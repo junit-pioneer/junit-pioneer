@@ -13,3 +13,13 @@ repositories {
 dependencies {
     compile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.0.0-SNAPSHOT'
 }
+
+configure(rootProject) {
+
+    task wrapper(type: Wrapper) {
+        description = 'Generates gradlew and gradlew.bat scripts'
+        gradleVersion = '3.2'
+        jarFile = "${project.projectDir}/.infra/gradle/gradle-wrapper.jar"
+    }
+
+}
