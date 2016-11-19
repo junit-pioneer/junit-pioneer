@@ -1,0 +1,15 @@
+group 'org.codefx.junit'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencies {
+    compile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.0.0-SNAPSHOT'
+}
