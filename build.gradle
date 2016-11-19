@@ -3,6 +3,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'com.diffplug.gradle.spotless'
+apply plugin: 'checkstyle'
 
 sourceCompatibility = 1.8
 
@@ -50,6 +51,12 @@ spotless {
         customReplaceRegex 'class-level Javadoc indentation fix', /^\*/, ' *'
         customReplaceRegex 'nested Javadoc indentation fix', /\t\*/, '\t *'
     }
+}
+
+checkstyle {
+    toolVersion = 6.11
+    configFile = rootProject.file('.infra/checkstyle/checkstyle.xml')
+    sourceSets = [ sourceSets.main ]
 }
 
 configure(rootProject) {
