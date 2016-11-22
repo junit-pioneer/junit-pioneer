@@ -4,6 +4,7 @@ version '1.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'checkstyle'
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 sourceCompatibility = 1.8
 
@@ -26,10 +27,12 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url 'https://plugins.gradle.org/m2/' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 
     dependencies {
         classpath group: 'com.diffplug.gradle.spotless', name: 'spotless', version: '2.2.0'
+        classpath group: 'org.junit.platform', name: 'junit-platform-gradle-plugin', version: '1.0.0-SNAPSHOT'
     }
 }
 
