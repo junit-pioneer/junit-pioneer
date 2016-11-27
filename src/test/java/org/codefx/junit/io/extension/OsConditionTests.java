@@ -153,7 +153,7 @@ class OsConditionTests {
 	private static Optional<AnnotatedElement> asElement(Class<?> type, String methodName) throws NoSuchMethodException {
 		if (methodName.isEmpty())
 			return Optional.of(type);
-		return Optional.of(type.getDeclaredMethod(methodName, null));
+		return Optional.of(type.getDeclaredMethod(methodName, (Class<?>[]) null));
 	}
 
 	private static void assertEnabledOn(ConditionEvaluationResult result, OS os) {

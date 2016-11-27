@@ -12,7 +12,6 @@ package org.codefx.junit.io.extension;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 public enum OS {
 
