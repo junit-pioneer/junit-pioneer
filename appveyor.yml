@@ -1,0 +1,21 @@
+version: "{branch}-{build}"
+
+build:
+  verbosity: detailed
+
+build_script:
+  - gradlew.bat assemble --info --no-daemon
+
+test_script:
+  - gradlew.bat check --info --no-daemon
+
+environment:
+  matrix:
+    - JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+
+matrix:
+  fast_finish: true
+
+cache:
+  - '%USERPROFILE%\.gradle\caches -> build.gradle'
+  - '%USERPROFILE%\.gradle\wrapper -> gradle\wrapper\gradle-wrapper.properties'
