@@ -8,6 +8,8 @@
 > [volcanic centres](https://en.wikipedia.org/wiki/List_of_volcanic_features_on_Io)
 > and extensive [lava flows](https://en.wikipedia.org/wiki/Lava).
 
+[![Build Status](https://travis-ci.org/CodeFX-org/junit-io.svg?branch=master)](https://travis-ci.org/CodeFX-org/junit-io)
+
 A melting pot for all kinds of extensions to
 [JUnit 5](https://github.com/junit-team/junit5), particular to its Jupiter API.
 
