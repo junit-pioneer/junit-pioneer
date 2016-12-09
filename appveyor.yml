@@ -7,7 +7,7 @@ build_script:
   - gradlew.bat assemble --info --no-daemon
 
 test_script:
-  - gradlew.bat check --info --no-daemon
+  - gradlew.bat spotlessJavaCheck --debug
 
 environment:
   matrix:
