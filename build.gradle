@@ -76,6 +76,43 @@ publishing {
 
             artifact sourceJar
             artifact javadocJar
+
+            pom.withXml {
+                asNode().with {
+                    appendNode('packaging', 'jar')
+                    appendNode('name', 'JUnit Io')
+                    appendNode('description', 'JUnit 5 Extension Pack')
+                    appendNode('url', 'https://github.com/CodeFX-org/junit-io')
+                    appendNode('scm').with {
+                        appendNode('url', 'https://github.com/CodeFX-org/junit-io')
+                        appendNode('connection', 'scm:git:git://github.com:CodeFX-org/junit-io.git')
+                    }
+                    appendNode('issueManagement').with {
+                        appendNode('url', 'https://github.com/CodeFX-org/junit-io/issues')
+                        appendNode('system', 'GitHub')
+                    }
+                    appendNode('licenses').with {
+                        appendNode('license').with {
+                            appendNode('name', 'Eclipse Public License v1.0')
+                            appendNode('url', 'http://www.eclipse.org/legal/epl-v10.html')
+                        }
+                    }
+                    appendNode('organization').with {
+                        appendNode('name', 'CodeFX')
+                        appendNode('url', 'http://codefx.org')
+                    }
+                    appendNode('developers').with {
+                        appendNode('developer').with {
+                            appendNode('id', 'nipa')
+                            appendNode('name', 'Nicolai Parlog')
+                            appendNode('email', 'nipa@codefx.org')
+                            appendNode('organization', 'CodeFX')
+                            appendNode('organizationUrl', 'http://codefx.org')
+                            appendNode('timezone', '1')
+                        }
+                    }
+                }
+            }
         }
     }
     repositories {
