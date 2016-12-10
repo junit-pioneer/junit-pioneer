@@ -77,6 +77,13 @@ publishing {
             artifact sourceJar
             artifact javadocJar
 
+            tasks.withType(Jar) {
+                from(project.projectDir) {
+                    include 'LICENSE.md'
+                    into 'META-INF'
+                }
+            }
+
             pom.withXml {
                 asNode().with {
                     appendNode('packaging', 'jar')
