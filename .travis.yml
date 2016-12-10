@@ -34,3 +34,11 @@ script:
   - java -version
   - ./gradlew -version
   - ./gradlew --refresh-dependencies clean check -Dscan
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: ./gradlew publish -p snapshot-repo-pass=$SNAPSHOT-REPO-PASS --stacktrace
+  on:
+    branch: master
+    jdk: oraclejdk8
