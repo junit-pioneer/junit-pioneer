@@ -22,6 +22,10 @@ import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestExtensionContext;
 import org.opentest4j.AssertionFailedError;
 
+/**
+ * This extension implements the expected exception behavior of {@link Test @Test}, where a test only passes if it throws
+ * an exception of the specified type.
+ */
 class ExpectedExceptionExtension implements TestExecutionExceptionHandler, AfterTestExecutionCallback {
 
 	/*

@@ -101,8 +101,7 @@ public class TestIntegrationTest extends AbstractIoTestEngineTests {
 
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_belowTimeout_passes() {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class,
-				"testWithTimeout_belowTimeout");
+		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class, "testWithTimeout_belowTimeout");
 
 		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
 		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
@@ -110,8 +109,7 @@ public class TestIntegrationTest extends AbstractIoTestEngineTests {
 
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_exceedsTimeout_fails() throws Exception {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class,
-				"testWithTimeout_exceedsTimeout");
+		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class, "testWithTimeout_exceedsTimeout");
 
 		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
 		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);

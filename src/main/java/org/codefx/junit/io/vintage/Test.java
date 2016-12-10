@@ -17,6 +17,11 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
+/**
+ * {@code @Test} is used to signal that the annotated method is a <em>test</em> method.
+ *
+ * <p>See {@link org.junit.jupiter.api.Test the official @Test} for more information.
+ */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(ExpectedExceptionExtension.class)

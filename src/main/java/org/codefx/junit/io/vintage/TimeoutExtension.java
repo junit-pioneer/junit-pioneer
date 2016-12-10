@@ -22,6 +22,14 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExtensionContext;
 
+/**
+ * This extension implements the timeout behavior of {@link Test @Test}, where a test is failed if it takes longer to finish
+ * than the specified time.
+ *
+ * <p>Note that this is different from JUnit 4's {@code @Test} parameter, which would abandon the test if it ran to
+ * long and continue with the remainder of the suite. As Jupiter's extension API is currently not powerful enough
+ * to interact with its threading model, this could not be implemented.
+ */
 class TimeoutExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
 	static final String TEST_RAN_TOO_LONG = "Test '%s' was supposed to run no longer than %d ms but ran %d ms.";
