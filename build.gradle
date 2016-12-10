@@ -123,7 +123,13 @@ publishing {
         }
     }
     repositories {
-        mavenLocal()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            credentials {
+                username "nipa"
+                password project.getProperty('snapshot-repo-pass')
+            }
+        }
     }
 }
 
