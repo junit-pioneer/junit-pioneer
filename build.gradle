@@ -5,8 +5,14 @@ apply plugin: 'java'
 apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'checkstyle'
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
+
+ext {
+    // the password needs to be specified via command line
+    snapshotRepoPass = project.hasProperty('snapshotRepoPass') ? project.getProperty('snapshotRepoPass') : ''
+}
 
 repositories {
     mavenCentral()
@@ -66,6 +72,80 @@ checkstyle {
     toolVersion = 6.11
     configFile = rootProject.file('.infra/checkstyle/checkstyle.xml')
     sourceSets = [ sourceSets.main ]
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourceJar
+            artifact javadocJar
+
+            tasks.withType(Jar) {
+                from(project.projectDir) {
+                    include 'LICENSE.md'
+                    into 'META-INF'
+                }
+            }
+
+            pom.withXml {
+                asNode().with {
+                    appendNode('packaging', 'jar')
+                    appendNode('name', 'JUnit Io')
+                    appendNode('description', 'JUnit 5 Extension Pack')
+                    appendNode('url', 'https://github.com/CodeFX-org/junit-io')
+                    appendNode('scm').with {
+                        appendNode('url', 'https://github.com/CodeFX-org/junit-io')
+                        appendNode('connection', 'scm:git:git://github.com:CodeFX-org/junit-io.git')
+                    }
+                    appendNode('issueManagement').with {
+                        appendNode('url', 'https://github.com/CodeFX-org/junit-io/issues')
+                        appendNode('system', 'GitHub')
+                    }
+                    appendNode('licenses').with {
+                        appendNode('license').with {
+                            appendNode('name', 'Eclipse Public License v1.0')
+                            appendNode('url', 'http://www.eclipse.org/legal/epl-v10.html')
+                        }
+                    }
+                    appendNode('organization').with {
+                        appendNode('name', 'CodeFX')
+                        appendNode('url', 'http://codefx.org')
+                    }
+                    appendNode('developers').with {
+                        appendNode('developer').with {
+                            appendNode('id', 'nipa')
+                            appendNode('name', 'Nicolai Parlog')
+                            appendNode('email', 'nipa@codefx.org')
+                            appendNode('organization', 'CodeFX')
+                            appendNode('organizationUrl', 'http://codefx.org')
+                            appendNode('timezone', '1')
+                        }
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            credentials {
+                username "nipa"
+                password project.snapshotRepoPass
+            }
+        }
+    }
+}
+
+task sourceJar(type: Jar, dependsOn: classes) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
 configure(rootProject) {
