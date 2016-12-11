@@ -9,6 +9,11 @@ apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
 
+ext {
+    // the password needs to be specified via command line
+    snapshotRepoPass = project.hasProperty('snapshotRepoPass') ? project.getProperty('snapshotRepoPass') : ''
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
@@ -127,7 +132,7 @@ publishing {
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
             credentials {
                 username "nipa"
-                password project.getProperty('snapshot-repo-pass')
+                password project.snapshotRepoPass
             }
         }
     }
