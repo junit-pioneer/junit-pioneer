@@ -23,7 +23,10 @@ import org.codefx.junit.io.AbstractIoTestEngineTests;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 
-public class TestIntegrationTest extends AbstractIoTestEngineTests {
+/**
+ * Tests the vintage {@link Test @Test} annotation by running the entire test engine.
+ */
+class TestIntegrationTests extends AbstractIoTestEngineTests {
 
 	@org.junit.jupiter.api.Test
 	void test_successfulTest_passes() throws Exception {

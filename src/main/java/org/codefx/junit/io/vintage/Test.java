@@ -18,9 +18,14 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @Test} is used to signal that the annotated method is a <em>test</em> method.
+ * {@code @Test} is used to signal to JUnit Jupiter that the annotated method is a <em>test</em> method - it is designed
+ * to be a drop-in replacement for JUnit 4's {@code @Test}.
  *
- * <p>See {@link org.junit.jupiter.api.Test the official @Test} for more information.
+ * <p>Like JUnit 4's annotation it offers the possibility to {@link #expected() expect exceptions} and to
+ * {@link #timeout() time out} long running tests. The latter functions slightly different from the original - see the
+ * attached Javadoc.
+ *
+ * <p>See {@link org.junit.jupiter.api.Test the official @Test} for more information regarding JUnit Jupiter integration.
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
