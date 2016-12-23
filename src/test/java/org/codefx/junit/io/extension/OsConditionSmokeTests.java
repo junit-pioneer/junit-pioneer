@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
 
+import org.codefx.junit.io.AbstractIoTestEngineTests;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
@@ -24,18 +25,13 @@ import org.junit.platform.launcher.LauncherDiscoveryRequest;
  * These integration tests are incomplete,
  * see {@link OsConditionTests} for a detailed battery of unit tests.
  */
-class OsConditionSmokeTests extends AbstractJupiterTestEngineTests {
+class OsConditionSmokeTests extends AbstractIoTestEngineTests {
 
 	@Test
 	void disabledOnNix_onNix_disabled() {
 		Assumptions.assumeTrue(OS.determine() == OS.NIX);
 
-		// @formatter:off
-		LauncherDiscoveryRequest request = request()
-				.selectors(selectClass(DisabledOnNixTestCase.class))
-				.build();
-		// @formatter:on
-		ExecutionEventRecorder eventRecorder = executeTests(request);
+		ExecutionEventRecorder eventRecorder = executeTests(DisabledOnNixTestCase.class);
 
 		assertEquals(1, eventRecorder.getContainerSkippedCount(), "# container skipped");
 		assertEquals(0, eventRecorder.getTestStartedCount(), "# tests started");
@@ -45,12 +41,7 @@ class OsConditionSmokeTests extends AbstractJupiterTestEngineTests {
 	void disabledOnNix_notOnNix_enabled() {
 		Assumptions.assumeTrue(OS.determine() != OS.NIX);
 
-		// @formatter:off
-		LauncherDiscoveryRequest request = request()
-				.selectors(selectClass(DisabledOnNixTestCase.class))
-				.build();
-		// @formatter:on
-		ExecutionEventRecorder eventRecorder = executeTests(request);
+		ExecutionEventRecorder eventRecorder = executeTests(DisabledOnNixTestCase.class);
 
 		assertEquals(1, eventRecorder.getTestStartedCount(), "# tests started");
 		assertEquals(1, eventRecorder.getTestSuccessfulCount(), "# tests succeeded");
@@ -60,12 +51,7 @@ class OsConditionSmokeTests extends AbstractJupiterTestEngineTests {
 	void enabledOnNix_onNix_disabled() {
 		Assumptions.assumeTrue(OS.determine() == OS.NIX);
 
-		// @formatter:off
-		LauncherDiscoveryRequest request = request()
-				.selectors(selectClass(EnabledOnNixTestCase.class))
-				.build();
-		// @formatter:on
-		ExecutionEventRecorder eventRecorder = executeTests(request);
+		ExecutionEventRecorder eventRecorder = executeTests(EnabledOnNixTestCase.class);
 
 		assertEquals(1, eventRecorder.getTestStartedCount(), "# tests started");
 		assertEquals(1, eventRecorder.getTestSuccessfulCount(), "# tests succeeded");
@@ -75,12 +61,7 @@ class OsConditionSmokeTests extends AbstractJupiterTestEngineTests {
 	void enabledOnNix_notOnNix_disabled() {
 		Assumptions.assumeTrue(OS.determine() != OS.NIX);
 
-		// @formatter:off
-		LauncherDiscoveryRequest request = request()
-				.selectors(selectClass(EnabledOnNixTestCase.class))
-				.build();
-		// @formatter:on
-		ExecutionEventRecorder eventRecorder = executeTests(request);
+		ExecutionEventRecorder eventRecorder = executeTests(EnabledOnNixTestCase.class);
 
 		assertEquals(1, eventRecorder.getContainerSkippedCount(), "# container skipped");
 		assertEquals(0, eventRecorder.getTestStartedCount(), "# tests started");
@@ -88,12 +69,7 @@ class OsConditionSmokeTests extends AbstractJupiterTestEngineTests {
 
 	@Test
 	void enabledAndDisabled_onAnyOs_someEnabledSomeDisabled() throws Exception {
-		// @formatter:off
-		LauncherDiscoveryRequest request = request()
-				.selectors(selectClass(EnabledAndDisabledTestMethods.class))
-				.build();
-		// @formatter:on
-		ExecutionEventRecorder eventRecorder = executeTests(request);
+		ExecutionEventRecorder eventRecorder = executeTests(EnabledAndDisabledTestMethods.class);
 
 		// The test class contains three pairs of methods, where exactly one
 		// method from each pair should be executed. Hence across all three OS
