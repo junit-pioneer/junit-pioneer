@@ -93,7 +93,8 @@ class OsConditionTests {
 
 	@Test
 	void evaluateMethod_disabledOnOtherOs_enabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "disabledOnLinuxTest");
+		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class,
+			"disabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.WINDOWS);
 
 		ConditionEvaluationResult result = condition.evaluate(context);
@@ -103,7 +104,8 @@ class OsConditionTests {
 
 	@Test
 	void evaluateMethod_disabledOnRunningOs_disabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "disabledOnLinuxTest");
+		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class,
+			"disabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.LINUX);
 
 		ConditionEvaluationResult result = condition.evaluate(context);
@@ -113,7 +115,8 @@ class OsConditionTests {
 
 	@Test
 	void evaluateMethod_enabledOnOtherOs_disabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "enabledOnLinuxTest");
+		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class,
+			"enabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.WINDOWS);
 
 		ConditionEvaluationResult result = condition.evaluate(context);
@@ -123,7 +126,8 @@ class OsConditionTests {
 
 	@Test
 	void evaluateMethod_enabledOnRunningOs_enabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "enabledOnLinuxTest");
+		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class,
+			"enabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.LINUX);
 
 		ConditionEvaluationResult result = condition.evaluate(context);

@@ -20,10 +20,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 /**
  * {@code @EnabledOnOs} is used to signal that the annotated test class or
  * test method is <em>disabled</em> on all operating systems except the
- * specified one.
+ * specified ones.
  *
  * <p>When applied at the class level, all test methods within that class
- * are automatically disabled as well if not on the specified operating system.
+ * are automatically disabled as well if not on the specified operating systems.
  *
  * @since 1.0
  */
