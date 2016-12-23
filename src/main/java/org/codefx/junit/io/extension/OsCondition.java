@@ -64,8 +64,9 @@ class OsCondition implements ContainerExecutionCondition, TestExecutionCondition
 				.map(DisabledOnOs::value)
 				.map(this::disabledIfOn);
 		// @formatter:on
-		if (disabledResult.isPresent())
+		if (disabledResult.isPresent()) {
 			return disabledResult.get();
+		}
 
 		// @formatter:off
 		Optional<ConditionEvaluationResult> enabledResult = element
@@ -76,8 +77,9 @@ class OsCondition implements ContainerExecutionCondition, TestExecutionCondition
 				.map(OS::except)
 				.map(this::disabledIfOn);
 		// @formatter:on
-		if (enabledResult.isPresent())
+		if (enabledResult.isPresent()) {
 			return enabledResult.get();
+		}
 
 		// if both annotations are missing, the container/test is enabled
 		return ConditionEvaluationResult.enabled(NO_CONDITION_PRESENT);
@@ -85,10 +87,12 @@ class OsCondition implements ContainerExecutionCondition, TestExecutionCondition
 
 	private ConditionEvaluationResult disabledIfOn(OS[] disabledOnOs) {
 		OS os = osDetector.get();
-		if (Arrays.asList(disabledOnOs).contains(os))
+		if (Arrays.asList(disabledOnOs).contains(os)) {
 			return ConditionEvaluationResult.disabled(format(TEST_DISABLED, os));
-		else
+		}
+		else {
 			return ConditionEvaluationResult.enabled(format(TEST_ENABLED, os));
+		}
 	}
 
 }
