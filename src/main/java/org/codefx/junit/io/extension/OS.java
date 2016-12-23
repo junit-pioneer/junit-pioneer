@@ -12,48 +12,59 @@ package org.codefx.junit.io.extension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
+/**
+ * Enumerates the operating systems that JUnit IO can discern.
+ */
 public enum OS {
 
-	/*
-	 * This class was written for demonstration purposes.
-	 * It is not at all fit for production!
+	/**
+	 * A Linux-based operating system.
 	 */
+	LINUX,
 
-	NIX, MAC, WINDOWS;
+	/**
+	 * A Mac operating system.
+	 */
+	MAC,
+
+	/**
+	 * A Windows operating system.
+	 */
+	WINDOWS;
+
+	private static final OS RUNNING_OS = determineOs();
 
 	static OS determine() {
-		String os = System.getProperty("os.name").toLowerCase();
+		return RUNNING_OS;
+	}
 
-		if (isWindows(os)) {
-			return WINDOWS;
+	private static OS determineOs() {
+		String lowerCaseOsName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+
+		// these checks were inspired by how Apache Commons-Lang's 'SystemUtils' solves the problem
+		// https://github.com/apache/commons-lang/blob/master/src/main/java/org/apache/commons/lang3/SystemUtils.java
+		if (lowerCaseOsName.startsWith("linux")) {
+			return OS.LINUX;
 		}
-		else if (isMac(os)) {
-			return MAC;
+		if (lowerCaseOsName.startsWith("mac")) {
+			return OS.MAC;
 		}
-		else if (isUnix(os)) {
-			return NIX;
+		if (lowerCaseOsName.startsWith("windows")) {
+			return OS.WINDOWS;
 		}
-		else {
-			throw new IllegalArgumentException("Unknown OS \"" + os + "\".");
-		}
+
+		throw new IllegalArgumentException("Unknown OS \"" + System.getProperty("os.name") + "\".");
 	}
 
 	static OS[] except(OS... others) {
-		List<OS> otherses = Arrays.asList(others);
-		return Arrays.stream(OS.values()).filter(os -> !otherses.contains(os)).toArray(OS[]::new);
-	}
-
-	private static boolean isWindows(String os) {
-		return os.contains("win");
-	}
-
-	private static boolean isMac(String os) {
-		return os.contains("mac");
-	}
-
-	private static boolean isUnix(String os) {
-		return os.contains("nix") || os.contains("nux");
+		List<OS> othrs = Arrays.asList(others);
+		// @formatter:off
+		return Arrays.stream(OS.values())
+				.filter(os -> !othrs.contains(os))
+				.toArray(OS[]::new);
+		// @formatter:on
 	}
 
 }

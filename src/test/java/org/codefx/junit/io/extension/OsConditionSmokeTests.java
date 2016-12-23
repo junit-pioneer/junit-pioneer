@@ -28,40 +28,40 @@ import org.junit.platform.launcher.LauncherDiscoveryRequest;
 class OsConditionSmokeTests extends AbstractIoTestEngineTests {
 
 	@Test
-	void disabledOnNix_onNix_disabled() {
-		Assumptions.assumeTrue(OS.determine() == OS.NIX);
+	void disabledOnLinux_onLinux_disabled() {
+		Assumptions.assumeTrue(OS.determine() == OS.LINUX);
 
-		ExecutionEventRecorder eventRecorder = executeTests(DisabledOnNixTestCase.class);
+		ExecutionEventRecorder eventRecorder = executeTests(DisabledOnLinuxTestCase.class);
 
 		assertEquals(1, eventRecorder.getContainerSkippedCount(), "# container skipped");
 		assertEquals(0, eventRecorder.getTestStartedCount(), "# tests started");
 	}
 
 	@Test
-	void disabledOnNix_notOnNix_enabled() {
-		Assumptions.assumeTrue(OS.determine() != OS.NIX);
+	void disabledOnLinux_notOnLinux_enabled() {
+		Assumptions.assumeTrue(OS.determine() != OS.LINUX);
 
-		ExecutionEventRecorder eventRecorder = executeTests(DisabledOnNixTestCase.class);
-
-		assertEquals(1, eventRecorder.getTestStartedCount(), "# tests started");
-		assertEquals(1, eventRecorder.getTestSuccessfulCount(), "# tests succeeded");
-	}
-
-	@Test
-	void enabledOnNix_onNix_disabled() {
-		Assumptions.assumeTrue(OS.determine() == OS.NIX);
-
-		ExecutionEventRecorder eventRecorder = executeTests(EnabledOnNixTestCase.class);
+		ExecutionEventRecorder eventRecorder = executeTests(DisabledOnLinuxTestCase.class);
 
 		assertEquals(1, eventRecorder.getTestStartedCount(), "# tests started");
 		assertEquals(1, eventRecorder.getTestSuccessfulCount(), "# tests succeeded");
 	}
 
 	@Test
-	void enabledOnNix_notOnNix_disabled() {
-		Assumptions.assumeTrue(OS.determine() != OS.NIX);
+	void enabledOnLinux_onLinux_disabled() {
+		Assumptions.assumeTrue(OS.determine() == OS.LINUX);
 
-		ExecutionEventRecorder eventRecorder = executeTests(EnabledOnNixTestCase.class);
+		ExecutionEventRecorder eventRecorder = executeTests(EnabledOnLinuxTestCase.class);
+
+		assertEquals(1, eventRecorder.getTestStartedCount(), "# tests started");
+		assertEquals(1, eventRecorder.getTestSuccessfulCount(), "# tests succeeded");
+	}
+
+	@Test
+	void enabledOnLinux_notOnLinux_disabled() {
+		Assumptions.assumeTrue(OS.determine() != OS.LINUX);
+
+		ExecutionEventRecorder eventRecorder = executeTests(EnabledOnLinuxTestCase.class);
 
 		assertEquals(1, eventRecorder.getContainerSkippedCount(), "# container skipped");
 		assertEquals(0, eventRecorder.getTestStartedCount(), "# tests started");
@@ -82,8 +82,8 @@ class OsConditionSmokeTests extends AbstractIoTestEngineTests {
 
 	// TEST CASES -------------------------------------------------------------------
 
-	@DisabledOnOs(OS.NIX)
-	private static class DisabledOnNixTestCase {
+	@DisabledOnOs(OS.LINUX)
+	private static class DisabledOnLinuxTestCase {
 
 		@Test
 		void unconditionalTest() {
@@ -91,8 +91,8 @@ class OsConditionSmokeTests extends AbstractIoTestEngineTests {
 
 	}
 
-	@EnabledOnOs(OS.NIX)
-	private static class EnabledOnNixTestCase {
+	@EnabledOnOs(OS.LINUX)
+	private static class EnabledOnLinuxTestCase {
 
 		@Test
 		void unconditionalTest() {
@@ -102,14 +102,14 @@ class OsConditionSmokeTests extends AbstractIoTestEngineTests {
 
 	private static class EnabledAndDisabledTestMethods {
 
-		@DisabledOnOs(OS.NIX)
+		@DisabledOnOs(OS.LINUX)
 		@Test
-		void disabledOnNixTest() {
+		void disabledOnLinuxTest() {
 		}
 
-		@EnabledOnOs(OS.NIX)
+		@EnabledOnOs(OS.LINUX)
 		@Test
-		void enabledOnNixTest() {
+		void enabledOnLinuxTest() {
 		}
 
 		@DisabledOnOs(OS.WINDOWS)

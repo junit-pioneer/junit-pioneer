@@ -40,7 +40,7 @@ class OsConditionTests {
 
 	@Test
 	void evaluateContainer_disabledOnOtherOs_enabled() throws Exception {
-		ContainerExtensionContext context = createContextReturning(DisabledOnNixTestCase.class);
+		ContainerExtensionContext context = createContextReturning(DisabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.WINDOWS);
 
 		ConditionEvaluationResult result = conditionOnWindows.evaluate(context);
@@ -49,18 +49,18 @@ class OsConditionTests {
 	}
 
 	@Test
-	void evaluateContainer_disabledOnThisOs_disabled() throws Exception {
-		ContainerExtensionContext context = createContextReturning(DisabledOnNixTestCase.class);
-		OsCondition conditionOnWindows = new OsCondition(() -> OS.NIX);
+	void evaluateContainer_disabledOnRunningOs_disabled() throws Exception {
+		ContainerExtensionContext context = createContextReturning(DisabledOnLinuxTestCase.class);
+		OsCondition conditionOnWindows = new OsCondition(() -> OS.LINUX);
 
 		ConditionEvaluationResult result = conditionOnWindows.evaluate(context);
 
-		assertDisabledOn(result, OS.NIX);
+		assertDisabledOn(result, OS.LINUX);
 	}
 
 	@Test
 	void evaluateContainer_enabledOnOtherOs_disabled() throws Exception {
-		ContainerExtensionContext context = createContextReturning(EnabledOnNixTestCase.class);
+		ContainerExtensionContext context = createContextReturning(EnabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.WINDOWS);
 
 		ConditionEvaluationResult result = conditionOnWindows.evaluate(context);
@@ -69,13 +69,13 @@ class OsConditionTests {
 	}
 
 	@Test
-	void evaluateContainer_enabledOnThisOs_enabled() throws Exception {
-		ContainerExtensionContext context = createContextReturning(EnabledOnNixTestCase.class);
-		OsCondition conditionOnWindows = new OsCondition(() -> OS.NIX);
+	void evaluateContainer_enabledOnRunningOs_enabled() throws Exception {
+		ContainerExtensionContext context = createContextReturning(EnabledOnLinuxTestCase.class);
+		OsCondition conditionOnWindows = new OsCondition(() -> OS.LINUX);
 
 		ConditionEvaluationResult result = conditionOnWindows.evaluate(context);
 
-		assertEnabledOn(result, OS.NIX);
+		assertEnabledOn(result, OS.LINUX);
 	}
 
 	// TESTS -------------------------------------------------------------------
@@ -93,7 +93,7 @@ class OsConditionTests {
 
 	@Test
 	void evaluateMethod_disabledOnOtherOs_enabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "disabledOnNixTest");
+		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "disabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.WINDOWS);
 
 		ConditionEvaluationResult result = condition.evaluate(context);
@@ -102,18 +102,18 @@ class OsConditionTests {
 	}
 
 	@Test
-	void evaluateMethod_disabledOnThisOs_disabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "disabledOnNixTest");
-		OsCondition condition = new OsCondition(() -> OS.NIX);
+	void evaluateMethod_disabledOnRunningOs_disabled() throws Exception {
+		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "disabledOnLinuxTest");
+		OsCondition condition = new OsCondition(() -> OS.LINUX);
 
 		ConditionEvaluationResult result = condition.evaluate(context);
 
-		assertDisabledOn(result, OS.NIX);
+		assertDisabledOn(result, OS.LINUX);
 	}
 
 	@Test
 	void evaluateMethod_enabledOnOtherOs_disabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "enabledOnNixTest");
+		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "enabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.WINDOWS);
 
 		ConditionEvaluationResult result = condition.evaluate(context);
@@ -122,13 +122,13 @@ class OsConditionTests {
 	}
 
 	@Test
-	void evaluateMethod_enabledOnThisOs_enabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "enabledOnNixTest");
-		OsCondition condition = new OsCondition(() -> OS.NIX);
+	void evaluateMethod_enabledOnRunningOs_enabled() throws Exception {
+		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "enabledOnLinuxTest");
+		OsCondition condition = new OsCondition(() -> OS.LINUX);
 
 		ConditionEvaluationResult result = condition.evaluate(context);
 
-		assertEnabledOn(result, OS.NIX);
+		assertEnabledOn(result, OS.LINUX);
 	}
 
 	// HELPER -------------------------------------------------------------------
@@ -175,22 +175,22 @@ class OsConditionTests {
 
 	}
 
-	@DisabledOnOs(OS.NIX)
-	private static class DisabledOnNixTestCase {
+	@DisabledOnOs(OS.LINUX)
+	private static class DisabledOnLinuxTestCase {
 	}
 
-	@EnabledOnOs(OS.NIX)
-	private static class EnabledOnNixTestCase {
+	@EnabledOnOs(OS.LINUX)
+	private static class EnabledOnLinuxTestCase {
 	}
 
 	private static class EnabledAndDisabledTestMethods {
 
-		@DisabledOnOs(OS.NIX)
-		void disabledOnNixTest() {
+		@DisabledOnOs(OS.LINUX)
+		void disabledOnLinuxTest() {
 		}
 
-		@EnabledOnOs(OS.NIX)
-		void enabledOnNixTest() {
+		@EnabledOnOs(OS.LINUX)
+		void enabledOnLinuxTest() {
 		}
 
 	}
