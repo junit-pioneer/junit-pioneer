@@ -11,6 +11,7 @@
 package org.codefx.junit.io;
 
 import static java.util.Arrays.stream;
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
 import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
 
@@ -22,12 +23,24 @@ import org.junit.platform.launcher.LauncherDiscoveryRequest;
 public abstract class AbstractIoTestEngineTests extends AbstractJupiterTestEngineTests {
 
 	protected ExecutionEventRecorder executeTests(Class<?> type, String... methodNames) {
+		if (methodNames.length == 0)
+			return executeTestClass(type);
+		else
+			return executeTestMethods(type, methodNames);
+	}
+
+	private ExecutionEventRecorder executeTestClass(Class<?> type) {
+		LauncherDiscoveryRequest request = request().selectors(selectClass(type)).build();
+		return executeTests(request);
+	}
+
+	private ExecutionEventRecorder executeTestMethods(Class<?> type, String[] methodNames) {
 		//@formatter:off
 		DiscoverySelector[] selectors = stream(methodNames)
 				.map(methodName -> selectMethod(type, methodName))
 				.toArray(DiscoverySelector[]::new);
-		LauncherDiscoveryRequest request = request().selectors(selectors).build();
 		//@formatter:on
+		LauncherDiscoveryRequest request = request().selectors(selectors).build();
 		return executeTests(request);
 	}
 
