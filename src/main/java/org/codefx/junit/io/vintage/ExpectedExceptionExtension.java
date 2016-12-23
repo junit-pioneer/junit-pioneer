@@ -43,8 +43,8 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 	public void handleTestExecutionException(TestExtensionContext context, Throwable throwable) throws Throwable {
 		//@formatter:off
 		boolean throwableMatchesExpectedException = expectedException(context)
-						.filter(expected -> expected.isInstance(throwable))
-						.isPresent();
+				.filter(expected -> expected.isInstance(throwable))
+				.isPresent();
 		//@formatter:on
 
 		// in the `afterTestExecution` callback we have to pass or fail the test
