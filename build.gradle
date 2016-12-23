@@ -75,6 +75,14 @@ checkstyle {
     sourceSets = [ sourceSets.main ]
 }
 
+javadoc {
+    // of all the javadoc checks (accessibility, html, missing, reference, syntax; see
+    // https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html#BEJEFABE)
+    // disable the warning for missing comments and tags because they spam the output
+    // (it does often not make sense to comment every tag; e.g. the @return tag on annotations)
+    options.addStringOption('Xdoclint:accessibility,html,syntax,reference', '-quiet')
+}
+
 // to find Javadoc errors early, let 'javadoc' task run during 'check'
 check.dependsOn javadoc
 // it should ran last, though
