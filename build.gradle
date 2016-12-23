@@ -75,6 +75,11 @@ checkstyle {
     sourceSets = [ sourceSets.main ]
 }
 
+// to find Javadoc errors early, let 'javadoc' task run during 'check'
+check.dependsOn javadoc
+// it should ran last, though
+javadoc.shouldRunAfter test
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
