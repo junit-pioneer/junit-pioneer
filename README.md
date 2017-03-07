@@ -1,12 +1,4 @@
-# Io
-
-> The [tidal heating](https://en.wikipedia.org/wiki/Tidal_heating_of_Io)
-> produced by [Io](https://en.wikipedia.org/wiki/Io_(moon))'s forced
-> [orbital eccentricity](https://en.wikipedia.org/wiki/Orbital_eccentricity)
-> has made it the most volcanically active world in the Solar System, with
-> hundreds of
-> [volcanic centres](https://en.wikipedia.org/wiki/List_of_volcanic_features_on_Io)
-> and extensive [lava flows](https://en.wikipedia.org/wiki/Lava).
+# JUnit Pioneer
 
 [![Travis build status](https://travis-ci.org/CodeFX-org/junit-io.svg?branch=master)](https://travis-ci.org/CodeFX-org/junit-io)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/cnmk9d487t0vy0a9?svg=true)](https://ci.appveyor.com/project/nicolaiparlog/junit-io)
