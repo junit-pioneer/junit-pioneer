@@ -1,4 +1,4 @@
-group 'org.codefx.junit'
+group 'org.junit-pioneer'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
@@ -106,15 +106,15 @@ publishing {
             pom.withXml {
                 asNode().with {
                     appendNode('packaging', 'jar')
-                    appendNode('name', 'JUnit Io')
+                    appendNode('name', 'JUnit Pioneer')
                     appendNode('description', 'JUnit 5 Extension Pack')
-                    appendNode('url', 'https://github.com/CodeFX-org/junit-io')
+                    appendNode('url', 'https://github.com/junit-pioneer/junit-pioneer')
                     appendNode('scm').with {
-                        appendNode('url', 'https://github.com/CodeFX-org/junit-io')
-                        appendNode('connection', 'scm:git:git://github.com:CodeFX-org/junit-io.git')
+                        appendNode('url', 'https://github.com/junit-pioneer/junit-pioneer')
+                        appendNode('connection', 'scm:git:git://github.com:junit-pioneer/junit-pioneer.git')
                     }
                     appendNode('issueManagement').with {
-                        appendNode('url', 'https://github.com/CodeFX-org/junit-io/issues')
+                        appendNode('url', 'https://github.com/junit-pioneer/junit-pioneer/issues')
                         appendNode('system', 'GitHub')
                     }
                     appendNode('licenses').with {
@@ -124,8 +124,8 @@ publishing {
                         }
                     }
                     appendNode('organization').with {
-                        appendNode('name', 'CodeFX')
-                        appendNode('url', 'http://codefx.org')
+                        appendNode('name', 'JUnit Pioneer')
+                        appendNode('url', 'https://github.com/junit-pioneer')
                     }
                     appendNode('developers').with {
                         appendNode('developer').with {
