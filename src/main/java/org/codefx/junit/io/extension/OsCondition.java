@@ -48,12 +48,12 @@ class OsCondition implements ContainerExecutionCondition, TestExecutionCondition
 	}
 
 	@Override
-	public ConditionEvaluationResult evaluate(ContainerExtensionContext context) {
+	public ConditionEvaluationResult evaluateContainerExecutionCondition(ContainerExtensionContext context) {
 		return evaluateIfAnnotated(context.getElement());
 	}
 
 	@Override
-	public ConditionEvaluationResult evaluate(TestExtensionContext context) {
+	public ConditionEvaluationResult evaluateTestExecutionCondition(TestExtensionContext context) {
 		return evaluateIfAnnotated(context.getElement());
 	}
 

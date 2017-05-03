@@ -32,7 +32,7 @@ class OsConditionTests {
 		ContainerExtensionContext context = createContextReturning(UnconditionalTestCase.class);
 		OsCondition condition = new OsCondition();
 
-		ConditionEvaluationResult result = condition.evaluate(context);
+		ConditionEvaluationResult result = condition.evaluateContainerExecutionCondition(context);
 
 		assertThat(result.isDisabled()).isFalse();
 		assertThat(result.getReason()).contains(OsCondition.NO_CONDITION_PRESENT);
@@ -43,7 +43,7 @@ class OsConditionTests {
 		ContainerExtensionContext context = createContextReturning(DisabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.WINDOWS);
 
-		ConditionEvaluationResult result = conditionOnWindows.evaluate(context);
+		ConditionEvaluationResult result = conditionOnWindows.evaluateContainerExecutionCondition(context);
 
 		assertEnabledOn(result, OS.WINDOWS);
 	}
@@ -53,7 +53,7 @@ class OsConditionTests {
 		ContainerExtensionContext context = createContextReturning(DisabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.LINUX);
 
-		ConditionEvaluationResult result = conditionOnWindows.evaluate(context);
+		ConditionEvaluationResult result = conditionOnWindows.evaluateContainerExecutionCondition(context);
 
 		assertDisabledOn(result, OS.LINUX);
 	}
@@ -63,7 +63,7 @@ class OsConditionTests {
 		ContainerExtensionContext context = createContextReturning(EnabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.WINDOWS);
 
-		ConditionEvaluationResult result = conditionOnWindows.evaluate(context);
+		ConditionEvaluationResult result = conditionOnWindows.evaluateContainerExecutionCondition(context);
 
 		assertDisabledOn(result, OS.WINDOWS);
 	}
@@ -73,7 +73,7 @@ class OsConditionTests {
 		ContainerExtensionContext context = createContextReturning(EnabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.LINUX);
 
-		ConditionEvaluationResult result = conditionOnWindows.evaluate(context);
+		ConditionEvaluationResult result = conditionOnWindows.evaluateContainerExecutionCondition(context);
 
 		assertEnabledOn(result, OS.LINUX);
 	}
@@ -85,7 +85,7 @@ class OsConditionTests {
 		TestExtensionContext context = createContextReturning(UnconditionalTestCase.class, "unconditionalTest");
 		OsCondition condition = new OsCondition();
 
-		ConditionEvaluationResult result = condition.evaluate(context);
+		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
 
 		assertThat(result.isDisabled()).isFalse();
 		assertThat(result.getReason()).contains(OsCondition.NO_CONDITION_PRESENT);
@@ -97,7 +97,7 @@ class OsConditionTests {
 			"disabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.WINDOWS);
 
-		ConditionEvaluationResult result = condition.evaluate(context);
+		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
 
 		assertEnabledOn(result, OS.WINDOWS);
 	}
@@ -108,7 +108,7 @@ class OsConditionTests {
 			"disabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.LINUX);
 
-		ConditionEvaluationResult result = condition.evaluate(context);
+		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
 
 		assertDisabledOn(result, OS.LINUX);
 	}
@@ -119,7 +119,7 @@ class OsConditionTests {
 			"enabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.WINDOWS);
 
-		ConditionEvaluationResult result = condition.evaluate(context);
+		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
 
 		assertDisabledOn(result, OS.WINDOWS);
 	}
@@ -130,7 +130,7 @@ class OsConditionTests {
 			"enabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.LINUX);
 
-		ConditionEvaluationResult result = condition.evaluate(context);
+		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
 
 		assertEnabledOn(result, OS.LINUX);
 	}
