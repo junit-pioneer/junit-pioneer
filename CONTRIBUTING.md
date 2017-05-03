@@ -1,5 +1,10 @@
 # Contributing
 
+The following guidelines were chosen very deliberately to make sure the project benefits from contributions.
+This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
+
+The guidelines apply to maintainers as well as contributors!
+
 ## Io Contributor License Agreement
 
 **Project License:**  [Apache License v2.0](LICENSE.md)
@@ -16,7 +21,7 @@
 
 ### Branching Strategy
 
-By default development happens in branches, which are merged via pull requests - this also applies to core committers.
+By default development happens in branches, which are merged via pull requests.
 Special cases, like fixing problems with the CI pipeline, are of course exempt from this guideline.
 
 Please make sure to give branches a meaningful name!
