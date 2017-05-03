@@ -23,7 +23,7 @@ Please make sure to give branches a meaningful name!
 
 ### Commits
 
-While it is nice to have each individual commit pass the build, this is not a requirement - it is the developer's branch to play on.
+While it is nice to have each individual commit pass the build, this is not a requirement - it is the contributor's branch to play on.
 
 As a general rule, the style and formatting of commit messages should follow the [guidelines for good Git commit messages](http://chris.beams.io/posts/git-commit/).
 Because of the noise it generates on the issue, please do _not_ mention the issue number in the message.
@@ -61,4 +61,4 @@ Ideally, this title line should not exceed 50 characters - 70 is the absolute ma
 This can usually be a summary of the issue description and commit messages.
 Markdown syntax can be used and lines should usually not exceed 72 characters (exceptions are possible, e.g. to include stack traces).
 
-Once a pull request is ready to be merged, the developer will be asked to propose an action and body for the squashed commit and the maintainer will refine them when merging.
+Once a pull request is ready to be merged, the contributor will be asked to propose an action and body for the squashed commit and the maintainer will refine them when merging.
