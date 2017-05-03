@@ -11,3 +11,8 @@ A melting pot for all kinds of extensions to
 🚧 Much of this project is still under construction. 🚧
 
 ***
+
+## Contributing
+
+We welcome contributions of all kinds and shapes!
+We are still building up infrastructure and what exactly we need help on is not easy to say, but we already settled and [what we want contributions to look like](CONTRIBUTING.md).
