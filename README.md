@@ -1,7 +1,7 @@
 # JUnit Pioneer
 
-[![Travis build status](https://travis-ci.org/CodeFX-org/junit-io.svg?branch=master)](https://travis-ci.org/CodeFX-org/junit-io)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/cnmk9d487t0vy0a9?svg=true)](https://ci.appveyor.com/project/nicolaiparlog/junit-io)
+[![Travis build status](https://api.travis-ci.org/junit-pioneer/junit-pioneer.svg?branch=master)](https://travis-ci.org/junit-pioneer/junit-pioneer)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/ijrlfaa2fpnxwm3r?svg=true)](https://ci.appveyor.com/project/nicolaiparlog/junit-pioneer)
 
 A melting pot for all kinds of extensions to
 [JUnit 5](https://github.com/junit-team/junit5), particular to its Jupiter API.
