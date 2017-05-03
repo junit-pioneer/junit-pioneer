@@ -6,4 +6,8 @@
 A melting pot for all kinds of extensions to
 [JUnit 5](https://github.com/junit-team/junit5), particular to its Jupiter API.
 
-:construction: UNDER CONSTRUCTION :construction:
+***
+
+🚧 Much of this project is still under construction. 🚧
+
+***
