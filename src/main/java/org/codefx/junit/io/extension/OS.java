@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Enumerates the operating systems that JUnit Io can discern.
+ * Enumerates the operating systems that JUnit Pioneer can discern.
  */
 public enum OS {
 

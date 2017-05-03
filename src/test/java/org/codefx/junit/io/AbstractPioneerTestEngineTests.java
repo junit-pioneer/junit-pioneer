@@ -20,7 +20,7 @@ import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 
-public abstract class AbstractIoTestEngineTests extends AbstractJupiterTestEngineTests {
+public abstract class AbstractPioneerTestEngineTests extends AbstractJupiterTestEngineTests {
 
 	protected ExecutionEventRecorder executeTests(Class<?> type, String... methodNames) {
 		if (methodNames.length == 0)

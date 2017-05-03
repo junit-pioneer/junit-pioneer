@@ -12,20 +12,17 @@ package org.codefx.junit.io.extension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
-import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
 
-import org.codefx.junit.io.AbstractIoTestEngineTests;
+import org.codefx.junit.io.AbstractPioneerTestEngineTests;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junit.platform.launcher.LauncherDiscoveryRequest;
 
 /**
  * These integration tests are incomplete,
  * see {@link OsConditionTests} for a detailed battery of unit tests.
  */
-class OsConditionSmokeTests extends AbstractIoTestEngineTests {
+class OsConditionSmokeTests extends AbstractPioneerTestEngineTests {
 
 	@Test
 	void disabledOnLinux_onLinux_disabled() {
