@@ -19,14 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
-import org.codefx.junit.io.AbstractIoTestEngineTests;
+import org.codefx.junit.io.AbstractPioneerTestEngineTests;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 
 /**
  * Tests the vintage {@link Test @Test} annotation by running the entire test engine.
  */
-class TestIntegrationTests extends AbstractIoTestEngineTests {
+class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 
 	@org.junit.jupiter.api.Test
 	void test_successfulTest_passes() throws Exception {

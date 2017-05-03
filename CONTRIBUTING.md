@@ -5,17 +5,14 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 
 The guidelines apply to maintainers as well as contributors!
 
-## Io Contributor License Agreement
+## JUnit Pioneer Contributor License Agreement
 
-**Project License:**  [Apache License v2.0](LICENSE.md)
+**Project License:** [Eclipse Public License v1.0](LICENSE.md)
 
-* You will only submit contributions where you have authored 100% of the
-  content.
+* You will only submit contributions where you have authored 100% of the content.
 * You will only submit contributions to which you have the necessary rights.
-  This means that if you are employed you have received the necessary
-  permissions from your employer to make the contributions.
-* Whatever content you contribute will be provided under the project
-  license(s).
+  This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
+* Whatever content you contribute will be provided under the project license(s).
 
 ## Branching, Committing, Pull Requesting, and Merging
 
