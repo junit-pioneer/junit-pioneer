@@ -20,6 +20,7 @@ By default development happens in branches, which are merged via pull requests -
 Special cases, like fixing problems with the CI pipeline, are of course exempt from this guideline.
 
 Please make sure to give branches a meaningful name!
+As an example, the one creating this documentation was called `branching-merging-documentation`.
 
 ### Commits
 
@@ -58,7 +59,29 @@ It is followed by a comma-separated list of all related issues, a dash, and the 
 Ideally, this title line should not exceed 50 characters - 70 is the absolute maximum.
 
 `<Body>` should outline the problem the pull request was solving - it should focus on _why_ the code was written not on _how_ it works.
-This can usually be a summary of the issue description and commit messages.
+This can usually be a summary of the issue description and discussion as well as commit messages.
 Markdown syntax can be used and lines should usually not exceed 72 characters (exceptions are possible, e.g. to include stack traces).
 
 Once a pull request is ready to be merged, the contributor will be asked to propose an action and body for the squashed commit and the maintainer will refine them when merging.
+
+As an example, the squashed commit that created this documentation had the following message:
+
+```
+Document branching and merging (#30, #31 / #40)
+
+To make sure the project has a sensible and helpful commit history and
+interacts well with GitHub's features the strategy used for branching,
+commit messages, and merging must be chosen carefully and deliberately.
+The following aspects are particularly important:
+
+ - a history that is accessible, detailed, and of high quality
+ - backlinks from commits to isses and PRs without creating
+   "notification noise" in the web interface
+ - reduce necessity for maintainers policing contributors' commit
+   messages
+
+The chosen approach to squash and merge fulfills all of them except
+the detailed history, which will be more coarse than with merge commits
+or fast-forward merges. This was deemed acceptable in order to achieve
+the other points, particularly the last one.
+```
