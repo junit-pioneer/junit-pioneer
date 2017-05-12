@@ -8,18 +8,17 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.codefx.junit.io.vintage;
+package org.junit$pioneer.vintage;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.codefx.junit.io.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
-import static org.codefx.junit.io.vintage.TimeoutExtension.TEST_RAN_TOO_LONG;
+import static org.junit$pioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
-import org.codefx.junit.io.AbstractPioneerTestEngineTests;
+import org.junit$pioneer.AbstractPioneerTestEngineTests;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 
@@ -124,7 +123,7 @@ class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 				.flatMap(TestExecutionResult::getThrowable)
 				.map(Throwable::getMessage);
 		//@formatter:on
-		String expectedMessage = format(TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1, 10);
+		String expectedMessage = String.format(TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1, 10);
 		// the message contains the actual run time, which is unpredictable, so it has to be cut off for the assertion
 		String expectedKnownPrefix = expectedMessage.substring(0, expectedMessage.length() - 6);
 		assertThat(failedTestMessage).isNotEmpty();
