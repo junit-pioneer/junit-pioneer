@@ -15,4 +15,24 @@ A melting pot for all kinds of extensions to
 ## Contributing
 
 We welcome contributions of all kinds and shapes!
-We are still building up infrastructure and what exactly we need help on is not easy to say, but we already settled and [what we want contributions to look like](CONTRIBUTING.md).
+We are still building up infrastructure and what exactly we need help on is not easy to say, but we already settled on [what we want contributions to look like](CONTRIBUTING.md).
+
+## Setup
+
+### Publishing Snapshots
+
+To publish snapshots to Maven Central you need to execute `gradle publish` after defining the properties `mavenUserName` and `mavenPassword`.
+
+One way to do the latter are [Gradle properties](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_properties_and_system_properties).
+For that approach, create a file `gradle.properties` in `GRADLE_USER_HOME` (which defaults to `USER_HOME/.gradle`) with the following content:
+
+```
+mavenUserName=...
+mavenPassword=...
+```
+
+Another way are command line flags (but note that these add sensitive information to your terminal history):
+
+```
+gradle publish -PmavenUserName=--- -PmavenPassword=---
+```
