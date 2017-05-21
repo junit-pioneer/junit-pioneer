@@ -9,6 +9,13 @@ apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
 
+ext {
+    // assign empty user name and password, so Gradle does not fail due to
+    // missing properties when eagerly configuring the Maven credentials
+    mavenUserName = project.findProperty('mavenUserName') ?: ''
+    mavenPassword = project.findProperty('mavenPassword') ?: ''
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
