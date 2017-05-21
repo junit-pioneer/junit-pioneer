@@ -8,12 +8,12 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.codefx.junit.io.extension;
+package org.junit$pioneer.jupiter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
-import org.codefx.junit.io.AbstractPioneerTestEngineTests;
+import org.junit$pioneer.AbstractPioneerTestEngineTests;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;

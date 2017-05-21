@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.codefx.junit.io.extension;
+package org.junit$pioneer.jupiter;
 
 import java.util.Arrays;
 import java.util.List;

@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.codefx.junit.io;
+package org.junit$pioneer;
 
 import static java.util.Arrays.stream;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
