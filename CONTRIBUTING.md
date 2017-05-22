@@ -14,7 +14,11 @@ The guidelines apply to maintainers as well as contributors!
   This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
 * Whatever content you contribute will be provided under the project license(s).
 
-## Branching, Committing, Pull Requesting, and Merging
+
+## Fixing Bugs, Developing Features
+
+This section governs how features or bug fixes are developed.
+See the next section for how to adapt to upstream changes.
 
 ### Branching Strategy
 
@@ -62,7 +66,7 @@ Ideally, this title line should not exceed 50 characters - 70 is the absolute ma
 
 `<Body>` should outline the problem the pull request was solving - it should focus on _why_ the code was written not on _how_ it works.
 This can usually be a summary of the issue description and discussion as well as commit messages.
-Markdown syntax can be used and lines should usually not exceed 72 characters (exceptions are possible, e.g. to include stack traces).
+Markdown syntax can be used and lines should usually not exceed 70 characters (exceptions are possible, e.g. to include stack traces).
 
 Once a pull request is ready to be merged, the contributor will be asked to propose an action and body for the squashed commit and the maintainer will refine them when merging.
 
