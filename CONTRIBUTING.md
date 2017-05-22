@@ -93,6 +93,39 @@ the other points, particularly the last one.
 ```
 
 
+## Adapting to Upstream Changes
+
+JUnit Pioneer has an uncharacteristically strong relationship to the JUnit 5 project (often called _upstream_).
+It not only depends on it, it also uses its internal APIs, copies source code that is not released in any artifact, mimics code style, unit testing, build and CI setup, and more.
+As such it will frequently have to adapt to upstream changes, so it makes sense to provision for that in the development strategy.
+
+### Small, Unavoidable Changes
+
+Some upstream changes (like [this one](https://github.com/junit-team/junit5/issues/793#issuecomment-294377755)) can cause compile or other blatantly obvious errors, for which only one fix exists and no discussion is required.
+In such cases:
+
+* no issue needs to be created
+* pull requests are optional and the maintainer might opt to commit directly on `master` (please make sure it builds!)
+* commit messages must be stellar:
+    * structured and worded as defined above
+    * reference to the upstream change (issue and pull request)
+
+### Unavoidable Changes
+
+Some breaking upstream changes might require solutions that are not as obvious as above.
+In such cases:
+
+* no issue needs to be created
+* a pull request should be opened for review, in which case everything said earlier about commits, PRs, and merges in regular development holds
+* the final commit message should reference the upstream change (issue and pull request)
+
+### Optional Changes
+
+In case an upstream change does not _require_ a fix, a discussion is warranted.
+An issue should be opened and the procedure follows regular development as described earlier.
+The final commit message should reference the upstream change (issue and pull request).
+
+
 ## Publishing
 
 ### Snapshots
