@@ -3,7 +3,21 @@
 The following guidelines were chosen very deliberately to make sure the project benefits from contributions.
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
+* [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
+* [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
+	* [Branching Strategy](#branching-strategy)
+	* [Commits](#commits)
+	* [Pull Requests](#pull-requests)
+	* [Merging](#merging)
+* [Adapting to Upstream Changes](#adapting-to-upstream-changes)
+	* [Small, Unavoidable Changes](#small-unavoidable-changes)
+	* [Unavoidable Changes](#unavoidable-changes)
+	* [Optional Changes](#optional-changes)
+* [Publishing](#publishing)
+	* [Snapshots](#snapshots)
+
 The guidelines apply to maintainers as well as contributors!
+
 
 ## JUnit Pioneer Contributor License Agreement
 
@@ -107,8 +121,8 @@ In such cases:
 * no issue needs to be created
 * pull requests are optional and the maintainer might opt to commit directly on `master` (please make sure it builds!)
 * commit messages must be stellar:
-    * structured and worded as defined above
-    * reference to the upstream change (issue and pull request)
+	* structured and worded as defined above
+	* reference to the upstream change (issue and pull request)
 
 ### Unavoidable Changes
 
