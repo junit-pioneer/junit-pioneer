@@ -6,6 +6,7 @@ apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'checkstyle'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.8
 
@@ -14,6 +15,7 @@ ext {
     // missing properties when eagerly configuring the Maven credentials
     mavenUserName = project.findProperty('mavenUserName') ?: ''
     mavenPassword = project.findProperty('mavenPassword') ?: ''
+    isReleaseVersion = !version.endsWith('-SNAPSHOT')
 }
 
 repositories {
@@ -100,7 +102,7 @@ check.dependsOn javadoc
 javadoc.shouldRunAfter test
 
 // create sources and JavaDoc JARs
-task sourceJar(type: Jar, dependsOn: classes) {
+task sourcesJar(type: Jar, dependsOn: classes) {
     classifier 'sources'
     from sourceSets.main.allSource
 }
@@ -110,13 +112,83 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+// sign POM and archives
+task signPom(type: Sign, dependsOn: 'generatePomFileForCompletePublication') {
+    sign file('build/publications/complete/pom-default.xml')
+}
+signing {
+    sign configurations.archives
+}
+signArchives.dependsOn signPom
+
+// make sure specific tasks are used instead of the overly encompassing `gradle publish`
+task publishSnapshot {
+    dependsOn 'publishCompletePublicationToMavenSnapshotRepository'
+}
+task publishRelease {
+    dependsOn 'publishCompletePublicationToMavenRepository'
+}
+tasks.whenTaskAdded{ task ->
+    // all publication tasks should require a successful build
+    if (task instanceof PublishToMavenRepository)
+        task.dependsOn(check)
+    // because maven-publish creates its tasks very late,
+    // this was the only way I found to add the dependency to signing
+    if (task.name == "publishCompletePublicationToMavenRepository")
+        task.dependsOn(signArchives)
+}
+gradle.taskGraph.whenReady { taskGraph ->
+    def tasks = taskGraph.getAllTasks()
+    if (tasks.find { it.name == 'publish' })
+        throw new GradleException('''
+                ---------------------------------------------------------------------------
+                DON'T USE `gradle publish`!
+
+                It will try to publish a snapshot _and_ a release, which doesn't work well.
+                Instead use either `gradle publishSnapshot` or `gradle publishRelease`.
+                ---------------------------------------------------------------------------
+               ''')
+    if (tasks.find { it.name == 'publishSnapshot' } && isReleaseVersion)
+        throw new GradleException('''
+                ------------------------------------------------------------
+                DON'T USE `gradle publishSnapshot` ON NON-SNAPSHOT VERSIONS!
+
+                Maybe you're looking for `gradle publishRelease`?
+                ------------------------------------------------------------
+               ''')
+    if (tasks.find { it.name == 'publishRelease' } && !isReleaseVersion)
+        throw new GradleException('''
+                -------------------------------------------------------
+                DON'T USE `gradle publishRelease` ON SNAPSHOT VERSIONS!
+
+                Maybe you're looking for `gradle publishSnapshot`?
+                -------------------------------------------------------
+               ''')
+}
+
 publishing {
     publications {
         complete(MavenPublication) {
             from components.java
 
-            artifact sourceJar
+            artifact sourcesJar
             artifact javadocJar
+
+            // only include signatures for releases
+            if (isReleaseVersion) {
+                artifact source: "build/libs/${rootProject.name}-${rootProject.version}.jar.asc",
+                        extension: 'jar.asc'
+                artifact source: project.tasks.signPom.signatureFiles.collect { it }[0],
+                        extension: 'pom.asc'
+                artifact source: "build/libs/${rootProject.name}-${rootProject.version}-sources.jar.asc",
+                        classifier: 'sources', extension: 'jar.asc'
+                artifact source: "build/libs/${rootProject.name}-${rootProject.version}-javadoc.jar.asc",
+                        classifier: 'javadoc', extension: 'jar.asc'
+            }
 
             tasks.withType(Jar) {
                 from(project.projectDir) {
@@ -127,7 +199,6 @@ publishing {
 
             pom.withXml {
                 asNode().with {
-                    appendNode('packaging', 'jar')
                     appendNode('name', 'JUnit Pioneer')
                     appendNode('description', 'JUnit 5 Extension Pack')
                     appendNode('url', 'https://github.com/junit-pioneer/junit-pioneer')
