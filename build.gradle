@@ -18,7 +18,10 @@ ext {
 
 repositories {
     mavenCentral()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven {
+        name "MavenSnapshot"
+        url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
 }
 
 dependencies {
@@ -35,8 +38,14 @@ dependencies {
 buildscript {
     repositories {
         mavenLocal()
-        maven { url 'https://plugins.gradle.org/m2/' }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven {
+            name "GradlePlugins"
+            url 'https://plugins.gradle.org/m2/'
+        }
+        maven {
+            name "MavenSnapshot"
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
     }
 
     dependencies {
@@ -92,7 +101,7 @@ javadoc.shouldRunAfter test
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        complete(MavenPublication) {
             from components.java
 
             artifact sourceJar
@@ -144,7 +153,9 @@ publishing {
         }
     }
     repositories {
+        mavenCentral()
         maven {
+            name "MavenSnapshot"
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
             credentials {
                 username mavenUserName
