@@ -99,6 +99,17 @@ check.dependsOn javadoc
 // it should ran last, though
 javadoc.shouldRunAfter test
 
+// create sources and JavaDoc JARs
+task sourceJar(type: Jar, dependsOn: classes) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
 publishing {
     publications {
         complete(MavenPublication) {
@@ -153,7 +164,14 @@ publishing {
         }
     }
     repositories {
-        mavenCentral()
+        maven {
+            name "Maven"
+            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username mavenUserName
+                password mavenPassword
+            }
+        }
         maven {
             name "MavenSnapshot"
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
@@ -163,16 +181,6 @@ publishing {
             }
         }
     }
-}
-
-task sourceJar(type: Jar, dependsOn: classes) {
-    classifier 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
 }
 
 configure(rootProject) {
