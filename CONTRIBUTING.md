@@ -3,7 +3,21 @@
 The following guidelines were chosen very deliberately to make sure the project benefits from contributions.
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
+* [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
+* [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
+	* [Branching Strategy](#branching-strategy)
+	* [Commits](#commits)
+	* [Pull Requests](#pull-requests)
+	* [Merging](#merging)
+* [Adapting to Upstream Changes](#adapting-to-upstream-changes)
+	* [Small, Unavoidable Changes](#small-unavoidable-changes)
+	* [Unavoidable Changes](#unavoidable-changes)
+	* [Optional Changes](#optional-changes)
+* [Publishing](#publishing)
+	* [Snapshots](#snapshots)
+
 The guidelines apply to maintainers as well as contributors!
+
 
 ## JUnit Pioneer Contributor License Agreement
 
@@ -14,7 +28,11 @@ The guidelines apply to maintainers as well as contributors!
   This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
 * Whatever content you contribute will be provided under the project license(s).
 
-## Branching, Committing, Pull Requesting, and Merging
+
+## Fixing Bugs, Developing Features
+
+This section governs how features or bug fixes are developed.
+See the next section for how to adapt to upstream changes.
 
 ### Branching Strategy
 
@@ -62,7 +80,7 @@ Ideally, this title line should not exceed 50 characters - 70 is the absolute ma
 
 `<Body>` should outline the problem the pull request was solving - it should focus on _why_ the code was written not on _how_ it works.
 This can usually be a summary of the issue description and discussion as well as commit messages.
-Markdown syntax can be used and lines should usually not exceed 72 characters (exceptions are possible, e.g. to include stack traces).
+Markdown syntax can be used and lines should usually not exceed 70 characters (exceptions are possible, e.g. to include stack traces).
 
 Once a pull request is ready to be merged, the contributor will be asked to propose an action and body for the squashed commit and the maintainer will refine them when merging.
 
@@ -87,6 +105,39 @@ the detailed history, which will be more coarse than with merge commits
 or fast-forward merges. This was deemed acceptable in order to achieve
 the other points, particularly the last one.
 ```
+
+
+## Adapting to Upstream Changes
+
+JUnit Pioneer has an uncharacteristically strong relationship to the JUnit 5 project (often called _upstream_).
+It not only depends on it, it also uses its internal APIs, copies source code that is not released in any artifact, mimics code style, unit testing, build and CI setup, and more.
+As such it will frequently have to adapt to upstream changes, so it makes sense to provision for that in the development strategy.
+
+### Small, Unavoidable Changes
+
+Some upstream changes (like [this one](https://github.com/junit-team/junit5/issues/793#issuecomment-294377755)) can cause compile or other blatantly obvious errors, for which only one fix exists and no discussion is required.
+In such cases:
+
+* no issue needs to be created
+* pull requests are optional and the maintainer might opt to commit directly on `master` (please make sure it builds!)
+* commit messages must be stellar:
+	* structured and worded as defined above
+	* reference to the upstream change (issue and pull request)
+
+### Unavoidable Changes
+
+Some breaking upstream changes might require solutions that are not as obvious as above.
+In such cases:
+
+* no issue needs to be created
+* a pull request should be opened for review, in which case everything said earlier about commits, PRs, and merges in regular development holds
+* the final commit message should reference the upstream change (issue and pull request)
+
+### Optional Changes
+
+In case an upstream change does not _require_ a fix, a discussion is warranted.
+An issue should be opened and the procedure follows regular development as described earlier.
+The final commit message should reference the upstream change (issue and pull request).
 
 
 ## Publishing
