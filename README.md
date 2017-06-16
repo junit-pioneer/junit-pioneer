@@ -15,4 +15,4 @@ A melting pot for all kinds of extensions to
 ## Contributing
 
 We welcome contributions of all kinds and shapes!
-We are still building up infrastructure and what exactly we need help on is not easy to say, but we already settled and [what we want contributions to look like](CONTRIBUTING.md).
+We are still building up infrastructure and what exactly we need help on is not easy to say, but we already settled on [what we want contributions to look like](CONTRIBUTING.md).

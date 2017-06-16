@@ -87,3 +87,24 @@ the detailed history, which will be more coarse than with merge commits
 or fast-forward merges. This was deemed acceptable in order to achieve
 the other points, particularly the last one.
 ```
+
+
+## Publishing
+
+### Snapshots
+
+To publish snapshots to Maven Central you need to execute `gradle publish` after defining the properties `mavenUserName` and `mavenPassword`.
+
+One way to do the latter are [Gradle properties](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_properties_and_system_properties).
+For that approach, create a file `gradle.properties` in `GRADLE_USER_HOME` (which defaults to `USER_HOME/.gradle`) with the following content:
+
+```
+mavenUserName=...
+mavenPassword=...
+```
+
+Another way are command line flags (but note that these add sensitive information to your terminal history):
+
+```
+gradle publish -PmavenUserName=... -PmavenPassword=...
+```

@@ -10,8 +10,10 @@ apply plugin: 'maven-publish'
 sourceCompatibility = 1.8
 
 ext {
-    // the password needs to be specified via command line
-    snapshotRepoPass = project.hasProperty('snapshotRepoPass') ? project.getProperty('snapshotRepoPass') : ''
+    // assign empty user name and password, so Gradle does not fail due to
+    // missing properties when eagerly configuring the Maven credentials
+    mavenUserName = project.findProperty('mavenUserName') ?: ''
+    mavenPassword = project.findProperty('mavenPassword') ?: ''
 }
 
 repositories {
@@ -145,8 +147,8 @@ publishing {
         maven {
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
             credentials {
-                username "nipa"
-                password project.snapshotRepoPass
+                username mavenUserName
+                password mavenPassword
             }
         }
     }
