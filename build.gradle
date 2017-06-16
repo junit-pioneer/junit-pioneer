@@ -125,6 +125,14 @@ signing {
 }
 signArchives.dependsOn signPom
 
+// The task "assemble" and by extension "build" depends on signing, which leads to
+// problems on machines that have no signatories configured (e.g. AppVeyor). For
+// that reason we want to skip signing unless it is actually required for publication.
+// Unfortunately there seems to be no way to remove a dependency (in this case from
+// "assemble" to "signArchives"), so we disable the task and enable it when required.
+signArchives.enabled = false
+signPom.enabled = false
+
 // make sure specific tasks are used instead of the overly encompassing `gradle publish`
 task publishSnapshot {
     dependsOn 'publishCompletePublicationToMavenSnapshotRepository'
@@ -138,8 +146,12 @@ tasks.whenTaskAdded{ task ->
         task.dependsOn(check)
     // because maven-publish creates its tasks very late,
     // this was the only way I found to add the dependency to signing
-    if (task.name == "publishCompletePublicationToMavenRepository")
+    if (task.name == "publishCompletePublicationToMavenRepository") {
         task.dependsOn(signArchives)
+        // activate the signing tasks (we deactivated them above)
+        signArchives.enabled = true
+        signPom.enabled = true
+    }
 }
 gradle.taskGraph.whenReady { taskGraph ->
     def tasks = taskGraph.getAllTasks()
