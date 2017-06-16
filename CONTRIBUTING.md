@@ -14,7 +14,9 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 	* [Unavoidable Changes](#unavoidable-changes)
 	* [Optional Changes](#optional-changes)
 * [Publishing](#publishing)
+	* [Credentials](#credentials)
 	* [Snapshots](#snapshots)
+	* [Releases](#releases)
 
 The guidelines apply to maintainers as well as contributors!
 
@@ -142,11 +144,13 @@ The final commit message should reference the upstream change (issue and pull re
 
 ## Publishing
 
-### Snapshots
+Because `gradle publish` tries to execute all publications (e.g. snapshots _and_ releases), it is deactivated.
+Instead use the more specific tasks described below.
 
-To publish snapshots to Maven Central you need to execute `gradle publish` after defining the properties `mavenUserName` and `mavenPassword`.
+### Credentials
 
-One way to do the latter are [Gradle properties](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_properties_and_system_properties).
+For any release you need the properties `mavenUserName` and `mavenPassword` to contain your credentials for the Sonatype repositories.
+One way to define them is [a Gradle properties file](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_properties_and_system_properties).
 For that approach, create a file `gradle.properties` in `GRADLE_USER_HOME` (which defaults to `USER_HOME/.gradle`) with the following content:
 
 ```
@@ -159,3 +163,33 @@ Another way are command line flags (but note that these add sensitive informatio
 ```
 gradle publish -PmavenUserName=... -PmavenPassword=...
 ```
+
+Furthermore, non-snapshot releases require signed artifacts, for which the following properties have to be defined:
+
+```
+signing.keyId= # last eight digits of key ID
+signing.password= # password for the key
+signing.secretKeyRingFile= # path to local secring.gpg
+```
+
+For details on these have a look at the [Gradle Signing Plugin's documentation](https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials).
+
+### Snapshots
+
+To publish a snapshot version simply execute `gradle publishSnapshot`.
+This will fail if the current project version does not end in `-SNAPSHOT`.
+
+### Releases
+
+To publish a new release, go through the following check list:
+
+* you should be operating on the `master` branch and have no uncommitted changes
+* the version must not end in `-SNAPSHOT`
+* no dependency on snapshot versions
+
+If everything's in order, execute `gradle publishRelease`.
+
+After a successful release do the following:
+
+* tag the current HEAD as a release and upload all artifacts to GitHub
+* go to the next snapshot version and commit the change
