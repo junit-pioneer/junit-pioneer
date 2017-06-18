@@ -1,0 +1,10 @@
+---
+layout: single
+permalink: /docs/
+header:
+  overlay_color: black
+  overlay_image: assets/site_images/type-writer.jpg
+title: Documentation
+---
+
+Once we have features, they'll be documented here. :wink:
