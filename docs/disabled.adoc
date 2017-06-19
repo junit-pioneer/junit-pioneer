@@ -1,6 +1,4 @@
----
-title: Disabling Tests
----
+:page-title: Disabling Tests
 
 = Sample Page
 :uri-asciidoctor: http://asciidoctor.org
