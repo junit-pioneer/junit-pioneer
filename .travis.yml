@@ -36,9 +36,19 @@ script:
   - ./gradlew --refresh-dependencies clean check -Dscan
 
 deploy:
-  skip_cleanup: true
-  provider: script
-  script: ./gradlew publishSnapshot -P mavenUserName=$MAVEN_USER_NAME -P mavenPassword=$MAVEN_PASSWORD --stacktrace
-  on:
-    branch: master
-    jdk: oraclejdk8
+  - provider: script
+    skip_cleanup: true
+    script: ./gradlew publishSnapshot -P mavenUserName=$MAVEN_USER_NAME -P mavenPassword=$MAVEN_PASSWORD --stacktrace
+    on:
+      branch: master
+      jdk: oraclejdk8
+  - provider: script
+    skip_cleanup:
+    script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
+    on:
+      branch: master
+      jdk: oraclejdk8
+
+env:
+  global:
+    secure: GsimBlssACyPVbikvaq5QPJfgNIPqEvrSQbbFQuTmCzyDpUMx2ED3+7wrGXZrGQmlDVcdm6I5+y9aGboxFVaYjdtHaWGVxXijt0jAyhvrvdvOr+d4JiD+3amryHT4HKJBJFBXY6VS9AOxuzcaoAq8+Twd8Hm/N/VZuHeyDCjwdidiJByeaU9ZEAAYSo7RJkSI2ybtVuLwN5TR0W+MKro29B5xUXBPuoBmai6vneq2iYT44QtGJ1CEsXq8GnjLvUMRFmT7gKL1fXu7pW8e9wBt9UB3aPPEElXQxLgIAwDAqtOcYJXAms/X1XEVIwu3ieBXBFYYM2XlJ6QIFbCiZFB+8ywaynecGTzF5HIeBEG20HUzqpsPACW855J9gNm46zaq22cLBKc46rwgDswX3WV0ac4fsRge/uSsmEvZ3wQsHQVGJi/bdOeIoBOWaiXNoM//Kd3LydBgIDbu3jxzkhAbPTapeeMT+oCeIAUrpfIHxM9/1Fhi238/e5Dmz/aSsMzE3sfzeRyfVr3L2OGRVr17iDxMoboAsFgBOIDFdaQ3OGngF4qJ7P8unuAg041aQZCYrNUB+2lG1Nuj/VdaSj0yFzMP2RdJKUSV/IUW38V5kQtp4iZuQPq5PB6fvMmehMXk2b9qP3W5KyjWP4lqayjaQE9j14n/L1vncZXWbsTkZo=
