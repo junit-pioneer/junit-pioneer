@@ -14,12 +14,6 @@ It aims to spin off successful and cohesive portions into sibling projects or ba
 
 To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its infrastructure, from code style to build tool and configuration to continuous integration.
 
-***
-
-🚧 Much of this project is still under construction. 🚧
-
-***
-
 ## Getting on Board
 
 There were no [releases](https://github.com/junit-pioneer/junit-pioneer/releases) to Maven Central, yet, but every successful build on `master` releases a snapshot [to Sonatype's snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/org/junit-pioneer/junit-pioneer/).
