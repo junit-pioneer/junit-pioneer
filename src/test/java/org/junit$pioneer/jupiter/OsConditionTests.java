@@ -20,8 +20,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
-import org.junit.jupiter.api.extension.TestExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 class OsConditionTests {
 
@@ -29,10 +28,10 @@ class OsConditionTests {
 
 	@Test
 	void evaluateContainer_notAnnotated_enabled() throws Exception {
-		ContainerExtensionContext context = createContextReturning(UnconditionalTestCase.class);
+		ExtensionContext context = createContextReturning(UnconditionalTestCase.class);
 		OsCondition condition = new OsCondition();
 
-		ConditionEvaluationResult result = condition.evaluateContainerExecutionCondition(context);
+		ConditionEvaluationResult result = condition.evaluateExecutionCondition(context);
 
 		assertThat(result.isDisabled()).isFalse();
 		assertThat(result.getReason()).contains(OsCondition.NO_CONDITION_PRESENT);
@@ -40,40 +39,40 @@ class OsConditionTests {
 
 	@Test
 	void evaluateContainer_disabledOnOtherOs_enabled() throws Exception {
-		ContainerExtensionContext context = createContextReturning(DisabledOnLinuxTestCase.class);
+		ExtensionContext context = createContextReturning(DisabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.WINDOWS);
 
-		ConditionEvaluationResult result = conditionOnWindows.evaluateContainerExecutionCondition(context);
+		ConditionEvaluationResult result = conditionOnWindows.evaluateExecutionCondition(context);
 
 		assertEnabledOn(result, OS.WINDOWS);
 	}
 
 	@Test
 	void evaluateContainer_disabledOnRunningOs_disabled() throws Exception {
-		ContainerExtensionContext context = createContextReturning(DisabledOnLinuxTestCase.class);
+		ExtensionContext context = createContextReturning(DisabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.LINUX);
 
-		ConditionEvaluationResult result = conditionOnWindows.evaluateContainerExecutionCondition(context);
+		ConditionEvaluationResult result = conditionOnWindows.evaluateExecutionCondition(context);
 
 		assertDisabledOn(result, OS.LINUX);
 	}
 
 	@Test
 	void evaluateContainer_enabledOnOtherOs_disabled() throws Exception {
-		ContainerExtensionContext context = createContextReturning(EnabledOnLinuxTestCase.class);
+		ExtensionContext context = createContextReturning(EnabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.WINDOWS);
 
-		ConditionEvaluationResult result = conditionOnWindows.evaluateContainerExecutionCondition(context);
+		ConditionEvaluationResult result = conditionOnWindows.evaluateExecutionCondition(context);
 
 		assertDisabledOn(result, OS.WINDOWS);
 	}
 
 	@Test
 	void evaluateContainer_enabledOnRunningOs_enabled() throws Exception {
-		ContainerExtensionContext context = createContextReturning(EnabledOnLinuxTestCase.class);
+		ExtensionContext context = createContextReturning(EnabledOnLinuxTestCase.class);
 		OsCondition conditionOnWindows = new OsCondition(() -> OS.LINUX);
 
-		ConditionEvaluationResult result = conditionOnWindows.evaluateContainerExecutionCondition(context);
+		ConditionEvaluationResult result = conditionOnWindows.evaluateExecutionCondition(context);
 
 		assertEnabledOn(result, OS.LINUX);
 	}
@@ -82,10 +81,10 @@ class OsConditionTests {
 
 	@Test
 	void evaluateMethod_notAnnotated_enabled() throws Exception {
-		TestExtensionContext context = createContextReturning(UnconditionalTestCase.class, "unconditionalTest");
+		ExtensionContext context = createContextReturning(UnconditionalTestCase.class, "unconditionalTest");
 		OsCondition condition = new OsCondition();
 
-		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
+		ConditionEvaluationResult result = condition.evaluateExecutionCondition(context);
 
 		assertThat(result.isDisabled()).isFalse();
 		assertThat(result.getReason()).contains(OsCondition.NO_CONDITION_PRESENT);
@@ -93,52 +92,48 @@ class OsConditionTests {
 
 	@Test
 	void evaluateMethod_disabledOnOtherOs_enabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class,
-			"disabledOnLinuxTest");
+		ExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "disabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.WINDOWS);
 
-		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
+		ConditionEvaluationResult result = condition.evaluateExecutionCondition(context);
 
 		assertEnabledOn(result, OS.WINDOWS);
 	}
 
 	@Test
 	void evaluateMethod_disabledOnRunningOs_disabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class,
-			"disabledOnLinuxTest");
+		ExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "disabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.LINUX);
 
-		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
+		ConditionEvaluationResult result = condition.evaluateExecutionCondition(context);
 
 		assertDisabledOn(result, OS.LINUX);
 	}
 
 	@Test
 	void evaluateMethod_enabledOnOtherOs_disabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class,
-			"enabledOnLinuxTest");
+		ExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "enabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.WINDOWS);
 
-		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
+		ConditionEvaluationResult result = condition.evaluateExecutionCondition(context);
 
 		assertDisabledOn(result, OS.WINDOWS);
 	}
 
 	@Test
 	void evaluateMethod_enabledOnRunningOs_enabled() throws Exception {
-		TestExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class,
-			"enabledOnLinuxTest");
+		ExtensionContext context = createContextReturning(EnabledAndDisabledTestMethods.class, "enabledOnLinuxTest");
 		OsCondition condition = new OsCondition(() -> OS.LINUX);
 
-		ConditionEvaluationResult result = condition.evaluateTestExecutionCondition(context);
+		ConditionEvaluationResult result = condition.evaluateExecutionCondition(context);
 
 		assertEnabledOn(result, OS.LINUX);
 	}
 
 	// HELPER -------------------------------------------------------------------
 
-	private static ContainerExtensionContext createContextReturning(Class<?> type) throws NoSuchMethodException {
-		ContainerExtensionContext context = mock(ContainerExtensionContext.class);
+	private static ExtensionContext createContextReturning(Class<?> type) throws NoSuchMethodException {
+		ExtensionContext context = mock(ExtensionContext.class);
 		when(context.getElement()).thenReturn(asElement(type));
 		return context;
 	}
@@ -147,9 +142,9 @@ class OsConditionTests {
 		return asElement(type, "");
 	}
 
-	private static TestExtensionContext createContextReturning(Class<?> type, String methodName)
+	private static ExtensionContext createContextReturning(Class<?> type, String methodName)
 			throws NoSuchMethodException {
-		TestExtensionContext context = mock(TestExtensionContext.class);
+		ExtensionContext context = mock(ExtensionContext.class);
 		when(context.getElement()).thenReturn(asElement(type, methodName));
 		return context;
 	}

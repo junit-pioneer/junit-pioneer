@@ -11,6 +11,7 @@
 package org.junit$pioneer.jupiter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 import org.junit$pioneer.AbstractPioneerTestEngineTests;
@@ -26,7 +27,7 @@ class OsConditionSmokeTests extends AbstractPioneerTestEngineTests {
 
 	@Test
 	void disabledOnLinux_onLinux_disabled() {
-		Assumptions.assumeTrue(OS.determine() == OS.LINUX);
+		assumeTrue(OS.determine() == OS.LINUX);
 
 		ExecutionEventRecorder eventRecorder = executeTests(DisabledOnLinuxTestCase.class);
 
@@ -36,7 +37,7 @@ class OsConditionSmokeTests extends AbstractPioneerTestEngineTests {
 
 	@Test
 	void disabledOnLinux_notOnLinux_enabled() {
-		Assumptions.assumeTrue(OS.determine() != OS.LINUX);
+		assumeTrue(OS.determine() != OS.LINUX);
 
 		ExecutionEventRecorder eventRecorder = executeTests(DisabledOnLinuxTestCase.class);
 
@@ -46,7 +47,7 @@ class OsConditionSmokeTests extends AbstractPioneerTestEngineTests {
 
 	@Test
 	void enabledOnLinux_onLinux_disabled() {
-		Assumptions.assumeTrue(OS.determine() == OS.LINUX);
+		assumeTrue(OS.determine() == OS.LINUX);
 
 		ExecutionEventRecorder eventRecorder = executeTests(EnabledOnLinuxTestCase.class);
 
@@ -56,7 +57,7 @@ class OsConditionSmokeTests extends AbstractPioneerTestEngineTests {
 
 	@Test
 	void enabledOnLinux_notOnLinux_disabled() {
-		Assumptions.assumeTrue(OS.determine() != OS.LINUX);
+		assumeTrue(OS.determine() != OS.LINUX);
 
 		ExecutionEventRecorder eventRecorder = executeTests(EnabledOnLinuxTestCase.class);
 
