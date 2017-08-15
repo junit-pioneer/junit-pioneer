@@ -48,5 +48,9 @@ testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: '0.1-SNA
 
 ## Contributing
 
-We welcome contributions of all kinds and shapes!
-We are still building up infrastructure and what exactly we need help on is not easy to say, but we already settled on [what we want contributions to look like](CONTRIBUTING.md).
+We welcome contributions of all shapes and forms! 🌞
+
+* If you have an idea for an extension, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and let's discuss.
+* If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly [unassigned ones](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee) and those [marked as up for grabs](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs).
+
+Before contributing, please read the [contribution guide](CONTRIBUTING.md).
