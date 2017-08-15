@@ -1,5 +1,7 @@
 # JUnit Pioneer
 
+<img src="docs/project-logo.jpg" align="right" width="150px"/>
+
 [![Travis build status](https://api.travis-ci.org/junit-pioneer/junit-pioneer.svg?branch=master)](https://travis-ci.org/junit-pioneer/junit-pioneer)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/ijrlfaa2fpnxwm3r?svg=true)](https://ci.appveyor.com/project/nicolaiparlog/junit-pioneer)
 
