@@ -16,3 +16,14 @@ A melting pot for all kinds of extensions to
 
 We welcome contributions of all kinds and shapes!
 We are still building up infrastructure and what exactly we need help on is not easy to say, but we already settled on [what we want contributions to look like](CONTRIBUTING.md).
+
+## Project Structure
+
+### Dependencies
+
+To not add to user's [JAR hell](https://blog.codefx.org/java/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
+For our own infrastructure, we rely on the following compile and test dependencies:
+
+* JSR-305 (for static analysis)
+* AssertJ (for our tests)
+* Mockito (for our tests)
