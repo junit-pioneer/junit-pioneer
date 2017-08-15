@@ -20,6 +20,32 @@ To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its i
 
 ***
 
+## Getting on Board
+
+There were no [releases](https://github.com/junit-pioneer/junit-pioneer/releases) to Maven Central, yet, but every successful build on `master` releases a snapshot [to Sonatype's snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/org/junit-pioneer/junit-pioneer/).
+
+Coordinates:
+
+* group ID: `org.junit-pioneer`
+* artifact ID: `junit-pioneer`
+* version `0.1-SNAPSHOT`
+
+For Maven:
+
+```xml
+<dependency>
+	<groupId>org.junit-pioneer</groupId>
+	<artifactId>junit-pioneer</artifactId>
+	<version>0.1-SNAPSHOT</version>
+</dependency>
+```
+
+For Gradle:
+
+```
+testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: '0.1-SNAPSHOT'
+```
+
 ## Contributing
 
 We welcome contributions of all kinds and shapes!
