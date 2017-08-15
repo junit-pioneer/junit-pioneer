@@ -16,3 +16,12 @@ A melting pot for all kinds of extensions to
 
 We welcome contributions of all kinds and shapes!
 We are still building up infrastructure and what exactly we need help on is not easy to say, but we already settled on [what we want contributions to look like](CONTRIBUTING.md).
+
+## Project Structure
+
+### Code Style
+
+[There shall be no null - use `Optional` instead.](https://blog.codefx.org/techniques/intention-revealing-code-java-8-optional/):
+
+* design code to avoid optionality wherever feasibly possible
+* in all remaining cases, prefer `Optional` over `null`.
