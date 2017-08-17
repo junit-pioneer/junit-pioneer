@@ -52,3 +52,14 @@ We welcome contributions of all shapes and forms! 🌞
 * If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly [unassigned ones](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee) and those [marked as up for grabs](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs).
 
 Before contributing, please read the [contribution guide](CONTRIBUTING.md).
+
+## Project Structure
+
+### Dependencies
+
+To not add to user's [JAR hell](https://blog.codefx.org/java/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
+For our own infrastructure, we rely on the following compile and test dependencies:
+
+* JSR-305 (for static analysis)
+* AssertJ (for our tests)
+* Mockito (for our tests)
