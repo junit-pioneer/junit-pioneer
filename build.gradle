@@ -104,6 +104,15 @@ check.dependsOn javadoc
 // it should ran last, though
 javadoc.shouldRunAfter test
 
+// the manifest needs to declare the future module name
+jar {
+    manifest {
+        attributes(
+                'Automatic-Module-Name': 'org.junit$pioneer'
+        )
+    }
+}
+
 // create sources and JavaDoc JARs
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier 'sources'
