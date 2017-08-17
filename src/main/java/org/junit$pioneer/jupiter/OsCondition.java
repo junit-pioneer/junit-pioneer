@@ -20,15 +20,13 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
-import org.junit.jupiter.api.extension.ContainerExecutionCondition;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
-import org.junit.jupiter.api.extension.TestExecutionCondition;
-import org.junit.jupiter.api.extension.TestExtensionContext;
+import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * Implements the execution conditions for {@link DisabledOnOs} and {@link EnabledOnOs}.
  */
-class OsCondition implements ContainerExecutionCondition, TestExecutionCondition {
+class OsCondition implements ExecutionCondition {
 
 	static final String NO_CONDITION_PRESENT = "No OS-specific condition present.";
 	static final String TEST_ENABLED = "Test is enabled on %s.";
@@ -48,12 +46,7 @@ class OsCondition implements ContainerExecutionCondition, TestExecutionCondition
 	}
 
 	@Override
-	public ConditionEvaluationResult evaluateContainerExecutionCondition(ContainerExtensionContext context) {
-		return evaluateIfAnnotated(context.getElement());
-	}
-
-	@Override
-	public ConditionEvaluationResult evaluateTestExecutionCondition(TestExtensionContext context) {
+	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
 		return evaluateIfAnnotated(context.getElement());
 	}
 

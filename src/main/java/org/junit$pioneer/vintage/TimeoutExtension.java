@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.TestExtensionContext;
 
 /**
  * This extension implements the timeout behavior of {@link Test @Test}, where a test is failed if it takes longer to finish
@@ -38,16 +37,16 @@ class TimeoutExtension implements BeforeTestExecutionCallback, AfterTestExecutio
 	private static final String LAUNCH_TIME_KEY = "LaunchTime";
 
 	@Override
-	public void beforeTestExecution(TestExtensionContext context) {
+	public void beforeTestExecution(ExtensionContext context) {
 		storeNowAsLaunchTime(context);
 	}
 
 	@Override
-	public void afterTestExecution(TestExtensionContext context) {
+	public void afterTestExecution(ExtensionContext context) {
 		annotatedTimeout(context).ifPresent(timeout -> failTestIfRanTooLong(context, timeout));
 	}
 
-	private void failTestIfRanTooLong(TestExtensionContext context, Long timeout) {
+	private void failTestIfRanTooLong(ExtensionContext context, Long timeout) {
 		long launchTime = loadLaunchTime(context);
 		long elapsedTime = currentTimeMillis() - launchTime;
 
@@ -57,7 +56,7 @@ class TimeoutExtension implements BeforeTestExecutionCallback, AfterTestExecutio
 		}
 	}
 
-	private Optional<Long> annotatedTimeout(TestExtensionContext context) {
+	private Optional<Long> annotatedTimeout(ExtensionContext context) {
 		return findAnnotation(context.getElement(), Test.class).map(Test::timeout).filter(timeout -> timeout != 0L);
 	}
 
