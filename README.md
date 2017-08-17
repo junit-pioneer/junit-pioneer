@@ -63,3 +63,10 @@ For our own infrastructure, we rely on the following compile and test dependenci
 * JSR-305 (for static analysis)
 * AssertJ (for our tests)
 * Mockito (for our tests)
+
+### Code Style
+
+[There shall be no null - use `Optional` instead.](https://blog.codefx.org/techniques/intention-revealing-code-java-8-optional/):
+
+* design code to avoid optionality wherever feasibly possible
+* in all remaining cases, prefer `Optional` over `null`.
