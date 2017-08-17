@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
-import org.junit.jupiter.api.extension.TestExtensionContext;
 import org.opentest4j.AssertionFailedError;
 
 /**
@@ -40,7 +39,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 	private static final String KEY = "ExceptionWasThrown";
 
 	@Override
-	public void handleTestExecutionException(TestExtensionContext context, Throwable throwable) throws Throwable {
+	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
 		//@formatter:off
 		boolean throwableMatchesExpectedException = expectedException(context)
 				.filter(expected -> expected.isInstance(throwable))
@@ -62,7 +61,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 	}
 
 	@Override
-	public void afterTestExecution(TestExtensionContext context) throws Exception {
+	public void afterTestExecution(ExtensionContext context) throws Exception {
 		switch (loadExceptionStatus(context)) {
 			case WAS_NOT_THROWN:
 				//@formatter:off
