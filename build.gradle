@@ -112,7 +112,7 @@ javadoc.shouldRunAfter test
 jar {
     manifest {
         attributes(
-                'Automatic-Module-Name': 'org.junit$pioneer'
+                'Automatic-Module-Name': 'org.junit.pioneer'
         )
     }
 }
