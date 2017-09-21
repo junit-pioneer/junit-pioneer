@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.junit$pioneer.jupiter;
+package org.junit.pioneer.jupiter;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
