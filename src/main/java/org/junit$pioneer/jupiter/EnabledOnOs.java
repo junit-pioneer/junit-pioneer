@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.junit.pioneer.jupiter;
+package org.junit$pioneer.jupiter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,21 +18,22 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @DisabledOnOs} is used to signal that the annotated test class or
- * test method is <em>disabled</em> on the specified operating systems.
+ * {@code @EnabledOnOs} is used to signal that the annotated test class or
+ * test method is <em>disabled</em> on all operating systems except the
+ * specified ones.
  *
  * <p>When applied at the class level, all test methods within that class
- * are automatically disabled as well if on the specified operating system.
+ * are automatically disabled as well if not on the specified operating systems.
  *
  * @since 1.0
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(OsCondition.class)
-public @interface DisabledOnOs {
+public @interface EnabledOnOs {
 
 	/**
-	 * Operating systems on which the test or test container is disabled.
+	 * Operating systems on which the test or test container is enabled.
 	 */
 	OS[] value() default {};
 
