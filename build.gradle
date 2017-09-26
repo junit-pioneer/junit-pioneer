@@ -1,7 +1,32 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven {
+            name "GradlePlugins"
+            url 'https://plugins.gradle.org/m2/'
+        }
+        maven {
+            name "MavenSnapshot"
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+    }
+
+    dependencies {
+        classpath group: 'com.diffplug.gradle.spotless', name: 'spotless', version: '2.4.1'
+        classpath group: 'org.junit.platform', name: 'junit-platform-gradle-plugin', version: '1.0.0-SNAPSHOT'
+        classpath group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.9.0'
+        classpath group: 'org.ajoberstar', name: 'grgit', version: '2.0.1'
+    }
+}
+
+plugins {
+    id 'com.github.ben-manes.versions' version '0.15.0'
+}
+
 group 'org.junit-pioneer'
 version '0.1-SNAPSHOT'
 
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'checkstyle'
 apply plugin: 'org.junit.platform.gradle.plugin'
@@ -28,35 +53,14 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.0.0-SNAPSHOT'
-    compile group: 'org.opentest4j', name: 'opentest4j', version: '1.0.0-M1'
+    api group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.0.0-SNAPSHOT'
+    api group: 'org.opentest4j', name: 'opentest4j', version: '1.0.0'
 
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.0-SNAPSHOT'
-    testCompile group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.0.0-SNAPSHOT'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.8.0'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.10.0'
 
-    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.2.1'
-}
-
-buildscript {
-    repositories {
-        mavenLocal()
-        maven {
-            name "GradlePlugins"
-            url 'https://plugins.gradle.org/m2/'
-        }
-        maven {
-            name "MavenSnapshot"
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
-    }
-
-    dependencies {
-        classpath group: 'com.diffplug.gradle.spotless', name: 'spotless', version: '2.2.0'
-        classpath group: 'org.junit.platform', name: 'junit-platform-gradle-plugin', version: '1.0.0-SNAPSHOT'
-        classpath group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.8.1'
-        classpath group: 'org.ajoberstar', name: 'grgit', version: '1.9.3'
-    }
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.0-SNAPSHOT'
+    testImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.0.0-SNAPSHOT'
 }
 
 spotless {
@@ -86,7 +90,7 @@ spotless {
 }
 
 checkstyle {
-    toolVersion = 6.11
+    toolVersion = '8.2'
     configFile = rootProject.file('.infra/checkstyle/checkstyle.xml')
     sourceSets = [ sourceSets.main ]
 }
@@ -282,7 +286,7 @@ configure(rootProject) {
 
     task wrapper(type: Wrapper) {
         description = 'Generates gradlew and gradlew.bat scripts'
-        gradleVersion = '3.2'
+        gradleVersion = '4.2'
         jarFile = "${project.projectDir}/.infra/gradle/gradle-wrapper.jar"
     }
 
