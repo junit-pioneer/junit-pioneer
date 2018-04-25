@@ -5,7 +5,7 @@ That means you do not need to run JUnit 5's Vintage engine to execute this test-
 
 Like JUnit 4's version, `@Test` has two optional parameters:
 
-* `exptected` to fail a test unless an exception of the specified type is thrown
+* `expected` to fail a test unless an exception of the specified type is thrown
 * `timeout` to fail a test that runs too long (*careful*: at the moment, long running tests are not aborted--they just fail once they're finished)
 
 == Expecting exceptions
