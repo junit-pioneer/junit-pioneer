@@ -1,0 +1,68 @@
+= Vintage @Test
+
+The annotation `org.junit$pioneer.vintage.@Test` acts as a drop-in replacement for https://junit.org/junit4/javadoc/4.12/org/junit/Test.html[JUnit 4`s `org.junit.@Test` annotation], but marks the method as a regular JUnit Jupiter test.
+That means you do not need to run JUnit 5's Vintage engine to execute this test--Jupiter suffices.
+
+Like JUnit 4's version, `@Test` has two optional parameters:
+
+* `expected` to fail a test unless an exception of the specified type is thrown
+* `timeout` to fail a test that runs too long (*careful*: at the moment, long running tests are not aborted--they just fail once they're finished)
+
+== Expecting exceptions
+
+The optional parameter `expected` declares that a test method should throw an exception.
+If it doesn't throw an exception or if it throws an exception whose type is not the specified one and does not extend it, the test fails.
+
+For example, the following test succeeds because the thrown exception is of the specified type:
+
+[source,java]
+----
+@Test(expected=IndexOutOfBoundsException.class)
+public void outOfBounds_passes() {
+	new ArrayList<Object>().get(1);
+}
+----
+
+This test succeeds because the thrown exception is a subtype of the specified one:
+
+[source,java]
+----
+@Test(expected=RuntimeException.class)
+public void outOfBounds_passes() {
+	new ArrayList<Object>().get(1);
+}
+----
+
+Finally, this test fails because the thrown exception is neither of the specified type nor a subtype:
+
+[source,java]
+----
+@Test(expected=IllegalArgumentException.class)
+public void outOfBounds_fails() {
+	new ArrayList<Object>().get(1);
+}
+----
+
+== Fail long-running tests
+
+The optional parameter `timeout` causes a test to fail if it takes longer than a specified amount of clock time, measured in milliseconds.
+The following test fails:
+
+[source,java]
+----
+@Test(timeout=100)
+public void slow_fail() {
+	Thread.sleep(1_000);
+}
+----
+
+Note that unlike in JUnit 4, `timeout` does not abort long-running tests!
+The following tests does not fail--it runs indefinitely:
+
+[source,java]
+----
+@Test(timeout=100)
+public void indefinitely() {
+	while(true);
+}
+----
