@@ -3,7 +3,7 @@
  *
  * <p>Check out the following types for details:
  * <ul>
- *     <li>{@link org.junit$pioneer.jupiter.DisabledOnOs} / {@link org.junit$pioneer.jupiter.EnabledOnOs}</li>
+ *     <li>n.a.</li>
  * </ul>
  */
 
