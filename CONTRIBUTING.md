@@ -71,16 +71,16 @@ To make the single commit expressive its message must be detailed and [good]((ht
 Furthermore, it must follow this structure:
 
 ```
-<Action> (<issues> / <pull-request>)
+${action} (${issues} / ${pull-request})
 
-<Body>
+${body}
 ```
 
-`<Action>` should succinctly describe what the PR does in good Git style.
-It is followed by a comma-separated list of all related issues, a dash, and the pull request (to make all of them easy to find from a look at the log).
+`${action}` should succinctly describe what the PR does in good Git style.
+It is followed, in parenthesis, by a comma-separated list of all related issues, a slash, and the pull request (to make all of them easy to find from a look at the log).
 Ideally, this title line should not exceed 50 characters - 70 is the absolute maximum.
 
-`<Body>` should outline the problem the pull request was solving - it should focus on _why_ the code was written not on _how_ it works.
+`${body}` should outline the problem the pull request was solving - it should focus on _why_ the code was written, not on _how_ it works.
 This can usually be a summary of the issue description and discussion as well as commit messages.
 Markdown syntax can be used and lines should usually not exceed 70 characters (exceptions are possible, e.g. to include stack traces).
 
@@ -161,7 +161,7 @@ mavenPassword=...
 Another way are command line flags (but note that these add sensitive information to your terminal history):
 
 ```
-gradle publish -PmavenUserName=... -PmavenPassword=...
+gradle publishSnapshot -PmavenUserName=... -PmavenPassword=...
 ```
 
 Furthermore, non-snapshot releases require signed artifacts, for which the following properties have to be defined:
