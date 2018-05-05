@@ -278,14 +278,10 @@ publishing {
     }
 }
 
-configure(rootProject) {
-
-    task wrapper(type: Wrapper) {
-        description = 'Generates gradlew and gradlew.bat scripts'
-        gradleVersion = '3.2'
-        jarFile = "${project.projectDir}/.infra/gradle/gradle-wrapper.jar"
-    }
-
+wrapper {
+    description = 'Generates gradlew and gradlew.bat scripts'
+    gradleVersion = '4.7'
+    jarFile = "${project.projectDir}/.infra/gradle/gradle-wrapper.jar"
 }
 
 task triggerSiteBuild(type: TriggerTravisTask) {
