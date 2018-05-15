@@ -59,7 +59,7 @@ test {
 }
 
 spotless {
-    def headerFile = rootProject.file('.infra/spotless/eclipse-public-license-1.0.java')
+    def headerFile = rootProject.file('.infra/spotless/eclipse-public-license-2.0.java')
 
     java {
         licenseHeaderFile headerFile, '(package|import) '
@@ -235,8 +235,8 @@ publishing {
                     }
                     appendNode('licenses').with {
                         appendNode('license').with {
-                            appendNode('name', 'Eclipse Public License v1.0')
-                            appendNode('url', 'http://www.eclipse.org/legal/epl-v10.html')
+                            appendNode('name', 'Eclipse Public License v2.0')
+                            appendNode('url', 'http://www.eclipse.org/legal/epl-v20.html')
                         }
                     }
                     appendNode('organization').with {
