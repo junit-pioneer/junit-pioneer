@@ -23,7 +23,7 @@ The guidelines apply to maintainers as well as contributors!
 
 ## JUnit Pioneer Contributor License Agreement
 
-**Project License:** [Eclipse Public License v1.0](LICENSE.md)
+**Project License:** [Eclipse Public License v2.0](LICENSE.md)
 
 * You will only submit contributions where you have authored 100% of the content.
 * You will only submit contributions to which you have the necessary rights.
