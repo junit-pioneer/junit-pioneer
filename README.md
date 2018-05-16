@@ -58,11 +58,15 @@ Before contributing, please read the [contribution guide](CONTRIBUTING.md).
 ### Dependencies
 
 To not add to user's [JAR hell](https://blog.codefx.org/java/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
+Pioneer always depends on the lowest JUnit 5 version that supports its feature set, but that should not keep you from using 5's latest and greatest.
+
 For our own infrastructure, we rely on the following compile and test dependencies:
 
 * JSR-305 (for static analysis)
-* AssertJ (for our tests)
-* Mockito (for our tests)
+* AssertJ (assertions for our tests)
+* Mockito (mocking for our tests)
+* Log4J (to configure logging during test runs)
+* Jimfs (as an in-memory file system for our test)
 
 ### Code Style
 
