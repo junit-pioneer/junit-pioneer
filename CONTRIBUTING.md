@@ -71,25 +71,34 @@ To make the single commit expressive its message must be detailed and [good]((ht
 Furthermore, it must follow this structure:
 
 ```
-${action} (${issues} / ${pull-request})
+${action}
 
 ${body}
+
+${references} ${issues} / ${pull-request}
 ```
 
 `${action}` should succinctly describe what the PR does in good Git style.
-It is followed, in parenthesis, by a comma-separated list of all related issues, a slash, and the pull request (to make all of them easy to find from a look at the log).
 Ideally, this title line should not exceed 50 characters - 70 is the absolute maximum.
 
 `${body}` should outline the problem the pull request was solving - it should focus on _why_ the code was written, not on _how_ it works.
 This can usually be a summary of the issue description and discussion as well as commit messages.
 Markdown syntax can be used and lines should usually not exceed 70 characters (exceptions are possible, e.g. to include stack traces).
 
+The message ends with a list of related issues and the PR that merges the change:
+
+* `${references}` is either _Closes_, _Fixes_, or _Resolves_.
+* `${issues}` is a comma-separated list of all related issues
+* `${pull-request}` is the pull request (don't forget to separate it from the issues with a slash)
+
+This makes the related issues and pull request easy to find from a look at the log.
+
 Once a pull request is ready to be merged, the contributor will be asked to propose an action and body for the squashed commit and the maintainer will refine them when merging.
 
-As an example, the squashed commit that created this documentation had the following message:
+As an example, the squashed commit 22996a2, which created this documentation, had the following message:
 
 ```
-Document branching and merging (#30, #31 / #40)
+Document branching and merging
 
 To make sure the project has a sensible and helpful commit history and
 interacts well with GitHub's features the strategy used for branching,
@@ -106,7 +115,11 @@ The chosen approach to squash and merge fulfills all of them except
 the detailed history, which will be more coarse than with merge commits
 or fast-forward merges. This was deemed acceptable in order to achieve
 the other points, particularly the last one.
+
+Closes #30, #31 / #40
 ```
+
+(This is not entirely true - the guideline for location of the issue and pull request numbers was later changed, so in the original message, they appear in a different place.)
 
 
 ## Adapting to Upstream Changes
