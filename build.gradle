@@ -34,6 +34,9 @@ dependencies {
 
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.2.1'
+
+    testRuntime group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
+    testRuntime group: 'org.apache.logging.log4j', name: 'log4j-jul', version: '2.11.0'
 }
 
 buildscript {
@@ -55,6 +58,7 @@ test {
     filter {
         includeTestsMatching "*Tests"
     }
+    systemProperty 'java.util.logging.manager', 'org.apache.logging.log4j.jul.LogManager'
 }
 
 spotless {
