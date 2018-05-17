@@ -27,11 +27,10 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.0.0-SNAPSHOT'
-    compile group: 'org.opentest4j', name: 'opentest4j', version: '1.0.0-M1'
+    compile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.1.1'
 
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.0-SNAPSHOT'
-    testCompile group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.0.0-SNAPSHOT'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.1.1'
+    testCompile group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.1.1'
 
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.2.1'
