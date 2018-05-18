@@ -68,8 +68,6 @@ spotless {
 
         trimTrailingWhitespace()
         endWithNewline()
-
-        custom 'Lambda fix', { it.replace('} )', '})').replace('} ,', '},') }
     }
 
     format 'groovy', {
