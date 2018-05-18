@@ -17,7 +17,6 @@ import static org.junit.platform.engine.TestExecutionResult.Status.FAILED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -61,7 +60,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	@BeforeEach
 	@AfterEach
 	void resetStaticVariables() {
-		BaseSharedTempDirTestCase.tempDir = null;
+		BaseSharedTempDirTestCase.tempDir = Optional.empty();
 		BaseSeparateTempDirsTestCase.tempDirs.clear();
 	}
 
@@ -99,7 +98,8 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			assertEquals(2, executionEventRecorder.getTestStartedCount());
 			assertEquals(0, executionEventRecorder.getTestFailedCount());
 			assertEquals(2, executionEventRecorder.getTestSuccessfulCount());
-			assertThat(BaseSharedTempDirTestCase.tempDir).doesNotExist();
+			assertThat(BaseSharedTempDirTestCase.tempDir).isPresent();
+			assertThat(BaseSharedTempDirTestCase.tempDir.get()).doesNotExist();
 		}
 	}
 
@@ -116,8 +116,10 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			assertEquals(1, executionEventRecorder.getTestStartedCount());
 			assertEquals(0, executionEventRecorder.getTestFailedCount());
 			assertEquals(1, executionEventRecorder.getTestSuccessfulCount());
-			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir).doesNotExist();
-			assertThat(AnnotationOnAfterAllMethodParameterTestCase.secondTempDir).doesNotExist();
+			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir).isPresent();
+			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir.get()).doesNotExist();
+			assertThat(AnnotationOnAfterAllMethodParameterTestCase.secondTempDir).isPresent();
+			assertThat(AnnotationOnAfterAllMethodParameterTestCase.secondTempDir.get()).doesNotExist();
 		}
 
 		@Test
@@ -221,7 +223,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 	@ExtendWith(TempDirectory.class)
 	static class BaseSharedTempDirTestCase {
-		static Path tempDir;
+		static Optional<Path> tempDir;
 
 		@BeforeEach
 		void beforeEach(@TempDir Path tempDir) {
@@ -246,18 +248,19 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		static void check(Path tempDir) {
-			assertSame(BaseSharedTempDirTestCase.tempDir, tempDir);
+			assertThat(BaseSharedTempDirTestCase.tempDir).isPresent();
+			assertSame(BaseSharedTempDirTestCase.tempDir.get(), tempDir);
 			assertTrue(Files.exists(tempDir));
 		}
 	}
 
 	static class AnnotationOnConstructorParameterTestCase extends BaseSharedTempDirTestCase {
 		AnnotationOnConstructorParameterTestCase(@TempDir Path tempDir) {
-			if (BaseSharedTempDirTestCase.tempDir == null) {
-				BaseSharedTempDirTestCase.tempDir = tempDir;
+			if (BaseSharedTempDirTestCase.tempDir.isPresent()) {
+				assertSame(BaseSharedTempDirTestCase.tempDir.get(), tempDir);
 			}
 			else {
-				assertSame(BaseSharedTempDirTestCase.tempDir, tempDir);
+				BaseSharedTempDirTestCase.tempDir = Optional.of(tempDir);
 			}
 			check(tempDir);
 		}
@@ -266,8 +269,8 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	static class AnnotationOnBeforeAllMethodParameterTestCase extends BaseSharedTempDirTestCase {
 		@BeforeAll
 		static void beforeAll(@TempDir Path tempDir) {
-			assertNull(BaseSharedTempDirTestCase.tempDir);
-			BaseSharedTempDirTestCase.tempDir = tempDir;
+			assertThat(BaseSharedTempDirTestCase.tempDir).isEmpty();
+			BaseSharedTempDirTestCase.tempDir = Optional.of(tempDir);
 			check(tempDir);
 		}
 	}
@@ -287,21 +290,21 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 	@ExtendWith(TempDirectory.class)
 	static class AnnotationOnAfterAllMethodParameterTestCase {
-		static Path firstTempDir;
-		static Path secondTempDir;
+		static Optional<Path> firstTempDir = Optional.empty();
+		static Optional<Path> secondTempDir = Optional.empty();
 
 		@Test
 		void test(@TempDir Path tempDir, TestInfo testInfo) throws Exception {
-			assertNull(firstTempDir);
-			firstTempDir = tempDir;
+			assertThat(firstTempDir).isEmpty();
+			firstTempDir = Optional.of(tempDir);
 			writeFile(tempDir, testInfo);
 		}
 
 		@AfterAll
 		static void afterAll(@TempDir Path tempDir) {
-			secondTempDir = tempDir;
-			assertNotNull(firstTempDir);
-			assertNotEquals(firstTempDir, tempDir);
+			assertThat(firstTempDir).isPresent();
+			assertNotEquals(firstTempDir.get(), tempDir);
+			secondTempDir = Optional.of(tempDir);
 		}
 	}
 
@@ -375,7 +378,8 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory(() -> Files.createDirectories(fileSystem.getPath("tmp")));
+		Extension tempDirectory = new TempDirectory(
+			() -> Optional.of(Files.createDirectories(fileSystem.getPath("tmp"))));
 
 	}
 
@@ -386,7 +390,8 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			Store store = extensionContext.getRoot().getStore(Namespace.GLOBAL);
 			FileSystem fileSystem = store.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
 				JimfsFileSystemResource.class).get();
-			return Files.createDirectories(fileSystem.getPath("tmp"));
+			Path tempDirectory = Files.createDirectories(fileSystem.getPath("tmp"));
+			return Optional.of(tempDirectory);
 		});
 
 		static class JimfsFileSystemResource implements CloseableResource {
@@ -423,7 +428,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory(() -> fileSystem.getPath("tmp"));
+		Extension tempDirectory = new TempDirectory(() -> Optional.of(fileSystem.getPath("tmp")));
 
 		@Test
 		void test(@TempDir Path tempDir) {
@@ -453,7 +458,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory(() -> fileSystem.getPath("tmp"));
+		Extension tempDirectory = new TempDirectory(() -> Optional.of(fileSystem.getPath("tmp")));
 
 		@Test
 		void test(@TempDir Path tempDir) {
