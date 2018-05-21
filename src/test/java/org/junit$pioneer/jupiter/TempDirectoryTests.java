@@ -158,7 +158,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 	@Nested
 	@DisplayName("reports failure")
-	class Foo {
+	class Failures {
 
 		@Test
 		@DisplayName("when @TempDir is used on parameter of wrong type")
