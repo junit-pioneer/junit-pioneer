@@ -19,7 +19,7 @@ void test(@TempDir Path tempDir) {
 
 In addition to the default file system, the extension can be used with any `FileSystem` implementation, e.g. https://github.com/google/jimfs[Jimfs].
 In order to use a custom file system, simply register the extension programmatically and pass a provider of a custom parent directory of type `Path`.
-The following example uses the Jimfs `FileSystem` and passes a custom `tmp` parent directory to the `TempDirectory` constructor.
+The following example uses the Jimfs `FileSystem` and passes a custom `tmp` parent directory to the static factory method `TempDirectory::createInCustomDirectory`.
 
 [source,java]
 ----
@@ -37,7 +37,7 @@ class MyTests {
     }
 
     @RegisterExtension
-    Extension tempDirectory = new TempDirectory(() ->
+    Extension tempDirectory = TempDirectory.createInCustomDirectory(() ->
         Files.createDirectories(fileSystem.getPath("tmp")));
 
     @Test

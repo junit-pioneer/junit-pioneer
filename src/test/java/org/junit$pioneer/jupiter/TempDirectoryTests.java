@@ -378,7 +378,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory(
+		Extension tempDirectory = TempDirectory.createInCustomDirectory(
 			() -> Files.createDirectories(fileSystem.getPath("tmp")));
 
 	}
@@ -386,7 +386,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	static class ParentDirFromProviderTestCase extends BaseSeparateTempDirsTestCase {
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory((parameterContext, extensionContext) -> {
+		Extension tempDirectory = TempDirectory.createInCustomDirectory((parameterContext, extensionContext) -> {
 			Store store = extensionContext.getRoot().getStore(Namespace.GLOBAL);
 			FileSystem fileSystem = store.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
 				JimfsFileSystemResource.class).get();
@@ -427,7 +427,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory(() -> fileSystem.getPath("tmp"));
+		Extension tempDirectory = TempDirectory.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
 
 		@Test
 		void test(@TempDir Path tempDir) {
@@ -457,7 +457,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory(() -> fileSystem.getPath("tmp"));
+		Extension tempDirectory = TempDirectory.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
 
 		@Test
 		void test(@TempDir Path tempDir) {
@@ -470,7 +470,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		private FileSystem fileSystem = mock(FileSystem.class);
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory(() -> {
+		Extension tempDirectory = TempDirectory.createInCustomDirectory(() -> {
 			throw new IOException("something went horribly wrong");
 		});
 
