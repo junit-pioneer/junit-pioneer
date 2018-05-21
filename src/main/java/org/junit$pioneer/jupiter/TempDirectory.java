@@ -24,9 +24,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
@@ -79,6 +79,8 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  */
 public class TempDirectory implements ParameterResolver {
 
+	private static final String TEMP_DIR_PREFIX = "junit";
+
 	/**
 	 * {@code TempDir} can be used to annotate a test or lifecycle method or
 	 * test class constructor parameter of type {@link Path} that should be
@@ -106,17 +108,35 @@ public class TempDirectory implements ParameterResolver {
 		 * Get the parent directory for all temporary directories created by the
 		 * {@link TempDirectory} extension this is used with.
 		 *
-		 * @return the {@link Optional optional} parent directory for all temporary
-		 * directories; must be {@link Optional#empty() empty} or contain an existing
-		 * directory.
+		 * @return the parent directory for all temporary directories
 		 */
-		Optional<Path> get(ParameterContext parameterContext, ExtensionContext extensionContext) throws Exception;
+		Path get(ParameterContext parameterContext, ExtensionContext extensionContext) throws Exception;
+	}
+
+	/**
+	 * {@code TempDirProvider} is used internally to define how the temporary
+	 * directory is created.
+	 *
+	 * <p>The temporary directory is by default created on the regular
+	 * file system, but the user can also provide a custom file system
+	 * by using the {@link ParentDirProvider}. An instance of
+	 * {@code TempDirProvider} executes these (and possibly other) strategies.
+	 *
+	 * @see TempDirectory.ParentDirProvider
+	 */
+	@FunctionalInterface
+	private interface TempDirProvider {
+		CloseablePath get(ParameterContext parameterContext, ExtensionContext extensionContext, String dirPrefix);
 	}
 
 	private static final Namespace NAMESPACE = Namespace.create(TempDirectory.class);
 	private static final String KEY = "temp.dir";
 
-	private final ParentDirProvider parentDirProvider;
+	private final TempDirProvider tempDirProvider;
+
+	public TempDirectory(TempDirProvider tempDirProvider) {
+		this.tempDirProvider = requireNonNull(tempDirProvider);
+	}
 
 	/**
 	 * Create a new {@code TempDirectory} extension that uses the default
@@ -128,27 +148,7 @@ public class TempDirectory implements ParameterResolver {
 	 * {@link org.junit.jupiter.api.extension.ExtendWith @ExtendWith}.
 	 */
 	public TempDirectory() {
-		this((parameterContext, extensionContext) -> Optional.empty());
-	}
-
-	/**
-	 * Create a new {@code TempDirectory} extension that uses the supplied
-	 * {@link Callable} to configure the parent directory for the temporary
-	 * directories created by this extension.
-	 *
-	 * <p>The {@link Optional optional} parent directory returned by the
-	 * supplied {@link Callable} must be {@link Optional#empty() empty} or
-	 * contain an existing directory.
-	 *
-	 * <p>You may use this constructor when registering this extension via
-	 * {@link org.junit.jupiter.api.extension.RegisterExtension @RegisterExtension}.
-	 *
-	 * @param parentDirProvider used to configure the parent directory for the
-	 * temporary directories created by this extension
-	 */
-	public TempDirectory(Callable<Optional<Path>> parentDirProvider) {
-		this((parameterContext, extensionContext) -> parentDirProvider.call());
-		requireNonNull(parentDirProvider);
+		this((__, ___, dirPrefix) -> createDefaultTempDir(dirPrefix));
 	}
 
 	/**
@@ -163,7 +163,27 @@ public class TempDirectory implements ParameterResolver {
 	 * temporary directories created by this extension
 	 */
 	public TempDirectory(ParentDirProvider parentDirProvider) {
-		this.parentDirProvider = requireNonNull(parentDirProvider);
+		// @formatter:off
+		this((parameterContext, extensionContext, dirPrefix) ->
+				createCustomTempDir(parentDirProvider, parameterContext, extensionContext, dirPrefix));
+		// @formatter:on
+		requireNonNull(parentDirProvider);
+	}
+
+	/**
+	 * Create a new {@code TempDirectory} extension that uses the supplied
+	 * {@link Callable} to configure the parent directory for the temporary
+	 * directories created by this extension.
+	 *
+	 * <p>You may use this constructor when registering this extension via
+	 * {@link org.junit.jupiter.api.extension.RegisterExtension @RegisterExtension}.
+	 *
+	 * @param parentDirProvider used to configure the parent directory for the
+	 * temporary directories created by this extension
+	 */
+	public TempDirectory(Callable<Path> parentDirProvider) {
+		this((parameterContext, extensionContext) -> parentDirProvider.call());
+		requireNonNull(parentDirProvider);
 	}
 
 	@Override
@@ -179,34 +199,35 @@ public class TempDirectory implements ParameterResolver {
 				"Can only resolve parameter of type " + Path.class.getName() + " but was: " + parameterType.getName());
 		}
 		return extensionContext.getStore(NAMESPACE) //
-				.getOrComputeIfAbsent(KEY, key -> createCloseablePath(parameterContext, extensionContext),
+				.getOrComputeIfAbsent(KEY,
+					key -> tempDirProvider.get(parameterContext, extensionContext, TEMP_DIR_PREFIX),
 					CloseablePath.class) //
 				.get();
 	}
 
-	private CloseablePath createCloseablePath(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		Optional<Path> parentDir = getParentDirFromProvider(parameterContext, extensionContext);
+	private static CloseablePath createDefaultTempDir(String dirPrefix) {
 		try {
-			String prefix = "junit";
-			// @formatter:off
-			Path tempDirectory = parentDir.isPresent()
-					? Files.createTempDirectory(parentDir.get(), prefix)
-					: Files.createTempDirectory(prefix);
-			// @formatter:on
-			return new CloseablePath(tempDirectory);
+			return new CloseablePath(Files.createTempDirectory(dirPrefix));
 		}
-		catch (Exception e) {
-			throw new ParameterResolutionException("Failed to create temp directory", e);
+		catch (Exception ex) {
+			throw new ExtensionConfigurationException("Failed to create default temp directory", ex);
 		}
 	}
 
-	private Optional<Path> getParentDirFromProvider(ParameterContext parameterContext,
-			ExtensionContext extensionContext) {
+	private static CloseablePath createCustomTempDir(ParentDirProvider parentDirProvider,
+			ParameterContext parameterContext, ExtensionContext extensionContext, String dirPrefix) {
+		Path parentDir;
 		try {
-			return parentDirProvider.get(parameterContext, extensionContext);
+			parentDir = parentDirProvider.get(parameterContext, extensionContext);
 		}
 		catch (Exception ex) {
 			throw new ParameterResolutionException("Failed to get parent directory from provider", ex);
+		}
+		try {
+			return new CloseablePath(Files.createTempDirectory(parentDir, dirPrefix));
+		}
+		catch (Exception ex) {
+			throw new ParameterResolutionException("Failed to create custom temp directory", ex);
 		}
 	}
 

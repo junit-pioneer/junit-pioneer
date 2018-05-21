@@ -175,7 +175,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			ExecutionEventRecorder executionEventRecorder = executeTests(FailedCreationAttemptTestCase.class);
 
 			assertSingleFailedTest(executionEventRecorder, ParameterResolutionException.class,
-				"Failed to create temp directory");
+				"Failed to create custom temp directory");
 		}
 
 		@Test
@@ -379,7 +379,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 		@RegisterExtension
 		Extension tempDirectory = new TempDirectory(
-			() -> Optional.of(Files.createDirectories(fileSystem.getPath("tmp"))));
+			() -> Files.createDirectories(fileSystem.getPath("tmp")));
 
 	}
 
@@ -390,8 +390,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			Store store = extensionContext.getRoot().getStore(Namespace.GLOBAL);
 			FileSystem fileSystem = store.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
 				JimfsFileSystemResource.class).get();
-			Path tempDirectory = Files.createDirectories(fileSystem.getPath("tmp"));
-			return Optional.of(tempDirectory);
+			return Files.createDirectories(fileSystem.getPath("tmp"));
 		});
 
 		static class JimfsFileSystemResource implements CloseableResource {
@@ -428,7 +427,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory(() -> Optional.of(fileSystem.getPath("tmp")));
+		Extension tempDirectory = new TempDirectory(() -> fileSystem.getPath("tmp"));
 
 		@Test
 		void test(@TempDir Path tempDir) {
@@ -458,7 +457,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = new TempDirectory(() -> Optional.of(fileSystem.getPath("tmp")));
+		Extension tempDirectory = new TempDirectory(() -> fileSystem.getPath("tmp"));
 
 		@Test
 		void test(@TempDir Path tempDir) {
