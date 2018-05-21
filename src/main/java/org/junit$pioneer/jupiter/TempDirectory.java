@@ -235,6 +235,7 @@ public class TempDirectory implements ParameterResolver {
 		Path parentDir;
 		try {
 			parentDir = parentDirProvider.get(parameterContext, extensionContext);
+			requireNonNull(parentDir);
 		}
 		catch (Exception ex) {
 			throw new ParameterResolutionException("Failed to get parent directory from provider", ex);
