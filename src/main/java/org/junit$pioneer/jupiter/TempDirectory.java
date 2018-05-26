@@ -79,8 +79,6 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  */
 public class TempDirectory implements ParameterResolver {
 
-	private static final String TEMP_DIR_PREFIX = "junit";
-
 	/**
 	 * {@code TempDir} can be used to annotate a test or lifecycle method or
 	 * test class constructor parameter of type {@link Path} that should be
@@ -131,6 +129,7 @@ public class TempDirectory implements ParameterResolver {
 
 	private static final Namespace NAMESPACE = Namespace.create(TempDirectory.class);
 	private static final String KEY = "temp.dir";
+	private static final String TEMP_DIR_PREFIX = "junit";
 
 	private final TempDirProvider tempDirProvider;
 
@@ -152,7 +151,7 @@ public class TempDirectory implements ParameterResolver {
 	}
 
 	/**
-	 * Returns a {@code TempDirectory} extension that uses the default
+	 * Create a new {@code TempDirectory} extension that uses the default
 	 * {@link java.nio.file.FileSystem FileSystem} and creates temporary
 	 * directories in the default location.
 	 *
@@ -168,7 +167,7 @@ public class TempDirectory implements ParameterResolver {
 	}
 
 	/**
-	 * Returns a {@code TempDirectory} extension that uses the supplied
+	 * Create a new {@code TempDirectory} extension that uses the supplied
 	 * {@link ParentDirProvider} to configure the parent directory for the
 	 * temporary directories created by this extension.
 	 *
@@ -187,7 +186,7 @@ public class TempDirectory implements ParameterResolver {
 	}
 
 	/**
-	 * Returns a {@code TempDirectory} extension that uses the supplied
+	 * Create a new {@code TempDirectory} extension that uses the supplied
 	 * {@link Callable} to configure the parent directory for the temporary
 	 * directories created by this extension.
 	 *
@@ -248,7 +247,7 @@ public class TempDirectory implements ParameterResolver {
 		}
 	}
 
-	static class CloseablePath implements CloseableResource {
+	private static class CloseablePath implements CloseableResource {
 
 		private final Path dir;
 
