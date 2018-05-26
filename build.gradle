@@ -49,7 +49,7 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'com.diffplug.gradle.spotless', name: 'spotless', version: '2.2.0'
+        classpath group: 'com.diffplug.spotless', name: 'spotless-plugin-gradle', version: '3.12.0'
     }
 }
 
@@ -67,12 +67,10 @@ spotless {
     java {
         licenseHeaderFile headerFile, '(package|import) '
         importOrderFile rootProject.file('.infra/eclipse/junit-eclipse.importorder')
-        eclipseFormatFile rootProject.file('.infra/eclipse/junit-eclipse-formatter-settings.xml')
+        eclipse().configFile('.infra/eclipse/junit-eclipse-formatter-settings.xml')
 
         trimTrailingWhitespace()
         endWithNewline()
-
-        custom 'Lambda fix', { it.replace('} )', '})').replace('} ,', '},') }
     }
 
     format 'groovy', {
@@ -82,8 +80,8 @@ spotless {
         endWithNewline()
         licenseHeaderFile headerFile, "package "
 
-        customReplaceRegex 'class-level Javadoc indentation fix', /^\*/, ' *'
-        customReplaceRegex 'nested Javadoc indentation fix', /\t\*/, '\t *'
+        replaceRegex 'class-level Javadoc indentation fix', /^\*/, ' *'
+        replaceRegex 'nested Javadoc indentation fix', /\t\*/, '\t *'
     }
 }
 
