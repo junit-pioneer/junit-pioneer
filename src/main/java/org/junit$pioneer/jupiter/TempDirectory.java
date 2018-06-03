@@ -151,7 +151,7 @@ public class TempDirectory implements ParameterResolver {
 	}
 
 	/**
-	 * Create a new {@code TempDirectory} extension that uses the default
+	 * Returns a {@code TempDirectory} extension that uses the default
 	 * {@link java.nio.file.FileSystem FileSystem} and creates temporary
 	 * directories in the default location.
 	 *
@@ -167,7 +167,7 @@ public class TempDirectory implements ParameterResolver {
 	}
 
 	/**
-	 * Create a new {@code TempDirectory} extension that uses the supplied
+	 * Returns a {@code TempDirectory} extension that uses the supplied
 	 * {@link ParentDirProvider} to configure the parent directory for the
 	 * temporary directories created by this extension.
 	 *
@@ -186,7 +186,7 @@ public class TempDirectory implements ParameterResolver {
 	}
 
 	/**
-	 * Create a new {@code TempDirectory} extension that uses the supplied
+	 * Returns a {@code TempDirectory} extension that uses the supplied
 	 * {@link Callable} to configure the parent directory for the temporary
 	 * directories created by this extension.
 	 *
