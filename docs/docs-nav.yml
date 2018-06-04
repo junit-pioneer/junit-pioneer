@@ -2,3 +2,5 @@
     children:
       - title: Vintage @Test
         url: /docs/vintage-test/
+      - title: TempDirectory
+        url: /docs/temp-directory/

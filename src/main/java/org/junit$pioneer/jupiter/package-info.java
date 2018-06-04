@@ -3,7 +3,7 @@
  *
  * <p>Check out the following types for details:
  * <ul>
- *     <li>n.a.</li>
+ *     <li>{@link org.junit$pioneer.jupiter.TempDirectory}</li>
  * </ul>
  */
 

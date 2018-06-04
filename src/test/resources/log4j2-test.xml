@@ -6,6 +6,8 @@
 		</Console>
 	</Appenders>
 	<Loggers>
+		<!-- Hide logged errors when closing CloseableResources -->
+		<Logger name="org.junit.jupiter.engine.execution.JupiterEngineExecutionContext" level="off" />
 		<Root level="error">
 			<AppenderRef ref="Console" />
 		</Root>
