@@ -109,90 +109,39 @@ javadoc.shouldRunAfter test
 jar {
     manifest {
         attributes(
-                'Automatic-Module-Name': 'org.junit$pioneer'
+            'Automatic-Module-Name': 'org.junit$pioneer'
         )
     }
 }
 
 // create sources and JavaDoc JARs
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier 'sources'
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task javadocJar(type: Jar) {
     classifier = 'javadoc'
-    from javadoc.destinationDir
+    from javadoc
+}
+
+tasks.withType(Jar) {
+    from(projectDir) {
+        include 'LICENSE.md'
+        into 'META-INF'
+    }
 }
 
 artifacts {
     archives javadocJar, sourcesJar
 }
 
-// sign POM and archives
-task signPom(type: Sign, dependsOn: 'generatePomFileForCompletePublication') {
-    sign file('build/publications/complete/pom-default.xml')
-}
 signing {
-    sign configurations.archives
+    sign publishing.publications
 }
-signArchives.dependsOn signPom
 
-// The task "assemble" and by extension "build" depends on signing, which leads to
-// problems on machines that have no signatories configured (e.g. AppVeyor). For
-// that reason we want to skip signing unless it is actually required for publication.
-// Unfortunately there seems to be no way to remove a dependency (in this case from
-// "assemble" to "signArchives"), so we disable the task and enable it when required.
-signArchives.enabled = false
-signPom.enabled = false
-
-// make sure specific tasks are used instead of the overly encompassing `gradle publish`
-task publishSnapshot {
-    dependsOn 'publishCompletePublicationToMavenSnapshotRepository'
-}
-task publishRelease {
-    dependsOn 'publishCompletePublicationToMavenRepository'
-}
-tasks.whenTaskAdded{ task ->
-    // all publication tasks should require a successful build
-    if (task instanceof PublishToMavenRepository)
-        task.dependsOn(check)
-    // because maven-publish creates its tasks very late,
-    // this was the only way I found to add the dependency to signing
-    if (task.name == "publishCompletePublicationToMavenRepository") {
-        task.dependsOn(signArchives)
-        // activate the signing tasks (we deactivated them above)
-        signArchives.enabled = true
-        signPom.enabled = true
-    }
-}
-gradle.taskGraph.whenReady { taskGraph ->
-    def tasks = taskGraph.getAllTasks()
-    if (tasks.find { it.name == 'publish' })
-        throw new GradleException('''
-                ---------------------------------------------------------------------------
-                DON'T USE `gradle publish`!
-
-                It will try to publish a snapshot _and_ a release, which doesn't work well.
-                Instead use either `gradle publishSnapshot` or `gradle publishRelease`.
-                ---------------------------------------------------------------------------
-               ''')
-    if (tasks.find { it.name == 'publishSnapshot' } && isReleaseVersion)
-        throw new GradleException('''
-                ------------------------------------------------------------
-                DON'T USE `gradle publishSnapshot` ON NON-SNAPSHOT VERSIONS!
-
-                Maybe you're looking for `gradle publishRelease`?
-                ------------------------------------------------------------
-               ''')
-    if (tasks.find { it.name == 'publishRelease' } && !isReleaseVersion)
-        throw new GradleException('''
-                -------------------------------------------------------
-                DON'T USE `gradle publishRelease` ON SNAPSHOT VERSIONS!
-
-                Maybe you're looking for `gradle publishSnapshot`?
-                -------------------------------------------------------
-               ''')
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
 }
 
 publishing {
@@ -203,57 +152,36 @@ publishing {
             artifact sourcesJar
             artifact javadocJar
 
-            // only include signatures for releases
-            if (isReleaseVersion) {
-                artifact source: "build/libs/${rootProject.name}-${rootProject.version}.jar.asc",
-                        extension: 'jar.asc'
-                artifact source: project.tasks.signPom.signatureFiles.collect { it }[0],
-                        extension: 'pom.asc'
-                artifact source: "build/libs/${rootProject.name}-${rootProject.version}-sources.jar.asc",
-                        classifier: 'sources', extension: 'jar.asc'
-                artifact source: "build/libs/${rootProject.name}-${rootProject.version}-javadoc.jar.asc",
-                        classifier: 'javadoc', extension: 'jar.asc'
-            }
-
-            tasks.withType(Jar) {
-                from(project.projectDir) {
-                    include 'LICENSE.md'
-                    into 'META-INF'
+            pom {
+                name = 'JUnit Pioneer'
+                description = 'JUnit 5 Extension Pack'
+                url = 'https://github.com/junit-pioneer/junit-pioneer'
+                scm {
+                    url = 'https://github.com/junit-pioneer/junit-pioneer'
+                    connection = 'scm:git:git://github.com:junit-pioneer/junit-pioneer.git'
                 }
-            }
-
-            pom.withXml {
-                asNode().with {
-                    appendNode('name', 'JUnit Pioneer')
-                    appendNode('description', 'JUnit 5 Extension Pack')
-                    appendNode('url', 'https://github.com/junit-pioneer/junit-pioneer')
-                    appendNode('scm').with {
-                        appendNode('url', 'https://github.com/junit-pioneer/junit-pioneer')
-                        appendNode('connection', 'scm:git:git://github.com:junit-pioneer/junit-pioneer.git')
+                issueManagement {
+                    url = 'https://github.com/junit-pioneer/junit-pioneer/issues'
+                    system = 'GitHub'
+                }
+                licenses {
+                    license {
+                        name = 'Eclipse Public License v2.0'
+                        url = 'http://www.eclipse.org/legal/epl-v20.html'
                     }
-                    appendNode('issueManagement').with {
-                        appendNode('url', 'https://github.com/junit-pioneer/junit-pioneer/issues')
-                        appendNode('system', 'GitHub')
-                    }
-                    appendNode('licenses').with {
-                        appendNode('license').with {
-                            appendNode('name', 'Eclipse Public License v2.0')
-                            appendNode('url', 'http://www.eclipse.org/legal/epl-v20.html')
-                        }
-                    }
-                    appendNode('organization').with {
-                        appendNode('name', 'JUnit Pioneer')
-                        appendNode('url', 'https://github.com/junit-pioneer')
-                    }
-                    appendNode('developers').with {
-                        appendNode('developer').with {
-                            appendNode('id', 'nipa')
-                            appendNode('name', 'Nicolai Parlog')
-                            appendNode('email', 'nipa@codefx.org')
-                            appendNode('organization', 'CodeFX')
-                            appendNode('organizationUrl', 'http://codefx.org')
-                            appendNode('timezone', '1')
-                        }
+                }
+                organization {
+                    name = 'JUnit Pioneer'
+                    url = 'https://github.com/junit-pioneer'
+                }
+                developers {
+                    developer {
+                        id = 'nipa'
+                        name = 'Nicolai Parlog'
+                        email = 'nipa@codefx.org'
+                        organization = 'CodeFX'
+                        organizationUrl = 'http://codefx.org'
+                        timezone = '1'
                     }
                 }
             }
@@ -261,16 +189,9 @@ publishing {
     }
     repositories {
         maven {
-            name "Maven"
-            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-            credentials {
-                username mavenUserName
-                password mavenPassword
-            }
-        }
-        maven {
-            name "MavenSnapshot"
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            def stagingRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            def snapshotRepoUrl ='https://oss.sonatype.org/content/repositories/snapshots/'
+            url = isReleaseVersion ? stagingRepoUrl : snapshotRepoUrl
             credentials {
                 username mavenUserName
                 password mavenPassword
@@ -280,9 +201,8 @@ publishing {
 }
 
 wrapper {
-    description = 'Generates gradlew and gradlew.bat scripts'
-    gradleVersion = '4.7'
-    jarFile = "${project.projectDir}/.infra/gradle/gradle-wrapper.jar"
+    gradleVersion = '4.8'
+    jarFile = file('.infra/gradle/gradle-wrapper.jar')
 }
 
 task triggerSiteBuild(type: org.junit$pioneer.gradle.TriggerTravisTask) {

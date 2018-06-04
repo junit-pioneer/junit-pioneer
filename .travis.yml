@@ -38,7 +38,7 @@ script:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: ./gradlew publishSnapshot -P mavenUserName=$MAVEN_USER_NAME -P mavenPassword=$MAVEN_PASSWORD --stacktrace
+    script: ./gradlew publish -P mavenUserName=$MAVEN_USER_NAME -P mavenPassword=$MAVEN_PASSWORD --stacktrace
     on:
       branch: master
       jdk: oraclejdk8
