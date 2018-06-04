@@ -75,7 +75,8 @@ ${action}
 
 ${body}
 
-${references} ${issues} / ${pull-request}
+${references}: ${issues}
+PR: ${pull-request}
 ```
 
 `${action}` should succinctly describe what the PR does in good Git style.
@@ -87,15 +88,15 @@ Markdown syntax can be used and lines should usually not exceed 70 characters (e
 
 The message ends with a list of related issues and the PR that merges the change:
 
-* `${references}` is either _Closes_, _Fixes_, or _Resolves_.
+* `${references}` is usually _Closes_, _Fixes_, or _Resolves_, but if none of that is the case, can also be _Issue(s)_
 * `${issues}` is a comma-separated list of all related issues
-* `${pull-request}` is the pull request (don't forget to separate it from the issues with a slash)
+* `${pull-request}` is the pull request
 
 This makes the related issues and pull request easy to find from a look at the log.
 
 Once a pull request is ready to be merged, the contributor will be asked to propose an action and body for the squashed commit and the maintainer will refine them when merging.
 
-As an example, the squashed commit 22996a2, which created this documentation, had the following message:
+As an example, the squashed commit 22996a2, which created this documentation, should have had the following message:
 
 ```
 Document branching and merging
@@ -116,10 +117,11 @@ the detailed history, which will be more coarse than with merge commits
 or fast-forward merges. This was deemed acceptable in order to achieve
 the other points, particularly the last one.
 
-Closes #30, #31 / #40
+Closes: #30, #31
+PR: #40
 ```
 
-(This is not entirely true - the guideline for location of the issue and pull request numbers was later changed, so in the original message, they appear in a different place.)
+(The actual message is slightly different because the guideline for location of the issue and pull request numbers was later changed and the example above was updated to reflect that.)
 
 
 ## Adapting to Upstream Changes
