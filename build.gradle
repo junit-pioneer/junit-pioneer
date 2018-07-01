@@ -3,7 +3,7 @@ plugins {
     id 'checkstyle'
     id 'maven-publish'
     id 'com.diffplug.gradle.spotless' version '3.13.0'
-    id 'org.shipkit.java' version '2.0.25'
+    id 'org.shipkit.java' version '2.0.26'
 }
 
 group 'org.junit-pioneer'
