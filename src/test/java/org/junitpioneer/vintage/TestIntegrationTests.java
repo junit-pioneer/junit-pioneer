@@ -8,19 +8,19 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junit$pioneer.vintage;
+package org.junitpioneer.vintage;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit$pioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
 import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
-import org.junit$pioneer.AbstractPioneerTestEngineTests;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 /**
  * Tests the vintage {@link Test @Test} annotation by running the entire test engine.

@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junit$pioneer.vintage;
+package org.junitpioneer.vintage;
 
 import static java.lang.String.format;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;

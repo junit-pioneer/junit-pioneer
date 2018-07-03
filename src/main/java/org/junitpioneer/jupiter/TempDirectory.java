@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junit$pioneer.jupiter;
+package org.junitpioneer.jupiter;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.util.Objects.requireNonNull;

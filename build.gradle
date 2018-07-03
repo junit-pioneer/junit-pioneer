@@ -205,7 +205,7 @@ wrapper {
     jarFile = file('.infra/gradle/gradle-wrapper.jar')
 }
 
-task triggerSiteBuild(type: org.junit$pioneer.gradle.TriggerTravisTask) {
+task triggerSiteBuild(type: org.junitpioneer.gradle.TriggerTravisTask) {
     travisProject = "junit-pioneer/junit-pioneer.github.io"
     branch = "grandmaster"
     apiToken = travisApiToken

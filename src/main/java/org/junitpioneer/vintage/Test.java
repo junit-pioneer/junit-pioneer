@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junit$pioneer.vintage;
+package org.junitpioneer.vintage;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
