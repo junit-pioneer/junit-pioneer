@@ -3,8 +3,8 @@
  *
  * <p>Check out the following types for details:
  * <ul>
- *     <li>{@link org.junit$pioneer.jupiter.TempDirectory}</li>
+ *     <li>{@link org.junitpioneer.jupiter.TempDirectory}</li>
  * </ul>
  */
 
-package org.junit$pioneer.jupiter;
+package org.junitpioneer.jupiter;

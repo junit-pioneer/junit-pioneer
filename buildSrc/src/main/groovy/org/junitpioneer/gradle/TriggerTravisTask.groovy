@@ -7,7 +7,7 @@
  *
  * http://www.eclipse.org/legal/epl-v20.html
  */
-package org.junit$pioneer.gradle
+package org.junitpioneer.gradle
 
 import okhttp3.Headers
 import okhttp3.MediaType

@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junit$pioneer;
+package org.junitpioneer;
 
 import static java.util.Arrays.stream;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;

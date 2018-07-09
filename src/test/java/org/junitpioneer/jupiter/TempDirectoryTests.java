@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junit$pioneer.jupiter;
+package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,8 +32,6 @@ import java.util.Optional;
 
 import com.google.common.jimfs.Jimfs;
 
-import org.junit$pioneer.AbstractPioneerTestEngineTests;
-import org.junit$pioneer.jupiter.TempDirectory.TempDir;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -53,6 +51,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEvent;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 @DisplayName("TempDirectory extension")
 class TempDirectoryTests extends AbstractPioneerTestEngineTests {
