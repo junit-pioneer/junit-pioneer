@@ -145,52 +145,10 @@ Follow these steps when updating JUnit 5:
 
 ## Publishing
 
-Because `gradle publish` tries to execute all publications (e.g. snapshots _and_ releases), it is deactivated.
-Instead use the more specific tasks described below.
+Like [Mockito](http://mockito.org/), JUnit Pioneer implements a continuous delivery model using [Shipkit](http://shipkit.org/) and [Travis CI](https://travis-ci.org/).
+Every change on the `master` branch (for example when merging a pull request) triggers a release build that publishes a new version if the following criteria are met:
 
-### Credentials
+- all checks (e.g. tests) are successful
+- no `ci skip release` is used in the commit message (see the build log for more information)
 
-For any release you need the properties `mavenUserName` and `mavenPassword` to contain your credentials for the Sonatype repositories.
-One way to define them is [a Gradle properties file](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_properties_and_system_properties).
-For that approach, create a file `gradle.properties` in `GRADLE_USER_HOME` (which defaults to `USER_HOME/.gradle`) with the following content:
-
-```
-mavenUserName=...
-mavenPassword=...
-```
-
-Another way are command line flags (but note that these add sensitive information to your terminal history):
-
-```
-gradle publishSnapshot -PmavenUserName=... -PmavenPassword=...
-```
-
-Furthermore, non-snapshot releases require signed artifacts, for which the following properties have to be defined:
-
-```
-signing.keyId= # last eight digits of key ID
-signing.password= # password for the key
-signing.secretKeyRingFile= # path to local secring.gpg
-```
-
-For details on these have a look at the [Gradle Signing Plugin's documentation](https://docs.gradle.org/current/userguide/signing_plugin.html#sec:signatory_credentials).
-
-### Snapshots
-
-To publish a snapshot version simply execute `gradle publishSnapshot`.
-This will fail if the current project version does not end in `-SNAPSHOT`.
-
-### Releases
-
-To publish a new release, go through the following check list:
-
-* you should be operating on the `master` branch and have no uncommitted changes
-* the version must not end in `-SNAPSHOT`
-* no dependency on snapshot versions
-
-If everything's in order, execute `gradle publishRelease`.
-
-After a successful release do the following:
-
-* tag the current HEAD as a release and upload all artifacts to GitHub
-* go to the next snapshot version and commit the change
+Every new version is published to the `junit-pioneer/maven` Bintray repository as well as to Maven Central and JCenter.

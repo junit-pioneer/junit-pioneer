@@ -1,0 +1,36 @@
+//To leverage Shipkit fully, refer to our Getting Started Guide for help:
+//
+//     https://github.com/mockito/shipkit/blob/master/docs/getting-started.md
+//
+shipkit {
+   gitHub.repository = 'junit-pioneer/junit-pioneer' // https://github.com/junit-pioneer/junit-pioneer
+   gitHub.readOnlyAuthToken = '584daca204258e2a397d0c029010732a994382dd'
+   gitHub.writeAuthToken = System.getenv('GITHUB_WRITE_TOKEN')
+}
+
+allprojects {
+   plugins.withId('org.shipkit.bintray') {
+
+       bintray {
+           user = System.getenv('BINTRAY_USER_NAME')
+           key = System.getenv('BINTRAY_API_KEY')
+
+           pkg {
+               userOrg = 'junit-pioneer' // https://bintray.com/junit-pioneer
+               repo = 'junit-pioneer'    // https://bintray.com/junit-pioneer/junit-pioneer
+               name = 'junit-pioneer'    // https://bintray.com/junit-pioneer/junit-pioneer/junit-pioneer
+               licenses = ['EPL-2.0']
+               vcsUrl = 'https://github.com/junit-pioneer/junit-pioneer.git'
+               labels = ['testing', 'junit', 'extensions']
+
+               version {
+                   mavenCentralSync {
+                       sync = true
+                       user = System.getenv('NEXUS_USERNAME')
+                       password = System.getenv('NEXUS_PASSWORD')
+                   }
+               }
+           }
+       }
+   }
+}

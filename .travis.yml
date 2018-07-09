@@ -30,15 +30,21 @@ cache:
 # Display Gradle version instead of letting Travis execute './gradlew assemble' by default
 install: ./gradlew -version
 
+#Don't build tags
+branches:
+  except:
+  - /^v\d/
+
+#Build and perform release (if needed)
 script:
   - java -version
   - ./gradlew -version
-  - ./gradlew --refresh-dependencies clean check -Dscan
+  - ./gradlew --refresh-dependencies --stacktrace -Dscan clean build
 
 deploy:
   - provider: script
     skip_cleanup: true
-    script: ./gradlew publish -P mavenUserName=$MAVEN_USER_NAME -P mavenPassword=$MAVEN_PASSWORD --stacktrace
+    script: ./gradlew ciPerformRelease
     on:
       branch: master
       jdk: oraclejdk8

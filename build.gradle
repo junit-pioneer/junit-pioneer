@@ -1,11 +1,12 @@
-group 'org.junit-pioneer'
-version '0.1-SNAPSHOT'
+plugins {
+    id 'java'
+    id 'checkstyle'
+    id 'maven-publish'
+    id 'com.diffplug.gradle.spotless' version '3.13.0'
+    id 'org.shipkit.java' version '2.0.26'
+}
 
-apply plugin: 'java'
-apply plugin: 'com.diffplug.gradle.spotless'
-apply plugin: 'checkstyle'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
+group 'org.junit-pioneer'
 
 sourceCompatibility = 1.8
 
@@ -38,20 +39,6 @@ dependencies {
 
     testRuntime group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.0'
     testRuntime group: 'org.apache.logging.log4j', name: 'log4j-jul', version: '2.11.0'
-}
-
-buildscript {
-    repositories {
-        mavenLocal()
-        maven {
-            name "GradlePlugins"
-            url 'https://plugins.gradle.org/m2/'
-        }
-    }
-
-    dependencies {
-        classpath group: 'com.diffplug.spotless', name: 'spotless-plugin-gradle', version: '3.12.0'
-    }
 }
 
 test {
@@ -114,17 +101,6 @@ jar {
     }
 }
 
-// create sources and JavaDoc JARs
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
-}
-
 tasks.withType(Jar) {
     from(projectDir) {
         include 'LICENSE.md'
@@ -134,14 +110,6 @@ tasks.withType(Jar) {
 
 artifacts {
     archives javadocJar, sourcesJar
-}
-
-signing {
-    sign publishing.publications
-}
-
-tasks.withType(Sign) {
-    onlyIf { isReleaseVersion }
 }
 
 publishing {
