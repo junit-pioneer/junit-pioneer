@@ -4,8 +4,8 @@
 //
 shipkit {
    gitHub.repository = "junit-pioneer/junit-pioneer"
-   gitHub.readOnlyAuthToken = "2ce24ae6df26d6878d363a8f4e4073c691460657"
-   gitHub.writeAuthToken = System.getenv("GH_WRITE_TOKEN")
+   gitHub.readOnlyAuthToken = "584daca204258e2a397d0c029010732a994382dd"
+   gitHub.writeAuthToken = System.getenv("GITHUB_WRITE_TOKEN")
 }
 
 allprojects {
@@ -14,6 +14,7 @@ allprojects {
        //Bintray configuration is handled by JFrog Bintray Gradle Plugin
        //For reference see the official documentation: https://github.com/bintray/gradle-bintray-plugin
        bintray {
+           user = System.getenv("BINTRAY_USER_NAME")
            key = System.getenv("BINTRAY_API_KEY")
 
            pkg {
@@ -22,6 +23,14 @@ allprojects {
                licenses = ['EPL-2.0']
                vcsUrl = 'https://github.com/junit-pioneer/junit-pioneer.git'
                labels = ['testing', 'junit', 'extensions']
+
+               version {
+                   mavenCentralSync {
+                       sync = false
+                       user = System.getenv('NEXUS_USERNAME')
+                       password = System.getenv('NEXUS_PASSWORD')
+                   }
+               }
            }
        }
    }
