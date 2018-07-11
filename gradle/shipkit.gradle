@@ -6,6 +6,9 @@ shipkit {
    gitHub.repository = 'junit-pioneer/junit-pioneer' // https://github.com/junit-pioneer/junit-pioneer
    gitHub.readOnlyAuthToken = '584daca204258e2a397d0c029010732a994382dd'
    gitHub.writeAuthToken = System.getenv('GITHUB_WRITE_TOKEN')
+
+   // Needed for uploading to Maven Central
+   team.developers = ['nicolaiparlog:Nicolai Parlog']
 }
 
 allprojects {
@@ -26,8 +29,8 @@ allprojects {
                version {
                    mavenCentralSync {
                        sync = true
-                       user = System.getenv('NEXUS_USERNAME')
-                       password = System.getenv('NEXUS_PASSWORD')
+                       user = System.getenv('NEXUS_TOKEN_USERNAME')
+                       password = System.getenv('NEXUS_TOKEN_PASSWORD')
                    }
                }
            }

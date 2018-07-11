@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'org.junit-pioneer'
-
+description = 'JUnit 5 Extension Pack'
 sourceCompatibility = 1.8
 
 ext {
