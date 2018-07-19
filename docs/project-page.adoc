@@ -1,15 +1,44 @@
 ---
-excerpt: 'JUnit 5 extension pack, pushing the frontiers on Jupiter.<br /> <small><a href="https://github.com/junit-pioneer/junit-pioneer/releases">First release coming soon!</a></small><br /><br /> {::nomarkdown}<iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=fork&count=true&size=large" frameborder="0" scrolling="0" width="158px" height="30px"></iframe>{:/nomarkdown}'
+excerpt: '<p>JUnit 5 extension pack, pushing the frontiers on Jupiter.</p> <small>Released on <a href="https://github.com/junit-pioneer/junit-pioneer/releases">GitHub</a>, <a href="https://jcenter.bintray.com/org/junit-pioneer/junit-pioneer/">JCenter</a>, and <a href="http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.junit-pioneer%22%20a%3A%22junit-pioneer%22">Maven Central</a> under<br /><code class="coordinates">org.junit-pioneer : junit-pioneer</code></small><br/><br/> {::nomarkdown}<iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=watch&count=true&size=large&v=2" frameborder="0" scrolling="0" width="145px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=star&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=fork&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe>{:/nomarkdown}'
 ---
 :page-layout: single
 :page-permalink: /junit-pioneer/
 :page-header: { overlay_image: {site-images}/pioneer-full.jpg }
 :page-title: JUnit Pioneer
 
-JUnit Pioneer is an http://blog.codefx.org/design/architecture/junit-5-extension-model/[extension pack] for JUnit 5 or, to be http://blog.codefx.org/design/architecture/junit-5-architecture/[more precise], for the Jupiter engine.
-It is currently being set up, so this site as well as the repo is a little shy on content - we hope to fix that soon!
+JUnit Pioneer is an https://blog.codefx.org/design/architecture/junit-5-extension-model/[extension pack] for https://junit.org/junit5/[JUnit 5] or, https://blog.codefx.org/design/architecture/junit-5-architecture/[to be more precise], for the Jupiter engine.
+It's still pretty young, but it already has https://junit-pioneer.org/docs/[a few features] and is continuously released with more.
 
-There are various ways to help us get there if you're interested:
+
+== Quick start
+
+Determine the latest version (e.g. on http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.junit-pioneer%22%20a%3A%22junit-pioneer%22"[Maven Central]) and add Pioneer as a test dependency.
+
+Maven:
+
+[source,xml]
+----
+<dependency>
+	<groupId>org.junit-pioneer</groupId>
+	<artifactId>junit-pioneer</artifactId>
+	<version><!-- ... --><version>
+	<scope>test</scope>
+</dependency>
+----
+
+Gradle:
+
+[source,groovy]
+----
+testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /* ... */
+----
+
+Done, you're good to go! 👍
+
+
+== Contributing
+
+There are various ways to help us improve JUnit Pioneer if you're interested:
 
 * if you have an idea for an extension you could make good use of, https://github.com/junit-pioneer/junit-pioneer/issues/new[open an issue]
 * if you already wrote some code and would like to release it as part of JUnit Pioneer, which is an awesome idea, please also https://github.com/junit-pioneer/junit-pioneer/issues/new[open an issue] (rather than a pull request)
