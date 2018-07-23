@@ -2,9 +2,10 @@
 
 <img src="docs/project-logo.jpg" align="right" width="150px"/>
 
+[![Latest Junit Pioneer on Maven Central](https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat)](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer)
 [![Travis build status](https://api.travis-ci.org/junit-pioneer/junit-pioneer.svg?branch=master)](https://travis-ci.org/junit-pioneer/junit-pioneer)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/ijrlfaa2fpnxwm3r?svg=true)](https://ci.appveyor.com/project/nicolaiparlog/junit-pioneer)
-
+ 
 A melting pot for all kinds of extensions to
 [JUnit 5](https://github.com/junit-team/junit5), particular to its Jupiter API.
 
@@ -20,13 +21,11 @@ To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its i
 
 ## Getting on Board
 
-There were no [releases](https://github.com/junit-pioneer/junit-pioneer/releases) to Maven Central, yet, but every successful build on `master` releases a snapshot [to Sonatype's snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/org/junit-pioneer/junit-pioneer/).
-
-Coordinates:
+JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases), [JCenter](https://jcenter.bintray.com/org/junit-pioneer/junit-pioneer/), and [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.junit-pioneer%22%20a%3A%22junit-pioneer%22). Coordinates:
 
 * group ID: `org.junit-pioneer`
 * artifact ID: `junit-pioneer`
-* version `0.1-SNAPSHOT`
+* version: [![Latest Junit Pioneer on Maven Central](https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat)](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer)
 
 For Maven:
 
@@ -34,14 +33,15 @@ For Maven:
 <dependency>
 	<groupId>org.junit-pioneer</groupId>
 	<artifactId>junit-pioneer</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version><!--...--></version>
+	<scope>test</scope>
 </dependency>
 ```
 
 For Gradle:
 
-```
-testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: '0.1-SNAPSHOT'
+```groovy
+testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
 ```
 
 ## Contributing
