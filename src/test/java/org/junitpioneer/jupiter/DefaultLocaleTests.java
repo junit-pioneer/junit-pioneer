@@ -70,7 +70,7 @@ class DefaultLocaleTests {
 	@DefaultLocale(language = "en", variant = "gb")
 	@Test
 	@DisplayName("fails when variant is set but country is not")
-	void failsWhenVariantIsSetButCountryIsNotSet() throws Exception {
+	void failsWhenVariantIsSetButCountryIsNotSet() {
 		assertEquals(new Locale("en_EN"), Locale.getDefault());
 	}
 
