@@ -13,27 +13,37 @@ package org.junitpioneer.jupiter;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-public class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
+class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
 	private Locale defaultLocale;
 
 	@Override
+	public void beforeAll(final ExtensionContext context) throws Exception {
+		setDefaultLocale(context);
+	}
+
+	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		defaultLocale = Locale.getDefault();
+		setDefaultLocale(context);
+	}
+
+	private void setDefaultLocale(final ExtensionContext context) {
+		saveDefaultLocale();
 
 		Locale configuredLocale = readLocaleFromAnnotation(context);
 
 		Locale.setDefault(configuredLocale);
 	}
 
-	@Override
-	public void afterEach(ExtensionContext context) throws Exception {
-		Locale.setDefault(defaultLocale);
+	private void saveDefaultLocale() {
+		defaultLocale = Locale.getDefault();
 	}
 
 	private Locale readLocaleFromAnnotation(ExtensionContext context) {
@@ -57,5 +67,19 @@ public class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCall
 		else {
 			return new Locale(annotation.language());
 		}
+	}
+
+	@Override
+	public void afterEach(ExtensionContext context) throws Exception {
+		resetDefaultLocale();
+	}
+
+	@Override
+	public void afterAll(final ExtensionContext context) throws Exception {
+		resetDefaultLocale();
+	}
+
+	private void resetDefaultLocale() {
+		Locale.setDefault(defaultLocale);
 	}
 }
