@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
@@ -39,6 +40,22 @@ public class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCall
 		Optional<DefaultLocale> annotation = context.getElement().flatMap(
 			elem -> Optional.of(elem.getAnnotation(DefaultLocale.class)));
 
-		return annotation.map(DefaultLocale::value).map(Locale::new).orElse(Locale.getDefault());
+		return annotation.map(DefaultLocaleExtension::createLocale).orElse(Locale.getDefault());
+	}
+
+	private static Locale createLocale(DefaultLocale annotation) {
+		if (!annotation.country().isEmpty() && !annotation.variant().isEmpty()) {
+			return new Locale(annotation.language(), annotation.country(), annotation.variant());
+		}
+		else if (!annotation.country().isEmpty()) {
+			return new Locale(annotation.language(), annotation.country());
+		}
+		else if (!annotation.variant().isEmpty()) {
+			throw new ExtensionConfigurationException(
+				"@DefaultLocale.country must not be empty when @DefaultLocale.variant is set!");
+		}
+		else {
+			return new Locale(annotation.language());
+		}
 	}
 }

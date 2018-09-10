@@ -22,5 +22,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(DefaultLocaleExtension.class)
 public @interface DefaultLocale {
 
-	String value();
+	String language();
+
+	String country() default "";
+
+	String variant() default "";
 }
