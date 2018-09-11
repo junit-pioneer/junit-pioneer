@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.support.AnnotationSupport;
 
 class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
@@ -46,8 +47,8 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	}
 
 	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
-		Optional<DefaultTimeZone> annotation = context.getElement().flatMap(
-			elem -> Optional.ofNullable(elem.getAnnotation(DefaultTimeZone.class)));
+		Optional<DefaultTimeZone> annotation = AnnotationSupport.findAnnotation(context.getElement(),
+			DefaultTimeZone.class);
 
 		return annotation.map(DefaultTimeZone::value).map(TimeZone::getTimeZone).orElse(TimeZone.getDefault());
 	}

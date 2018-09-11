@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.support.AnnotationSupport;
 
 class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
@@ -47,8 +48,8 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	}
 
 	private Locale readLocaleFromAnnotation(ExtensionContext context) {
-		Optional<DefaultLocale> annotation = context.getElement().flatMap(
-			elem -> Optional.ofNullable(elem.getAnnotation(DefaultLocale.class)));
+		Optional<DefaultLocale> annotation = AnnotationSupport.findAnnotation(context.getElement(),
+			DefaultLocale.class);
 
 		return annotation.map(DefaultLocaleExtension::createLocale).orElse(Locale.getDefault());
 	}
