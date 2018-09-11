@@ -48,7 +48,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	private Locale readLocaleFromAnnotation(ExtensionContext context) {
 		Optional<DefaultLocale> annotation = context.getElement().flatMap(
-			elem -> Optional.of(elem.getAnnotation(DefaultLocale.class)));
+			elem -> Optional.ofNullable(elem.getAnnotation(DefaultLocale.class)));
 
 		return annotation.map(DefaultLocaleExtension::createLocale).orElse(Locale.getDefault());
 	}

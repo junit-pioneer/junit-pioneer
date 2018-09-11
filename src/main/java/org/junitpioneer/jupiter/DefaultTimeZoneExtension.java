@@ -47,7 +47,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
 		Optional<DefaultTimeZone> annotation = context.getElement().flatMap(
-			elem -> Optional.of(elem.getAnnotation(DefaultTimeZone.class)));
+			elem -> Optional.ofNullable(elem.getAnnotation(DefaultTimeZone.class)));
 
 		return annotation.map(DefaultTimeZone::value).map(TimeZone::getTimeZone).orElse(TimeZone.getDefault());
 	}
