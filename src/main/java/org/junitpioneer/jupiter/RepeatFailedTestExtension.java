@@ -6,19 +6,17 @@ import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Stream.concat;
 import static java.util.stream.StreamSupport.stream;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
@@ -45,8 +43,9 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
 		// this `context` (M) is a child of the context passed to `provideTestTemplateInvocationContexts` (T),
 		// which means M's store content is invisible to T's store; this can be fixed by using T's store here
-		// TODO: throw proper exception
-		ExtensionContext templateContext = context.getParent().orElseThrow(IllegalStateException::new);
+		ExtensionContext templateContext = context.getParent()
+				.orElseThrow(() -> new IllegalStateException(
+						"Extension context \"" + context + "\" should have a parent context."));
 		repeaterFor(templateContext).failed(throwable);
 	}
 
@@ -89,11 +88,18 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		}
 
 		private void failTest() {
-			// TODO provide proper message - like stack traces
-			String message = exceptionsSoFar.stream()
-					.map(Throwable::getMessage)
-					.collect(joining("\n"));
-			throw new AssertionError(message);
+			StringWriter stringer = new StringWriter();
+			writeFailureMessageInto(stringer);
+			throw new AssertionError(stringer.toString());
+		}
+
+		private void writeFailureMessageInto(StringWriter stringer) {
+			PrintWriter printer = new PrintWriter(stringer);
+			printer.append("Each iteration of the repeated test failed.\n");
+			for (int i = 0; i < exceptionsSoFar.size(); i++) {
+				printer.append("\n---- EXECUTION #" + i + " ----\n");
+				exceptionsSoFar.get(i).printStackTrace(printer);
+			}
 		}
 
 		@Override
