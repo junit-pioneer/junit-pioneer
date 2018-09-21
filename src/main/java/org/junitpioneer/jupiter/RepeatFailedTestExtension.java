@@ -1,10 +1,14 @@
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
+import org.junit.platform.commons.logging.Logger;
+import org.junit.platform.commons.logging.LoggerFactory;
+import org.junitpioneer.jupiter.RepeatFailedTest.LogLevel;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -12,6 +16,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.Spliterator.ORDERED;
@@ -62,24 +68,47 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 	private static class FailedTestRepeater implements Iterator<RepeatFailedTestInvocationContext> {
 
 		private final int maxRepetitions;
+		private final BiConsumer<Throwable, Supplier<String>> logger;
+
 		private int repetitionsSoFar;
 		private final List<Throwable> exceptionsSoFar;
 
-		private FailedTestRepeater(int maxRepetitions) {
+		private FailedTestRepeater(int maxRepetitions, LogLevel level) {
 			this.maxRepetitions = maxRepetitions;
 			this.repetitionsSoFar = 0;
 			this.exceptionsSoFar = new ArrayList<>();
+			this.logger = createLogger(level);
+		}
+
+		private BiConsumer<Throwable, Supplier<String>> createLogger(LogLevel level) {
+			Logger logger = LoggerFactory.getLogger(RepeatFailedTest.class);
+			//@formatter:off
+			switch (level) {
+				case OFF:     return (__, ___) -> { };
+				case FINER:   return logger::trace;
+				case FINE:    return logger::debug;
+				case CONFIG:  return logger::config;
+				case INFO:    return logger::info;
+				case WARNING: return logger::warn;
+				case SEVERE:  return logger::error;
+				default: throw new IllegalArgumentException("Unknown log level " + level);
+			}
+			//@formatter:on
 		}
 
 		static FailedTestRepeater createFor(Method repeatedTest) {
-			int maxRepetitions = findAnnotation(repeatedTest, RepeatFailedTest.class)
-					.map(RepeatFailedTest::value)
-					.orElseThrow(IllegalStateException::new);
-			return new FailedTestRepeater(maxRepetitions);
+			//@formatter:off
+			RepeatFailedTest repeatFailedTest = findAnnotation(repeatedTest, RepeatFailedTest.class)
+					.orElseThrow(() -> new IllegalStateException("@RepeatFailedTest is mising."));
+			return new FailedTestRepeater(
+					repeatFailedTest.value(),
+					repeatFailedTest.logFailedTestOn());
+			//@formatter:on
 		}
 
 		void failed(Throwable exception) throws Throwable {
-			// TODO: throw if in "always fail" mode, log otherwise
+			// TODO: throw if in "always fail" mode
+			logger.accept(exception, () -> "Execution #" + repetitionsSoFar + " failed.");
 			exceptionsSoFar.add(exception);
 
 			boolean allRepetitionsFailed = exceptionsSoFar.size() == maxRepetitions;

@@ -19,4 +19,45 @@ public @interface RepeatFailedTest {
 
 	int value();
 
+	LogLevel logFailedTestOn() default LogLevel.OFF;
+
+	enum LogLevel {
+
+		/**
+		 * @see  java.util.logging.Level#OFF
+		 */
+		OFF,
+
+		/**
+		 * @see  java.util.logging.Level#FINER
+		 */
+		FINER,
+
+		/**
+		 * @see  java.util.logging.Level#FIN
+		 */
+		FINE,
+
+		/**
+		 * @see  java.util.logging.Level#CONFIG
+		 */
+		CONFIG,
+
+		/**
+		 * @see  java.util.logging.Level#INFO
+		 */
+		INFO,
+
+		/**
+		 * @see  java.util.logging.Level#WARNING
+		 */
+		WARNING,
+
+		/**
+		 * @see  java.util.logging.Level#SEVERE
+		 */
+		SEVERE;
+
+	}
+
 }
