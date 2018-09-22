@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.util.Objects.requireNonNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -253,6 +254,7 @@ public class TempDirectory implements ParameterResolver {
 
 		CloseablePath(Path dir) {
 			this.dir = dir;
+			deleteOnExit(dir);
 		}
 
 		Path get() {
@@ -261,6 +263,20 @@ public class TempDirectory implements ParameterResolver {
 
 		@Override
 		public void close() throws IOException {
+			Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
+
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
+					deleteOnExit(file);
+					return CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+					deleteOnExit(dir);
+					return CONTINUE;
+				}
+			});
 			Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
 
 				@Override
@@ -285,6 +301,22 @@ public class TempDirectory implements ParameterResolver {
 					return CONTINUE;
 				}
 			});
+		}
+
+		static void deleteOnExit(Path path) {
+			if (path == null) {
+				return;
+			}
+			try {
+				File file = path.toFile();
+				if (file == null) {
+					return;
+				}
+				file.deleteOnExit();
+			}
+			catch (UnsupportedOperationException e) {
+				// file system does not support Path#toFile -> do nothing
+			}
 		}
 	}
 }
