@@ -7,7 +7,11 @@ After the annotated element has been executed the initial default value is resto
 
 == `@DefaultLocale`
 
-The default `Locale` is specified according to the constructors of https://docs.oracle.com/javase/10/docs/api/java/util/Locale.html[Locale].
+The default `Locale` is specified according to https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#constructor.summary[its constructors] - it needs either:
+
+* `language` or
+* `language` and `country` or
+* `language`, `country`, and `variant`
 
 [source,java]
 ----
@@ -30,8 +34,8 @@ void test_with_lanuage_and_country_and_vairant() {
 }
 ----
 
-Note that variant can only be specified when the country is also specified.
-If a variant is specified without a country an `ExtentionConfigurationException` will be thrown.
+Note that `variant` can only be specified if `country` is also specified.
+If `variant` is specified without `country`, an `ExtentionConfigurationException` will be thrown.
 
 Any method level `@DefaultLocale` configurations will override class level configurations.
 
@@ -55,7 +59,7 @@ class MyLocaleTests {
 
 == `@DefaultTimeZone`
 
-The default `TimeZone` is specified according to the https://docs.oracle.com/javase/10/docs/api/java/util/TimeZone.html#getTimeZone(java.lang.String)[TimeZone.getTimeZone(String)] method.
+The default `TimeZone` is specified according to the https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html#getTimeZone(java.lang.String)[TimeZone.getTimeZone(String)] method.
 
 [source,java]
 ----
