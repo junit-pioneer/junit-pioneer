@@ -25,7 +25,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	private TimeZone defaultTimeZone;
 
 	@Override
-	public void beforeAll(final ExtensionContext context) {
+	public void beforeAll(ExtensionContext context) {
 		setDefaultTimeZone(context);
 	}
 
@@ -34,7 +34,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 		setDefaultTimeZone(context);
 	}
 
-	private void setDefaultTimeZone(final ExtensionContext context) {
+	private void setDefaultTimeZone(ExtensionContext context) {
 		saveDefaultTimeZone();
 
 		TimeZone configuredTimeZone = readTimeZoneFromAnnotation(context);
@@ -59,7 +59,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	}
 
 	@Override
-	public void afterAll(final ExtensionContext context) {
+	public void afterAll(ExtensionContext context) {
 		resetDefaultTimeZone();
 	}
 

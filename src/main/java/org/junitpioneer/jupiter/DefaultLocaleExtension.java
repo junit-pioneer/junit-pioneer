@@ -26,7 +26,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	private Locale defaultLocale;
 
 	@Override
-	public void beforeAll(final ExtensionContext context) {
+	public void beforeAll(ExtensionContext context) {
 		setDefaultLocale(context);
 	}
 
@@ -35,7 +35,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 		setDefaultLocale(context);
 	}
 
-	private void setDefaultLocale(final ExtensionContext context) {
+	private void setDefaultLocale(ExtensionContext context) {
 		saveDefaultLocale();
 
 		Locale configuredLocale = readLocaleFromAnnotation(context);
@@ -76,7 +76,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	}
 
 	@Override
-	public void afterAll(final ExtensionContext context) {
+	public void afterAll(ExtensionContext context) {
 		resetDefaultLocale();
 	}
 

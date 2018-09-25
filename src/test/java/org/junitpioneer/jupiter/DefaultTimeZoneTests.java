@@ -28,7 +28,7 @@ class DefaultTimeZoneTests {
 	@BeforeAll
 	static void globalSetUp() {
 		DEFAULT_TIMEZONE_BEFORE_TEST = TimeZone.getDefault();
-		final TimeZone utc = TimeZone.getTimeZone("UTC");
+		TimeZone utc = TimeZone.getTimeZone("UTC");
 		if (!DEFAULT_TIMEZONE_BEFORE_TEST.equals(utc)) {
 			TimeZone.setDefault(utc);
 		}
