@@ -18,11 +18,14 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
-	private TimeZone defaultTimeZone;
+	private static final Namespace NAMESPACE = Namespace.create(DefaultTimeZoneExtension.class);
+
+	private static final String KEY = "DefaultTimeZone";
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
@@ -35,13 +38,13 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	}
 
 	private void setDefaultTimeZone(ExtensionContext context) {
-		saveDefaultTimeZone();
+		storeDefaultTimeZone(context);
 		TimeZone configuredTimeZone = readTimeZoneFromAnnotation(context);
 		TimeZone.setDefault(configuredTimeZone);
 	}
 
-	private void saveDefaultTimeZone() {
-		defaultTimeZone = TimeZone.getDefault();
+	private void storeDefaultTimeZone(ExtensionContext context) {
+		context.getStore(NAMESPACE).put(KEY, TimeZone.getDefault());
 	}
 
 	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
@@ -52,15 +55,15 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		resetDefaultTimeZone();
+		resetDefaultTimeZone(context);
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) {
-		resetDefaultTimeZone();
+		resetDefaultTimeZone(context);
 	}
 
-	private void resetDefaultTimeZone() {
-		TimeZone.setDefault(defaultTimeZone);
+	private void resetDefaultTimeZone(ExtensionContext context) {
+		TimeZone.setDefault((TimeZone) context.getStore(NAMESPACE).get(KEY));
 	}
 }
