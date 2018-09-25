@@ -37,9 +37,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	private void setDefaultLocale(ExtensionContext context) {
 		saveDefaultLocale();
-
 		Locale configuredLocale = readLocaleFromAnnotation(context);
-
 		Locale.setDefault(configuredLocale);
 	}
 
@@ -50,7 +48,6 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	private Locale readLocaleFromAnnotation(ExtensionContext context) {
 		Optional<DefaultLocale> annotation = AnnotationSupport.findAnnotation(context.getElement(),
 			DefaultLocale.class);
-
 		return annotation.map(DefaultLocaleExtension::createLocale).orElse(Locale.getDefault());
 	}
 

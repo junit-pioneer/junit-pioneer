@@ -36,9 +36,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	private void setDefaultTimeZone(ExtensionContext context) {
 		saveDefaultTimeZone();
-
 		TimeZone configuredTimeZone = readTimeZoneFromAnnotation(context);
-
 		TimeZone.setDefault(configuredTimeZone);
 	}
 
@@ -49,7 +47,6 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
 		Optional<DefaultTimeZone> annotation = AnnotationSupport.findAnnotation(context.getElement(),
 			DefaultTimeZone.class);
-
 		return annotation.map(DefaultTimeZone::value).map(TimeZone::getTimeZone).orElse(TimeZone.getDefault());
 	}
 
