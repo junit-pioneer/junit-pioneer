@@ -15,12 +15,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 @DisplayName("TimeZone extension")
-class DefaultTimeZoneTests {
+class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 
 	private static TimeZone TEST_DEFAULT_TIMEZONE;
 	private static TimeZone DEFAULT_TIMEZONE_BEFORE_TEST;
@@ -38,28 +43,71 @@ class DefaultTimeZoneTests {
 		TEST_DEFAULT_TIMEZONE = TimeZone.getDefault();
 	}
 
-	@Test
-	@DisplayName("does nothing when annotation is not present")
-	void doesNothingWhenAnnotationNotPresent() {
-		assertEquals(TEST_DEFAULT_TIMEZONE, TimeZone.getDefault());
-	}
-
-	@DefaultTimeZone("CET")
-	@Test
-	@DisplayName("sets the default time zone using an abbreviation")
-	void setsTimeZoneFromAbbreviation() {
-		assertEquals(TimeZone.getTimeZone("CET"), TimeZone.getDefault());
-	}
-
-	@DefaultTimeZone("America/Los_Angeles")
-	@Test
-	@DisplayName("sets the default time zone using a full name")
-	void setsTimeZoneFromFullName() {
-		assertEquals(TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getDefault());
-	}
-
 	@AfterAll
 	static void globalTearDown() {
 		TimeZone.setDefault(DEFAULT_TIMEZONE_BEFORE_TEST);
+	}
+
+	@Nested
+	@DisplayName("when applied on the method level")
+	class MethodLevelTests {
+
+		@Test
+		@DisplayName("does nothing when annotation is not present")
+		void doesNothingWhenAnnotationNotPresent() {
+			assertEquals(TEST_DEFAULT_TIMEZONE, TimeZone.getDefault());
+		}
+
+		@DefaultTimeZone("CET")
+		@Test
+		@DisplayName("sets the default time zone using an abbreviation")
+		void setsTimeZoneFromAbbreviation() {
+			assertEquals(TimeZone.getTimeZone("CET"), TimeZone.getDefault());
+		}
+
+		@DefaultTimeZone("America/Los_Angeles")
+		@Test
+		@DisplayName("sets the default time zone using a full name")
+		void setsTimeZoneFromFullName() {
+			assertEquals(TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getDefault());
+		}
+	}
+
+	@Nested
+	@DisplayName("applied on the class level")
+	class ClassLevelTests {
+
+		@BeforeEach
+		void setUp() {
+			assertEquals(TEST_DEFAULT_TIMEZONE, TimeZone.getDefault());
+		}
+
+		@Test
+		@DisplayName("should execute tests with configured TimeZone")
+		void shouldExecuteTestsWithConfiguredTimeZone() {
+			ExecutionEventRecorder eventRecorder = executeTestsForClass(DefaultTimeZoneTests.ClassLevelTestCase.class);
+
+			assertEquals(2, eventRecorder.getTestSuccessfulCount());
+		}
+
+		@AfterEach
+		void tearDown() {
+			assertEquals(TEST_DEFAULT_TIMEZONE, TimeZone.getDefault());
+		}
+	}
+
+	@DefaultTimeZone("GMT-8:00")
+	static class ClassLevelTestCase {
+
+		@Test
+		void shouldExecuteWithClassLevelTimeZone() {
+			assertEquals(TimeZone.getTimeZone("GMT-8:00"), TimeZone.getDefault());
+		}
+
+		@Test
+		@DefaultTimeZone("GMT-12:00")
+		void shouldBeOverriddenWithMethodLevelTimeZone() {
+			assertEquals(TimeZone.getTimeZone("GMT-12:00"), TimeZone.getDefault());
+		}
 	}
 }
