@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -59,9 +58,12 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	}
 
 	private Locale readLocaleFromAnnotation(ExtensionContext context) {
-		Optional<DefaultLocale> annotation = AnnotationSupport.findAnnotation(context.getElement(),
-			DefaultLocale.class);
-		return annotation.map(DefaultLocaleExtension::createLocale).orElse(Locale.getDefault());
+		//@formatter:off
+		return AnnotationSupport
+				.findAnnotation(context.getElement(), DefaultLocale.class)
+				.map(DefaultLocaleExtension::createLocale)
+				.orElseThrow(() -> new ExtensionConfigurationException("TODO"));
+		//@formatter:on
 	}
 
 	private static Locale createLocale(DefaultLocale annotation) {

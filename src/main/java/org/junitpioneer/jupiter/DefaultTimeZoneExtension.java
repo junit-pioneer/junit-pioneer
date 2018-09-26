@@ -10,13 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
-import java.util.Optional;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -58,9 +58,13 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	}
 
 	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
-		Optional<DefaultTimeZone> annotation = AnnotationSupport.findAnnotation(context.getElement(),
-			DefaultTimeZone.class);
-		return annotation.map(DefaultTimeZone::value).map(TimeZone::getTimeZone).orElse(TimeZone.getDefault());
+		//@formatter:off
+		return AnnotationSupport
+				.findAnnotation(context.getElement(), DefaultTimeZone.class)
+				.map(DefaultTimeZone::value)
+				.map(TimeZone::getTimeZone)
+				.orElseThrow(() -> new ExtensionConfigurationException("TODO"));
+		//@formatter:on
 	}
 
 	@Override
