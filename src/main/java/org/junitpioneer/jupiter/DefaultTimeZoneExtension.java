@@ -63,7 +63,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 				.findAnnotation(context.getElement(), DefaultTimeZone.class)
 				.map(DefaultTimeZone::value)
 				.map(TimeZone::getTimeZone)
-				.orElseThrow(() -> new ExtensionConfigurationException("TODO"));
+				.orElseThrow(() -> new ExtensionConfigurationException("The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
 		//@formatter:on
 	}
 

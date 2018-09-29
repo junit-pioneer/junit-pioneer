@@ -62,7 +62,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 		return AnnotationSupport
 				.findAnnotation(context.getElement(), DefaultLocale.class)
 				.map(DefaultLocaleExtension::createLocale)
-				.orElseThrow(() -> new ExtensionConfigurationException("TODO"));
+				.orElseThrow(() -> new ExtensionConfigurationException("The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
 		//@formatter:on
 	}
 
