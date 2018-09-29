@@ -95,6 +95,6 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	}
 
 	private void resetDefaultLocale(ExtensionContext context) {
-		Locale.setDefault((Locale) context.getStore(NAMESPACE).get(KEY));
+		Locale.setDefault(context.getStore(NAMESPACE).get(KEY, Locale.class));
 	}
 }

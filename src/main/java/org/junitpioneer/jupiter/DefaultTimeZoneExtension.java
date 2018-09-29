@@ -80,6 +80,6 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	}
 
 	private void resetDefaultTimeZone(ExtensionContext context) {
-		TimeZone.setDefault((TimeZone) context.getStore(NAMESPACE).get(KEY));
+		TimeZone.setDefault(context.getStore(NAMESPACE).get(KEY, TimeZone.class));
 	}
 }
