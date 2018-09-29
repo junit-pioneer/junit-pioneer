@@ -32,13 +32,16 @@ class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 
 	@BeforeAll
 	static void globalSetUp() {
+		// the extension sets UTC as test time zone unless it is already
+		// the system's time zone; in that case it uses GMT
 		DEFAULT_TIMEZONE_BEFORE_TEST = TimeZone.getDefault();
 		TimeZone utc = TimeZone.getTimeZone("UTC");
-		if (!DEFAULT_TIMEZONE_BEFORE_TEST.equals(utc)) {
-			TimeZone.setDefault(utc);
+		TimeZone gmt = TimeZone.getTimeZone("GMT");
+		if (DEFAULT_TIMEZONE_BEFORE_TEST.equals(utc)) {
+			TimeZone.setDefault(gmt);
 		}
 		else {
-			TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+			TimeZone.setDefault(utc);
 		}
 		TEST_DEFAULT_TIMEZONE = TimeZone.getDefault();
 	}
