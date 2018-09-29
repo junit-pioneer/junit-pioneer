@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
 
@@ -21,6 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
@@ -122,6 +125,13 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 			ExecutionEventRecorder eventRecorder = executeTestsForClass(MethodLevelInitializationFailureTestCase.class);
 
 			assertEquals(1, eventRecorder.getTestFailedCount());
+			//@formatter:off
+			Throwable thrown = eventRecorder.getFailedTestFinishedEvents().get(0)
+					.getPayload(TestExecutionResult.class)
+					.flatMap(TestExecutionResult::getThrowable)
+					.orElseThrow(AssertionError::new);
+			//@formatter:on
+			assertTrue(thrown instanceof ExtensionConfigurationException);
 		}
 
 		@Test
@@ -130,6 +140,13 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 			ExecutionEventRecorder eventRecorder = executeTestsForClass(ClassLevelInitializationFailureTestCase.class);
 
 			assertEquals(1, eventRecorder.getContainerFailedCount());
+			//@formatter:off
+			Throwable thrown = eventRecorder.getFailedContainerEvents().get(0)
+					.getPayload(TestExecutionResult.class)
+					.flatMap(TestExecutionResult::getThrowable)
+					.orElseThrow(AssertionError::new);
+			//@formatter:on
+			assertTrue(thrown instanceof ExtensionConfigurationException);
 		}
 	}
 
