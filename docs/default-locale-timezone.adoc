@@ -1,0 +1,97 @@
+:page-title: @DefaultLocale and @DefaultTimeZone
+:page-description: JUnit Jupiter extensions to change the values returned from Locale.getDefault() and TimeZone.getDefault()
+
+The `@DefaultLocale` and `@DefaultTimeZone` annotations can be used to change the values returned from `Locale.getDefault()` and `TimeZone.getDefault()`.
+Both annotations work on the test class level and on the test method level.
+After the annotated element has been executed the initial default value is restored.
+
+== `@DefaultLocale`
+
+The default `Locale` is specified according to https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#constructor.summary[its constructors] - it needs either:
+
+* `language` or
+* `language` and `country` or
+* `language`, `country`, and `variant`
+
+[source,java]
+----
+@Test
+@DefaultLocale(language = "en")
+void test_with_lanuage() {
+    assertEquals(new Locale("en"), Locale.getDefault());
+}
+
+@Test
+@DefaultLocale(language = "en", country = "EN")
+void test_with_lanuage_and_country() {
+    assertEquals(new Locale("en", "EN"), Locale.getDefault());
+}
+
+@Test
+@DefaultLocale(language = "en", country = "EN", variant = "gb")
+void test_with_lanuage_and_country_and_vairant() {
+    assertEquals(new Locale("en", "EN", "gb"), Locale.getDefault());
+}
+----
+
+Note that `variant` can only be specified if `country` is also specified.
+If `variant` is specified without `country`, an `ExtentionConfigurationException` will be thrown.
+
+Any method level `@DefaultLocale` configurations will override class level configurations.
+
+[source,java]
+----
+@DefaultLocale(language = "fr")
+class MyLocaleTests {
+
+    @Test
+    void test_with_class_level_configuration() {
+        assertEquals(new Locale("fr"), Locale.getDefault());
+    }
+
+    @Test
+    @DefaultLocale(language = "en")
+    void test_with_method_level_configuration() {
+        assertEquals(new Locale("en"), Locale.getDefault());
+    }
+}
+----
+
+== `@DefaultTimeZone`
+
+The default `TimeZone` is specified according to the https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html#getTimeZone(java.lang.String)[TimeZone.getTimeZone(String)] method.
+
+[source,java]
+----
+@Test
+@DefaulTimeZone("CET")
+void test_with_short_zone_id() {
+    assertEquals(TimeZone.getTimeZone("CET"), TimeZone.getDefault());
+}
+
+@Test
+@DefaultTimeZone("America/Los_Angeles")
+void test_with_long_zone_id() {
+    assertEquals(TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getDefault());
+}
+----
+
+Any method level `@DefaultTimeZone` configurations will override class level configurations:
+
+[source,java]
+----
+@DefaultTimeZone("CET")
+class MyTimeZoneTests {
+
+    @Test
+    void test_with_class_level_configuration() {
+        assertEquals(TimeZone.getTimeZone("CET"), TimeZone.getDefault());
+    }
+
+    @Test
+    @DefaultTimeZone("America/Los_Angeles")
+    void test_with_method_level_configuration() {
+        assertEquals(TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getDefault());
+    }
+}
+----

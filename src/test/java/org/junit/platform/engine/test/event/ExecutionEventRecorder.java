@@ -134,6 +134,10 @@ public class ExecutionEventRecorder implements EngineExecutionListener {
 		return containerEventsByType(FINISHED).count();
 	}
 
+	public long getContainerFailedCount() {
+		return getFailedContainerEvents().size();
+	}
+
 	public List<ExecutionEvent> getSkippedTestEvents() {
 		return testEventsByType(Type.SKIPPED).collect(toList());
 	}
@@ -144,6 +148,10 @@ public class ExecutionEventRecorder implements EngineExecutionListener {
 
 	public List<ExecutionEvent> getFailedTestFinishedEvents() {
 		return testFinishedEvents(Status.FAILED).collect(toList());
+	}
+
+	public List<ExecutionEvent> getFailedContainerEvents() {
+		return containerFinishedEvents(Status.FAILED).collect(toList());
 	}
 
 	private long getTestFinishedCount(Status status) {
@@ -157,6 +165,11 @@ public class ExecutionEventRecorder implements EngineExecutionListener {
 
 	private Stream<ExecutionEvent> testEventsByType(Type type) {
 		return eventsByTypeAndTestDescriptor(type, TestDescriptor::isTest);
+	}
+
+	private Stream<ExecutionEvent> containerFinishedEvents(Status status) {
+		return containerEventsByType(FINISHED).filter(
+			byPayload(TestExecutionResult.class, where(TestExecutionResult::getStatus, isEqual(status))));
 	}
 
 	private Stream<ExecutionEvent> containerEventsByType(Type type) {
