@@ -39,8 +39,8 @@ public class RangeSourceTests extends AbstractPioneerTestEngineTests {
 
 	@BeforeEach
 	public void populateValues() {
-		expectedValues = IntStream.concat(IntStream.range(0, 10), IntStream.range(-6, -2)).boxed().toArray(
-			Integer[]::new);
+		expectedValues = IntStream.concat(IntStream.range(0, 10),
+			IntStream.rangeClosed(-7, -3).filter(i -> i % 2 == -1)).boxed().toArray(Integer[]::new);
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class RangeSourceTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@ParameterizedTest(name = "{0}")
-		@RangeSource(from = -3, to = -7, step = -1)
+		@RangeSource(from = -3, to = -7, step = -2, closed = true)
 		public void descending(int param) {
 		}
 

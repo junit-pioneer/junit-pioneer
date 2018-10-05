@@ -47,4 +47,9 @@ public @interface RangeSource {
 	 * The size of the step between the {@code from} and the {@code to}.
 	 */
 	int step() default 1;
+
+	/**
+	 * Whether the range is closed (inclusive of the {@link #to()}) or not.
+	 */
+	boolean closed() default false;
 }

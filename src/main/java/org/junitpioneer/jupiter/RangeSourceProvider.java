@@ -32,6 +32,11 @@ public class RangeSourceProvider implements ArgumentsProvider, AnnotationConsume
 	 */
 	private final List<Integer> values = new LinkedList<>();
 
+	/**
+	 * Whether the range is closed or not
+	 */
+	private boolean closed;
+
 	@Override
 	public void accept(RangeSource rangeSource) {
 		Preconditions.condition(rangeSource.step() != 0,
@@ -47,12 +52,14 @@ public class RangeSourceProvider implements ArgumentsProvider, AnnotationConsume
 			() -> String.format("Illegal %s. There's no way to get from %d to %d with a step of %d.",
 				RangeSource.class.getSimpleName(), rangeSource.from(), rangeSource.to(), rangeSource.step()));
 
+		closed = rangeSource.closed();
+
 		// Once (if) Java 8 support is dropped, this boiler-plate can be cleaned up and we can just use
 		// IntStream.iterate(rangeSource.from(), i -> i < rangeSource.to(), i -> i += rangeSource.step());
 		int val = rangeSource.from();
 		int to = rangeSource.to();
 		int step = rangeSource.step();
-		while (val < to && step > 0 || val > to && step < 0) {
+		while (val < to && step > 0 || val > to && step < 0 || closed && val == to) {
 			values.add(val);
 			val += rangeSource.step();
 		}
