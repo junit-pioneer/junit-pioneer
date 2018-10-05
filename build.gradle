@@ -4,6 +4,7 @@ plugins {
     id 'maven-publish'
     id 'com.diffplug.gradle.spotless' version '3.13.0'
     id 'org.shipkit.java' version '2.0.26'
+    id 'at.zierler.yamlvalidator' version '1.5.0'
 }
 
 group 'org.junit-pioneer'
@@ -92,6 +93,13 @@ check.dependsOn javadoc
 // it should ran last, though
 javadoc.shouldRunAfter test
 
+yamlValidator {
+    searchPaths = ['docs']
+    searchRecursive = true
+}
+
+check.dependsOn validateYaml
+
 // the manifest needs to declare the future module name
 jar {
     manifest {
@@ -174,8 +182,8 @@ wrapper {
 }
 
 task triggerSiteBuild(type: org.junitpioneer.gradle.TriggerTravisTask) {
-    travisProject = "junit-pioneer/junit-pioneer.github.io"
-    branch = "grandmaster"
+    travisProject = 'junit-pioneer/junit-pioneer.github.io'
+    branch = 'grandmaster'
     apiToken = travisApiToken
-    message = "Triggered by successful JUnit Pioneer build for %COMMIT"
+    message = 'Triggered by successful JUnit Pioneer build for %COMMIT'
 }
