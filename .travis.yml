@@ -39,7 +39,7 @@ branches:
 script:
   - java -version
   - ./gradlew -version
-  - ./gradlew --refresh-dependencies --stacktrace -Dscan clean build
+  - ./gradlew --refresh-dependencies --stacktrace --scan clean build
 
 deploy:
   - provider: script
