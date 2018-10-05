@@ -1,8 +1,8 @@
   - title: Features
     children:
-      - title: Vintage @Test
+      - title: "Vintage @Test"
         url: /docs/vintage-test/
-      - title: TempDirectory
+      - title: "TempDirectory"
         url: /docs/temp-directory/
-      - title: @DefaultLocale and @DefaultTimeZone
+      - title: "@DefaultLocale and @DefaultTimeZone"
         url: /docs/default-locale-timezone/
