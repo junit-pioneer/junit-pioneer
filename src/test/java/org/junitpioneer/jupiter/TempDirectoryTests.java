@@ -452,6 +452,8 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 				when(path.getFileSystem()).thenReturn(fileSystem);
 				when(path.toAbsolutePath()).thenReturn(path);
 				when(path.resolve(any(Path.class))).thenAnswer(invocation1 -> invocation1.getArgument(0));
+				when(path.toFile()).thenThrow(UnsupportedOperationException.class);
+				when(path.relativize(any(Path.class))).thenAnswer(invocation1 -> invocation1.getArgument(0));
 				return path;
 			});
 		}

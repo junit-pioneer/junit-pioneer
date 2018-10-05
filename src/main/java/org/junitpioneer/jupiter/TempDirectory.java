@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
 import java.lang.annotation.Documented;
@@ -24,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -261,30 +264,69 @@ public class TempDirectory implements ParameterResolver {
 
 		@Override
 		public void close() throws IOException {
+			SortedMap<Path, IOException> failures = deleteAllFilesAndDirectories();
+			if (!failures.isEmpty()) {
+				throw createIOExceptionWithAttachedFailures(failures);
+			}
+		}
+
+		private SortedMap<Path, IOException> deleteAllFilesAndDirectories() throws IOException {
+			SortedMap<Path, IOException> failures = new TreeMap<>();
 			Files.walkFileTree(dir, new SimpleFileVisitor<Path>() {
 
 				@Override
-				public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) throws IOException {
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
 					return deleteAndContinue(file);
 				}
 
 				@Override
-				public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+				public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
 					return deleteAndContinue(dir);
 				}
 
-				private FileVisitResult deleteAndContinue(Path path) throws IOException {
+				private FileVisitResult deleteAndContinue(Path path) {
 					try {
 						Files.delete(path);
 					}
 					catch (IOException ex) {
-						throw new IOException(
-							"Failed to delete temp directory " + dir.toAbsolutePath() + " at: " + path.toAbsolutePath(),
-							ex);
+						failures.put(path, ex);
 					}
 					return CONTINUE;
 				}
 			});
+			return failures;
+		}
+
+		private IOException createIOExceptionWithAttachedFailures(SortedMap<Path, IOException> failures) {
+			// @formatter:off
+			String joinedPaths = failures.keySet().stream()
+					.peek(this::tryToDeleteOnExit)
+					.map(this::relativizeSafely)
+					.map(String::valueOf)
+					.collect(joining(", "));
+			// @formatter:on
+			IOException exception = new IOException("Failed to delete temp directory " + dir.toAbsolutePath()
+					+ ". The following paths could not be deleted (see suppressed exceptions for details): "
+					+ joinedPaths);
+			failures.values().forEach(exception::addSuppressed);
+			return exception;
+		}
+
+		private void tryToDeleteOnExit(Path path) {
+			try {
+				path.toFile().deleteOnExit();
+			}
+			catch (UnsupportedOperationException ignore) {
+			}
+		}
+
+		private Path relativizeSafely(Path path) {
+			try {
+				return dir.relativize(path);
+			}
+			catch (IllegalArgumentException e) {
+				return path;
+			}
 		}
 	}
 }
