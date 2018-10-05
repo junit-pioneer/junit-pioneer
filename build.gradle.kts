@@ -32,6 +32,7 @@ repositories {
 
 dependencies {
     implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.3.2")
+    implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.3.2")
 
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.3.2")
     testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.3.2")
