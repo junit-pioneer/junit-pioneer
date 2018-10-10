@@ -48,12 +48,12 @@ deploy:
     on:
       branch: master
       jdk: oraclejdk8
-  - provider: script
-    skip_cleanup:
-    script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
-    on:
-      branch: master
-      jdk: oraclejdk8
+# - provider: script
+#   skip_cleanup:
+#   script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
+#   on:
+#     branch: master
+#     jdk: oraclejdk8
 
 env:
   global:
