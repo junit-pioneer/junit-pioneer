@@ -22,6 +22,11 @@ local.properties
 *.iws
 /out/
 
+# Visual Studio Code
+
+.factoryPath
+.vscode/
+
 # Gradle
 
 .gradle/
