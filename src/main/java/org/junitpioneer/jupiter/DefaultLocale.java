@@ -44,11 +44,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface DefaultLocale {
 
 	/**
+	 * An language tag string as specified by IETF BCP 47. See
+	 * {@link java.util.Locale#forLanguageTag(String)} for more information
+	 * about valid language tag values.
+	 *
+	 * @since 0.3
+	 */
+	String value() default "";
+
+	/**
 	 * An ISO 639 alpha-2 or alpha-3 language code, or a language subtag up to
 	 * 8 characters in length. See the {@link java.util.Locale} class
 	 * description about valid language values.
 	 */
-	String language();
+	String language() default "";
 
 	/**
 	 * An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code. See
