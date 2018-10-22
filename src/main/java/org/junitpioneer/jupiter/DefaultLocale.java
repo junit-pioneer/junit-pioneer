@@ -22,12 +22,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * returned by {@link java.util.Locale#getDefault()} for a test execution.
  *
  * <p>The {@link java.util.Locale} to set as the default locale can be
- * configured using only a language, a language and a country, or a language, a
- * country and a variant. If {@link #variant()} is set, but {@link #country()}
- * is not, a
- * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will
- * be thrown. After the annotated element has been executed, the default
- * {@code Locale} will be restored to its original value.</p>
+ * configured in several ways:
+ *
+ * <ul>
+ *   <li>using a {@link java.util.Locale#forLanguageTag(String) language tag}</li>
+ *   <li>using a {@link java.util.Locale#Locale(String) language}</li>
+ *   <li>using a {@link java.util.Locale#Locale(String, String) language and a county}</li>
+ *   <li>using a {@link java.util.Locale#Locale(String, String, String) language, a county and a variant}</li>
+ * </ul>
+ *
+ * If a language tag is set, none of the other fields must be set. Otherwise an
+ * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will be thrown.
+ * Specifying a {@link #variant()} but no {@link #country()} will also cause an
+ * {@code ExtensionConfigurationException}. After the annotated element has been
+ * executed, the default {@code Locale} will be restored to its original value.</p>
  *
  * <p>{@code @DefaultLocale} can be used on the method and on the class level.
  * If a class is annotated, the configured {@code Locale} will be the default
