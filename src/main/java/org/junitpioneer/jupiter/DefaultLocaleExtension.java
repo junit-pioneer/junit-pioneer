@@ -97,7 +97,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 			return new Locale(language);
 		}
 		else {
-			throw new ExtensionConfigurationException("@DefaultLocale not configured correctly!");
+			throw new ExtensionConfigurationException("@DefaultLocale not configured correctly");
 		}
 	}
 
