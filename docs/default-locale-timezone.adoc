@@ -46,7 +46,7 @@ void test_with_lanuage_and_country_and_vairant() {
 ----
 
 Note that mixing language tag configuration and constructor based configuration will cause an
-`ExtentionConfigurationException` to be thrown. Furthermore a `variant` can only be specified
+`ExtensionConfigurationException` to be thrown. Furthermore a `variant` can only be specified
 if `country` is also specified. If `variant` is specified without `country`, an
 `ExtensionConfigurationException` will be thrown.
 
