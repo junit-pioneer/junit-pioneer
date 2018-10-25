@@ -78,7 +78,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	private static Locale createFromLanguageTag(DefaultLocale annotation) {
 		if (!annotation.language().isEmpty() || !annotation.country().isEmpty() || !annotation.variant().isEmpty()) {
 			throw new ExtensionConfigurationException(
-				"@DefaultLocale can only be used with language tag if language, country and variant are not set!");
+				"@DefaultLocale can only be used with language tag if language, country, and variant are not set");
 		}
 		return Locale.forLanguageTag(annotation.value());
 	}
