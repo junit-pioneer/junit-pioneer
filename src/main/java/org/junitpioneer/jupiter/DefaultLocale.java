@@ -28,7 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *   <li>using a {@link java.util.Locale#forLanguageTag(String) language tag}</li>
  *   <li>using a {@link java.util.Locale#Locale(String) language}</li>
  *   <li>using a {@link java.util.Locale#Locale(String, String) language and a county}</li>
- *   <li>using a {@link java.util.Locale#Locale(String, String, String) language, a county and a variant}</li>
+ *   <li>using a {@link java.util.Locale#Locale(String, String, String) language, a county, and a variant}</li>
  * </ul>
  *
  * If a language tag is set, none of the other fields must be set. Otherwise an
