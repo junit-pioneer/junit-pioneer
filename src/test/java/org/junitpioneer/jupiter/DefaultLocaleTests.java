@@ -232,6 +232,6 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 				.flatMap(TestExecutionResult::getThrowable)
 				.orElseThrow(AssertionError::new);
 		//@formatter:on
-		assertTrue(thrown instanceof ExtensionConfigurationException);
+		assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
 	}
 }
