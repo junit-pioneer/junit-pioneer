@@ -183,7 +183,6 @@ publishing {
 }
 
 wrapper {
-    gradleVersion = '4.8'
     jarFile = file('.infra/gradle/gradle-wrapper.jar')
 }
 
