@@ -98,8 +98,8 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 		}
 		else {
 			throw new ExtensionConfigurationException(
-					"@DefaultLocale not configured correctly. When not using a language tag, specify either"
-							+ "language, or language and country, or language and country and variant.");
+				"@DefaultLocale not configured correctly. When not using a language tag, specify either"
+						+ "language, or language and country, or language and country and variant.");
 		}
 	}
 
