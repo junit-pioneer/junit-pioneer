@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *   <li>using a {@link java.util.Locale#Locale(String, String, String) language, a county, and a variant}</li>
  * </ul>
  *
- * If a language tag is set, none of the other fields must be set. Otherwise an
+ * <p>If a language tag is set, none of the other fields must be set. Otherwise an
  * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will
  * be thrown. Specifying a {@link #country()} but no {@link #language()}, or a
  * {@link #variant()} but no {@link #country()} and {@link #language()} will
