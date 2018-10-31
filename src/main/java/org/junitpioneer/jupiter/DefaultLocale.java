@@ -32,10 +32,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * </ul>
  *
  * If a language tag is set, none of the other fields must be set. Otherwise an
- * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will be thrown.
- * Specifying a {@link #variant()} but no {@link #country()} will also cause an
- * {@code ExtensionConfigurationException}. After the annotated element has been
- * executed, the default {@code Locale} will be restored to its original value.</p>
+ * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will
+ * be thrown. Specifying a {@link #country()} but no {@link #language()}, or a
+ * {@link #variant()} but no {@link #country()} and {@link #language()} will
+ * also cause an {@code ExtensionConfigurationException}. After the annotated
+ * element has been executed, the default {@code Locale} will be restored to
+ * its original value.</p>
  *
  * <p>{@code @DefaultLocale} can be used on the method and on the class level.
  * If a class is annotated, the configured {@code Locale} will be the default
