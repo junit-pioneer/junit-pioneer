@@ -1,3 +1,4 @@
+
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
@@ -8,12 +9,12 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.METHOD )
-@Repeatable( ClearSystemProperties.class )
-@ExtendWith( SystemPropertyExtension.class )
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Repeatable(ClearSystemProperties.class)
+@ExtendWith(SystemPropertyExtension.class)
 public @interface ClearSystemProperty {
-	
+
 	String key();
 
 }
