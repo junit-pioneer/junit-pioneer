@@ -11,24 +11,41 @@ class SystemPropertyExtensionTests {
 	@BeforeAll
 	static void setUpOnce() {
 		System.setProperty( "some property", "old value" );
+		System.setProperty( "another property", "old value" );
 	}
 
 	@ClearSystemProperty( key = "some property" )
 	@Test
-	void extension_should_set_property_to_null() {
+	void clearSystemPropertyShouldSetPropertyToNull() {
 		assertThat( System.getProperty( "some property" ) ).isNull();
+	}
+
+	@ClearSystemProperty( key = "some property" )
+	@ClearSystemProperty( key = "another property" )
+	@Test
+	void clearSystemPropertyShouldBeRepeatable() {
+		assertThat( System.getProperty( "some property" ) ).isNull();
+		assertThat( System.getProperty( "another property" ) ).isNull();
 	}
 
 	@SetSystemProperty( key = "some property", value = "new value" )
 	@Test
-	void extension_should_set_property_to_value() {
+	void setSystemPropertyShouldSetPropertyToValue() {
 		assertThat( System.getProperty( "some property" ) ).isEqualTo( "new value" );
+	}
+
+	@SetSystemProperty( key = "some property", value = "new value" )
+	@SetSystemProperty( key = "another property", value = "new value" )
+	@Test
+	void setSystemPropertyShouldBeRepeatable() {
+		assertThat( System.getProperty( "some property" ) ).isEqualTo( "new value" );
+		assertThat( System.getProperty( "another property" ) ).isEqualTo( "new value" );
 	}
 
 	@ClearSystemProperty( key = "some property" )
 	@SetSystemProperty( key = "another property", value = "new value" )
 	@Test
-	void extension_should_be_repeatable() {
+	void clearAndSetSystemPropertyShouldBeMixable() {
 		assertThat( System.getProperty( "some property" ) ).isNull();
 		assertThat( System.getProperty( "another property" ) ).isEqualTo( "new value" );
 	}
@@ -36,5 +53,7 @@ class SystemPropertyExtensionTests {
 	@AfterAll
 	static void tearDownOnce() {
 		assertThat( System.getProperty( "some property" ) ).isEqualTo( "old value" );
+		assertThat( System.getProperty( "another property" ) ).isEqualTo( "old value" );
 	}
+
 }
