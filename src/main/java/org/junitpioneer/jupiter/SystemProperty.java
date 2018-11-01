@@ -13,9 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Repeatable( SystemProperties.class )
 @ExtendWith( SystemPropertyExtension.class )
 public @interface SystemProperty {
+	
+	public static final String CLEAR = "org.junitpioneer.jupiter.SystemProperty#CLEAR";
 
 	String key();
 
-	String value() default "";
+	String value();
 
 }

@@ -32,7 +32,7 @@ public class SystemPropertyExtension implements BeforeEachCallback, AfterEachCal
 	}
 
 	private void prepareSystemProperty( final SystemProperty prop ) {
-		if ( prop.value().isEmpty() ) {
+		if ( prop.value().equals( SystemProperty.CLEAR ) ) {
 			System.clearProperty( prop.key() );
 		} else {
 			System.setProperty( prop.key(), prop.value() );

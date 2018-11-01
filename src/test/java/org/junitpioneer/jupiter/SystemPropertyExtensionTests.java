@@ -13,7 +13,7 @@ class SystemPropertyExtensionTests {
 		System.setProperty( "some property", "old value" );
 	}
 
-	@SystemProperty( key = "some property" )
+	@SystemProperty( key = "some property", value = SystemProperty.CLEAR )
 	@Test
 	void extension_should_set_property_to_null() {
 		assertThat( System.getProperty( "some property" ) ).isNull();
@@ -25,7 +25,7 @@ class SystemPropertyExtensionTests {
 		assertThat( System.getProperty( "some property" ) ).isEqualTo( "new value" );
 	}
 
-	@SystemProperty( key = "some property" )
+	@SystemProperty( key = "some property", value = SystemProperty.CLEAR )
 	@SystemProperty( key = "another property", value = "new value" )
 	@Test
 	void extension_should_be_repeatable() {
