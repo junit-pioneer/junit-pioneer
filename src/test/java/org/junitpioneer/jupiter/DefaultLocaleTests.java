@@ -10,9 +10,10 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.AfterAll;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.engine.test.event.ExecutionEvent;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
@@ -53,6 +55,13 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 		@DisplayName("does nothing when annotation is not present")
 		void testDefaultLocaleNoAnnotation() {
 			assertEquals(TEST_DEFAULT_LOCALE, Locale.getDefault());
+		}
+
+		@DefaultLocale("zh-Hant-TW")
+		@Test
+		@DisplayName("sets the default locale using a language tag")
+		void setsLocaleViaLanguageTag() {
+			assertEquals(Locale.forLanguageTag("zh-Hant-TW"), Locale.getDefault());
 		}
 
 		@DefaultLocale(language = "en_EN")
@@ -119,51 +128,116 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 	@DisplayName("when configured incorrect")
 	class ConfigurationFailureTests {
 
-		@Test
-		@DisplayName("should fail when variant is set but country is not on method level")
-		void shouldFailWhenVariantIsSetButCountryIsNotOnMethodLevel() {
-			ExecutionEventRecorder eventRecorder = executeTestsForClass(MethodLevelInitializationFailureTestCase.class);
+		@Nested
+		@DisplayName("on the method level")
+		class MethodLevel {
 
-			assertEquals(1, eventRecorder.getTestFailedCount());
-			//@formatter:off
-			Throwable thrown = eventRecorder.getFailedTestFinishedEvents().get(0)
-					.getPayload(TestExecutionResult.class)
-					.flatMap(TestExecutionResult::getThrowable)
-					.orElseThrow(AssertionError::new);
-			//@formatter:on
-			assertTrue(thrown instanceof ExtensionConfigurationException);
+			@Test
+			@DisplayName("should fail when nothing is configured")
+			void shouldFailWhenNothingIsConfigured() {
+				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+					"shouldFailMissingConfiguration");
+
+				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			}
+
+			@Test
+			@DisplayName("should fail when variant is set but country is not")
+			void shouldFailWhenVariantIsSetButCountryIsNot() {
+				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+					"shouldFailMissingCountry");
+
+				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			}
+
+			@Test
+			@DisplayName("should fail when languageTag and language is set")
+			void shouldFailWhenLanguageTagAndLanguageIsSet() {
+				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+					"shouldFailLanguageTagAndLanguage");
+
+				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			}
+
+			@Test
+			@DisplayName("should fail when languageTag and country is set")
+			void shouldFailWhenLanguageTagAndCountryIsSet() {
+				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+					"shouldFailLanguageTagAndCountry");
+
+				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			}
+
+			@Test
+			@DisplayName("should fail when languageTag and variant is set")
+			void shouldFailWhenLanguageTagAndVariantIsSet() {
+				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+					"shouldFailLanguageTagAndVariant");
+
+				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			}
 		}
 
-		@Test
-		@DisplayName("should fail when variant is set but country is not on class level")
-		void shouldFailWhenVariantIsSetButCountryIsNotOnClassLevel() {
-			ExecutionEventRecorder eventRecorder = executeTestsForClass(ClassLevelInitializationFailureTestCase.class);
+		@Nested
+		@DisplayName("on the class level")
+		class ClassLevel {
 
-			assertEquals(1, eventRecorder.getContainerFailedCount());
-			//@formatter:off
-			Throwable thrown = eventRecorder.getFailedContainerEvents().get(0)
-					.getPayload(TestExecutionResult.class)
-					.flatMap(TestExecutionResult::getThrowable)
-					.orElseThrow(AssertionError::new);
-			//@formatter:on
-			assertTrue(thrown instanceof ExtensionConfigurationException);
+			@Test
+			@DisplayName("should fail when variant is set but country is not")
+			void shouldFailWhenVariantIsSetButCountryIsNot() {
+				ExecutionEventRecorder eventRecorder = executeTestsForClass(
+					ClassLevelInitializationFailureTestCase.class);
+
+				assertExtensionConfigurationFailure(eventRecorder.getFailedContainerEvents());
+			}
 		}
 	}
 
 	static class MethodLevelInitializationFailureTestCase {
 
 		@Test
-		@DefaultLocale(language = "de", variant = "ch")
-		void shouldFail() {
+		@DefaultLocale
+		void shouldFailMissingConfiguration() {
 		}
-	}
 
+		@Test
+		@DefaultLocale(language = "de", variant = "ch")
+		void shouldFailMissingCountry() {
+		}
+
+		@Test
+		@DefaultLocale(value = "Something", language = "de")
+		void shouldFailLanguageTagAndLanguage() {
+		}
+
+		@Test
+		@DefaultLocale(value = "Something", country = "DE")
+		void shouldFailLanguageTagAndCountry() {
+		}
+
+		@Test
+		@DefaultLocale(value = "Something", variant = "ch")
+		void shouldFailLanguageTagAndVariant() {
+		}
+
+	}
 	@DefaultLocale(language = "de", variant = "ch")
 	static class ClassLevelInitializationFailureTestCase {
 
 		@Test
 		void shouldFail() {
 		}
+
 	}
 
+	private static void assertExtensionConfigurationFailure(List<ExecutionEvent> failedTestFinishedEvents) {
+		assertEquals(1, failedTestFinishedEvents.size());
+		//@formatter:off
+		Throwable thrown = failedTestFinishedEvents.get(0)
+				.getPayload(TestExecutionResult.class)
+				.flatMap(TestExecutionResult::getThrowable)
+				.orElseThrow(AssertionError::new);
+		//@formatter:on
+		assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
+	}
 }

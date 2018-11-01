@@ -7,7 +7,18 @@ After the annotated element has been executed the initial default value is resto
 
 == `@DefaultLocale`
 
-The default `Locale` is specified according to https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#constructor.summary[its constructors] - it needs either:
+The default `Locale` can be specified using an https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#forLanguageTag-java.lang.String-[IETF BCP 47 language tag string]
+
+[source,java]
+----
+@Test
+@DefaultLocale("zh-Hant-TW")
+void test_with_lanuage() {
+    assertEquals(Locale.forLanguageTag("zh-Hant-TW"), Locale.getDefault());
+}
+----
+
+Alternatively the default `Locale` can be specified according to https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#constructor.summary[its constructors] - it needs either:
 
 * `language` or
 * `language` and `country` or
@@ -34,8 +45,9 @@ void test_with_lanuage_and_country_and_vairant() {
 }
 ----
 
-Note that `variant` can only be specified if `country` is also specified.
-If `variant` is specified without `country`, an `ExtentionConfigurationException` will be thrown.
+Note that mixing language tag configuration and constructor based configuration will cause an `ExtensionConfigurationException` to be thrown.
+Furthermore a `variant` can only be specified if `country` is also specified.
+If `variant` is specified without `country`, an `ExtensionConfigurationException` will be thrown.
 
 Any method level `@DefaultLocale` configurations will override class level configurations.
 

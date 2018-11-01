@@ -67,18 +67,39 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	}
 
 	private static Locale createLocale(DefaultLocale annotation) {
-		if (!annotation.country().isEmpty() && !annotation.variant().isEmpty()) {
-			return new Locale(annotation.language(), annotation.country(), annotation.variant());
-		}
-		else if (!annotation.country().isEmpty()) {
-			return new Locale(annotation.language(), annotation.country());
-		}
-		else if (!annotation.variant().isEmpty()) {
-			throw new ExtensionConfigurationException(
-				"@DefaultLocale.country must not be empty when @DefaultLocale.variant is set!");
+		if (!annotation.value().isEmpty()) {
+			return createFromLanguageTag(annotation);
 		}
 		else {
-			return new Locale(annotation.language());
+			return createFromParts(annotation);
+		}
+	}
+
+	private static Locale createFromLanguageTag(DefaultLocale annotation) {
+		if (!annotation.language().isEmpty() || !annotation.country().isEmpty() || !annotation.variant().isEmpty()) {
+			throw new ExtensionConfigurationException(
+				"@DefaultLocale can only be used with language tag if language, country, and variant are not set");
+		}
+		return Locale.forLanguageTag(annotation.value());
+	}
+
+	private static Locale createFromParts(DefaultLocale annotation) {
+		String language = annotation.language();
+		String country = annotation.country();
+		String variant = annotation.variant();
+		if (!language.isEmpty() && !country.isEmpty() && !variant.isEmpty()) {
+			return new Locale(language, country, variant);
+		}
+		else if (!language.isEmpty() && !country.isEmpty()) {
+			return new Locale(language, country);
+		}
+		else if (!language.isEmpty() && variant.isEmpty()) {
+			return new Locale(language);
+		}
+		else {
+			throw new ExtensionConfigurationException(
+				"@DefaultLocale not configured correctly. When not using a language tag, specify either"
+						+ "language, or language and country, or language and country and variant.");
 		}
 	}
 
