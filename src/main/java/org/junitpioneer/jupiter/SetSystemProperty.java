@@ -18,14 +18,31 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
+/**
+ * {@code @SetSystemProperty} is a JUnit Jupiter extension to set the value
+ * of a system property for a test execution.
+ *
+ * <p>The key and value of the system property to be set must be specified
+ * via {@link #key()} and {@link #value()}. After the annotated method has
+ * been executed, all system properties will be restored to their original
+ * value.</p>
+ *
+ * @since 0.4
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Repeatable(SetSystemProperties.class)
 @ExtendWith(SystemPropertyExtension.class)
 public @interface SetSystemProperty {
 
+	/**
+	 * The key of the system property to be set.
+	 */
 	String key();
 
+	/**
+	 * The value of the system property to be set.
+	 */
 	String value();
 
 }
