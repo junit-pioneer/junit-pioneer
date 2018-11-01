@@ -20,7 +20,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
 
-public class SystemPropertyExtension implements BeforeEachCallback, AfterEachCallback {
+class SystemPropertyExtension implements BeforeEachCallback, AfterEachCallback {
 
 	private static final String BACKUP_STORE_KEY = "backup";
 

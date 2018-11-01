@@ -20,7 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @ExtendWith(SystemPropertyExtension.class)
-public @interface ClearSystemProperties {
+@interface ClearSystemProperties {
 
 	ClearSystemProperty[] value();
 
