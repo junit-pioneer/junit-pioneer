@@ -22,23 +22,22 @@ public class SystemPropertyExtension implements BeforeEachCallback, AfterEachCal
 		store.put( BACKUP_STORE_KEY, backup );
 
 		final Method testMethod = context.getTestMethod().get();
-		if ( testMethod.isAnnotationPresent( SystemProperty.class ) ) {
-			final SystemProperty prop = testMethod.getAnnotation( SystemProperty.class );
-			prepareSystemProperty( prop );
-		} else {
-			final SystemProperties props = testMethod.getAnnotation( SystemProperties.class );
-			Arrays.stream( props.value() ).forEach( this::prepareSystemProperty );
-		}
-	}
-
-	private void prepareSystemProperty( final SystemProperty prop ) {
-		if ( prop.value().equals( SystemProperty.CLEAR ) ) {
+		if ( testMethod.isAnnotationPresent( ClearSystemProperty.class ) ) {
+			final ClearSystemProperty prop = testMethod.getAnnotation( ClearSystemProperty.class );
 			System.clearProperty( prop.key() );
-		} else {
+		} else if ( testMethod.isAnnotationPresent( ClearSystemProperties.class ) ) {
+			final ClearSystemProperties props = testMethod.getAnnotation( ClearSystemProperties.class );
+			Arrays.stream( props.value() ).forEach( prop -> System.clearProperty( prop.key() ) );
+		}
+		if ( testMethod.isAnnotationPresent( SetSystemProperty.class ) ) {
+			final SetSystemProperty prop = testMethod.getAnnotation( SetSystemProperty.class );
 			System.setProperty( prop.key(), prop.value() );
+		} else if ( testMethod.isAnnotationPresent( SetSystemProperties.class ) ) {
+			final SetSystemProperties props = testMethod.getAnnotation( SetSystemProperties.class );
+			Arrays.stream( props.value() ).forEach( prop -> System.setProperty( prop.key(), prop.value() ) );
 		}
 	}
-
+	
 	@Override
 	public void afterEach( final ExtensionContext context ) throws Exception {
 		final Store store = context.getStore( Namespace.create( getClass(), context.getRequiredTestMethod() ) );
