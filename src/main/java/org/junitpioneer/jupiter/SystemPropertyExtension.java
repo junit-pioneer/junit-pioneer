@@ -18,18 +18,18 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.ExtensionContext.Store;
 
 class SystemPropertyExtension implements BeforeEachCallback, AfterEachCallback {
 
-	private static final String BACKUP_STORE_KEY = "backup";
+	private static final Namespace NAMESPACE = Namespace.create(SystemPropertyExtension.class);
+
+	private static final String KEY = "SystemProperty";
 
 	@Override
 	public void beforeEach(final ExtensionContext context) throws Exception {
 		final Properties backup = new Properties();
 		backup.putAll(System.getProperties());
-		final Store store = context.getStore(Namespace.create(getClass(), context.getRequiredTestMethod()));
-		store.put(BACKUP_STORE_KEY, backup);
+		context.getStore(NAMESPACE).put(KEY, backup);
 
 		final Method testMethod = context.getTestMethod().get();
 		if (testMethod.isAnnotationPresent(ClearSystemProperty.class)) {
@@ -52,8 +52,7 @@ class SystemPropertyExtension implements BeforeEachCallback, AfterEachCallback {
 
 	@Override
 	public void afterEach(final ExtensionContext context) throws Exception {
-		final Store store = context.getStore(Namespace.create(getClass(), context.getRequiredTestMethod()));
-		final Properties backup = store.get(BACKUP_STORE_KEY, Properties.class);
+		final Properties backup = context.getStore(NAMESPACE).get(KEY, Properties.class);
 		System.setProperties(backup);
 	}
 
