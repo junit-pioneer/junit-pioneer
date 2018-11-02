@@ -50,11 +50,16 @@ class TriggerTravisTask extends DefaultTask {
 	}
 
 	private void checkConfiguration() {
-		if (travisProject == null)
+		boolean configurationInvalid = false;
+		if (travisProject == null || travisProject.allWhitespace) {
+			configurationInvalid = true;
 			logger.error "For the task '${getName()}', no Travis project name has been defined."
-		if (apiToken == null)
+		}
+		if (apiToken == null || apiToken.allWhitespace) {
+			configurationInvalid = true;
 			logger.error "For the task '${getName()}', no API token has been defined."
-		if (travisProject == null || apiToken == null)
+		}
+		if (configurationInvalid)
 			throw new GradleException("To trigger a Travis build, please define both a project name and an API token.")
 	}
 
