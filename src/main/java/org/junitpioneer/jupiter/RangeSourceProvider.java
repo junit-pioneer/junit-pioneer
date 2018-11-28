@@ -13,7 +13,7 @@ package org.junitpioneer.jupiter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +49,15 @@ public class RangeSourceProvider implements ArgumentsProvider {
 	/**
 	 * A map from the (wrapper) class to produce, to a function that can produce it from a {@link Number}
 	 */
-	private static final Map<Class<?>, Function<Number, ?>> primitiveMappers = Collections.singletonMap(Integer.class,
-		Number::intValue);
+	private static final Map<Class<?>, Function<Number, ?>> primitiveMappers = new HashMap<>();
+	static {
+		primitiveMappers.put(Byte.class, Number::byteValue);
+		primitiveMappers.put(Short.class, Number::shortValue);
+		primitiveMappers.put(Integer.class, Number::intValue);
+		primitiveMappers.put(Long.class, Number::longValue);
+		primitiveMappers.put(Float.class, Number::floatValue);
+		primitiveMappers.put(Double.class, Number::doubleValue);
+	}
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
