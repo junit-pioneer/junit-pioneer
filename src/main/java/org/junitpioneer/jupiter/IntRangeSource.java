@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 /**
- * {@code @RangeSource} is an {@link ArgumentsSource} which provides access to a range of {@code int} values.
+ * {@code @IntRangeSource} is an {@link ArgumentsSource} which provides access to a range of {@code int} values.
  *
  * <p>The supplied values will be provided as arguments to the annotated {@code @ParameterizedTest} method.
  *
@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ArgumentsSource(RangeSourceProvider.class)
-public @interface RangeSource {
+public @interface IntRangeSource {
 
 	/**
 	 * The starting point of the range, inclusive.

@@ -10,63 +10,94 @@
 
 package org.junitpioneer.jupiter;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.support.AnnotationConsumer;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.util.Preconditions;
 
 /**
- * Provides a range of {@code int}s, as defined by {@link RangeSource}.
+ * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.
+ * Such an annotation should have the following properties:
+ * <ul>
+ *     <li>{@code from} a primitive value for the "start" of the range.</li>
+ *     <li>{@code to} a primitive value for the "end" of the range. {@code to} must have the same type as {@code from}.</li>
+ *     <li>{@code step} a primitive value for the difference between each two values of the range.</li>
+ *     <li>{@code closed} a {@code boolean} value describing if the range includes the last value (cloded), or not (open).</li>
+ * </ul>
  *
- * @see RangeSource
+ * @see IntRangeSource
  */
-public class RangeSourceProvider implements ArgumentsProvider, AnnotationConsumer<RangeSource> {
+public class RangeSourceProvider implements ArgumentsProvider {
 
 	/**
-	 * The range of values.
+	 * {@link Function}s to convert {@link Number}s to primitive wrappers.
 	 */
-	private final List<Integer> values = new LinkedList<>();
+	private final List<Number> values = new LinkedList<>();
 
 	/**
-	 * Whether the range is closed or not
+	 * A map from the (wrapper) class to produce, to a function that can produce it from a {@link Number}
 	 */
-	private boolean closed;
+	private static final Map<Class<?>, Function<Number, ?>> primitiveMappers = Collections.singletonMap(Integer.class,
+		Number::intValue);
 
 	@Override
-	public void accept(RangeSource rangeSource) {
-		Preconditions.condition(rangeSource.step() != 0,
-			() -> String.format("Illegal %s. The step cannot be 0.", RangeSource.class.getSimpleName()));
+	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+		// Since it's a method annotation, the element will always be present.
+		List<Annotation> argumentsSources = context.getElement().map(e -> Arrays.stream(e.getAnnotations()).filter(
+			as -> Arrays.stream(as.annotationType().getAnnotationsByType(ArgumentsSource.class)).anyMatch(
+				a -> getClass().equals(a.value()))).collect(Collectors.toList())).get();
 
-		Preconditions.condition(rangeSource.from() != rangeSource.to(),
-			() -> String.format("Illegal %s. Equal from and to will produce an empty range.",
-				RangeSource.class.getSimpleName()));
+		Preconditions.condition(argumentsSources.size() == 1,
+			() -> String.format("Expected exactly one annotation to provide an ArgumentSource, found %d.",
+				argumentsSources.size()));
 
-		Preconditions.condition(
-			rangeSource.from() < rangeSource.to() && rangeSource.step() > 0
-					|| rangeSource.from() > rangeSource.to() && rangeSource.step() < 0,
-			() -> String.format("Illegal %s. There's no way to get from %d to %d with a step of %d.",
-				RangeSource.class.getSimpleName(), rangeSource.from(), rangeSource.to(), rangeSource.step()));
+		Annotation argumentsSource = argumentsSources.get(0);
+		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 
-		closed = rangeSource.closed();
+		Method stepMethod = argumentsSourceClass.getMethod("step");
+		Number stepValue = (Number) stepMethod.invoke(argumentsSource);
+		double stepDouble = stepValue.doubleValue();
+		Preconditions.condition(stepDouble != 0.0, "Illegal range. The step cannot be 0.");
+
+		Method fromMethod = argumentsSourceClass.getMethod("from");
+		Number fromValue = (Number) fromMethod.invoke(argumentsSource);
+		double fromDouble = fromValue.doubleValue();
+
+		Method toMethod = argumentsSourceClass.getMethod("to");
+		Number toValue = (Number) toMethod.invoke(argumentsSource);
+		double toDouble = toValue.doubleValue();
+
+		Preconditions.condition(fromDouble != toDouble,
+			"Illegal range. Equal from and to will produce an empty range.");
+
+		Preconditions.condition(fromDouble < toDouble && stepDouble > 0.0 || fromDouble > toDouble && stepDouble < 0.0,
+			() -> String.format("Illegal range. There's no way to get from %f to %f with a step of %f.", fromDouble,
+				toDouble, stepDouble));
+
+		Method closeMethod = argumentsSourceClass.getMethod("closed");
+		Boolean closedValue = (Boolean) closeMethod.invoke(argumentsSource);
 
 		// Once (if) Java 8 support is dropped, this boiler-plate can be cleaned up and we can just use
 		// IntStream.iterate(rangeSource.from(), i -> i < rangeSource.to(), i -> i += rangeSource.step());
-		int val = rangeSource.from();
-		int to = rangeSource.to();
-		int step = rangeSource.step();
-		while (val < to && step > 0 || val > to && step < 0 || closed && val == to) {
+		double val = fromDouble;
+		while (val < toDouble && stepDouble > 0.0 || val > toDouble && stepDouble < 0.0
+				|| closedValue && val == toDouble) {
 			values.add(val);
-			val += rangeSource.step();
+			val += stepDouble;
 		}
-	}
 
-	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-		return values.stream().map(Arguments::of);
+		return values.stream().map(primitiveMappers.get(fromValue.getClass())).map(Arguments::of);
 	}
 }
