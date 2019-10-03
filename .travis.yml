@@ -33,13 +33,13 @@ deploy:
     script: ./gradlew ciPerformRelease
     on:
       branch: master
-      jdk: openjdk11
+      jdk: openjdk8
   - provider: script
     skip_cleanup:
     script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
     on:
       branch: master
-      jdk: openjdk11
+      jdk: openjdk8
 
 env:
   global:
