@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'checkstyle'
     id 'maven-publish'
-    id 'com.diffplug.gradle.spotless' version '3.13.0'
+    id 'com.diffplug.gradle.spotless' version '3.24.3'
     id 'org.shipkit.java' version '2.0.26'
     id 'at.zierler.yamlvalidator' version '1.5.0'
     id 'com.gradle.build-scan' version '2.4.2'
@@ -66,6 +66,7 @@ spotless {
 
         trimTrailingWhitespace()
         endWithNewline()
+        removeUnusedImports()
     }
 
     format 'groovy', {
