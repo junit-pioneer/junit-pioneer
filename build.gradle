@@ -5,7 +5,7 @@ plugins {
     id 'com.diffplug.gradle.spotless' version '3.13.0'
     id 'org.shipkit.java' version '2.0.26'
     id 'at.zierler.yamlvalidator' version '1.5.0'
-    id 'com.gradle.build-scan' version '1.16'
+    id 'com.gradle.build-scan' version '2.4.2'
 }
 
 group 'org.junit-pioneer'
@@ -44,8 +44,8 @@ dependencies {
 }
 
 buildScan {
-    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
-    licenseAgree = 'yes'
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
 test {
