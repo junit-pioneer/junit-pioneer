@@ -1,22 +1,8 @@
 language: java
 
-sudo: required
-
-# required for oraclejdk9
-dist: trusty
-
 jdk:
-  - oraclejdk8
-  - oraclejdk9
-
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
-
-matrix:
-  allow_failures:
-    - jdk: oraclejdk9
+  - openjdk8
+  - openjdk11
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -47,13 +33,13 @@ deploy:
     script: ./gradlew ciPerformRelease
     on:
       branch: master
-      jdk: oraclejdk8
+      jdk: openjdk11
   - provider: script
     skip_cleanup:
     script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
     on:
       branch: master
-      jdk: oraclejdk8
+      jdk: openjdk11
 
 env:
   global:
