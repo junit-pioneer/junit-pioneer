@@ -1,14 +1,20 @@
+/*
+ * Copyright 2015-2018 the original author or authors.
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v2.0 which
+ * accompanies this distribution and is available at
+ *
+ * http://www.eclipse.org/legal/epl-v20.html
+ */
+
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
-import org.junitpioneer.jupiter.RepeatFailedTest.LogLevel;
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.stream.StreamSupport.stream;
+import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
+import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -20,12 +26,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static java.util.Spliterator.ORDERED;
-import static java.util.Spliterators.spliteratorUnknownSize;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.StreamSupport.stream;
-import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
-import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
+import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
+import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
+import org.junit.platform.commons.logging.Logger;
+import org.junit.platform.commons.logging.LoggerFactory;
+import org.junitpioneer.jupiter.RepeatFailedTest.LogLevel;
 
 public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
 
@@ -39,8 +47,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 	}
 
 	@Override
-	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(
-			ExtensionContext context) {
+	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		FailedTestRepeater repeater = repeaterFor(context);
 		return stream(spliteratorUnknownSize(repeater, ORDERED), false);
 	}
@@ -49,13 +56,18 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
 		// this `context` (M) is a child of the context passed to `provideTestTemplateInvocationContexts` (T),
 		// which means M's store content is invisible to T's store; this can be fixed by using T's store here
-		ExtensionContext templateContext = context.getParent()
-				.orElseThrow(() -> new IllegalStateException(
-						"Extension context \"" + context + "\" should have a parent context."));
+		//@formatter:off
+		ExtensionContext templateContext = context
+				.getParent()
+				.orElseThrow(
+						() -> new IllegalStateException(
+								"Extension context \"" + context + "\" should have a parent context."));
+		//@formatter:on
 		repeaterFor(templateContext).failed(throwable);
 	}
 
 	private static FailedTestRepeater repeaterFor(ExtensionContext context) {
+		//@formatter:off
 		Method repeatedTest = context.getRequiredTestMethod();
 		return context
 				.getStore(NAMESPACE)
@@ -63,6 +75,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 						repeatedTest.toString(),
 						__ -> FailedTestRepeater.createFor(repeatedTest),
 						FailedTestRepeater.class);
+		//@formatter:on
 	}
 
 	private static class FailedTestRepeater implements Iterator<RepeatFailedTestInvocationContext> {
