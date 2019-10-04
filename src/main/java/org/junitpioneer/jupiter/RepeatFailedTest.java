@@ -20,13 +20,45 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+/**
+ * {@code @RepeatFailedTest} is a JUnit Jupiter extension that repeats
+ * a failing test a certain number of times before the test actually
+ * shows up as failing.
+ *
+ * If annotated with {@code @RepeatFailedTest(n)}, a test method is
+ * executed as long as it keeps failing, but no more than {@code n}
+ * times. That means all actual executions - except possibly the
+ * last - have failed. In contrast, all executions - except possibly
+ * the last - always show up as having passed because that is the only
+ * way not to break the test suite. Only if all {@code n} executions
+ * fail, is the last one marked as such and lists all exceptions thrown
+ * by previous executions.
+ *
+ * <p>{@code @RepeatFailedTest} has a number of limitations:
+ *
+ * <ul>
+ *     <li>it can only be applied to methods</li>
+ *     <li>it can't be used with other {@link TestTemplate}-based mechanisms
+ *         like {@code org.junit.jupiter.api.RepeatedTest @RepeatedTest} or
+ *         {@code org.junit.jupiter.params.ParameterizedTest @ParameterizedTest}</li>
+ *     <li>it can't be used with
+ *         {@code org.junit.jupiter.api.DynamicTest @DynamicTest}</li>
+ *     <li>it isn't thread-safe and if used with
+ *         <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution">parallel test execution</a>,
+ *         its effect is undefined</li>
+ * </ul>
+ *
+ * @since 0.4
+ */
 @Target({ METHOD, ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(RepeatFailedTestExtension.class)
 @TestTemplate
-// TODO: comment
 public @interface RepeatFailedTest {
 
+	/**
+	 * Specifies how often the test is executed at most.
+	 */
 	int value();
 
 	LogLevel logFailedTestOn() default LogLevel.OFF;

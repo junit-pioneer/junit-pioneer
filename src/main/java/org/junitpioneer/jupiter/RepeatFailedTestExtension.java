@@ -112,7 +112,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		static FailedTestRepeater createFor(Method repeatedTest) {
 			//@formatter:off
 			RepeatFailedTest repeatFailedTest = findAnnotation(repeatedTest, RepeatFailedTest.class)
-					.orElseThrow(() -> new IllegalStateException("@RepeatFailedTest is mising."));
+					.orElseThrow(() -> new IllegalStateException("@RepeatFailedTest is missing."));
 			return new FailedTestRepeater(
 					repeatFailedTest.value(),
 					repeatFailedTest.logFailedTestOn());
@@ -120,7 +120,6 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		}
 
 		void failed(Throwable exception) throws Throwable {
-			// TODO: throw if in "always fail" mode
 			logger.accept(exception, () -> "Execution #" + repetitionsSoFar + " failed.");
 			exceptionsSoFar.add(exception);
 

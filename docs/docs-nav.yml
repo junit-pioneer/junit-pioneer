@@ -6,3 +6,5 @@
         url: /docs/temp-directory/
       - title: "@DefaultLocale and @DefaultTimeZone"
         url: /docs/default-locale-timezone/
+      - title: "@RepeatFailedTest"
+        url: /docs/repeat-failed-test
