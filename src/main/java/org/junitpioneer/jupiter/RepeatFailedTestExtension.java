@@ -100,9 +100,12 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 
 			boolean allRepetitionsFailed = exceptionsSoFar == maxRepetitions;
 			if (allRepetitionsFailed)
-				throw new AssertionError(format("Test execution #%d (of up to %d) failed ~> test fails", exceptionsSoFar, maxRepetitions));
+				throw new AssertionError(
+					format("Test execution #%d (of up to %d) failed ~> test fails", exceptionsSoFar, maxRepetitions));
 			else
-				throw new TestAbortedException(format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRepetitions), exception);
+				throw new TestAbortedException(
+					format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRepetitions),
+					exception);
 		}
 
 		@Override
