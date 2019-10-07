@@ -2,7 +2,7 @@
 :page-description: Repeats a failing test a certain number of times; only marking it failed if none of them pass
 
 Some tests, e.g. those depending on external systems, may fail through no fault of the code under test.
-Such tests make a suite fragile and it makes sense to try and avoid them, but if that is not possible, it may help to retry a number of times before eventually assuming actual failure.
+Such tests make a suite fragile and it makes sense to try and avoid them, but if that's infeasible, it may help to retry a number of times before eventually assuming actual failure.
 `@RepeatFailedTest` provides that functionality.
 
 == Basic Use
@@ -28,7 +28,7 @@ void failsOnlyOnFirstInvocation() {
 ```
 
 The test `failsOnlyOnFirstInvocation` is executed once (which fails) and then once more (which succeeds).
-To allow the entire test suite to pass, the first execution isn't marked as having failed and so _both_ executions are marked as passing.
+To allow the entire test suite to pass, the first execution is marked as ignored/aborted, which includes the underlying exception - the second is of course marked as passing.
 
 ```
 @RepeatFailedTest(3)
@@ -38,5 +38,4 @@ void failsAlways() {
 ```
 
 The test `failsAlways` is executed three times (all of which fail).
-The first two executions are marked as passing and the last as failed.
-The last execution is also the one listing all exceptions.
+The first two executions are marked as ignored/aborted and the last as failed - each contains the underlying exception.

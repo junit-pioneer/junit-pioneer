@@ -32,7 +32,8 @@ class RepeatFailedTestTests extends AbstractPioneerTestEngineTests {
 			"failsOnlyOnFirstInvocation");
 
 		assertThat(eventRecorder.getDynamicTestRegisteredCount()).isEqualTo(2);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(2);
+		assertThat(eventRecorder.getTestAbortedCount()).isEqualTo(1);
+		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
 	}
 
 	@Test
@@ -40,7 +41,7 @@ class RepeatFailedTestTests extends AbstractPioneerTestEngineTests {
 		ExecutionEventRecorder eventRecorder = executeTests(RepeatFailedTestTestCase.class, "failsAlways");
 
 		assertThat(eventRecorder.getDynamicTestRegisteredCount()).isEqualTo(3);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(2);
+		assertThat(eventRecorder.getTestAbortedCount()).isEqualTo(2);
 		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);
 	}
 

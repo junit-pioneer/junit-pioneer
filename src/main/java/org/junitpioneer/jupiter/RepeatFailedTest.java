@@ -29,10 +29,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * executed as long as it keeps failing, but no more than {@code n}
  * times. That means all actual executions - except possibly the
  * last - have failed. In contrast, all executions - except possibly
- * the last - always show up as having passed because that is the only
- * way not to break the test suite. Only if all {@code n} executions
- * fail, is the last one marked as such and lists all exceptions thrown
- * by previous executions.
+ * the last - show up as being ignored/aborted because that is the best
+ * way to communicate a problem without breaking the test suite. Only
+ * if all {@code n} executions fail, is the last one marked as such.
+ * Each ignored/aborted or failed execution includes the underlying
+ * exception.
  *
  * <p>{@code @RepeatFailedTest} has a number of limitations:
  *

@@ -10,20 +10,15 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.lang.String.format;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -31,9 +26,8 @@ import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-import org.junit.platform.commons.logging.Logger;
-import org.junit.platform.commons.logging.LoggerFactory;
 import org.junitpioneer.jupiter.RepeatFailedTest.LogLevel;
+import org.opentest4j.TestAbortedException;
 
 public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
 
@@ -81,32 +75,14 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 	private static class FailedTestRepeater implements Iterator<RepeatFailedTestInvocationContext> {
 
 		private final int maxRepetitions;
-		private final BiConsumer<Throwable, Supplier<String>> logger;
 
 		private int repetitionsSoFar;
-		private final List<Throwable> exceptionsSoFar;
+		private int exceptionsSoFar;
 
 		private FailedTestRepeater(int maxRepetitions, LogLevel level) {
 			this.maxRepetitions = maxRepetitions;
 			this.repetitionsSoFar = 0;
-			this.exceptionsSoFar = new ArrayList<>();
-			this.logger = createLogger(level);
-		}
-
-		private BiConsumer<Throwable, Supplier<String>> createLogger(LogLevel level) {
-			Logger logger = LoggerFactory.getLogger(RepeatFailedTest.class);
-			//@formatter:off
-			switch (level) {
-				case OFF:     return (__, ___) -> { };
-				case FINER:   return logger::trace;
-				case FINE:    return logger::debug;
-				case CONFIG:  return logger::config;
-				case INFO:    return logger::info;
-				case WARNING: return logger::warn;
-				case SEVERE:  return logger::error;
-				default: throw new IllegalArgumentException("Unknown log level " + level);
-			}
-			//@formatter:on
+			this.exceptionsSoFar = 0;
 		}
 
 		static FailedTestRepeater createFor(Method repeatedTest) {
@@ -120,27 +96,13 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		}
 
 		void failed(Throwable exception) throws Throwable {
-			logger.accept(exception, () -> "Execution #" + repetitionsSoFar + " failed.");
-			exceptionsSoFar.add(exception);
+			exceptionsSoFar++;
 
-			boolean allRepetitionsFailed = exceptionsSoFar.size() == maxRepetitions;
+			boolean allRepetitionsFailed = exceptionsSoFar == maxRepetitions;
 			if (allRepetitionsFailed)
-				failTest();
-		}
-
-		private void failTest() {
-			StringWriter stringer = new StringWriter();
-			writeFailureMessageInto(stringer);
-			throw new AssertionError(stringer.toString());
-		}
-
-		private void writeFailureMessageInto(StringWriter stringer) {
-			PrintWriter printer = new PrintWriter(stringer);
-			printer.append("Each iteration of the repeated test failed.\n");
-			for (int i = 0; i < exceptionsSoFar.size(); i++) {
-				printer.append("\n---- EXECUTION #" + i + " ----\n");
-				exceptionsSoFar.get(i).printStackTrace(printer);
-			}
+				throw new AssertionError(format("Test execution #%d (of up to %d) failed ~> test fails", exceptionsSoFar, maxRepetitions));
+			else
+				throw new TestAbortedException(format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRepetitions), exception);
 		}
 
 		@Override
@@ -150,7 +112,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 				return true;
 
 			// if we caught an exception in each repetition, each repetition failed, including the previous one
-			boolean previousFailed = repetitionsSoFar == exceptionsSoFar.size();
+			boolean previousFailed = repetitionsSoFar == exceptionsSoFar;
 			boolean maxRepetitionsReached = repetitionsSoFar == maxRepetitions;
 			return previousFailed && !maxRepetitionsReached;
 		}
