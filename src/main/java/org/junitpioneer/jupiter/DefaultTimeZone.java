@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * returned by {@link java.util.TimeZone#getDefault()} for a test execution.
  *
  * <p>The {@link java.util.TimeZone} to set as the default {@code TimeZone} is
- * configured bei specifying the {@code TimeZone} ID as defined by
+ * configured by specifying the {@code TimeZone} ID as defined by
  * {@link java.util.TimeZone#getTimeZone(String)}. After the annotated element
  * has been executed, the default {@code TimeZone} will be restored to its
  * original value.</p>
