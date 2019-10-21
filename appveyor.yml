@@ -18,4 +18,4 @@ matrix:
   fast_finish: true
 
 cache:
-  - '%USERPROFILE%\.gradle\wrapper -> gradle\wrapper\gradle-wrapper.properties'
+  - '%USERPROFILE%\.gradle\wrapper -> .infra\gradle\gradle-wrapper.properties'
