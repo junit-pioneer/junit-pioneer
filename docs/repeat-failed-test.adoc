@@ -30,7 +30,7 @@ void failsOnlyOnFirstInvocation() {
 The test `failsOnlyOnFirstInvocation` is executed once (which fails) and then once more (which succeeds).
 To allow the entire test suite to pass, the first execution is marked as ignored/aborted, which includes the underlying exception - the second is of course marked as passing.
 
-```
+```java
 @RepeatFailedTest(3)
 void failsAlways() {
     // test code that always fails
