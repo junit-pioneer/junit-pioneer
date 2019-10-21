@@ -61,14 +61,24 @@ public class RangeSourceProvider implements ArgumentsProvider {
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-		// Since it's a method annotation, the element will always be present.
-		List<Annotation> argumentsSources = context.getElement().map(e -> Arrays.stream(e.getAnnotations()).filter(
-			as -> Arrays.stream(as.annotationType().getAnnotationsByType(ArgumentsSource.class)).anyMatch(
-				a -> getClass().equals(a.value()))).collect(Collectors.toList())).get();
+		// @formatter:off
+		// since it's a method annotation, the element will always be present
+		List<Annotation> argumentsSources = context
+				.getElement()
+				.map(method -> Arrays
+						.stream(method.getAnnotations())
+						.filter(annotations -> Arrays
+								.stream(annotations.annotationType().getAnnotationsByType(ArgumentsSource.class))
+								.anyMatch(annotation -> getClass().equals(annotation.value())))
+						.collect(Collectors.toList()))
+				.get();
 
-		Preconditions.condition(argumentsSources.size() == 1,
-			() -> String.format("Expected exactly one annotation to provide an ArgumentSource, found %d.",
-				argumentsSources.size()));
+		Preconditions.condition(
+				argumentsSources.size() == 1,
+				() -> String.format(
+						"Expected exactly one annotation to provide an ArgumentSource, found %d.",
+						argumentsSources.size()));
+		// @formatter:on
 
 		Annotation argumentsSource = argumentsSources.get(0);
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
@@ -86,12 +96,17 @@ public class RangeSourceProvider implements ArgumentsProvider {
 		Number toValue = (Number) toMethod.invoke(argumentsSource);
 		double toDouble = toValue.doubleValue();
 
-		Preconditions.condition(fromDouble != toDouble,
-			"Illegal range. Equal from and to will produce an empty range.");
+		// @formatter:off
+		Preconditions.condition(
+				fromDouble != toDouble,
+				"Illegal range. Equal from and to will produce an empty range.");
 
-		Preconditions.condition(fromDouble < toDouble && stepDouble > 0.0 || fromDouble > toDouble && stepDouble < 0.0,
-			() -> String.format("Illegal range. There's no way to get from %f to %f with a step of %f.", fromDouble,
-				toDouble, stepDouble));
+		Preconditions.condition(
+				fromDouble < toDouble && stepDouble > 0.0 || fromDouble > toDouble && stepDouble < 0.0,
+				() -> String.format(
+						"Illegal range. There's no way to get from %f to %f with a step of %f.",
+						fromDouble, toDouble, stepDouble));
+		// @formatter:on
 
 		Method closeMethod = argumentsSourceClass.getMethod("closed");
 		Boolean closedValue = (Boolean) closeMethod.invoke(argumentsSource);
