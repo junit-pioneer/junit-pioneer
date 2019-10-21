@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.METHOD;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,6 +20,7 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
 
 /**
  * {@code @RepeatFailedTest} is a JUnit Jupiter extension that repeats
@@ -44,15 +46,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *         {@code org.junit.jupiter.params.ParameterizedTest @ParameterizedTest}</li>
  *     <li>it can't be used with
  *         {@code org.junit.jupiter.api.DynamicTest @DynamicTest}</li>
- *     <li>it isn't thread-safe and if used with
- *         <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution">parallel test execution</a>,
- *         its effect is undefined</li>
+ *     <li>all repetitions are run sequentially, even when used with
+ *         <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution">parallel test execution</a></li>
  * </ul>
  *
  * @since 0.4
  */
 @Target({ METHOD, ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+// the extension is not thread-safe, so it forces execution of all repetitions
+// onto the same thread
+@Execution(SAME_THREAD)
 @ExtendWith(RepeatFailedTestExtension.class)
 @TestTemplate
 public @interface RepeatFailedTest {
