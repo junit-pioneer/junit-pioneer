@@ -14,9 +14,7 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 	* [Unavoidable Changes](#unavoidable-changes)
 	* [Optional Changes](#optional-changes)
 * [Publishing](#publishing)
-	* [Credentials](#credentials)
-	* [Snapshots](#snapshots)
-	* [Releases](#releases)
+	* [Versioning](#versioning)
 
 The guidelines apply to maintainers as well as contributors!
 
@@ -148,7 +146,24 @@ Follow these steps when updating JUnit 5:
 Like [Mockito](http://mockito.org/), JUnit Pioneer implements a continuous delivery model using [Shipkit](http://shipkit.org/) and [Travis CI](https://travis-ci.org/).
 Every change on the `master` branch (for example when merging a pull request) triggers a release build that publishes a new version if the following criteria are met:
 
+- the commit message doesn't contain `[ci skip-release]`
 - all checks (e.g. tests) are successful
-- no `ci skip release` is used in the commit message (see the build log for more information)
+- at least one main artifact (that includes `...-source.jar` and `...-javadoc.jar`) has changed
 
 Every new version is published to the `junit-pioneer/maven` Bintray repository as well as to Maven Central and JCenter.
+
+### Versioning
+
+Shipkit manages versions by reading from and writing to [`version-properties`](version.properties):
+On each build, it releases the version specified by the `version` field and then increases its patch level for the next release.
+
+This is how JUnit Pioneer handles versioning:
+
+* _patch_: automatically increased by Shipkit on each release
+* _minor_: manually increased for each substantial change/feature
+* _major_: stays at 0 for now
+
+That means, for now, contributors only have to care about _minor_.
+Since each non-trivial change is developed in a PR, this is the place to discuss whether the minor version should be increased, i.e. whether a change or feature is "substantial".
+If it is, the PR needs to update `version-properties` to the next minor version.
+Note that the feature's Javadoc needs to reference the same version in its `@since` tag.
