@@ -26,7 +26,6 @@ import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-import org.junitpioneer.jupiter.RepeatFailedTest.LogLevel;
 import org.opentest4j.TestAbortedException;
 
 public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
@@ -79,7 +78,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		private int repetitionsSoFar;
 		private int exceptionsSoFar;
 
-		private FailedTestRepeater(int maxRepetitions, LogLevel level) {
+		private FailedTestRepeater(int maxRepetitions) {
 			this.maxRepetitions = maxRepetitions;
 			this.repetitionsSoFar = 0;
 			this.exceptionsSoFar = 0;
@@ -89,9 +88,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 			//@formatter:off
 			RepeatFailedTest repeatFailedTest = findAnnotation(repeatedTest, RepeatFailedTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RepeatFailedTest is missing."));
-			return new FailedTestRepeater(
-					repeatFailedTest.value(),
-					repeatFailedTest.logFailedTestOn());
+			return new FailedTestRepeater(repeatFailedTest.value());
 			//@formatter:on
 		}
 
