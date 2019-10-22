@@ -11,7 +11,11 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.platform.engine.TestExecutionResult.Status.FAILED;
 import static org.mockito.ArgumentMatchers.any;
@@ -92,15 +96,6 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			assertResolvesShareTempDir(AnnotationOnBeforeAllMethodParameterWithTestInstancePerClassTestCase.class);
 		}
 
-		private void assertResolvesShareTempDir(Class<? extends BaseSharedTempDirTestCase> testClass) {
-			ExecutionEventRecorder executionEventRecorder = executeTests(testClass);
-
-			assertEquals(2, executionEventRecorder.getTestStartedCount());
-			assertEquals(0, executionEventRecorder.getTestFailedCount());
-			assertEquals(2, executionEventRecorder.getTestSuccessfulCount());
-			assertThat(BaseSharedTempDirTestCase.tempDir).isPresent();
-			assertThat(BaseSharedTempDirTestCase.tempDir.get()).doesNotExist();
-		}
 	}
 
 	@Nested
@@ -143,6 +138,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	@Nested
 	@DisplayName("resolves temp dir with custom parent dir")
 	class WithCustomParentDir {
+
 		@Test
 		@DisplayName("from Callable<Path>")
 		void resolvesTempDirWithCustomParentDirFromCallable() {
@@ -195,20 +191,16 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 				"Failed to get parent directory");
 		}
 
-		private void assertSingleFailedTest(ExecutionEventRecorder executionEventRecorder,
-				Class<? extends Throwable> clazz, String message) {
-			assertEquals(1, executionEventRecorder.getTestStartedCount());
-			assertEquals(1, executionEventRecorder.getTestFailedCount());
-			assertEquals(0, executionEventRecorder.getTestSuccessfulCount());
+	}
 
-			ExecutionEvent executionEvent = executionEventRecorder.getFailedTestFinishedEvents().get(0);
-			Optional<TestExecutionResult> result = executionEvent.getPayload(TestExecutionResult.class);
-			assertThat(result).isPresent();
-			assertThat(result.get().getStatus()).isEqualTo(FAILED);
-			Optional<Throwable> throwable = result.get().getThrowable();
-			assertThat(throwable).containsInstanceOf(clazz);
-			assertThat(throwable.get()).hasMessageContaining(message);
-		}
+	private void assertResolvesShareTempDir(Class<? extends BaseSharedTempDirTestCase> testClass) {
+		ExecutionEventRecorder executionEventRecorder = executeTests(testClass);
+
+		assertEquals(2, executionEventRecorder.getTestStartedCount());
+		assertEquals(0, executionEventRecorder.getTestFailedCount());
+		assertEquals(2, executionEventRecorder.getTestSuccessfulCount());
+		assertThat(BaseSharedTempDirTestCase.tempDir).isPresent();
+		assertThat(BaseSharedTempDirTestCase.tempDir.get()).doesNotExist();
 	}
 
 	private void assertResolvesSeparateTempDirs(Class<? extends BaseSeparateTempDirsTestCase> testClass) {
@@ -221,8 +213,24 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		assertThat(tempDirs).hasSize(2);
 	}
 
+	private void assertSingleFailedTest(ExecutionEventRecorder executionEventRecorder, Class<? extends Throwable> clazz,
+			String message) {
+		assertEquals(1, executionEventRecorder.getTestStartedCount());
+		assertEquals(1, executionEventRecorder.getTestFailedCount());
+		assertEquals(0, executionEventRecorder.getTestSuccessfulCount());
+
+		ExecutionEvent executionEvent = executionEventRecorder.getFailedTestFinishedEvents().get(0);
+		Optional<TestExecutionResult> result = executionEvent.getPayload(TestExecutionResult.class);
+		assertThat(result).isPresent();
+		assertThat(result.get().getStatus()).isEqualTo(FAILED);
+		Optional<Throwable> throwable = result.get().getThrowable();
+		assertThat(throwable).containsInstanceOf(clazz);
+		assertThat(throwable.get()).hasMessageContaining(message);
+	}
+
 	@ExtendWith(TempDirectory.class)
 	static class BaseSharedTempDirTestCase {
+
 		static Optional<Path> tempDir;
 
 		@BeforeEach
@@ -249,38 +257,45 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 		static void check(Path tempDir) {
 			assertThat(BaseSharedTempDirTestCase.tempDir).isPresent();
-			assertSame(BaseSharedTempDirTestCase.tempDir.get(), tempDir);
-			assertTrue(Files.exists(tempDir));
+			assertThat(BaseSharedTempDirTestCase.tempDir).containsSame(tempDir);
+			assertThat(tempDir).exists();
 		}
+
 	}
 
 	static class AnnotationOnConstructorParameterTestCase extends BaseSharedTempDirTestCase {
+
 		AnnotationOnConstructorParameterTestCase(@TempDir Path tempDir) {
 			if (BaseSharedTempDirTestCase.tempDir.isPresent()) {
-				assertSame(BaseSharedTempDirTestCase.tempDir.get(), tempDir);
+				assertThat(BaseSharedTempDirTestCase.tempDir).containsSame(tempDir);
 			}
 			else {
 				BaseSharedTempDirTestCase.tempDir = Optional.of(tempDir);
 			}
 			check(tempDir);
 		}
+
 	}
 
 	static class AnnotationOnBeforeAllMethodParameterTestCase extends BaseSharedTempDirTestCase {
+
 		@BeforeAll
 		static void beforeAll(@TempDir Path tempDir) {
 			assertThat(BaseSharedTempDirTestCase.tempDir).isEmpty();
 			BaseSharedTempDirTestCase.tempDir = Optional.of(tempDir);
 			check(tempDir);
 		}
+
 	}
 
 	@TestInstance(PER_CLASS)
 	static class AnnotationOnConstructorParameterWithTestInstancePerClassTestCase
 			extends AnnotationOnConstructorParameterTestCase {
+
 		AnnotationOnConstructorParameterWithTestInstancePerClassTestCase(@TempDir Path tempDir) {
 			super(tempDir);
 		}
+
 	}
 
 	@TestInstance(PER_CLASS)
@@ -290,6 +305,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 	@ExtendWith(TempDirectory.class)
 	static class AnnotationOnAfterAllMethodParameterTestCase {
+
 		static Optional<Path> firstTempDir = Optional.empty();
 		static Optional<Path> secondTempDir = Optional.empty();
 
@@ -306,9 +322,11 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			assertNotEquals(firstTempDir.get(), tempDir);
 			secondTempDir = Optional.of(tempDir);
 		}
+
 	}
 
 	static class BaseSeparateTempDirsTestCase {
+
 		static final Deque<Path> tempDirs = new LinkedList<>();
 
 		@BeforeEach
@@ -340,8 +358,9 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 		void check(@TempDir Path tempDir) {
 			assertSame(tempDirs.getLast(), tempDir);
-			assertTrue(Files.exists(tempDir));
+			assertThat(tempDir).exists();
 		}
+
 	}
 
 	@ExtendWith(TempDirectory.class)
@@ -355,10 +374,12 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 	@ExtendWith(TempDirectory.class)
 	static class InvalidTestCase {
+
 		@Test
 		void wrongParameterType(@TempDir File ignored) {
 			fail("this should never be called");
 		}
+
 	}
 
 	static class ParentDirFromCallableTestCase extends BaseSeparateTempDirsTestCase {
@@ -411,6 +432,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 				fileSystem.close();
 			}
 		}
+
 	}
 
 	static class FailedCreationAttemptTestCase {
@@ -433,6 +455,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		void test(@TempDir Path tempDir) {
 			fail("this should never be called");
 		}
+
 	}
 
 	static class FailedDeletionAttemptTestCase {
@@ -465,6 +488,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		void test(@TempDir Path tempDir) {
 			assertNotNull(tempDir);
 		}
+
 	}
 
 	static class ErroneousParentDirProviderTestCase {
@@ -480,6 +504,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		void test(@TempDir Path tempDir) {
 			fail("this should never be called");
 		}
+
 	}
 
 	private static Path writeFile(@TempDir Path tempDir, TestInfo testInfo) throws IOException {
@@ -487,4 +512,5 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		Files.write(file, testInfo.getDisplayName().getBytes());
 		return file;
 	}
+
 }
