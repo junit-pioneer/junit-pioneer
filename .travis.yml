@@ -43,8 +43,7 @@ deploy:
   - provider: releases
     api_key: "${GITHUB_WRITE_TOKEN}"
     on:
-      branch: master
-      jdk: openjdk8
+      tags: true
 
 env:
   global:
