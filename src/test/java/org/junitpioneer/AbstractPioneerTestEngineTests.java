@@ -17,6 +17,7 @@ import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.r
 
 import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
 import org.junit.platform.engine.DiscoverySelector;
+import org.junit.platform.engine.discovery.MethodSelector;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 
@@ -34,14 +35,29 @@ public abstract class AbstractPioneerTestEngineTests extends AbstractJupiterTest
 		return executeTests(request);
 	}
 
-	private ExecutionEventRecorder executeTestMethods(Class<?> type, String[] methodNames) {
+	private ExecutionEventRecorder executeTestMethods(Class<?> type, String[] methodSignatures) {
 		//@formatter:off
-		DiscoverySelector[] selectors = stream(methodNames)
-				.map(methodName -> selectMethod(type, methodName))
+		DiscoverySelector[] selectors = stream(methodSignatures)
+				.map(methodSignature -> selectMethodWithPossibleParameters(type, methodSignature))
 				.toArray(DiscoverySelector[]::new);
 		//@formatter:on
 		LauncherDiscoveryRequest request = request().selectors(selectors).build();
 		return executeTests(request);
+	}
+
+	private MethodSelector selectMethodWithPossibleParameters(Class<?> type, String methodSignature) {
+		int open = methodSignature.indexOf('(');
+		int close = methodSignature.indexOf(')');
+		boolean hasValidParameters = 0 < open && open < close && close == methodSignature.length() - 1;
+
+		if (hasValidParameters) {
+			String methodName = methodSignature.substring(0, open);
+			String methodParameters = methodSignature.substring(open + 1, close);
+			return selectMethod(type, methodName, methodParameters);
+		}
+		else {
+			return selectMethod(type, methodSignature);
+		}
 	}
 
 }

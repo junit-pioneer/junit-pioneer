@@ -307,6 +307,9 @@ public class TempDirectory implements ParameterResolver {
 
 				private FileVisitResult deleteAndContinue(Path path) {
 					try {
+						// without races by multiple threads, a call to `Files::delete` would suffice
+						// because the tree walker doesn't visit non-existing files; since race
+						// conditions can't be ruled out, `Files::deleteIfExists` is the safer approach
 						Files.deleteIfExists(path);
 					}
 					catch (IOException ex) {

@@ -66,6 +66,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	void resetStaticVariables() {
 		BaseSharedTempDirTestCase.tempDir = Optional.empty();
 		BaseSeparateTempDirsTestCase.tempDirs.clear();
+		DeletionTestCase.tempDir = Optional.empty();
 	}
 
 	@Nested
@@ -150,6 +151,38 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		void resolvesTempDirWithCustomParentDirFromProvider() {
 			assertResolvesSeparateTempDirs(ParentDirFromProviderTestCase.class);
 		}
+	}
+
+	@Nested
+	@DisplayName("deletes temp dir")
+	class Deletions {
+
+		@Test
+		@DisplayName("after test execution")
+		void deletesTempDirAfterExecution() {
+			ExecutionEventRecorder executionEventRecorder = //
+				executeTests(DeletionTestCase.class, "test(java.nio.file.Path)");
+
+			assertEquals(1, executionEventRecorder.getTestStartedCount());
+			assertEquals(1, executionEventRecorder.getTestSuccessfulCount());
+
+			assertThat(DeletionTestCase.tempDir).isPresent();
+			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
+		}
+
+		@Test
+		@DisplayName("and ignores deleted directory without failing")
+		void ignoresDeletedDirectory() {
+			ExecutionEventRecorder executionEventRecorder = //
+				executeTests(DeletionTestCase.class, "testThatDeletes(java.nio.file.Path)");
+
+			assertEquals(1, executionEventRecorder.getTestStartedCount());
+			assertEquals(1, executionEventRecorder.getTestSuccessfulCount());
+
+			assertThat(DeletionTestCase.tempDir).isPresent();
+			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
+		}
+
 	}
 
 	@Nested
@@ -373,6 +406,35 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	}
 
 	@ExtendWith(TempDirectory.class)
+	static class DeletionTestCase {
+
+		static Optional<Path> tempDir;
+
+		@Test
+		void test(@TempDir Path tempDir) throws Exception {
+			storeTempDir(tempDir);
+			Files.write(tempDir.resolve("DeletionTestCase_test.txt"), "Non-empty file".getBytes());
+		}
+
+		@Test
+		void testThatDeletes(@TempDir Path tempDir) throws Exception {
+			storeTempDir(tempDir);
+			Files.delete(tempDir);
+		}
+
+		private void storeTempDir(@TempDir Path tempDir) {
+			if (DeletionTestCase.tempDir.isPresent()) {
+				assertThat(DeletionTestCase.tempDir).containsSame(tempDir);
+			}
+			else {
+				assertThat(tempDir).exists();
+				DeletionTestCase.tempDir = Optional.of(tempDir);
+			}
+		}
+
+	}
+
+	@ExtendWith(TempDirectory.class)
 	static class InvalidTestCase {
 
 		@Test
@@ -469,6 +531,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			when(provider.readAttributes(any(), any(Class.class), any())) //
 					.thenAnswer(invocation -> mock(invocation.getArgument(1)));
 			doThrow(new IOException("Simulated deletion failure")).when(provider).delete(any());
+			doThrow(new IOException("Simulated deletion failure")).when(provider).deleteIfExists(any());
 			when(fileSystem.provider()).thenReturn(provider);
 			when(fileSystem.getPath(any())).thenAnswer(invocation -> {
 				Path path = mock(Path.class, Arrays.toString(invocation.getArguments()));
