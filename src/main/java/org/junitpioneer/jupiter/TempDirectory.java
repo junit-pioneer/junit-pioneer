@@ -75,6 +75,12 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * with any third-party {@code FileSystem} implementation, e.g.
  * <a href="https://github.com/google/jimfs">Jimfs</a>.
  *
+ * <p>Since JUnit Jupiter 5.4, there's a
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory">
+ * built-in {@code @TempDir} extension</a>. If you don't need support for
+ * arbitrary file systems, you should consider using that instead of this
+ * extension.
+ *
  * @since 0.1
  * @see TempDir
  * @see ParentDirProvider
@@ -86,6 +92,12 @@ public class TempDirectory implements ParameterResolver {
 	 * {@code TempDir} can be used to annotate a test or lifecycle method or
 	 * test class constructor parameter of type {@link Path} that should be
 	 * resolved into a temporary directory.
+	 *
+	 * <p>Since JUnit Jupiter 5.4, there's a
+	 * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory">
+	 * built-in {@code @TempDir} extension</a>. If you don't need support for
+	 * arbitrary file systems, you should consider using that instead of this
+	 * extension.
 	 *
 	 * @see TempDirectory
 	 */
