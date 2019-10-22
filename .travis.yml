@@ -42,6 +42,9 @@ deploy:
       jdk: openjdk8
   - provider: releases
     api_key: "${GITHUB_WRITE_TOKEN}"
+    skip_cleanup: true
+    file_glob: true
+    file: "./build/libs/junit-pioneer-*.jar"
     on:
       tags: true
 
