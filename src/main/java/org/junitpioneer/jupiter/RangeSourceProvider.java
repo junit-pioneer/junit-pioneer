@@ -11,15 +11,13 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
@@ -38,26 +36,13 @@ import org.junit.platform.commons.util.Preconditions;
  * </ul>
  *
  * @see IntRangeSource
+ * @see ShortRangeSource
+ * @see LongRangeSource
+ * @see ByteRangeSource
+ * @see DoubleRangeSource
+ * @see FloatRangeSource
  */
 public class RangeSourceProvider implements ArgumentsProvider {
-
-	/**
-	 * {@link Function}s to convert {@link Number}s to primitive wrappers.
-	 */
-	private final List<Number> values = new LinkedList<>();
-
-	/**
-	 * A map from the (wrapper) class to produce, to a function that can produce it from a {@link Number}
-	 */
-	private static final Map<Class<?>, Function<Number, ?>> primitiveMappers = new HashMap<>();
-	static {
-		primitiveMappers.put(Byte.class, Number::byteValue);
-		primitiveMappers.put(Short.class, Number::shortValue);
-		primitiveMappers.put(Integer.class, Number::intValue);
-		primitiveMappers.put(Long.class, Number::longValue);
-		primitiveMappers.put(Float.class, Number::floatValue);
-		primitiveMappers.put(Double.class, Number::doubleValue);
-	}
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
@@ -82,44 +67,15 @@ public class RangeSourceProvider implements ArgumentsProvider {
 
 		Annotation argumentsSource = argumentsSources.get(0);
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
+		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
 
-		Method stepMethod = argumentsSourceClass.getMethod("step");
-		Number stepValue = (Number) stepMethod.invoke(argumentsSource);
-		double stepDouble = stepValue.doubleValue();
-		Preconditions.condition(stepDouble != 0.0, "Illegal range. The step cannot be 0.");
-
-		Method fromMethod = argumentsSourceClass.getMethod("from");
-		Number fromValue = (Number) fromMethod.invoke(argumentsSource);
-		double fromDouble = fromValue.doubleValue();
-
-		Method toMethod = argumentsSourceClass.getMethod("to");
-		Number toValue = (Number) toMethod.invoke(argumentsSource);
-		double toDouble = toValue.doubleValue();
-
-		// @formatter:off
-		Preconditions.condition(
-				fromDouble != toDouble,
-				"Illegal range. Equal from and to will produce an empty range.");
-
-		Preconditions.condition(
-				fromDouble < toDouble && stepDouble > 0.0 || fromDouble > toDouble && stepDouble < 0.0,
-				() -> String.format(
-						"Illegal range. There's no way to get from %f to %f with a step of %f.",
-						fromDouble, toDouble, stepDouble));
-		// @formatter:on
-
-		Method closeMethod = argumentsSourceClass.getMethod("closed");
-		Boolean closedValue = (Boolean) closeMethod.invoke(argumentsSource);
-
-		// Once (if) Java 8 support is dropped, this boiler-plate can be cleaned up and we can just use
-		// IntStream.iterate(rangeSource.from(), i -> i < rangeSource.to(), i -> i += rangeSource.step());
-		double val = fromDouble;
-		while (val < toDouble && stepDouble > 0.0 || val > toDouble && stepDouble < 0.0
-				|| closedValue && val == toDouble) {
-			values.add(val);
-			val += stepDouble;
-		}
-
-		return values.stream().map(primitiveMappers.get(fromValue.getClass())).map(Arguments::of);
+		Range<?> range = (Range) rangeClass.getConstructors()[0].newInstance(argumentsSource);
+		range.validate();
+		return asStream(range).map(Arguments::of);
 	}
+
+	private Stream<?> asStream(Range r) {
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(r, Spliterator.ORDERED), false);
+	}
+
 }

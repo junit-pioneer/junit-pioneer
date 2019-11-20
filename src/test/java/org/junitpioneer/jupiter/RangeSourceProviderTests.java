@@ -185,7 +185,7 @@ public class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 			RangeSourceProvider provider = new RangeSourceProvider();
 			PreconditionViolationException e = assertThrows(PreconditionViolationException.class,
 				() -> provider.provideArguments(ec));
-			assertEquals("Illegal range. The step cannot be 0.", e.getMessage());
+			assertEquals("Illegal range. The step cannot be zero.", e.getMessage());
 		}
 
 		@Test
@@ -204,8 +204,7 @@ public class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 			RangeSourceProvider provider = new RangeSourceProvider();
 			PreconditionViolationException e = assertThrows(PreconditionViolationException.class,
 				() -> provider.provideArguments(ec));
-			assertEquals("Illegal range. There's no way to get from 10.000000 to 0.000000 with a step of 1.000000.",
-				e.getMessage());
+			assertEquals("Illegal range. There's no way to get from 10 to 0 with a step of 1.", e.getMessage());
 		}
 
 		@Test

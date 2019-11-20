@@ -31,6 +31,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ArgumentsSource(RangeSourceProvider.class)
+@RangeClass(DoubleRange.class)
 public @interface DoubleRangeSource {
 
 	/**
