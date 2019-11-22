@@ -48,9 +48,8 @@ public class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 			LongStream.range(6_000_000_000L, 6_000_000_003L).boxed(),
 			LongStream.rangeClosed(-6_000_000_400L, -6_000_000_000L).filter(l -> l % 100L == 0L).boxed(),
 			IntStream.range(0, 3).mapToObj(i -> i + 2.2F), IntStream.rangeClosed(3, 6).mapToObj(i -> i * -0.1F),
-			IntStream.range(0, 2).mapToObj(i -> i + 8.4),
-			IntStream.rangeClosed(-3, -2).mapToObj(i -> (double) i)).flatMap(Function.identity()).toArray(
-				Number[]::new);
+			IntStream.range(0, 2).mapToObj(i -> i + 8.4), IntStream.rangeClosed(-3, -2).mapToObj(i -> (double) i),
+			Stream.of(123)).flatMap(Function.identity()).toArray(Number[]::new);
 	}
 
 	@Test
@@ -140,6 +139,11 @@ public class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 		@ParameterizedTest(name = "Double {0}")
 		@DoubleRangeSource(from = -2.0, to = -3.0, step = -1, closed = true)
 		public void descendingDouble(double param) {
+		}
+
+		@ParameterizedTest(name = "Integer {0}")
+		@IntRangeSource(from = 123, to = 123, closed = true)
+		public void emptyClosedRange(int param) {
 		}
 	}
 
