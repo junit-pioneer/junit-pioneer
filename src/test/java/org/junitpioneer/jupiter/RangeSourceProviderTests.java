@@ -34,12 +34,12 @@ import org.junitpioneer.AbstractPioneerTestEngineTests;
 /**
  * Tests for the {@link RangeSourceProvider}.
  */
-public class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
+class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 
 	private Number[] expectedValues;
 
 	@BeforeEach
-	public void populateValues() {
+	void populateValues() {
 		expectedValues = Stream.of(IntStream.range(0, 10).mapToObj(i -> (byte) i),
 			IntStream.rangeClosed(-7, -3).mapToObj(i -> (byte) i), IntStream.range(130, 136).mapToObj(i -> (short) i),
 			IntStream.rangeClosed(-144, -140).filter(i -> i % 2 == 0).mapToObj(i -> (short) i),
@@ -53,7 +53,7 @@ public class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 	}
 
 	@Test
-	public void assertAllValuesSupplied() {
+	void assertAllValuesSupplied() {
 		ExecutionEventRecorder eventRecorder = executeTestsForClass(RangeTestCases.class);
 
 		List<Number> actualValues = eventRecorder.eventStream().filter(
@@ -83,92 +83,92 @@ public class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 	class RangeTestCases {
 		@ParameterizedTest(name = "Byte {0}")
 		@ByteRangeSource(from = 0, to = 10)
-		public void ascendingByte(byte param) {
+		void ascendingByte(byte param) {
 		}
 
 		@ParameterizedTest(name = "Byte {0}")
 		@ByteRangeSource(from = -3, to = -7, step = -1, closed = true)
-		public void descendingByte(byte param) {
+		void descendingByte(byte param) {
 		}
 
 		@ParameterizedTest(name = "Short {0}")
 		@ShortRangeSource(from = 130, to = 136)
-		public void ascendingShort(short param) {
+		void ascendingShort(short param) {
 		}
 
 		@ParameterizedTest(name = "Short {0}")
 		@ShortRangeSource(from = -140, to = -144, step = -2, closed = true)
-		public void descendingShort(short param) {
+		void descendingShort(short param) {
 		}
 
 		@ParameterizedTest(name = "Integer {0}")
 		@IntRangeSource(from = 40_000, to = 40_005)
-		public void ascendingInt(int param) {
+		void ascendingInt(int param) {
 		}
 
 		@ParameterizedTest(name = "Integer {0}")
 		@IntRangeSource(from = -40_000, to = -42_000, step = -2000, closed = true)
-		public void descendingInt(int param) {
+		void descendingInt(int param) {
 		}
 
 		@ParameterizedTest(name = "Long {0}")
 		@LongRangeSource(from = 6_000_000_000L, to = 6_000_000_003L)
-		public void ascendingLong(long param) {
+		void ascendingLong(long param) {
 		}
 
 		@ParameterizedTest(name = "Long {0}")
 		@LongRangeSource(from = -6_000_000_000L, to = -6_000_000_400L, step = -100, closed = true)
-		public void descendingLong(long param) {
+		void descendingLong(long param) {
 		}
 
 		@ParameterizedTest(name = "Float {0}")
 		@FloatRangeSource(from = 2.2F, to = 5.2F)
-		public void ascendingFloat(float param) {
+		void ascendingFloat(float param) {
 		}
 
 		@ParameterizedTest(name = "Float {0}")
 		@FloatRangeSource(from = -0.3F, to = -0.6F, step = -0.1F, closed = true)
-		public void descendingFloat(float param) {
+		void descendingFloat(float param) {
 		}
 
 		@ParameterizedTest(name = "Double {0}")
 		@DoubleRangeSource(from = 8.4, to = 10.4)
-		public void ascendingDouble(double param) {
+		void ascendingDouble(double param) {
 		}
 
 		@ParameterizedTest(name = "Double {0}")
 		@DoubleRangeSource(from = -2.0, to = -3.0, step = -1, closed = true)
-		public void descendingDouble(double param) {
+		void descendingDouble(double param) {
 		}
 
 		@ParameterizedTest(name = "Integer {0}")
 		@IntRangeSource(from = 123, to = 123, closed = true)
-		public void emptyClosedRange(int param) {
+		void emptyClosedRange(int param) {
 		}
 	}
 
 	@Nested
 	class InvalidRangeTestCases {
 		@Test
-		public void twoAnnotations() {
+		void twoAnnotations() {
 			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "twoAnnotations");
 			assertInvalidRange(eventRecorder, "Expected exactly one annotation to provide an ArgumentSource, found 2.");
 		}
 
 		@Test
-		public void zeroStep() {
+		void zeroStep() {
 			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "zeroStep");
 			assertInvalidRange(eventRecorder, "Illegal range. The step cannot be zero.");
 		}
 
 		@Test
-		public void illegalStep() {
+		void illegalStep() {
 			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "illegalStep");
 			assertInvalidRange(eventRecorder, "Illegal range. There's no way to get from 10 to 0 with a step of 1.");
 		}
 
 		@Test
-		public void emptyRange() {
+		void emptyRange() {
 			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "emptyRange");
 			assertInvalidRange(eventRecorder, "Illegal range. Equal from and to will produce an empty range.");
 		}
