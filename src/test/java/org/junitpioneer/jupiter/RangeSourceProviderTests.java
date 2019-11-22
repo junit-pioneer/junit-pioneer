@@ -12,17 +12,9 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -32,10 +24,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.util.PreconditionViolationException;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEvent;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
@@ -150,115 +141,68 @@ public class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 		@DoubleRangeSource(from = -2.0, to = -3.0, step = -1, closed = true)
 		public void descendingDouble(double param) {
 		}
+	}
 
+	@Nested
+	class InvalidRangeTestCases {
 		@Test
-		public void noAnnotation() throws NoSuchMethodException {
-			Object dummy = new Object() {
-				@Override
-				public String toString() {
-					return "";
-				}
-			};
-
-			ExtensionContext ec = spy(ExtensionContext.class);
-			when(ec.getElement()).thenReturn(Optional.of(dummy.getClass().getMethod("toString")));
-
-			RangeSourceProvider provider = new RangeSourceProvider();
-			PreconditionViolationException e = assertThrows(PreconditionViolationException.class,
-				() -> provider.provideArguments(ec));
-			assertEquals("Expected exactly one annotation to provide an ArgumentSource, found 0.", e.getMessage());
+		public void twoAnnotations() {
+			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "twoAnnotations");
+			assertInvalidRange(eventRecorder, "Expected exactly one annotation to provide an ArgumentSource, found 2.");
 		}
 
 		@Test
-		public void zeroStep() throws NoSuchMethodException {
-			Object dummy = new Object() {
-				@IntRangeSource(from = 1, to = 2, step = 0)
-				@Override
-				public String toString() {
-					return "";
-				}
-			};
-
-			ExtensionContext ec = spy(ExtensionContext.class);
-			when(ec.getElement()).thenReturn(Optional.of(dummy.getClass().getMethod("toString")));
-
-			RangeSourceProvider provider = new RangeSourceProvider();
-			PreconditionViolationException e = assertThrows(PreconditionViolationException.class,
-				() -> provider.provideArguments(ec));
-			assertEquals("Illegal range. The step cannot be zero.", e.getMessage());
+		public void zeroStep() {
+			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "zeroStep");
+			assertInvalidRange(eventRecorder, "Illegal range. The step cannot be zero.");
 		}
 
 		@Test
-		public void illegalStep() throws NoSuchMethodException {
-			Object dummy = new Object() {
-				@IntRangeSource(from = 10, to = 0, step = 1)
-				@Override
-				public String toString() {
-					return "";
-				}
-			};
-
-			ExtensionContext ec = spy(ExtensionContext.class);
-			when(ec.getElement()).thenReturn(Optional.of(dummy.getClass().getMethod("toString")));
-
-			RangeSourceProvider provider = new RangeSourceProvider();
-			PreconditionViolationException e = assertThrows(PreconditionViolationException.class,
-				() -> provider.provideArguments(ec));
-			assertEquals("Illegal range. There's no way to get from 10 to 0 with a step of 1.", e.getMessage());
+		public void illegalStep() {
+			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "illegalStep");
+			assertInvalidRange(eventRecorder, "Illegal range. There's no way to get from 10 to 0 with a step of 1.");
 		}
 
 		@Test
-		public void emptyRange() throws NoSuchMethodException {
-			Object dummy = new Object() {
-				@IntRangeSource(from = 7, to = 7, step = 1)
-				@Override
-				public String toString() {
-					return "";
-				}
-			};
-
-			ExtensionContext ec = spy(ExtensionContext.class);
-			when(ec.getElement()).thenReturn(Optional.of(dummy.getClass().getMethod("toString")));
-
-			RangeSourceProvider provider = new RangeSourceProvider();
-			PreconditionViolationException e = assertThrows(PreconditionViolationException.class,
-				() -> provider.provideArguments(ec));
-
-			assertEquals("Illegal range. Equal from and to will produce an empty range.", e.getMessage());
+		public void emptyRange() {
+			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "emptyRange");
+			assertInvalidRange(eventRecorder, "Illegal range. Equal from and to will produce an empty range.");
 		}
 	}
 
-	@Test
-	public void twoAnnotations() throws NoSuchMethodException {
-		Object dummy = new Object() {
-			@LongRangeSource(from = 1, to = 2, step = 1)
-			@IntRangeSource(from = 1, to = 2, step = 1)
-			@Override
-			public String toString() {
-				return "";
-			}
-		};
+	static class InvalidRanges {
+		@IntRangeSource(from = 1, to = 2)
+		@LongRangeSource(from = 1L, to = 2L)
+		@ParameterizedTest
+		void twoAnnotations() {
+		}
 
-		ExtensionContext ec = spy(ExtensionContext.class);
-		when(ec.getElement()).thenReturn(Optional.of(dummy.getClass().getMethod("toString")));
+		@IntRangeSource(from = 1, to = 2, step = 0)
+		@ParameterizedTest
+		void zeroStep() {
+		}
 
-		RangeSourceProvider provider = new RangeSourceProvider();
-		PreconditionViolationException e = assertThrows(PreconditionViolationException.class,
-			() -> provider.provideArguments(ec));
+		@IntRangeSource(from = 10, to = 0, step = 1)
+		@ParameterizedTest
+		void illegalStep() {
+		}
 
-		assertEquals("Expected exactly one annotation to provide an ArgumentSource, found 2.", e.getMessage());
+		@IntRangeSource(from = 7, to = 7, step = 1)
+		@ParameterizedTest
+		void emptyRange() {
+		}
 	}
 
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
-	@ArgumentsSource(RangeSourceProvider.class)
-	private @interface InvalidRangeSource {
-		int from() default 1;
-
-		double to() default 2;
-
-		int step() default 1;
-
-		boolean closed() default false;
+	private static void assertInvalidRange(ExecutionEventRecorder eventRecorder, String message) {
+		List<ExecutionEvent> failedContainerFinishedEvents = eventRecorder.getFailedContainerEvents();
+		assertEquals(1, failedContainerFinishedEvents.size());
+		//@formatter:off
+		Throwable thrown = failedContainerFinishedEvents.get(0)
+				.getPayload(TestExecutionResult.class)
+				.flatMap(TestExecutionResult::getThrowable)
+				.orElseThrow(AssertionError::new);
+		//@formatter:on
+		assertThat(thrown).isInstanceOf(PreconditionViolationException.class);
+		assertEquals(message, thrown.getMessage());
 	}
 }
