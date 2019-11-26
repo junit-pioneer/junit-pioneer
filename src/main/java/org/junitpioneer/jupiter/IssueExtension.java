@@ -24,10 +24,9 @@ import org.junit.platform.commons.support.AnnotationSupport;
  */
 @DisplayName("Issue extension")
 class IssueExtension implements BeforeEachCallback {
-
 	static final Namespace NAMESPACE = Namespace.create(IssueExtension.class);
-
 	static final String KEY = "Issue";
+
 
 
 	@Override
@@ -64,9 +63,6 @@ class IssueExtension implements BeforeEachCallback {
 	}
 
 	static String createIssueId(Issue annotation) {
-		if (annotation.value().isEmpty()) {
-			throw new IllegalArgumentException("The value of the annotation must not be empty");
-		}
 		return annotation.value();
 	}
 
