@@ -26,7 +26,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * attached Javadoc.
  *
  * <p>See {@link org.junit.jupiter.api.Test the official @Test} for more information regarding JUnit Jupiter integration.
+ *
+ * @deprecated This annotation is an intermediate step on a full migration from JUnit 4's {@code @Test} to Jupiter's.
+ * To emphasize its character as a temporary solution and to reduce risk of accidental use, it's marked as deprecated.
+ * Deprecated since v0.4; not intended to be removed.
+ *
  */
+@Deprecated
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(ExpectedExceptionExtension.class)
