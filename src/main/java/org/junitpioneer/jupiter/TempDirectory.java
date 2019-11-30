@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -292,13 +293,24 @@ public class TempDirectory implements ParameterResolver {
 				}
 
 				@Override
+				public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+					if (exc instanceof NoSuchFileException) {
+						return CONTINUE;
+					}
+					return super.visitFileFailed(file, exc);
+				}
+
+				@Override
 				public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
 					return deleteAndContinue(dir);
 				}
 
 				private FileVisitResult deleteAndContinue(Path path) {
 					try {
-						Files.delete(path);
+						// without races by multiple threads, a call to `Files::delete` would suffice
+						// because the tree walker doesn't visit non-existing files; since race
+						// conditions can't be ruled out, `Files::deleteIfExists` is the safer approach
+						Files.deleteIfExists(path);
 					}
 					catch (IOException ex) {
 						failures.put(path, ex);
