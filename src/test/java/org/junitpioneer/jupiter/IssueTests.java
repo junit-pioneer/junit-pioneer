@@ -1,11 +1,12 @@
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
-import org.junitpioneer.vintage.Test;
+
 
 import java.nio.file.Files;
 import java.nio.file.Path;
