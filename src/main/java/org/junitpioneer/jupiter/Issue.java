@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 the original author or authors.
+ * Copyright 2015-2020 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,12 +10,12 @@
 
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * {@code @Issue} is a JUnit Jupiter extension to mark Tests that they are
@@ -38,11 +38,9 @@ import java.lang.annotation.Target;
  * This is done by purpose because a test case should only cover exactly
  * one aspect of a method.</p>
  *
- * @link https://github.com/junit-pioneer/junit-pioneer/issues/135
- *
  * @since 0.4
  */
-@Target({ ElementType.METHOD})
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(IssueExtension.class)
 public @interface Issue {

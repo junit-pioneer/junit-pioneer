@@ -1,44 +1,38 @@
+/*
+ * Copyright 2015-2020 the original author or authors.
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v2.0 which
+ * accompanies this distribution and is available at
+ *
+ * http://www.eclipse.org/legal/epl-v20.html
+ */
+
 package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.engine.TestDescriptor;
-import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 import org.junitpioneer.vintage.Test;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
-import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
 
 @ExtendWith(IssueExtension.class)
 public class IssueTests extends AbstractPioneerTestEngineTests {
 
-    @Test
-    void testIssueAnnotation() {
+	@Test
+	void testIssueAnnotation() {
 
-    }
+	}
 
-    static class IssueTestCase {
+	static class IssueTestCase {
 
-        @Test
-        void testNoAnnotation() {
+		@Test
+		void testNoAnnotation() {
 
-        }
+		}
 
-        @Issue("Req 11")
-        @Test
-        void testIsAnnotated() {
+		@Issue("Req 11")
+		@Test
+		void testIsAnnotated() {
 
-        }
-    }
+		}
+	}
 }
