@@ -10,7 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
+import java.lang.annotation.Annotation;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -62,21 +64,17 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	}
 
 	private void clearAnnotatedSystemProperties(final ExtensionContext context) {
-		//@formatter:off
-		context.getElement().ifPresent(element -> {
-			AnnotationSupport.findRepeatableAnnotations(element, ClearSystemProperty.class).stream()
-				.forEach(prop -> System.clearProperty(prop.key()));
-		});
-		//@formatter:on
+		forEachAnnotation(context, ClearSystemProperty.class, prop -> System.clearProperty(prop.key()));
 	}
 
 	private void setAnnotatedSystemProperties(final ExtensionContext context) {
-		//@formatter:off
-		context.getElement().ifPresent(element -> {
-			AnnotationSupport.findRepeatableAnnotations(element, SetSystemProperty.class).stream()
-				.forEach(prop -> System.setProperty(prop.key(), prop.value()));
-		});
-		//@formatter:on
+		forEachAnnotation(context, SetSystemProperty.class, prop -> System.setProperty(prop.key(), prop.value()));
+	}
+
+	private <A extends Annotation> void forEachAnnotation(ExtensionContext context, Class<A> annotationType,
+			Consumer<A> action) {
+		context.getElement().ifPresent(
+			element -> AnnotationSupport.findRepeatableAnnotations(element, annotationType).stream().forEach(action));
 	}
 
 	@Override
