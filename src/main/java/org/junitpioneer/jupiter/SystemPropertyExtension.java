@@ -38,20 +38,11 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		if (annotationsPresentOnTestMethod(context)) {
+		boolean present = Util.annotationPresentOnTestMethod(context, ClearSystemProperty.class,
+			ClearSystemProperties.class, SetSystemProperty.class, SetSystemProperties.class);
+		if (present) {
 			handleSystemProperties(context);
 		}
-	}
-
-	private boolean annotationsPresentOnTestMethod(ExtensionContext context) {
-		//@formatter:off
-		return context.getTestMethod()
-				.map(testMethod -> AnnotationSupport.isAnnotated(testMethod, ClearSystemProperty.class)
-						|| AnnotationSupport.isAnnotated(testMethod, ClearSystemProperties.class)
-						|| AnnotationSupport.isAnnotated(testMethod, SetSystemProperty.class)
-						|| AnnotationSupport.isAnnotated(testMethod, SetSystemProperties.class))
-				.orElse(false);
-		//@formatter:on
 	}
 
 	private void handleSystemProperties(ExtensionContext context) {
@@ -127,7 +118,9 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		if (annotationsPresentOnTestMethod(context)) {
+		boolean present = Util.annotationPresentOnTestMethod(context, ClearSystemProperty.class,
+			ClearSystemProperties.class, SetSystemProperty.class, SetSystemProperties.class);
+		if (present) {
 			restoreOriginalSystemProperties(context);
 		}
 	}

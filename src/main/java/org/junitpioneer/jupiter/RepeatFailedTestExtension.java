@@ -14,8 +14,6 @@ import static java.lang.String.format;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
-import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
-import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -26,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
 
 public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
@@ -35,8 +34,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 	@Override
 	public boolean supportsTestTemplate(ExtensionContext context) {
 		// the annotation only applies to methods
-		Method testMethod = context.getRequiredTestMethod();
-		return isAnnotated(testMethod, RepeatFailedTest.class);
+		return Util.annotationPresentOnTestMethod(context, RepeatFailedTest.class);
 	}
 
 	@Override
@@ -86,7 +84,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 
 		static FailedTestRepeater createFor(Method repeatedTest) {
 			//@formatter:off
-			RepeatFailedTest repeatFailedTest = findAnnotation(repeatedTest, RepeatFailedTest.class)
+			RepeatFailedTest repeatFailedTest = AnnotationSupport.findAnnotation(repeatedTest, RepeatFailedTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RepeatFailedTest is missing."));
 			return new FailedTestRepeater(repeatFailedTest.value());
 			//@formatter:on
