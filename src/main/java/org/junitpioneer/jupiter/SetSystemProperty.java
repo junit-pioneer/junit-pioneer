@@ -30,7 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @since 0.4
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(SetSystemProperties.class)
 @ExtendWith(SystemPropertyExtension.class)
 public @interface SetSystemProperty {
