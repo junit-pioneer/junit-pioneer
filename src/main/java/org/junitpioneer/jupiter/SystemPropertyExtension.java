@@ -10,20 +10,26 @@
 
 package org.junitpioneer.jupiter;
 
-import java.lang.reflect.Method;
 import java.util.Properties;
 
+import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.platform.commons.support.AnnotationSupport;
 
-class SystemPropertyExtension implements BeforeEachCallback, AfterEachCallback {
+class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(SystemPropertyExtension.class);
 
 	private static final String KEY = "SystemProperty";
+
+	@Override
+	public void beforeAll(ExtensionContext context) throws Exception {
+		handleSystemProperties(context);
+	}
 
 	@Override
 	public void beforeEach(final ExtensionContext context) throws Exception {
@@ -45,10 +51,8 @@ class SystemPropertyExtension implements BeforeEachCallback, AfterEachCallback {
 
 	private void handleSystemProperties(final ExtensionContext context) {
 		storeOriginalSystemProperties(context);
-		context.getTestMethod().ifPresent(testMethod -> {
-			clearAnnotatedSystemProperties(testMethod);
-			setAnnotatedSystemProperties(testMethod);
-		});
+		clearAnnotatedSystemProperties(context);
+		setAnnotatedSystemProperties(context);
 	}
 
 	private void storeOriginalSystemProperties(final ExtensionContext context) {
@@ -57,17 +61,21 @@ class SystemPropertyExtension implements BeforeEachCallback, AfterEachCallback {
 		context.getStore(NAMESPACE).put(KEY, backup);
 	}
 
-	private void clearAnnotatedSystemProperties(final Method testMethod) {
+	private void clearAnnotatedSystemProperties(final ExtensionContext context) {
 		//@formatter:off
-		AnnotationSupport.findRepeatableAnnotations(testMethod, ClearSystemProperty.class).stream()
+		context.getElement().ifPresent(element -> {
+			AnnotationSupport.findRepeatableAnnotations(element, ClearSystemProperty.class).stream()
 				.forEach(prop -> System.clearProperty(prop.key()));
+		});
 		//@formatter:on
 	}
 
-	private void setAnnotatedSystemProperties(final Method testMethod) {
+	private void setAnnotatedSystemProperties(final ExtensionContext context) {
 		//@formatter:off
-		AnnotationSupport.findRepeatableAnnotations(testMethod, SetSystemProperty.class).stream()
+		context.getElement().ifPresent(element -> {
+			AnnotationSupport.findRepeatableAnnotations(element, SetSystemProperty.class).stream()
 				.forEach(prop -> System.setProperty(prop.key(), prop.value()));
+		});
 		//@formatter:on
 	}
 
@@ -76,6 +84,11 @@ class SystemPropertyExtension implements BeforeEachCallback, AfterEachCallback {
 		if (annotationsPresentOnTestMethod(context)) {
 			resetOriginalSystemProperties(context);
 		}
+	}
+
+	@Override
+	public void afterAll(ExtensionContext context) throws Exception {
+		resetOriginalSystemProperties(context);
 	}
 
 	private void resetOriginalSystemProperties(final ExtensionContext context) {
