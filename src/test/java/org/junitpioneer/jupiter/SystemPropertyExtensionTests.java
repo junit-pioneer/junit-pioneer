@@ -23,14 +23,14 @@ class SystemPropertyExtensionTests {
 
 	@BeforeAll
 	static void globalSetUp() {
-		System.setProperty("some property", "old value");
-		System.setProperty("another property", "old value");
+		System.setProperty("property A", "old A");
+		System.setProperty("property B", "old B");
 	}
 
 	@AfterAll
 	static void globalTearDown() {
-		assertThat(System.getProperty("some property")).isEqualTo("old value");
-		assertThat(System.getProperty("another property")).isEqualTo("old value");
+		assertThat(System.getProperty("property A")).isEqualTo("old A");
+		assertThat(System.getProperty("property B")).isEqualTo("old B");
 	}
 
 	@Nested
@@ -39,19 +39,19 @@ class SystemPropertyExtensionTests {
 
 		@Test
 		@DisplayName("should clear system property")
-		@ClearSystemProperty(key = "some property")
+		@ClearSystemProperty(key = "property A")
 		void shouldClearSystemProperty() {
-			assertThat(System.getProperty("some property")).isNull();
-			assertThat(System.getProperty("another property")).isEqualTo("old value");
+			assertThat(System.getProperty("property A")).isNull();
+			assertThat(System.getProperty("property B")).isEqualTo("old B");
 		}
 
 		@Test
 		@DisplayName("should be repeatable")
-		@ClearSystemProperty(key = "some property")
-		@ClearSystemProperty(key = "another property")
+		@ClearSystemProperty(key = "property A")
+		@ClearSystemProperty(key = "property B")
 		void shouldBeRepeatable() {
-			assertThat(System.getProperty("some property")).isNull();
-			assertThat(System.getProperty("another property")).isNull();
+			assertThat(System.getProperty("property A")).isNull();
+			assertThat(System.getProperty("property B")).isNull();
 		}
 
 	}
@@ -62,19 +62,19 @@ class SystemPropertyExtensionTests {
 
 		@Test
 		@DisplayName("should set system property to value")
-		@SetSystemProperty(key = "some property", value = "new value")
+		@SetSystemProperty(key = "property A", value = "new A")
 		void shouldSetSystemPropertyToValue() {
-			assertThat(System.getProperty("some property")).isEqualTo("new value");
-			assertThat(System.getProperty("another property")).isEqualTo("old value");
+			assertThat(System.getProperty("property A")).isEqualTo("new A");
+			assertThat(System.getProperty("property B")).isEqualTo("old B");
 		}
 
 		@Test
 		@DisplayName("should be repeatable")
-		@SetSystemProperty(key = "some property", value = "new value")
-		@SetSystemProperty(key = "another property", value = "new value")
+		@SetSystemProperty(key = "property A", value = "new A")
+		@SetSystemProperty(key = "property B", value = "new B")
 		void shouldBeRepeatable() {
-			assertThat(System.getProperty("some property")).isEqualTo("new value");
-			assertThat(System.getProperty("another property")).isEqualTo("new value");
+			assertThat(System.getProperty("property A")).isEqualTo("new A");
+			assertThat(System.getProperty("property B")).isEqualTo("new B");
 		}
 
 	}
@@ -85,11 +85,11 @@ class SystemPropertyExtensionTests {
 
 		@Test
 		@DisplayName("should be mixable")
-		@ClearSystemProperty(key = "some property")
-		@SetSystemProperty(key = "another property", value = "new value")
+		@ClearSystemProperty(key = "property A")
+		@SetSystemProperty(key = "property B", value = "new B")
 		void clearAndSetSystemPropertyShouldBeMixable() {
-			assertThat(System.getProperty("some property")).isNull();
-			assertThat(System.getProperty("another property")).isEqualTo("new value");
+			assertThat(System.getProperty("property A")).isNull();
+			assertThat(System.getProperty("property B")).isEqualTo("new B");
 		}
 
 	}
