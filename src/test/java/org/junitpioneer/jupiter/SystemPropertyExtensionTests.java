@@ -37,17 +37,17 @@ class SystemPropertyExtensionTests {
 	@DisplayName("used with ClearSystemProperty")
 	class ClearSystemPropertyTests {
 
-		@ClearSystemProperty(key = "some property")
 		@Test
 		@DisplayName("should clear system property")
+		@ClearSystemProperty(key = "some property")
 		void shouldClearSystemProperty() {
 			assertThat(System.getProperty("some property")).isNull();
 		}
 
-		@ClearSystemProperty(key = "some property")
-		@ClearSystemProperty(key = "another property")
 		@Test
 		@DisplayName("should be repeatable")
+		@ClearSystemProperty(key = "some property")
+		@ClearSystemProperty(key = "another property")
 		void shouldBeRepeatable() {
 			assertThat(System.getProperty("some property")).isNull();
 			assertThat(System.getProperty("another property")).isNull();
@@ -59,17 +59,17 @@ class SystemPropertyExtensionTests {
 	@DisplayName("used with SetSystemProperty")
 	class SetSystemPropertyTests {
 
-		@SetSystemProperty(key = "some property", value = "new value")
 		@Test
 		@DisplayName("should set system property to value")
+		@SetSystemProperty(key = "some property", value = "new value")
 		void shouldSetSystemPropertyToValue() {
 			assertThat(System.getProperty("some property")).isEqualTo("new value");
 		}
 
-		@SetSystemProperty(key = "some property", value = "new value")
-		@SetSystemProperty(key = "another property", value = "new value")
 		@Test
 		@DisplayName("should be repeatable")
+		@SetSystemProperty(key = "some property", value = "new value")
+		@SetSystemProperty(key = "another property", value = "new value")
 		void shouldBeRepeatable() {
 			assertThat(System.getProperty("some property")).isEqualTo("new value");
 			assertThat(System.getProperty("another property")).isEqualTo("new value");
@@ -81,10 +81,10 @@ class SystemPropertyExtensionTests {
 	@DisplayName("used with both ClearSystemProperty and SetSystemProperty")
 	class MixedSystemPropertyTests {
 
-		@ClearSystemProperty(key = "some property")
-		@SetSystemProperty(key = "another property", value = "new value")
 		@Test
 		@DisplayName("should be mixable")
+		@ClearSystemProperty(key = "some property")
+		@SetSystemProperty(key = "another property", value = "new value")
 		void clearAndSetSystemPropertyShouldBeMixable() {
 			assertThat(System.getProperty("some property")).isNull();
 			assertThat(System.getProperty("another property")).isEqualTo("new value");
