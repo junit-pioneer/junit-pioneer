@@ -34,7 +34,7 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	}
 
 	@Override
-	public void beforeEach(final ExtensionContext context) throws Exception {
+	public void beforeEach(ExtensionContext context) throws Exception {
 		if (annotationsPresentOnTestMethod(context)) {
 			handleSystemProperties(context);
 		}
@@ -51,23 +51,23 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 		//@formatter:on
 	}
 
-	private void handleSystemProperties(final ExtensionContext context) {
+	private void handleSystemProperties(ExtensionContext context) {
 		storeOriginalSystemProperties(context);
 		clearAnnotatedSystemProperties(context);
 		setAnnotatedSystemProperties(context);
 	}
 
-	private void storeOriginalSystemProperties(final ExtensionContext context) {
-		final Properties backup = new Properties();
+	private void storeOriginalSystemProperties(ExtensionContext context) {
+		Properties backup = new Properties();
 		backup.putAll(System.getProperties());
 		context.getStore(NAMESPACE).put(KEY, backup);
 	}
 
-	private void clearAnnotatedSystemProperties(final ExtensionContext context) {
+	private void clearAnnotatedSystemProperties(ExtensionContext context) {
 		forEachAnnotation(context, ClearSystemProperty.class, prop -> System.clearProperty(prop.key()));
 	}
 
-	private void setAnnotatedSystemProperties(final ExtensionContext context) {
+	private void setAnnotatedSystemProperties(ExtensionContext context) {
 		forEachAnnotation(context, SetSystemProperty.class, prop -> System.setProperty(prop.key(), prop.value()));
 	}
 
@@ -78,7 +78,7 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	}
 
 	@Override
-	public void afterEach(final ExtensionContext context) throws Exception {
+	public void afterEach(ExtensionContext context) throws Exception {
 		if (annotationsPresentOnTestMethod(context)) {
 			resetOriginalSystemProperties(context);
 		}
@@ -89,8 +89,8 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 		resetOriginalSystemProperties(context);
 	}
 
-	private void resetOriginalSystemProperties(final ExtensionContext context) {
-		final Properties backup = context.getStore(NAMESPACE).get(KEY, Properties.class);
+	private void resetOriginalSystemProperties(ExtensionContext context) {
+		Properties backup = context.getStore(NAMESPACE).get(KEY, Properties.class);
 		System.setProperties(backup);
 	}
 
