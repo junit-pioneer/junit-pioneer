@@ -81,13 +81,13 @@ class SystemPropertyExtensionTests {
 
 	@Nested
 	@DisplayName("used with both ClearSystemProperty and SetSystemProperty")
-	class MixedSystemPropertyTests {
+	class CombinedSystemPropertyTests {
 
 		@Test
-		@DisplayName("should be mixable")
+		@DisplayName("should be combinable")
 		@ClearSystemProperty(key = "property A")
 		@SetSystemProperty(key = "property B", value = "new B")
-		void clearAndSetSystemPropertyShouldBeMixable() {
+		void clearAndSetSystemPropertyShouldBeCombinable() {
 			assertThat(System.getProperty("property A")).isNull();
 			assertThat(System.getProperty("property B")).isEqualTo("new B");
 		}
