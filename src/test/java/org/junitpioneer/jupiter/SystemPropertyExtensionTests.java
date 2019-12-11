@@ -25,16 +25,19 @@ class SystemPropertyExtensionTests {
 	static void globalSetUp() {
 		System.setProperty("property A", "old A");
 		System.setProperty("property B", "old B");
+		System.setProperty("property C", "old C");
 	}
 
 	@AfterAll
 	static void globalTearDown() {
 		assertThat(System.getProperty("property A")).isEqualTo("old A");
 		assertThat(System.getProperty("property B")).isEqualTo("old B");
+		assertThat(System.getProperty("property C")).isEqualTo("old C");
 	}
 
 	@Nested
 	@DisplayName("used with ClearSystemProperty")
+	@ClearSystemProperty(key = "property C")
 	class ClearSystemPropertyTests {
 
 		@Test
@@ -43,6 +46,7 @@ class SystemPropertyExtensionTests {
 		void shouldClearSystemProperty() {
 			assertThat(System.getProperty("property A")).isNull();
 			assertThat(System.getProperty("property B")).isEqualTo("old B");
+			assertThat(System.getProperty("property C")).isNull();
 		}
 
 		@Test
@@ -52,12 +56,14 @@ class SystemPropertyExtensionTests {
 		void shouldBeRepeatable() {
 			assertThat(System.getProperty("property A")).isNull();
 			assertThat(System.getProperty("property B")).isNull();
+			assertThat(System.getProperty("property C")).isNull();
 		}
 
 	}
 
 	@Nested
 	@DisplayName("used with SetSystemProperty")
+	@SetSystemProperty(key = "property C", value = "new C")
 	class SetSystemPropertyTests {
 
 		@Test
@@ -66,6 +72,7 @@ class SystemPropertyExtensionTests {
 		void shouldSetSystemPropertyToValue() {
 			assertThat(System.getProperty("property A")).isEqualTo("new A");
 			assertThat(System.getProperty("property B")).isEqualTo("old B");
+			assertThat(System.getProperty("property C")).isEqualTo("new C");
 		}
 
 		@Test
@@ -75,12 +82,15 @@ class SystemPropertyExtensionTests {
 		void shouldBeRepeatable() {
 			assertThat(System.getProperty("property A")).isEqualTo("new A");
 			assertThat(System.getProperty("property B")).isEqualTo("new B");
+			assertThat(System.getProperty("property C")).isEqualTo("new C");
 		}
 
 	}
 
 	@Nested
 	@DisplayName("used with both ClearSystemProperty and SetSystemProperty")
+	@ClearSystemProperty(key = "property A")
+	@SetSystemProperty(key = "property B", value = "new B")
 	class CombinedSystemPropertyTests {
 
 		@Test
@@ -90,6 +100,15 @@ class SystemPropertyExtensionTests {
 		void clearAndSetSystemPropertyShouldBeCombinable() {
 			assertThat(System.getProperty("property A")).isNull();
 			assertThat(System.getProperty("property B")).isEqualTo("new B");
+		}
+
+		@Test
+		@DisplayName("method level should overwrite class level")
+		@ClearSystemProperty(key = "property B")
+		@SetSystemProperty(key = "property A", value = "new A")
+		void methodLevelShouldOverwriteClassLevel() {
+			assertThat(System.getProperty("property B")).isNull();
+			assertThat(System.getProperty("property A")).isEqualTo("new A");
 		}
 
 	}
