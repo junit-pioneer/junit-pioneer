@@ -100,6 +100,7 @@ class SystemPropertyExtensionTests {
 		void clearAndSetSystemPropertyShouldBeCombinable() {
 			assertThat(System.getProperty("property A")).isNull();
 			assertThat(System.getProperty("property B")).isEqualTo("new B");
+			assertThat(System.getProperty("property C")).isEqualTo("old C");
 		}
 
 		@Test
@@ -109,6 +110,7 @@ class SystemPropertyExtensionTests {
 		void methodLevelShouldOverwriteClassLevel() {
 			assertThat(System.getProperty("property B")).isNull();
 			assertThat(System.getProperty("property A")).isEqualTo("new A");
+			assertThat(System.getProperty("property C")).isEqualTo("old C");
 		}
 
 	}
