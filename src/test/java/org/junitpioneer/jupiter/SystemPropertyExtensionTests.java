@@ -42,6 +42,7 @@ class SystemPropertyExtensionTests {
 		@ClearSystemProperty(key = "some property")
 		void shouldClearSystemProperty() {
 			assertThat(System.getProperty("some property")).isNull();
+			assertThat(System.getProperty("another property")).isEqualTo("old value");
 		}
 
 		@Test
@@ -64,6 +65,7 @@ class SystemPropertyExtensionTests {
 		@SetSystemProperty(key = "some property", value = "new value")
 		void shouldSetSystemPropertyToValue() {
 			assertThat(System.getProperty("some property")).isEqualTo("new value");
+			assertThat(System.getProperty("another property")).isEqualTo("old value");
 		}
 
 		@Test
