@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 the original author or authors.
+ * Copyright 2015-2020 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -26,8 +26,6 @@ import org.junit.platform.commons.support.AnnotationSupport;
 class IssueExtension implements BeforeEachCallback {
 	static final Namespace NAMESPACE = Namespace.create(IssueExtension.class);
 	static final String KEY = "Issue";
-
-
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
@@ -65,6 +63,5 @@ class IssueExtension implements BeforeEachCallback {
 	static String createIssueId(Issue annotation) {
 		return annotation.value();
 	}
-
 
 }
