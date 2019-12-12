@@ -21,15 +21,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 /**
  * {@code @ClearSystemProperty} is a JUnit Jupiter extension to clear the value
  * of a system property for a test execution.
- * 
+ *
  * <p> The key of the system property to be cleared must be specified via
  * {@link #key()}. After the annotated element has been executed, all system
  * properties will be restored to their original value.
- * 
+ *
  * <p> {@code ClearSystemProperty} is repeatable and can be used on the method
  * and on the class level. If a class is annotated, the configured property will
  * be cleared for all tests inside that class.
- * 
+ *
  * @since 0.4
  */
 @Retention(RetentionPolicy.RUNTIME)
