@@ -2,32 +2,21 @@ package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.engine.TestDescriptor;
-import org.junit.platform.launcher.LauncherDiscoveryRequest;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
-
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
-import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
 
 @ExtendWith(IssueExtension.class)
-public class IssueTests extends AbstractPioneerTestEngineTests {
+public class IssueTests {
 
-    @Test
-    void testIssueAnnotation() {
-
-    }
+//    @Test
+//    void checkMethodNotAnnotated() {
+//        assertThat(IssueTestCase#testNoAnnotation).isNotAnnotatedWith(Issue.class);
+//        assertThat(IssueTestCase#testIsAnnotated).isAnnotatedWith(Issue.class);
+//    }
+//
+//    @Test
+//    void checkMethodIstAnnotated() {
+//        assertThat(IssueTestCase#testIsAnnotated).isAnnotatedWith(Issue.class);
+//        assertThat(IssueTestCase#testIsAnnotated).hasAnnotationValue(Issue.class, "Req 11");
+//    }
 
     static class IssueTestCase {
 
