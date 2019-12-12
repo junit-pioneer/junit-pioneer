@@ -11,8 +11,9 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
-import java.util.Properties;
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -20,13 +21,12 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(SystemPropertyExtension.class);
-
-	private static final String KEY = "SystemProperty";
 
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
@@ -52,29 +52,41 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	}
 
 	private void handleSystemProperties(ExtensionContext context) {
-		storeOriginalSystemProperties(context);
-		clearAnnotatedSystemProperties(context);
-		setAnnotatedSystemProperties(context);
+		List<ClearSystemProperty> clearAnnotations = findRepeatableAnnotations(context, ClearSystemProperty.class);
+		List<SetSystemProperty> setAnnotations = findRepeatableAnnotations(context, SetSystemProperty.class);
+
+		storeOriginalSystemProperties(context, clearAnnotations, setAnnotations);
+		clearAnnotatedSystemProperties(clearAnnotations);
+		setAnnotatedSystemProperties(setAnnotations);
 	}
 
-	private void storeOriginalSystemProperties(ExtensionContext context) {
-		Properties backup = new Properties();
-		backup.putAll(System.getProperties());
-		context.getStore(NAMESPACE).put(KEY, backup);
+	private <A extends Annotation> List<A> findRepeatableAnnotations(ExtensionContext context,
+			Class<A> annotationType) {
+		// @formatter:off
+		return context.getElement()
+				.map(element -> AnnotationSupport.findRepeatableAnnotations(element, annotationType))
+				.orElseGet(Collections::emptyList);
+		// @formatter:on
 	}
 
-	private void clearAnnotatedSystemProperties(ExtensionContext context) {
-		forEachAnnotation(context, ClearSystemProperty.class, prop -> System.clearProperty(prop.key()));
+	private void storeOriginalSystemProperties(ExtensionContext context, List<ClearSystemProperty> clearAnnotations,
+			List<SetSystemProperty> setAnnotations) {
+		Stream<String> clearKeys = clearAnnotations.stream().map(ClearSystemProperty::key);
+		Stream<String> setKeys = setAnnotations.stream().map(SetSystemProperty::key);
+		Store store = context.getStore(NAMESPACE);
+
+		Stream.concat(clearKeys, setKeys).forEach(key -> {
+			String backup = System.getProperty(key);
+			store.put(key, backup);
+		});
 	}
 
-	private void setAnnotatedSystemProperties(ExtensionContext context) {
-		forEachAnnotation(context, SetSystemProperty.class, prop -> System.setProperty(prop.key(), prop.value()));
+	private void clearAnnotatedSystemProperties(List<ClearSystemProperty> clearAnnotations) {
+		clearAnnotations.forEach(prop -> System.clearProperty(prop.key()));
 	}
 
-	private <A extends Annotation> void forEachAnnotation(ExtensionContext context, Class<A> annotationType,
-			Consumer<A> action) {
-		context.getElement().ifPresent(
-			element -> AnnotationSupport.findRepeatableAnnotations(element, annotationType).stream().forEach(action));
+	private void setAnnotatedSystemProperties(List<SetSystemProperty> setAnnotations) {
+		setAnnotations.forEach(prop -> System.setProperty(prop.key(), prop.value()));
 	}
 
 	@Override
@@ -90,8 +102,20 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	}
 
 	private void resetOriginalSystemProperties(ExtensionContext context) {
-		Properties backup = context.getStore(NAMESPACE).get(KEY, Properties.class);
-		System.setProperties(backup);
+		// @formatter:off
+		Stream<String> clearKeys = findRepeatableAnnotations(context, ClearSystemProperty.class).stream()
+				.map(ClearSystemProperty::key);
+		Stream<String> setKeys = findRepeatableAnnotations(context, SetSystemProperty.class).stream()
+				.map(SetSystemProperty::key);
+		// @formatter:on
+		Store store = context.getStore(NAMESPACE);
+
+		Stream.concat(clearKeys, setKeys).forEach(key -> {
+			String backup = store.get(key, String.class);
+			if (backup != null) {
+				System.setProperty(key, backup);
+			}
+		});
 	}
 
 }
