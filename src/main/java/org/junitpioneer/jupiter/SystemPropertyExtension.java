@@ -112,7 +112,10 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 
 		Stream.concat(clearKeys, setKeys).forEach(key -> {
 			String backup = store.get(key, String.class);
-			if (backup != null) {
+			if (backup == null) {
+				System.clearProperty(key);
+			}
+			else {
 				System.setProperty(key, backup);
 			}
 		});
