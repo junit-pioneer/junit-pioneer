@@ -25,14 +25,14 @@ class SystemPropertyExtensionTests {
 	static void globalSetUp() {
 		System.setProperty("property A", "old A");
 		System.setProperty("property B", "old B");
-		System.setProperty("property C", "old C");
+		System.clearProperty("property C");
 	}
 
 	@AfterAll
 	static void globalTearDown() {
 		assertThat(System.getProperty("property A")).isEqualTo("old A");
 		assertThat(System.getProperty("property B")).isEqualTo("old B");
-		assertThat(System.getProperty("property C")).isEqualTo("old C");
+		assertThat(System.getProperty("property C")).isNull();
 	}
 
 	@Nested
@@ -100,7 +100,7 @@ class SystemPropertyExtensionTests {
 		void clearAndSetSystemPropertyShouldBeCombinable() {
 			assertThat(System.getProperty("property A")).isNull();
 			assertThat(System.getProperty("property B")).isEqualTo("new B");
-			assertThat(System.getProperty("property C")).isEqualTo("old C");
+			assertThat(System.getProperty("property C")).isNull();
 		}
 
 		@Test
@@ -110,7 +110,7 @@ class SystemPropertyExtensionTests {
 		void methodLevelShouldOverwriteClassLevel() {
 			assertThat(System.getProperty("property B")).isNull();
 			assertThat(System.getProperty("property A")).isEqualTo("new A");
-			assertThat(System.getProperty("property C")).isEqualTo("old C");
+			assertThat(System.getProperty("property C")).isNull();
 		}
 
 	}
