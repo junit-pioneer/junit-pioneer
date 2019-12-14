@@ -80,9 +80,13 @@ public abstract class Range<N extends Number & Comparable<N>> implements Iterato
 
 	@Override
 	public boolean hasNext() {
+		if (current == null) {
+			return true;
+		}
 		N nextValue = getNextValue();
 		int cmp = nextValue.compareTo(to);
-		return (cmp < 0 != sign < 0) || (closed && cmp == 0);
+		int overflowCheck = nextValue.compareTo(current);
+		return ((cmp < 0 != sign < 0) && (overflowCheck < 0 == sign < 0)) || (closed && cmp == 0);
 	}
 
 	@Override

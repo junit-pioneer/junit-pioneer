@@ -49,7 +49,8 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 			LongStream.rangeClosed(-6_000_000_400L, -6_000_000_000L).filter(l -> l % 100L == 0L).boxed(),
 			IntStream.range(0, 3).mapToObj(i -> i + 2.2F), IntStream.rangeClosed(3, 6).mapToObj(i -> i * -0.1F),
 			IntStream.range(0, 2).mapToObj(i -> i + 8.4), IntStream.rangeClosed(-3, -2).mapToObj(i -> (double) i),
-			Stream.of(123)).flatMap(Function.identity()).toArray(Number[]::new);
+			Stream.of(123), Stream.of((byte) 120), Stream.of((byte) -120)).flatMap(Function.identity()).toArray(
+				Number[]::new);
 	}
 
 	@Test
@@ -144,6 +145,16 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 		@ParameterizedTest(name = "Integer {0}")
 		@IntRangeSource(from = 123, to = 123, closed = true)
 		void emptyClosedRange(int param) {
+		}
+
+		@ParameterizedTest(name = "Byte {0}")
+		@ByteRangeSource(from = 120, to = 125, step = 10)
+		void overflowProtection(byte param) {
+		}
+
+		@ParameterizedTest(name = "Byte {0}")
+		@ByteRangeSource(from = -120, to = -125, step = -10)
+		void underflowProtection(byte param) {
 		}
 	}
 
