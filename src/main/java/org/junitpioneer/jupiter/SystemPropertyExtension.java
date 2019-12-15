@@ -75,10 +75,10 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 
 	private void storeOriginalSystemProperties(ExtensionContext context, List<ClearSystemProperty> clearAnnotations,
 			List<SetSystemProperty> setAnnotations) {
-		Set<String> clearKeys = clearAnnotations.stream().map(ClearSystemProperty::key) //
-				.collect(Collectors.toCollection(HashSet::new));
-		Set<String> setKeys = setAnnotations.stream().map(SetSystemProperty::key) //
-				.collect(Collectors.toCollection(HashSet::new));
+		Set<String> clearKeys = clearAnnotations.stream().map(ClearSystemProperty::key).collect(
+			Collectors.toCollection(HashSet::new));
+		Set<String> setKeys = setAnnotations.stream().map(SetSystemProperty::key).collect(
+			Collectors.toCollection(HashSet::new));
 		Store store = context.getStore(NAMESPACE);
 
 		Stream.concat(clearKeys.stream(), setKeys.stream()).forEach(key -> {
@@ -86,13 +86,15 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 			store.put(key, backup);
 		});
 
-		clearKeys.stream() //
-				.filter(setKeys::contains) //
-				.reduce((k0, k1) -> k0 + ", " + k1) //
+		// @formatter:off
+		clearKeys.stream()
+				.filter(setKeys::contains)
+				.reduce((k0, k1) -> k0 + ", " + k1)
 				.ifPresent(duplicateKeys -> {
 					throw new ExtensionConfigurationException(
 						"Cannot clear and set the following system properties at the same time: " + duplicateKeys);
 				});
+		// @formatter:on
 	}
 
 	private void clearAnnotatedSystemProperties(List<ClearSystemProperty> clearAnnotations) {
