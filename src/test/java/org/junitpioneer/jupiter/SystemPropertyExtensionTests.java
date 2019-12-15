@@ -134,9 +134,9 @@ class SystemPropertyExtensionTests {
 		@Test
 		@DisplayName("method level should overwrite class level")
 		@ClearSystemProperty(key = "clear prop D")
-		@SetSystemProperty(key = "property A", value = "new A")
+		@SetSystemProperty(key = "set prop A", value = "new A")
 		void methodLevelShouldOverwriteClassLevel() {
-			assertThat(System.getProperty("set prop A")).isNull();
+			assertThat(System.getProperty("set prop A")).isEqualTo("new A");
 			assertThat(System.getProperty("set prop B")).isEqualTo("old B");
 			assertThat(System.getProperty("set prop C")).isEqualTo("old C");
 
