@@ -23,94 +23,126 @@ class SystemPropertyExtensionTests {
 
 	@BeforeAll
 	static void globalSetUp() {
-		System.setProperty("property A", "old A");
-		System.setProperty("property B", "old B");
-		System.clearProperty("property C");
+		System.setProperty("set prop A", "old A");
+		System.setProperty("set prop B", "old B");
+		System.setProperty("set prop C", "old C");
+
+		System.clearProperty("clear prop D");
+		System.clearProperty("clear prop E");
+		System.clearProperty("clear prop F");
 	}
 
 	@AfterAll
 	static void globalTearDown() {
-		assertThat(System.getProperty("property A")).isEqualTo("old A");
-		assertThat(System.getProperty("property B")).isEqualTo("old B");
-		assertThat(System.getProperty("property C")).isNull();
+		assertThat(System.getProperty("set prop A")).isEqualTo("old A");
+		assertThat(System.getProperty("set prop B")).isEqualTo("old B");
+		assertThat(System.getProperty("set prop C")).isEqualTo("old C");
+
+		assertThat(System.getProperty("clear prop D")).isNull();
+		assertThat(System.getProperty("clear prop E")).isNull();
+		assertThat(System.getProperty("clear prop F")).isNull();
 	}
 
 	@Nested
 	@DisplayName("used with ClearSystemProperty")
-	@ClearSystemProperty(key = "property C")
+	@ClearSystemProperty(key = "set prop A")
 	class ClearSystemPropertyTests {
 
 		@Test
 		@DisplayName("should clear system property")
-		@ClearSystemProperty(key = "property A")
+		@ClearSystemProperty(key = "set prop B")
 		void shouldClearSystemProperty() {
-			assertThat(System.getProperty("property A")).isNull();
-			assertThat(System.getProperty("property B")).isEqualTo("old B");
-			assertThat(System.getProperty("property C")).isNull();
+			assertThat(System.getProperty("set prop A")).isNull();
+			assertThat(System.getProperty("set prop B")).isNull();
+			assertThat(System.getProperty("set prop C")).isEqualTo("old C");
+
+			assertThat(System.getProperty("clear prop D")).isNull();
+			assertThat(System.getProperty("clear prop E")).isNull();
+			assertThat(System.getProperty("clear prop F")).isNull();
 		}
 
 		@Test
 		@DisplayName("should be repeatable")
-		@ClearSystemProperty(key = "property A")
-		@ClearSystemProperty(key = "property B")
+		@ClearSystemProperty(key = "set prop B")
+		@ClearSystemProperty(key = "set prop C")
 		void shouldBeRepeatable() {
-			assertThat(System.getProperty("property A")).isNull();
-			assertThat(System.getProperty("property B")).isNull();
-			assertThat(System.getProperty("property C")).isNull();
+			assertThat(System.getProperty("set prop A")).isNull();
+			assertThat(System.getProperty("set prop B")).isNull();
+			assertThat(System.getProperty("set prop C")).isNull();
+
+			assertThat(System.getProperty("clear prop D")).isNull();
+			assertThat(System.getProperty("clear prop E")).isNull();
+			assertThat(System.getProperty("clear prop F")).isNull();
 		}
 
 	}
 
 	@Nested
 	@DisplayName("used with SetSystemProperty")
-	@SetSystemProperty(key = "property C", value = "new C")
+	@SetSystemProperty(key = "set prop A", value = "new A")
 	class SetSystemPropertyTests {
 
 		@Test
 		@DisplayName("should set system property to value")
-		@SetSystemProperty(key = "property A", value = "new A")
+		@SetSystemProperty(key = "set prop B", value = "new B")
 		void shouldSetSystemPropertyToValue() {
-			assertThat(System.getProperty("property A")).isEqualTo("new A");
-			assertThat(System.getProperty("property B")).isEqualTo("old B");
-			assertThat(System.getProperty("property C")).isEqualTo("new C");
+			assertThat(System.getProperty("set prop A")).isEqualTo("new A");
+			assertThat(System.getProperty("set prop B")).isEqualTo("new B");
+			assertThat(System.getProperty("set prop C")).isEqualTo("old C");
+
+			assertThat(System.getProperty("clear prop D")).isNull();
+			assertThat(System.getProperty("clear prop E")).isNull();
+			assertThat(System.getProperty("clear prop F")).isNull();
 		}
 
 		@Test
 		@DisplayName("should be repeatable")
-		@SetSystemProperty(key = "property A", value = "new A")
-		@SetSystemProperty(key = "property B", value = "new B")
+		@SetSystemProperty(key = "set prop B", value = "new B")
+		@SetSystemProperty(key = "clear prop D", value = "new D")
 		void shouldBeRepeatable() {
-			assertThat(System.getProperty("property A")).isEqualTo("new A");
-			assertThat(System.getProperty("property B")).isEqualTo("new B");
-			assertThat(System.getProperty("property C")).isEqualTo("new C");
+			assertThat(System.getProperty("set prop A")).isEqualTo("new A");
+			assertThat(System.getProperty("set prop B")).isEqualTo("new B");
+			assertThat(System.getProperty("set prop C")).isEqualTo("old C");
+
+			assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
+			assertThat(System.getProperty("clear prop E")).isNull();
+			assertThat(System.getProperty("clear prop F")).isNull();
 		}
 
 	}
 
 	@Nested
 	@DisplayName("used with both ClearSystemProperty and SetSystemProperty")
-	@ClearSystemProperty(key = "property A")
-	@SetSystemProperty(key = "property B", value = "new B")
+	@ClearSystemProperty(key = "set prop A")
+	@SetSystemProperty(key = "clear prop D", value = "new D")
 	class CombinedSystemPropertyTests {
 
 		@Test
 		@DisplayName("should be combinable")
-		@ClearSystemProperty(key = "property A")
-		@SetSystemProperty(key = "property B", value = "new B")
+		@ClearSystemProperty(key = "set prop B")
+		@SetSystemProperty(key = "clear prop E", value = "new E")
 		void clearAndSetSystemPropertyShouldBeCombinable() {
-			assertThat(System.getProperty("property A")).isNull();
-			assertThat(System.getProperty("property B")).isEqualTo("new B");
-			assertThat(System.getProperty("property C")).isNull();
+			assertThat(System.getProperty("set prop A")).isNull();
+			assertThat(System.getProperty("set prop B")).isNull();
+			assertThat(System.getProperty("set prop C")).isEqualTo("old C");
+
+			assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
+			assertThat(System.getProperty("clear prop E")).isEqualTo("new E");
+			assertThat(System.getProperty("clear prop F")).isNull();
 		}
 
 		@Test
 		@DisplayName("method level should overwrite class level")
-		@ClearSystemProperty(key = "property B")
+		@ClearSystemProperty(key = "clear prop D")
 		@SetSystemProperty(key = "property A", value = "new A")
 		void methodLevelShouldOverwriteClassLevel() {
-			assertThat(System.getProperty("property B")).isNull();
-			assertThat(System.getProperty("property A")).isEqualTo("new A");
-			assertThat(System.getProperty("property C")).isNull();
+			assertThat(System.getProperty("set prop A")).isNull();
+			assertThat(System.getProperty("set prop B")).isEqualTo("old B");
+			assertThat(System.getProperty("set prop C")).isEqualTo("old C");
+
+			assertThat(System.getProperty("clear prop D")).isNull();
+			assertThat(System.getProperty("clear prop E")).isNull();
+			assertThat(System.getProperty("clear prop F")).isNull();
 		}
 
 	}
