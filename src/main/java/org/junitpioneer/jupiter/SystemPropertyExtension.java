@@ -12,13 +12,17 @@ package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
@@ -71,14 +75,24 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 
 	private void storeOriginalSystemProperties(ExtensionContext context, List<ClearSystemProperty> clearAnnotations,
 			List<SetSystemProperty> setAnnotations) {
-		Stream<String> clearKeys = clearAnnotations.stream().map(ClearSystemProperty::key);
-		Stream<String> setKeys = setAnnotations.stream().map(SetSystemProperty::key);
+		Set<String> clearKeys = clearAnnotations.stream().map(ClearSystemProperty::key) //
+				.collect(Collectors.toCollection(HashSet::new));
+		Set<String> setKeys = setAnnotations.stream().map(SetSystemProperty::key) //
+				.collect(Collectors.toCollection(HashSet::new));
 		Store store = context.getStore(NAMESPACE);
 
-		Stream.concat(clearKeys, setKeys).forEach(key -> {
+		Stream.concat(clearKeys.stream(), setKeys.stream()).forEach(key -> {
 			String backup = System.getProperty(key);
 			store.put(key, backup);
 		});
+
+		clearKeys.stream() //
+				.filter(setKeys::contains) //
+				.reduce((k0, k1) -> k0 + ", " + k1) //
+				.ifPresent(duplicateKeys -> {
+					throw new ExtensionConfigurationException(
+						"Cannot clear and set the following system properties at the same time: " + duplicateKeys);
+				});
 	}
 
 	private void clearAnnotatedSystemProperties(List<ClearSystemProperty> clearAnnotations) {
