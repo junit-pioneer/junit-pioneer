@@ -11,15 +11,23 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.engine.test.event.ExecutionEvent;
+import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 @DisplayName("SystemProperty extension")
-class SystemPropertyExtensionTests {
+class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 
 	@BeforeAll
 	static void globalSetUp() {
@@ -145,6 +153,42 @@ class SystemPropertyExtensionTests {
 			assertThat(System.getProperty("clear prop F")).isNull();
 		}
 
+	}
+
+	@Nested
+	@DisplayName("used with incorrect configuration")
+	class ConfigurationFailureTests {
+
+		@Test
+		@DisplayName("should fail when clear and set same system property")
+		void shouldFailWhenClearAndSetSameSystemProperty() {
+			ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+				"shouldFailWhenClearAndSetSameSystemProperty");
+
+			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+		}
+
+	}
+
+	static class MethodLevelInitializationFailureTestCase {
+
+		@Test
+		@ClearSystemProperty(key = "set prop A")
+		@SetSystemProperty(key = "set prop A", value = "new A")
+		void shouldFailWhenClearAndSetSameSystemProperty() {
+		}
+
+	}
+
+	private static void assertExtensionConfigurationFailure(List<ExecutionEvent> failedTestFinishedEvents) {
+		assertEquals(1, failedTestFinishedEvents.size());
+		//@formatter:off
+		Throwable thrown = failedTestFinishedEvents.get(0)
+				.getPayload(TestExecutionResult.class)
+				.flatMap(TestExecutionResult::getThrowable)
+				.orElseThrow(AssertionError::new);
+		//@formatter:on
+		assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
 	}
 
 }
