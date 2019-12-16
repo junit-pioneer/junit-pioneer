@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 /**
- * {@code @LongRangeSource} is an {@link ArgumentsSource} which provides access to a range of {@code long} values.
+ * {@code @IntRangeSource} is an {@link ArgumentsSource} which provides access to a range of {@code int} values.
  *
  * <p>The supplied values will be provided as arguments to the annotated {@code @ParameterizedTest} method.
  *
@@ -31,23 +31,23 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ArgumentsSource(RangeSourceProvider.class)
-@RangeClass(LongRange.class)
-public @interface LongRangeSource {
+@RangeClass(IntRange.class)
+public @interface IntRangeSource {
 
 	/**
 	 * The starting point of the range, inclusive.
 	 */
-	long from();
+	int from();
 
 	/**
 	 * The end point of the range, exclusive.
 	 */
-	long to();
+	int to();
 
 	/**
 	 * The size of the step between the {@code from} and the {@code to}.
 	 */
-	long step() default 1;
+	int step() default 1;
 
 	/**
 	 * Whether the range is closed (inclusive of the {@link #to()}) or not.

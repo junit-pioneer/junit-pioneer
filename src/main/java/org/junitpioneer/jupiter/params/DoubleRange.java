@@ -8,20 +8,20 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.params;
 
-public class ShortRange extends Range<Short> {
-	public ShortRange(ShortRangeSource source) {
+public class DoubleRange extends Range<Double> {
+	public DoubleRange(DoubleRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}
 
 	@Override
-	public Short nextValue() {
-		return (short) (getCurrent() + getStep());
+	public Double nextValue() {
+		return getCurrent() + getStep();
 	}
 
 	@Override
-	Short getZero() {
-		return 0;
+	Double getZero() {
+		return 0.0D;
 	}
 }

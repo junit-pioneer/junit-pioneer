@@ -8,20 +8,20 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.params;
 
-public class IntRange extends Range<Integer> {
-	public IntRange(IntRangeSource source) {
+public class ByteRange extends Range<Byte> {
+	public ByteRange(ByteRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}
 
 	@Override
-	public Integer nextValue() {
-		return getCurrent() + getStep();
+	public Byte nextValue() {
+		return (byte) (getCurrent() + getStep());
 	}
 
 	@Override
-	Integer getZero() {
+	Byte getZero() {
 		return 0;
 	}
 }

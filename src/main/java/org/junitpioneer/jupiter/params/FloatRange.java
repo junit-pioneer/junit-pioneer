@@ -8,20 +8,20 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.params;
 
-public class DoubleRange extends Range<Double> {
-	public DoubleRange(DoubleRangeSource source) {
+public class FloatRange extends Range<Float> {
+	public FloatRange(FloatRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}
 
 	@Override
-	public Double nextValue() {
+	public Float nextValue() {
 		return getCurrent() + getStep();
 	}
 
 	@Override
-	Double getZero() {
-		return 0.0D;
+	Float getZero() {
+		return 0.0F;
 	}
 }

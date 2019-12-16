@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 /**
- * {@code @ByteRangeSource} is an {@link ArgumentsSource} which provides access to a range of {@code byte} values.
+ * {@code @FloatRangeSource} is an {@link ArgumentsSource} which provides access to a range of {@code float} values.
  *
  * <p>The supplied values will be provided as arguments to the annotated {@code @ParameterizedTest} method.
  *
@@ -31,23 +31,23 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ArgumentsSource(RangeSourceProvider.class)
-@RangeClass(ByteRange.class)
-public @interface ByteRangeSource {
+@RangeClass(FloatRange.class)
+public @interface FloatRangeSource {
 
 	/**
 	 * The starting point of the range, inclusive.
 	 */
-	byte from();
+	float from();
 
 	/**
 	 * The end point of the range, exclusive.
 	 */
-	byte to();
+	float to();
 
 	/**
 	 * The size of the step between the {@code from} and the {@code to}.
 	 */
-	byte step() default 1;
+	float step() default 1;
 
 	/**
 	 * Whether the range is closed (inclusive of the {@link #to()}) or not.
