@@ -20,7 +20,7 @@ import org.junit.platform.commons.util.Preconditions;
  * An iterator for numerical ranges, used as the backing logic for {@link RangeSourceProvider}.
  * @param <N> The numerical type used by the range.
  */
-public abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
+abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 	private N from;
 	private N to;
 	private N step;

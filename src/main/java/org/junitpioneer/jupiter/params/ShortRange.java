@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
-public class ShortRange extends Range<Short> {
+class ShortRange extends Range<Short> {
 	public ShortRange(ShortRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}

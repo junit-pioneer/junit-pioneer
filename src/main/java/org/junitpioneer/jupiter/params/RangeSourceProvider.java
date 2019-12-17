@@ -42,7 +42,7 @@ import org.junit.platform.commons.util.Preconditions;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
-public class RangeSourceProvider implements ArgumentsProvider {
+class RangeSourceProvider implements ArgumentsProvider {
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {

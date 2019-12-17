@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
-public class ByteRange extends Range<Byte> {
+class ByteRange extends Range<Byte> {
 	public ByteRange(ByteRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}

@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
-public class FloatRange extends Range<Float> {
+class FloatRange extends Range<Float> {
 	public FloatRange(FloatRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}

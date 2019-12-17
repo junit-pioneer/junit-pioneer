@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
-public class DoubleRange extends Range<Double> {
+class DoubleRange extends Range<Double> {
 	public DoubleRange(DoubleRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}

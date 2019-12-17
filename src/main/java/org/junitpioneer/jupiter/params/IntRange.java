@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
-public class IntRange extends Range<Integer> {
+class IntRange extends Range<Integer> {
 	public IntRange(IntRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}

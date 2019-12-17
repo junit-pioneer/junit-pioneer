@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
-public class LongRange extends Range<Long> {
+class LongRange extends Range<Long> {
 	public LongRange(LongRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}
