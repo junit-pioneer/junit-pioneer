@@ -15,11 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEvent;
@@ -168,6 +164,27 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
 		}
 
+		@Test
+		@DisplayName("should fail when clear same system property twice")
+		@Disabled("This can't happen at the moment, because Jupiter's annotation tooling "
+				+ "deduplicates identical annotations like the ones required for this test: "
+				+ "https://github.com/junit-team/junit5/issues/2131")
+		void shouldFailWhenClearSameSystemPropertyTwice() {
+			ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+				"shouldFailWhenClearSameSystemPropertyTwice");
+
+			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+		}
+
+		@Test
+		@DisplayName("should fail when set same system property twice")
+		void shouldFailWhenSetSameSystemPropertyTwice() {
+			ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+				"shouldFailWhenSetSameSystemPropertyTwice");
+
+			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+		}
+
 	}
 
 	static class MethodLevelInitializationFailureTestCase {
@@ -176,6 +193,19 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 		@ClearSystemProperty(key = "set prop A")
 		@SetSystemProperty(key = "set prop A", value = "new A")
 		void shouldFailWhenClearAndSetSameSystemProperty() {
+		}
+
+		@Test
+		@ClearSystemProperty(key = "set prop A")
+		@ClearSystemProperty(key = "set prop A")
+		void shouldFailWhenClearSameSystemPropertyTwice() {
+		}
+
+		@Test
+		@DisplayName("clearing and setting the same property")
+		@SetSystemProperty(key = "set prop A", value = "new A")
+		@SetSystemProperty(key = "set prop A", value = "new B")
+		void shouldFailWhenSetSameSystemPropertyTwice() {
 		}
 
 	}

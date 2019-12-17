@@ -10,12 +10,10 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.stream.Collectors.*;
+
 import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -25,12 +23,12 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(SystemPropertyExtension.class);
+	private static final String BACKUP = "Backup";
 
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
@@ -56,12 +54,38 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	}
 
 	private void handleSystemProperties(ExtensionContext context) {
-		List<ClearSystemProperty> clearAnnotations = findRepeatableAnnotations(context, ClearSystemProperty.class);
-		List<SetSystemProperty> setAnnotations = findRepeatableAnnotations(context, SetSystemProperty.class);
+		Set<String> propertiesToClear;
+		Map<String, String> propertiesToSet;
+		try {
+			propertiesToClear = findRepeatableAnnotations(context, ClearSystemProperty.class).stream()
+					// collect to map because the collector throws an IllegalStateException on
+					// duplicate keys, which is desired behavior;
+					// see comment SystemPropertyExtensionTests.ConfigurationFailureTests.shouldFailWhenClearSameSystemPropertyTwice
+					.collect(toMap(ClearSystemProperty::key, __ -> "")).keySet();
+			propertiesToSet = findRepeatableAnnotations(context, SetSystemProperty.class).stream().collect(
+				toMap(SetSystemProperty::key, SetSystemProperty::value));
+			preventMultiplePropertyMutations(propertiesToClear, propertiesToSet.keySet());
+		}
+		catch (IllegalStateException ex) {
+			throw new ExtensionConfigurationException("Don't clear/set the same property more than once.", ex);
+		}
 
-		storeOriginalSystemProperties(context, clearAnnotations, setAnnotations);
-		clearAnnotatedSystemProperties(clearAnnotations);
-		setAnnotatedSystemProperties(setAnnotations);
+		storeOriginalSystemProperties(context, propertiesToClear, propertiesToSet.keySet());
+		clearSystemProperties(propertiesToClear);
+		setSystemProperties(propertiesToSet);
+	}
+
+	private void preventMultiplePropertyMutations(Collection<String> propertiesToClear,
+			Collection<String> propertiesToSet) {
+		// @formatter:off
+		propertiesToClear.stream()
+				.filter(propertiesToSet::contains)
+				.reduce((k0, k1) -> k0 + ", " + k1)
+				.ifPresent(duplicateKeys -> {
+					throw new IllegalStateException(
+							"Cannot clear and set the following system properties at the same time: " + duplicateKeys);
+				});
+		// @formatter:on
 	}
 
 	private <A extends Annotation> List<A> findRepeatableAnnotations(ExtensionContext context,
@@ -73,68 +97,71 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 		// @formatter:on
 	}
 
-	private void storeOriginalSystemProperties(ExtensionContext context, List<ClearSystemProperty> clearAnnotations,
-			List<SetSystemProperty> setAnnotations) {
-		Set<String> clearKeys = clearAnnotations.stream().map(ClearSystemProperty::key).collect(
-			Collectors.toCollection(HashSet::new));
-		Set<String> setKeys = setAnnotations.stream().map(SetSystemProperty::key).collect(
-			Collectors.toCollection(HashSet::new));
-		Store store = context.getStore(NAMESPACE);
-
-		Stream.concat(clearKeys.stream(), setKeys.stream()).forEach(key -> {
-			String backup = System.getProperty(key);
-			store.put(key, backup);
-		});
-
-		// @formatter:off
-		clearKeys.stream()
-				.filter(setKeys::contains)
-				.reduce((k0, k1) -> k0 + ", " + k1)
-				.ifPresent(duplicateKeys -> {
-					throw new ExtensionConfigurationException(
-						"Cannot clear and set the following system properties at the same time: " + duplicateKeys);
-				});
-		// @formatter:on
+	private void storeOriginalSystemProperties(ExtensionContext context, Collection<String> clearProperties,
+			Collection<String> setProperties) {
+		context.getStore(NAMESPACE).put(BACKUP, new SystemPropertyBackup(clearProperties, setProperties));
 	}
 
-	private void clearAnnotatedSystemProperties(List<ClearSystemProperty> clearAnnotations) {
-		clearAnnotations.forEach(prop -> System.clearProperty(prop.key()));
+	private void clearSystemProperties(Collection<String> clearProperties) {
+		clearProperties.forEach(System::clearProperty);
 	}
 
-	private void setAnnotatedSystemProperties(List<SetSystemProperty> setAnnotations) {
-		setAnnotations.forEach(prop -> System.setProperty(prop.key(), prop.value()));
+	private void setSystemProperties(Map<String, String> setProperties) {
+		setProperties.entrySet().forEach(
+			propertyWithValue -> System.setProperty(propertyWithValue.getKey(), propertyWithValue.getValue()));
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
 		if (annotationsPresentOnTestMethod(context)) {
-			resetOriginalSystemProperties(context);
+			restoreOriginalSystemProperties(context);
 		}
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) throws Exception {
-		resetOriginalSystemProperties(context);
+		restoreOriginalSystemProperties(context);
 	}
 
-	private void resetOriginalSystemProperties(ExtensionContext context) {
-		// @formatter:off
-		Stream<String> clearKeys = findRepeatableAnnotations(context, ClearSystemProperty.class).stream()
-				.map(ClearSystemProperty::key);
-		Stream<String> setKeys = findRepeatableAnnotations(context, SetSystemProperty.class).stream()
-				.map(SetSystemProperty::key);
-		// @formatter:on
-		Store store = context.getStore(NAMESPACE);
+	private void restoreOriginalSystemProperties(ExtensionContext context) {
+		context.getStore(NAMESPACE).get(BACKUP, SystemPropertyBackup.class).restoreProperties();
+	}
 
-		Stream.concat(clearKeys, setKeys).forEach(key -> {
-			String backup = store.get(key, String.class);
-			if (backup == null) {
-				System.clearProperty(key);
-			}
-			else {
-				System.setProperty(key, backup);
-			}
-		});
+	/**
+	 * Stores which system properties need to be cleared or set to their old values after the test.
+	 */
+	private static class SystemPropertyBackup {
+
+		private final Map<String, String> propertiesToSet;
+		private final Collection<String> propertiesToUnset;
+
+		public SystemPropertyBackup(Collection<String> clearProperties, Collection<String> setProperties) {
+			propertiesToSet = new HashMap<>();
+			propertiesToUnset = new HashSet<>();
+			// @formatter:off
+			Stream.concat(clearProperties.stream(), setProperties.stream())
+					.forEach(property -> {
+						String backup = System.getProperty(property);
+						if (backup == null)
+							propertiesToUnset.add(property);
+						else
+							propertiesToSet.put(property, backup);
+					});
+			// @formatter:on
+		}
+
+		public void restoreProperties() {
+			// @formatter:off
+			propertiesToSet
+					.entrySet()
+					.forEach(propertyWithValue -> System.setProperty(
+							propertyWithValue.getKey(),
+							propertyWithValue.getValue()));
+			propertiesToUnset
+					.forEach(System::clearProperty);
+			// @formatter:on
+		}
+
 	}
 
 }
