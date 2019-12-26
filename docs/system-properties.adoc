@@ -49,10 +49,10 @@ Note that class level configurations are overwritten by method level configurati
 ----
 @ClearSystemProperty(key = "some property")
 class MySystemPropertyTest {
-	@Test
-	@SetSystemProperty(key = "some property", value = "new value")
-	void test() {
-		assertEquals("new value", System.getProperty("some property"));
-	}
+    @Test
+    @SetSystemProperty(key = "some property", value = "new value")
+    void test() {
+        assertEquals("new value", System.getProperty("some property"));
+    }
 }
 ----
