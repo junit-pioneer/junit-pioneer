@@ -7,6 +7,8 @@
  *     <li>{@link org.junitpioneer.jupiter.DefaultTimeZone}</li>
  *     <li>{@link org.junitpioneer.jupiter.RepeatFailedTest}</li>
  *     <li>{@link org.junitpioneer.jupiter.TempDirectory}</li>
+ *     <li>{@link org.junitpioneer.jupiter.ClearSystemProperty}</li>
+ *     <li>{@link org.junitpioneer.jupiter.SetSystemProperty}</li>
  * </ul>
  */
 
