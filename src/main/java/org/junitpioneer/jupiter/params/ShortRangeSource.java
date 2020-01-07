@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 /**
- * {@code @ShortRangeSource} is an {@link ArgumentsSource} which provides access to a range of {@code short} values.
+ * {@code @ShortRangeSource} is an {@link ArgumentsSource} that provides access to a range of {@code short} values.
  *
  * <p>The supplied values will be provided as arguments to the annotated {@code @ParameterizedTest} method.
  *

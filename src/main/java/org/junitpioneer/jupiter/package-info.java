@@ -11,7 +11,7 @@
  *     <li>{@link org.junitpioneer.jupiter.SetSystemProperty}</li>
  * </ul>
  *
- * Also check the {@link org.junitpioneer.jupiter.range range} package.
+ * Also check the {@link org.junitpioneer.jupiter.params params} package.
  */
 
 package org.junitpioneer.jupiter;

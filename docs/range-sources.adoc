@@ -1,17 +1,18 @@
 :page-title: Range Sources
 :page-description: JUnit Jupiter argument sources for a series of numbers
 
-The various range sources can be used to provide a series of numeric arguments with fixed differences between them (i.e., arithmetic progressions) to a `@ParameterizedTest`.
-There is a range source for every corresponding numeric primitive type: `ByteRangeSource`, `DoubleRangeSource`, `FloatRangeSource`, `IntRangeSource`, `LongRangeSource` and `ShortRangeSource`.
+The various range sources can be used to provide a series of numeric arguments with fixed differences between them (i.e., https://en.wikipedia.org/wiki/Arithmetic_progression[arithmetic progressions]) to a `@ParameterizedTest`.
+There is a range source for every corresponding numeric primitive type: `ByteRangeSource`, `ShortRangeSource`, `IntRangeSource`, `LongRangeSource`, `FloatRangeSource`, and `DoubleRangeSource`.
 
 == Basic Use
 
-In the basic usecase, using any range source with just the `from` and `to` parameters will provide a series of numeric arguments with a difference of 1 between them:
+In the basic use case, using any range source with just the `from` and `to` parameters will provide a series of numeric arguments with a difference of 1 between them, beginning at `from` ending at the last value smaller than `to` (i.e. _excluding_ `to`).
 
 [source,java]
 ----
 @ParameterizedTest
 @IntRangeSource(from = 0, to = 10)
+// called 10 times with `digit` = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
 void validDigit(int digit) {
     System.out.println(digit + " is a valid digit");
 }
@@ -43,7 +44,8 @@ This behavior can be controlled by specifying the `closed` argument:
 @ParameterizedTest
 @ByteRangeSource(from = 0, to = 0)
 void illegalRange(byte arg) {
-    // This will fail with a PreconditionViolationException since the range will be empty
+    // this will fail with a PreconditionViolationException
+    // since the range will be empty
 }
 
 @ParameterizedTest
@@ -53,3 +55,7 @@ void legalRrange(long arg) {
     assertEquals(0L, arg);
 }
 ----
+
+== Empty ranges
+
+The range sources check whether the range defined by `from`, `to`, and `step` is empty and throws a `PreconditionViolationException` if it is.
