@@ -13,9 +13,9 @@ For example, the following test registers the extension for a single test method
 @Test
 @ExtendWith(TempDirectory.class)
 void test(@TempDir Path tempDir) {
-    Path file = tempDir.resolve("test.txt");
-    writeFile(file);
-    assertExpectedFileContent(file);
+	Path file = tempDir.resolve("test.txt");
+	writeFile(file);
+	assertExpectedFileContent(file);
 }
 ----
 
@@ -26,27 +26,27 @@ The following example uses the Jimfs `FileSystem` and passes a custom `tmp` pare
 [source,java]
 ----
 class MyTests {
-    private static FileSystem fileSystem;
+	private static FileSystem fileSystem;
 
-    @BeforeAll
-    static void createFileSystem() {
-        fileSystem = Jimfs.newFileSystem();
-    }
+	@BeforeAll
+	static void createFileSystem() {
+		fileSystem = Jimfs.newFileSystem();
+	}
 
-    @AfterAll
-    static void closeFileSystem() throws Exception {
-        fileSystem.close();
-    }
+	@AfterAll
+	static void closeFileSystem() throws Exception {
+		fileSystem.close();
+	}
 
-    @RegisterExtension
-    Extension tempDirectory = TempDirectory.createInCustomDirectory(() ->
-        Files.createDirectories(fileSystem.getPath("tmp")));
+	@RegisterExtension
+	Extension tempDirectory = TempDirectory.createInCustomDirectory(() ->
+		Files.createDirectories(fileSystem.getPath("tmp")));
 
-    @Test
-    void test(@TempDir Path tempDir) {
-        Path file = tempDir.resolve("test.txt");
-        writeFile(file);
-        assertExpectedFileContent(file);
-    }
+	@Test
+	void test(@TempDir Path tempDir) {
+		Path file = tempDir.resolve("test.txt");
+		writeFile(file);
+		assertExpectedFileContent(file);
+	}
 }
 ----

@@ -14,7 +14,7 @@ The default `Locale` can be specified using an https://docs.oracle.com/javase/8/
 @Test
 @DefaultLocale("zh-Hant-TW")
 void test_with_lanuage() {
-    assertEquals(Locale.forLanguageTag("zh-Hant-TW"), Locale.getDefault());
+	assertEquals(Locale.forLanguageTag("zh-Hant-TW"), Locale.getDefault());
 }
 ----
 
@@ -29,19 +29,19 @@ Alternatively the default `Locale` can be specified according to https://docs.or
 @Test
 @DefaultLocale(language = "en")
 void test_with_lanuage() {
-    assertEquals(new Locale("en"), Locale.getDefault());
+	assertEquals(new Locale("en"), Locale.getDefault());
 }
 
 @Test
 @DefaultLocale(language = "en", country = "EN")
 void test_with_lanuage_and_country() {
-    assertEquals(new Locale("en", "EN"), Locale.getDefault());
+	assertEquals(new Locale("en", "EN"), Locale.getDefault());
 }
 
 @Test
 @DefaultLocale(language = "en", country = "EN", variant = "gb")
 void test_with_lanuage_and_country_and_vairant() {
-    assertEquals(new Locale("en", "EN", "gb"), Locale.getDefault());
+	assertEquals(new Locale("en", "EN", "gb"), Locale.getDefault());
 }
 ----
 
@@ -56,16 +56,16 @@ Any method level `@DefaultLocale` configurations will override class level confi
 @DefaultLocale(language = "fr")
 class MyLocaleTests {
 
-    @Test
-    void test_with_class_level_configuration() {
-        assertEquals(new Locale("fr"), Locale.getDefault());
-    }
+	@Test
+	void test_with_class_level_configuration() {
+		assertEquals(new Locale("fr"), Locale.getDefault());
+	}
 
-    @Test
-    @DefaultLocale(language = "en")
-    void test_with_method_level_configuration() {
-        assertEquals(new Locale("en"), Locale.getDefault());
-    }
+	@Test
+	@DefaultLocale(language = "en")
+	void test_with_method_level_configuration() {
+		assertEquals(new Locale("en"), Locale.getDefault());
+	}
 }
 ----
 
@@ -78,13 +78,13 @@ The default `TimeZone` is specified according to the https://docs.oracle.com/jav
 @Test
 @DefaulTimeZone("CET")
 void test_with_short_zone_id() {
-    assertEquals(TimeZone.getTimeZone("CET"), TimeZone.getDefault());
+	assertEquals(TimeZone.getTimeZone("CET"), TimeZone.getDefault());
 }
 
 @Test
 @DefaultTimeZone("America/Los_Angeles")
 void test_with_long_zone_id() {
-    assertEquals(TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getDefault());
+	assertEquals(TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getDefault());
 }
 ----
 
@@ -95,15 +95,15 @@ Any method level `@DefaultTimeZone` configurations will override class level con
 @DefaultTimeZone("CET")
 class MyTimeZoneTests {
 
-    @Test
-    void test_with_class_level_configuration() {
-        assertEquals(TimeZone.getTimeZone("CET"), TimeZone.getDefault());
-    }
+	@Test
+	void test_with_class_level_configuration() {
+		assertEquals(TimeZone.getTimeZone("CET"), TimeZone.getDefault());
+	}
 
-    @Test
-    @DefaultTimeZone("America/Los_Angeles")
-    void test_with_method_level_configuration() {
-        assertEquals(TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getDefault());
-    }
+	@Test
+	@DefaultTimeZone("America/Los_Angeles")
+	void test_with_method_level_configuration() {
+		assertEquals(TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getDefault());
+	}
 }
 ----
