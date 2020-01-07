@@ -14,6 +14,7 @@ import static java.util.stream.Collectors.*;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -57,14 +58,11 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 		Set<String> propertiesToClear;
 		Map<String, String> propertiesToSet;
 		try {
-			propertiesToClear = findRepeatableAnnotations(context, ClearSystemProperty.class).stream()
-					// collect to map because the collector throws an IllegalStateException on
-					// duplicate keys, which is desired behavior;
-					// see comment SystemPropertyExtensionTests.ConfigurationFailureTests.shouldFailWhenClearSameSystemPropertyTwice
-					.collect(toMap(ClearSystemProperty::key, __ -> "")).keySet();
+			propertiesToClear = findRepeatableAnnotations(context, ClearSystemProperty.class).stream().map(
+				ClearSystemProperty::key).collect(toSetStrict());
 			propertiesToSet = findRepeatableAnnotations(context, SetSystemProperty.class).stream().collect(
 				toMap(SetSystemProperty::key, SetSystemProperty::value));
-			preventMultiplePropertyMutations(propertiesToClear, propertiesToSet.keySet());
+			preventClearAndSetSameSystemProperties(propertiesToClear, propertiesToSet.keySet());
 		}
 		catch (IllegalStateException ex) {
 			throw new ExtensionConfigurationException("Don't clear/set the same property more than once.", ex);
@@ -75,7 +73,23 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 		setSystemProperties(propertiesToSet);
 	}
 
-	private void preventMultiplePropertyMutations(Collection<String> propertiesToClear,
+	private static <T> Collector<T, Set<T>, Set<T>> toSetStrict() {
+		return Collector.of(HashSet::new, (set, element) -> addButThrowIfDuplicate(set, element), (left, right) -> {
+			right.forEach(element -> {
+				addButThrowIfDuplicate(right, element);
+			});
+			return left;
+		});
+	}
+
+	private static <T> void addButThrowIfDuplicate(Set<T> right, T element) {
+		boolean newElement = right.add(element);
+		if (!newElement) {
+			throw new IllegalStateException("Duplicate element '" + element + "'.");
+		}
+	}
+
+	private void preventClearAndSetSameSystemProperties(Collection<String> propertiesToClear,
 			Collection<String> propertiesToSet) {
 		// @formatter:off
 		propertiesToClear.stream()
@@ -133,7 +147,7 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	private static class SystemPropertyBackup {
 
 		private final Map<String, String> propertiesToSet;
-		private final Collection<String> propertiesToUnset;
+		private final Set<String> propertiesToUnset;
 
 		public SystemPropertyBackup(Collection<String> clearProperties, Collection<String> setProperties) {
 			propertiesToSet = new HashMap<>();
