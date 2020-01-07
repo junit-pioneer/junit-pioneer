@@ -1,15 +1,12 @@
 :page-title: Range Sources
 :page-description: JUnit Jupiter argument sources for a series of numbers
 
-The various range sources can be used to provide a series of numeric arguments with fixed differences between them
-(i.e., arithmetic progressions) to a `@ParameterizedTest`. There is a range source for every corresponding numeric
-primitive type: `ByteRangeSource`, `DoubleRangeSource`, `FloatRangeSource`, `IntRangeSource`, `LongRangeSource` and
-`ShortRangeSource`.
+The various range sources can be used to provide a series of numeric arguments with fixed differences between them (i.e., arithmetic progressions) to a `@ParameterizedTest`.
+There is a range source for every corresponding numeric primitive type: `ByteRangeSource`, `DoubleRangeSource`, `FloatRangeSource`, `IntRangeSource`, `LongRangeSource` and `ShortRangeSource`.
 
 == Basic Use
 
-In the basic usecase, using any range source with just the `from` and `to` parameters will provide a series of numeric
-arguments with a difference of 1 between them:
+In the basic usecase, using any range source with just the `from` and `to` parameters will provide a series of numeric arguments with a difference of 1 between them:
 
 [source,java]
 ----
@@ -22,7 +19,8 @@ void validDigit(int digit) {
 
 == Defining the step
 
-The `step` argument allows controlling the difference between the consecutive values. It can be positive or negative:
+The `step` argument allows controlling the difference between the consecutive values.
+It can be positive or negative:
 
 [source,java]
 ----
@@ -37,8 +35,8 @@ void howCouldIsIt(double d) {
 
 == Open and closed range sources
 
-By default, range sources represent ranges that are inclusive of the starting point (the `from` value), and exclusive
-of the end point (the `to` value). This behavior can be controlled by specifying the `closed` argument:
+By default, range sources represent ranges that are inclusive of the starting point (the `from` value), and exclusive of the end point (the `to` value).
+This behavior can be controlled by specifying the `closed` argument:
 
 [source,java]
 ----
