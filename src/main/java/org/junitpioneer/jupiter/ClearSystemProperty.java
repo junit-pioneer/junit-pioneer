@@ -30,7 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * on the class level. If a class is annotated, the configured property will be
  * cleared for all tests inside that class.
  *
- * @since 0.4
+ * @since 0.5
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })

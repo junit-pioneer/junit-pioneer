@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * for all tests inside that class. Any method level configurations will
  * override the class level configurations.
  *
- * @since 0.4
+ * @since 0.5
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
