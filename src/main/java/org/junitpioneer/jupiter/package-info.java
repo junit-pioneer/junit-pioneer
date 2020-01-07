@@ -10,6 +10,8 @@
  *     <li>{@link org.junitpioneer.jupiter.ClearSystemProperty}</li>
  *     <li>{@link org.junitpioneer.jupiter.SetSystemProperty}</li>
  * </ul>
+ *
+ * Also check the {@link org.junitpioneer.jupiter.params params} package.
  */
 
 package org.junitpioneer.jupiter;

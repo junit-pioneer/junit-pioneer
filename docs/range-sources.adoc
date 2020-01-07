@@ -1,0 +1,61 @@
+:page-title: Range Sources
+:page-description: JUnit Jupiter argument sources for a series of numbers
+
+The various range sources can be used to provide a series of numeric arguments with fixed differences between them (i.e., https://en.wikipedia.org/wiki/Arithmetic_progression[arithmetic progressions]) to a `@ParameterizedTest`.
+There is a range source for every corresponding numeric primitive type: `ByteRangeSource`, `ShortRangeSource`, `IntRangeSource`, `LongRangeSource`, `FloatRangeSource`, and `DoubleRangeSource`.
+
+== Basic Use
+
+In the basic use case, using any range source with just the `from` and `to` parameters will provide a series of numeric arguments with a difference of 1 between them, beginning at `from` ending at the last value smaller than `to` (i.e. _excluding_ `to`).
+
+[source,java]
+----
+@ParameterizedTest
+@IntRangeSource(from = 0, to = 10)
+// called 10 times with `digit` = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+void validDigit(int digit) {
+    System.out.println(digit + " is a valid digit");
+}
+----
+
+== Defining the step
+
+The `step` argument allows controlling the difference between the consecutive values.
+It can be positive or negative:
+
+[source,java]
+----
+@ParameterizedTest
+@DoubleRangeSource(from = -0.1, to = -10, step = -0.1)
+void howCouldIsIt(double d) {
+    System.out.println(d + " degrees Celsius is cold");
+    System.out.println(d + " degrees Fahrenheit is REALY cold");
+    System.out.println(d + " degrees Kelvin is too cold to be true");
+}
+----
+
+== Open and closed range sources
+
+By default, range sources represent ranges that are inclusive of the starting point (the `from` value), and exclusive of the end point (the `to` value).
+This behavior can be controlled by specifying the `closed` argument:
+
+[source,java]
+----
+@ParameterizedTest
+@ByteRangeSource(from = 0, to = 0)
+void illegalRange(byte arg) {
+    // this will fail with a PreconditionViolationException
+    // since the range will be empty
+}
+
+@ParameterizedTest
+@LongRangeSource(from = 0L, to = 0L, closed = true)
+void legalRrange(long arg) {
+    // But this is fine
+    assertEquals(0L, arg);
+}
+----
+
+== Empty ranges
+
+The range sources check whether the range defined by `from`, `to`, and `step` is empty and throws a `PreconditionViolationException` if it is.
