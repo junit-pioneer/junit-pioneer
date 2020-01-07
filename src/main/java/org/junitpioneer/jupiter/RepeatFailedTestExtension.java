@@ -34,7 +34,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 	@Override
 	public boolean supportsTestTemplate(ExtensionContext context) {
 		// the annotation only applies to methods
-		return Util.annotationPresentOnTestMethod(context, RepeatFailedTest.class);
+		return Utils.annotationPresentOnTestMethod(context, RepeatFailedTest.class);
 	}
 
 	@Override

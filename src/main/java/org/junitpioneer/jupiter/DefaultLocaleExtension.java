@@ -34,7 +34,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		if (Util.annotationPresentOnTestMethod(context, DefaultLocale.class)) {
+		if (Utils.annotationPresentOnTestMethod(context, DefaultLocale.class)) {
 			setDefaultLocale(context);
 		}
 	}
@@ -97,7 +97,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (Util.annotationPresentOnTestMethod(context, DefaultLocale.class)) {
+		if (Utils.annotationPresentOnTestMethod(context, DefaultLocale.class)) {
 			resetDefaultLocale(context);
 		}
 	}

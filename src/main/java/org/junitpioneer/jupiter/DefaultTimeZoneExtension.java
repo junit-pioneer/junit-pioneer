@@ -34,7 +34,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		if (Util.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
+		if (Utils.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
 			setDefaultTimeZone(context);
 		}
 	}
@@ -61,7 +61,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (Util.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
+		if (Utils.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
 			resetDefaultTimeZone(context);
 		}
 	}
