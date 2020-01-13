@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.junit.platform.commons.util.AnnotationUtils;
 
 /**
  * Pioneer-internal utility class.
@@ -63,6 +65,16 @@ class Utils {
 		if (!newElement) {
 			throw new IllegalStateException("Duplicate element '" + element + "'.");
 		}
+	}
+
+	/**
+	 * Checks if element or its enclosed class is annotated with {@code annotationType}
+	 */
+	public static <A extends Annotation> Optional<A> findAnnotationForNested(ExtensionContext context,
+			Class<A> annotationType) {
+		return Stream.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass)).map(
+			el -> AnnotationUtils.findAnnotation(el, annotationType)).filter(Optional::isPresent).findFirst().orElse(
+				Optional.empty());
 	}
 
 }
