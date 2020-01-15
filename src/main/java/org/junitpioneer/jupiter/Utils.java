@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
-import org.junit.platform.commons.util.AnnotationUtils;
 
 /**
  * Pioneer-internal utility class.
@@ -72,9 +71,13 @@ class Utils {
 	 */
 	public static <A extends Annotation> Optional<A> findAnnotationForNested(ExtensionContext context,
 			Class<A> annotationType) {
-		return Stream.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass)).map(
-			el -> AnnotationUtils.findAnnotation(el, annotationType)).filter(Optional::isPresent).findFirst().orElse(
-				Optional.empty());
+		//@formatter:off
+		return Stream.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass))
+					 .map(el -> AnnotationSupport.findAnnotation(el, annotationType))
+					 .filter(Optional::isPresent)
+					 .findFirst()
+					 .orElse(Optional.empty());
+		//@formatter:on
 	}
 
 }
