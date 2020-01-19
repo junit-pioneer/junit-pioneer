@@ -50,10 +50,8 @@ class Utils {
 	 * on duplicate elements (according to {@link Object#equals(Object) equals}).
 	 */
 	public static <T> Collector<T, Set<T>, Set<T>> distinctToSet() {
-		return Collector.of(HashSet::new, (set, element) -> addButThrowIfDuplicate(set, element), (left, right) -> {
-			right.forEach(element -> {
-				addButThrowIfDuplicate(left, element);
-			});
+		return Collector.of(HashSet::new, Utils::addButThrowIfDuplicate, (left, right) -> {
+			right.forEach(element -> addButThrowIfDuplicate(left, element));
 			return left;
 		});
 	}
