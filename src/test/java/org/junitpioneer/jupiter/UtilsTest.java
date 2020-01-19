@@ -73,7 +73,7 @@ class UtilsTest {
 		}
 
 		@Test
-		@DisplayName("should should combine sets with new elements")
+		@DisplayName("should combine sets with new elements")
 		void combinerShouldCombineSetsWithNewElements() throws Exception {
 			Set<Object> left = new HashSet<>();
 			Object leftElement = new Object();
@@ -89,7 +89,7 @@ class UtilsTest {
 		}
 
 		@Test
-		@DisplayName("should should not combine sets with duplicates")
+		@DisplayName("should not combine sets with duplicate elements")
 		void combinerShouldNotCombineSetsWithDuplicates() throws Exception {
 			Object element = new Object();
 
