@@ -85,7 +85,7 @@ class UtilsTest {
 
 			BinaryOperator<Set<Object>> combiner = collector.combiner();
 
-			assertThat(combiner.apply(left, right)).containsExactly(leftElement, rightElement);
+			assertThat(combiner.apply(left, right)).containsExactlyInAnyOrder(leftElement, rightElement);
 		}
 
 		@Test
