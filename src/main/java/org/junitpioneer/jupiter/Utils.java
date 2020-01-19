@@ -52,7 +52,7 @@ class Utils {
 	public static <T> Collector<T, Set<T>, Set<T>> distinctToSet() {
 		return Collector.of(HashSet::new, (set, element) -> addButThrowIfDuplicate(set, element), (left, right) -> {
 			right.forEach(element -> {
-				addButThrowIfDuplicate(right, element);
+				addButThrowIfDuplicate(left, element);
 			});
 			return left;
 		});
