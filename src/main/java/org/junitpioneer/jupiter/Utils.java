@@ -56,8 +56,8 @@ class Utils {
 		});
 	}
 
-	private static <T> void addButThrowIfDuplicate(Set<T> right, T element) {
-		boolean newElement = right.add(element);
+	private static <T> void addButThrowIfDuplicate(Set<T> set, T element) {
+		boolean newElement = set.add(element);
 		if (!newElement) {
 			throw new IllegalStateException("Duplicate element '" + element + "'.");
 		}
