@@ -161,7 +161,6 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 
 	}
 
-
 	@Nested
 	@DisplayName("when configured incorrect")
 	class ConfigurationFailureTests {

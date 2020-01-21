@@ -47,6 +47,20 @@ class Utils {
 	}
 
 	/**
+	 * Returns the specified annotation if it either is either <em>present</em> or
+	 * <em>meta-present</em> on the test method belonging to the specified {@code context}.
+	 */
+	public static <A extends Annotation> Optional<A> findAnnotation(ExtensionContext context, Class<A> annotationType) {
+		//@formatter:off
+		return Stream.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass))
+				.map(el -> AnnotationSupport.findAnnotation(el, annotationType))
+				.filter(Optional::isPresent)
+				.findFirst()
+				.orElse(Optional.empty());
+		//@formatter:on
+	}
+
+	/**
 	 * A {@link Collectors#toSet() toSet} collector that throws an {@link IllegalStateException}
 	 * on duplicate elements (according to {@link Object#equals(Object) equals}).
 	 */
@@ -64,20 +78,6 @@ class Utils {
 		if (!newElement) {
 			throw new IllegalStateException("Duplicate element '" + element + "'.");
 		}
-	}
-
-	/**
-	 * Checks if element or its enclosed class is annotated with {@code annotationType}
-	 */
-	public static <A extends Annotation> Optional<A> findAnnotationForNested(ExtensionContext context,
-			Class<A> annotationType) {
-		//@formatter:off
-		return Stream.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass))
-					 .map(el -> AnnotationSupport.findAnnotation(el, annotationType))
-					 .filter(Optional::isPresent)
-					 .findFirst()
-					 .orElse(Optional.empty());
-		//@formatter:on
 	}
 
 }

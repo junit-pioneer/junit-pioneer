@@ -50,7 +50,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	private Locale readLocaleFromAnnotation(ExtensionContext context) {
 		//@formatter:off
-		return Utils.findAnnotationForNested(context, DefaultLocale.class)
+		return Utils.findAnnotation(context, DefaultLocale.class)
 				.map(DefaultLocaleExtension::createLocale)
 				.orElseThrow(() -> new ExtensionConfigurationException("The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
 		//@formatter:on
