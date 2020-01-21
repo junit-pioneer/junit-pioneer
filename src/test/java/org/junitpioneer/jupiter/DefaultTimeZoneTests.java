@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
-@DisplayName("TimeZone extension")
+@DisplayName("DefaultTimeZone extension")
 class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 
 	private static TimeZone TEST_DEFAULT_TIMEZONE;
@@ -113,4 +113,42 @@ class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 			assertEquals(TimeZone.getTimeZone("GMT-12:00"), TimeZone.getDefault());
 		}
 	}
+
+	@DisplayName("with nested classes")
+	@DefaultTimeZone("GMT-8:00")
+	@Nested
+	class NestedDefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
+
+		@Nested
+		@DisplayName("without DefaultTimeZone annotation")
+		class NestedClass {
+
+			@Test
+			@DisplayName("DefaultTimeZone should be set from enclosed class when it is not provided in nested")
+			public void shouldSetTimeZoneFromEnclosedClass() {
+				assertEquals(TimeZone.getTimeZone("GMT-8:00"), TimeZone.getDefault());
+			}
+		}
+
+		@Nested
+		@DefaultTimeZone("GMT-12:00")
+		@DisplayName("with DefaultTimeZone annotation")
+		class AnnotatedNestedClass {
+
+			@Test
+			@DisplayName("DefaultTimeZone should be set from nested class when it is provided")
+			public void shouldSetTimeZoneFromNestedClass() {
+				assertEquals(TimeZone.getTimeZone("GMT-12:00"), TimeZone.getDefault());
+			}
+
+			@Test
+			@DefaultTimeZone("GMT-6:00")
+			@DisplayName("DefaultTimeZone should be set from method when it is provided")
+			public void shouldSetTimeZoneFromMethodOfNestedClass() {
+				assertEquals(TimeZone.getTimeZone("GMT-6:00"), TimeZone.getDefault());
+			}
+		}
+
+	}
+
 }

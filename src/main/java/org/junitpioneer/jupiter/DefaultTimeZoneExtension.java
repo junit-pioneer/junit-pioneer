@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.platform.commons.support.AnnotationSupport;
 
 class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
@@ -51,8 +50,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
 		//@formatter:off
-		return AnnotationSupport
-				.findAnnotation(context.getElement(), DefaultTimeZone.class)
+		return Utils.findAnnotation(context, DefaultTimeZone.class)
 				.map(DefaultTimeZone::value)
 				.map(TimeZone::getTimeZone)
 				.orElseThrow(() -> new ExtensionConfigurationException("The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));

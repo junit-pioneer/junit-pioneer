@@ -33,7 +33,8 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 
 	@Override
 	public boolean supportsTestTemplate(ExtensionContext context) {
-		// the annotation only applies to methods
+		// the annotation only applies to methods (see its `@Target`),
+		// so it doesn't matter that this method checks meta-annotations
 		return Utils.annotationPresentOnTestMethod(context, RepeatFailedTest.class);
 	}
 

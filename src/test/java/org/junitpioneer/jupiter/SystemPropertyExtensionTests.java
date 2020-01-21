@@ -151,6 +151,45 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 
 	}
 
+	@DisplayName("with nested classes")
+	@ClearSystemProperty(key = "set prop A")
+	@SetSystemProperty(key = "set prop B", value = "new B")
+	@Nested
+	class NestedSystemPropertyTests extends AbstractPioneerTestEngineTests {
+
+		@Nested
+		@DisplayName("without SystemProperty annotations")
+		class NestedClass {
+
+			@Test
+			@DisplayName("system properties should be set from enclosed class when they are not provided in nested")
+			public void shouldSetSystemPropertyFromEnclosedClass() {
+				assertThat(System.getProperty("set prop A")).isNull();
+				assertThat(System.getProperty("set prop B")).isEqualTo("new B");
+			}
+		}
+
+		@Nested
+		@SetSystemProperty(key = "set prop B", value = "newer B")
+		@DisplayName("with SetSystemProperty annotation")
+		class AnnotatedNestedClass {
+
+			@Test
+			@DisplayName("system property should be set from nested class when it is provided")
+			public void shouldSetSystemPropertyFromNestedClass() {
+				assertThat(System.getProperty("set prop B")).isEqualTo("newer B");
+			}
+
+			@Test
+			@SetSystemProperty(key = "set prop B", value = "newest B")
+			@DisplayName("system property should be set from method when it is provided")
+			public void shouldSetSystemPropertyFromMethodOfNestedClass() {
+				assertThat(System.getProperty("set prop B")).isEqualTo("newest B");
+			}
+		}
+
+	}
+
 	@Nested
 	@DisplayName("used with incorrect configuration")
 	class ConfigurationFailureTests {

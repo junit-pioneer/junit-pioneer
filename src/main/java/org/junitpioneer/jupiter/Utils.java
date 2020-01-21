@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -42,6 +43,20 @@ class Utils {
 						.of(annotationTypes)
 						.anyMatch(annotationType -> AnnotationSupport.isAnnotated(testMethod, annotationType)))
 				.orElse(false);
+		//@formatter:on
+	}
+
+	/**
+	 * Returns the specified annotation if it either is either <em>present</em> or
+	 * <em>meta-present</em> on the test method belonging to the specified {@code context}.
+	 */
+	public static <A extends Annotation> Optional<A> findAnnotation(ExtensionContext context, Class<A> annotationType) {
+		//@formatter:off
+		return Stream.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass))
+				.map(el -> AnnotationSupport.findAnnotation(el, annotationType))
+				.filter(Optional::isPresent)
+				.findFirst()
+				.orElse(Optional.empty());
 		//@formatter:on
 	}
 
