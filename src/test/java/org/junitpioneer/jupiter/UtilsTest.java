@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
-import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,14 +36,6 @@ class UtilsTest {
 		@BeforeEach
 		void setUp() throws Exception {
 			collector = Utils.distinctToSet();
-		}
-
-		@Test
-		@DisplayName("should use hash set")
-		void supplierShouldUseHashSet() throws Exception {
-			Supplier<Set<Object>> supplier = collector.supplier();
-
-			assertThat(supplier.get()).isInstanceOf(HashSet.class);
 		}
 
 		@Test
