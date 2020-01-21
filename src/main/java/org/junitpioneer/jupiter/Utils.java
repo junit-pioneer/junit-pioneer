@@ -65,16 +65,14 @@ class Utils {
 	 * on duplicate elements (according to {@link Object#equals(Object) equals}).
 	 */
 	public static <T> Collector<T, Set<T>, Set<T>> distinctToSet() {
-		return Collector.of(HashSet::new, (set, element) -> addButThrowIfDuplicate(set, element), (left, right) -> {
-			right.forEach(element -> {
-				addButThrowIfDuplicate(right, element);
-			});
+		return Collector.of(HashSet::new, Utils::addButThrowIfDuplicate, (left, right) -> {
+			right.forEach(element -> addButThrowIfDuplicate(left, element));
 			return left;
 		});
 	}
 
-	private static <T> void addButThrowIfDuplicate(Set<T> right, T element) {
-		boolean newElement = right.add(element);
+	private static <T> void addButThrowIfDuplicate(Set<T> set, T element) {
+		boolean newElement = set.add(element);
 		if (!newElement) {
 			throw new IllegalStateException("Duplicate element '" + element + "'.");
 		}
