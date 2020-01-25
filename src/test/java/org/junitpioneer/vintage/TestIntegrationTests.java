@@ -10,17 +10,16 @@
 
 package org.junitpioneer.vintage;
 
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
+import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
 /**
  * Tests the vintage {@link Test @Test} annotation by running the entire test engine.
@@ -137,7 +136,7 @@ class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 
 		@Test
 		void test_successfulTest() {
-			assertTrue(true);
+			assertThat(true).isTrue();
 		}
 
 		@Test
@@ -149,7 +148,7 @@ class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 
 		@Test(expected = IllegalArgumentException.class)
 		void testWithExpectedException_successfulTest() {
-			assertTrue(true);
+			assertThat(true).isTrue();
 		}
 
 		@Test(expected = IllegalArgumentException.class)
@@ -171,7 +170,7 @@ class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 
 		@Test(timeout = 10_000)
 		void testWithTimeout_belowTimeout() {
-			assertTrue(true);
+			assertThat(true).isTrue();
 		}
 
 		@Test(timeout = 1)
