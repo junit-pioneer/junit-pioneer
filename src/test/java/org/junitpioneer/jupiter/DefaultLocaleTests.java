@@ -10,6 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+import java.util.Locale;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,11 +27,6 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEvent;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
-
-import java.util.List;
-import java.util.Locale;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("DefaultLocale extension")
 class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
