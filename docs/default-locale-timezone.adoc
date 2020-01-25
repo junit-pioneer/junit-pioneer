@@ -64,7 +64,7 @@ class MyLocaleTests {
 	@Test
 	@DefaultLocale(language = "en")
 	void test_with_method_level_configuration() {
-		aassertThat(Locale.getDefault()).isEqualsTo(new Locale("en"));
+		assertThat(Locale.getDefault()).isEqualsTo(new Locale("en"));
 	}
 }
 ----
