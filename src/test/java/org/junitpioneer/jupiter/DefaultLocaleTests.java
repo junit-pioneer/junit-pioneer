@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Locale;
@@ -54,35 +53,35 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 		@Test
 		@DisplayName("does nothing when annotation is not present")
 		void testDefaultLocaleNoAnnotation() {
-			assertEquals(TEST_DEFAULT_LOCALE, Locale.getDefault());
+			assertThat(Locale.getDefault()).isEqualTo(TEST_DEFAULT_LOCALE);
 		}
 
 		@DefaultLocale("zh-Hant-TW")
 		@Test
 		@DisplayName("sets the default locale using a language tag")
 		void setsLocaleViaLanguageTag() {
-			assertEquals(Locale.forLanguageTag("zh-Hant-TW"), Locale.getDefault());
+			assertThat(Locale.getDefault()).isEqualTo(Locale.forLanguageTag("zh-Hant-TW"));
 		}
 
 		@DefaultLocale(language = "en_EN")
 		@Test
 		@DisplayName("sets the default locale using a language")
 		void setsLanguage() {
-			assertEquals(new Locale("en_EN"), Locale.getDefault());
+			assertThat(Locale.getDefault()).isEqualTo(new Locale("en_EN"));
 		}
 
 		@DefaultLocale(language = "en", country = "EN")
 		@Test
 		@DisplayName("sets the default locale using a language and a country")
 		void setsLanguageAndCountry() {
-			assertEquals(new Locale("en", "EN"), Locale.getDefault());
+			assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN"));
 		}
 
 		@DefaultLocale(language = "en", country = "EN", variant = "gb")
 		@Test
 		@DisplayName("sets the default locale using a language, a country and a variant")
 		void setsLanguageAndCountryAndVariant() {
-			assertEquals(new Locale("en", "EN", "gb"), Locale.getDefault());
+			assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN", "gb"));
 		}
 	}
 
@@ -92,20 +91,19 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 
 		@BeforeEach
 		void setUp() {
-			assertEquals(TEST_DEFAULT_LOCALE, Locale.getDefault());
+			assertThat(Locale.getDefault()).isEqualTo(TEST_DEFAULT_LOCALE);
 		}
 
 		@Test
 		@DisplayName("should execute tests with configured Locale")
 		void shouldExecuteTestsWithConfiguredLocale() {
 			ExecutionEventRecorder eventRecorder = executeTestsForClass(ClassLevelTestCase.class);
-
-			assertEquals(2, eventRecorder.getTestSuccessfulCount());
+			assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(2);
 		}
 
 		@AfterEach
 		void tearDown() {
-			assertEquals(TEST_DEFAULT_LOCALE, Locale.getDefault());
+			assertThat(Locale.getDefault()).isEqualTo(TEST_DEFAULT_LOCALE);
 		}
 	}
 
@@ -114,13 +112,13 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 
 		@Test
 		void shouldExecuteWithClassLevelLocale() {
-			assertEquals(new Locale("fr", "FR"), Locale.getDefault());
+			assertThat(Locale.getDefault()).isEqualTo(new Locale("fr", "FR"));
 		}
 
 		@Test
 		@DefaultLocale(language = "de", country = "DE")
 		void shouldBeOverriddenWithMethodLevelLocale() {
-			assertEquals(new Locale("de", "DE"), Locale.getDefault());
+			assertThat(Locale.getDefault()).isEqualTo(new Locale("de", "DE"));
 		}
 	}
 
@@ -136,7 +134,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 			@Test
 			@DisplayName("DefaultLocale should be set from enclosed class when it is not provided in nested")
 			public void shouldSetLocaleFromEnclosedClass() {
-				assertEquals(Locale.getDefault().getLanguage(), "en");
+				assertThat("en").isEqualTo(Locale.getDefault().getLanguage());
 			}
 		}
 
@@ -148,14 +146,14 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 			@Test
 			@DisplayName("DefaultLocale should be set from nested class when it is provided")
 			public void shouldSetLocaleFromNestedClass() {
-				assertEquals(Locale.getDefault().getLanguage(), "de");
+				assertThat("de").isEqualTo(Locale.getDefault().getLanguage());
 			}
 
 			@Test
 			@DefaultLocale(language = "ch")
 			@DisplayName("DefaultLocale should be set from method when it is provided")
 			public void shouldSetLocaleFromMethodOfNestedClass() {
-				assertEquals(Locale.getDefault().getLanguage(), "ch");
+				assertThat("ch").isEqualTo(Locale.getDefault().getLanguage());
 			}
 		}
 
@@ -268,7 +266,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 	}
 
 	private static void assertExtensionConfigurationFailure(List<ExecutionEvent> failedTestFinishedEvents) {
-		assertEquals(1, failedTestFinishedEvents.size());
+		assertThat(failedTestFinishedEvents.size()).isEqualTo(1);
 		//@formatter:off
 		Throwable thrown = failedTestFinishedEvents.get(0)
 				.getPayload(TestExecutionResult.class)

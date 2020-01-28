@@ -11,11 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.platform.engine.TestExecutionResult.Status.FAILED;
 import static org.mockito.ArgumentMatchers.any;
@@ -109,9 +105,10 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			ExecutionEventRecorder executionEventRecorder = executeTests(
 				AnnotationOnAfterAllMethodParameterTestCase.class);
 
-			assertEquals(1, executionEventRecorder.getTestStartedCount());
-			assertEquals(0, executionEventRecorder.getTestFailedCount());
-			assertEquals(1, executionEventRecorder.getTestSuccessfulCount());
+			assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(1);
+			assertThat(executionEventRecorder.getTestFailedCount()).isEqualTo(0);
+			assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+
 			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir).isPresent();
 			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir.get()).doesNotExist();
 			assertThat(AnnotationOnAfterAllMethodParameterTestCase.secondTempDir).isPresent();
@@ -163,8 +160,8 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			ExecutionEventRecorder executionEventRecorder = //
 				executeTests(DeletionTestCase.class, "test(java.nio.file.Path)");
 
-			assertEquals(1, executionEventRecorder.getTestStartedCount());
-			assertEquals(1, executionEventRecorder.getTestSuccessfulCount());
+			assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(1);
+			assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(1);
 
 			assertThat(DeletionTestCase.tempDir).isPresent();
 			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
@@ -176,8 +173,8 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			ExecutionEventRecorder executionEventRecorder = //
 				executeTests(DeletionTestCase.class, "testThatDeletes(java.nio.file.Path)");
 
-			assertEquals(1, executionEventRecorder.getTestStartedCount());
-			assertEquals(1, executionEventRecorder.getTestSuccessfulCount());
+			assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(1);
+			assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(1);
 
 			assertThat(DeletionTestCase.tempDir).isPresent();
 			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
@@ -229,9 +226,10 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	private void assertResolvesShareTempDir(Class<? extends BaseSharedTempDirTestCase> testClass) {
 		ExecutionEventRecorder executionEventRecorder = executeTests(testClass);
 
-		assertEquals(2, executionEventRecorder.getTestStartedCount());
-		assertEquals(0, executionEventRecorder.getTestFailedCount());
-		assertEquals(2, executionEventRecorder.getTestSuccessfulCount());
+		assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(2);
+		assertThat(executionEventRecorder.getTestFailedCount()).isEqualTo(0);
+		assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(2);
+
 		assertThat(BaseSharedTempDirTestCase.tempDir).isPresent();
 		assertThat(BaseSharedTempDirTestCase.tempDir.get()).doesNotExist();
 	}
@@ -239,18 +237,19 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	private void assertResolvesSeparateTempDirs(Class<? extends BaseSeparateTempDirsTestCase> testClass) {
 		ExecutionEventRecorder executionEventRecorder = executeTests(testClass);
 
-		assertEquals(2, executionEventRecorder.getTestStartedCount());
-		assertEquals(0, executionEventRecorder.getTestFailedCount());
-		assertEquals(2, executionEventRecorder.getTestSuccessfulCount());
+		assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(2);
+		assertThat(executionEventRecorder.getTestFailedCount()).isEqualTo(0);
+		assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(2);
 		Deque<Path> tempDirs = BaseSeparateTempDirsTestCase.tempDirs;
 		assertThat(tempDirs).hasSize(2);
 	}
 
 	private void assertSingleFailedTest(ExecutionEventRecorder executionEventRecorder, Class<? extends Throwable> clazz,
 			String message) {
-		assertEquals(1, executionEventRecorder.getTestStartedCount());
-		assertEquals(1, executionEventRecorder.getTestFailedCount());
-		assertEquals(0, executionEventRecorder.getTestSuccessfulCount());
+
+		assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(1);
+		assertThat(executionEventRecorder.getTestFailedCount()).isEqualTo(1);
+		assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(0);
 
 		ExecutionEvent executionEvent = executionEventRecorder.getFailedTestFinishedEvents().get(0);
 		Optional<TestExecutionResult> result = executionEvent.getPayload(TestExecutionResult.class);
@@ -352,7 +351,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		@AfterAll
 		static void afterAll(@TempDir Path tempDir) {
 			assertThat(firstTempDir).isPresent();
-			assertNotEquals(firstTempDir.get(), tempDir);
+			assertThat(firstTempDir.get()).isNotEqualTo(tempDir);
 			secondTempDir = Optional.of(tempDir);
 		}
 
@@ -390,7 +389,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		void check(@TempDir Path tempDir) {
-			assertSame(tempDirs.getLast(), tempDir);
+			assertThat(tempDirs.getLast()).isSameAs(tempDir);
 			assertThat(tempDir).exists();
 		}
 
@@ -480,7 +479,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			private final FileSystem fileSystem;
 
 			JimfsFileSystemResource() {
-				this.fileSystem = Jimfs.newFileSystem();
+				fileSystem = Jimfs.newFileSystem();
 			}
 
 			FileSystem get() {
@@ -549,7 +548,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 		@Test
 		void test(@TempDir Path tempDir) {
-			assertNotNull(tempDir);
+			assertThat(tempDir).isNotNull();
 		}
 
 	}

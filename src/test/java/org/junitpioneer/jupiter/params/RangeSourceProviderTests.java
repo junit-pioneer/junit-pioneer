@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter.params;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -220,7 +219,8 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 
 	private static void assertInvalidRange(ExecutionEventRecorder eventRecorder, String message) {
 		List<ExecutionEvent> failedContainerFinishedEvents = eventRecorder.getFailedContainerEvents();
-		assertEquals(1, failedContainerFinishedEvents.size());
+		assertThat(failedContainerFinishedEvents.size()).isEqualTo(1);
+
 		//@formatter:off
 		Throwable thrown = failedContainerFinishedEvents.get(0)
 				.getPayload(TestExecutionResult.class)
@@ -228,6 +228,6 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 				.orElseThrow(AssertionError::new);
 		//@formatter:on
 		assertThat(thrown).isInstanceOf(PreconditionViolationException.class);
-		assertEquals(message, thrown.getMessage());
+		assertThat(thrown.getMessage()).isEqualTo(message);
 	}
 }
