@@ -59,8 +59,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	private static Locale createLocale(DefaultLocale annotation) {
 		if (!annotation.value().isEmpty()) {
 			return createFromLanguageTag(annotation);
-		}
-		else {
+		} else {
 			return createFromParts(annotation);
 		}
 	}
@@ -79,14 +78,11 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 		String variant = annotation.variant();
 		if (!language.isEmpty() && !country.isEmpty() && !variant.isEmpty()) {
 			return new Locale(language, country, variant);
-		}
-		else if (!language.isEmpty() && !country.isEmpty()) {
+		} else if (!language.isEmpty() && !country.isEmpty()) {
 			return new Locale(language, country);
-		}
-		else if (!language.isEmpty() && variant.isEmpty()) {
+		} else if (!language.isEmpty() && variant.isEmpty()) {
 			return new Locale(language);
-		}
-		else {
+		} else {
 			throw new ExtensionConfigurationException(
 				"@DefaultLocale not configured correctly. When not using a language tag, specify either"
 						+ "language, or language and country, or language and country and variant.");

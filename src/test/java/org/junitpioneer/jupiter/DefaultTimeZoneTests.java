@@ -39,8 +39,7 @@ class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		if (DEFAULT_TIMEZONE_BEFORE_TEST.equals(utc)) {
 			TimeZone.setDefault(gmt);
-		}
-		else {
+		} else {
 			TimeZone.setDefault(utc);
 		}
 		TEST_DEFAULT_TIMEZONE = TimeZone.getDefault();

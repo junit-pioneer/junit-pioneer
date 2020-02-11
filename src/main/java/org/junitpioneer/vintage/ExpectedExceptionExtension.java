@@ -52,8 +52,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 		// (NOTE that if no exception was thrown, NOTHING is registered)
 		if (throwableMatchesExpectedException) {
 			storeExceptionStatus(context, EXCEPTION.WAS_THROWN_AS_EXPECTED);
-		}
-		else {
+		} else {
 			// this extension is not in charge of the throwable, so we need to rethrow;
 			storeExceptionStatus(context, EXCEPTION.WAS_THROWN_NOT_AS_EXPECTED);
 			throw throwable;
@@ -96,8 +95,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 		EXCEPTION thrown = context.getStore(NAMESPACE).get(KEY, EXCEPTION.class);
 		if (thrown == null) {
 			return EXCEPTION.WAS_NOT_THROWN;
-		}
-		else {
+		} else {
 			return thrown;
 		}
 	}

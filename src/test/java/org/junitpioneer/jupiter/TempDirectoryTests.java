@@ -300,8 +300,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		AnnotationOnConstructorParameterTestCase(@TempDir Path tempDir) {
 			if (BaseSharedTempDirTestCase.tempDir.isPresent()) {
 				assertThat(BaseSharedTempDirTestCase.tempDir).containsSame(tempDir);
-			}
-			else {
+			} else {
 				BaseSharedTempDirTestCase.tempDir = Optional.of(tempDir);
 			}
 			check(tempDir);
@@ -424,8 +423,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		private void storeTempDir(@TempDir Path tempDir) {
 			if (DeletionTestCase.tempDir.isPresent()) {
 				assertThat(DeletionTestCase.tempDir).containsSame(tempDir);
-			}
-			else {
+			} else {
 				assertThat(tempDir).exists();
 				DeletionTestCase.tempDir = Optional.of(tempDir);
 			}
