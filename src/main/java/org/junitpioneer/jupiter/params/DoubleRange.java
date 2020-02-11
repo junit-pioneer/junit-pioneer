@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.params;
 
 class DoubleRange extends Range<Double> {
+
 	public DoubleRange(DoubleRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}
@@ -24,4 +25,5 @@ class DoubleRange extends Range<Double> {
 	Double getZero() {
 		return 0.0D;
 	}
+
 }

@@ -81,4 +81,5 @@ public @interface DefaultLocale {
 	 * See the {@link java.util.Locale} class description for the details.
 	 */
 	String variant() default "";
+
 }

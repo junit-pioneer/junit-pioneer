@@ -171,6 +171,7 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 				assertThat(System.getProperty("set prop A")).isNull();
 				assertThat(System.getProperty("set prop B")).isEqualTo("new B");
 			}
+
 		}
 
 		@Nested
@@ -190,6 +191,7 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 			public void shouldSetSystemPropertyFromMethodOfNestedClass() {
 				assertThat(System.getProperty("set prop B")).isEqualTo("newest B");
 			}
+
 		}
 
 	}

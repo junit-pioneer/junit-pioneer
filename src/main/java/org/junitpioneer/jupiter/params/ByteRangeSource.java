@@ -53,4 +53,5 @@ public @interface ByteRangeSource {
 	 * Whether the range is closed (inclusive of the {@link #to()}) or not.
 	 */
 	boolean closed() default false;
+
 }

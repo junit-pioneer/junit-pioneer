@@ -131,6 +131,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			assertThat(BaseSeparateTempDirsTestCase.tempDirs.getFirst()).doesNotExist();
 			assertThat(BaseSeparateTempDirsTestCase.tempDirs.getLast()).doesNotExist();
 		}
+
 	}
 
 	@Nested
@@ -148,6 +149,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		void resolvesTempDirWithCustomParentDirFromProvider() {
 			assertResolvesSeparateTempDirs(ParentDirFromProviderTestCase.class);
 		}
+
 	}
 
 	@Nested
@@ -474,6 +476,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		});
 
 		static class JimfsFileSystemResource implements CloseableResource {
+
 			private final FileSystem fileSystem;
 
 			JimfsFileSystemResource() {
@@ -490,6 +493,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 				assertThat(tempDirs.getLast()).doesNotExist();
 				fileSystem.close();
 			}
+
 		}
 
 	}

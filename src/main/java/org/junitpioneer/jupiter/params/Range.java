@@ -21,6 +21,7 @@ import org.junit.platform.commons.util.Preconditions;
  * @param <N> The numerical type used by the range.
  */
 abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
+
 	private N from;
 	private N to;
 	private N step;
@@ -97,4 +98,5 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 		current = getNextValue();
 		return current;
 	}
+
 }
