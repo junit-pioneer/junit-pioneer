@@ -460,8 +460,8 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory.createInCustomDirectory(
-			() -> Files.createDirectories(fileSystem.getPath("tmp")));
+		Extension tempDirectory = TempDirectory
+				.createInCustomDirectory(() -> Files.createDirectories(fileSystem.getPath("tmp")));
 
 	}
 
@@ -470,8 +470,10 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		@RegisterExtension
 		Extension tempDirectory = TempDirectory.createInCustomDirectory((parameterContext, extensionContext) -> {
 			Store store = extensionContext.getRoot().getStore(Namespace.GLOBAL);
-			FileSystem fileSystem = store.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
-				JimfsFileSystemResource.class).get();
+			FileSystem fileSystem = store
+					.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
+						JimfsFileSystemResource.class)
+					.get();
 			return Files.createDirectories(fileSystem.getPath("tmp"));
 		});
 

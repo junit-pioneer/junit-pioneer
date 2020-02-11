@@ -199,10 +199,8 @@ public class TempDirectory implements ParameterResolver {
 	 */
 	public static TempDirectory createInCustomDirectory(ParentDirProvider parentDirProvider) {
 		requireNonNull(parentDirProvider);
-		// @formatter:off
-		return new TempDirectory((parameterContext, extensionContext, dirPrefix) ->
-				createCustomTempDir(parentDirProvider, parameterContext, extensionContext, dirPrefix));
-		// @formatter:on
+		return new TempDirectory((parameterContext, extensionContext,
+				dirPrefix) -> createCustomTempDir(parentDirProvider, parameterContext, extensionContext, dirPrefix));
 	}
 
 	/**
@@ -233,7 +231,8 @@ public class TempDirectory implements ParameterResolver {
 			throw new ParameterResolutionException(
 				"Can only resolve parameter of type " + Path.class.getName() + " but was: " + parameterType.getName());
 		}
-		return extensionContext.getStore(NAMESPACE) //
+		return extensionContext
+				.getStore(NAMESPACE) //
 				.getOrComputeIfAbsent(KEY,
 					key -> tempDirProvider.get(parameterContext, extensionContext, TEMP_DIR_PREFIX),
 					CloseablePath.class) //
@@ -327,13 +326,13 @@ public class TempDirectory implements ParameterResolver {
 		}
 
 		private IOException createIOExceptionWithAttachedFailures(SortedMap<Path, IOException> failures) {
-			// @formatter:off
-			String joinedPaths = failures.keySet().stream()
+			String joinedPaths = failures
+					.keySet()
+					.stream()
 					.peek(this::tryToDeleteOnExit)
 					.map(this::relativizeSafely)
 					.map(String::valueOf)
 					.collect(joining(", "));
-			// @formatter:on
 			IOException exception = new IOException("Failed to delete temp directory " + dir.toAbsolutePath()
 					+ ". The following paths could not be deleted (see suppressed exceptions for details): "
 					+ joinedPaths);

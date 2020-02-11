@@ -66,10 +66,12 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 	void assertAllValuesSupplied() {
 		ExecutionEventRecorder eventRecorder = executeTestsForClass(RangeTestCases.class);
 
-		List<Number> actualValues = eventRecorder.eventStream().filter(
-			e -> e.getType() == ExecutionEvent.Type.DYNAMIC_TEST_REGISTERED).map(
-				e -> e.getTestDescriptor().getDisplayName()).map(RangeSourceProviderTests::displayNameToNumber).collect(
-					Collectors.toList());
+		List<Number> actualValues = eventRecorder
+				.eventStream()
+				.filter(e -> e.getType() == ExecutionEvent.Type.DYNAMIC_TEST_REGISTERED)
+				.map(e -> e.getTestDescriptor().getDisplayName())
+				.map(RangeSourceProviderTests::displayNameToNumber)
+				.collect(Collectors.toList());
 
 		assertThat(actualValues).containsExactlyInAnyOrder(expectedValues);
 	}
