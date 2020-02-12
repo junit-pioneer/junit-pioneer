@@ -46,6 +46,22 @@ class Utils {
 	}
 
 	/**
+	 * Determines whether an annotation of any of the specified {@code annotationTypes}
+	 * is either <em>present</em> on the test class belonging
+	 * to the specified {@code context}.
+	 */
+	public static boolean annotationPresentOnTestClass(ExtensionContext context,
+														Class<? extends Annotation>... annotationTypes) {
+		//@formatter:off
+		return context.getTestClass()
+				.map(testClass -> Stream
+						.of(annotationTypes)
+						.anyMatch(annotationType -> AnnotationSupport.isAnnotated(testClass, annotationType)))
+				.orElse(false);
+		//@formatter:on
+	}
+
+	/**
 	 * Returns the specified annotation if it either is either <em>present</em> or
 	 * <em>meta-present</em> on the test method belonging to the specified {@code context}.
 	 */
