@@ -36,9 +36,8 @@ public final class Disable {
         return this;
     }
 
-    public Disable becauseOf(String reason) {
+    public void becauseOf(String reason) {
         this.reason = reason;
-        return this;
     }
 
     private void abortTest(Object... values) {
