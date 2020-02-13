@@ -21,86 +21,86 @@ import java.util.function.Consumer;
  */
 public class EnvironmentVariableUtils {
 
-    /**
-     * Set the values of an environment variables.
-     *
-     * @param entries with name and new value of the environment variables
-     */
-    public static void set(Map<String, String> entries) {
-        modifyEnvironmentVariables(map -> map.putAll(entries));
-    }
+	/**
+	 * Set the values of an environment variables.
+	 *
+	 * @param entries with name and new value of the environment variables
+	 */
+	public static void set(Map<String, String> entries) {
+		modifyEnvironmentVariables(map -> map.putAll(entries));
+	}
 
-    /**
-     * Clears environment variables.
-     *
-     * @param names of the environment variables.
-     */
-    public static void clear(Collection<String> names) {
-        modifyEnvironmentVariables(map -> names.forEach(map::remove));
-    }
+	/**
+	 * Clears environment variables.
+	 *
+	 * @param names of the environment variables.
+	 */
+	public static void clear(Collection<String> names) {
+		modifyEnvironmentVariables(map -> names.forEach(map::remove));
+	}
 
-    /**
-     * Set a value of an environment variable.
-     *
-     * @param name  of the environment variable
-     * @param value of the environment variable
-     */
-    public static void set(String name, String value) {
-        modifyEnvironmentVariables(map -> map.put(name, value));
-    }
+	/**
+	 * Set a value of an environment variable.
+	 *
+	 * @param name  of the environment variable
+	 * @param value of the environment variable
+	 */
+	public static void set(String name, String value) {
+		modifyEnvironmentVariables(map -> map.put(name, value));
+	}
 
-    /**
-     * Clear an environment variable.
-     *
-     * @param name of the environment variable
-     */
-    public static void clear(String name) {
-        modifyEnvironmentVariables(map -> map.remove(name));
-    }
+	/**
+	 * Clear an environment variable.
+	 *
+	 * @param name of the environment variable
+	 */
+	public static void clear(String name) {
+		modifyEnvironmentVariables(map -> map.remove(name));
+	}
 
-    private static void modifyEnvironmentVariables(Consumer<Map<String, String>> consumer) {
-        try {
-            tryProcessEnvironmentClassFallbackSystemEnvClass(consumer);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException("Could not modify environment variables");
-        }
-    }
+	private static void modifyEnvironmentVariables(Consumer<Map<String, String>> consumer) {
+		try {
+			tryProcessEnvironmentClassFallbackSystemEnvClass(consumer);
+		} catch (NoSuchFieldException e) {
+			throw new RuntimeException("Could not modify environment variables");
+		}
+	}
 
-    private static void tryProcessEnvironmentClassFallbackSystemEnvClass(Consumer<Map<String, String>> consumer)
-            throws NoSuchFieldException {
-        try {
-            setInProcessEnvironmentClass(consumer);
-        } catch (NoSuchFieldException | ClassNotFoundException e) {
-            setInSystemEnvClass(consumer);
-        }
-    }
+	private static void tryProcessEnvironmentClassFallbackSystemEnvClass(Consumer<Map<String, String>> consumer)
+			throws NoSuchFieldException {
+		try {
+			setInProcessEnvironmentClass(consumer);
+		} catch (NoSuchFieldException | ClassNotFoundException e) {
+			setInSystemEnvClass(consumer);
+		}
+	}
 
-    /*
-     * Works on Windows
-     */
-    private static void setInProcessEnvironmentClass(Consumer<Map<String, String>> consumer)
-            throws ClassNotFoundException, NoSuchFieldException {
-        Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-        consumer.accept(getFieldValue(processEnvironmentClass, "theEnvironment"));
-        consumer.accept(getFieldValue(processEnvironmentClass, "theCaseInsensitiveEnvironment"));
-    }
+	/*
+	 * Works on Windows
+	 */
+	private static void setInProcessEnvironmentClass(Consumer<Map<String, String>> consumer)
+			throws ClassNotFoundException, NoSuchFieldException {
+		Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
+		consumer.accept(getFieldValue(processEnvironmentClass, "theEnvironment"));
+		consumer.accept(getFieldValue(processEnvironmentClass, "theCaseInsensitiveEnvironment"));
+	}
 
-    /*
-     * Works on Linux
-     */
-    private static void setInSystemEnvClass(Consumer<Map<String, String>> consumer) throws NoSuchFieldException {
-        consumer.accept(getFieldValue(System.getenv().getClass(), "m"));
-    }
+	/*
+	 * Works on Linux
+	 */
+	private static void setInSystemEnvClass(Consumer<Map<String, String>> consumer) throws NoSuchFieldException {
+		consumer.accept(getFieldValue(System.getenv().getClass(), "m"));
+	}
 
-    @SuppressWarnings("unchecked")
-    private static Map<String, String> getFieldValue(Class<?> clazz, String name) throws NoSuchFieldException {
-        Field field = clazz.getDeclaredField(name);
-        try {
-            field.setAccessible(true);
-            return (Map<String, String>) field.get(null);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Cannot access field " + clazz.getName() + "." + name, e);
-        }
-    }
+	@SuppressWarnings("unchecked")
+	private static Map<String, String> getFieldValue(Class<?> clazz, String name) throws NoSuchFieldException {
+		Field field = clazz.getDeclaredField(name);
+		try {
+			field.setAccessible(true);
+			return (Map<String, String>) field.get(null);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("Cannot access field " + clazz.getName() + "." + name, e);
+		}
+	}
 
 }
