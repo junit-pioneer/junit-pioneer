@@ -30,6 +30,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * on the class level. If a class is annotated, the configured variable will be
  * cleared for all tests inside that class.
  *
+ * <p>Warning: If your {@link SecurityManager} does not allow modifications, it fails.
+ *
  * @since 0.6
  */
 @Retention(RetentionPolicy.RUNTIME)

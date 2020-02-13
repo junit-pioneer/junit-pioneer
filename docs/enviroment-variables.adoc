@@ -6,6 +6,8 @@ Both annotations work on the test method and class level, are repeatable as well
 After the annotated method has been executed, the variables mentioned in the annotation will be restored to their original value or will be cleared if they didn't have one before.
 Other environment variables that are changed during the test, are *not* restored.
 
+Warning: Your SecurityManager has to allow modifications.
+
 For example, clearing a environment variable for a test execution can be done as follows:
 
 [source,java]

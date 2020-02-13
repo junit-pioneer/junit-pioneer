@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 /**
  * This class modifies the internals of the environment variables map with reflection.
- * If your {@link SecurityManager} does not allow modifications, it fails.
+ * Warning: If your {@link SecurityManager} does not allow modifications, it fails.
  */
 public class EnvironmentVariableUtils {
 

@@ -31,6 +31,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * for all tests inside that class. Any method level configurations will
  * override the class level configurations.
  *
+ * <p>Warning: If your {@link SecurityManager} does not allow modifications, it fails.
+ *
  * @since 0.6
  */
 @Retention(RetentionPolicy.RUNTIME)
