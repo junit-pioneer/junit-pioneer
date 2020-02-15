@@ -19,7 +19,7 @@ public class StopwatchExtensionTests  extends AbstractPioneerTestEngineTests {
         assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
         // How to access context to check stored values
 
-        // CURRENT: Stopwatch is NOT executed
+        // CURRENT: Stopwatch is executed [OK]
     }
 
     @Test
@@ -30,7 +30,7 @@ public class StopwatchExtensionTests  extends AbstractPioneerTestEngineTests {
         assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
         // How to access context to check stored values
 
-        // CURRENT: Stopwatch is executed
+        // CURRENT: Stopwatch is executed [OK]
     }
 
     @Test
@@ -41,7 +41,7 @@ public class StopwatchExtensionTests  extends AbstractPioneerTestEngineTests {
         assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
         // How to access context to check stored values
 
-        // CURRENT: Stopwatch is NOT executed
+        // CURRENT: Stopwatch is NOT executed [OK]
     }
 
 

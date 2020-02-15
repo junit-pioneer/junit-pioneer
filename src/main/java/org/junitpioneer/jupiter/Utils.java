@@ -10,6 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.support.AnnotationSupport;
+
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Optional;
@@ -17,9 +20,6 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
  * Pioneer-internal utility class.
@@ -46,19 +46,17 @@ class Utils {
 	}
 
 	/**
-	 * Determines whether an annotation of any of the specified {@code annotationTypes}
-	 * is either <em>present</em> on the test class belonging
-	 * to the specified {@code context}.
+	 * Determines whether an annotation of the specified {@code annotationType}
+	 * is <em>present</em> on the test class belonging to the specified {@code context}.
+	 * This method is needed because {@link #annotationPresentOnTestMethod(ExtensionContext, Class[])}
+	 * does not recognize annotations on class level.
 	 */
 	public static boolean annotationPresentOnTestClass(ExtensionContext context,
-														Class<? extends Annotation>... annotationTypes) {
-		//@formatter:off
-		return context.getTestClass()
-				.map(testClass -> Stream
-						.of(annotationTypes)
-						.anyMatch(annotationType -> AnnotationSupport.isAnnotated(testClass, annotationType)))
+														Class<? extends Annotation> annotationType) {
+		return context.getElement()
+				.map(el -> AnnotationSupport.isAnnotated(el, annotationType))
 				.orElse(false);
-		//@formatter:on
+
 	}
 
 	/**
