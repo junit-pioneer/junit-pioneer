@@ -58,11 +58,11 @@ class StopwatchExtension implements BeforeAllCallback, BeforeTestExecutionCallba
 	}
 
 	@Override
-	public void afterAll(ExtensionContext context) throws Exception {
+	public void afterAll(ExtensionContext context){
 		if(annotationPresentOnTestClass(context, Stopwatch.class)) {
 			long launchTime = loadLaunchTime(context, LaunchTimeKey.CLASS);
 			long elapsedTime = currentTimeMillis() - launchTime;
-			report("Test", context, elapsedTime);
+			report("Class", context, elapsedTime);
 		}
 	}
 
