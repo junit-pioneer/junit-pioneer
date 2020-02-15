@@ -22,12 +22,9 @@ import java.time.Clock;
 import static java.lang.System.currentTimeMillis;
 import static org.junitpioneer.jupiter.Utils.annotationPresentOnTestClass;
 
-/*
-TODO:
-- Extension is not Executed on Classlevel
-- How to access context to get value of report
+/**
+ * The StopwachtExtension implements callback methods for the {@code @Stopwatch} annotation.
  */
-
 class StopwatchExtension implements BeforeAllCallback, BeforeTestExecutionCallback,
 		AfterTestExecutionCallback, AfterAllCallback {
 	private final Clock clock = Clock.systemUTC();

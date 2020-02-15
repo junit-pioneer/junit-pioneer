@@ -18,8 +18,11 @@ public class StopwatchExtensionTests  extends AbstractPioneerTestEngineTests {
 
         assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
         // How to access context to check stored values
+        // TestReporter onl hast methods to publish Data, but not to recieve Data (from the context)
 
-        // CURRENT: Stopwatch is executed [OK]
+        // CURRENT (Seen by System.out.println in Extension): Stopwatch is executed [OK]
+        // Passing an "ExtensionContext"-Parameter does not work as the parameter is not resolved
+        // No ParameterResolver registered for parameter [org.junit.jupiter.api.extension.ExtensionContext arg0]
     }
 
     @Test
@@ -30,7 +33,7 @@ public class StopwatchExtensionTests  extends AbstractPioneerTestEngineTests {
         assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
         // How to access context to check stored values
 
-        // CURRENT: Stopwatch is executed [OK]
+        // CURRENT (Seen by System.out.println in Extension): Stopwatch is executed [OK]
     }
 
     @Test
@@ -41,7 +44,7 @@ public class StopwatchExtensionTests  extends AbstractPioneerTestEngineTests {
         assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
         // How to access context to check stored values
 
-        // CURRENT: Stopwatch is NOT executed [OK]
+        // CURRENT  (Seen by System.out.println in Extension): Stopwatch is NOT executed [OK]
     }
 
 
@@ -58,7 +61,6 @@ public class StopwatchExtensionTests  extends AbstractPioneerTestEngineTests {
         @Stopwatch
         @Test
         void stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel() {
-
         }
     }
 
@@ -66,7 +68,6 @@ public class StopwatchExtensionTests  extends AbstractPioneerTestEngineTests {
 
         @Test
         void stopwatchExtensionShouldNotBeExecuted() {
-
         }
     }
 
