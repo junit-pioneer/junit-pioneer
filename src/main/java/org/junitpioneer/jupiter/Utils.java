@@ -10,9 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.commons.support.AnnotationSupport;
-
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Optional;
@@ -20,6 +17,9 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
  * Pioneer-internal utility class.
@@ -52,10 +52,8 @@ class Utils {
 	 * does not recognize annotations on class level.
 	 */
 	public static boolean annotationPresentOnTestClass(ExtensionContext context,
-														Class<? extends Annotation> annotationType) {
-		return context.getElement()
-				.map(el -> AnnotationSupport.isAnnotated(el, annotationType))
-				.orElse(false);
+			Class<? extends Annotation> annotationType) {
+		return context.getElement().map(el -> AnnotationSupport.isAnnotated(el, annotationType)).orElse(false);
 
 	}
 
