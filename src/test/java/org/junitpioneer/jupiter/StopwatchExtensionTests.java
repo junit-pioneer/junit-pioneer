@@ -1,74 +1,82 @@
+/*
+ * Copyright 2015-2020 the original author or authors.
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v2.0 which
+ * accompanies this distribution and is available at
+ *
+ * http://www.eclipse.org/legal/epl-v20.html
+ */
+
 package org.junitpioneer.jupiter;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-
 @DisplayName("Stopwatch extension")
-public class StopwatchExtensionTests  extends AbstractPioneerTestEngineTests {
+public class StopwatchExtensionTests extends AbstractPioneerTestEngineTests {
 
-    @Test
-    void runClassLevelAnnotationTest() {
-        ExecutionEventRecorder eventRecorder = executeTests(StopwatchExtensionTests.ClassLevelAnnotationTest.class,
-                "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel");
+	@Test
+	void runClassLevelAnnotationTest() {
+		ExecutionEventRecorder eventRecorder = executeTests(StopwatchExtensionTests.ClassLevelAnnotationTest.class,
+			"stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel");
 
-        assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
-        // How to access context to check stored values
-        // TestReporter onl hast methods to publish Data, but not to recieve Data (from the context)
+		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		// How to access context to check stored values
+		// TestReporter onl hast methods to publish Data, but not to recieve Data (from the context)
 
-        // CURRENT (Seen by System.out.println in Extension): Stopwatch is executed [OK]
-        // Passing an "ExtensionContext"-Parameter does not work as the parameter is not resolved
-        // No ParameterResolver registered for parameter [org.junit.jupiter.api.extension.ExtensionContext arg0]
-    }
+		// CURRENT (Seen by System.out.println in Extension): Stopwatch is executed [OK]
+		// Passing an "ExtensionContext"-Parameter does not work as the parameter is not resolved
+		// No ParameterResolver registered for parameter [org.junit.jupiter.api.extension.ExtensionContext arg0]
+	}
 
-    @Test
-    void runMethodLevelAnnotationTest() {
-        ExecutionEventRecorder eventRecorder = executeTests(StopwatchExtensionTests.MethodLevelAnnotationTest.class,
-                "stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel");
+	@Test
+	void runMethodLevelAnnotationTest() {
+		ExecutionEventRecorder eventRecorder = executeTests(StopwatchExtensionTests.MethodLevelAnnotationTest.class,
+			"stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel");
 
-        assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
-        // How to access context to check stored values
+		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		// How to access context to check stored values
 
-        // CURRENT (Seen by System.out.println in Extension): Stopwatch is executed [OK]
-    }
+		// CURRENT (Seen by System.out.println in Extension): Stopwatch is executed [OK]
+	}
 
-    @Test
-    void runNonLevelAnnotationTest() {
-        ExecutionEventRecorder eventRecorder = executeTests(StopwatchExtensionTests.NonAnnotationTest.class,
-                "stopwatchExtensionShouldNotBeExecuted");
+	@Test
+	void runNonLevelAnnotationTest() {
+		ExecutionEventRecorder eventRecorder = executeTests(StopwatchExtensionTests.NonAnnotationTest.class,
+			"stopwatchExtensionShouldNotBeExecuted");
 
-        assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
-        // How to access context to check stored values
+		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		// How to access context to check stored values
 
-        // CURRENT  (Seen by System.out.println in Extension): Stopwatch is NOT executed [OK]
-    }
+		// CURRENT  (Seen by System.out.println in Extension): Stopwatch is NOT executed [OK]
+	}
 
+	@Stopwatch
+	static class ClassLevelAnnotationTest {
 
-    @Stopwatch
-    static class ClassLevelAnnotationTest {
+		@Test
+		void stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel() {
+		}
+	}
 
-        @Test
-        void stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel() {
-        }
-    }
+	static class MethodLevelAnnotationTest {
 
-    static class MethodLevelAnnotationTest {
+		@Stopwatch
+		@Test
+		void stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel() {
+		}
+	}
 
-        @Stopwatch
-        @Test
-        void stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel() {
-        }
-    }
+	static class NonAnnotationTest {
 
-    static class NonAnnotationTest {
-
-        @Test
-        void stopwatchExtensionShouldNotBeExecuted() {
-        }
-    }
+		@Test
+		void stopwatchExtensionShouldNotBeExecuted() {
+		}
+	}
 
 }

@@ -10,9 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
 import java.lang.annotation.*;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * {@code @Stopwatch} is a JUnit Jupiter extension measure the elapsed time of a test execution.
