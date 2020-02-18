@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.params;
 
 class FloatRange extends Range<Float> {
+
 	public FloatRange(FloatRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}
@@ -24,4 +25,5 @@ class FloatRange extends Range<Float> {
 	Float getZero() {
 		return 0.0F;
 	}
+
 }

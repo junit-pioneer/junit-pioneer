@@ -54,8 +54,7 @@ public abstract class AbstractPioneerTestEngineTests extends AbstractJupiterTest
 			String methodName = methodSignature.substring(0, open);
 			String methodParameters = methodSignature.substring(open + 1, close);
 			return selectMethod(type, methodName, methodParameters);
-		}
-		else {
+		} else {
 			return selectMethod(type, methodSignature);
 		}
 	}

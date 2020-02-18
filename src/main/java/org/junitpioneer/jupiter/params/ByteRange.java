@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.params;
 
 class ByteRange extends Range<Byte> {
+
 	public ByteRange(ByteRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}
@@ -24,4 +25,5 @@ class ByteRange extends Range<Byte> {
 	Byte getZero() {
 		return 0;
 	}
+
 }

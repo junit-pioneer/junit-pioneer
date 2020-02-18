@@ -2,7 +2,7 @@ plugins {
     java
     checkstyle
     `maven-publish`
-    id("com.diffplug.gradle.spotless") version "3.24.3"
+    id("com.diffplug.gradle.spotless") version "3.27.1"
     id("org.shipkit.java") version "2.2.5"
     id("at.zierler.yamlvalidator") version "1.5.0"
     id("com.gradle.build-scan") version "2.4.2"

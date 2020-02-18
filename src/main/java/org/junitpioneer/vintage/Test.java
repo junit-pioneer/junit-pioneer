@@ -46,6 +46,7 @@ public @interface Test {
 
 		private None() {
 		}
+
 	}
 
 	/**

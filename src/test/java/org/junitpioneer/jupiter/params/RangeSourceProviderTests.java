@@ -66,10 +66,12 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 	void assertAllValuesSupplied() {
 		ExecutionEventRecorder eventRecorder = executeTestsForClass(RangeTestCases.class);
 
-		List<Number> actualValues = eventRecorder.eventStream().filter(
-			e -> e.getType() == ExecutionEvent.Type.DYNAMIC_TEST_REGISTERED).map(
-				e -> e.getTestDescriptor().getDisplayName()).map(RangeSourceProviderTests::displayNameToNumber).collect(
-					Collectors.toList());
+		List<Number> actualValues = eventRecorder
+				.eventStream()
+				.filter(e -> e.getType() == ExecutionEvent.Type.DYNAMIC_TEST_REGISTERED)
+				.map(e -> e.getTestDescriptor().getDisplayName())
+				.map(RangeSourceProviderTests::displayNameToNumber)
+				.collect(Collectors.toList());
 
 		assertThat(actualValues).containsExactlyInAnyOrder(expectedValues);
 	}
@@ -91,6 +93,7 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 
 	@Nested
 	class RangeTestCases {
+
 		@ParameterizedTest(name = "Byte {0}")
 		@ByteRangeSource(from = 0, to = 10)
 		void ascendingByte(byte param) {
@@ -165,10 +168,12 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 		@ByteRangeSource(from = -120, to = -125, step = -10)
 		void underflowProtection(byte param) {
 		}
+
 	}
 
 	@Nested
 	class InvalidRangeTestCases {
+
 		@Test
 		void twoAnnotations() {
 			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "twoAnnotations");
@@ -192,9 +197,11 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "emptyRange");
 			assertInvalidRange(eventRecorder, "Illegal range. Equal from and to will produce an empty range.");
 		}
+
 	}
 
 	static class InvalidRanges {
+
 		@IntRangeSource(from = 1, to = 2)
 		@LongRangeSource(from = 1L, to = 2L)
 		@ParameterizedTest
@@ -215,6 +222,7 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 		@ParameterizedTest
 		void emptyRange() {
 		}
+
 	}
 
 	private static void assertInvalidRange(ExecutionEventRecorder eventRecorder, String message) {
@@ -230,4 +238,5 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 		assertThat(thrown).isInstanceOf(PreconditionViolationException.class);
 		assertThat(thrown.getMessage()).isEqualTo(message);
 	}
+
 }
