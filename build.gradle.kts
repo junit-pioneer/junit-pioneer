@@ -203,3 +203,11 @@ tasks.register<org.junitpioneer.gradle.TriggerTravisTask>("triggerSiteBuild") {
     apiToken = travisApiToken
     message = "Triggered by successful JUnit Pioneer build for %COMMIT"
 }
+
+test {
+    testLogging {
+        // set options for log level LIFECYCLE
+        events "failed"
+        exceptionFormat "full"
+    }
+}
