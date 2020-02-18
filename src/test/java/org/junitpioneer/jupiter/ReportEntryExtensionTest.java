@@ -26,21 +26,25 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 	void test() {
 		final ExecutionEventRecorder recorder = executeTestsForClass(ReportEntriesTest.class);
 		assertThat(recorder.getReportingEntryPublishedCount()).isEqualTo(7);
-		assertThat(values(recorder)).contains("Once upon a midnight dreary", "While I pondered weak and weary",
-			"Over many a quaint and curious volume of forgotten lore", "While I nodded, nearly napping",
-			"suddenly there came a tapping", "As if some one gently rapping", "rapping at my chamber door");
+		assertThat(values(recorder))
+				.contains("Once upon a midnight dreary", "While I pondered weak and weary",
+					"Over many a quaint and curious volume of forgotten lore", "While I nodded, nearly napping",
+					"suddenly there came a tapping", "As if some one gently rapping", "rapping at my chamber door");
 	}
 
 	private Stream<String> values(ExecutionEventRecorder recorder) {
-		return recorder.executionEvents.stream().filter(
-			event -> event.getType().equals(ExecutionEvent.Type.REPORTING_ENTRY_PUBLISHED)).map(
-				executionEvent -> executionEvent.getPayload(
-					org.junit.platform.engine.reporting.ReportEntry.class)).filter(Optional::isPresent).map(
-						Optional::get).map(org.junit.platform.engine.reporting.ReportEntry::getKeyValuePairs).flatMap(
-							map -> map.values().stream());
+		return recorder.executionEvents
+				.stream()
+				.filter(event -> event.getType().equals(ExecutionEvent.Type.REPORTING_ENTRY_PUBLISHED))
+				.map(executionEvent -> executionEvent.getPayload(org.junit.platform.engine.reporting.ReportEntry.class))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.map(org.junit.platform.engine.reporting.ReportEntry::getKeyValuePairs)
+				.flatMap(map -> map.values().stream());
 	}
 
 	static class ReportEntriesTest {
+
 		private static final String VERSE_2 = "While I pondered weak and weary";
 
 		@Test
@@ -61,5 +65,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		@ReportEntry("rapping at my chamber door")
 		void test3() {
 		}
+
 	}
+
 }
