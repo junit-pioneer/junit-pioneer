@@ -36,11 +36,9 @@ public abstract class AbstractPioneerTestEngineTests extends AbstractJupiterTest
 	}
 
 	private ExecutionEventRecorder executeTestMethods(Class<?> type, String[] methodSignatures) {
-		//@formatter:off
 		DiscoverySelector[] selectors = stream(methodSignatures)
 				.map(methodSignature -> selectMethodWithPossibleParameters(type, methodSignature))
 				.toArray(DiscoverySelector[]::new);
-		//@formatter:on
 		LauncherDiscoveryRequest request = request().selectors(selectors).build();
 		return executeTests(request);
 	}

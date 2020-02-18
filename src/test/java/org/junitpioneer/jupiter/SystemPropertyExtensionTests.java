@@ -257,12 +257,11 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 
 	private static void assertExtensionConfigurationFailure(List<ExecutionEvent> failedTestFinishedEvents) {
 		assertThat(failedTestFinishedEvents.size()).isEqualTo(1);
-		//@formatter:off
-		Throwable thrown = failedTestFinishedEvents.get(0)
+		Throwable thrown = failedTestFinishedEvents
+				.get(0)
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable)
 				.orElseThrow(AssertionError::new);
-		//@formatter:on
 		assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
 	}
 

@@ -48,26 +48,19 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
 		// this `context` (M) is a child of the context passed to `provideTestTemplateInvocationContexts` (T),
 		// which means M's store content is invisible to T's store; this can be fixed by using T's store here
-		//@formatter:off
 		ExtensionContext templateContext = context
 				.getParent()
-				.orElseThrow(
-						() -> new IllegalStateException(
-								"Extension context \"" + context + "\" should have a parent context."));
-		//@formatter:on
+				.orElseThrow(() -> new IllegalStateException(
+					"Extension context \"" + context + "\" should have a parent context."));
 		repeaterFor(templateContext).failed(throwable);
 	}
 
 	private static FailedTestRepeater repeaterFor(ExtensionContext context) {
-		//@formatter:off
 		Method repeatedTest = context.getRequiredTestMethod();
 		return context
 				.getStore(NAMESPACE)
-				.getOrComputeIfAbsent(
-						repeatedTest.toString(),
-						__ -> FailedTestRepeater.createFor(repeatedTest),
-						FailedTestRepeater.class);
-		//@formatter:on
+				.getOrComputeIfAbsent(repeatedTest.toString(), __ -> FailedTestRepeater.createFor(repeatedTest),
+					FailedTestRepeater.class);
 	}
 
 	private static class FailedTestRepeater implements Iterator<RepeatFailedTestInvocationContext> {
@@ -84,11 +77,10 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		}
 
 		static FailedTestRepeater createFor(Method repeatedTest) {
-			//@formatter:off
-			RepeatFailedTest repeatFailedTest = AnnotationSupport.findAnnotation(repeatedTest, RepeatFailedTest.class)
+			RepeatFailedTest repeatFailedTest = AnnotationSupport
+					.findAnnotation(repeatedTest, RepeatFailedTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RepeatFailedTest is missing."));
 			return new FailedTestRepeater(repeatFailedTest.value());
-			//@formatter:on
 		}
 
 		void failed(Throwable exception) throws Throwable {

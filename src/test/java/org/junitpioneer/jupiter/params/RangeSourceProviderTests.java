@@ -39,10 +39,8 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 
 	@BeforeEach
 	void populateValues() {
-		//@formatter:off
 		expectedValues = Stream
-				.of(
-					IntStream.range(0, 10).mapToObj(i -> (byte) i),
+				.of(IntStream.range(0, 10).mapToObj(i -> (byte) i),
 					IntStream.rangeClosed(-7, -3).mapToObj(i -> (byte) i),
 					IntStream.range(130, 136).mapToObj(i -> (short) i),
 					IntStream.rangeClosed(-144, -140).filter(i -> i % 2 == 0).mapToObj(i -> (short) i),
@@ -50,16 +48,12 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 					IntStream.rangeClosed(-42_000, -40_000).filter(i -> i % 2000 == 0).boxed(),
 					LongStream.range(6_000_000_000L, 6_000_000_003L).boxed(),
 					LongStream.rangeClosed(-6_000_000_400L, -6_000_000_000L).filter(l -> l % 100L == 0L).boxed(),
-					IntStream.range(0, 3).mapToObj(i -> i + 2.2F),
-					IntStream.rangeClosed(3, 6).mapToObj(i -> i * -0.1F),
+					IntStream.range(0, 3).mapToObj(i -> i + 2.2F), IntStream.rangeClosed(3, 6).mapToObj(i -> i * -0.1F),
 					IntStream.range(0, 2).mapToObj(i -> i + 8.4),
-					IntStream.rangeClosed(-3, -2).mapToObj(i -> (double) i),
-					Stream.of(123),
-					Stream.of((byte) 120),
+					IntStream.rangeClosed(-3, -2).mapToObj(i -> (double) i), Stream.of(123), Stream.of((byte) 120),
 					Stream.of((byte) -120))
 				.flatMap(Function.identity())
 				.toArray(Number[]::new);
-		//@formatter:on
 	}
 
 	@Test
@@ -229,12 +223,11 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 		List<ExecutionEvent> failedContainerFinishedEvents = eventRecorder.getFailedContainerEvents();
 		assertThat(failedContainerFinishedEvents.size()).isEqualTo(1);
 
-		//@formatter:off
-		Throwable thrown = failedContainerFinishedEvents.get(0)
+		Throwable thrown = failedContainerFinishedEvents
+				.get(0)
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable)
 				.orElseThrow(AssertionError::new);
-		//@formatter:on
 		assertThat(thrown).isInstanceOf(PreconditionViolationException.class);
 		assertThat(thrown.getMessage()).isEqualTo(message);
 	}
