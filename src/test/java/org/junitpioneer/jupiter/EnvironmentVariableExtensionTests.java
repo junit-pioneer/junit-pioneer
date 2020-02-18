@@ -171,6 +171,7 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 				assertThat(System.getenv("set prop A")).isNull();
 				assertThat(System.getenv("set prop B")).isEqualTo("new B");
 			}
+
 		}
 
 		@Nested
@@ -190,6 +191,7 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 			public void shouldSetEnvironmentVariableFromMethodOfNestedClass() {
 				assertThat(System.getenv("set prop B")).isEqualTo("newest B");
 			}
+
 		}
 
 	}

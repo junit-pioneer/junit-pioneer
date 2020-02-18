@@ -61,7 +61,8 @@ public class EnvironmentVariableUtils {
 	private static void modifyEnvironmentVariables(Consumer<Map<String, String>> consumer) {
 		try {
 			tryProcessEnvironmentClassFallbackSystemEnvClass(consumer);
-		} catch (NoSuchFieldException e) {
+		}
+		catch (NoSuchFieldException e) {
 			throw new RuntimeException("Could not modify environment variables");
 		}
 	}
@@ -70,7 +71,8 @@ public class EnvironmentVariableUtils {
 			throws NoSuchFieldException {
 		try {
 			setInProcessEnvironmentClass(consumer);
-		} catch (NoSuchFieldException | ClassNotFoundException e) {
+		}
+		catch (NoSuchFieldException | ClassNotFoundException e) {
 			setInSystemEnvClass(consumer);
 		}
 	}
@@ -98,7 +100,8 @@ public class EnvironmentVariableUtils {
 		try {
 			field.setAccessible(true);
 			return (Map<String, String>) field.get(null);
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			throw new RuntimeException("Cannot access field " + clazz.getName() + "." + name, e);
 		}
 	}
