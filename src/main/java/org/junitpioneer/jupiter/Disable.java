@@ -15,6 +15,7 @@ import java.util.Arrays;
 import org.opentest4j.TestAbortedException;
 
 public final class Disable {
+
 	private String reason;
 	private Object[] params;
 
@@ -55,4 +56,5 @@ public final class Disable {
 		}
 		throw new TestAbortedException("Test aborted for arguments " + Arrays.toString(values));
 	}
+
 }

@@ -22,6 +22,7 @@ import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 public class DisableTest extends AbstractPioneerTestEngineTests {
+
 	@Test
 	@DisplayName("Incorrectly configured, will throw an exception.")
 	void testIncorrect() {
@@ -69,6 +70,7 @@ public class DisableTest extends AbstractPioneerTestEngineTests {
 	}
 
 	static class DisableTestCases {
+
 		@ParameterizedTest
 		@CsvSource({ "1, a", "1, b", "1, c", "2, a", "2, b", "2, c", "3, a", "3, b", "3, c" })
 		public void failedDisable(int number, String text) {
@@ -106,5 +108,7 @@ public class DisableTest extends AbstractPioneerTestEngineTests {
 			assertThat(Arrays.asList(number, text)).isNotEqualTo(Arrays.asList(2, "b"));
 			assertThat(Arrays.asList(number, text)).isNotEqualTo(Arrays.asList(3, "a"));
 		}
+
 	}
+
 }
