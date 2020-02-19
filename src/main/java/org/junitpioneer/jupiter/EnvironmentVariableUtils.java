@@ -84,8 +84,8 @@ public class EnvironmentVariableUtils {
 	private static void setInProcessEnvironmentClass(Consumer<Map<String, String>> consumer)
 			throws ClassNotFoundException, NoSuchFieldException {
 		Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-		consumer.accept(getFieldValue(processEnvironmentClass, "theEnvironment", null));
-		consumer.accept(getFieldValue(processEnvironmentClass, "theCaseInsensitiveEnvironment", null));
+		consumer.accept(getFieldValue(processEnvironmentClass, null, "theEnvironment"));
+		consumer.accept(getFieldValue(processEnvironmentClass, null, "theCaseInsensitiveEnvironment"));
 	}
 
 	/*
@@ -104,7 +104,7 @@ public class EnvironmentVariableUtils {
 			return (Map<String, String>) field.get(object);
 		}
 		catch (IllegalAccessException e) {
-			boolean staticField = field == null && Modifier.isStatic(field.getModifiers());
+			boolean staticField = Modifier.isStatic(field.getModifiers());
 			throw new RuntimeException("Cannot access " + (staticField ? "static ": "") + "field " + clazz.getName() + "." + name, e);
 		}
 	}
