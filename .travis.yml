@@ -1,13 +1,17 @@
 language: java
 
 os:
-  - windows
   - linux
   - osx
 
 jdk:
-  - oraclejdk8
+  - oraclejdk11
   - openjdk8
+
+jobs:
+  exclude:
+    - os: osx
+      jdk: openjdk8
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
