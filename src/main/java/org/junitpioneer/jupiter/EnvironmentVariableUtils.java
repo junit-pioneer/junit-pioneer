@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -97,12 +98,16 @@ public class EnvironmentVariableUtils {
 	@SuppressWarnings("unchecked")
 	private static Map<String, String> getFieldValue(Class<?> clazz, String name) throws NoSuchFieldException {
 		Field field = clazz.getDeclaredField(name);
+		Boolean staticField = field == null ? null : Modifier.isStatic(field.getModifiers());
 		try {
 			field.setAccessible(true);
 			return (Map<String, String>) field.get(null);
 		}
+		catch (NullPointerException e) {
+			throw new NullPointerException("Field " + clazz.getName() + "." + name + " is expected to be static: " + staticField);
+		}
 		catch (IllegalAccessException e) {
-			throw new RuntimeException("Cannot access field " + clazz.getName() + "." + name, e);
+			throw new RuntimeException("Cannot access " + (staticField ? "static ": "") + "field " + clazz.getName() + "." + name, e);
 		}
 	}
 
