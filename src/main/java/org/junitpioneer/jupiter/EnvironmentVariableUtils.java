@@ -84,29 +84,27 @@ public class EnvironmentVariableUtils {
 	private static void setInProcessEnvironmentClass(Consumer<Map<String, String>> consumer)
 			throws ClassNotFoundException, NoSuchFieldException {
 		Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-		consumer.accept(getFieldValue(processEnvironmentClass, "theEnvironment"));
-		consumer.accept(getFieldValue(processEnvironmentClass, "theCaseInsensitiveEnvironment"));
+		consumer.accept(getFieldValue(processEnvironmentClass, "theEnvironment", null));
+		consumer.accept(getFieldValue(processEnvironmentClass, "theCaseInsensitiveEnvironment", null));
 	}
 
 	/*
 	 * Works on Linux
 	 */
 	private static void setInSystemEnvClass(Consumer<Map<String, String>> consumer) throws NoSuchFieldException {
-		consumer.accept(getFieldValue(System.getenv().getClass(), "m"));
+		Map<String, String> env = System.getenv();
+		consumer.accept(getFieldValue(env.getClass(), env,"m"));
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Map<String, String> getFieldValue(Class<?> clazz, String name) throws NoSuchFieldException {
+	private static Map<String, String> getFieldValue(Class<?> clazz, Object object, String name) throws NoSuchFieldException {
 		Field field = clazz.getDeclaredField(name);
-		Boolean staticField = field == null ? null : Modifier.isStatic(field.getModifiers());
 		try {
 			field.setAccessible(true);
-			return (Map<String, String>) field.get(null);
-		}
-		catch (NullPointerException e) {
-			throw new NullPointerException("Field " + clazz.getName() + "." + name + " is expected to be static: " + staticField);
+			return (Map<String, String>) field.get(object);
 		}
 		catch (IllegalAccessException e) {
+			boolean staticField = field == null && Modifier.isStatic(field.getModifiers());
 			throw new RuntimeException("Cannot access " + (staticField ? "static ": "") + "field " + clazz.getName() + "." + name, e);
 		}
 	}
