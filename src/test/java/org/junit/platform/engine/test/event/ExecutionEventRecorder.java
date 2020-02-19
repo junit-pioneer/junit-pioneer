@@ -47,11 +47,12 @@ import org.junit.platform.engine.test.event.ExecutionEvent.Type;
 public class ExecutionEventRecorder implements EngineExecutionListener {
 
 	public static List<ExecutionEvent> execute(TestEngine testEngine, EngineDiscoveryRequest discoveryRequest) {
-		TestDescriptor engineTestDescriptor = testEngine.discover(discoveryRequest,
-			UniqueId.forEngine(testEngine.getId()));
+		TestDescriptor engineTestDescriptor = testEngine
+				.discover(discoveryRequest, UniqueId.forEngine(testEngine.getId()));
 		ExecutionEventRecorder listener = new ExecutionEventRecorder();
-		testEngine.execute(
-			new ExecutionRequest(engineTestDescriptor, listener, discoveryRequest.getConfigurationParameters()));
+		testEngine
+				.execute(new ExecutionRequest(engineTestDescriptor, listener,
+					discoveryRequest.getConfigurationParameters()));
 		return listener.getExecutionEvents();
 	}
 
@@ -159,8 +160,8 @@ public class ExecutionEventRecorder implements EngineExecutionListener {
 	}
 
 	private Stream<ExecutionEvent> testFinishedEvents(Status status) {
-		return testEventsByType(FINISHED).filter(
-			byPayload(TestExecutionResult.class, where(TestExecutionResult::getStatus, isEqual(status))));
+		return testEventsByType(FINISHED)
+				.filter(byPayload(TestExecutionResult.class, where(TestExecutionResult::getStatus, isEqual(status))));
 	}
 
 	private Stream<ExecutionEvent> testEventsByType(Type type) {
@@ -168,8 +169,8 @@ public class ExecutionEventRecorder implements EngineExecutionListener {
 	}
 
 	private Stream<ExecutionEvent> containerFinishedEvents(Status status) {
-		return containerEventsByType(FINISHED).filter(
-			byPayload(TestExecutionResult.class, where(TestExecutionResult::getStatus, isEqual(status))));
+		return containerEventsByType(FINISHED)
+				.filter(byPayload(TestExecutionResult.class, where(TestExecutionResult::getStatus, isEqual(status))));
 	}
 
 	private Stream<ExecutionEvent> containerEventsByType(Type type) {

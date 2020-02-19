@@ -83,6 +83,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 		void setsLanguageAndCountryAndVariant() {
 			assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN", "gb"));
 		}
+
 	}
 
 	@Nested
@@ -105,6 +106,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 		void tearDown() {
 			assertThat(Locale.getDefault()).isEqualTo(TEST_DEFAULT_LOCALE);
 		}
+
 	}
 
 	@DefaultLocale(language = "fr", country = "FR")
@@ -120,6 +122,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 		void shouldBeOverriddenWithMethodLevelLocale() {
 			assertThat(Locale.getDefault()).isEqualTo(new Locale("de", "DE"));
 		}
+
 	}
 
 	@DisplayName("with nested classes")
@@ -136,6 +139,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 			public void shouldSetLocaleFromEnclosedClass() {
 				assertThat("en").isEqualTo(Locale.getDefault().getLanguage());
 			}
+
 		}
 
 		@Nested
@@ -155,6 +159,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 			public void shouldSetLocaleFromMethodOfNestedClass() {
 				assertThat("ch").isEqualTo(Locale.getDefault().getLanguage());
 			}
+
 		}
 
 	}
@@ -211,6 +216,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 
 				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
 			}
+
 		}
 
 		@Nested
@@ -225,7 +231,9 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 
 				assertExtensionConfigurationFailure(eventRecorder.getFailedContainerEvents());
 			}
+
 		}
+
 	}
 
 	static class MethodLevelInitializationFailureTestCase {
@@ -267,12 +275,12 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 
 	private static void assertExtensionConfigurationFailure(List<ExecutionEvent> failedTestFinishedEvents) {
 		assertThat(failedTestFinishedEvents.size()).isEqualTo(1);
-		//@formatter:off
-		Throwable thrown = failedTestFinishedEvents.get(0)
+		Throwable thrown = failedTestFinishedEvents
+				.get(0)
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable)
 				.orElseThrow(AssertionError::new);
-		//@formatter:on
 		assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
 	}
+
 }

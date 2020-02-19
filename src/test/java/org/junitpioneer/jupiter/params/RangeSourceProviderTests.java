@@ -39,10 +39,8 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 
 	@BeforeEach
 	void populateValues() {
-		//@formatter:off
 		expectedValues = Stream
-				.of(
-					IntStream.range(0, 10).mapToObj(i -> (byte) i),
+				.of(IntStream.range(0, 10).mapToObj(i -> (byte) i),
 					IntStream.rangeClosed(-7, -3).mapToObj(i -> (byte) i),
 					IntStream.range(130, 136).mapToObj(i -> (short) i),
 					IntStream.rangeClosed(-144, -140).filter(i -> i % 2 == 0).mapToObj(i -> (short) i),
@@ -50,26 +48,24 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 					IntStream.rangeClosed(-42_000, -40_000).filter(i -> i % 2000 == 0).boxed(),
 					LongStream.range(6_000_000_000L, 6_000_000_003L).boxed(),
 					LongStream.rangeClosed(-6_000_000_400L, -6_000_000_000L).filter(l -> l % 100L == 0L).boxed(),
-					IntStream.range(0, 3).mapToObj(i -> i + 2.2F),
-					IntStream.rangeClosed(3, 6).mapToObj(i -> i * -0.1F),
+					IntStream.range(0, 3).mapToObj(i -> i + 2.2F), IntStream.rangeClosed(3, 6).mapToObj(i -> i * -0.1F),
 					IntStream.range(0, 2).mapToObj(i -> i + 8.4),
-					IntStream.rangeClosed(-3, -2).mapToObj(i -> (double) i),
-					Stream.of(123),
-					Stream.of((byte) 120),
+					IntStream.rangeClosed(-3, -2).mapToObj(i -> (double) i), Stream.of(123), Stream.of((byte) 120),
 					Stream.of((byte) -120))
 				.flatMap(Function.identity())
 				.toArray(Number[]::new);
-		//@formatter:on
 	}
 
 	@Test
 	void assertAllValuesSupplied() {
 		ExecutionEventRecorder eventRecorder = executeTestsForClass(RangeTestCases.class);
 
-		List<Number> actualValues = eventRecorder.eventStream().filter(
-			e -> e.getType() == ExecutionEvent.Type.DYNAMIC_TEST_REGISTERED).map(
-				e -> e.getTestDescriptor().getDisplayName()).map(RangeSourceProviderTests::displayNameToNumber).collect(
-					Collectors.toList());
+		List<Number> actualValues = eventRecorder
+				.eventStream()
+				.filter(e -> e.getType() == ExecutionEvent.Type.DYNAMIC_TEST_REGISTERED)
+				.map(e -> e.getTestDescriptor().getDisplayName())
+				.map(RangeSourceProviderTests::displayNameToNumber)
+				.collect(Collectors.toList());
 
 		assertThat(actualValues).containsExactlyInAnyOrder(expectedValues);
 	}
@@ -91,6 +87,7 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 
 	@Nested
 	class RangeTestCases {
+
 		@ParameterizedTest(name = "Byte {0}")
 		@ByteRangeSource(from = 0, to = 10)
 		void ascendingByte(byte param) {
@@ -165,10 +162,12 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 		@ByteRangeSource(from = -120, to = -125, step = -10)
 		void underflowProtection(byte param) {
 		}
+
 	}
 
 	@Nested
 	class InvalidRangeTestCases {
+
 		@Test
 		void twoAnnotations() {
 			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "twoAnnotations");
@@ -192,9 +191,11 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "emptyRange");
 			assertInvalidRange(eventRecorder, "Illegal range. Equal from and to will produce an empty range.");
 		}
+
 	}
 
 	static class InvalidRanges {
+
 		@IntRangeSource(from = 1, to = 2)
 		@LongRangeSource(from = 1L, to = 2L)
 		@ParameterizedTest
@@ -215,19 +216,20 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 		@ParameterizedTest
 		void emptyRange() {
 		}
+
 	}
 
 	private static void assertInvalidRange(ExecutionEventRecorder eventRecorder, String message) {
 		List<ExecutionEvent> failedContainerFinishedEvents = eventRecorder.getFailedContainerEvents();
 		assertThat(failedContainerFinishedEvents.size()).isEqualTo(1);
 
-		//@formatter:off
-		Throwable thrown = failedContainerFinishedEvents.get(0)
+		Throwable thrown = failedContainerFinishedEvents
+				.get(0)
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable)
 				.orElseThrow(AssertionError::new);
-		//@formatter:on
 		assertThat(thrown).isInstanceOf(PreconditionViolationException.class);
 		assertThat(thrown.getMessage()).isEqualTo(message);
 	}
+
 }

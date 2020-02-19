@@ -37,13 +37,12 @@ class Utils {
 	 */
 	public static boolean annotationPresentOnTestMethod(ExtensionContext context,
 			Class<? extends Annotation>... annotationTypes) {
-		//@formatter:off
-		return context.getTestMethod()
+		return context
+				.getTestMethod()
 				.map(testMethod -> Stream
 						.of(annotationTypes)
 						.anyMatch(annotationType -> AnnotationSupport.isAnnotated(testMethod, annotationType)))
 				.orElse(false);
-		//@formatter:on
 	}
 
 	/**
@@ -51,13 +50,12 @@ class Utils {
 	 * <em>meta-present</em> on the test method belonging to the specified {@code context}.
 	 */
 	public static <A extends Annotation> Optional<A> findAnnotation(ExtensionContext context, Class<A> annotationType) {
-		//@formatter:off
-		return Stream.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass))
+		return Stream
+				.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass))
 				.map(el -> AnnotationSupport.findAnnotation(el, annotationType))
 				.filter(Optional::isPresent)
 				.findFirst()
 				.orElse(Optional.empty());
-		//@formatter:on
 	}
 
 	/**

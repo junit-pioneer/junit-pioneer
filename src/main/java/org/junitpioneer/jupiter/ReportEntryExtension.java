@@ -15,19 +15,21 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 class ReportEntryExtension implements BeforeEachCallback {
+
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		context.getElement().map(
-			element -> AnnotationSupport.findRepeatableAnnotations(element, ReportEntry.class)).ifPresent(
-				entries -> entries.forEach(entry -> publish(context, entry)));
+		context
+				.getElement()
+				.map(element -> AnnotationSupport.findRepeatableAnnotations(element, ReportEntry.class))
+				.ifPresent(entries -> entries.forEach(entry -> publish(context, entry)));
 	}
 
 	private void publish(ExtensionContext context, ReportEntry entry) {
 		if (!entry.key().isEmpty()) {
 			context.publishReportEntry(entry.key(), entry.value());
-		}
-		else {
+		} else {
 			context.publishReportEntry(entry.value());
 		}
 	}
+
 }

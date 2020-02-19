@@ -49,12 +49,12 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	}
 
 	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
-		//@formatter:off
-		return Utils.findAnnotation(context, DefaultTimeZone.class)
+		return Utils
+				.findAnnotation(context, DefaultTimeZone.class)
 				.map(DefaultTimeZone::value)
 				.map(TimeZone::getTimeZone)
-				.orElseThrow(() -> new ExtensionConfigurationException("The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
-		//@formatter:on
+				.orElseThrow(() -> new ExtensionConfigurationException(
+					"The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
 	}
 
 	@Override

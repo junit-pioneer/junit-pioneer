@@ -20,7 +20,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(ReportEntryExtension.class)
 public @interface ReportEntry {
+
 	String key() default "";
 
 	String value();
+
 }

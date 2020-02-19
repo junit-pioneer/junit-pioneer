@@ -46,7 +46,6 @@ class RangeSourceProvider implements ArgumentsProvider {
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-		// @formatter:off
 		// since it's a method annotation, the element will always be present
 		List<Annotation> argumentsSources = context
 				.getElement()
@@ -58,13 +57,11 @@ class RangeSourceProvider implements ArgumentsProvider {
 						.collect(Collectors.toList()))
 				.get();
 
-		Preconditions.condition(
-				argumentsSources.size() == 1,
-				() -> String.format(
-						"Expected exactly one annotation to provide an ArgumentSource, found %d.",
-						argumentsSources.size()));
-		// @formatter:on
-
+		Preconditions
+				.condition(argumentsSources.size() == 1,
+					() -> String
+							.format("Expected exactly one annotation to provide an ArgumentSource, found %d.",
+								argumentsSources.size()));
 		Annotation argumentsSource = argumentsSources.get(0);
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();

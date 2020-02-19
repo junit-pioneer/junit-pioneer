@@ -10,10 +10,16 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -37,8 +43,9 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		boolean present = Utils.annotationPresentOnTestMethod(context, ClearSystemProperty.class,
-			ClearSystemProperties.class, SetSystemProperty.class, SetSystemProperties.class);
+		boolean present = Utils
+				.annotationPresentOnTestMethod(context, ClearSystemProperty.class, ClearSystemProperties.class,
+					SetSystemProperty.class, SetSystemProperties.class);
 		if (present) {
 			handleSystemProperties(context);
 		}
@@ -48,10 +55,13 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 		Set<String> propertiesToClear;
 		Map<String, String> propertiesToSet;
 		try {
-			propertiesToClear = findRepeatableAnnotations(context, ClearSystemProperty.class).stream().map(
-				ClearSystemProperty::key).collect(Utils.distinctToSet());
-			propertiesToSet = findRepeatableAnnotations(context, SetSystemProperty.class).stream().collect(
-				toMap(SetSystemProperty::key, SetSystemProperty::value));
+			propertiesToClear = findRepeatableAnnotations(context, ClearSystemProperty.class)
+					.stream()
+					.map(ClearSystemProperty::key)
+					.collect(Utils.distinctToSet());
+			propertiesToSet = findRepeatableAnnotations(context, SetSystemProperty.class)
+					.stream()
+					.collect(toMap(SetSystemProperty::key, SetSystemProperty::value));
 			preventClearAndSetSameSystemProperties(propertiesToClear, propertiesToSet.keySet());
 		}
 		catch (IllegalStateException ex) {
@@ -65,24 +75,22 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 
 	private void preventClearAndSetSameSystemProperties(Collection<String> propertiesToClear,
 			Collection<String> propertiesToSet) {
-		// @formatter:off
-		propertiesToClear.stream()
+		propertiesToClear
+				.stream()
 				.filter(propertiesToSet::contains)
 				.reduce((k0, k1) -> k0 + ", " + k1)
 				.ifPresent(duplicateKeys -> {
 					throw new IllegalStateException(
-							"Cannot clear and set the following system properties at the same time: " + duplicateKeys);
+						"Cannot clear and set the following system properties at the same time: " + duplicateKeys);
 				});
-		// @formatter:on
 	}
 
 	private <A extends Annotation> List<A> findRepeatableAnnotations(ExtensionContext context,
 			Class<A> annotationType) {
-		// @formatter:off
-		return context.getElement()
+		return context
+				.getElement()
 				.map(element -> AnnotationSupport.findRepeatableAnnotations(element, annotationType))
 				.orElseGet(Collections::emptyList);
-		// @formatter:on
 	}
 
 	private void storeOriginalSystemProperties(ExtensionContext context, Collection<String> clearProperties,
@@ -95,14 +103,17 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	}
 
 	private void setSystemProperties(Map<String, String> setProperties) {
-		setProperties.entrySet().forEach(
-			propertyWithValue -> System.setProperty(propertyWithValue.getKey(), propertyWithValue.getValue()));
+		setProperties
+				.entrySet()
+				.forEach(
+					propertyWithValue -> System.setProperty(propertyWithValue.getKey(), propertyWithValue.getValue()));
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		boolean present = Utils.annotationPresentOnTestMethod(context, ClearSystemProperty.class,
-			ClearSystemProperties.class, SetSystemProperty.class, SetSystemProperties.class);
+		boolean present = Utils
+				.annotationPresentOnTestMethod(context, ClearSystemProperty.class, ClearSystemProperties.class,
+					SetSystemProperty.class, SetSystemProperties.class);
 		if (present) {
 			restoreOriginalSystemProperties(context);
 		}
@@ -128,28 +139,21 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 		public SystemPropertyBackup(Collection<String> clearProperties, Collection<String> setProperties) {
 			propertiesToSet = new HashMap<>();
 			propertiesToUnset = new HashSet<>();
-			// @formatter:off
-			Stream.concat(clearProperties.stream(), setProperties.stream())
-					.forEach(property -> {
-						String backup = System.getProperty(property);
-						if (backup == null)
-							propertiesToUnset.add(property);
-						else
-							propertiesToSet.put(property, backup);
-					});
-			// @formatter:on
+			Stream.concat(clearProperties.stream(), setProperties.stream()).forEach(property -> {
+				String backup = System.getProperty(property);
+				if (backup == null)
+					propertiesToUnset.add(property);
+				else
+					propertiesToSet.put(property, backup);
+			});
 		}
 
 		public void restoreProperties() {
-			// @formatter:off
 			propertiesToSet
 					.entrySet()
-					.forEach(propertyWithValue -> System.setProperty(
-							propertyWithValue.getKey(),
-							propertyWithValue.getValue()));
-			propertiesToUnset
-					.forEach(System::clearProperty);
-			// @formatter:on
+					.forEach(propertyWithValue -> System
+							.setProperty(propertyWithValue.getKey(), propertyWithValue.getValue()));
+			propertiesToUnset.forEach(System::clearProperty);
 		}
 
 	}

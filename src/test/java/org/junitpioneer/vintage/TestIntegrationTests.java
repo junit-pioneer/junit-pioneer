@@ -52,13 +52,12 @@ class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
 		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);
 
-		//@formatter:off
 		Optional<String> failedTestMessage = eventRecorder
-				.getFailedTestFinishedEvents().get(0)
+				.getFailedTestFinishedEvents()
+				.get(0)
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable)
 				.map(Throwable::getMessage);
-		//@formatter:on
 		String expectedMessage = format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class);
 		assertThat(failedTestMessage).contains(expectedMessage);
 	}
@@ -89,12 +88,11 @@ class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
 		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);
 
-		//@formatter:off
 		Optional<Throwable> failedTestThrowable = eventRecorder
-				.getFailedTestFinishedEvents().get(0)
+				.getFailedTestFinishedEvents()
+				.get(0)
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable);
-		//@formatter:on
 		assertThat(failedTestThrowable).containsInstanceOf(RuntimeException.class);
 	}
 
@@ -115,15 +113,14 @@ class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
 		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);
 
-		//@formatter:off
 		Optional<String> failedTestMessage = eventRecorder
-				.getFailedTestFinishedEvents().get(0)
+				.getFailedTestFinishedEvents()
+				.get(0)
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable)
 				.map(Throwable::getMessage);
-		String expectedMessage = String.format(
-				TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1, 10);
-		//@formatter:on
+		String expectedMessage = String
+				.format(TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1, 10);
 		// the message contains the actual run time, which is unpredictable, so it has to be cut off for the assertion
 		String expectedKnownPrefix = expectedMessage.substring(0, expectedMessage.length() - 6);
 		assertThat(failedTestMessage).isNotEmpty();

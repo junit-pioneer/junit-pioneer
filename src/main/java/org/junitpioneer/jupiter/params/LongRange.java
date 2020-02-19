@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.params;
 
 class LongRange extends Range<Long> {
+
 	public LongRange(LongRangeSource source) {
 		super(source.from(), source.to(), source.step(), source.closed());
 	}
@@ -24,4 +25,5 @@ class LongRange extends Range<Long> {
 	Long getZero() {
 		return 0L;
 	}
+
 }

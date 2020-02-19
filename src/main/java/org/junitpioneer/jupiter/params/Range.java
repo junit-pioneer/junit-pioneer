@@ -21,6 +21,7 @@ import org.junit.platform.commons.util.Preconditions;
  * @param <N> The numerical type used by the range.
  */
 abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
+
 	private N from;
 	private N to;
 	private N step;
@@ -44,13 +45,15 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 	void validate() throws PreconditionViolationException {
 		Preconditions.condition(!step.equals(getZero()), "Illegal range. The step cannot be zero.");
 
-		Preconditions.condition(closed || !from.equals(to),
-			"Illegal range. Equal from and to will produce an empty range.");
+		Preconditions
+				.condition(closed || !from.equals(to), "Illegal range. Equal from and to will produce an empty range.");
 
 		int cmp = from.compareTo(to);
-		Preconditions.condition((cmp < 0 != sign < 0) || (closed && cmp == 0),
-			() -> String.format("Illegal range. There's no way to get from %s to %s with a step of %s.", from, to,
-				step));
+		Preconditions
+				.condition((cmp < 0 != sign < 0) || (closed && cmp == 0),
+					() -> String
+							.format("Illegal range. There's no way to get from %s to %s with a step of %s.", from, to,
+								step));
 	}
 
 	N getStep() {
@@ -97,4 +100,5 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 		current = getNextValue();
 		return current;
 	}
+
 }

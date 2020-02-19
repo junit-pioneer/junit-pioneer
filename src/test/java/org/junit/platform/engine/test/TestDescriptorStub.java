@@ -26,4 +26,5 @@ public class TestDescriptorStub extends AbstractTestDescriptor {
 	public Type getType() {
 		return getChildren().isEmpty() ? Type.TEST : Type.CONTAINER;
 	}
+
 }
