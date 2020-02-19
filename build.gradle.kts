@@ -96,6 +96,9 @@ sonarqube {
 tasks {
 
     test {
+        testLogging {
+            setExceptionFormat("full")
+        }
         useJUnitPlatform()
         filter {
             includeTestsMatching("*Tests")
@@ -202,12 +205,4 @@ tasks.register<org.junitpioneer.gradle.TriggerTravisTask>("triggerSiteBuild") {
     branch = "grandmaster"
     apiToken = travisApiToken
     message = "Triggered by successful JUnit Pioneer build for %COMMIT"
-}
-
-test {
-    testLogging {
-        // set options for log level LIFECYCLE
-        events "failed"
-        exceptionFormat "full"
-    }
 }
