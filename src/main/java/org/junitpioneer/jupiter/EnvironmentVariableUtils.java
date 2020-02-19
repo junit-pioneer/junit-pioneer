@@ -93,11 +93,12 @@ public class EnvironmentVariableUtils {
 	 */
 	private static void setInSystemEnvClass(Consumer<Map<String, String>> consumer) throws NoSuchFieldException {
 		Map<String, String> env = System.getenv();
-		consumer.accept(getFieldValue(env.getClass(), env,"m"));
+		consumer.accept(getFieldValue(env.getClass(), env, "m"));
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Map<String, String> getFieldValue(Class<?> clazz, Object object, String name) throws NoSuchFieldException {
+	private static Map<String, String> getFieldValue(Class<?> clazz, Object object, String name)
+			throws NoSuchFieldException {
 		Field field = clazz.getDeclaredField(name);
 		try {
 			field.setAccessible(true);
@@ -105,7 +106,8 @@ public class EnvironmentVariableUtils {
 		}
 		catch (IllegalAccessException e) {
 			boolean staticField = Modifier.isStatic(field.getModifiers());
-			throw new RuntimeException("Cannot access " + (staticField ? "static ": "") + "field " + clazz.getName() + "." + name, e);
+			throw new RuntimeException(
+				"Cannot access " + (staticField ? "static " : "") + "field " + clazz.getName() + "." + name, e);
 		}
 	}
 
