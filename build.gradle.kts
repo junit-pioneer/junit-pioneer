@@ -2,10 +2,12 @@ plugins {
     java
     checkstyle
     `maven-publish`
+    jacoco
     id("com.diffplug.gradle.spotless") version "3.27.1"
     id("org.shipkit.java") version "2.2.5"
     id("at.zierler.yamlvalidator") version "1.5.0"
     id("com.gradle.build-scan") version "2.4.2"
+    id("org.sonarqube") version "2.8"
 }
 
 group = "org.junit-pioneer"
@@ -86,6 +88,20 @@ yamlValidator {
     isSearchRecursive = true
 }
 
+sonarqube {
+    properties {
+        /* 
+        TODO: this part need to be reworked and included into travisCI.
+            eg. the login needs to be removed and also the location/organization
+            needs to change
+         */
+        property("sonar.projectKey", "aepfli_junit-pioneer")
+        property("sonar.organization", "aepfli")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.login", "6af2d758574bc471864b3d239cc1b92628147e08")
+    }
+}
+
 tasks {
 
     test {
@@ -105,9 +121,15 @@ tasks {
         shouldRunAfter(test)
     }
 
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+        }
+    }
+
     check {
         // to find Javadoc errors early, let "javadoc" task run during "check"
-        dependsOn(javadoc, validateYaml)
+        dependsOn(javadoc, validateYaml, jacocoTestReport, sonarqube)
     }
 
     // the manifest needs to declare the future module name
