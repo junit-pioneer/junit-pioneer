@@ -9,10 +9,7 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 	* [Commits](#commits)
 	* [Pull Requests](#pull-requests)
 	* [Merging](#merging)
-* [Adapting to Upstream Changes](#adapting-to-upstream-changes)
-	* [Small, Unavoidable Changes](#small-unavoidable-changes)
-	* [Unavoidable Changes](#unavoidable-changes)
-	* [Optional Changes](#optional-changes)
+* [Updating Dependency on JUnit 5](#updating-dependency-on-junit-5)
 * [Publishing](#publishing)
 	* [Versioning](#versioning)
 
