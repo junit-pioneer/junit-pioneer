@@ -10,25 +10,26 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.lang.String.format;
+
 import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.commons.support.AnnotationSupport;
 
 class ReportEntryExtension implements BeforeEachCallback {
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		context
-				.getElement()
-				.map(element -> AnnotationSupport.findRepeatableAnnotations(element, ReportEntry.class))
-				.ifPresent(entries -> entries.forEach(entry -> publish(context, entry)));
+		Utils
+				.findRepeatableAnnotation(context, ReportEntry.class)
+				.peek(ReportEntryExtension::verifyKeyValueAreNotBlank)
+				.forEach(entry -> context.publishReportEntry(entry.key(), entry.value()));
 	}
 
-	private void publish(ExtensionContext context, ReportEntry entry) {
-		if (!entry.key().isEmpty()) {
-			context.publishReportEntry(entry.key(), entry.value());
-		} else {
-			context.publishReportEntry(entry.value());
+	private static void verifyKeyValueAreNotBlank(ReportEntry entry) {
+		if (entry.key().isEmpty() || entry.value().isEmpty()) {
+			String message = "Report entries can't have blank key or value: { key=\"%s\", value=\"%s\" }";
+			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
 		}
 	}
 

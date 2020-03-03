@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(ReportEntryExtension.class)
 public @interface ReportEntry {
 
-	String key() default "";
+	String key() default "value";
 
 	String value();
 

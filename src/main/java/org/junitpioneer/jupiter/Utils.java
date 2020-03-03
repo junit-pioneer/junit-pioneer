@@ -59,6 +59,19 @@ class Utils {
 	}
 
 	/**
+	 * Returns the specified repeatable annotation if it either is either <em>present</em> or
+	 * <em>meta-present</em> on the test method belonging to the specified {@code context}.
+	 */
+	public static <A extends Annotation> Stream<A> findRepeatableAnnotation(ExtensionContext context,
+			Class<A> annotationType) {
+		return Stream
+				.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.flatMap(el -> AnnotationSupport.findRepeatableAnnotations(el, annotationType).stream());
+	}
+
+	/**
 	 * A {@link Collectors#toSet() toSet} collector that throws an {@link IllegalStateException}
 	 * on duplicate elements (according to {@link Object#equals(Object) equals}).
 	 */

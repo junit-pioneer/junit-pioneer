@@ -10,10 +10,14 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
@@ -23,47 +27,104 @@ import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 
 	@Test
-	void test() {
-		final ExecutionEventRecorder recorder = executeTestsForClass(ReportEntriesTest.class);
-		assertThat(recorder.getReportingEntryPublishedCount()).isEqualTo(7);
-		assertThat(values(recorder))
-				.contains("Once upon a midnight dreary", "While I pondered weak and weary",
-					"Over many a quaint and curious volume of forgotten lore", "While I nodded, nearly napping",
-					"suddenly there came a tapping", "As if some one gently rapping", "rapping at my chamber door");
+	void explicitKey_keyAndValueAreReported() {
+		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "explicitKey");
+
+		List<Map<String, String>> reportEntries = reportEntries(recorder);
+		assertThat(reportEntries).hasSize(1);
+		Map<String, String> reportEntry = reportEntries.get(0);
+		assertThat(reportEntry).hasSize(1);
+		assertThat(reportEntry).containsExactly(entryOf("Crow2", "While I pondered weak and weary"));
 	}
 
-	private Stream<String> values(ExecutionEventRecorder recorder) {
-		return recorder.executionEvents
-				.stream()
+	@Test
+	void implicitKey_keyIsNamedValue() {
+		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "implicitKey");
+
+		List<Map<String, String>> reportEntries = reportEntries(recorder);
+		assertThat(reportEntries).hasSize(1);
+		assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
+			assertThat(reportEntry).hasSize(1);
+			assertThat(reportEntry).containsExactly(entryOf("value", "Once upon a midnight dreary"));
+		});
+	}
+
+	@Test
+	void emptyKey_fails() {
+		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "emptyKey");
+
+		assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+		assertThat(getFirstFailuresThrowable(recorder).getMessage())
+				.contains("Report entries can't have blank key or value",
+					"Over many a quaint and curious volume of forgotten lore");
+	}
+
+	@Test
+	void emptyValue_fails() {
+		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "emptyValue");
+
+		assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+		assertThat(getFirstFailuresThrowable(recorder).getMessage())
+				.contains("Report entries can't have blank key or value", "While I nodded, nearly napping");
+	}
+
+	@Test
+	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
+		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedAnnotation");
+
+		List<Map<String, String>> reportEntries = reportEntries(recorder);
+
+		assertAll("Verifying report entries " + reportEntries, //
+			() -> assertThat(reportEntries).hasSize(3),
+			() -> assertThat(reportEntries).extracting(entry -> entry.size()).containsExactlyInAnyOrder(1, 1, 1),
+			() -> assertThat(reportEntries)
+					.extracting(entry -> entry.get("value"))
+					.containsExactlyInAnyOrder("suddenly there came a tapping", "As if some one gently rapping",
+						"rapping at my chamber door"));
+	}
+
+	private static List<Map<String, String>> reportEntries(ExecutionEventRecorder recorder) {
+		return recorder
+				.eventStream()
 				.filter(event -> event.getType().equals(ExecutionEvent.Type.REPORTING_ENTRY_PUBLISHED))
 				.map(executionEvent -> executionEvent.getPayload(org.junit.platform.engine.reporting.ReportEntry.class))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.map(org.junit.platform.engine.reporting.ReportEntry::getKeyValuePairs)
-				.flatMap(map -> map.values().stream());
+				.collect(toList());
+	}
+
+	private static Map.Entry<String, String> entryOf(String key, String value) {
+		return new AbstractMap.SimpleEntry<>(key, value);
 	}
 
 	static class ReportEntriesTest {
 
-		private static final String VERSE_2 = "While I pondered weak and weary";
+		@Test
+		@ReportEntry(key = "Crow2", value = "While I pondered weak and weary")
+		void explicitKey() {
+		}
 
 		@Test
 		@ReportEntry("Once upon a midnight dreary")
-		@ReportEntry(key = "Crow2", value = VERSE_2)
-		void test1() {
+		void implicitKey() {
 		}
 
 		@Test
-		@ReportEntry("Over many a quaint and curious volume of forgotten lore")
-		void test2() {
+		@ReportEntry(key = "", value = "Over many a quaint and curious volume of forgotten lore")
+		void emptyKey() {
 		}
 
 		@Test
-		@ReportEntry("While I nodded, nearly napping")
+		@ReportEntry(key = "While I nodded, nearly napping", value = "")
+		void emptyValue() {
+		}
+
+		@Test
 		@ReportEntry("suddenly there came a tapping")
 		@ReportEntry("As if some one gently rapping")
 		@ReportEntry("rapping at my chamber door")
-		void test3() {
+		void repeatedAnnotation() {
 		}
 
 	}
