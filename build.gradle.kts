@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     checkstyle
     `maven-publish`
     id("com.diffplug.gradle.spotless") version "3.27.1"
@@ -103,6 +104,13 @@ tasks {
         // (it does often not make sense to comment every tag; e.g. the @return tag on annotations)
         (options as CoreJavadocOptions).addStringOption("Xdoclint:accessibility,html,syntax,reference", "-quiet")
         shouldRunAfter(test)
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+            xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+        }
     }
 
     check {
