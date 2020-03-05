@@ -4,6 +4,12 @@ jdk:
   - openjdk8
   - openjdk11
 
+addons:
+  sonarcloud:
+    organization: "aepfli" # the key of the org you chose at step #3
+    token:
+      secure: $SONAR_TOKEN # encrypted value of your token
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
