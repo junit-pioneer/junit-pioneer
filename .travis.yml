@@ -32,6 +32,7 @@ script:
   - java -version
   - ./gradlew -version
   - ./gradlew --refresh-dependencies --stacktrace --scan clean build
+  - ./gradlew jacocoTestReport sonarqube
 
 deploy:
   - provider: script
