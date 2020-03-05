@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
  * This class modifies the internals of the environment variables map with reflection.
  * Warning: If your {@link SecurityManager} does not allow modifications, it fails.
  */
-public class EnvironmentVariableUtils {
+class EnvironmentVariableUtils {
 
 	/**
 	 * Set a value of an environment variable.
@@ -63,20 +63,21 @@ public class EnvironmentVariableUtils {
 
 	private static void modifyEnvironmentVariables(Consumer<Map<String, String>> consumer) {
 		try {
-			tryProcessEnvironmentClassFallbackSystemEnvClass(consumer);
-		}
-		catch (ReflectiveOperationException ex) {
-			throw new ExtensionConfigurationException("Could not modify environment variables", ex);
-		}
-	}
-
-	private static void tryProcessEnvironmentClassFallbackSystemEnvClass(Consumer<Map<String, String>> consumer)
-			throws ReflectiveOperationException {
-		try {
 			setInProcessEnvironmentClass(consumer);
 		}
 		catch (ReflectiveOperationException ex) {
+			trySystemEnvClass(consumer, ex);
+		}
+	}
+
+	private static void trySystemEnvClass(Consumer<Map<String, String>> consumer,
+			ReflectiveOperationException processEnvironmentClassEx) {
+		try {
 			setInSystemEnvClass(consumer);
+		}
+		catch (ReflectiveOperationException ex) {
+			ex.addSuppressed(processEnvironmentClassEx);
+			throw new ExtensionConfigurationException("Could not modify environment variables", ex);
 		}
 	}
 
@@ -91,7 +92,7 @@ public class EnvironmentVariableUtils {
 	}
 
 	/*
-	 * Works on Linux
+	 * Works on Linux and OSX
 	 */
 	private static void setInSystemEnvClass(Consumer<Map<String, String>> consumer) throws NoSuchFieldException {
 		Map<String, String> env = System.getenv();
