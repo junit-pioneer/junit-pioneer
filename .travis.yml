@@ -26,6 +26,10 @@ script:
   - java -version
   - ./gradlew -version
   - ./gradlew --refresh-dependencies --stacktrace --scan clean build
+  - ./gradlew jacocoTestReport
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 deploy:
   - provider: script
