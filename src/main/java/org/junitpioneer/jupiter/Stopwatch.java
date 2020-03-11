@@ -10,15 +10,18 @@
 
 package org.junitpioneer.jupiter;
 
-import java.lang.annotation.*;
-
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * {@code @Stopwatch} is a JUnit Jupiter extension measure the elapsed time of a test execution.
+ * {@code @Stopwatch} is a JUnit Jupiter extension to measure the elapsed time of a test execution.
  * It's based on the JUnit extension example.
  *
- * <p>{@code Stopwatch} is not repeatable and can be used on the method and class level.
+ * <p>{@code Stopwatch} is not repeatable. It can be used on the method and class level.
  *
  * @since 0.6
  */
