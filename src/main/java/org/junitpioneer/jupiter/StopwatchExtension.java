@@ -89,9 +89,7 @@ class StopwatchExtension
 		long launchTime = loadLaunchTime(context, unit);
 		long elapsedTime = currentTimeMillis() - launchTime;
 
-		String message = String.format("%s '%s' took %d ms.", unit.getName(), context.getDisplayName(), elapsedTime);
-
-		System.out.println("Test-Method while developing: To see if extension is executed:" + message);
+		String message = String.format("%s '%s' took %d ms.", unit.name(), context.getDisplayName(), elapsedTime);
 		context.publishReportEntry("stopwatch", message);
 	}
 
