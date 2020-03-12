@@ -10,6 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.lang.System.currentTimeMillis;
+import static org.junitpioneer.jupiter.Utils.annotationPresentOnTestClass;
+
+import java.time.Clock;
+
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -18,16 +23,12 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junitpioneer.jupiter.enumerations.TestunitEnum;
 
-import java.time.Clock;
-
-import static java.lang.System.currentTimeMillis;
-import static org.junitpioneer.jupiter.Utils.annotationPresentOnTestClass;
-
 /**
  * The StopwatchExtension implements callback methods for the {@code @Stopwatch} annotation.
  */
 class StopwatchExtension
 		implements BeforeAllCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback, AfterAllCallback {
+
 	private final Clock clock = Clock.systemUTC();
 	private static final Namespace NAMESPACE = Namespace.create(StopwatchExtension.class);
 
