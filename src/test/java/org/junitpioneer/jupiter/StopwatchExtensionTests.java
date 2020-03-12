@@ -10,6 +10,10 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
@@ -17,13 +21,8 @@ import org.junitpioneer.AbstractPioneerTestEngineTests;
 import org.junitpioneer.jupiter.enumerations.TestunitEnum;
 import org.junitpioneer.jupiter.utils.EventRecorderUtils;
 
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("Stopwatch extension tests")
 public class StopwatchExtensionTests extends AbstractPioneerTestEngineTests {
-
 
 	@Test
 	void runClassLevelAnnotationTest() {
@@ -67,12 +66,13 @@ public class StopwatchExtensionTests extends AbstractPioneerTestEngineTests {
 	/**
 	 * Inner test class for testing the class level annotation.
 	 */
-		@Stopwatch
+	@Stopwatch
 	static class ClassLevelAnnotationTest {
 
 		@Test
 		void stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel() {
 		}
+
 	}
 
 	/**
@@ -84,6 +84,7 @@ public class StopwatchExtensionTests extends AbstractPioneerTestEngineTests {
 		@Test
 		void stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel() {
 		}
+
 	}
 
 	/**
@@ -94,6 +95,7 @@ public class StopwatchExtensionTests extends AbstractPioneerTestEngineTests {
 		@Test
 		void stopwatchExtensionShouldNotBeExecuted() {
 		}
+
 	}
 
 }
