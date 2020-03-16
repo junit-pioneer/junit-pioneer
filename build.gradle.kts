@@ -89,6 +89,12 @@ yamlValidator {
 
 tasks {
 
+    printEnvs {
+        val map: MutableMap<String, String>? = System.getEnv()
+        for ((key, value) in map!!) {
+            println("$key: $value")
+        }
+    }
     test {
         useJUnitPlatform()
         filter {

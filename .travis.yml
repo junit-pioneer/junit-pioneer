@@ -1,5 +1,10 @@
 language: java
 
+addons:
+  sonarcloud:
+    organization: "aepfli" 
+    token: "${SONAR_TOKEN}"
+    
 jdk:
   - openjdk8
   - openjdk11
@@ -24,9 +29,7 @@ branches:
 #Build and perform release (if needed)
 script:
   - java -version
-  - ./gradlew -version
-  - ./gradlew --refresh-dependencies --stacktrace --scan clean build
-  - ./gradlew jacocoTestReport
+  - ./gradlew printEnvs
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
