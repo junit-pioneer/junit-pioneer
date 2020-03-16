@@ -65,8 +65,8 @@ void reportingTest() {
 }
 ----
 
-You can also declare your own keys in the annotation (if you don't declare it, JUnit
-will use the value of the entry as the key).
+You can also declare your own keys in the annotation (if you don't declare it, the
+extension will use 'value' as the key).
 
 [source,java]
 ----
