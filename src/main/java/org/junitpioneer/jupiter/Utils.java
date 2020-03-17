@@ -11,15 +11,22 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Pioneer-internal utility class.
@@ -35,6 +42,7 @@ class Utils {
 	 * is either <em>present</em> or <em>meta-present</em> on the test method belonging
 	 * to the specified {@code context}.
 	 */
+	@Deprecated
 	public static boolean annotationPresentOnTestMethod(ExtensionContext context,
 			Class<? extends Annotation>... annotationTypes) {
 		return context
@@ -46,16 +54,39 @@ class Utils {
 	}
 
 	/**
-	 * Returns the specified annotation if it either is either <em>present</em> or
-	 * <em>meta-present</em> on the test method belonging to the specified {@code context}.
+	 * Determines whether an annotation of any of the specified {@code annotationTypes}
+	 * is either <em>present</em> or <em>meta-present</em> on the test element (method or
+	 * class) or any enclosing class belonging to the specified {@code context}.
+	 */
+	public static boolean annotationPresent(ExtensionContext context,
+			Class<? extends Annotation>... annotationTypes) {
+		return Stream.of(annotationTypes)
+				.map(annotationType -> findAnnotation(context, annotationType))
+				.anyMatch(Optional::isPresent);
+	}
+
+	/**
+	 * Returns the specified annotation if it is either <em>present</em> or <em>meta-present</em>
+	 * on the test element (method or class) or any enclosing class belonging to the specified
+	 * {@code context}.
 	 */
 	public static <A extends Annotation> Optional<A> findAnnotation(ExtensionContext context, Class<A> annotationType) {
-		return Stream
-				.of(context.getElement(), context.getTestClass().map(Class::getEnclosingClass))
-				.map(el -> AnnotationSupport.findAnnotation(el, annotationType))
-				.filter(Optional::isPresent)
-				.findFirst()
-				.orElse(Optional.empty());
+		Optional<A> methodAnnotation = AnnotationSupport.findAnnotation(context.getTestMethod(), annotationType);
+		if (methodAnnotation.isPresent())
+			return methodAnnotation;
+
+		return findAnnotationOnClass(context.getTestClass(), annotationType);
+	}
+
+	private static <A extends Annotation> Optional<A> findAnnotationOnClass(Optional<Class<?>> type, Class<A> annotationType) {
+		if (!type.isPresent())
+			return Optional.empty();
+
+		Optional<A> annotation = AnnotationSupport.findAnnotation(type, annotationType);
+		if (annotation.isPresent())
+			return annotation;
+
+		return findAnnotationOnClass(type.map(Class::getEnclosingClass), annotationType);
 	}
 
 	/**

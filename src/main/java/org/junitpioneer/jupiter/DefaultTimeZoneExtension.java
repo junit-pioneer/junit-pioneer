@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 
@@ -28,19 +27,21 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
-		setDefaultTimeZone(context);
+		Utils
+				.findAnnotation(context, DefaultTimeZone.class)
+				.ifPresent(annotation -> setDefaultTimeZone(context, annotation));
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		if (Utils.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
-			setDefaultTimeZone(context);
-		}
+		Utils
+				.findAnnotation(context, DefaultTimeZone.class)
+				.ifPresent(annotation -> setDefaultTimeZone(context, annotation));
 	}
 
-	private void setDefaultTimeZone(ExtensionContext context) {
+	private void setDefaultTimeZone(ExtensionContext context, DefaultTimeZone annotation) {
 		storeDefaultTimeZone(context);
-		TimeZone configuredTimeZone = readTimeZoneFromAnnotation(context);
+		TimeZone configuredTimeZone = TimeZone.getTimeZone(annotation.value());
 		TimeZone.setDefault(configuredTimeZone);
 	}
 
@@ -48,18 +49,9 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 		context.getStore(NAMESPACE).put(KEY, TimeZone.getDefault());
 	}
 
-	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
-		return Utils
-				.findAnnotation(context, DefaultTimeZone.class)
-				.map(DefaultTimeZone::value)
-				.map(TimeZone::getTimeZone)
-				.orElseThrow(() -> new ExtensionConfigurationException(
-					"The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
-	}
-
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (Utils.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
+		if (Utils.annotationPresent(context, DefaultTimeZone.class)) {
 			resetDefaultTimeZone(context);
 		}
 	}
