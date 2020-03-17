@@ -11,22 +11,15 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Pioneer-internal utility class.
@@ -58,9 +51,9 @@ class Utils {
 	 * is either <em>present</em> or <em>meta-present</em> on the test element (method or
 	 * class) or any enclosing class belonging to the specified {@code context}.
 	 */
-	public static boolean annotationPresent(ExtensionContext context,
-			Class<? extends Annotation>... annotationTypes) {
-		return Stream.of(annotationTypes)
+	public static boolean annotationPresent(ExtensionContext context, Class<? extends Annotation>... annotationTypes) {
+		return Stream
+				.of(annotationTypes)
 				.map(annotationType -> findAnnotation(context, annotationType))
 				.anyMatch(Optional::isPresent);
 	}
@@ -78,7 +71,8 @@ class Utils {
 		return findAnnotationOnClass(context.getTestClass(), annotationType);
 	}
 
-	private static <A extends Annotation> Optional<A> findAnnotationOnClass(Optional<Class<?>> type, Class<A> annotationType) {
+	private static <A extends Annotation> Optional<A> findAnnotationOnClass(Optional<Class<?>> type,
+			Class<A> annotationType) {
 		if (!type.isPresent())
 			return Optional.empty();
 

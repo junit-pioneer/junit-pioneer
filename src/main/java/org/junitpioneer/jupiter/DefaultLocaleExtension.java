@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import java.lang.annotation.Annotation;
 import java.util.Locale;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
