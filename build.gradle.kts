@@ -1,11 +1,15 @@
+import com.google.gson.Gson
+
 plugins {
     java
+    jacoco
     checkstyle
     `maven-publish`
     id("com.diffplug.gradle.spotless") version "3.27.1"
     id("org.shipkit.java") version "2.2.5"
     id("at.zierler.yamlvalidator") version "1.5.0"
     id("com.gradle.build-scan") version "2.4.2"
+    id("org.sonarqube") version "2.8"
 }
 
 group = "org.junit-pioneer"
@@ -86,6 +90,33 @@ yamlValidator {
     isSearchRecursive = true
 }
 
+sonarqube {
+    // If you want to use this logcally a sonarLogin has to be provide, either via Username and Password
+    // or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
+    properties {
+        // Default properties if somebody wants to execute it locally
+        property("sonar.projectKey", "junit-pioneer_junit-pioneer")
+        property("sonar.organization", "junit-pioneer-xp")
+        property("sonar.host.url", "https://sonarcloud.io")
+
+        // reminder to @aepfli, provide a follow up pull request do remove this line, and delete token in sonarcloud
+        property("sonar.login", "a175fc2e92f951bbc1da3de77f3309d85dfa5ddd")
+        /*
+        Travis CI provides a Environment Variable called $SONARQUBE_SCANNER_PARAMS, if it is provided and
+        it is populated it will be a json string, if not, it will print the name.
+         */
+
+        val travisSonarProps: String? = System.getenv("SONARQUBE_SCANNER_PARAMS")
+        if (travisSonarProps!= null && travisSonarProps.isNotEmpty()) {
+            val gson = Gson()
+            val map: MutableMap<String, String>? = gson.fromJson(travisSonarProps, MutableMap::class.java) as MutableMap<String, String>?
+            for ((key, value) in map!!) {
+                property(key, value)
+            }
+        }
+    }
+}
+
 tasks {
 
     test {
@@ -103,6 +134,13 @@ tasks {
         // (it does often not make sense to comment every tag; e.g. the @return tag on annotations)
         (options as CoreJavadocOptions).addStringOption("Xdoclint:accessibility,html,syntax,reference", "-quiet")
         shouldRunAfter(test)
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+            xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+        }
     }
 
     check {
