@@ -11,34 +11,42 @@ package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
+import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.jupiter.utils.EventRecorderUtils;
+
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(IssueExtension.class)
-public class IssueTests extends AbstractJupiterTestEngineTests {
+public class IssueTests extends AbstractPioneerTestEngineTests {
 
 
-//    @Test
-//    void checkMethodNotAnnotated() {
-//         ExtensionContext context = JunitJupiterTestExecutionerMagicThing.getContext();
-//        executeTestsForClass(IssueTestCase.class);
-//
-//        if("testNoAnnotation".equals(exectuedMethod.getName())) {
-//            assertThat(exectuedMethod).isNotAnnotatedWith(Issue.class);
-//        }
-//    }
-//
-//    @Test
-//    void checkMethodIstAnnotated() {
-//        ExtensionContext context = JunitJupiterTestExecutionerMagicThing.getContext();
-//        executeTestsForClass(IssueTestCase.class);
-//
-//        if("testNoAnnotation".equals(exectuedMethod.getName())) {
-//            assertThat(exectuedMethod.isAnnotatedWith(Issue.class);
-//            assertThat(exectuedMethod.hasAnnotationValue(Issue.class, "Req 11");
-//        }
-//    }
+    @Test
+    void checkMethodNotAnnotated() {
+        ExecutionEventRecorder eventRecorder = executeTests(IssueTests.IssueDummyTestClass.class,
+            "testNoAnnotation");
 
-    static class IssueTestCase {
+        Map<String, String> reportEntry = EventRecorderUtils.getFirstReportEntry(eventRecorder);
+        assertThat(reportEntry).isEmpty();
+
+    }
+
+    @Test
+    void checkMethodIstAnnotated() {
+        ExecutionEventRecorder eventRecorder = executeTests(IssueTests.IssueDummyTestClass.class,
+            "testIsAnnotated");
+
+        Map<String, String> reportEntry = EventRecorderUtils.getFirstReportEntry(eventRecorder);
+        assertThat(reportEntry).hasSize(1);
+
+        String result = reportEntry.get("Issue");
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo("Req 11");
+    }
+
+    static class IssueDummyTestClass {
 
         @Test
         void testNoAnnotation() {

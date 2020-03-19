@@ -10,24 +10,26 @@
 
 package org.junitpioneer;
 
-import static java.util.Arrays.stream;
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
-import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
-
 import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.MethodSelector;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 
+import static java.util.Arrays.stream;
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
+import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
+
 public abstract class AbstractPioneerTestEngineTests extends AbstractJupiterTestEngineTests {
 
 	protected ExecutionEventRecorder executeTests(Class<?> type, String... methodNames) {
-		if (methodNames.length == 0)
+		if (methodNames.length == 0) {
 			return executeTestClass(type);
-		else
+		}
+		else {
 			return executeTestMethods(type, methodNames);
+		}
 	}
 
 	private ExecutionEventRecorder executeTestClass(Class<?> type) {
@@ -55,6 +57,10 @@ public abstract class AbstractPioneerTestEngineTests extends AbstractJupiterTest
 		} else {
 			return selectMethod(type, methodSignature);
 		}
+	}
+
+	protected ExecutionEventRecorder executeTestsForMethod(Class<?> testClass, String methodName) {
+		return executeTests(request().selectors(selectMethod(testClass.getName(), methodName)).build());
 	}
 
 }

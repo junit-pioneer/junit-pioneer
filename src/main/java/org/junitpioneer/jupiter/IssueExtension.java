@@ -35,12 +35,12 @@ class IssueExtension implements BeforeEachCallback {
 	}
 
 	/**
-	 * Reads the {@code @Issue} value from the annotation and stores it in the extensions namespace.
+	 * Reads the {@code @Issue} value from the annotation and publishs it in the extension context.
 	 * @param context The Extensions context
 	 */
 	void storeIssueId(ExtensionContext context) {
 		String issueId = readIssueIdFromAnnotation(context);
-		context.getStore(NAMESPACE).put(KEY, issueId);
+		context.publishReportEntry(KEY, issueId);
 	}
 
 	/**
