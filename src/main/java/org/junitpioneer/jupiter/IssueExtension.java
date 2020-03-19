@@ -22,45 +22,47 @@ import org.junit.platform.commons.support.AnnotationSupport;
  *
  * @see Issue
  */
-@DisplayName("Issue extension")
+@SuppressWarnings("ALL") @DisplayName("Issue extension")
 class IssueExtension implements BeforeEachCallback {
 	static final Namespace NAMESPACE = Namespace.create(IssueExtension.class);
 	static final String KEY = "Issue";
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		if (isAnnotationPresentOnTestMethod(context)) {
-			setIssueId(context);
+		if (Utils.annotationPresentOnTestMethod(context, Issue.class)) {
+			storeIssueId(context);
 		}
 	}
 
-	boolean isAnnotationPresentOnTestMethod(ExtensionContext context) {
-		//@formatter:off
-		return context.getTestMethod()
-				.map(testMethod -> AnnotationSupport.isAnnotated(testMethod, Issue.class))
-				.orElse(false);
-		//@formatter:on
-	}
-
-	void setIssueId(ExtensionContext context) {
+	/**
+	 * Reads the {@code @Issue} value from the annotation and stores it in the extensions namespace.
+	 * @param context The Extensions context
+	 */
+	void storeIssueId(ExtensionContext context) {
 		String issueId = readIssueIdFromAnnotation(context);
-		storeIssueId(context, issueId);
-	}
-
-	void storeIssueId(ExtensionContext context, String issueId) {
 		context.getStore(NAMESPACE).put(KEY, issueId);
 	}
 
+	/**
+	 * Reads the {@code @Issue} value from the annotation.
+	 * @param context The Extensions context
+	 * @return The read value
+	 */
 	String readIssueIdFromAnnotation(ExtensionContext context) {
 		//@formatter:off
 		return AnnotationSupport
 				.findAnnotation(context.getElement(), Issue.class)
-				.map(IssueExtension::createIssueId)
+				.map(IssueExtension::convertIssueIdValueAsString)
 				.orElseThrow(() -> new ExtensionConfigurationException("The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
 		//@formatter:on
 	}
 
-	static String createIssueId(Issue annotation) {
+	/**
+	 * Converts the value of the {@code @Issue} into a string.
+	 * @param annotation The annotations instance
+	 * @return Converted issue Id
+	 */
+	static String convertIssueIdValueAsString(Issue annotation) {
 		return annotation.value();
 	}
 
