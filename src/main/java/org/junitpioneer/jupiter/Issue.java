@@ -10,12 +10,12 @@
 
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * {@code @Issue} is a JUnit Jupiter extension to mark Tests that they are
@@ -38,7 +38,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * This is done by purpose because a test case should only cover exactly
  * one aspect of a method.</p>
  *
- * @since 0.4
+ * @since 0.6
  */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
