@@ -40,7 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * @since 0.4
  */
-@Target({ ElementType.METHOD})
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(IssueExtension.class)
 public @interface Issue {
@@ -51,4 +51,5 @@ public @interface Issue {
 	 * @since 0.4
 	 */
 	String value();
+
 }

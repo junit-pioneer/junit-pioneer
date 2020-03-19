@@ -22,8 +22,10 @@ import org.junit.platform.commons.support.AnnotationSupport;
  *
  * @see Issue
  */
-@SuppressWarnings("ALL") @DisplayName("Issue extension")
+@SuppressWarnings("ALL")
+@DisplayName("Issue extension")
 class IssueExtension implements BeforeEachCallback {
+
 	static final Namespace NAMESPACE = Namespace.create(IssueExtension.class);
 	static final String KEY = "Issue";
 

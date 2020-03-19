@@ -7,7 +7,12 @@
  *
  * http://www.eclipse.org/legal/epl-v20.html
  */
+
 package org.junitpioneer.jupiter;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,48 +20,43 @@ import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 import org.junitpioneer.jupiter.utils.EventRecorderUtils;
 
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @ExtendWith(IssueExtension.class)
 public class IssueTests extends AbstractPioneerTestEngineTests {
 
+	@Test
+	void checkMethodNotAnnotated() {
+		ExecutionEventRecorder eventRecorder = executeTests(IssueTests.IssueDummyTestClass.class, "testNoAnnotation");
 
-    @Test
-    void checkMethodNotAnnotated() {
-        ExecutionEventRecorder eventRecorder = executeTests(IssueTests.IssueDummyTestClass.class,
-            "testNoAnnotation");
+		Map<String, String> reportEntry = EventRecorderUtils.getFirstReportEntry(eventRecorder);
+		assertThat(reportEntry).isEmpty();
 
-        Map<String, String> reportEntry = EventRecorderUtils.getFirstReportEntry(eventRecorder);
-        assertThat(reportEntry).isEmpty();
+	}
 
-    }
+	@Test
+	void checkMethodIstAnnotated() {
+		ExecutionEventRecorder eventRecorder = executeTests(IssueTests.IssueDummyTestClass.class, "testIsAnnotated");
 
-    @Test
-    void checkMethodIstAnnotated() {
-        ExecutionEventRecorder eventRecorder = executeTests(IssueTests.IssueDummyTestClass.class,
-            "testIsAnnotated");
+		Map<String, String> reportEntry = EventRecorderUtils.getFirstReportEntry(eventRecorder);
+		assertThat(reportEntry).hasSize(1);
 
-        Map<String, String> reportEntry = EventRecorderUtils.getFirstReportEntry(eventRecorder);
-        assertThat(reportEntry).hasSize(1);
+		String result = reportEntry.get("Issue");
+		assertThat(result).isNotNull();
+		assertThat(result).isEqualTo("Req 11");
+	}
 
-        String result = reportEntry.get("Issue");
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo("Req 11");
-    }
+	static class IssueDummyTestClass {
 
-    static class IssueDummyTestClass {
+		@Test
+		void testNoAnnotation() {
 
-        @Test
-        void testNoAnnotation() {
+		}
 
-        }
+		@Issue("Req 11")
+		@Test
+		void testIsAnnotated() {
 
-        @Issue("Req 11")
-        @Test
-        void testIsAnnotated() {
+		}
 
-        }
-    }
+	}
+
 }
