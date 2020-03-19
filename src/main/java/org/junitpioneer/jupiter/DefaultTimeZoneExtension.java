@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.platform.commons.support.AnnotationSupport;
 
 class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
@@ -34,17 +33,9 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		if (annotationPresentOnTestMethod(context)) {
+		if (Utils.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
 			setDefaultTimeZone(context);
 		}
-	}
-
-	private boolean annotationPresentOnTestMethod(ExtensionContext context) {
-		//@formatter:off
-		return context.getTestMethod()
-				.map(testMethod -> AnnotationSupport.isAnnotated(testMethod, DefaultTimeZone.class))
-				.orElse(false);
-		//@formatter:on
 	}
 
 	private void setDefaultTimeZone(ExtensionContext context) {
@@ -58,18 +49,17 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	}
 
 	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
-		//@formatter:off
-		return AnnotationSupport
-				.findAnnotation(context.getElement(), DefaultTimeZone.class)
+		return Utils
+				.findAnnotation(context, DefaultTimeZone.class)
 				.map(DefaultTimeZone::value)
 				.map(TimeZone::getTimeZone)
-				.orElseThrow(() -> new ExtensionConfigurationException("The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
-		//@formatter:on
+				.orElseThrow(() -> new ExtensionConfigurationException(
+					"The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (annotationPresentOnTestMethod(context)) {
+		if (Utils.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
 			resetDefaultTimeZone(context);
 		}
 	}
@@ -82,4 +72,5 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	private void resetDefaultTimeZone(ExtensionContext context) {
 		TimeZone.setDefault(context.getStore(NAMESPACE).get(KEY, TimeZone.class));
 	}
+
 }

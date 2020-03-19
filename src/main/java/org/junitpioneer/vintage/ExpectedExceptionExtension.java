@@ -40,11 +40,9 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 
 	@Override
 	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-		//@formatter:off
 		boolean throwableMatchesExpectedException = expectedException(context)
 				.filter(expected -> expected.isInstance(throwable))
 				.isPresent();
-		//@formatter:on
 
 		// in the `afterTestExecution` callback we have to pass or fail the test
 		// depending on whether the exception was thrown or not;
@@ -52,8 +50,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 		// (NOTE that if no exception was thrown, NOTHING is registered)
 		if (throwableMatchesExpectedException) {
 			storeExceptionStatus(context, EXCEPTION.WAS_THROWN_AS_EXPECTED);
-		}
-		else {
+		} else {
 			// this extension is not in charge of the throwable, so we need to rethrow;
 			storeExceptionStatus(context, EXCEPTION.WAS_THROWN_NOT_AS_EXPECTED);
 			throw throwable;
@@ -64,11 +61,11 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 	public void afterTestExecution(ExtensionContext context) throws Exception {
 		switch (loadExceptionStatus(context)) {
 			case WAS_NOT_THROWN:
-				//@formatter:off
 				expectedException(context)
 						.map(expected -> new AssertionFailedError(format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, expected)))
-						.ifPresent(error -> { throw error; });
-				//@formatter:on
+						.ifPresent(error -> {
+							throw error;
+						});
 			case WAS_THROWN_AS_EXPECTED:
 				// the exception was thrown as expected so there is nothing to do
 				break;
@@ -81,11 +78,9 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 	}
 
 	private static Optional<? extends Class<? extends Throwable>> expectedException(ExtensionContext context) {
-		//@formatter:off
 		return findAnnotation(context.getElement(), Test.class)
 				.map(Test::expected)
 				.filter(exceptionType -> exceptionType != Test.None.class);
-		//@formatter:on
 	}
 
 	private static void storeExceptionStatus(ExtensionContext context, EXCEPTION thrown) {
@@ -96,8 +91,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 		EXCEPTION thrown = context.getStore(NAMESPACE).get(KEY, EXCEPTION.class);
 		if (thrown == null) {
 			return EXCEPTION.WAS_NOT_THROWN;
-		}
-		else {
+		} else {
 			return thrown;
 		}
 	}

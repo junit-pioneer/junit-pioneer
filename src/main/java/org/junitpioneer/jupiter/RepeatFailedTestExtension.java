@@ -14,8 +14,6 @@ import static java.lang.String.format;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
-import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
-import static org.junit.platform.commons.util.AnnotationUtils.isAnnotated;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -26,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
 
 public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
@@ -34,9 +33,9 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 
 	@Override
 	public boolean supportsTestTemplate(ExtensionContext context) {
-		// the annotation only applies to methods
-		Method testMethod = context.getRequiredTestMethod();
-		return isAnnotated(testMethod, RepeatFailedTest.class);
+		// the annotation only applies to methods (see its `@Target`),
+		// so it doesn't matter that this method checks meta-annotations
+		return Utils.annotationPresentOnTestMethod(context, RepeatFailedTest.class);
 	}
 
 	@Override
@@ -49,26 +48,19 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
 		// this `context` (M) is a child of the context passed to `provideTestTemplateInvocationContexts` (T),
 		// which means M's store content is invisible to T's store; this can be fixed by using T's store here
-		//@formatter:off
 		ExtensionContext templateContext = context
 				.getParent()
-				.orElseThrow(
-						() -> new IllegalStateException(
-								"Extension context \"" + context + "\" should have a parent context."));
-		//@formatter:on
+				.orElseThrow(() -> new IllegalStateException(
+					"Extension context \"" + context + "\" should have a parent context."));
 		repeaterFor(templateContext).failed(throwable);
 	}
 
 	private static FailedTestRepeater repeaterFor(ExtensionContext context) {
-		//@formatter:off
 		Method repeatedTest = context.getRequiredTestMethod();
 		return context
 				.getStore(NAMESPACE)
-				.getOrComputeIfAbsent(
-						repeatedTest.toString(),
-						__ -> FailedTestRepeater.createFor(repeatedTest),
-						FailedTestRepeater.class);
-		//@formatter:on
+				.getOrComputeIfAbsent(repeatedTest.toString(), __ -> FailedTestRepeater.createFor(repeatedTest),
+					FailedTestRepeater.class);
 	}
 
 	private static class FailedTestRepeater implements Iterator<RepeatFailedTestInvocationContext> {
@@ -85,11 +77,10 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		}
 
 		static FailedTestRepeater createFor(Method repeatedTest) {
-			//@formatter:off
-			RepeatFailedTest repeatFailedTest = findAnnotation(repeatedTest, RepeatFailedTest.class)
+			RepeatFailedTest repeatFailedTest = AnnotationSupport
+					.findAnnotation(repeatedTest, RepeatFailedTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RepeatFailedTest is missing."));
 			return new FailedTestRepeater(repeatFailedTest.value());
-			//@formatter:on
 		}
 
 		void failed(Throwable exception) throws Throwable {
@@ -98,7 +89,9 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 			boolean allRepetitionsFailed = exceptionsSoFar == maxRepetitions;
 			if (allRepetitionsFailed)
 				throw new AssertionError(
-					format("Test execution #%d (of up to %d) failed ~> test fails", exceptionsSoFar, maxRepetitions));
+					format("Test execution #%d (of up to %d) failed ~> test fails - see cause for details",
+						exceptionsSoFar, maxRepetitions),
+					exception);
 			else
 				throw new TestAbortedException(
 					format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRepetitions),

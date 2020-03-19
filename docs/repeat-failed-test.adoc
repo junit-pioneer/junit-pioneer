@@ -13,7 +13,7 @@ The attribute `n` specifies how often the test is executed before giving up.
 ```java
 @RepeatFailedTest(3)
 void failsNever() {
-    // passing test code
+	// passing test code
 }
 ```
 
@@ -22,8 +22,8 @@ The test `failsNever` is executed once (which succeeds) and marked as passed.
 ```java
 @RepeatFailedTest(3)
 void failsOnlyOnFirstInvocation() {
-    // test code that fails on first execution
-    // but passes on the second
+	// test code that fails on first execution
+	// but passes on the second
 }
 ```
 
@@ -33,7 +33,7 @@ To allow the entire test suite to pass, the first execution is marked as ignored
 ```java
 @RepeatFailedTest(3)
 void failsAlways() {
-    // test code that always fails
+	// test code that always fails
 }
 ```
 

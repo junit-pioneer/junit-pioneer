@@ -19,7 +19,6 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.platform.commons.support.AnnotationSupport;
 
 class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
@@ -34,17 +33,9 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		if (annotationPresentOnTestMethod(context)) {
+		if (Utils.annotationPresentOnTestMethod(context, DefaultLocale.class)) {
 			setDefaultLocale(context);
 		}
-	}
-
-	private boolean annotationPresentOnTestMethod(ExtensionContext context) {
-		//@formatter:off
-		return context.getTestMethod()
-				.map(testMethod -> AnnotationSupport.isAnnotated(testMethod, DefaultLocale.class))
-				.orElse(false);
-		//@formatter:on
 	}
 
 	private void setDefaultLocale(ExtensionContext context) {
@@ -58,19 +49,17 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	}
 
 	private Locale readLocaleFromAnnotation(ExtensionContext context) {
-		//@formatter:off
-		return AnnotationSupport
-				.findAnnotation(context.getElement(), DefaultLocale.class)
+		return Utils
+				.findAnnotation(context, DefaultLocale.class)
 				.map(DefaultLocaleExtension::createLocale)
-				.orElseThrow(() -> new ExtensionConfigurationException("The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
-		//@formatter:on
+				.orElseThrow(() -> new ExtensionConfigurationException(
+					"The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
 	}
 
 	private static Locale createLocale(DefaultLocale annotation) {
 		if (!annotation.value().isEmpty()) {
 			return createFromLanguageTag(annotation);
-		}
-		else {
+		} else {
 			return createFromParts(annotation);
 		}
 	}
@@ -89,14 +78,11 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 		String variant = annotation.variant();
 		if (!language.isEmpty() && !country.isEmpty() && !variant.isEmpty()) {
 			return new Locale(language, country, variant);
-		}
-		else if (!language.isEmpty() && !country.isEmpty()) {
+		} else if (!language.isEmpty() && !country.isEmpty()) {
 			return new Locale(language, country);
-		}
-		else if (!language.isEmpty() && variant.isEmpty()) {
+		} else if (!language.isEmpty() && variant.isEmpty()) {
 			return new Locale(language);
-		}
-		else {
+		} else {
 			throw new ExtensionConfigurationException(
 				"@DefaultLocale not configured correctly. When not using a language tag, specify either"
 						+ "language, or language and country, or language and country and variant.");
@@ -105,7 +91,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (annotationPresentOnTestMethod(context)) {
+		if (Utils.annotationPresentOnTestMethod(context, DefaultLocale.class)) {
 			resetDefaultLocale(context);
 		}
 	}
@@ -118,4 +104,5 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 	private void resetDefaultLocale(ExtensionContext context) {
 		Locale.setDefault(context.getStore(NAMESPACE).get(KEY, Locale.class));
 	}
+
 }

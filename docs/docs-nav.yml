@@ -1,10 +1,16 @@
+# NOTE: The URLs need a trailing slash or the selected nav element
+#       won't be highlighted.
   - title: Features
     children:
-      - title: "Vintage @Test"
-        url: /docs/vintage-test/
-      - title: "TempDirectory"
-        url: /docs/temp-directory/
+      - title: "@ClearSystemProperty and @SetSystemProperty"
+        url: /docs/system-properties/
       - title: "@DefaultLocale and @DefaultTimeZone"
         url: /docs/default-locale-timezone/
+      - title: "Range Sources"
+        url: /docs/range-sources/
       - title: "@RepeatFailedTest"
-        url: /docs/repeat-failed-test
+        url: /docs/repeat-failed-test/
+      - title: "TempDirectory"
+        url: /docs/temp-directory/
+      - title: "Vintage @Test"
+        url: /docs/vintage-test/
