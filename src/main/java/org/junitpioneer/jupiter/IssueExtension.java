@@ -22,7 +22,6 @@ import org.junit.platform.commons.support.AnnotationSupport;
  *
  * @see Issue
  */
-@SuppressWarnings("ALL")
 @DisplayName("Issue extension")
 class IssueExtension implements BeforeEachCallback {
 
@@ -31,6 +30,7 @@ class IssueExtension implements BeforeEachCallback {
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
+		//noinspection unchecked
 		if (Utils.annotationPresentOnTestMethod(context, Issue.class)) {
 			storeIssueId(context);
 		}
