@@ -33,7 +33,7 @@ public class IssueTests extends AbstractPioneerTestEngineTests {
 	}
 
 	@Test
-	void checkMethodIstAnnotated() {
+	void checkMethodIsAnnotated() {
 		ExecutionEventRecorder eventRecorder = executeTests(IssueTests.IssueDummyTestClass.class, "testIsAnnotated");
 
 		Map<String, String> reportEntry = EventRecorderUtils.getFirstReportEntry(eventRecorder);
