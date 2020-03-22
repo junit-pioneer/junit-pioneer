@@ -24,11 +24,10 @@ import org.junit.platform.launcher.LauncherDiscoveryRequest;
 public abstract class AbstractPioneerTestEngineTests extends AbstractJupiterTestEngineTests {
 
 	protected ExecutionEventRecorder executeTests(Class<?> type, String... methodNames) {
-		if (methodNames.length == 0) {
+		if (methodNames.length == 0)
 			return executeTestClass(type);
-		} else {
+		else
 			return executeTestMethods(type, methodNames);
-		}
 	}
 
 	private ExecutionEventRecorder executeTestClass(Class<?> type) {
@@ -56,10 +55,6 @@ public abstract class AbstractPioneerTestEngineTests extends AbstractJupiterTest
 		} else {
 			return selectMethod(type, methodSignature);
 		}
-	}
-
-	protected ExecutionEventRecorder executeTestsForMethod(Class<?> testClass, String methodName) {
-		return executeTests(request().selectors(selectMethod(testClass.getName(), methodName)).build());
 	}
 
 }
