@@ -37,7 +37,7 @@ class IssueExtension implements BeforeEachCallback {
 	}
 
 	/**
-	 * Reads the {@code @Issue} value from the annotation and publishs it in the extension context.
+	 * Reads the {@code @Issue} value from the annotation and publishes it in the extension context.
 	 * @param context The Extensions context
 	 */
 	void storeIssueId(ExtensionContext context) {
