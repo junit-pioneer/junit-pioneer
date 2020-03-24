@@ -5,7 +5,6 @@ os:
   - osx
 
 jdk:
-  - oraclejdk11
   - openjdk8
 
 matrix:
