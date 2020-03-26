@@ -1,0 +1,65 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: JUnit Pioneer Flow
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: '*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # test against latest update of each major Java version, as well as specific updates of LTS versions:
+        java: [ 8, 11 ]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    name: ${{ matrix.os }} - Java ${{ matrix.java }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Gradle build
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: --refresh-dependencies --stacktrace --scan clean build
+      - name: Sonarqube
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        if:  matrix.java == '8' && matrix.os == 'ubuntu-latest'
+        run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
+
+  # This will be handled on a later stage
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   name: Deploy
+  #   if: github.ref == 'refs/heads/master'
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Setup java
+  #       uses: actions/setup-java@v1
+  #       with:
+  #         java-version: 8
+  #     - name: Perform Release
+  #       uses: eskatos/gradle-command-action@v1
+  #       if:
+  #       with:
+  #         arguments: ciPerformRelease
+  #     - name: Upload Release to GitHub
+  #       uses: softprops/action-gh-release@v1
+  #       if: startsWith(github.ref, 'refs/tags/')
+  #       with:
+  #         files: ./build/libs/junit-pioneer-*.jar
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Update Page
+  #       uses: eskatos/gradle-command-action@v1
+  #       with:
+  #         arguments: triggerSiteBuild -P travisApiToken=${{ secrets.TRAVIS_API_TOKEN }} --stacktrace
+      
