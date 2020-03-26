@@ -2,7 +2,6 @@ language: java
 
 jdk:
   - openjdk8
-  - openjdk11
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -18,8 +17,8 @@ install: ./gradlew -version
 
 #Don't build tags
 branches:
-  except:
-  - /^v\d/
+  only:
+  - master
 
 #Build and perform release (if needed)
 script:
@@ -33,7 +32,6 @@ deploy:
     script: ./gradlew ciPerformRelease
     on:
       branch: master
-      jdk: openjdk8
   - provider: releases
     api_key: "${GITHUB_WRITE_TOKEN}"
     skip_cleanup: true
@@ -46,7 +44,6 @@ deploy:
     script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
     on:
       branch: master
-      jdk: openjdk8
 
 env:
   global:
