@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -36,6 +37,11 @@ class EnvironmentVariableExtension
 
 	private static final Namespace NAMESPACE = Namespace.create(EnvironmentVariableExtension.class);
 	private static final String BACKUP = "Backup";
+
+	private static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
+	// package visible to make accessible for tests
+	static final String WARNING_KEY = EnvironmentVariableExtension.class.getSimpleName();
+	static final String WARNING_VALUE = "This extension uses reflection to mutate JDK-internal state, which is fragile. Check the Javadoc or documentation for more details.";
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
@@ -71,8 +77,17 @@ class EnvironmentVariableExtension
 		}
 
 		storeOriginalEnvironmentVariables(context, variablesToClear, variablesToSet.keySet());
+		reportWarning(context);
 		EnvironmentVariableUtils.clear(variablesToClear);
 		EnvironmentVariableUtils.set(variablesToSet);
+	}
+
+	private <A extends Annotation> List<A> findRepeatableAnnotations(ExtensionContext context,
+			Class<A> annotationType) {
+		return context
+				.getElement()
+				.map(element -> AnnotationSupport.findRepeatableAnnotations(element, annotationType))
+				.orElseGet(Collections::emptyList);
 	}
 
 	private void preventClearAndSetSameEnvironmentVariables(Collection<String> variablesToClear,
@@ -87,17 +102,15 @@ class EnvironmentVariableExtension
 				});
 	}
 
-	private <A extends Annotation> List<A> findRepeatableAnnotations(ExtensionContext context,
-			Class<A> annotationType) {
-		return context
-				.getElement()
-				.map(element -> AnnotationSupport.findRepeatableAnnotations(element, annotationType))
-				.orElseGet(Collections::emptyList);
-	}
-
 	private void storeOriginalEnvironmentVariables(ExtensionContext context, Collection<String> clearVariables,
 			Collection<String> setVariables) {
 		context.getStore(NAMESPACE).put(BACKUP, new EnvironmentVariableBackup(clearVariables, setVariables));
+	}
+
+	private void reportWarning(ExtensionContext context) {
+		boolean wasReported = REPORTED_WARNING.getAndSet(true);
+		if (!wasReported)
+			context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
 	}
 
 	@Override
@@ -117,6 +130,11 @@ class EnvironmentVariableExtension
 
 	private void restoreOriginalEnvironmentVariables(ExtensionContext context) {
 		context.getStore(NAMESPACE).get(BACKUP, EnvironmentVariableBackup.class).restoreVariables();
+	}
+
+	// this method is needed by the tests that verify whether the warning is correctly reported
+	static void resetWarning() {
+		REPORTED_WARNING.set(false);
 	}
 
 	/**

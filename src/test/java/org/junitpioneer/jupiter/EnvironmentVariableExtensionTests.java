@@ -11,11 +11,15 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_KEY;
+import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_VALUE;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -228,6 +232,59 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 				"shouldFailWhenSetSameEnvironmentVariableTwice");
 
 			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+		}
+
+	}
+
+	@Nested
+	class ReportWarningTests extends AbstractPioneerTestEngineTests {
+
+		@BeforeEach
+		void resetWarning() {
+			EnvironmentVariableExtension.resetWarning();
+		}
+
+		@Test
+		void shouldNotReportWarningIfExtensionNotUsed() {
+			ExecutionEventRecorder eventRecorder = executeTests(ReportWarningTestCases.class, "testWithoutExtension");
+
+			assertThat(eventRecorder.getReportingEntryPublishedCount()).isEqualTo(0);
+		}
+
+		@Test
+		void shouldReportWarningIfExtensionUsed() {
+			ExecutionEventRecorder eventRecorder = executeTests(ReportWarningTestCases.class, "testWithExtension");
+
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(eventRecorder);
+			assertThat(reportEntries).hasSize(1);
+			Map<String, String> reportEntry = reportEntries.get(0);
+			assertThat(reportEntry).containsExactly(TestUtils.entryOf(WARNING_KEY, WARNING_VALUE));
+		}
+
+		@Test
+		void shouldReportWarningExactlyOnce() {
+			ExecutionEventRecorder eventRecorder = executeTests(ReportWarningTestCases.class);
+
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(eventRecorder);
+			assertThat(reportEntries).hasSize(1);
+		}
+
+	}
+
+	static class ReportWarningTestCases {
+
+		@Test
+		void testWithoutExtension() {
+		}
+
+		@Test
+		@ClearEnvironmentVariable(key = "set prop A")
+		void testWithExtension() {
+		}
+
+		@Test
+		@ClearEnvironmentVariable(key = "set prop A")
+		void anotherTestWithExtension() {
 		}
 
 	}
