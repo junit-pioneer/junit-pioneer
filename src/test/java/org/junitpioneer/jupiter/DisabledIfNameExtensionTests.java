@@ -26,6 +26,7 @@ class DisabledIfNameExtensionTests extends AbstractPioneerTestEngineTests {
 		ExecutionEventRecorder eventRecorder = executeTestsForClass(DisabledIfTests.class);
 
 		assertThat(eventRecorder.getTestSkippedCount()).isEqualTo(5);
+		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
 	}
 
 	// TEST CASES -------------------------------------------------------------------
@@ -41,12 +42,14 @@ class DisabledIfNameExtensionTests extends AbstractPioneerTestEngineTests {
 						"you, disable you",
 						"why am I disabled",
 						"what has been disabled must stay disabled",
-						"fine disable me all you want"
+						"fine disable me all you want",
+						"not those one, though!"
 				}
 		)
 		//@formatter:on
-		void testShouldAlwaysBeDisabled(String reason) {
-			fail("Test Should've been disabled " + reason);
+		void testWhereSomeExecutionsAreDisabled(String reason) {
+			if (reason.contains("disable"))
+				fail("Test Should've been disabled " + reason);
 		}
 
 	}
