@@ -10,9 +10,9 @@
         url: /docs/range-sources/
       - title: "@RepeatFailedTest"
         url: /docs/repeat-failed-test/
+      - title: "Report entries"
+        url: /docs/report-entries/
       - title: "TempDirectory"
         url: /docs/temp-directory/
       - title: "Vintage @Test"
         url: /docs/vintage-test/
-      - title: "Report entries"
-        url: /docs/report-entries/
