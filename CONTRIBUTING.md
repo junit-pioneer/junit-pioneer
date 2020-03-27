@@ -33,11 +33,22 @@ See the next section for how to adapt to upstream changes.
 
 ### Branching Strategy
 
-By default development happens in branches, which are merged via pull requests.
+By default, development happens in branches, which are merged via pull requests.
 Special cases, like fixing problems with the CI pipeline, are of course exempt from this guideline.
 
 Please make sure to give branches a meaningful name!
 As an example, the one creating this documentation was called `branching-merging-documentation`.
+
+### Documentation
+
+When a new extension was added (or significant changes were made) please update the documentation.
+To add the documentation for a new extension add a new entry in the `docs/docs-nav.yml` file and add a new `.adoc` file for the new extension.
+To ensure that a linebreak is properly displayed in the resulting documentation ensure to write **one and only one sentence per line**.
+Do this also for very short sentences like _"Tests must be fast!"_.
+As long as there is no empty line is between to lines of text then the sentences will be displayed like they were written in one line, but will be wraped dynamically of the readers screen resolution.
+
+Do **not** update the `release-notes.md` file!
+This file will be generated automatically.
 
 ### Commits
 
