@@ -1,11 +1,13 @@
 plugins {
     java
+    jacoco
     checkstyle
     `maven-publish`
     id("com.diffplug.gradle.spotless") version "3.27.1"
     id("org.shipkit.java") version "2.2.5"
     id("at.zierler.yamlvalidator") version "1.5.0"
     id("com.gradle.build-scan") version "2.4.2"
+    id("org.sonarqube") version "2.8"
 }
 
 group = "org.junit-pioneer"
@@ -86,6 +88,17 @@ yamlValidator {
     isSearchRecursive = true
 }
 
+sonarqube {
+    // If you want to use this logcally a sonarLogin has to be provide, either via Username and Password
+    // or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
+    properties {
+        // Default properties if somebody wants to execute it locally
+        property("sonar.projectKey", "junit-pioneer_junit-pioneer") // needs to be changed
+        property("sonar.organization", "junit-pioneer-xp") // needs to be changed
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
 tasks {
 
     test {
@@ -103,6 +116,13 @@ tasks {
         // (it does often not make sense to comment every tag; e.g. the @return tag on annotations)
         (options as CoreJavadocOptions).addStringOption("Xdoclint:accessibility,html,syntax,reference", "-quiet")
         shouldRunAfter(test)
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+            xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+        }
     }
 
     check {
