@@ -198,7 +198,7 @@ publishing {
 }
 
 tasks.wrapper {
-    jarFile = file(".infra/gradle/gradle-wrapper.jar")
+    jarFile = file("gradle/wrapper/gradle-wrapper.jar")
 }
 
 tasks.register<org.junitpioneer.gradle.TriggerTravisTask>("triggerSiteBuild") {
