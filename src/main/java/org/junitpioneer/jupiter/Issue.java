@@ -18,13 +18,8 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @Issue} is a JUnit Jupiter extension to mark Tests that they are
+ * {@code @Issue} is a JUnit Jupiter extension to mark tests that they are
  * exist to cover an issue, like a requirement or a bugfix.
- *
- * <p>The main reason tests are written to ensure the functionality of a
- * requirement of to avoid technical problems. This annotation allows to
- * mark tests with the related issue of an issue-tracker like JIRA or
- * Redmine.
  *
  * The annotated issue will be enlisted in the test results, so that
  * it's easy so see if all tests of an issue are completed successfully.</p>
@@ -48,7 +43,7 @@ public @interface Issue {
 	/**
 	 * The id of the issue as defined by the issue-tracker, e.g. "REQ-123".
 	 *
-	 * @since 0.4
+	 * @since 0.6
 	 */
 	String value();
 
