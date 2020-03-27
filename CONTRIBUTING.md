@@ -75,6 +75,8 @@ The [pull requests template](.github/PULL_REQUEST_TEMPLATE.md) contains a footer
 
 To enforce the [branching strategy](#branching-strategy) pull requests from `master` will be closed.
 
+See the [appendix](#appendix) to create a fork, make changes and open a pull request.
+
 ### Merging
 
 A pull request is accepted by squashing the commits and fast-forwarding master, making each bug fix or feature appear atomically on master.
@@ -182,3 +184,49 @@ That means, for now, contributors only have to care about _minor_.
 Since each non-trivial change is developed in a PR, this is the place to discuss whether the minor version should be increased, i.e. whether a change or feature is "substantial".
 If it is, the PR needs to update `version-properties` to the next minor version.
 Note that the feature's Javadoc needs to reference the same version in its `@since` tag.
+
+# Appendix
+
+## How to: Create and work with a fork of the project 
+
+This section will explain how to create a fork of the project and use this fork for contributing code changes.
+
+Before you start add you should create a fork of the project.
+A fork is a personal copy of the project branched to a specific time.
+With a fork it's possible to work independend of the projects progress and push changes back via [pull requests](#pull-requests). 
+
+### Create a fork
+
+To create a fork of the repository and configure it to be able to create proper [pull requests](#pull-requests) here's a short set up guide:
+
+1. On the [projects Github page](https://github.com/junit-pioneer/junit-pioneer), click on the button "Fork" (upper right).
+Github will create a fork for you (e.g. `https://github.com/myfork/junit-pioneer`)
+2. Clone you personal
+3. Open a terminal inside your forks directory
+4. Add the project repository as a remote repository with name `upstream`.
+You do this when executing the following command: `git remote add upstream git@github.com:junit-pioneer/junit-pioneer.git`
+
+Note: You don't have to create a new fork for every change you want to contribute.
+You only ceate one and keep it updated.
+
+### Updating personal fork
+
+Before starting to work on an extension or issue you should always update your fork to be equal to the project.
+To do this checkout your personal `master` branch and execute the following steps
+
+5. Update the index `upstream` by fetch all changes: `git fetch upstream`
+6. Reset the `master` branch of your personal repository to match `upstream`: `git reset --hard upstream/master`.
+Note: This will _delete all local changes_ on your `master` branch.
+But when you stick to the [branching strategy](#branching-strategy), there will never be any as you will never work on `master`.
+7. Update your personal remote (by default called `origin`) `master` using: `git push origin master -f`
+The `f` is short for `force` and will delete all changes on the remote repository.
+
+Voilá - you have created your personal fork and know how to update it.
+
+### Making changes / open pull request
+
+When you want to add content or change something, update your `master` and create a new branch from your personal `master` branch.
+Before call your changes "final" you should update your `master` (see above) and merge it into the feature branch to resolve possible merge conflicts before opening the pull request.
+Depending on how long you worked on your changes, there will be changes in the main repository which may result in conflicts with yours and merge conflicts will break the pull request.
+After finishing work push the branch to your `origin` repository.
+When your feature was pushed to `origin`, open the Github page of your personal repository. Github will hightlight you the recently updated feature branch and allow you a button to open a pull request.
