@@ -1,0 +1,22 @@
+:page-title: Stopwatch
+:page-description: JUnit Jupiter extension to measure elapsed time of a test method or class
+
+== Introduction
+
+Test shall be fast.
+To get a feeling how fast or slow a specific test the `@Stopwatch` annotation can be used.
+It will measure elapsed time and pass the result to the test reporter, which will publish it.
+
+== Usage
+
+To measure elapsed time just at the `@Stopwatch` annotation to a class or, like in the following example, on to a method:
+
+[source,java]
+----
+@Stopwatch
+@Test
+void test() {
+	// Some test
+}
+----
+
