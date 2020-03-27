@@ -12,6 +12,8 @@
         url: /docs/repeat-failed-test/
       - title: "Report entries"
         url: /docs/report-entries/
+      - title: "@Stopwatch"
+        url: /docs/stopwatch/
       - title: "TempDirectory"
         url: /docs/temp-directory/
       - title: "Vintage @Test"
