@@ -221,7 +221,7 @@ But when you stick to the [branching strategy](#branching-strategy), there will 
 7. Update your personal remote (by default called `origin`) `master` using: `git push origin master -f`
 The `f` is short for `force` and will delete all changes on the remote repository.
 
-Voilá - you have created your personal fork and know how to update it.
+Voilà - you have created your personal fork and know how to update it.
 
 ### Making changes / open pull request
 
@@ -230,3 +230,7 @@ Before call your changes "final" you should update your `master` (see above) and
 Depending on how long you worked on your changes, there will be changes in the main repository which may result in conflicts with yours and merge conflicts will break the pull request.
 After finishing work push the branch to your `origin` repository.
 When your feature was pushed to `origin`, open the Github page of your personal repository. Github will hightlight you the recently updated feature branch and allow you a button to open a pull request.
+
+### Further reading
+
+For more information about working with forks please have a look at the corresponding [GitHub help page](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks)
