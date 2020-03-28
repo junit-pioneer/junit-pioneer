@@ -44,7 +44,7 @@ As an example, the one creating this documentation was called `branching-merging
 When a new extension was added (or significant changes were made) please update the documentation.
 To add documentation for an undocumented extension add an entry in the `docs/docs-nav.yml` file and create a new `.adoc` file for the extension.
 To ensure that a linebreak is properly displayed in the resulting documentation ensure to write **one and only one sentence per line**.
-Do this also for very short sentences like _"Tests must be fast!"_.
+This rule also applies for very short sentences like _"Tests must be fast!"_.
 As long as there is no empty line is between to lines of text then the sentences will be displayed like they were written in one line, but will be wraped dynamically of the readers screen resolution.
 
 Do **not** update the `release-notes.md` file!
