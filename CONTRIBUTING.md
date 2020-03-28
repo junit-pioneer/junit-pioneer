@@ -45,7 +45,9 @@ When a new extension was added (or significant changes were made) please update 
 To add documentation for an undocumented extension add an entry in the `docs/docs-nav.yml` file and create a new `.adoc` file for the extension.
 To ensure that a linebreak is properly displayed in the resulting documentation ensure to write **one and only one sentence per line**.
 This rule also applies for very short sentences like _"Tests must be fast!"_.
-As long as there is no empty line is between to lines of text then the sentences will be displayed like they were written in one line, but will be wraped dynamically of the readers screen resolution.
+If long as text blocks are not separated by an empty line, they are treated as one paragraph and without line breaks, regardless existing ones. This means you need to apply at least an empty line if you want to have text separated.
+
+For further information regarding formatting, and how to use AsciiDoctor please use the [Writers Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
 
 Do **not** update the `release-notes.md` file!
 This file will be generated automatically.
