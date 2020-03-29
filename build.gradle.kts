@@ -197,10 +197,6 @@ publishing {
     }
 }
 
-tasks.wrapper {
-    jarFile = file(".infra/gradle/gradle-wrapper.jar")
-}
-
 tasks.register<org.junitpioneer.gradle.TriggerTravisTask>("triggerSiteBuild") {
     travisProject = "junit-pioneer/junit-pioneer.github.io"
     branch = "grandmaster"
