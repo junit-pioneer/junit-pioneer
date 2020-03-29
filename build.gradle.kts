@@ -6,7 +6,6 @@ plugins {
     id("com.diffplug.gradle.spotless") version "3.27.1"
     id("org.shipkit.java") version "2.2.5"
     id("at.zierler.yamlvalidator") version "1.5.0"
-    id("com.gradle.build-scan") version "2.4.2"
     id("org.sonarqube") version "2.8"
 }
 
@@ -45,11 +44,6 @@ dependencies {
 
     testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.12.1")
     testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.12.1")
-}
-
-buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
 }
 
 spotless {
