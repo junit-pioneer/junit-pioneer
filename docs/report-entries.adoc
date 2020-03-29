@@ -1,0 +1,80 @@
+:page-title: Report entries
+:page-description: JUnit Jupiter extension to report with annotations.
+
+You can use `@ReportEntry` as a simple way to declaratively add metadata to test methods.
+
+From the https://https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection[JUnit 5 documentation]:
+
+> In JUnit Jupiter you should use `TestReporter` where you used to print information to `stdout` or `stderr` in JUnit 4.
+> Using `@RunWith(JUnitPlatform.class)` will output all reported entries to `stdout`.
+> In addition, some IDEs print report entries to `stdout` or display them in the user interface for test results.
+
+To see how `@ReportEntry` helps, let's first take a look at the conventional approach and then at this extension.
+
+== Standard Use of `TestReporter`
+
+From the https://https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection[JUnit 5 documentation]:
+
+> If a constructor or method parameter is of type `TestReporter`, the `TestReporterParameterResolver` will supply an instance of `TestReporter`.
+> The `TestReporter` can be used to publish additional data about the current test run.
+> The data can be consumed via the `reportingEntryPublished()` method in a `TestExecutionListener`, allowing it to be viewed in IDEs or included in reports.
+
+So, you would use it like this:
+
+[source,java]
+----
+@Test
+void reportingTest(TestReporter reporter) {
+    reporter.publishEntry("Hello World!");
+    // YOUR TEST CODE HERE
+}
+----
+
+You can have a look at https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/TestReporter.html[the official documentation for more details].
+
+== With the extension
+
+It can be argued that publishing data about your tests should not be in your test code because it is simply not part of your test.
+It is meta-data.
+
+So it makes sense that you should be able to add that meta-data to your test declaratively with annotations and have JUnit take care of the publishing.
+This is what this extension is for!
+
+You can write...
+
+[source,java]
+----
+@Test
+@ReportEntry("Hello World!")
+void reportingTest() {
+    // YOUR TEST CODE HERE
+}
+----
+
+...and the extension will publish your report entry for you!
+
+You can declare multiple report entries on the same test (the annotation is repeatable).
+
+[source,java]
+----
+@Test
+@ReportEntry("foo")
+@ReportEntry("bar")
+void reportingTest() {
+    // YOUR TEST CODE HERE
+}
+----
+
+Just like `TestReporter::publishEntry` accepts a single string as value or a key/value pair, `@ReportEntry` accepts either a single string as value or a key/value pair:
+
+[source,java]
+----
+@Test
+@ReportEntry(key = "line1", value = "Once upon a midnight dreary")
+@ReportEntry(key = "line2", value = "While I pondered weak and weary")
+void edgarAllanPoe() {
+    // YOUR TEST CODE HERE
+}
+----
+
+Again, just like `TestReporter::publishEntry`, if no key is given it defaults to `"value"` (yes, that's not a mixup).

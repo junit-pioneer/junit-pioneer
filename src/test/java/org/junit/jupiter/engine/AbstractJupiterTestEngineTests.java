@@ -11,10 +11,12 @@
 package org.junit.jupiter.engine;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
 import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
 
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
@@ -32,11 +34,24 @@ public abstract class AbstractJupiterTestEngineTests {
 		return executeTests(request().selectors(selectClass(testClass)).build());
 	}
 
+	protected ExecutionEventRecorder executeTestsForMethod(Class<?> testClass, String methodName) {
+		return executeTests(request().selectors(selectMethod(testClass.getName(), methodName)).build());
+	}
+
 	protected ExecutionEventRecorder executeTests(LauncherDiscoveryRequest request) {
 		TestDescriptor testDescriptor = discoverTests(request);
 		ExecutionEventRecorder eventRecorder = new ExecutionEventRecorder();
 		engine.execute(new ExecutionRequest(testDescriptor, eventRecorder, request.getConfigurationParameters()));
 		return eventRecorder;
+	}
+
+	protected Throwable getFirstFailuresThrowable(ExecutionEventRecorder recorder) {
+		return recorder
+				.getFailedTestFinishedEvents()
+				.get(0)
+				.getPayload(TestExecutionResult.class)
+				.flatMap(TestExecutionResult::getThrowable)
+				.orElseThrow(AssertionError::new);
 	}
 
 	protected TestDescriptor discoverTests(LauncherDiscoveryRequest request) {
