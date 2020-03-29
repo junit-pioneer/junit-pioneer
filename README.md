@@ -1,4 +1,4 @@
-# JUnit Pioneer
+# JUnit Pioneer 10
 
 <img src="docs/project-logo.jpg" align="right" width="150px"/>
 
