@@ -41,16 +41,21 @@ As an example, the one creating this documentation was called `branching-merging
 
 ### Documentation
 
-When a new extension was added (or significant changes were made) please update the documentation.
-To add documentation for an undocumented extension add an entry in the `docs/docs-nav.yml` file and create a new `.adoc` file for the extension.
-To ensure that a linebreak is properly displayed in the resulting documentation ensure to write **one and only one sentence per line**.
-This rule also applies for very short sentences like _"Tests must be fast!"_.
-If long as text blocks are not separated by an empty line, they are treated as one paragraph and without line breaks, regardless existing ones. This means you need to apply at least an empty line if you want to have text separated.
+Each feature is documented on [the project website](https://junit-pioneer.org/docs/), which is pulled from the files in the `docs/` folder, where each feature has:
 
-For further information regarding formatting, and how to use AsciiDoctor please use the [Writers Guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
+* an entry in `docs-nav.yml` (lexicographically ordered)
+* it's own `.adoc` file
 
-Do **not** update the `release-notes.md` file!
-This file will be generated automatically.
+Add these entries when implementing a new feature and update them when changing an existing one.
+
+For information on how to use AsciiDoctor, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
+One project-specific requirement:
+
+* one sentence per line, i.e. no matter how short or long a sentence is, it will occupy a single line, not shared with any other sentences
+* to start a new paragraph, add a single blank line
+
+Finally, do **not** update the `release-notes.md` file!
+This file is generated automatically.
 
 ### Commits
 
