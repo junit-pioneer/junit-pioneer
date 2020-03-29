@@ -5,7 +5,8 @@ name: JUnit Pioneer Flow
 
 on:
   push:
-    branches: [ master ]
+    tags-ignore: 
+      - 'v*'
   pull_request:
     branches: '*'
 
@@ -27,7 +28,9 @@ jobs:
       - name: Gradle build
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build
+          arguments: --refresh-dependencies --stacktrace --scan clean build ciPerformRelease
+      - name: echo
+        run: echo ${{ steps.gradle.outputs }}
       - name: Sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,29 +38,27 @@ jobs:
         if:  matrix.java == '8' && matrix.os == 'ubuntu-latest'
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
 
-  # This will be handled on a later stage
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   name: Deploy
-  #   if: github.ref == 'refs/heads/master'
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Setup java
-  #       uses: actions/setup-java@v1
-  #       with:
-  #         java-version: 8
-  #     - name: Perform Release
-  #       uses: eskatos/gradle-command-action@v1
-  #       if:
-  #       with:
-  #         arguments: ciPerformRelease
-  #     - name: Upload Release to GitHub
-  #       uses: softprops/action-gh-release@v1
-  #       if: startsWith(github.ref, 'refs/tags/')
-  #       with:
-  #         files: ./build/libs/junit-pioneer-*.jar
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Perform Release
+        uses: eskatos/gradle-command-action@v1
+        if:
+        with:
+          arguments: ciPerformRelease
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./build/libs/junit-pioneer-*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   #     - name: Update Page
   #       uses: eskatos/gradle-command-action@v1
   #       with:
