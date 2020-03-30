@@ -33,11 +33,29 @@ See the next section for how to adapt to upstream changes.
 
 ### Branching Strategy
 
-By default development happens in branches, which are merged via pull requests.
+By default, development happens in branches, which are merged via pull requests.
 Special cases, like fixing problems with the CI pipeline, are of course exempt from this guideline.
 
 Please make sure to give branches a meaningful name!
 As an example, the one creating this documentation was called `branching-merging-documentation`.
+
+### Documentation
+
+Each feature is documented on [the project website](https://junit-pioneer.org/docs/), which is pulled from the files in the `docs/` folder, where each feature has:
+
+* an entry in `docs-nav.yml` (lexicographically ordered)
+* it's own `.adoc` file
+
+Add these entries when implementing a new feature and update them when changing an existing one.
+
+For information on how to use AsciiDoctor, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
+One project-specific requirement:
+
+* one sentence per line, i.e. no matter how short or long a sentence is, it will occupy a single line, not shared with any other sentences
+* to start a new paragraph, add a single blank line
+
+Finally, do **not** update the `release-notes.md` file!
+This file is generated automatically.
 
 ### Commits
 
