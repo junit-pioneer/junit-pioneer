@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * exist to cover an issue, like a requirement or a bugfix.
  *
  * The annotated issue will be enlisted in the test results, so that
- * it's easy so see if all tests of an issue are completed successfully.</p>
+ * it's easy so see if all tests of an issue are completed successfully.
  *
  * <p>{@code @Issue} can be used on the method level only.
  * This is done by purpose, so that the test class can contain tests
