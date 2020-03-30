@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
 import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
 
+import java.lang.reflect.Method;
 import java.util.Optional;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
@@ -24,25 +25,31 @@ public class DisableIfNameExtension implements ExecutionCondition {
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-		Optional<DisableIfName> disable = findAnnotation(context.getElement(), DisableIfName.class);
+		Optional<Method> testMethod = context.getTestMethod();
 
-		if (!disable.isPresent()) {
+		if (!testMethod.isPresent()) {
+			return enabled("Only disable at method level so the parameterized tests could be registered");
+		}
+
+		Optional<DisableIfDisplayName> disableIf = findAnnotation(testMethod, DisableIfDisplayName.class);
+		if (!disableIf.isPresent()) {
 			return enabled("No instructions to disable");
-		} else if (!context.getTestMethod().isPresent()) {
-			return enabled("Only disable at method level");
 		}
-		DisableIfName details = disable.get();
-		boolean toDisable;
-		if (details.regex()) {
-			toDisable = context.getDisplayName().matches(details.value());
-		} else {
-			toDisable = context.getDisplayName().contains(details.value());
-		}
+		DisableIfDisplayName disableInstruction = disableIf.get();
+		String displayName = context.getDisplayName();
+		StringBuilder reasonToDisable = new StringBuilder();
+
 		//@formatter:off
-		return toDisable
-				? disabled(context.getDisplayName() + " matches " + details.value())
-				: enabled(context.getDisplayName() + " doesn't match " + details.value());
+		for (String value : disableInstruction.value()) {
+			boolean toDisable = disableInstruction.regex()
+					? displayName.matches(value)
+					: context.getDisplayName().contains(value);
+			if (toDisable)
+				reasonToDisable.append(displayName).append(" matches ").append(disableInstruction);
+		}
 		//@formatter:on
+		String anyReason = reasonToDisable.toString();
+		return anyReason.isEmpty() ? enabled("No reason to disable on display name identified") : disabled(anyReason);
 	}
 
 }

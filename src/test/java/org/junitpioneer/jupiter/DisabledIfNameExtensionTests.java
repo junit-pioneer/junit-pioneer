@@ -22,11 +22,11 @@ import org.junitpioneer.AbstractPioneerTestEngineTests;
 class DisabledIfNameExtensionTests extends AbstractPioneerTestEngineTests {
 
 	@Test
-	void test_testShouldAlwaysBeDisabled() throws Exception {
+	void test_testShouldAlwaysBeDisabled() {
 		ExecutionEventRecorder eventRecorder = executeTestsForClass(DisabledIfTests.class);
 
-		assertThat(eventRecorder.getTestSkippedCount()).isEqualTo(5);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		assertThat(eventRecorder.getTestSkippedCount()).isEqualTo(7);
+		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(4);
 	}
 
 	// TEST CASES -------------------------------------------------------------------
@@ -34,7 +34,7 @@ class DisabledIfNameExtensionTests extends AbstractPioneerTestEngineTests {
 	static class DisabledIfTests {
 
 		//@formatter:off
-		@DisableIfName("disable")
+		@DisableIfDisplayName("disable")
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(
 				strings = {
@@ -50,6 +50,14 @@ class DisabledIfNameExtensionTests extends AbstractPioneerTestEngineTests {
 		void testWhereSomeExecutionsAreDisabled(String reason) {
 			if (reason.contains("disable"))
 				fail("Test Should've been disabled " + reason);
+		}
+
+		@DisableIfDisplayName({ "1", "2" })
+		@ParameterizedTest(name = "See if enabled with {0}")
+		@ValueSource(ints = { 1, 2, 3, 4, 5 })
+		void testDisplayNameString(int num) {
+			if (num == 1 || num == 2)
+				fail("Test Should've been disabled for " + num);
 		}
 
 	}
