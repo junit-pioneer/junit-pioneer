@@ -69,7 +69,7 @@ class PioneerUtils {
 	 */
 	public static <A extends Annotation> Optional<A> findClosestAnnotation(ExtensionContext context,
 			Class<A> annotationType) {
-		return findOnAnything(context, annotationType, false, true).findFirst();
+		return findOnAnything(context, annotationType, false, false).findFirst();
 	}
 
 	/**
@@ -91,7 +91,7 @@ class PioneerUtils {
 	 */
 	public static <A extends Annotation> Stream<A> findClosestRepeatableAnnotation(ExtensionContext context,
 			Class<A> annotationType) {
-		return findOnAnything(context, annotationType, true, true);
+		return findOnAnything(context, annotationType, true, false);
 	}
 
 	/**
@@ -111,7 +111,7 @@ class PioneerUtils {
 				.getTestMethod()
 				.map(method -> findOnElement(method, annotationType, repeatable))
 				.orElse(Collections.emptyList());
-		if (stackable && !onMethod.isEmpty())
+		if (!stackable && !onMethod.isEmpty())
 			return onMethod.stream();
 		Stream<A> onClass = findOnOuterClasses(context.getTestClass(), annotationType, repeatable, stackable);
 
@@ -135,7 +135,7 @@ class PioneerUtils {
 			return Stream.empty();
 
 		List<A> onThisClass = findOnElement(type.get(), annotationType, repeatable);
-		if (stackable && !onThisClass.isEmpty())
+		if (!stackable && !onThisClass.isEmpty())
 			return onThisClass.stream();
 
 		Stream<A> onParentClass = findOnOuterClasses(type.map(Class::getEnclosingClass), annotationType, repeatable,

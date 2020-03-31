@@ -28,7 +28,7 @@ import org.junit.platform.engine.test.event.ExecutionEvent;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
-@DisplayName("Utils")
+@DisplayName("JUnitPioneer utilities")
 class PioneerUtilsTest {
 
 	@Nested
@@ -46,14 +46,16 @@ class PioneerUtilsTest {
 		 */
 
 		@Nested
+		@DisplayName("that are not repeatable")
 		class SimpleAnnotations {
 
 			@Nested
+			@DisplayName("and not stackable")
 			class StopOnFirst {
 
 				@BeforeEach
 				void enableStopOnFirst() {
-					FailExtension.STACKABLE.set(true);
+					FailExtension.STACKABLE.set(false);
 				}
 
 				@Test
@@ -96,11 +98,12 @@ class PioneerUtilsTest {
 			}
 
 			@Nested
-			class DontStopOnFirst {
+			@DisplayName("but stackable")
+			class Stackable {
 
 				@BeforeEach
 				void enableStopOnFirst() {
-					FailExtension.STACKABLE.set(false);
+					FailExtension.STACKABLE.set(true);
 				}
 
 				@Test
@@ -145,14 +148,16 @@ class PioneerUtilsTest {
 		}
 
 		@Nested
+		@DisplayName("that are repeatable")
 		class RepeatableAnnotations {
 
 			@Nested
+			@DisplayName("but not stackable")
 			class StopOnFirst {
 
 				@BeforeEach
 				void enableStopOnFirst() {
-					RepeatableFailExtension.STACKABLE.set(true);
+					RepeatableFailExtension.STACKABLE.set(false);
 				}
 
 				@Test
@@ -211,11 +216,12 @@ class PioneerUtilsTest {
 			}
 
 			@Nested
-			class DontStopOnFirst {
+			@DisplayName("and stackable")
+			class Stackable {
 
 				@BeforeEach
 				void enableStopOnFirst() {
-					RepeatableFailExtension.STACKABLE.set(false);
+					RepeatableFailExtension.STACKABLE.set(true);
 				}
 
 				@Test
