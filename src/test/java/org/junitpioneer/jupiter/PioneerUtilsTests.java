@@ -29,7 +29,7 @@ import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 @DisplayName("JUnitPioneer utilities")
-class PioneerUtilsTest {
+class PioneerUtilsTests {
 
 	@Nested
 	@DisplayName("for annotations")
