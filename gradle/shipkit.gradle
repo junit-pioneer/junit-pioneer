@@ -3,12 +3,13 @@
 //     https://github.com/mockito/shipkit/blob/master/docs/getting-started.md
 //
 shipkit {
-   gitHub.repository = 'junit-pioneer/junit-pioneer' // https://github.com/junit-pioneer/junit-pioneer
-   gitHub.readOnlyAuthToken = '584daca204258e2a397d0c029010732a994382dd'
-   gitHub.writeAuthToken = System.getenv('GITHUB_WRITE_TOKEN')
+    gitHub.repository = 'junit-pioneer/junit-pioneer' // https://github.com/junit-pioneer/junit-pioneer
+    gitHub.readOnlyAuthToken = '584daca204258e2a397d0c029010732a994382dd'
 
-   // Needed for uploading to Maven Central
-   team.developers = ['nicolaiparlog:Nicolai Parlog']
+    ciManagement.system = 'GitHub Actions'
+
+    // Needed for uploading to Maven Central
+    team.developers = ['nicolaiparlog:Nicolai Parlog']
 }
 
 allprojects {

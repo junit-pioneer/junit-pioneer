@@ -28,18 +28,6 @@ script:
 
 deploy:
   - provider: script
-    skip_cleanup: true
-    script: ./gradlew ciPerformRelease
-    on:
-      branch: master
-  - provider: releases
-    api_key: "${GITHUB_WRITE_TOKEN}"
-    skip_cleanup: true
-    file_glob: true
-    file: "./build/libs/junit-pioneer-*.jar"
-    on:
-      tags: true
-  - provider: script
     skip_cleanup:
     script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
     on:
