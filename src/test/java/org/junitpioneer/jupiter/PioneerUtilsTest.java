@@ -29,7 +29,7 @@ import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 @DisplayName("Utils")
-class UtilsTest {
+class PioneerUtilsTest {
 
 	@Nested
 	@DisplayName("for annotations")
@@ -291,7 +291,7 @@ class UtilsTest {
 
 		@BeforeEach
 		void setUp() throws Exception {
-			collector = Utils.distinctToSet();
+			collector = PioneerUtils.distinctToSet();
 		}
 
 		@Test

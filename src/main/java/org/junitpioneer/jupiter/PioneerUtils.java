@@ -27,9 +27,9 @@ import org.junit.platform.commons.support.AnnotationSupport;
 /**
  * Pioneer-internal utility class.
  */
-class Utils {
+class PioneerUtils {
 
-	private Utils() {
+	private PioneerUtils() {
 		// private constructor to prevent instantiation of utility class
 	}
 
@@ -148,7 +148,7 @@ class Utils {
 	 * on duplicate elements (according to {@link Object#equals(Object) equals}).
 	 */
 	public static <T> Collector<T, Set<T>, Set<T>> distinctToSet() {
-		return Collector.of(HashSet::new, Utils::addButThrowIfDuplicate, (left, right) -> {
+		return Collector.of(HashSet::new, PioneerUtils::addButThrowIfDuplicate, (left, right) -> {
 			right.forEach(element -> addButThrowIfDuplicate(left, element));
 			return left;
 		});

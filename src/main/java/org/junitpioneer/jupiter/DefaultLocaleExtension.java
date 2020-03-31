@@ -28,14 +28,14 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
-		Utils
+		PioneerUtils
 				.findClosestAnnotation(context, DefaultLocale.class)
 				.ifPresent(annotation -> setDefaultLocale(context, annotation));
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		Utils
+		PioneerUtils
 				.findClosestAnnotation(context, DefaultLocale.class)
 				.ifPresent(annotation -> setDefaultLocale(context, annotation));
 	}
@@ -85,7 +85,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (Utils.annotationsPresent(context, DefaultLocale.class)) {
+		if (PioneerUtils.annotationsPresent(context, DefaultLocale.class)) {
 			resetDefaultLocale(context);
 		}
 	}

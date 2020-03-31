@@ -46,11 +46,11 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 		Set<String> propertiesToClear;
 		Map<String, String> propertiesToSet;
 		try {
-			propertiesToClear = Utils
+			propertiesToClear = PioneerUtils
 					.findAllRepeatableAnnotations(context, ClearSystemProperty.class)
 					.map(ClearSystemProperty::key)
-					.collect(Utils.distinctToSet());
-			propertiesToSet = Utils
+					.collect(PioneerUtils.distinctToSet());
+			propertiesToSet = PioneerUtils
 					.findAllRepeatableAnnotations(context, SetSystemProperty.class)
 					.collect(toMap(SetSystemProperty::key, SetSystemProperty::value));
 			preventClearAndSetSameSystemProperties(propertiesToClear, propertiesToSet.keySet());
@@ -94,7 +94,7 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		boolean present = Utils
+		boolean present = PioneerUtils
 				.annotationsPresent(context, ClearSystemProperty.class, ClearSystemProperties.class,
 					SetSystemProperty.class, SetSystemProperties.class);
 		if (present) {

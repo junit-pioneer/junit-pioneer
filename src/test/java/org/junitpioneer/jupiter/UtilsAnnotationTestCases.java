@@ -164,7 +164,7 @@ class FailExtension implements BeforeTestExecutionCallback {
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {
-		String message = Utils
+		String message = PioneerUtils
 				.findOnAnything(context, Fail.class, false, STACKABLE.get())
 				.map(Fail::value)
 				.collect(joining(","));
@@ -199,7 +199,7 @@ class RepeatableFailExtension implements BeforeTestExecutionCallback {
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {
-		String message = Utils
+		String message = PioneerUtils
 				.findOnAnything(context, RepeatableFail.class, true, STACKABLE.get())
 				.map(RepeatableFail::value)
 				.collect(joining(","));
