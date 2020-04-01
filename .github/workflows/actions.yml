@@ -36,6 +36,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-
       - name: Cache Sonar
         uses: actions/cache@v1
+        if: matrix.java == '8' && matrix.os == 'ubuntu-latest'
         with:
           path: ~/.sonar/cache/
           key: ${{ runner.os }}-sonar
@@ -44,10 +45,10 @@ jobs:
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
       - name: Sonarqube
+        if: matrix.java == '8' && matrix.os == 'ubuntu-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
-        if:  matrix.java == '8' && matrix.os == 'ubuntu-latest'
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
 
   # This will be handled on a later stage
