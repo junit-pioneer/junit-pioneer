@@ -24,6 +24,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
+      - name: Cache Sonar
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache/
+          key: ${{ runner.os }}-sonar
       - name: Gradle build
         uses: eskatos/gradle-command-action@v1
         with:
