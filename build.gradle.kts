@@ -6,7 +6,6 @@ plugins {
     id("com.diffplug.gradle.spotless") version "3.27.1"
     id("org.shipkit.java") version "2.2.5"
     id("at.zierler.yamlvalidator") version "1.5.0"
-    id("com.gradle.build-scan") version "2.4.2"
     id("org.sonarqube") version "2.8"
 }
 
@@ -33,23 +32,18 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.3.2")
-    implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.3.2")
+    implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.4.2")
+    implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.4.2")
 
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.3.2")
-    testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.3.2")
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.4.2")
+    testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.4.2")
 
-    testImplementation(group = "org.assertj", name = "assertj-core", version = "3.13.2")
-    testImplementation(group = "org.mockito", name = "mockito-core", version = "3.1.0")
+    testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
+    testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
     testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.1")
 
     testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.12.1")
     testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.12.1")
-}
-
-buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
 }
 
 spotless {
@@ -201,10 +195,6 @@ publishing {
             }
         }
     }
-}
-
-tasks.wrapper {
-    jarFile = file(".infra/gradle/gradle-wrapper.jar")
 }
 
 tasks.register<org.junitpioneer.gradle.TriggerTravisTask>("triggerSiteBuild") {

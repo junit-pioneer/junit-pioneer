@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
-        java: [ 8, 11 ]
+        java: [ 8, 11, 14 ]
         os: [ubuntu-latest, windows-latest, macos-latest]
     name: ${{ matrix.os }} - Java ${{ matrix.java }}
     steps:
@@ -31,7 +31,7 @@ jobs:
       - name: Sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
         if:  matrix.java == '8' && matrix.os == 'ubuntu-latest'
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
 
