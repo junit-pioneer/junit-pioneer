@@ -12,18 +12,30 @@ package org.junitpioneer.jupiter;
 
 import static java.lang.String.format;
 
-import org.junit.jupiter.api.extension.BeforeEachCallback;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-class ReportEntryExtension implements BeforeEachCallback {
+class ReportEntryExtension implements AfterEachCallback {
 
+	// TODO: This can be replaced with specific TestWatcher interface methods, once we update to JUnit 5.4+
 	@Override
-	public void beforeEach(ExtensionContext context) throws Exception {
-		Utils
-				.findRepeatableAnnotation(context, ReportEntry.class)
-				.peek(ReportEntryExtension::verifyKeyValueAreNotBlank)
+	public void afterEach(ExtensionContext context) {
+		final Optional<Throwable> ex = context.getExecutionException();
+		findAnnotations(context)
+				.filter(entry -> entry.when() == ReportEntry.PublishCondition.ALWAYS
+						|| entry.when() == ReportEntry.PublishCondition.ON_SUCCESS && !ex.isPresent()
+						|| entry.when() == ReportEntry.PublishCondition.ON_FAILURE && ex.isPresent())
 				.forEach(entry -> context.publishReportEntry(entry.key(), entry.value()));
+	}
+
+	private Stream<ReportEntry> findAnnotations(ExtensionContext context) {
+		return Utils
+				.findRepeatableAnnotation(context, ReportEntry.class)
+				.peek(ReportEntryExtension::verifyKeyValueAreNotBlank);
 	}
 
 	private static void verifyKeyValueAreNotBlank(ReportEntry entry) {
