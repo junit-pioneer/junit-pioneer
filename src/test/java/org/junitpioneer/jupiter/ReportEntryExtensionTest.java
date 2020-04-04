@@ -10,54 +10,38 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.testkit.engine.Events;
+import org.junitpioneer.platform.testkit.engine.PioneerEngineExecutionResults;
 import org.junitpioneer.platform.testkit.engine.PioneerTestKit;
 
 public class ReportEntryExtensionTest {
 
 	@Test
 	void explicitKey_keyAndValueAreReported() {
-		Events events = PioneerTestKit
+		List<Map<String, String>> reportEntries = PioneerTestKit
 				.execute(ReportEntriesTest.class, "explicitKey")
-				.tests()
-				.reportingEntryPublished();
+				.getPublishedTestReportEntries();
 
-		List<Map<String, String>> reportEntries = reportEntries(events);
 		assertThat(reportEntries).hasSize(1);
 		Map<String, String> reportEntry = reportEntries.get(0);
 		assertThat(reportEntry).hasSize(1);
 		assertThat(reportEntry).containsExactly(TestUtils.entryOf("Crow2", "While I pondered weak and weary"));
 	}
 
-	private static List<Map<String, String>> reportEntries(Events events) {
-		return events.stream()
-				.map(executionEvent -> executionEvent.getPayload(org.junit.platform.engine.reporting.ReportEntry.class))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.map(org.junit.platform.engine.reporting.ReportEntry::getKeyValuePairs)
-				.collect(toList());
-	}
-
 	@Test
 	void implicitKey_keyIsNamedValue() {
-		Events events = PioneerTestKit
+		List<Map<String, String>> reportEntries = PioneerTestKit
 				.execute(ReportEntriesTest.class, "implicitKey")
-				.tests()
-				.reportingEntryPublished();
+				.getPublishedTestReportEntries();
 
-		List<Map<String, String>> reportEntries = reportEntries(events);
 		assertThat(reportEntries).hasSize(1);
 		assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 			assertThat(reportEntry).hasSize(1);
@@ -67,45 +51,28 @@ public class ReportEntryExtensionTest {
 
 	@Test
 	void emptyKey_fails() {
-		Events events = PioneerTestKit
-				.execute(ReportEntriesTest.class, "emptyKey")
-				.tests();
+		PioneerEngineExecutionResults results = PioneerTestKit.execute(ReportEntriesTest.class, "emptyKey");
 
-		events.failed().assertThatEvents().hasSize(1);
-		assertThat(getFirstFailuresThrowable(events).getMessage())
+		assertThat(results.getNumberOfFailedTests()).isEqualTo(1);
+		assertThat(results.getFirstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value",
 					"Over many a quaint and curious volume of forgotten lore");
 	}
 
-	protected Throwable getFirstFailuresThrowable(Events events) {
-		return events
-				.failed().stream()
-				.findFirst()
-				.orElseThrow(AssertionError::new)
-				// TODO do we break out of the testkit API here? If we are, maybe we shouldn't
-				.getPayload(TestExecutionResult.class)
-				.flatMap(TestExecutionResult::getThrowable)
-				.orElseThrow(AssertionError::new);
-	}
-
 	@Test
 	void emptyValue_fails() {
-		Events events = PioneerTestKit
-				.execute(ReportEntriesTest.class, "emptyValue")
-				.tests();
+		PioneerEngineExecutionResults results = PioneerTestKit.execute(ReportEntriesTest.class, "emptyValue");
 
-		events.failed().assertThatEvents().hasSize(1);
-		assertThat(getFirstFailuresThrowable(events).getMessage())
+		assertThat(results.getNumberOfFailedTests()).isEqualTo(1);
+		assertThat(results.getFirstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value", "While I nodded, nearly napping");
 	}
 
 	@Test
 	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
-		Events events = PioneerTestKit
+		List<Map<String, String>> reportEntries = PioneerTestKit
 				.execute(ReportEntriesTest.class, "repeatedAnnotation")
-				.tests();
-
-		List<Map<String, String>> reportEntries = reportEntries(events);
+				.getPublishedTestReportEntries();
 
 		assertAll("Verifying report entries " + reportEntries, //
 			() -> assertThat(reportEntries).hasSize(3),
