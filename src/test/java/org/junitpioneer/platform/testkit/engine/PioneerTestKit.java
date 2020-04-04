@@ -12,19 +12,26 @@ package org.junitpioneer.platform.testkit.engine;
 
 public class PioneerTestKit {
 
-	/*
-	 * TODO: Wrap `EngineExecutionResults` into a Pioneer-specific class, so we can add functionality, e.g.
-	 * 	- make it easier to access specific payloads like Throwables and Report Entries,
-	 *    by throwing AssertionErrors if they're absent
+	/**
+	 * Returns the execution results of the given test class.
+	 *
+	 * @param testClass Name of the test class, the results should be returned
+	 * @return The execution results
 	 */
-
-	public static PioneerEngineExecutionResults execute(Class<?> testClass) {
+	public static PioneerEngineExecutionResults getExecutionResults(Class<?> testClass) {
 		PioneerEngineExecutionResults results = new PioneerEngineExecutionResults(testClass);
 
 		return results;
 	}
 
-	public static PioneerEngineExecutionResults execute(Class<?> testClass, String testMethodName) {
+	/**
+	 * Returns the execution results of the given method of a given test class.
+	 *
+	 * @param testClass Name of the test class
+	 * @param testMethodName Name of the test method (of the given class)
+	 * @return The execution results
+	 */
+	public static PioneerEngineExecutionResults getExecutionResults(Class<?> testClass, String testMethodName) {
 		PioneerEngineExecutionResults results = new PioneerEngineExecutionResults(testClass, testMethodName);
 
 		return results;

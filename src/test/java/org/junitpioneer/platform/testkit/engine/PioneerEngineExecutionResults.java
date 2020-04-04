@@ -24,7 +24,8 @@ import org.junit.platform.testkit.engine.EngineTestKit;
 import org.junit.platform.testkit.engine.Events;
 
 /**
- * Pioneer own class to handle {@link EngineExecutionResults}.
+ * Pioneer own class to handle {@link EngineExecutionResults} of the JUnit-Jupiter-Engine.
+ *
  */
 public class PioneerEngineExecutionResults {
 
@@ -118,6 +119,7 @@ public class PioneerEngineExecutionResults {
 
 	/**
 	 * Returns the message of the first failed event.
+	 * This can be used if you expect a test to fail with an exception and want to check the exception message.
 	 *
 	 * @return Message of the first failed event.
 	 */

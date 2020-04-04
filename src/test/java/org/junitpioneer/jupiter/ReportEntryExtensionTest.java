@@ -27,7 +27,7 @@ public class ReportEntryExtensionTest {
 	@Test
 	void explicitKey_keyAndValueAreReported() {
 		List<Map<String, String>> reportEntries = PioneerTestKit
-				.execute(ReportEntriesTest.class, "explicitKey")
+				.getExecutionResults(ReportEntriesTest.class, "explicitKey")
 				.getPublishedTestReportEntries();
 
 		assertThat(reportEntries).hasSize(1);
@@ -39,7 +39,7 @@ public class ReportEntryExtensionTest {
 	@Test
 	void implicitKey_keyIsNamedValue() {
 		List<Map<String, String>> reportEntries = PioneerTestKit
-				.execute(ReportEntriesTest.class, "implicitKey")
+				.getExecutionResults(ReportEntriesTest.class, "implicitKey")
 				.getPublishedTestReportEntries();
 
 		assertThat(reportEntries).hasSize(1);
@@ -51,7 +51,7 @@ public class ReportEntryExtensionTest {
 
 	@Test
 	void emptyKey_fails() {
-		PioneerEngineExecutionResults results = PioneerTestKit.execute(ReportEntriesTest.class, "emptyKey");
+		PioneerEngineExecutionResults results = PioneerTestKit.getExecutionResults(ReportEntriesTest.class, "emptyKey");
 
 		assertThat(results.getNumberOfFailedTests()).isEqualTo(1);
 		assertThat(results.getFirstFailuresThrowableMessage())
@@ -61,8 +61,8 @@ public class ReportEntryExtensionTest {
 
 	@Test
 	void emptyValue_fails() {
-		PioneerEngineExecutionResults results = PioneerTestKit.execute(ReportEntriesTest.class, "emptyValue");
-
+		PioneerEngineExecutionResults results = PioneerTestKit
+				.getExecutionResults(ReportEntriesTest.class, "emptyValue");
 		assertThat(results.getNumberOfFailedTests()).isEqualTo(1);
 		assertThat(results.getFirstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value", "While I nodded, nearly napping");
@@ -71,7 +71,7 @@ public class ReportEntryExtensionTest {
 	@Test
 	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
 		List<Map<String, String>> reportEntries = PioneerTestKit
-				.execute(ReportEntriesTest.class, "repeatedAnnotation")
+				.getExecutionResults(ReportEntriesTest.class, "repeatedAnnotation")
 				.getPublishedTestReportEntries();
 
 		assertAll("Verifying report entries " + reportEntries, //
