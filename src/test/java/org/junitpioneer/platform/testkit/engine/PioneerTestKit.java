@@ -1,8 +1,14 @@
-package org.junitpioneer.platform.testkit.engine;
+/*
+ * Copyright 2015-2020 the original author or authors.
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v2.0 which
+ * accompanies this distribution and is available at
+ *
+ * http://www.eclipse.org/legal/epl-v20.html
+ */
 
-import org.junit.platform.engine.discovery.DiscoverySelectors;
-import org.junit.platform.testkit.engine.EngineExecutionResults;
-import org.junit.platform.testkit.engine.EngineTestKit;
+package org.junitpioneer.platform.testkit.engine;
 
 public class PioneerTestKit {
 
@@ -12,18 +18,16 @@ public class PioneerTestKit {
 	 *    by throwing AssertionErrors if they're absent
 	 */
 
-	public static EngineExecutionResults execute(Class<?> testClass) {
-		return EngineTestKit
-				.engine("junit-jupiter")
-				.selectors(DiscoverySelectors.selectClass(testClass))
-				.execute();
+	public static PioneerEngineExecutionResults execute(Class<?> testClass) {
+		PioneerEngineExecutionResults results = new PioneerEngineExecutionResults(testClass);
+
+		return results;
 	}
 
-	public static EngineExecutionResults execute(Class<?> testClass, String testMethodName) {
-		return EngineTestKit
-				.engine("junit-jupiter")
-				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName))
-				.execute();
+	public static PioneerEngineExecutionResults execute(Class<?> testClass, String testMethodName) {
+		PioneerEngineExecutionResults results = new PioneerEngineExecutionResults(testClass, testMethodName);
+
+		return results;
 	}
 
 }
