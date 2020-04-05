@@ -72,9 +72,8 @@ spotless {
 }
 
 checkstyle {
-    toolVersion = "6.11"
-    configFile = rootProject.file(".infra/checkstyle/checkstyle.xml")
-    sourceSets = listOf(project.sourceSets.main.get())
+    toolVersion = "7.8.2"
+    configDir = rootProject.file(".infra/checkstyle")
 }
 
 yamlValidator {
