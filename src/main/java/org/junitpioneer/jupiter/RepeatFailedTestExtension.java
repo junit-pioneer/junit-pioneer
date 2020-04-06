@@ -10,15 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.String.format;
-import static java.util.Spliterator.ORDERED;
-import static java.util.Spliterators.spliteratorUnknownSize;
-import static java.util.stream.StreamSupport.stream;
-
-import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
@@ -26,6 +17,16 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
+
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.stream.Stream;
+
+import static java.lang.String.format;
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.stream.StreamSupport.stream;
 
 public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
 
@@ -72,8 +73,8 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 
 		private FailedTestRepeater(int maxRepetitions) {
 			this.maxRepetitions = maxRepetitions;
-			this.repetitionsSoFar = 0;
-			this.exceptionsSoFar = 0;
+			repetitionsSoFar = 0;
+			exceptionsSoFar = 0;
 		}
 
 		static FailedTestRepeater createFor(Method repeatedTest) {
@@ -87,22 +88,25 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 			exceptionsSoFar++;
 
 			boolean allRepetitionsFailed = exceptionsSoFar == maxRepetitions;
-			if (allRepetitionsFailed)
+			if (allRepetitionsFailed) {
 				throw new AssertionError(
 					format("Test execution #%d (of up to %d) failed ~> test fails - see cause for details",
 						exceptionsSoFar, maxRepetitions),
 					exception);
-			else
+			}
+			else {
 				throw new TestAbortedException(
 					format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRepetitions),
 					exception);
+			}
 		}
 
 		@Override
 		public boolean hasNext() {
 			// there's always at least one execution
-			if (repetitionsSoFar == 0)
+			if (repetitionsSoFar == 0) {
 				return true;
+			}
 
 			// if we caught an exception in each repetition, each repetition failed, including the previous one
 			boolean previousFailed = repetitionsSoFar == exceptionsSoFar;
@@ -112,6 +116,9 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 
 		@Override
 		public RepeatFailedTestInvocationContext next() {
+			if(!hasNext()) {
+				throw new NoSuchElementException();
+			}
 			repetitionsSoFar++;
 			return new RepeatFailedTestInvocationContext();
 		}
