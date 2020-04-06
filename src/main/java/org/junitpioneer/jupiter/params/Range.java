@@ -10,11 +10,11 @@
 
 package org.junitpioneer.jupiter.params;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import org.junit.platform.commons.util.PreconditionViolationException;
 import org.junit.platform.commons.util.Preconditions;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * An iterator for numerical ranges, used as the backing logic for {@link RangeSourceProvider}.
@@ -42,7 +42,7 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 	 * Asserts the range is valid.
 	 * @throws PreconditionViolationException if the range is not valid
 	 */
-	void validate() throws PreconditionViolationException {
+	void validate() {
 		Preconditions.condition(!step.equals(getZero()), "Illegal range. The step cannot be zero.");
 
 		Preconditions
