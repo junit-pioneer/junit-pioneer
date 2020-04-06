@@ -10,11 +10,11 @@
 
 package org.junitpioneer.jupiter.params;
 
-import org.junit.platform.commons.util.PreconditionViolationException;
-import org.junit.platform.commons.util.Preconditions;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import org.junit.platform.commons.util.PreconditionViolationException;
+import org.junit.platform.commons.util.Preconditions;
 
 /**
  * An iterator for numerical ranges, used as the backing logic for {@link RangeSourceProvider}.
