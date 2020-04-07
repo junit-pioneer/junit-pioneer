@@ -19,20 +19,36 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     name: ${{ matrix.os }} - Java ${{ matrix.java }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out repo
+        uses: actions/checkout@v2
+        # fetch unshallow to enable blame for Sonar
+      - name: Fetch unshallow
+        run: git fetch --prune --unshallow
       - name: Setup java
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
+      - name: Cache Gradle
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - name: Cache Sonar
+        uses: actions/cache@v1
+        if: matrix.java == '8' && matrix.os == 'ubuntu-latest'
+        with:
+          path: ~/.sonar/cache/
+          key: ${{ runner.os }}-sonar
       - name: Gradle build
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
       - name: Sonarqube
+        if: matrix.java == '8' && matrix.os == 'ubuntu-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
-        if:  matrix.java == '8' && matrix.os == 'ubuntu-latest'
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
 
   # This will be handled on a later stage
@@ -41,11 +57,18 @@ jobs:
   #   name: Deploy
   #   if: github.ref == 'refs/heads/master'
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - name: Check out repo
+  #       uses: actions/checkout@v2
   #     - name: Setup java
   #       uses: actions/setup-java@v1
   #       with:
   #         java-version: 8
+  #     - name: Cache Gradle
+  #       uses: actions/cache@v1
+  #       with:
+  #         path: ~/.gradle/caches
+  #         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+  #         restore-keys: ${{ runner.os }}-gradle-
   #     - name: Perform Release
   #       uses: eskatos/gradle-command-action@v1
   #       if:
