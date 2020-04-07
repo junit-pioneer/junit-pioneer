@@ -32,7 +32,8 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback {
 	}
 
 	private Stream<ReportEntry> findAnnotations(ExtensionContext context) {
-		return Utils.findRepeatableAnnotation(context, ReportEntry.class);
+		return PioneerAnnotationUtils
+				.findAllEnclosingRepeatableAnnotations(context, ReportEntry.class);
 	}
 
 	private static void verifyKeyValueAreNotBlank(ReportEntry entry) {
