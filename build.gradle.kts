@@ -104,6 +104,12 @@ tasks {
             includeTestsMatching("*Tests")
         }
         systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
+        // `SystemPropertyExtension` uses reflection to change environment variables;
+        // this prevents the corresponding warning (and keeps working on Java 8)
+        // IF YOU ADD MORE OPTIONS; CONSIDER REPLACING `-XX:+IgnoreUnrecognizedVMOptions WITH A CONDITIONAL
+        jvmArgs(
+                "-XX:+IgnoreUnrecognizedVMOptions",
+                "--add-opens=java.base/java.util=ALL-UNNAMED")
     }
 
     javadoc {
