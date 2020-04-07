@@ -11,31 +11,26 @@
 package org.junitpioneer.jupiter;
 
 import static java.lang.String.format;
+import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.*;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestWatcher;
 
-class ReportEntryExtension implements AfterEachCallback {
+class ReportEntryExtension implements TestWatcher, BeforeEachCallback {
 
-	// TODO: This can be replaced with specific TestWatcher interface methods, once we update to JUnit 5.4+
 	@Override
-	public void afterEach(ExtensionContext context) {
-		final Optional<Throwable> ex = context.getExecutionException();
-		findAnnotations(context)
-				.filter(entry -> entry.when() == ReportEntry.PublishCondition.ALWAYS
-						|| entry.when() == ReportEntry.PublishCondition.ON_SUCCESS && !ex.isPresent()
-						|| entry.when() == ReportEntry.PublishCondition.ON_FAILURE && ex.isPresent())
-				.forEach(entry -> context.publishReportEntry(entry.key(), entry.value()));
+	public void beforeEach(ExtensionContext context) {
+		findAnnotations(context).forEach(ReportEntryExtension::verifyKeyValueAreNotBlank);
 	}
 
 	private Stream<ReportEntry> findAnnotations(ExtensionContext context) {
-		return Utils
-				.findRepeatableAnnotation(context, ReportEntry.class)
-				.peek(ReportEntryExtension::verifyKeyValueAreNotBlank);
+		return Utils.findRepeatableAnnotation(context, ReportEntry.class);
 	}
 
 	private static void verifyKeyValueAreNotBlank(ReportEntry entry) {
@@ -43,6 +38,32 @@ class ReportEntryExtension implements AfterEachCallback {
 			String message = "Report entries can't have blank key or value: { key=\"%s\", value=\"%s\" }";
 			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
 		}
+	}
+
+	@Override
+	public void testDisabled(ExtensionContext context, Optional<String> reason) {
+	}
+
+	@Override
+	public void testSuccessful(ExtensionContext context) {
+		publishOnConditions(context, ALWAYS, ON_SUCCESS);
+	}
+
+	@Override
+	public void testAborted(ExtensionContext context, Throwable cause) {
+		publishOnConditions(context, ALWAYS, ON_FAILURE);
+	}
+
+	@Override
+	public void testFailed(ExtensionContext context, Throwable cause) {
+		publishOnConditions(context, ALWAYS, ON_FAILURE);
+	}
+
+	private void publishOnConditions(ExtensionContext context, ReportEntry.PublishCondition... conditions) {
+		findAnnotations(context)
+				.filter(entry -> Arrays.asList(conditions).contains(entry.when()))
+				.filter(entry -> !entry.key().isEmpty() && !entry.value().isEmpty())
+				.forEach(entry -> context.publishReportEntry(entry.key(), entry.value()));
 	}
 
 }

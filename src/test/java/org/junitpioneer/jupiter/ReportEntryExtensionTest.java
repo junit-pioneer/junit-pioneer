@@ -13,7 +13,10 @@ package org.junitpioneer.jupiter;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.*;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
+import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
+import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 
 import java.util.AbstractMap;
 import java.util.List;
@@ -102,7 +105,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("logs report entry regardless of the outcome when publish condition is ALWAYS")
 		void conditional_logBeforeRegardlessOfOutcome() {
-			ExecutionEventRecorder successRecorder = executeTestsForMethod(ReportEntriesTest.class, "beforeSuccess");
+			ExecutionEventRecorder successRecorder = executeTestsForMethod(ReportEntriesTest.class, "always_success");
 
 			List<Map<String, String>> successReportEntries = reportEntries(successRecorder);
 
@@ -112,7 +115,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 				assertThat(reportEntry).containsExactly(entryOf("value", "'Tis some visitor', I muttered"));
 			});
 
-			ExecutionEventRecorder failureRecorder = executeTestsForMethod(ReportEntriesTest.class, "beforeFailure");
+			ExecutionEventRecorder failureRecorder = executeTestsForMethod(ReportEntriesTest.class, "always_failure");
 
 			List<Map<String, String>> failureReportEntries = reportEntries(failureRecorder);
 
@@ -126,7 +129,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("logs after success, if publish condition is ON_SUCCESS")
 		void conditional_logOnSuccess() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess");
+			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_success");
 
 			List<Map<String, String>> reportEntries = reportEntries(recorder);
 
@@ -140,7 +143,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("does not logs after failure, if publish condition is ON_SUCCESS")
 		void conditional_doNotLogOnFailure() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "notOnFailure");
+			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_failure");
 
 			List<Map<String, String>> reportEntries = reportEntries(recorder);
 
@@ -151,7 +154,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("logs after failure, if publish condition is ON_FAILURE")
 		void conditional_logOnFailure() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure");
+			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_failure");
 
 			List<Map<String, String>> reportEntries = reportEntries(recorder);
 
@@ -165,7 +168,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("does not log after success, if publish condition is ON_FAILURE")
 		void conditional_doNotLogOnSuccess() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "notOnSuccess");
+			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_success");
 
 			List<Map<String, String>> reportEntries = reportEntries(recorder);
 
@@ -176,7 +179,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("logs entries independently on success, based on publish condition")
 		void conditional_logOnSuccessIndependently() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedOnSuccess");
+			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedSuccess");
 
 			List<Map<String, String>> reportEntries = reportEntries(recorder);
 
@@ -192,7 +195,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("logs entries independently on failure, based on publish condition")
 		void conditional_logOnFailureIndependently() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedOnFailure");
+			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedFailure");
 
 			List<Map<String, String>> reportEntries = reportEntries(recorder);
 
@@ -203,26 +206,6 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 				() -> assertThat(reportEntries)
 						.extracting(entry -> entry.get("value"))
 						.containsExactlyInAnyOrder("For the rare and radiant maiden", "Nameless here"));
-		}
-
-		@Test
-		@DisplayName("does not log entry when publish condition is NEVERMORE")
-		void conditional_nevermore() {
-			ExecutionEventRecorder successRecorder = executeTestsForMethod(ReportEntriesTest.class,
-				"nevermoreOnSuccess");
-
-			List<Map<String, String>> successReports = reportEntries(successRecorder);
-
-			assertThat(successRecorder.getSuccessfulTestFinishedEvents()).hasSize(1);
-			assertThat(successReports).isEmpty();
-
-			ExecutionEventRecorder failureRecorder = executeTestsForMethod(ReportEntriesTest.class,
-				"nevermoreOnFailure");
-
-			List<Map<String, String>> failureReports = reportEntries(failureRecorder);
-
-			assertThat(failureRecorder.getFailedTestFinishedEvents()).hasSize(1);
-			assertThat(failureReports).isEmpty();
 		}
 
 	}
@@ -273,63 +256,50 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 
 		@Test
 		@ReportEntry(value = "'Tis some visitor', I muttered", when = ALWAYS)
-		void beforeSuccess() {
+		void always_success() {
 		}
 
 		@Test
 		@ReportEntry(value = "'Tapping at my chamber door' -", when = ALWAYS)
-		void beforeFailure() {
-			throw new AssertionError();
+		void always_failure() {
+			fail();
 		}
 
 		@Test
 		@ReportEntry(value = "'Only this and nothing more.'", when = ON_SUCCESS)
-		void onSuccess() {
+		void onSuccess_success() {
 		}
 
 		@Test
 		@ReportEntry(value = "Ah, distinctly I remember it was in the bleak December", when = ON_SUCCESS)
-		void notOnFailure() {
-			throw new AssertionError();
+		void onSuccess_failure() {
+			fail();
 		}
 
 		@Test
 		@ReportEntry(value = "And each separate dying ember", when = ON_FAILURE)
-		void onFailure() {
-			throw new AssertionError();
+		void onFailure_failure() {
+			fail();
 		}
 
 		@Test
 		@ReportEntry(value = "wrought its ghost upon the floor", when = ON_FAILURE)
-		void notOnSuccess() {
-		}
-
-		@Test
-		@ReportEntry(value = "Tell me what thy lordly name is on the Night’s Plutonian shore!", when = NEVERMORE)
-		void nevermoreOnSuccess() {
-		}
-
-		@Test
-		@ReportEntry(value = "On the morrow he will leave me, as my Hopes have flown before.", when = NEVERMORE)
-		void nevermoreOnFailure() {
-			throw new AssertionError();
+		void onFailure_success() {
 		}
 
 		@Test
 		@ReportEntry(value = "Eagerly I wished the morrow;", when = ALWAYS)
 		@ReportEntry(value = "vainly I had sought to borrow", when = ON_SUCCESS)
 		@ReportEntry(value = "From my books surcease of sorrow—", when = ON_FAILURE)
-		@ReportEntry(value = "sorrow for the lost Lenore", when = NEVERMORE)
-		void repeatedOnSuccess() {
+		void repeatedSuccess() {
 		}
 
 		@Test
 		@ReportEntry(value = "For the rare and radiant maiden", when = ALWAYS)
 		@ReportEntry(value = "whom the angels name Lenore—", when = ON_SUCCESS)
 		@ReportEntry(value = "Nameless here", when = ON_FAILURE)
-		@ReportEntry(value = "for evermore.", when = NEVERMORE)
-		void repeatedOnFailure() {
-			throw new AssertionError();
+		void repeatedFailure() {
+			fail();
 		}
 
 	}

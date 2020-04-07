@@ -93,9 +93,9 @@ void sufferingFromSuccess() {
 }
 ----
 
-The `PublishCondition` must be one of the following:
+The publish condition must be an entry of the `ReportEntry.PublishCondtion` enumeration, which has the
+following values:
 
-- ALWAYS        The extension will always publish your entry when the test runs.
+- ALWAYS        The extension will always publish your entry when the test runs, regardless of its outcome.
 - ON_SUCCESS    The extension will publish your report entry if the test finishes successfully.
 - ON_FAILURE    The extension will publish your report entry if the test fails.
-- NEVERMORE     The extension will *not* publish your report entry. Nevermore.

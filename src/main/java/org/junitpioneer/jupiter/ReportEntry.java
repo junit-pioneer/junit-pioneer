@@ -47,23 +47,23 @@ public @interface ReportEntry {
 
 	/**
 	 * Specifies when the extension should publish the report entry.
-	 * Defaults to ReportEntry.Timing.ALWAYS
+	 * Defaults to {@link org.junitpioneer.jupiter.ReportEntry.PublishCondition#ALWAYS}
 	 * @see PublishCondition
 	 */
 	PublishCondition when() default PublishCondition.ALWAYS;
 
 	/**
-	 * The available parameters that define when the extension
-	 * should publish the report entry.
+	 * The available values you can choose from to define when
+	 * the extension should publish the report entry.
 	 * <p>
 	 * Available parameters are:
-	 *  - ALWAYS:		publish report entry before method call
-	 *  - ON_SUCCESS:	publish report entry after successful method run
+	 *  - ALWAYS:		publish report entry every time the test is ran, regardless of its outcome
+	 *  - ON_SUCCESS:	publish report entry after successful test run
 	 *  - ON_FAILURE:	publish report entry after failed test run
 	 *  - NEVERMORE:	never publishes report entry
 	 */
 	enum PublishCondition {
-		ALWAYS, ON_SUCCESS, ON_FAILURE, NEVERMORE
+		ALWAYS, ON_SUCCESS, ON_FAILURE
 	}
 
 	/**
