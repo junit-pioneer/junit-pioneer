@@ -290,7 +290,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		}
 
 		@Test
-		@Disabled
+		@Disabled("wanted here for showing that report entries are disabled")
 		@ReportEntry(value = "'Only this and nothing more.'", when = ALWAYS)
 		void always_disabled() {
 		}
