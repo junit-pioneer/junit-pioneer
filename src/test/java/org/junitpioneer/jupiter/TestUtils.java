@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.junit.platform.engine.reporting.ReportEntry;
-import org.junit.platform.engine.test.event.ExecutionEvent;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 
 public class TestUtils {
