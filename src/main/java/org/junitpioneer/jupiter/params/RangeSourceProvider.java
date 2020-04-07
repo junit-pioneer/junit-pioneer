@@ -32,7 +32,7 @@ import org.junit.platform.commons.util.Preconditions;
  *     <li>{@code from} a primitive value for the "start" of the range.</li>
  *     <li>{@code to} a primitive value for the "end" of the range. {@code to} must have the same type as {@code from}.</li>
  *     <li>{@code step} a primitive value for the difference between each two values of the range.</li>
- *     <li>{@code closed} a {@code boolean} value describing if the range includes the last value (cloded), or not (open).</li>
+ *     <li>{@code closed} a {@code boolean} value describing if the range includes the last value (closed), or not (open).</li>
  * </ul>
  *
  * @see IntRangeSource
