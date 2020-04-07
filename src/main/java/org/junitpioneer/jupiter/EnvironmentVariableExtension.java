@@ -34,8 +34,8 @@ class EnvironmentVariableExtension
 	private static final Namespace NAMESPACE = Namespace.create(EnvironmentVariableExtension.class);
 	private static final String BACKUP = "Backup";
 
-	private static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
 	// package visible to make accessible for tests
+	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
 	static final String WARNING_KEY = EnvironmentVariableExtension.class.getSimpleName();
 	static final String WARNING_VALUE = "This extension uses reflection to mutate JDK-internal state, which is fragile. Check the Javadoc or documentation for more details.";
 
@@ -113,11 +113,6 @@ class EnvironmentVariableExtension
 
 	private void restoreOriginalEnvironmentVariables(ExtensionContext context) {
 		context.getStore(NAMESPACE).get(BACKUP, EnvironmentVariableBackup.class).restoreVariables();
-	}
-
-	// this method is needed by the tests that verify whether the warning is correctly reported
-	static void resetWarning() {
-		REPORTED_WARNING.set(false);
 	}
 
 	/**

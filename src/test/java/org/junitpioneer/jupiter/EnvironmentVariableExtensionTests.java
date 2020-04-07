@@ -241,7 +241,7 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 
 		@BeforeEach
 		void resetWarning() {
-			EnvironmentVariableExtension.resetWarning();
+			EnvironmentVariableExtension.REPORTED_WARNING.set(false);
 		}
 
 		@Test
