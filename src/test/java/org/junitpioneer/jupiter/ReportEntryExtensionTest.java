@@ -107,7 +107,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 			assertThat(successRecorder.getSuccessfulTestFinishedEvents()).hasSize(1);
 			assertThat(successReportEntries.get(0)).satisfies(reportEntry -> {
 				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(entryOf("value", "'Tis some visitor', I muttered"));
+				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "'Tis some visitor', I muttered"));
 			});
 
 			ExecutionEventRecorder failureRecorder = executeTestsForMethod(ReportEntriesTest.class, "always_failure");
@@ -117,7 +117,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 			assertThat(failureRecorder.getFailedTestFinishedEvents()).hasSize(1);
 			assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
 				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(entryOf("value", "'Tapping at my chamber door' -"));
+				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "'Tapping at my chamber door' -"));
 			});
 		}
 
@@ -142,7 +142,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 			assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
 			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(entryOf("value", "Ah, distinctly I remember"));
+				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Ah, distinctly I remember"));
 			});
 		}
 
@@ -167,7 +167,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 			assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
 			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(entryOf("value", "And each separate dying ember"));
+				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "And each separate dying ember"));
 			});
 		}
 
@@ -181,7 +181,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 			assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
 			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(entryOf("value", "Eagerly I wished the morrow;"));
+				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Eagerly I wished the morrow;"));
 			});
 		}
 
