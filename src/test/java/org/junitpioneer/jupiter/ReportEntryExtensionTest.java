@@ -23,12 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
 import org.junit.platform.engine.test.event.ExecutionEvent;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.opentest4j.TestAbortedException;
 
 /**
  * Edgar Allan Poe: The Raven is in the public domain.
@@ -104,7 +103,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 
 		@Test
 		@DisplayName("logs report entry regardless of the outcome when publish condition is ALWAYS")
-		void conditional_logBeforeRegardlessOfOutcome() {
+		void conditional_logAlwaysWhenTestRuns() {
 			ExecutionEventRecorder successRecorder = executeTestsForMethod(ReportEntriesTest.class, "always_success");
 
 			List<Map<String, String>> successReportEntries = reportEntries(successRecorder);
@@ -127,6 +126,17 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		}
 
 		@Test
+		@DisplayName("does not log if the test does not run")
+		void conditional_doNotLogOnDisabled() {
+			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_disabled");
+
+			List<Map<String, String>> reportEntries = reportEntries(recorder);
+
+			assertThat(recorder.getTestFinishedCount()).isEqualTo(0);
+			assertThat(reportEntries).isEmpty();
+		}
+
+		@Test
 		@DisplayName("logs after success, if publish condition is ON_SUCCESS")
 		void conditional_logOnSuccess() {
 			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_success");
@@ -136,7 +146,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 			assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
 			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(entryOf("value", "'Only this and nothing more.'"));
+				assertThat(reportEntry).containsExactly(entryOf("value", "Ah, distinctly I remember"));
 			});
 		}
 
@@ -162,6 +172,20 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 				assertThat(reportEntry).hasSize(1);
 				assertThat(reportEntry).containsExactly(entryOf("value", "And each separate dying ember"));
+			});
+		}
+
+		@Test
+		@DisplayName("logs entries if test was aborted, treating it as a failure if publish condition is ON_FAILURE")
+		void conditional_logOnAbort() {
+			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_abort");
+
+			List<Map<String, String>> reportEntries = reportEntries(recorder);
+
+			assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
+				assertThat(reportEntry).hasSize(1);
+				assertThat(reportEntry).containsExactly(entryOf("value", "Eagerly I wished the morrow;"));
 			});
 		}
 
@@ -205,7 +229,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 				() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
 				() -> assertThat(reportEntries)
 						.extracting(entry -> entry.get("value"))
-						.containsExactlyInAnyOrder("For the rare and radiant maiden", "Nameless here"));
+						.containsExactlyInAnyOrder("For the rare and radiant maiden", "Nameless here for evermore"));
 		}
 
 	}
@@ -266,12 +290,18 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		}
 
 		@Test
-		@ReportEntry(value = "'Only this and nothing more.'", when = ON_SUCCESS)
+		@Disabled
+		@ReportEntry(value = "'Only this and nothing more.'", when = ALWAYS)
+		void always_disabled() {
+		}
+
+		@Test
+		@ReportEntry(value = "Ah, distinctly I remember", when = ON_SUCCESS)
 		void onSuccess_success() {
 		}
 
 		@Test
-		@ReportEntry(value = "Ah, distinctly I remember it was in the bleak December", when = ON_SUCCESS)
+		@ReportEntry(value = "it was in the bleak December", when = ON_SUCCESS)
 		void onSuccess_failure() {
 			fail();
 		}
@@ -288,16 +318,22 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		}
 
 		@Test
+		@ReportEntry(value = "Eagerly I wished the morrow;", when = ON_FAILURE)
+		void onFailure_abort() {
+			throw new TestAbortedException();
+		}
+
+		@Test
 		@ReportEntry(value = "Eagerly I wished the morrow;", when = ALWAYS)
 		@ReportEntry(value = "vainly I had sought to borrow", when = ON_SUCCESS)
-		@ReportEntry(value = "From my books surcease of sorrow—", when = ON_FAILURE)
+		@ReportEntry(value = "From my books surcease of sorrow-—sorrow for the lost Lenore-", when = ON_FAILURE)
 		void repeatedSuccess() {
 		}
 
 		@Test
 		@ReportEntry(value = "For the rare and radiant maiden", when = ALWAYS)
 		@ReportEntry(value = "whom the angels name Lenore—", when = ON_SUCCESS)
-		@ReportEntry(value = "Nameless here", when = ON_FAILURE)
+		@ReportEntry(value = "Nameless here for evermore", when = ON_FAILURE)
 		void repeatedFailure() {
 			fail();
 		}

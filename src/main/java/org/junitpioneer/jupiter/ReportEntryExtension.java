@@ -44,6 +44,7 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback {
 
 	@Override
 	public void testDisabled(ExtensionContext context, Optional<String> reason) {
+		// If the test is disabled we consider the annotation disabled too and don't publish anything.
 	}
 
 	@Override
