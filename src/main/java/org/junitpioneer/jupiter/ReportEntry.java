@@ -45,5 +45,4 @@ public @interface ReportEntry {
 	 */
 	String value();
 
-	String mistake();
 }
