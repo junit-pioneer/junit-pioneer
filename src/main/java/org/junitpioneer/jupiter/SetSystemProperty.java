@@ -39,7 +39,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * may have to add {@code --add-opens=java.base/java.util=ALL-UNNAMED} to your test
  * execution to prevent warnings or even errors.
  *
- * @since 0.5
+ * @since 0.6
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
