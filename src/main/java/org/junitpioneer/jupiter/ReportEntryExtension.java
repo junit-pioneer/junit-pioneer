@@ -11,7 +11,9 @@
 package org.junitpioneer.jupiter;
 
 import static java.lang.String.format;
-import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.*;
+import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
+import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
+import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 
 import java.util.Arrays;
 import java.util.Optional;
