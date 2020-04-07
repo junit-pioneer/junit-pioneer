@@ -46,13 +46,17 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 
 	@AfterAll
 	static void globalTearDown() {
-		assertThat(System.getenv("set prop A")).isEqualTo("old A");
-		assertThat(System.getenv("set prop B")).isEqualTo("old B");
-		assertThat(System.getenv("set prop C")).isEqualTo("old C");
+		assertThat(systemEnvironmentVariable("set prop A")).isEqualTo("old A");
+		assertThat(systemEnvironmentVariable("set prop B")).isEqualTo("old B");
+		assertThat(systemEnvironmentVariable("set prop C")).isEqualTo("old C");
 
-		assertThat(System.getenv("clear prop D")).isNull();
-		assertThat(System.getenv("clear prop E")).isNull();
-		assertThat(System.getenv("clear prop F")).isNull();
+		assertThat(systemEnvironmentVariable("clear prop D")).isNull();
+		assertThat(systemEnvironmentVariable("clear prop E")).isNull();
+		assertThat(systemEnvironmentVariable("clear prop F")).isNull();
+	}
+
+	private static String systemEnvironmentVariable(String variable) {
+		return System.getenv(variable); // NOSONAR access required to implement the tests
 	}
 
 	@Nested
@@ -64,13 +68,13 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 		@DisplayName("should clear environment variable")
 		@ClearEnvironmentVariable(key = "set prop B")
 		void shouldClearEnvironmentVariable() {
-			assertThat(System.getenv("set prop A")).isNull();
-			assertThat(System.getenv("set prop B")).isNull();
-			assertThat(System.getenv("set prop C")).isEqualTo("old C");
+			assertThat(systemEnvironmentVariable("set prop A")).isNull();
+			assertThat(systemEnvironmentVariable("set prop B")).isNull();
+			assertThat(systemEnvironmentVariable("set prop C")).isEqualTo("old C");
 
-			assertThat(System.getenv("clear prop D")).isNull();
-			assertThat(System.getenv("clear prop E")).isNull();
-			assertThat(System.getenv("clear prop F")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop D")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop E")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop F")).isNull();
 		}
 
 		@Test
@@ -78,13 +82,13 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 		@ClearEnvironmentVariable(key = "set prop B")
 		@ClearEnvironmentVariable(key = "set prop C")
 		void shouldBeRepeatable() {
-			assertThat(System.getenv("set prop A")).isNull();
-			assertThat(System.getenv("set prop B")).isNull();
-			assertThat(System.getenv("set prop C")).isNull();
+			assertThat(systemEnvironmentVariable("set prop A")).isNull();
+			assertThat(systemEnvironmentVariable("set prop B")).isNull();
+			assertThat(systemEnvironmentVariable("set prop C")).isNull();
 
-			assertThat(System.getenv("clear prop D")).isNull();
-			assertThat(System.getenv("clear prop E")).isNull();
-			assertThat(System.getenv("clear prop F")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop D")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop E")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop F")).isNull();
 		}
 
 	}
@@ -98,13 +102,13 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 		@DisplayName("should set environment variable to value")
 		@SetEnvironmentVariable(key = "set prop B", value = "new B")
 		void shouldSetEnvironmentVariableToValue() {
-			assertThat(System.getenv("set prop A")).isEqualTo("new A");
-			assertThat(System.getenv("set prop B")).isEqualTo("new B");
-			assertThat(System.getenv("set prop C")).isEqualTo("old C");
+			assertThat(systemEnvironmentVariable("set prop A")).isEqualTo("new A");
+			assertThat(systemEnvironmentVariable("set prop B")).isEqualTo("new B");
+			assertThat(systemEnvironmentVariable("set prop C")).isEqualTo("old C");
 
-			assertThat(System.getenv("clear prop D")).isNull();
-			assertThat(System.getenv("clear prop E")).isNull();
-			assertThat(System.getenv("clear prop F")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop D")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop E")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop F")).isNull();
 		}
 
 		@Test
@@ -112,13 +116,13 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 		@SetEnvironmentVariable(key = "set prop B", value = "new B")
 		@SetEnvironmentVariable(key = "clear prop D", value = "new D")
 		void shouldBeRepeatable() {
-			assertThat(System.getenv("set prop A")).isEqualTo("new A");
-			assertThat(System.getenv("set prop B")).isEqualTo("new B");
-			assertThat(System.getenv("set prop C")).isEqualTo("old C");
+			assertThat(systemEnvironmentVariable("set prop A")).isEqualTo("new A");
+			assertThat(systemEnvironmentVariable("set prop B")).isEqualTo("new B");
+			assertThat(systemEnvironmentVariable("set prop C")).isEqualTo("old C");
 
-			assertThat(System.getenv("clear prop D")).isEqualTo("new D");
-			assertThat(System.getenv("clear prop E")).isNull();
-			assertThat(System.getenv("clear prop F")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop D")).isEqualTo("new D");
+			assertThat(systemEnvironmentVariable("clear prop E")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop F")).isNull();
 		}
 
 	}
@@ -134,13 +138,13 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 		@ClearEnvironmentVariable(key = "set prop B")
 		@SetEnvironmentVariable(key = "clear prop E", value = "new E")
 		void clearAndSetEnvironmentVariableShouldBeCombinable() {
-			assertThat(System.getenv("set prop A")).isNull();
-			assertThat(System.getenv("set prop B")).isNull();
-			assertThat(System.getenv("set prop C")).isEqualTo("old C");
+			assertThat(systemEnvironmentVariable("set prop A")).isNull();
+			assertThat(systemEnvironmentVariable("set prop B")).isNull();
+			assertThat(systemEnvironmentVariable("set prop C")).isEqualTo("old C");
 
-			assertThat(System.getenv("clear prop D")).isEqualTo("new D");
-			assertThat(System.getenv("clear prop E")).isEqualTo("new E");
-			assertThat(System.getenv("clear prop F")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop D")).isEqualTo("new D");
+			assertThat(systemEnvironmentVariable("clear prop E")).isEqualTo("new E");
+			assertThat(systemEnvironmentVariable("clear prop F")).isNull();
 		}
 
 		@Test
@@ -148,13 +152,13 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 		@ClearEnvironmentVariable(key = "clear prop D")
 		@SetEnvironmentVariable(key = "set prop A", value = "new A")
 		void methodLevelShouldOverwriteClassLevel() {
-			assertThat(System.getenv("set prop A")).isEqualTo("new A");
-			assertThat(System.getenv("set prop B")).isEqualTo("old B");
-			assertThat(System.getenv("set prop C")).isEqualTo("old C");
+			assertThat(systemEnvironmentVariable("set prop A")).isEqualTo("new A");
+			assertThat(systemEnvironmentVariable("set prop B")).isEqualTo("old B");
+			assertThat(systemEnvironmentVariable("set prop C")).isEqualTo("old C");
 
-			assertThat(System.getenv("clear prop D")).isNull();
-			assertThat(System.getenv("clear prop E")).isNull();
-			assertThat(System.getenv("clear prop F")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop D")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop E")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop F")).isNull();
 		}
 
 	}
@@ -172,8 +176,8 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 			@Test
 			@DisplayName("environment variables should be set from enclosed class when they are not provided in nested")
 			public void shouldSetEnvironmentVariableFromEnclosedClass() {
-				assertThat(System.getenv("set prop A")).isNull();
-				assertThat(System.getenv("set prop B")).isEqualTo("new B");
+				assertThat(systemEnvironmentVariable("set prop A")).isNull();
+				assertThat(systemEnvironmentVariable("set prop B")).isEqualTo("new B");
 			}
 
 		}
@@ -186,14 +190,14 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 			@Test
 			@DisplayName("environment variable should be set from nested class when it is provided")
 			public void shouldSetEnvironmentVariableFromNestedClass() {
-				assertThat(System.getenv("set prop B")).isEqualTo("newer B");
+				assertThat(systemEnvironmentVariable("set prop B")).isEqualTo("newer B");
 			}
 
 			@Test
 			@SetEnvironmentVariable(key = "set prop B", value = "newest B")
 			@DisplayName("environment variable should be set from method when it is provided")
 			public void shouldSetEnvironmentVariableFromMethodOfNestedClass() {
-				assertThat(System.getenv("set prop B")).isEqualTo("newest B");
+				assertThat(systemEnvironmentVariable("set prop B")).isEqualTo("newest B");
 			}
 
 		}

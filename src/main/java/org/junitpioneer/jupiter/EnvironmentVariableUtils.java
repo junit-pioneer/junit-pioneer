@@ -24,6 +24,10 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
  */
 class EnvironmentVariableUtils {
 
+	private EnvironmentVariableUtils() {
+		// private constructor to prevent instantiation of utility class
+	}
+
 	/**
 	 * Set a value of an environment variable.
 	 *
@@ -94,8 +98,8 @@ class EnvironmentVariableUtils {
 	/*
 	 * Works on Linux and OSX
 	 */
-	private static void setInSystemEnvClass(Consumer<Map<String, String>> consumer) throws NoSuchFieldException {
-		Map<String, String> env = System.getenv();
+	private static void setInSystemEnvClass(Consumer<Map<String, String>> consumer) throws ReflectiveOperationException {
+		Map<String, String> env = System.getenv(); // NOSONAR access required to implement the extension
 		consumer.accept(getFieldValue(env.getClass(), env, "m"));
 	}
 
@@ -104,7 +108,7 @@ class EnvironmentVariableUtils {
 			throws NoSuchFieldException {
 		Field field = clazz.getDeclaredField(name);
 		try {
-			field.setAccessible(true);
+			field.setAccessible(true); // NOSONAR illegal access required to implement the extension
 			return (Map<String, String>) field.get(object);
 		}
 		catch (IllegalAccessException e) {
