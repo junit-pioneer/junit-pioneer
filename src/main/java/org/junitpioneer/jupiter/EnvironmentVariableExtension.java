@@ -12,12 +12,9 @@ package org.junitpioneer.jupiter;
 
 import static java.util.stream.Collectors.toMap;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,7 +27,6 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.platform.commons.support.AnnotationSupport;
 
 class EnvironmentVariableExtension
 		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
@@ -45,29 +41,24 @@ class EnvironmentVariableExtension
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
-		handleEnvironmentVariables(context);
+		clearAndSetEnvironmentVariables(context);
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		boolean present = Utils
-				.annotationPresentOnTestMethod(context, ClearEnvironmentVariable.class, ClearEnvironmentVariables.class,
-					SetEnvironmentVariable.class, SetEnvironmentVariables.class);
-		if (present) {
-			handleEnvironmentVariables(context);
-		}
+		clearAndSetEnvironmentVariables(context);
 	}
 
-	private void handleEnvironmentVariables(ExtensionContext context) {
+	private void clearAndSetEnvironmentVariables(ExtensionContext context) {
 		Set<String> variablesToClear;
 		Map<String, String> variablesToSet;
 		try {
-			variablesToClear = findRepeatableAnnotations(context, ClearEnvironmentVariable.class)
-					.stream()
+			variablesToClear = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(context, ClearEnvironmentVariable.class)
 					.map(ClearEnvironmentVariable::key)
-					.collect(Utils.distinctToSet());
-			variablesToSet = findRepeatableAnnotations(context, SetEnvironmentVariable.class)
-					.stream()
+					.collect(PioneerUtils.distinctToSet());
+			variablesToSet = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(context, SetEnvironmentVariable.class)
 					.collect(toMap(SetEnvironmentVariable::key, SetEnvironmentVariable::value));
 			preventClearAndSetSameEnvironmentVariables(variablesToClear, variablesToSet.keySet());
 		}
@@ -80,14 +71,6 @@ class EnvironmentVariableExtension
 		reportWarning(context);
 		EnvironmentVariableUtils.clear(variablesToClear);
 		EnvironmentVariableUtils.set(variablesToSet);
-	}
-
-	private <A extends Annotation> List<A> findRepeatableAnnotations(ExtensionContext context,
-			Class<A> annotationType) {
-		return context
-				.getElement()
-				.map(element -> AnnotationSupport.findRepeatableAnnotations(element, annotationType))
-				.orElseGet(Collections::emptyList);
 	}
 
 	private void preventClearAndSetSameEnvironmentVariables(Collection<String> variablesToClear,
@@ -115,8 +98,8 @@ class EnvironmentVariableExtension
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		boolean present = Utils
-				.annotationPresentOnTestMethod(context, ClearEnvironmentVariable.class, ClearEnvironmentVariables.class,
+		boolean present = PioneerAnnotationUtils
+				.isAnyAnnotationPresent(context, ClearEnvironmentVariable.class, ClearEnvironmentVariables.class,
 					SetEnvironmentVariable.class, SetEnvironmentVariables.class);
 		if (present) {
 			restoreOriginalEnvironmentVariables(context);
