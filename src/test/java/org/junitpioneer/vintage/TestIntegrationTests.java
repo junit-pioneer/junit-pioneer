@@ -10,16 +10,16 @@
 
 package org.junitpioneer.vintage;
 
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
+import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
 /**
  * Tests the vintage {@link Test @Test} annotation by running the entire test engine.
@@ -172,7 +172,7 @@ class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 
 		@Test(timeout = 1)
 		void testWithTimeout_exceedsTimeout() throws Exception {
-			Thread.sleep(10);
+			Thread.sleep(10); //NOSONAR wanted behaviour for testing
 		}
 
 	}
