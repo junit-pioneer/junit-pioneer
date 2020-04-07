@@ -20,7 +20,7 @@ class ReportEntryExtension implements BeforeEachCallback {
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		PioneerUtils
+		PioneerAnnotationUtils
 				.findAllRepeatableAnnotations(context, ReportEntry.class)
 				.peek(ReportEntryExtension::verifyKeyValueAreNotBlank)
 				.forEach(entry -> context.publishReportEntry(entry.key(), entry.value()));

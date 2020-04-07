@@ -25,7 +25,7 @@ import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-class UtilsAnnotationTestCases {
+class PioneerAnnotationUtilsTestCases {
 
 	/*
 	 *  ========
@@ -164,7 +164,7 @@ class FailExtension implements BeforeTestExecutionCallback {
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {
-		String message = PioneerUtils
+		String message = PioneerAnnotationUtils
 				.findOnAnything(context, Fail.class, false, STACKABLE.get())
 				.map(Fail::value)
 				.collect(joining(","));
@@ -199,7 +199,7 @@ class RepeatableFailExtension implements BeforeTestExecutionCallback {
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {
-		String message = PioneerUtils
+		String message = PioneerAnnotationUtils
 				.findOnAnything(context, RepeatableFail.class, true, STACKABLE.get())
 				.map(RepeatableFail::value)
 				.collect(joining(","));
