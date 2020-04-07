@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -18,14 +17,11 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
-import org.junit.platform.engine.test.event.ExecutionEvent;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.opentest4j.TestAbortedException;
 
@@ -40,11 +36,11 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 	void explicitKey_keyAndValueAreReported() {
 		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "explicitKey");
 
-		List<Map<String, String>> reportEntries = reportEntries(recorder);
+		List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 		assertThat(reportEntries).hasSize(1);
 		Map<String, String> reportEntry = reportEntries.get(0);
 		assertThat(reportEntry).hasSize(1);
-		assertThat(reportEntry).containsExactly(entryOf("Crow2", "While I pondered weak and weary"));
+		assertThat(reportEntry).containsExactly(TestUtils.entryOf("Crow2", "While I pondered weak and weary"));
 	}
 
 	@Test
@@ -52,11 +48,11 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 	void implicitKey_keyIsNamedValue() {
 		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "implicitKey");
 
-		List<Map<String, String>> reportEntries = reportEntries(recorder);
+		List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 		assertThat(reportEntries).hasSize(1);
 		assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 			assertThat(reportEntry).hasSize(1);
-			assertThat(reportEntry).containsExactly(entryOf("value", "Once upon a midnight dreary"));
+			assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Once upon a midnight dreary"));
 		});
 	}
 
@@ -86,7 +82,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
 		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedAnnotation");
 
-		List<Map<String, String>> reportEntries = reportEntries(recorder);
+		List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 		assertAll("Verifying report entries " + reportEntries, //
 			() -> assertThat(reportEntries).hasSize(3),
@@ -106,7 +102,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		void conditional_logAlwaysWhenTestRuns() {
 			ExecutionEventRecorder successRecorder = executeTestsForMethod(ReportEntriesTest.class, "always_success");
 
-			List<Map<String, String>> successReportEntries = reportEntries(successRecorder);
+			List<Map<String, String>> successReportEntries = TestUtils.reportEntries(successRecorder);
 
 			assertThat(successRecorder.getSuccessfulTestFinishedEvents()).hasSize(1);
 			assertThat(successReportEntries.get(0)).satisfies(reportEntry -> {
@@ -116,7 +112,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 
 			ExecutionEventRecorder failureRecorder = executeTestsForMethod(ReportEntriesTest.class, "always_failure");
 
-			List<Map<String, String>> failureReportEntries = reportEntries(failureRecorder);
+			List<Map<String, String>> failureReportEntries = TestUtils.reportEntries(failureRecorder);
 
 			assertThat(failureRecorder.getFailedTestFinishedEvents()).hasSize(1);
 			assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
@@ -130,7 +126,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		void conditional_doNotLogOnDisabled() {
 			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_disabled");
 
-			List<Map<String, String>> reportEntries = reportEntries(recorder);
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 			assertThat(recorder.getTestFinishedCount()).isEqualTo(0);
 			assertThat(reportEntries).isEmpty();
@@ -141,7 +137,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		void conditional_logOnSuccess() {
 			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_success");
 
-			List<Map<String, String>> reportEntries = reportEntries(recorder);
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 			assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
 			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
@@ -155,7 +151,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		void conditional_doNotLogOnFailure() {
 			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_failure");
 
-			List<Map<String, String>> reportEntries = reportEntries(recorder);
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 			assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
 			assertThat(reportEntries).isEmpty();
@@ -166,7 +162,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		void conditional_logOnFailure() {
 			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_failure");
 
-			List<Map<String, String>> reportEntries = reportEntries(recorder);
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 			assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
 			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
@@ -180,7 +176,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		void conditional_logOnAbort() {
 			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_abort");
 
-			List<Map<String, String>> reportEntries = reportEntries(recorder);
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 			assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
 			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
@@ -194,7 +190,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		void conditional_doNotLogOnSuccess() {
 			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_success");
 
-			List<Map<String, String>> reportEntries = reportEntries(recorder);
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 			assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
 			assertThat(reportEntries).isEmpty();
@@ -205,7 +201,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		void conditional_logOnSuccessIndependently() {
 			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedSuccess");
 
-			List<Map<String, String>> reportEntries = reportEntries(recorder);
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 			assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
 			assertAll("Verifying report entries " + reportEntries, //
@@ -221,7 +217,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 		void conditional_logOnFailureIndependently() {
 			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedFailure");
 
-			List<Map<String, String>> reportEntries = reportEntries(recorder);
+			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 			assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
 			assertAll("Verifying report entries " + reportEntries, //
@@ -232,21 +228,6 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 						.containsExactlyInAnyOrder("For the rare and radiant maiden", "Nameless here for evermore"));
 		}
 
-	}
-
-	private static List<Map<String, String>> reportEntries(ExecutionEventRecorder recorder) {
-		return recorder
-				.eventStream()
-				.filter(event -> event.getType().equals(ExecutionEvent.Type.REPORTING_ENTRY_PUBLISHED))
-				.map(executionEvent -> executionEvent.getPayload(org.junit.platform.engine.reporting.ReportEntry.class))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.map(org.junit.platform.engine.reporting.ReportEntry::getKeyValuePairs)
-				.collect(toList());
-	}
-
-	private static Map.Entry<String, String> entryOf(String key, String value) {
-		return new AbstractMap.SimpleEntry<>(key, value);
 	}
 
 	static class ReportEntriesTest {
