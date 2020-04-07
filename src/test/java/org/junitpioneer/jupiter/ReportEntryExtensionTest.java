@@ -98,7 +98,7 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 	}
 
 	@Nested
-	@DisplayName("with explicitly set when parameter")
+	@DisplayName("with explicitly set 'when' parameter")
 	class PublishConditionTests {
 
 		@Test

@@ -60,7 +60,6 @@ public @interface ReportEntry {
 	 *  - ALWAYS:		publish report entry every time the test is ran, regardless of its outcome
 	 *  - ON_SUCCESS:	publish report entry after successful test run
 	 *  - ON_FAILURE:	publish report entry after failed test run
-	 *  - NEVERMORE:	never publishes report entry
 	 */
 	enum PublishCondition {
 		ALWAYS, ON_SUCCESS, ON_FAILURE
