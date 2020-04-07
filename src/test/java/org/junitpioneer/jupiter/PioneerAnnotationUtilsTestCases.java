@@ -160,12 +160,12 @@ class PioneerAnnotationUtilsTestCases {
 
 class FailExtension implements BeforeTestExecutionCallback {
 
-	static final AtomicBoolean STACKABLE = new AtomicBoolean(true);
+	static final AtomicBoolean FIND_ENCLOSING = new AtomicBoolean(true);
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {
 		String message = PioneerAnnotationUtils
-				.findOnAnything(context, Fail.class, false, STACKABLE.get())
+				.findAnnotations(context, Fail.class, false, FIND_ENCLOSING.get())
 				.map(Fail::value)
 				.collect(joining(","));
 		if (!message.isEmpty())
@@ -195,12 +195,12 @@ class FailExtension implements BeforeTestExecutionCallback {
 
 class RepeatableFailExtension implements BeforeTestExecutionCallback {
 
-	static final AtomicBoolean STACKABLE = new AtomicBoolean(true);
+	static final AtomicBoolean FIND_ENCLOSING = new AtomicBoolean(true);
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {
 		String message = PioneerAnnotationUtils
-				.findOnAnything(context, RepeatableFail.class, true, STACKABLE.get())
+				.findAnnotations(context, RepeatableFail.class, true, FIND_ENCLOSING.get())
 				.map(RepeatableFail::value)
 				.collect(joining(","));
 		if (!message.isEmpty())

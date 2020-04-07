@@ -29,14 +29,14 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	@Override
 	public void beforeAll(ExtensionContext context) {
 		PioneerAnnotationUtils
-				.findClosestAnnotation(context, DefaultTimeZone.class)
+				.findClosestEnclosingAnnotation(context, DefaultTimeZone.class)
 				.ifPresent(annotation -> setDefaultTimeZone(context.getStore(NAMESPACE), annotation));
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
 		PioneerAnnotationUtils
-				.findClosestAnnotation(context, DefaultTimeZone.class)
+				.findClosestEnclosingAnnotation(context, DefaultTimeZone.class)
 				.ifPresent(annotation -> setDefaultTimeZone(context.getStore(NAMESPACE), annotation));
 	}
 
@@ -52,7 +52,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (PioneerAnnotationUtils.annotationsPresent(context, DefaultTimeZone.class)) {
+		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, DefaultTimeZone.class)) {
 			resetDefaultTimeZone(context.getStore(NAMESPACE));
 		}
 	}

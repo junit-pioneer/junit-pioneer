@@ -49,7 +49,7 @@ class PioneerAnnotationUtilsTests {
 
 				@BeforeEach
 				void enableStopOnFirst() {
-					FailExtension.STACKABLE.set(false);
+					FailExtension.FIND_ENCLOSING.set(false);
 				}
 
 				@Test
@@ -97,7 +97,7 @@ class PioneerAnnotationUtilsTests {
 
 				@BeforeEach
 				void enableStopOnFirst() {
-					FailExtension.STACKABLE.set(true);
+					FailExtension.FIND_ENCLOSING.set(true);
 				}
 
 				@Test
@@ -151,7 +151,7 @@ class PioneerAnnotationUtilsTests {
 
 				@BeforeEach
 				void enableStopOnFirst() {
-					RepeatableFailExtension.STACKABLE.set(false);
+					RepeatableFailExtension.FIND_ENCLOSING.set(false);
 				}
 
 				@Test
@@ -216,7 +216,7 @@ class PioneerAnnotationUtilsTests {
 
 				@BeforeEach
 				void enableStopOnFirst() {
-					RepeatableFailExtension.STACKABLE.set(true);
+					RepeatableFailExtension.FIND_ENCLOSING.set(true);
 				}
 
 				@Test
