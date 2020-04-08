@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.testkit.engine.EngineExecutionResults;
@@ -24,7 +23,7 @@ import org.junit.platform.testkit.engine.EngineTestKit;
 import org.junit.platform.testkit.engine.Events;
 
 /**
- * Pioneer own class to handle {@link EngineExecutionResults} of the JUnit-Jupiter-Engine.
+ * Pioneers own class to handle {@link org.junit.platform.testkit.engine.EngineExecutionResults} of the JUnit-Jupiter-Engine.
  *
  */
 public class PioneerEngineExecutionResults {
@@ -55,8 +54,8 @@ public class PioneerEngineExecutionResults {
 	/**
 	 * Get recorded events for containers.
 	 *
-	 * <p>In this context, the word "container" applies to {@link TestDescriptor
-	 * TestDescriptors} that return {@code true} from {@link TestDescriptor#isContainer()}.</p>
+	 * <p>In this context, the word "container" applies to {@link org.junit.platform.engine.TestDescriptor
+	 * TestDescriptors} that return {@code true} from {@link org.junit.platform.engine.TestDescriptor#isContainer()}.</p>
 	 */
 	public Events containers() {
 		return executionResults.containers();
@@ -65,8 +64,8 @@ public class PioneerEngineExecutionResults {
 	/**
 	 * Get recorded events for tests.
 	 *
-	 * <p>In this context, the word "test" applies to {@link TestDescriptor
-	 * TestDescriptors} that return {@code true} from {@link TestDescriptor#isTest()}.</p>
+	 * <p>In this context, the word "test" applies to {@link org.junit.platform.engine.TestDescriptor
+	 * TestDescriptors} that return {@code true} from {@link org.junit.platform.engine.TestDescriptor#isTest()}.</p>
 	 */
 	public Events tests() {
 		return executionResults.tests();

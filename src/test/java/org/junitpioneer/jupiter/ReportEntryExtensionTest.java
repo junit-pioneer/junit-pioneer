@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.platform.testkit.engine.PioneerEngineExecutionResults;
@@ -83,18 +82,11 @@ public class ReportEntryExtensionTest {
 						"rapping at my chamber door"));
 	}
 
-	private static Map.Entry<String, String> entryOf(String key, String value) {
-		return new AbstractMap.SimpleEntry<>(key, value);
-	}
-
 	static class ReportEntriesTest {
-
-		private static AtomicInteger executionCount = new AtomicInteger(0);
 
 		@Test
 		@ReportEntry(key = "Crow2", value = "While I pondered weak and weary")
 		void explicitKey() {
-			System.out.println("HI THERE! " + executionCount.getAndIncrement());
 		}
 
 		@Test
