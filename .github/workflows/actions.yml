@@ -38,7 +38,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-
       - name: Cache Sonar
         uses: actions/cache@v1
-        if: matrix.java == '8' && matrix.os == 'ubuntu-latest'
+        if: matrix.java == '8' && matrix.os == 'ubuntu'
         with:
           path: ~/.sonar/cache/
           key: ${{ runner.os }}-sonar
