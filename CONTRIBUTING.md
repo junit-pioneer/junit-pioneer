@@ -25,6 +25,10 @@ The guidelines apply to maintainers as well as contributors!
   This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
 * Whatever content you contribute will be provided under the project license(s).
 
+## Basics
+
+Like for many open source projects, contributing code changes for JUnit Pioneer should be be done via pull requests from a fork.
+If you are not familiar with this concept, please have a look at the [GitHub help page](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks).
 
 ## Fixing Bugs, Developing Features
 
