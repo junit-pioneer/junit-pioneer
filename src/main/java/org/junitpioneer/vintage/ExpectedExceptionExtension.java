@@ -10,16 +10,16 @@
 
 package org.junitpioneer.vintage;
 
+import static java.lang.String.format;
+import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.opentest4j.AssertionFailedError;
-
-import java.util.Optional;
-
-import static java.lang.String.format;
-import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 
 /**
  * This extension implements the expected exception behavior of {@link Test @Test}, where a test only passes if it throws
