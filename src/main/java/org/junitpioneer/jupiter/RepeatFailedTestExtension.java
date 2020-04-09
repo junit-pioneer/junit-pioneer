@@ -84,7 +84,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 			return new FailedTestRepeater(repeatFailedTest.value());
 		}
 
-		void failed(Throwable exception) throws Throwable {
+		void failed(Throwable exception) throws AssertionError, TestAbortedException {
 			exceptionsSoFar++;
 
 			boolean allRepetitionsFailed = exceptionsSoFar == maxRepetitions;
