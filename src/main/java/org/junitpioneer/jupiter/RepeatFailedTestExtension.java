@@ -10,16 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.String.format;
-import static java.util.Spliterator.ORDERED;
-import static java.util.Spliterators.spliteratorUnknownSize;
-import static java.util.stream.StreamSupport.stream;
-
-import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
@@ -27,6 +17,16 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
+
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.stream.Stream;
+
+import static java.lang.String.format;
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.stream.StreamSupport.stream;
 
 public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
 
@@ -60,7 +60,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		Method repeatedTest = context.getRequiredTestMethod();
 		return context
 				.getStore(NAMESPACE)
-				.getOrComputeIfAbsent(repeatedTest.toString(), __ -> FailedTestRepeater.createFor(repeatedTest),
+				.getOrComputeIfAbsent(repeatedTest.toString(), defaultCreator -> FailedTestRepeater.createFor(repeatedTest),
 					FailedTestRepeater.class);
 	}
 
