@@ -264,6 +264,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 		}
 
 	}
+
 	@DefaultLocale(language = "de", variant = "ch")
 	static class ClassLevelInitializationFailureTestCase {
 

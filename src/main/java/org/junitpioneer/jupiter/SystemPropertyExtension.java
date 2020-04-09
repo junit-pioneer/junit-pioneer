@@ -12,12 +12,9 @@ package org.junitpioneer.jupiter;
 
 import static java.util.stream.Collectors.toMap;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -29,7 +26,6 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.platform.commons.support.AnnotationSupport;
 
 class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
@@ -38,35 +34,33 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
-		handleSystemProperties(context);
+		clearAndSetSystemProperties(context);
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
-		boolean present = Utils
-				.annotationPresentOnTestMethod(context, ClearSystemProperty.class, ClearSystemProperties.class,
-					SetSystemProperty.class, SetSystemProperties.class);
-		if (present) {
-			handleSystemProperties(context);
-		}
+		clearAndSetSystemProperties(context);
 	}
 
-	private void handleSystemProperties(ExtensionContext context) {
+	private void clearAndSetSystemProperties(ExtensionContext context) {
 		Set<String> propertiesToClear;
 		Map<String, String> propertiesToSet;
 		try {
-			propertiesToClear = findRepeatableAnnotations(context, ClearSystemProperty.class)
-					.stream()
+			propertiesToClear = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(context, ClearSystemProperty.class)
 					.map(ClearSystemProperty::key)
-					.collect(Utils.distinctToSet());
-			propertiesToSet = findRepeatableAnnotations(context, SetSystemProperty.class)
-					.stream()
+					.collect(PioneerUtils.distinctToSet());
+			propertiesToSet = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(context, SetSystemProperty.class)
 					.collect(toMap(SetSystemProperty::key, SetSystemProperty::value));
 			preventClearAndSetSameSystemProperties(propertiesToClear, propertiesToSet.keySet());
 		}
 		catch (IllegalStateException ex) {
 			throw new ExtensionConfigurationException("Don't clear/set the same property more than once.", ex);
 		}
+
+		if (propertiesToClear.isEmpty() && propertiesToSet.isEmpty())
+			return;
 
 		storeOriginalSystemProperties(context, propertiesToClear, propertiesToSet.keySet());
 		clearSystemProperties(propertiesToClear);
@@ -85,14 +79,6 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 				});
 	}
 
-	private <A extends Annotation> List<A> findRepeatableAnnotations(ExtensionContext context,
-			Class<A> annotationType) {
-		return context
-				.getElement()
-				.map(element -> AnnotationSupport.findRepeatableAnnotations(element, annotationType))
-				.orElseGet(Collections::emptyList);
-	}
-
 	private void storeOriginalSystemProperties(ExtensionContext context, Collection<String> clearProperties,
 			Collection<String> setProperties) {
 		context.getStore(NAMESPACE).put(BACKUP, new SystemPropertyBackup(clearProperties, setProperties));
@@ -103,16 +89,13 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	}
 
 	private void setSystemProperties(Map<String, String> setProperties) {
-		setProperties
-				.entrySet()
-				.forEach(
-					propertyWithValue -> System.setProperty(propertyWithValue.getKey(), propertyWithValue.getValue()));
+		setProperties.forEach(System::setProperty);
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		boolean present = Utils
-				.annotationPresentOnTestMethod(context, ClearSystemProperty.class, ClearSystemProperties.class,
+		boolean present = PioneerAnnotationUtils
+				.isAnyAnnotationPresent(context, ClearSystemProperty.class, ClearSystemProperties.class,
 					SetSystemProperty.class, SetSystemProperties.class);
 		if (present) {
 			restoreOriginalSystemProperties(context);
@@ -149,10 +132,7 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 		}
 
 		public void restoreProperties() {
-			propertiesToSet
-					.entrySet()
-					.forEach(propertyWithValue -> System
-							.setProperty(propertyWithValue.getKey(), propertyWithValue.getValue()));
+			propertiesToSet.forEach(System::setProperty);
 			propertiesToUnset.forEach(System::clearProperty);
 		}
 
