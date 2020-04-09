@@ -16,9 +16,9 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ExtensionContext.Store;
 
 class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
@@ -28,49 +28,42 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
-		setDefaultTimeZone(context);
+		PioneerAnnotationUtils
+				.findClosestEnclosingAnnotation(context, DefaultTimeZone.class)
+				.ifPresent(annotation -> setDefaultTimeZone(context.getStore(NAMESPACE), annotation));
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		if (Utils.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
-			setDefaultTimeZone(context);
-		}
+		PioneerAnnotationUtils
+				.findClosestEnclosingAnnotation(context, DefaultTimeZone.class)
+				.ifPresent(annotation -> setDefaultTimeZone(context.getStore(NAMESPACE), annotation));
 	}
 
-	private void setDefaultTimeZone(ExtensionContext context) {
-		storeDefaultTimeZone(context);
-		TimeZone configuredTimeZone = readTimeZoneFromAnnotation(context);
+	private void setDefaultTimeZone(Store store, DefaultTimeZone annotation) {
+		storeDefaultTimeZone(store);
+		TimeZone configuredTimeZone = TimeZone.getTimeZone(annotation.value());
 		TimeZone.setDefault(configuredTimeZone);
 	}
 
-	private void storeDefaultTimeZone(ExtensionContext context) {
-		context.getStore(NAMESPACE).put(KEY, TimeZone.getDefault());
-	}
-
-	private TimeZone readTimeZoneFromAnnotation(ExtensionContext context) {
-		return Utils
-				.findAnnotation(context, DefaultTimeZone.class)
-				.map(DefaultTimeZone::value)
-				.map(TimeZone::getTimeZone)
-				.orElseThrow(() -> new ExtensionConfigurationException(
-					"The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
+	private void storeDefaultTimeZone(Store store) {
+		store.put(KEY, TimeZone.getDefault());
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (Utils.annotationPresentOnTestMethod(context, DefaultTimeZone.class)) {
-			resetDefaultTimeZone(context);
+		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, DefaultTimeZone.class)) {
+			resetDefaultTimeZone(context.getStore(NAMESPACE));
 		}
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) {
-		resetDefaultTimeZone(context);
+		resetDefaultTimeZone(context.getStore(NAMESPACE));
 	}
 
-	private void resetDefaultTimeZone(ExtensionContext context) {
-		TimeZone.setDefault(context.getStore(NAMESPACE).get(KEY, TimeZone.class));
+	private void resetDefaultTimeZone(Store store) {
+		TimeZone.setDefault(store.get(KEY, TimeZone.class));
 	}
 
 }

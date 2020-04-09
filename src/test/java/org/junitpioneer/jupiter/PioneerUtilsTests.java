@@ -24,8 +24,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Utils")
-class UtilsTest {
+@DisplayName("JUnitPioneer utilities")
+class PioneerUtilsTests {
 
 	@Nested
 	@DisplayName("to distinct set")
@@ -35,7 +35,7 @@ class UtilsTest {
 
 		@BeforeEach
 		void setUp() throws Exception {
-			collector = Utils.distinctToSet();
+			collector = PioneerUtils.distinctToSet();
 		}
 
 		@Test

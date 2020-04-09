@@ -4,6 +4,8 @@
     children:
       - title: "@ClearSystemProperty and @SetSystemProperty"
         url: /docs/system-properties/
+      - title: "@ClearEnvironmentVariable and @SetEnvironmentVariable"
+        url: /docs/environment-variables/
       - title: "@DefaultLocale and @DefaultTimeZone"
         url: /docs/default-locale-timezone/
       - title: "Range Sources"
