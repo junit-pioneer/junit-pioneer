@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
@@ -29,10 +30,18 @@ public class StopwatchExtensionTests extends AbstractPioneerTestEngineTests {
 		ExecutionEventRecorder eventRecorder = executeTests(StopwatchExtensionTests.ClassLevelAnnotationTest.class,
 			"stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel");
 
-		Map<String, String> reportEntry = EventRecorderUtils.getFirstReportEntry(eventRecorder);
-		assertThat(reportEntry).hasSize(1);
+		List<Map<String, String>> reportEntries = EventRecorderUtils.reportEntries(eventRecorder);
+		assertThat(reportEntries).hasSize(2);
 
-		String result = reportEntry.get("stopwatch");
+		Map<String, String> methodEntry = reportEntries.get(0);
+		String result = methodEntry.get("stopwatch");
+		assertThat(result).isNotNull();
+		assertThat(result).startsWith(TestunitEnum.TEST.name());
+		assertThat(result).contains("stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel");
+		assertThat(result).endsWith("ms.");
+
+		Map<String, String> classEntry = reportEntries.get(1);
+		result = classEntry.get("stopwatch");
 		assertThat(result).isNotNull();
 		assertThat(result).startsWith(TestunitEnum.CLASS.name());
 		assertThat(result).contains("ClassLevelAnnotationTest");

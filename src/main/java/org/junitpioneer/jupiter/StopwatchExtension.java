@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junitpioneer.jupiter.Utils.annotationPresentOnTestClass;
 
 import java.time.Clock;
 
@@ -34,28 +33,28 @@ class StopwatchExtension
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
-		if (annotationPresentOnTestClass(context, Stopwatch.class)) {
+		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
 			storeNowAsLaunchTime(context, TestunitEnum.CLASS);
 		}
 	}
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) {
-		if (annotationPresentOnTestClass(context, Stopwatch.class)) {
+		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
 			storeNowAsLaunchTime(context, TestunitEnum.TEST);
 		}
 	}
 
 	@Override
 	public void afterTestExecution(ExtensionContext context) {
-		if (annotationPresentOnTestClass(context, Stopwatch.class)) {
+		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
 			calculateAndReportElapsedTime(context, TestunitEnum.TEST);
 		}
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) {
-		if (annotationPresentOnTestClass(context, Stopwatch.class)) {
+		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
 			calculateAndReportElapsedTime(context, TestunitEnum.CLASS);
 		}
 	}
