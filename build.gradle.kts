@@ -16,19 +16,10 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
-// assign empty user name and password, so Gradle does not fail due to
-// missing properties when eagerly configuring the Maven credentials
-val mavenUserName: String? by project
-val mavenPassword: String? by project
-val isReleaseVersion = !version.toString().endsWith("-SNAPSHOT")
 val travisApiToken: String? by project
 
 repositories {
     mavenCentral()
-    maven {
-        name = "MavenSnapshot"
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
 }
 
 dependencies {

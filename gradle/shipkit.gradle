@@ -5,7 +5,6 @@
 shipkit {
     gitHub.repository = 'junit-pioneer/junit-pioneer' // https://github.com/junit-pioneer/junit-pioneer
     gitHub.readOnlyAuthToken = '584daca204258e2a397d0c029010732a994382dd'
-
     ciManagement.system = 'GitHub Actions'
 
     // Needed for uploading to Maven Central
@@ -13,28 +12,28 @@ shipkit {
 }
 
 allprojects {
-   plugins.withId('org.shipkit.bintray') {
+    plugins.withId('org.shipkit.bintray') {
 
-       bintray {
-           user = System.getenv('BINTRAY_USER_NAME')
-           key = System.getenv('BINTRAY_API_KEY')
+        bintray {
+            user = System.getenv('BINTRAY_USER_NAME')
+            key = System.getenv('BINTRAY_API_KEY')
 
-           pkg {
-               userOrg = 'junit-pioneer' // https://bintray.com/junit-pioneer
-               repo = 'junit-pioneer'    // https://bintray.com/junit-pioneer/junit-pioneer
-               name = 'junit-pioneer'    // https://bintray.com/junit-pioneer/junit-pioneer/junit-pioneer
-               licenses = ['EPL-2.0']
-               vcsUrl = 'https://github.com/junit-pioneer/junit-pioneer.git'
-               labels = ['testing', 'junit', 'extensions']
+            pkg {
+                userOrg = 'junit-pioneer' // https://bintray.com/junit-pioneer
+                repo = 'junit-pioneer'    // https://bintray.com/junit-pioneer/junit-pioneer
+                name = 'junit-pioneer'    // https://bintray.com/junit-pioneer/junit-pioneer/junit-pioneer
+                licenses = ['EPL-2.0']
+                vcsUrl = 'https://github.com/junit-pioneer/junit-pioneer.git'
+                labels = ['testing', 'junit', 'extensions']
 
-               version {
-                   mavenCentralSync {
-                       sync = true
-                       user = System.getenv('NEXUS_TOKEN_USERNAME')
-                       password = System.getenv('NEXUS_TOKEN_PASSWORD')
-                   }
-               }
-           }
-       }
-   }
+                version {
+                    mavenCentralSync {
+                        sync = true
+                        user = System.getenv('NEXUS_TOKEN_USERNAME')
+                        password = System.getenv('NEXUS_TOKEN_PASSWORD')
+                    }
+                }
+            }
+        }
+    }
 }
