@@ -31,7 +31,7 @@ class IssueExtension implements BeforeEachCallback {
 	@Override
 	public void beforeEach(ExtensionContext context) {
 		//noinspection unchecked
-		if (Utils.annotationPresentOnTestMethod(context, Issue.class)) {
+		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Issue.class)) {
 			storeIssueId(context);
 		}
 	}
