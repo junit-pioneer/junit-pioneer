@@ -125,7 +125,7 @@ public class TempDirectory implements ParameterResolver {
 		 *
 		 * @return the parent directory for all temporary directories
 		 */
-		Path get(ParameterContext parameterContext, ExtensionContext extensionContext) throws Exception; // NOSNAR
+		Path get(ParameterContext parameterContext, ExtensionContext extensionContext) throws Exception; //NOSONAR
 		// Excluded from sonar as java.util.concurrent.Callable<V> is root of this generic exception
 
 	}

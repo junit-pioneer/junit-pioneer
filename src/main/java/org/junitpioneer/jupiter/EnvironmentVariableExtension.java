@@ -92,8 +92,9 @@ class EnvironmentVariableExtension
 
 	private void reportWarning(ExtensionContext context) {
 		boolean wasReported = REPORTED_WARNING.getAndSet(true);
-		if (!wasReported)
+		if (!wasReported) {
 			context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
+		}
 	}
 
 	@Override
@@ -127,11 +128,12 @@ class EnvironmentVariableExtension
 			variablesToSet = new HashMap<>();
 			variablesToUnset = new HashSet<>();
 			Stream.concat(clearVariables.stream(), setVariables.stream()).forEach(variable -> {
-				String backup = System.getenv(variable); // NOSONAR access required to implement the extension
-				if (backup == null)
+				String backup = System.getenv(variable); //NOSONAR access required to implement the extension
+				if (backup == null) {
 					variablesToUnset.add(variable);
-				else
+				} else {
 					variablesToSet.put(variable, backup);
+				}
 			});
 		}
 

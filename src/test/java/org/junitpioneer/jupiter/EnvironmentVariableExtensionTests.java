@@ -56,7 +56,7 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 	}
 
 	private static String systemEnvironmentVariable(String variable) {
-		return System.getenv(variable); // NOSONAR access required to implement the tests
+		return System.getenv(variable); //NOSONAR access required to implement the tests
 	}
 
 	@Nested
