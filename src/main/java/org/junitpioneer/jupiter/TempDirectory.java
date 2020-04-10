@@ -346,7 +346,9 @@ public class TempDirectory implements ParameterResolver {
 				path.toFile().deleteOnExit();
 			}
 			catch (UnsupportedOperationException ignore) {
-				// this exception shall be ignored by purpose
+				// this exception shall be ignored by purpose this method is only called in the
+				// stream of the method "createIOExceptionWithAttachedFailures".
+				// That method overrules this "UnsupportedOperationException" anyway.
 			}
 		}
 
