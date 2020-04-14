@@ -100,135 +100,163 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 	@DisplayName("with explicitly set 'when' parameter")
 	class PublishConditionTests {
 
-		@Test
-		@DisplayName("logs report entry regardless of the outcome when publish condition is ALWAYS")
-		void conditional_logAlwaysWhenTestRuns() {
-			ExecutionEventRecorder successRecorder = executeTestsForMethod(ReportEntriesTest.class, "always_success");
+		@Nested
+		@DisplayName("to 'ALWAYS'")
+		class LogAlways {
 
-			List<Map<String, String>> successReportEntries = TestUtils.reportEntries(successRecorder);
+			@Test
+			@DisplayName("logs report entry for successful test")
+			void successfulTest_logsMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_success");
 
-			assertThat(successRecorder.getSuccessfulTestFinishedEvents()).hasSize(1);
-			assertThat(successReportEntries.get(0)).satisfies(reportEntry -> {
-				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "'Tis some visitor', I muttered"));
-			});
+				List<Map<String, String>> successReportEntries = TestUtils.reportEntries(recorder);
 
-			ExecutionEventRecorder failureRecorder = executeTestsForMethod(ReportEntriesTest.class, "always_failure");
+				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
+				assertThat(successReportEntries.get(0)).satisfies(reportEntry -> {
+					assertThat(reportEntry).hasSize(1);
+					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "'Tis some visitor', I muttered"));
+				});
+			}
 
-			List<Map<String, String>> failureReportEntries = TestUtils.reportEntries(failureRecorder);
+			@Test
+			@DisplayName("logs report entry for failing test")
+			void failingTest_logsMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_failure");
 
-			assertThat(failureRecorder.getFailedTestFinishedEvents()).hasSize(1);
-			assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
-				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "'Tapping at my chamber door' -"));
-			});
+				List<Map<String, String>> failureReportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+				assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
+					assertThat(reportEntry).hasSize(1);
+					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "'Tapping at my chamber door' -"));
+				});
+			}
+
+			@Test
+			@DisplayName("does not log for disabled test")
+			void disabledTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_disabled");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestFinishedCount()).isEqualTo(0);
+				assertThat(reportEntries).isEmpty();
+			}
+
 		}
 
-		@Test
-		@DisplayName("does not log if the test does not run")
-		void conditional_doNotLogOnDisabled() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_disabled");
+		@Nested
+		@DisplayName("to 'ON_SUCCESS'")
+		class LogOnSuccess {
 
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+			@Test
+			@DisplayName("logs for successful test")
+			void successfulTest_logsMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_success");
 
-			assertThat(recorder.getTestFinishedCount()).isEqualTo(0);
-			assertThat(reportEntries).isEmpty();
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
+				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
+					assertThat(reportEntry).hasSize(1);
+					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Ah, distinctly I remember"));
+				});
+			}
+
+			@Test
+			@DisplayName("does not log for failed test")
+			void failedTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_failure");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+				assertThat(reportEntries).isEmpty();
+			}
+
 		}
 
-		@Test
-		@DisplayName("logs after success, if publish condition is ON_SUCCESS")
-		void conditional_logOnSuccess() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_success");
+		@Nested
+		@DisplayName("to 'ON_FAILURE'")
+		class LogOnFailure {
 
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+			@Test
+			@DisplayName("does not log after success, if publish condition is ON_FAILURE")
+			void successfulTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_success");
 
-			assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
-			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
-				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Ah, distinctly I remember"));
-			});
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
+				assertThat(reportEntries).isEmpty();
+			}
+
+			@Test
+			@DisplayName("logs for failed test")
+			void failedTest_logsMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_failure");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
+					assertThat(reportEntry).hasSize(1);
+					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "And each separate dying ember"));
+				});
+			}
+
+			@Test
+			@DisplayName("logs for aborted tests, treating it as a failure if publish condition is ON_FAILURE")
+			void abortedTest_logsMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_abort");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
+					assertThat(reportEntry).hasSize(1);
+					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Eagerly I wished the morrow;"));
+				});
+			}
+
 		}
 
-		@Test
-		@DisplayName("does not logs after failure, if publish condition is ON_SUCCESS")
-		void conditional_doNotLogOnFailure() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_failure");
+		@Nested
+		@DisplayName("to multiple conditions")
+		class LogOnMultipleConditions {
 
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+			@Test
+			@DisplayName("logs entries independently on success, based on publish condition")
+			void conditional_logOnSuccessIndependently() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedSuccess");
 
-			assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
-			assertThat(reportEntries).isEmpty();
-		}
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
-		@Test
-		@DisplayName("logs after failure, if publish condition is ON_FAILURE")
-		void conditional_logOnFailure() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_failure");
+				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
+				assertAll("Verifying report entries " + reportEntries, //
+						() -> assertThat(reportEntries).hasSize(2),
+						() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
+						() -> assertThat(reportEntries)
+								.extracting(entry -> entry.get("value"))
+								.containsExactlyInAnyOrder("Eagerly I wished the morrow;", "vainly I had sought to borrow"));
+			}
 
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+			@Test
+			@DisplayName("logs entries independently on failure, based on publish condition")
+			void conditional_logOnFailureIndependently() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedFailure");
 
-			assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
-			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
-				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "And each separate dying ember"));
-			});
-		}
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
-		@Test
-		@DisplayName("logs entries if test was aborted, treating it as a failure if publish condition is ON_FAILURE")
-		void conditional_logOnAbort() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_abort");
+				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+				assertAll("Verifying report entries " + reportEntries, //
+						() -> assertThat(reportEntries).hasSize(2),
+						() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
+						() -> assertThat(reportEntries)
+								.extracting(entry -> entry.get("value"))
+								.containsExactlyInAnyOrder("For the rare and radiant maiden", "Nameless here for evermore"));
+			}
 
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
-
-			assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
-			assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
-				assertThat(reportEntry).hasSize(1);
-				assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Eagerly I wished the morrow;"));
-			});
-		}
-
-		@Test
-		@DisplayName("does not log after success, if publish condition is ON_FAILURE")
-		void conditional_doNotLogOnSuccess() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_success");
-
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
-
-			assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
-			assertThat(reportEntries).isEmpty();
-		}
-
-		@Test
-		@DisplayName("logs entries independently on success, based on publish condition")
-		void conditional_logOnSuccessIndependently() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedSuccess");
-
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
-
-			assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
-			assertAll("Verifying report entries " + reportEntries, //
-				() -> assertThat(reportEntries).hasSize(2),
-				() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
-				() -> assertThat(reportEntries)
-						.extracting(entry -> entry.get("value"))
-						.containsExactlyInAnyOrder("Eagerly I wished the morrow;", "vainly I had sought to borrow"));
-		}
-
-		@Test
-		@DisplayName("logs entries independently on failure, based on publish condition")
-		void conditional_logOnFailureIndependently() {
-			ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedFailure");
-
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
-
-			assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
-			assertAll("Verifying report entries " + reportEntries, //
-				() -> assertThat(reportEntries).hasSize(2),
-				() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
-				() -> assertThat(reportEntries)
-						.extracting(entry -> entry.get("value"))
-						.containsExactlyInAnyOrder("For the rare and radiant maiden", "Nameless here for evermore"));
 		}
 
 	}
