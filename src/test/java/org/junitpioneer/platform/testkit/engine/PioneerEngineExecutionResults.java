@@ -23,21 +23,22 @@ import org.junit.platform.testkit.engine.EngineTestKit;
 import org.junit.platform.testkit.engine.Events;
 
 /**
- * Pioneers own class to handle {@link org.junit.platform.testkit.engine.EngineExecutionResults} of the JUnit-Jupiter-Engine.
+ * Pioneers' class to handle JUnit Jupiter's {@link org.junit.platform.testkit.engine.EngineExecutionResults}.
  *
+ * Instantiate with the static factory methods in {@link PioneerTestKit}.
  */
 public class PioneerEngineExecutionResults {
 
 	EngineExecutionResults executionResults;
 
-	public PioneerEngineExecutionResults(Class<?> testClass) {
+	PioneerEngineExecutionResults(Class<?> testClass) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
 				.selectors(DiscoverySelectors.selectClass(testClass))
 				.execute();
 	}
 
-	public PioneerEngineExecutionResults(Class<?> testClass, String testMethodName) {
+	PioneerEngineExecutionResults(Class<?> testClass, String testMethodName) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName))
@@ -47,7 +48,7 @@ public class PioneerEngineExecutionResults {
 	/**
 	 * Get all recorded events.
 	 */
-	public Events all() {
+	public Events allEvents() {
 		return executionResults.all();
 	}
 
@@ -57,7 +58,7 @@ public class PioneerEngineExecutionResults {
 	 * <p>In this context, the word "container" applies to {@link org.junit.platform.engine.TestDescriptor
 	 * TestDescriptors} that return {@code true} from {@link org.junit.platform.engine.TestDescriptor#isContainer()}.</p>
 	 */
-	public Events containers() {
+	public Events containerEvents() {
 		return executionResults.containers();
 	}
 
@@ -67,7 +68,7 @@ public class PioneerEngineExecutionResults {
 	 * <p>In this context, the word "test" applies to {@link org.junit.platform.engine.TestDescriptor
 	 * TestDescriptors} that return {@code true} from {@link org.junit.platform.engine.TestDescriptor#isTest()}.</p>
 	 */
-	public Events tests() {
+	public Events testEvents() {
 		return executionResults.tests();
 	}
 
