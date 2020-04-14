@@ -114,7 +114,8 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
 				assertThat(successReportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "'Tis some visitor', I muttered"));
+					assertThat(reportEntry)
+							.containsExactly(TestUtils.entryOf("value", "'Tis some visitor', I muttered"));
 				});
 			}
 
@@ -128,7 +129,8 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
 				assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "'Tapping at my chamber door' -"));
+					assertThat(reportEntry)
+							.containsExactly(TestUtils.entryOf("value", "'Tapping at my chamber door' -"));
 				});
 			}
 
@@ -201,7 +203,8 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
 				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "And each separate dying ember"));
+					assertThat(reportEntry)
+							.containsExactly(TestUtils.entryOf("value", "And each separate dying ember"));
 				});
 			}
 
@@ -234,11 +237,12 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 
 				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
 				assertAll("Verifying report entries " + reportEntries, //
-						() -> assertThat(reportEntries).hasSize(2),
-						() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
-						() -> assertThat(reportEntries)
-								.extracting(entry -> entry.get("value"))
-								.containsExactlyInAnyOrder("Eagerly I wished the morrow;", "vainly I had sought to borrow"));
+					() -> assertThat(reportEntries).hasSize(2),
+					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
+					() -> assertThat(reportEntries)
+							.extracting(entry -> entry.get("value"))
+							.containsExactlyInAnyOrder("Eagerly I wished the morrow;",
+								"vainly I had sought to borrow"));
 			}
 
 			@Test
@@ -250,11 +254,12 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 
 				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
 				assertAll("Verifying report entries " + reportEntries, //
-						() -> assertThat(reportEntries).hasSize(2),
-						() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
-						() -> assertThat(reportEntries)
-								.extracting(entry -> entry.get("value"))
-								.containsExactlyInAnyOrder("For the rare and radiant maiden", "Nameless here for evermore"));
+					() -> assertThat(reportEntries).hasSize(2),
+					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
+					() -> assertThat(reportEntries)
+							.extracting(entry -> entry.get("value"))
+							.containsExactlyInAnyOrder("For the rare and radiant maiden",
+								"Nameless here for evermore"));
 			}
 
 		}
