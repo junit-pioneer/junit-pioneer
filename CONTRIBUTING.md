@@ -4,6 +4,7 @@ The following guidelines were chosen very deliberately to make sure the project 
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
+* [If you're new to Open Source](#if-youre-new-to-open-source)
 * [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
 	* [Branching Strategy](#branching-strategy)
 	* [Commits](#commits)
@@ -25,6 +26,18 @@ The guidelines apply to maintainers as well as contributors!
   This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
 * Whatever content you contribute will be provided under the project license(s).
 
+## If you're new to Open Source
+
+First of all, welcome!
+We really appreciate that you consider contributing to JUnit Pioneer.
+
+We know that this can be quite daunting at first:
+Everybody uses a vocabulary and techniques that appear quite cryptic to those not steeped in them.
+We can't fix that in a short file like this, but we want to provide some pointers to get you started.
+If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and ask us to explain it better.
+
+First off, like for many open source projects, contributing code changes to JUnit Pioneer should be done via pull requests from a fork.
+If you are not familiar with this concept, please have a look at the [GitHub help page](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks).
 
 ## Fixing Bugs, Developing Features
 
