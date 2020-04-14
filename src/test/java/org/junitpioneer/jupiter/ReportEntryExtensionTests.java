@@ -20,7 +20,10 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.opentest4j.TestAbortedException;
@@ -29,7 +32,7 @@ import org.opentest4j.TestAbortedException;
  * Edgar Allan Poe: The Raven is in the public domain.
  */
 @DisplayName("ReportEntry extension")
-public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
+public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 
 	@Test
 	@DisplayName("reports given explicit key and value")
