@@ -15,11 +15,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -88,25 +83,6 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * @see Files#createTempDirectory
  */
 public class TempDirectory implements ParameterResolver {
-
-	/**
-	 * {@code TempDir} can be used to annotate a test or lifecycle method or
-	 * test class constructor parameter of type {@link Path} that should be
-	 * resolved into a temporary directory.
-	 *
-	 * <p>Since JUnit Jupiter 5.4, there's a
-	 * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory">
-	 * built-in {@code @TempDir} extension</a>. If you don't need support for
-	 * arbitrary file systems, you should consider using that instead of this
-	 * extension.
-	 *
-	 * @see TempDirectory
-	 */
-	@Target(ElementType.PARAMETER)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	public @interface TempDir {
-	}
 
 	/**
 	 * {@code ParentDirProvider} can be used to configure a custom parent

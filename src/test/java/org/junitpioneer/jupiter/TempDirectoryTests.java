@@ -52,7 +52,6 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.test.event.ExecutionEvent;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 @DisplayName("TempDirectory extension")
 class TempDirectoryTests extends AbstractPioneerTestEngineTests {
