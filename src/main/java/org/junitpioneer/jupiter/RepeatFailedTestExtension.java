@@ -88,24 +88,23 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 			exceptionsSoFar++;
 
 			boolean allRepetitionsFailed = exceptionsSoFar == maxRepetitions;
-			if (allRepetitionsFailed) {
+			if (allRepetitionsFailed)
 				throw new AssertionError(
 					format("Test execution #%d (of up to %d) failed ~> test fails - see cause for details",
 						exceptionsSoFar, maxRepetitions),
 					exception);
-			} else {
+			else
 				throw new TestAbortedException(
 					format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRepetitions),
 					exception);
-			}
+
 		}
 
 		@Override
 		public boolean hasNext() {
 			// there's always at least one execution
-			if (repetitionsSoFar == 0) {
+			if (repetitionsSoFar == 0)
 				return true;
-			}
 
 			// if we caught an exception in each repetition, each repetition failed, including the previous one
 			boolean previousFailed = repetitionsSoFar == exceptionsSoFar;
@@ -115,9 +114,9 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 
 		@Override
 		public RepeatFailedTestInvocationContext next() {
-			if (!hasNext()) {
+			if (!hasNext())
 				throw new NoSuchElementException();
-			}
+
 			repetitionsSoFar++;
 			return new RepeatFailedTestInvocationContext();
 		}
