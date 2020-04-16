@@ -97,7 +97,6 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 				throw new TestAbortedException(
 					format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRepetitions),
 					exception);
-
 		}
 
 		@Override
