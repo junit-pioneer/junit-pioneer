@@ -73,8 +73,8 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 
 		private FailedTestRepeater(int maxRepetitions) {
 			this.maxRepetitions = maxRepetitions;
-			repetitionsSoFar = 0;
-			exceptionsSoFar = 0;
+			this.repetitionsSoFar = 0;
+			this.exceptionsSoFar = 0;
 		}
 
 		static FailedTestRepeater createFor(Method repeatedTest) {
