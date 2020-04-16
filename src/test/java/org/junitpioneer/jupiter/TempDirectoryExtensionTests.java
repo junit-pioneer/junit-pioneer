@@ -467,14 +467,15 @@ class TempDirectoryExtensionTests extends AbstractPioneerTestEngineTests {
 	static class ParentDirFromProviderTestCase extends BaseSeparateTempDirsTestCase {
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectoryExtension.createInCustomDirectory((parameterContext, extensionContext) -> {
-			Store store = extensionContext.getRoot().getStore(Namespace.GLOBAL);
-			FileSystem fileSystem = store
-					.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
-						JimfsFileSystemResource.class)
-					.get();
-			return Files.createDirectories(fileSystem.getPath("tmp"));
-		});
+		Extension tempDirectory = TempDirectoryExtension
+				.createInCustomDirectory((parameterContext, extensionContext) -> {
+					Store store = extensionContext.getRoot().getStore(Namespace.GLOBAL);
+					FileSystem fileSystem = store
+							.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
+								JimfsFileSystemResource.class)
+							.get();
+					return Files.createDirectories(fileSystem.getPath("tmp"));
+				});
 
 		static class JimfsFileSystemResource implements CloseableResource {
 
