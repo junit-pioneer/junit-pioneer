@@ -12,7 +12,6 @@ package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -56,7 +55,7 @@ class RangeSourceProvider implements ArgumentsProvider {
 								.stream(annotations.annotationType().getAnnotationsByType(ArgumentsSource.class))
 								.anyMatch(annotation -> getClass().equals(annotation.value())))
 						.collect(Collectors.toList()))
-				.orElse(Collections.emptyList());
+				.orElseThrow(IllegalStateException::new);
 
 		Preconditions
 				.condition(argumentsSources.size() == 1,
