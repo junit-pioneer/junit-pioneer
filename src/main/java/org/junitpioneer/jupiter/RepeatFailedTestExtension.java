@@ -116,7 +116,6 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		public RepeatFailedTestInvocationContext next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-
 			repetitionsSoFar++;
 			return new RepeatFailedTestInvocationContext();
 		}

@@ -132,7 +132,6 @@ class EnvironmentVariableExtension
 					variablesToUnset.add(variable);
 				else
 					variablesToSet.put(variable, backup);
-
 			});
 		}
 
