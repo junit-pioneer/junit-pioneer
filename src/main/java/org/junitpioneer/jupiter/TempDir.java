@@ -28,7 +28,7 @@ import java.nio.file.Path;
  * arbitrary file systems, you should consider using that instead of this
  * extension.
  *
- * @see TempDirectory
+ * @see TempDirectoryExtension
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

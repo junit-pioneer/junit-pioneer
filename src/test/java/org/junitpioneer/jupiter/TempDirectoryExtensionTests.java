@@ -54,7 +54,7 @@ import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 @DisplayName("TempDirectory extension")
-class TempDirectoryTests extends AbstractPioneerTestEngineTests {
+class TempDirectoryExtensionTests extends AbstractPioneerTestEngineTests {
 
 	@BeforeEach
 	@AfterEach
@@ -261,7 +261,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		assertThat(throwable.get()).hasMessageContaining(message);
 	}
 
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class BaseSharedTempDirTestCase {
 
 		static Optional<Path> tempDir;
@@ -335,7 +335,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			extends AnnotationOnBeforeAllMethodParameterTestCase {
 	}
 
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class AnnotationOnAfterAllMethodParameterTestCase {
 
 		static Optional<Path> firstTempDir = Optional.empty();
@@ -395,7 +395,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 	}
 
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class SeparateTempDirsWhenUsedOnForEachLifecycleMethodsTestCase extends BaseSeparateTempDirsTestCase {
 	}
 
@@ -404,7 +404,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			extends SeparateTempDirsWhenUsedOnForEachLifecycleMethodsTestCase {
 	}
 
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class DeletionTestCase {
 
 		static Optional<Path> tempDir;
@@ -432,7 +432,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 	}
 
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class InvalidTestCase {
 
 		@Test
@@ -459,7 +459,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory
+		Extension tempDirectory = TempDirectoryExtension
 				.createInCustomDirectory(() -> Files.createDirectories(fileSystem.getPath("tmp")));
 
 	}
@@ -467,7 +467,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	static class ParentDirFromProviderTestCase extends BaseSeparateTempDirsTestCase {
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory.createInCustomDirectory((parameterContext, extensionContext) -> {
+		Extension tempDirectory = TempDirectoryExtension.createInCustomDirectory((parameterContext, extensionContext) -> {
 			Store store = extensionContext.getRoot().getStore(Namespace.GLOBAL);
 			FileSystem fileSystem = store
 					.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
@@ -513,7 +513,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
+		Extension tempDirectory = TempDirectoryExtension.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
 
 		@Test
 		void test(@TempDir Path tempDir) {
@@ -547,7 +547,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
+		Extension tempDirectory = TempDirectoryExtension.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
 
 		@Test
 		void test(@TempDir Path tempDir) {
@@ -561,7 +561,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		private FileSystem fileSystem = mock(FileSystem.class);
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory.createInCustomDirectory(() -> {
+		Extension tempDirectory = TempDirectoryExtension.createInCustomDirectory(() -> {
 			throw new IOException("something went horribly wrong");
 		});
 
