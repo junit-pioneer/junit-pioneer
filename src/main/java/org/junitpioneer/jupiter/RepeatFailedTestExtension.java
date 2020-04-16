@@ -60,8 +60,8 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 		Method repeatedTest = context.getRequiredTestMethod();
 		return context
 				.getStore(NAMESPACE)
-				.getOrComputeIfAbsent(repeatedTest.toString(),
-					defaultCreator -> FailedTestRepeater.createFor(repeatedTest), FailedTestRepeater.class);
+				.getOrComputeIfAbsent(repeatedTest.toString(), __ -> FailedTestRepeater.createFor(repeatedTest),
+					FailedTestRepeater.class);
 	}
 
 	private static class FailedTestRepeater implements Iterator<RepeatFailedTestInvocationContext> {

@@ -168,7 +168,7 @@ public class TempDirectory implements ParameterResolver {
 	 * {@link org.junit.jupiter.api.extension.ExtendWith @ExtendWith}.
 	 */
 	public TempDirectory() {
-		this((parameterContext, extensionContext, dirPrefix) -> createDefaultTempDir(dirPrefix));
+		this((__, ___, dirPrefix) -> createDefaultTempDir(dirPrefix));
 	}
 
 	/**
