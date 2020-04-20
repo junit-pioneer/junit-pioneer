@@ -49,7 +49,10 @@ public class StdIOExtension implements ParameterResolver {
 	}
 
 	private StdIntercept getInterceptAnnotation(ParameterContext context) {
-		return context.findAnnotation(StdIntercept.class).orElseThrow(() -> new ParameterResolutionException("Needs to be annotated with StdIntercept"));
+		return context
+				.findAnnotation(StdIntercept.class)
+				.orElseThrow(() -> new ParameterResolutionException(
+					"This can never happen because this extension only supplies parameters if the parameter is annotated with @StdIntercept"));
 	}
 
 	public static class StdOut extends OutputStream {
