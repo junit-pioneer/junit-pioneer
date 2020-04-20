@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -27,39 +29,39 @@ public class StdIOExtension implements ParameterResolver {
 	private static final String SEPARATOR = System.getProperty("line.separator");
 
 	@Override
-	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-			throws ParameterResolutionException {
-		return parameterContext.isAnnotated(Std.class);
+	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+		return parameterContext.isAnnotated(StdIntercept.class);
 	}
 
 	@Override
-	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-			throws ParameterResolutionException {
+	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		Class<?> parameterType = parameterContext.getParameter().getType();
+		StdIntercept stdIntercept = getInterceptAnnotation(parameterContext);
 		if (parameterType == StdOut.class) {
 			return new StdOut();
 		}
 		if (parameterType == StdIn.class) {
-			Std std = parameterContext
-					.findAnnotation(Std.class)
-					.orElseThrow(() -> new ParameterResolutionException("Needs to be annotated with Std"));
-			return new StdIn(std.value());
+			return new StdIn(stdIntercept.value());
 		}
 		throw new ParameterResolutionException("Can only resolve parameter of type " + StdOut.class.getName() + " or "
 				+ StdIn.class.getName() + " but was: " + parameterType.getName());
 
 	}
 
+	private StdIntercept getInterceptAnnotation(ParameterContext context) {
+		return context.findAnnotation(StdIntercept.class).orElseThrow(() -> new ParameterResolutionException("Needs to be annotated with StdIntercept"));
+	}
+
 	public static class StdOut extends OutputStream {
 
-		StringWriter writer = new StringWriter();
+		Writer writer = new StringWriter();
 
 		public StdOut() {
 			System.setOut(new PrintStream(this));
 		}
 
 		@Override
-		public void write(int i) {
+		public void write(int i) throws IOException {
 			writer.write(i);
 		}
 
@@ -68,7 +70,7 @@ public class StdIOExtension implements ParameterResolver {
 			return writer.toString();
 		}
 
-		public String[] linesArray() {
+		public String[] capturedLines() {
 			return this.toString().split(SEPARATOR);
 		}
 
@@ -76,8 +78,8 @@ public class StdIOExtension implements ParameterResolver {
 
 	public static class StdIn extends InputStream {
 
-		StringReader reader;
-		StringWriter writer = new StringWriter();
+		Reader reader;
+		Writer writer = new StringWriter();
 
 		public StdIn(String... values) {
 			reader = new StringReader(String.join(SEPARATOR, values));
@@ -98,7 +100,7 @@ public class StdIOExtension implements ParameterResolver {
 			return writer.toString();
 		}
 
-		public String[] linesArray() {
+		public String[] capturedLines() {
 			return this.toString().split(SEPARATOR);
 		}
 

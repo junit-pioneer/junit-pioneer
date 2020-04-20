@@ -23,23 +23,34 @@ import org.junitpioneer.jupiter.StdIOExtension.StdIn;
 import org.junitpioneer.jupiter.StdIOExtension.StdOut;
 
 @ExtendWith(StdIOExtension.class)
+@DisplayName("StdIOExtension ")
 public class StdIoExtensionTest {
 
-	BasicCommandLineApp app = new BasicCommandLineApp();
+	final BasicCommandLineApp app = new BasicCommandLineApp();
+
+	@Test
+	@DisplayName("fails the test when badly configured")
+	void failsOnBadConfig() {
+
+	}
 
 	@Test
 	@DisplayName("catches the output on the standard out")
-	void catchesOut(@Std StdOut out) {
+	void catchesOut(@StdIntercept StdOut out) {
 		app.multiline();
-		assertThat(out.linesArray()).containsExactly("Hello", "World!");
+		assertThat(out.capturedLines()).containsExactly("Hello", "World!");
 	}
 
 	@Test
 	@DisplayName("catches the input from the standard in")
-	void catchesIn(@Std({ "Hello", "World!" }) StdIn in, @Std StdOut out) throws IOException {
+	void catchesIn(@StdIntercept({ "Hello", "World!" }) StdIn in, @StdIntercept StdOut out) throws IOException {
 		app.readAndWrite();
-		assertThat(in.linesArray()).containsExactly("Hello", "World!");
-		assertThat(out.linesArray()).containsExactly("Hello", "World!");
+		assertThat(in.capturedLines()).containsExactly("Hello", "World!");
+		assertThat(out.capturedLines()).containsExactly("Hello", "World!");
+	}
+
+	@Test
+	void badConfig(StdIn in) {
 	}
 
 	/**
