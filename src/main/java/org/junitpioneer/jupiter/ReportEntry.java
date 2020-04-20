@@ -20,7 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * Publish the specified key-value pair to be consumed by an
  * {@code org.junit.platform.engine.EngineExecutionListener}
  * in order to supply additional information to the reporting
- * infrastructure. This is functionally identical to calling
+ * infrastructure. This is funtionally identical to calling
  * {@link org.junit.jupiter.api.extension.ExtensionContext#publishReportEntry(String, String) ExtensionContext::publishReportEntry}
  * from within the test method.
  */
