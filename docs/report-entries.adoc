@@ -105,3 +105,7 @@ The extension will publish your report entry if the test finishes successfully.
 
 ON_FAILURE::
 The extension will publish your report entry if the test fails.
+
+ON_ABORTED::
+The extension will publish your report entry if the test was aborted
+(for example because of an https://junit.org/junit5/docs/5.0.0/api/org/junit/jupiter/api/Assumptions.html[Assumption]).

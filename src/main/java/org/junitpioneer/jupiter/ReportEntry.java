@@ -71,7 +71,12 @@ public @interface ReportEntry {
 		/**
 		 * Publish report entry after failed test run
 		 */
-		ON_FAILURE
+		ON_FAILURE,
+
+		/**
+		 * Publish report entry after test was aborted
+		 */
+		ON_ABORTED
 	}
 
 	/**

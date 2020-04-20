@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
+import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_ABORTED;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 
@@ -105,13 +106,13 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 		class LogAlways {
 
 			@Test
-			@DisplayName("logs report entry for successful test")
+			@DisplayName("logs for successful test")
 			void successfulTest_logsMessage() {
 				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_success");
 
 				List<Map<String, String>> successReportEntries = TestUtils.reportEntries(recorder);
 
-				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
+				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
 				assertThat(successReportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
 					assertThat(reportEntry)
@@ -120,17 +121,32 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			}
 
 			@Test
-			@DisplayName("logs report entry for failing test")
+			@DisplayName("logs for failed test")
 			void failingTest_logsMessage() {
 				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_failure");
 
 				List<Map<String, String>> failureReportEntries = TestUtils.reportEntries(recorder);
 
-				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
 				assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
 					assertThat(reportEntry)
 							.containsExactly(TestUtils.entryOf("value", "'Tapping at my chamber door' -"));
+				});
+			}
+
+			@Test
+			@DisplayName("logs for aborted test")
+			void abortedTest_logsMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_aborted");
+
+				List<Map<String, String>> failureReportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
+					assertThat(reportEntry).hasSize(1);
+					assertThat(reportEntry)
+							.containsExactly(TestUtils.entryOf("value", "'Only this and nothing more.'"));
 				});
 			}
 
@@ -141,7 +157,7 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 
 				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
-				assertThat(recorder.getTestFinishedCount()).isEqualTo(0);
+				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
 				assertThat(reportEntries).isEmpty();
 			}
 
@@ -158,10 +174,10 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 
 				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
-				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
+				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
 				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Ah, distinctly I remember"));
+					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "it was in the bleak December"));
 				});
 			}
 
@@ -172,7 +188,29 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 
 				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
-				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
+				assertThat(reportEntries).isEmpty();
+			}
+
+			@Test
+			@DisplayName("does not log for aborted test")
+			void abortedTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_aborted");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertThat(reportEntries).isEmpty();
+			}
+
+			@Test
+			@DisplayName("does not log for disabled test")
+			void disabledTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_disabled");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
 				assertThat(reportEntries).isEmpty();
 			}
 
@@ -183,13 +221,13 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 		class LogOnFailure {
 
 			@Test
-			@DisplayName("does not log after success, if publish condition is ON_FAILURE")
+			@DisplayName("does not log for successful test")
 			void successfulTest_logsNoMessage() {
 				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_success");
 
 				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
-				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
+				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
 				assertThat(reportEntries).isEmpty();
 			}
 
@@ -200,26 +238,88 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 
 				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
-				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
 				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry)
-							.containsExactly(TestUtils.entryOf("value", "And each separate dying ember"));
+					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Nameless here for evermore."));
 				});
 			}
 
 			@Test
-			@DisplayName("logs for aborted tests, treating it as a failure if publish condition is ON_FAILURE")
+			@DisplayName("does not log for aborted test")
+			void abortedTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_aborted");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertThat(reportEntries).isEmpty();
+			}
+
+			@Test
+			@DisplayName("does not log for disabled test")
+			void disabledTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_disabled");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
+				assertThat(reportEntries).isEmpty();
+			}
+
+		}
+
+		@Nested
+		@DisplayName("to 'ON_ABORTED'")
+		class LogOnAborted {
+
+			@Test
+			@DisplayName("does not log for successful test")
+			void successfulTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onAborted_success");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
+				assertThat(reportEntries).isEmpty();
+			}
+
+			@Test
+			@DisplayName("does not log for failed test")
+			void failedTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onAborted_failure");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
+				assertThat(reportEntries).isEmpty();
+			}
+
+			@Test
+			@DisplayName("logs for aborted test")
 			void abortedTest_logsMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_abort");
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onAborted_aborted");
 
 				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
 				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
 				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Eagerly I wished the morrow;"));
+					assertThat(reportEntry)
+							.containsExactly(TestUtils
+									.entryOf("value", "Some late visitor entreating entrance at my chamber door;—"));
 				});
+			}
+
+			@Test
+			@DisplayName("does not log for disabled test")
+			void disabledTest_logsNoMessage() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onAborted_disabled");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
+				assertThat(reportEntries).isEmpty();
 			}
 
 		}
@@ -231,35 +331,65 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("logs entries independently on success, based on publish condition")
 			void conditional_logOnSuccessIndependently() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedSuccess");
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeated_success");
 
 				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
-				assertThat(recorder.getSuccessfulTestFinishedEvents()).hasSize(1);
+				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
 				assertAll("Verifying report entries " + reportEntries, //
 					() -> assertThat(reportEntries).hasSize(2),
 					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
 					() -> assertThat(reportEntries)
 							.extracting(entry -> entry.get("value"))
-							.containsExactlyInAnyOrder("Eagerly I wished the morrow;",
-								"vainly I had sought to borrow"));
+							.containsExactlyInAnyOrder(
+								"Deep into that darkness peering, long I stood there wondering, fearing,",
+								"Doubting, dreaming dreams no mortal ever dared to dream before;"));
 			}
 
 			@Test
 			@DisplayName("logs entries independently on failure, based on publish condition")
 			void conditional_logOnFailureIndependently() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedFailure");
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeated_failure");
 
 				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 
-				assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
+				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
 				assertAll("Verifying report entries " + reportEntries, //
 					() -> assertThat(reportEntries).hasSize(2),
 					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
 					() -> assertThat(reportEntries)
 							.extracting(entry -> entry.get("value"))
-							.containsExactlyInAnyOrder("For the rare and radiant maiden",
-								"Nameless here for evermore"));
+							.containsExactlyInAnyOrder(
+								"And the only word there spoken was the whispered word, “Lenore?”",
+								"murmured back the word, “Lenore!”—"));
+			}
+
+			@Test
+			@DisplayName("logs entries independently on abortion, based on publish condition")
+			void conditional_logOnAbortedIndependently() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeated_aborted");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertAll("Verifying report entries " + reportEntries, //
+					() -> assertThat(reportEntries).hasSize(2),
+					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
+					() -> assertThat(reportEntries)
+							.extracting(entry -> entry.get("value"))
+							.containsExactlyInAnyOrder("Back into the chamber turning, all my soul within me burning,",
+								"“surely that is something at my window lattice;"));
+			}
+
+			@Test
+			@DisplayName("does not log entries if disabled")
+			void conditional_doesNotLogOnDisabled() {
+				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeated_disabled");
+
+				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+
+				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
+				assertThat(reportEntries).isEmpty();
 			}
 
 		}
@@ -269,17 +399,17 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 	static class ReportEntriesTest {
 
 		@Test
-		@ReportEntry(key = "Crow2", value = "While I pondered weak and weary")
-		void explicitKey() {
-		}
-
-		@Test
 		@ReportEntry("Once upon a midnight dreary")
 		void implicitKey() {
 		}
 
 		@Test
-		@ReportEntry(key = "", value = "Over many a quaint and curious volume of forgotten lore")
+		@ReportEntry(key = "Crow2", value = "While I pondered weak and weary")
+		void explicitKey() {
+		}
+
+		@Test
+		@ReportEntry(key = "", value = "Over many a quaint and curious volume of forgotten lore-")
 		void emptyKey() {
 		}
 
@@ -307,54 +437,130 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 		}
 
 		@Test
-		@Disabled("wanted here for showing that report entries are disabled")
 		@ReportEntry(value = "'Only this and nothing more.'", when = ALWAYS)
+		void always_aborted() {
+			abort();
+		}
+
+		@Test
+		@Disabled("to show that report entries are disabled")
+		@ReportEntry(value = "Ah, distinctly I remember", when = ALWAYS)
 		void always_disabled() {
 		}
 
 		@Test
-		@ReportEntry(value = "Ah, distinctly I remember", when = ON_SUCCESS)
+		@ReportEntry(value = "it was in the bleak December", when = ON_SUCCESS)
 		void onSuccess_success() {
 		}
 
 		@Test
-		@ReportEntry(value = "it was in the bleak December", when = ON_SUCCESS)
+		@ReportEntry(value = "And each separate dying ember wrought its ghost upon the floor.", when = ON_SUCCESS)
 		void onSuccess_failure() {
 			fail();
 		}
 
 		@Test
-		@ReportEntry(value = "And each separate dying ember", when = ON_FAILURE)
+		@ReportEntry(value = "Eagerly I wished the morrow;—vainly I had sought to borrow", when = ON_SUCCESS)
+		void onSuccess_aborted() {
+			abort();
+		}
+
+		@Test
+		@Disabled("to show that report entries are disabled")
+		@ReportEntry(value = "From my books surcease of sorrow—sorrow for the lost Lenore—", when = ON_SUCCESS)
+		void onSuccess_disabled() {
+
+		}
+
+		@Test
+		@ReportEntry(value = "For the rare and radiant maiden whom the angels name Lenore—", when = ON_FAILURE)
+		void onFailure_success() {
+		}
+
+		@Test
+		@ReportEntry(value = "Nameless here for evermore.", when = ON_FAILURE)
 		void onFailure_failure() {
 			fail();
 		}
 
 		@Test
-		@ReportEntry(value = "wrought its ghost upon the floor", when = ON_FAILURE)
-		void onFailure_success() {
+		@ReportEntry(value = "And the silken, sad, uncertain rustling of each purple curtain", when = ON_FAILURE)
+		void onFailure_aborted() {
+			abort();
 		}
 
 		@Test
-		@ReportEntry(value = "Eagerly I wished the morrow;", when = ON_FAILURE)
-		void onFailure_abort() {
-			throw new TestAbortedException();
+		@Disabled("to show that report entries are disabled")
+		@ReportEntry(value = "Thrilled me—filled me with fantastic terrors never felt before;", when = ON_FAILURE)
+		void onFailure_disabled() {
+
 		}
 
 		@Test
-		@ReportEntry(value = "Eagerly I wished the morrow;", when = ALWAYS)
-		@ReportEntry(value = "vainly I had sought to borrow", when = ON_SUCCESS)
-		@ReportEntry(value = "From my books surcease of sorrow-—sorrow for the lost Lenore-", when = ON_FAILURE)
-		void repeatedSuccess() {
+		@ReportEntry(value = "So that now, to still the beating of my heart, I stood repeating", when = ON_ABORTED)
+		void onAborted_success() {
+
 		}
 
 		@Test
-		@ReportEntry(value = "For the rare and radiant maiden", when = ALWAYS)
-		@ReportEntry(value = "whom the angels name Lenore—", when = ON_SUCCESS)
-		@ReportEntry(value = "Nameless here for evermore", when = ON_FAILURE)
-		void repeatedFailure() {
+		@ReportEntry(value = "Tis some visitor entreating entrance at my chamber door—", when = ON_ABORTED)
+		void onAborted_failure() {
 			fail();
 		}
 
+		@Test
+		@ReportEntry(value = "Some late visitor entreating entrance at my chamber door;—", when = ON_ABORTED)
+		void onAborted_aborted() {
+			abort();
+		}
+
+		@Test
+		@Disabled("to show that report entries are disabled")
+		@ReportEntry(value = "This it is and nothing more.", when = ON_ABORTED)
+		void onAborted_disabled() {
+
+		}
+
+		@Test
+		@ReportEntry(value = "Deep into that darkness peering, long I stood there wondering, fearing,", when = ALWAYS)
+		@ReportEntry(value = "Doubting, dreaming dreams no mortal ever dared to dream before;", when = ON_SUCCESS)
+		@ReportEntry(value = "But the silence was unbroken,", when = ON_FAILURE)
+		@ReportEntry(value = "and the stillness gave no token,", when = ON_ABORTED)
+		void repeated_success() {
+		}
+
+		@Test
+		@ReportEntry(value = "And the only word there spoken was the whispered word, “Lenore?”", when = ALWAYS)
+		@ReportEntry(value = "This I whispered, and an echo", when = ON_SUCCESS)
+		@ReportEntry(value = "murmured back the word, “Lenore!”—", when = ON_FAILURE)
+		@ReportEntry(value = "Merely this and nothing more.", when = ON_ABORTED)
+		void repeated_failure() {
+			fail();
+		}
+
+		@Test
+		@ReportEntry(value = "Back into the chamber turning, all my soul within me burning,", when = ALWAYS)
+		@ReportEntry(value = "Soon again I heard a tapping somewhat louder than before.", when = ON_SUCCESS)
+		@ReportEntry(value = "“Surely,” said I,", when = ON_FAILURE)
+		@ReportEntry(value = "“surely that is something at my window lattice;", when = ON_ABORTED)
+		void repeated_aborted() {
+			abort();
+		}
+
+		@Test
+		@Disabled("to show that report entries are disabled")
+		@ReportEntry(value = "Let me see, then, what thereat is, and this mystery explore—", when = ALWAYS)
+		@ReportEntry(value = "Let my heart be still a moment", when = ON_SUCCESS)
+		@ReportEntry(value = "and this mystery explore;—", when = ON_FAILURE)
+		@ReportEntry(value = "’Tis the wind and nothing more!”", when = ON_ABORTED)
+		void repeated_disabled() {
+
+		}
+
+	}
+
+	private static void abort() {
+		throw new TestAbortedException();
 	}
 
 }
