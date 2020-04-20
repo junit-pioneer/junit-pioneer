@@ -469,7 +469,6 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 		@Disabled("to show that report entries are disabled")
 		@ReportEntry(value = "From my books surcease of sorrow—sorrow for the lost Lenore—", when = ON_SUCCESS)
 		void onSuccess_disabled() {
-
 		}
 
 		@Test
@@ -493,13 +492,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 		@Disabled("to show that report entries are disabled")
 		@ReportEntry(value = "Thrilled me—filled me with fantastic terrors never felt before;", when = ON_FAILURE)
 		void onFailure_disabled() {
-
 		}
 
 		@Test
 		@ReportEntry(value = "So that now, to still the beating of my heart, I stood repeating", when = ON_ABORTED)
 		void onAborted_success() {
-
 		}
 
 		@Test
@@ -518,7 +515,6 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 		@Disabled("to show that report entries are disabled")
 		@ReportEntry(value = "This it is and nothing more.", when = ON_ABORTED)
 		void onAborted_disabled() {
-
 		}
 
 		@Test
@@ -554,7 +550,6 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 		@ReportEntry(value = "and this mystery explore;—", when = ON_FAILURE)
 		@ReportEntry(value = "’Tis the wind and nothing more!”", when = ON_ABORTED)
 		void repeated_disabled() {
-
 		}
 
 	}
