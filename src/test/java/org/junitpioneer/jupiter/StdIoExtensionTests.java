@@ -11,18 +11,19 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
+import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.jupiter.StdIOExtension.StdIn;
 import org.junitpioneer.jupiter.StdIOExtension.StdOut;
 
@@ -39,31 +40,50 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("fails if parameter is not annotated with @StdIntercept")
 		void needsAnnotation() {
-			try {
-				executeTestsForMethod(StdIOExtensionConfigurationTests.class, "noAnnotation");
-			}
-			catch (ParameterResolutionException ex) {
-				assertThat(ex.getMessage()).startsWith("No ParameterResolver registered");
-			}
+			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
+				"noAnnotation", StdIn.class);
+
+			assertThat(getFirstFailuresThrowable(recorder))
+					.isInstanceOf(ParameterResolutionException.class)
+					.hasMessageContaining("No ParameterResolver registered for");
 		}
 
 		@Test
 		@DisplayName("fails if the parameter type is not StdIn or StdOut")
 		void needsType() {
+			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
+				"badType", Boolean.class);
+
+			assertThat(getFirstFailuresThrowable(recorder))
+					.isInstanceOf(ParameterResolutionException.class)
+					.hasMessageContaining("Can only resolve parameter of type %s or %s but was:",
+						StdOut.class.getName(), StdIn.class.getName());
+		}
+
+		@Test
+		@DisplayName("resolves parameter for type StdIn and annotation")
+		void goodConfig_stdIn() {
 			try {
-				executeTestsForMethod(StdIOExtensionConfigurationTests.class, "badType");
+				ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(
+					StdIOExtensionConfigurations.class, "resolveStdIn", StdIn.class);
+				assertThat(recorder.getTestStartedCount()).isGreaterThan(0);
 			}
-			catch (ParameterResolutionException ex) {
-				assertThat(ex.getMessage()).contains("Can only resolve parameter", "but was");
+			catch (Throwable ignored) {
+				fail();
 			}
 		}
 
 		@Test
-		@DisplayName("resolves parameter for correct type and annotation")
-		void goodConfig() {
-			Assertions
-					.assertDoesNotThrow(
-						() -> executeTestsForMethod(StdIOExtensionConfigurationTests.class, "goodConfig"));
+		@DisplayName("resolves parameter for type StdOut and annotation")
+		void goodConfig_stdOut() {
+			try {
+				ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(
+					StdIOExtensionConfigurations.class, "resolveStdOut", StdOut.class);
+				assertThat(recorder.getTestStartedCount()).isGreaterThan(0);
+			}
+			catch (Throwable ignored) {
+				fail();
+			}
 		}
 
 	}
@@ -84,7 +104,8 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 		assertThat(in.capturedLines()).containsExactly("Hello", "World!");
 	}
 
-	private static class StdIOExtensionConfigurationTests {
+	@ExtendWith(StdIOExtension.class)
+	static class StdIOExtensionConfigurations {
 
 		@Test
 		void noAnnotation(StdIn in) {
@@ -95,7 +116,11 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 		}
 
 		@Test
-		void goodConfig(@StdIntercept StdIn in) {
+		void resolveStdIn(@StdIntercept StdIn in) {
+		}
+
+		@Test
+		void resolveStdOut(@StdIntercept StdOut out) {
 		}
 
 	}

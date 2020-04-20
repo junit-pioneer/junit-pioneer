@@ -14,6 +14,8 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
 import static org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder.request;
 
+import java.util.Arrays;
+
 import org.junit.platform.engine.ExecutionRequest;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.TestExecutionResult;
@@ -36,6 +38,16 @@ public abstract class AbstractJupiterTestEngineTests {
 
 	protected ExecutionEventRecorder executeTestsForMethod(Class<?> testClass, String methodName) {
 		return executeTests(request().selectors(selectMethod(testClass.getName(), methodName)).build());
+	}
+
+	protected ExecutionEventRecorder executeTestsForMethodWithParameters(Class<?> testClass, String methodName,
+			Class<?>... params) {
+		String paramNames = Arrays
+				.stream(params)
+				.map(Class::getName)
+				.reduce((name1, name2) -> String.join(",", name1, name2))
+				.orElse("");
+		return executeTests(request().selectors(selectMethod(testClass.getName(), methodName, paramNames)).build());
 	}
 
 	protected ExecutionEventRecorder executeTests(LauncherDiscoveryRequest request) {
