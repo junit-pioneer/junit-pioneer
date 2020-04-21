@@ -12,14 +12,13 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junitpioneer.platform.testkit.engine.PioneerTestKit.executeTestMethod;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.platform.testkit.engine.ExecutionResults;
+import org.junitpioneer.testkit.ExecutionResults;
 
 public class ReportEntryExtensionTest {
 

@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.platform.testkit.engine.PioneerTestKit.executeTestClass;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 
 import java.util.TimeZone;
 
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.platform.testkit.engine.ExecutionResults;
+import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("DefaultTimeZone extension")
 class DefaultTimeZoneTests {

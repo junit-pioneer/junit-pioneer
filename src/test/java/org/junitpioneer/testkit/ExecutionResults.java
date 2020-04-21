@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.platform.testkit.engine;
+package org.junitpioneer.testkit;
 
 import static java.util.stream.Collectors.toList;
 

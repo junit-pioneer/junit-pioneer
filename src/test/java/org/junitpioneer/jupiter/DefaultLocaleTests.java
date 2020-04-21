@@ -11,8 +11,8 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.platform.testkit.engine.PioneerTestKit.executeTestClass;
-import static org.junitpioneer.platform.testkit.engine.PioneerTestKit.executeTestMethod;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 
 import java.util.Locale;
 
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junitpioneer.platform.testkit.engine.ExecutionResults;
+import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("DefaultLocale extension")
 class DefaultLocaleTests {
