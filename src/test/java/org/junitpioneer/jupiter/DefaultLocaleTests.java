@@ -11,8 +11,9 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.platform.testkit.engine.PioneerTestKit.executeTestClass;
+import static org.junitpioneer.platform.testkit.engine.PioneerTestKit.executeTestMethod;
 
-import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.AfterAll;
@@ -23,13 +24,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEvent;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.platform.testkit.engine.ExecutionResults;
 
 @DisplayName("DefaultLocale extension")
-class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
+class DefaultLocaleTests {
 
 	private static Locale TEST_DEFAULT_LOCALE;
 	private static Locale DEFAULT_LOCALE_BEFORE_TEST;
@@ -98,8 +96,9 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 		@Test
 		@DisplayName("should execute tests with configured Locale")
 		void shouldExecuteTestsWithConfiguredLocale() {
-			ExecutionEventRecorder eventRecorder = executeTestsForClass(ClassLevelTestCase.class);
-			assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(2);
+			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
+
+			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
 		}
 
 		@AfterEach
@@ -128,7 +127,7 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 	@DisplayName("with nested classes")
 	@DefaultLocale(language = "en")
 	@Nested
-	class NestedDefaultLocaleTests extends AbstractPioneerTestEngineTests {
+	class NestedDefaultLocaleTests {
 
 		@Nested
 		@DisplayName("without DefaultLocale annotation")
@@ -175,46 +174,46 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 			@Test
 			@DisplayName("should fail when nothing is configured")
 			void shouldFailWhenNothingIsConfigured() {
-				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 					"shouldFailMissingConfiguration");
 
-				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+				assertTestFailedWithExtensionConfigurationException(results);
 			}
 
 			@Test
 			@DisplayName("should fail when variant is set but country is not")
 			void shouldFailWhenVariantIsSetButCountryIsNot() {
-				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailMissingCountry");
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+						"shouldFailMissingCountry");
 
-				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+				assertTestFailedWithExtensionConfigurationException(results);
 			}
 
 			@Test
 			@DisplayName("should fail when languageTag and language is set")
 			void shouldFailWhenLanguageTagAndLanguageIsSet() {
-				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailLanguageTagAndLanguage");
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+						"shouldFailLanguageTagAndLanguage");
 
-				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+				assertTestFailedWithExtensionConfigurationException(results);
 			}
 
 			@Test
 			@DisplayName("should fail when languageTag and country is set")
 			void shouldFailWhenLanguageTagAndCountryIsSet() {
-				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailLanguageTagAndCountry");
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+						"shouldFailLanguageTagAndCountry");
 
-				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+				assertTestFailedWithExtensionConfigurationException(results);
 			}
 
 			@Test
 			@DisplayName("should fail when languageTag and variant is set")
 			void shouldFailWhenLanguageTagAndVariantIsSet() {
-				ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailLanguageTagAndVariant");
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+						"shouldFailLanguageTagAndVariant");
 
-				assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+				assertTestFailedWithExtensionConfigurationException(results);
 			}
 
 		}
@@ -226,10 +225,10 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 			@Test
 			@DisplayName("should fail when variant is set but country is not")
 			void shouldFailWhenVariantIsSetButCountryIsNot() {
-				ExecutionEventRecorder eventRecorder = executeTestsForClass(
-					ClassLevelInitializationFailureTestCase.class);
+				ExecutionResults results = executeTestClass(ClassLevelInitializationFailureTestCase.class);
 
-				assertExtensionConfigurationFailure(eventRecorder.getFailedContainerEvents());
+				assertThat(results.numberOfFailedContainers()).isEqualTo(1);
+				assertThat(results.firstFailuresThrowable()).isInstanceOf(ExtensionConfigurationException.class);
 			}
 
 		}
@@ -274,14 +273,9 @@ class DefaultLocaleTests extends AbstractPioneerTestEngineTests {
 
 	}
 
-	private static void assertExtensionConfigurationFailure(List<ExecutionEvent> failedTestFinishedEvents) {
-		assertThat(failedTestFinishedEvents.size()).isEqualTo(1);
-		Throwable thrown = failedTestFinishedEvents
-				.get(0)
-				.getPayload(TestExecutionResult.class)
-				.flatMap(TestExecutionResult::getThrowable)
-				.orElseThrow(AssertionError::new);
-		assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
+	private static void assertTestFailedWithExtensionConfigurationException(ExecutionResults results) {
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results.firstFailuresThrowable()).isInstanceOf(ExtensionConfigurationException.class);
 	}
 
 }
