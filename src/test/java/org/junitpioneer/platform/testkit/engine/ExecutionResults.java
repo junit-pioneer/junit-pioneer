@@ -27,18 +27,18 @@ import org.junit.platform.testkit.engine.Events;
  *
  * Instantiate with the static factory methods in {@link PioneerTestKit}.
  */
-public class PioneerEngineExecutionResults {
+public class ExecutionResults {
 
 	EngineExecutionResults executionResults;
 
-	PioneerEngineExecutionResults(Class<?> testClass) {
+	ExecutionResults(Class<?> testClass) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
 				.selectors(DiscoverySelectors.selectClass(testClass))
 				.execute();
 	}
 
-	PioneerEngineExecutionResults(Class<?> testClass, String testMethodName) {
+	ExecutionResults(Class<?> testClass, String testMethodName) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName))
@@ -75,55 +75,75 @@ public class PioneerEngineExecutionResults {
 	/**
 	 * Returns the number of all tests.
 	 *
-	 * @return Number of all tests
+	 * @return number of all tests
 	 */
-	public long getTotalNumberOfTests() {
+	public long totalNumberOfTests() {
 		return executionResults.tests().count();
 	}
 
 	/**
 	 * Returns the number of failed tests.
 	 *
-	 * @return Number of failed tests
+	 * @return number of failed tests
 	 */
-	public long getNumberOfFailedTests() {
-		return executionResults.all().failed().count();
+	public long numberOfFailedTests() {
+		return executionResults.tests().failed().count();
 	}
 
 	/**
 	 * Returns the number of successful tests.
 	 *
-	 * @return Number of successful tests
+	 * @return number of successful tests
 	 */
-	public long getNumberOfSucceededEvents() {
-		return executionResults.all().succeeded().count();
+	public long numberOfSucceededTests() {
+		return executionResults.tests().succeeded().count();
 	}
 
 	/**
 	 * Returns the number of skipped tests.
 	 *
-	 * @return Number of skipped tests
+	 * @return number of skipped tests
 	 */
-	public long getNumberOfSkippedEvents() {
-		return executionResults.all().skipped().count();
+	public long numberOfSkippedTests() {
+		return executionResults.tests().skipped().count();
 	}
 
 	/**
 	 * Returns the number of aborted tests.
 	 *
-	 * @return Number of aborted events results
+	 * @return number of aborted events results
 	 */
-	public long getNumberOfAbortedEvents() {
-		return executionResults.all().aborted().count();
+	public long numberOfAbortedTests() {
+		return executionResults.tests().aborted().count();
+	}
+
+	/**
+	 * Returns the number of failed containers.
+	 *
+	 * @return number of failed containers
+	 */
+	public long numberOfFailedContainers() {
+		return executionResults.containers().failed().count();
 	}
 
 	/**
 	 * Returns the message of the first failed event.
 	 * This can be used if you expect a test to fail with an exception and want to check the exception message.
 	 *
-	 * @return Message of the first failed event.
+	 * @return message of the first failed event
 	 */
-	public String getFirstFailuresThrowableMessage() {
+	public String firstFailuresThrowableMessage() {
+		return firstFailuresThrowable()
+				.getMessage();
+	}
+
+	/**
+	 * Returns the {@link Throwable} of the first failed event.
+	 * This can be used if you expect a test to fail with a specific exception type.
+	 *
+	 * @return Throwable of the first failed event
+	 */
+	public Throwable firstFailuresThrowable() {
 		return executionResults
 				.all()
 				.failed()
@@ -132,8 +152,7 @@ public class PioneerEngineExecutionResults {
 				.orElseThrow(AssertionError::new)
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable)
-				.orElseThrow(AssertionError::new)
-				.getMessage();
+				.orElseThrow(AssertionError::new);
 	}
 
 	/**
@@ -141,7 +160,7 @@ public class PioneerEngineExecutionResults {
 	 *
 	 * @return published report entries of all tests
 	 */
-	public List<Map<String, String>> getPublishedTestReportEntries() {
+	public List<Map<String, String>> publishedTestReportEntries() {
 		return executionResults
 				.tests()
 				.reportingEntryPublished()

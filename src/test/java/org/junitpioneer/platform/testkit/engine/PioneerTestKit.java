@@ -18,8 +18,8 @@ public class PioneerTestKit {
 	 * @param testClass Name of the test class, the results should be returned
 	 * @return The execution results
 	 */
-	public static PioneerEngineExecutionResults executeTestClass(Class<?> testClass) {
-		return new PioneerEngineExecutionResults(testClass);
+	public static ExecutionResults executeTestClass(Class<?> testClass) {
+		return new ExecutionResults(testClass);
 	}
 
 	/**
@@ -29,8 +29,8 @@ public class PioneerTestKit {
 	 * @param testMethodName Name of the test method (of the given class)
 	 * @return The execution results
 	 */
-	public static PioneerEngineExecutionResults executeTestMethod(Class<?> testClass, String testMethodName) {
-		return new PioneerEngineExecutionResults(testClass, testMethodName);
+	public static ExecutionResults executeTestMethod(Class<?> testClass, String testMethodName) {
+		return new ExecutionResults(testClass, testMethodName);
 	}
 
 }

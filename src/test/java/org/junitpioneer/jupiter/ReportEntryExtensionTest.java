@@ -12,22 +12,21 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junitpioneer.platform.testkit.engine.PioneerTestKit.executeTestMethod;
 
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.platform.testkit.engine.PioneerEngineExecutionResults;
-import org.junitpioneer.platform.testkit.engine.PioneerTestKit;
+import org.junitpioneer.platform.testkit.engine.ExecutionResults;
 
 public class ReportEntryExtensionTest {
 
 	@Test
 	void explicitKey_keyAndValueAreReported() {
-		List<Map<String, String>> reportEntries = PioneerTestKit
-				.executeTestMethod(ReportEntriesTest.class, "explicitKey")
-				.getPublishedTestReportEntries();
+		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "explicitKey")
+				.publishedTestReportEntries();
 
 		assertThat(reportEntries).hasSize(1);
 		Map<String, String> reportEntry = reportEntries.get(0);
@@ -37,9 +36,8 @@ public class ReportEntryExtensionTest {
 
 	@Test
 	void implicitKey_keyIsNamedValue() {
-		List<Map<String, String>> reportEntries = PioneerTestKit
-				.executeTestMethod(ReportEntriesTest.class, "implicitKey")
-				.getPublishedTestReportEntries();
+		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "implicitKey")
+				.publishedTestReportEntries();
 
 		assertThat(reportEntries).hasSize(1);
 		assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
@@ -50,28 +48,26 @@ public class ReportEntryExtensionTest {
 
 	@Test
 	void emptyKey_fails() {
-		PioneerEngineExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "emptyKey");
+		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "emptyKey");
 
-		assertThat(results.getNumberOfFailedTests()).isEqualTo(1);
-		assertThat(results.getFirstFailuresThrowableMessage())
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results.firstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value",
 					"Over many a quaint and curious volume of forgotten lore");
 	}
 
 	@Test
 	void emptyValue_fails() {
-		PioneerEngineExecutionResults results = PioneerTestKit
-				.executeTestMethod(ReportEntriesTest.class, "emptyValue");
-		assertThat(results.getNumberOfFailedTests()).isEqualTo(1);
-		assertThat(results.getFirstFailuresThrowableMessage())
+		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "emptyValue");
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results.firstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value", "While I nodded, nearly napping");
 	}
 
 	@Test
 	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
-		List<Map<String, String>> reportEntries = PioneerTestKit
-				.executeTestMethod(ReportEntriesTest.class, "repeatedAnnotation")
-				.getPublishedTestReportEntries();
+		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "repeatedAnnotation")
+				.publishedTestReportEntries();
 
 		assertAll("Verifying report entries " + reportEntries, //
 			() -> assertThat(reportEntries).hasSize(3),
