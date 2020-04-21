@@ -29,7 +29,7 @@ import org.opentest4j.TestAbortedException;
 
 public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
 
-	private static final Namespace NAMESPACE = Namespace.create("org", "codefx", "RepeatFailedTestExtension");
+	private static final Namespace NAMESPACE = Namespace.create(RepeatFailedTestExtension.class);
 
 	@Override
 	public boolean supportsTestTemplate(ExtensionContext context) {

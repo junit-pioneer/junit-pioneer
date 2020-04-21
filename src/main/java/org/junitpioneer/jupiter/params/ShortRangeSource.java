@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ArgumentsSource(RangeSourceProvider.class)
+@ArgumentsSource(RangeSourceArgumentsProvider.class)
 @RangeClass(ShortRange.class)
 public @interface ShortRangeSource {
 

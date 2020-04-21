@@ -69,20 +69,3 @@ For our own infrastructure, we rely on the following compile and test dependenci
 * Log4J (to configure logging during test runs)
 * Jimfs (as an in-memory file system for our test)
 
-### Code Style
-
-#### `Optional`
-
-[There shall be no null - use `Optional` instead.](https://blog.codefx.org/techniques/intention-revealing-code-java-8-optional/):
-
-* design code to avoid optionality wherever feasibly possible
-* in all remaining cases, prefer `Optional` over `null`
-
-#### Assertions
-
-All tests shall use [AssertJ](https://joel-costigliola.github.io/assertj/)'s assertions and not the ones build into Jupiter:
-
-* more easily discoverable API
-* more detailed assertion failures
-
-Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue(bool)` vs `assertThat(bool).isTrue()`) - that will spare us the discussion which assertion to use in a specific case.

@@ -15,11 +15,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -68,8 +63,8 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * <p>By default, this extension will use the default
  * {@link java.nio.file.FileSystem FileSystem} to create temporary directories
  * in the default location. However, you may instantiate this extension using
- * the {@link TempDirectory#createInCustomDirectory(ParentDirProvider)}
- * or {@link TempDirectory#createInCustomDirectory(Callable)}} factory methods
+ * the {@link TempDirectoryExtension#createInCustomDirectory(ParentDirProvider)}
+ * or {@link TempDirectoryExtension#createInCustomDirectory(Callable)}} factory methods
  * and register it via {@link org.junit.jupiter.api.extension.RegisterExtension @RegisterExtension}
  * to pass a custom provider to configure the parent directory for all temporary
  * directories created by this extension. This allows the use of this extension
@@ -87,41 +82,22 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * @see ParentDirProvider
  * @see Files#createTempDirectory
  */
-public class TempDirectory implements ParameterResolver {
-
-	/**
-	 * {@code TempDir} can be used to annotate a test or lifecycle method or
-	 * test class constructor parameter of type {@link Path} that should be
-	 * resolved into a temporary directory.
-	 *
-	 * <p>Since JUnit Jupiter 5.4, there's a
-	 * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory">
-	 * built-in {@code @TempDir} extension</a>. If you don't need support for
-	 * arbitrary file systems, you should consider using that instead of this
-	 * extension.
-	 *
-	 * @see TempDirectory
-	 */
-	@Target(ElementType.PARAMETER)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	public @interface TempDir {
-	}
+public class TempDirectoryExtension implements ParameterResolver {
 
 	/**
 	 * {@code ParentDirProvider} can be used to configure a custom parent
 	 * directory for all temporary directories created by the
-	 * {@link TempDirectory} extension this is used with.
+	 * {@link TempDirectoryExtension} extension this is used with.
 	 *
 	 * @see org.junit.jupiter.api.extension.RegisterExtension
-	 * @see TempDirectory#createInCustomDirectory(ParentDirProvider)
+	 * @see TempDirectoryExtension#createInCustomDirectory(ParentDirProvider)
 	 */
 	@FunctionalInterface
 	public interface ParentDirProvider {
 
 		/**
 		 * Get the parent directory for all temporary directories created by the
-		 * {@link TempDirectory} extension this is used with.
+		 * {@link TempDirectoryExtension} extension this is used with.
 		 *
 		 * @return the parent directory for all temporary directories
 		 */
@@ -138,7 +114,7 @@ public class TempDirectory implements ParameterResolver {
 	 * by using the {@link ParentDirProvider}. An instance of
 	 * {@code TempDirProvider} executes these (and possibly other) strategies.
 	 *
-	 * @see TempDirectory.ParentDirProvider
+	 * @see TempDirectoryExtension.ParentDirProvider
 	 */
 	@FunctionalInterface
 	private interface TempDirProvider {
@@ -147,13 +123,13 @@ public class TempDirectory implements ParameterResolver {
 
 	}
 
-	private static final Namespace NAMESPACE = Namespace.create(TempDirectory.class);
+	private static final Namespace NAMESPACE = Namespace.create(TempDirectoryExtension.class);
 	private static final String KEY = "temp.dir";
 	private static final String TEMP_DIR_PREFIX = "junit";
 
 	private final TempDirProvider tempDirProvider;
 
-	private TempDirectory(TempDirProvider tempDirProvider) {
+	private TempDirectoryExtension(TempDirProvider tempDirProvider) {
 		this.tempDirProvider = requireNonNull(tempDirProvider);
 	}
 
@@ -166,7 +142,7 @@ public class TempDirectory implements ParameterResolver {
 	 * extension is registered via
 	 * {@link org.junit.jupiter.api.extension.ExtendWith @ExtendWith}.
 	 */
-	public TempDirectory() {
+	public TempDirectoryExtension() {
 		this((__, ___, dirPrefix) -> createDefaultTempDir(dirPrefix));
 	}
 
@@ -182,8 +158,8 @@ public class TempDirectory implements ParameterResolver {
 	 *
 	 * @return a {@code TempDirectory} extension
 	 */
-	public static TempDirectory createInDefaultDirectory() {
-		return new TempDirectory();
+	public static TempDirectoryExtension createInDefaultDirectory() {
+		return new TempDirectoryExtension();
 	}
 
 	/**
@@ -197,9 +173,9 @@ public class TempDirectory implements ParameterResolver {
 	 * @param parentDirProvider used to configure the parent directory for the
 	 * temporary directories created by this extension
 	 */
-	public static TempDirectory createInCustomDirectory(ParentDirProvider parentDirProvider) {
+	public static TempDirectoryExtension createInCustomDirectory(ParentDirProvider parentDirProvider) {
 		requireNonNull(parentDirProvider);
-		return new TempDirectory((parameterContext, extensionContext,
+		return new TempDirectoryExtension((parameterContext, extensionContext,
 				dirPrefix) -> createCustomTempDir(parentDirProvider, parameterContext, extensionContext, dirPrefix));
 	}
 
@@ -214,7 +190,7 @@ public class TempDirectory implements ParameterResolver {
 	 * @param parentDirProvider used to configure the parent directory for the
 	 * temporary directories created by this extension
 	 */
-	public static TempDirectory createInCustomDirectory(Callable<Path> parentDirProvider) {
+	public static TempDirectoryExtension createInCustomDirectory(Callable<Path> parentDirProvider) {
 		requireNonNull(parentDirProvider);
 		return createInCustomDirectory((parameterContext, extensionContext) -> parentDirProvider.call());
 	}
