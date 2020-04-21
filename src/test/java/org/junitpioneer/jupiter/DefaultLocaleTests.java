@@ -177,7 +177,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 					"shouldFailMissingConfiguration");
 
-				assertTestFailedWithExtensionConfigurationException(results);
+				results.assertTestFailedWithExtensionConfigurationException();
 			}
 
 			@Test
@@ -186,7 +186,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailMissingCountry");
 
-				assertTestFailedWithExtensionConfigurationException(results);
+				results.assertTestFailedWithExtensionConfigurationException();
 			}
 
 			@Test
@@ -195,7 +195,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailLanguageTagAndLanguage");
 
-				assertTestFailedWithExtensionConfigurationException(results);
+				results.assertTestFailedWithExtensionConfigurationException();
 			}
 
 			@Test
@@ -204,7 +204,9 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailLanguageTagAndCountry");
 
-				assertTestFailedWithExtensionConfigurationException(results);
+//				TODO: assertThat(results).hasSingleTestFailedWith(ExtensionConfigurationException.class);
+//				TODON'T: result.hasThrowable().isInstanceOf().hasMessage() // because `hasThrowable` implicitly asserts that there is a throwable
+				results.assertTestFailedWithExtensionConfigurationException();
 			}
 
 			@Test
@@ -213,7 +215,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailLanguageTagAndVariant");
 
-				assertTestFailedWithExtensionConfigurationException(results);
+				results.assertTestFailedWithExtensionConfigurationException();
 			}
 
 		}
@@ -271,11 +273,6 @@ class DefaultLocaleTests {
 		void shouldFail() {
 		}
 
-	}
-
-	private static void assertTestFailedWithExtensionConfigurationException(ExecutionResults results) {
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
-		assertThat(results.firstFailuresThrowable()).isInstanceOf(ExtensionConfigurationException.class);
 	}
 
 }

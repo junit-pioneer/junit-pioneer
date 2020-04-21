@@ -22,16 +22,6 @@ import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 
 public class TestUtils {
 
-	static List<Map<String, String>> reportEntries(ExecutionEventRecorder recorder) {
-		return recorder
-				.eventStream()
-				.map(executionEvent -> executionEvent.getPayload(ReportEntry.class))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.map(ReportEntry::getKeyValuePairs)
-				.collect(toList());
-	}
-
 	static Map.Entry<String, String> entryOf(String key, String value) {
 		return new AbstractMap.SimpleEntry<>(key, value);
 	}

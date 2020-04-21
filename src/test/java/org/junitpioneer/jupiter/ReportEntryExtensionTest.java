@@ -70,7 +70,7 @@ public class ReportEntryExtensionTest {
 
 		assertAll("Verifying report entries " + reportEntries, //
 			() -> assertThat(reportEntries).hasSize(3),
-			() -> assertThat(reportEntries).extracting(entry -> entry.size()).containsExactlyInAnyOrder(1, 1, 1),
+			() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1, 1),
 			() -> assertThat(reportEntries)
 					.extracting(entry -> entry.get("value"))
 					.containsExactlyInAnyOrder("suddenly there came a tapping", "As if some one gently rapping",

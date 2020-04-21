@@ -11,13 +11,17 @@
 package org.junitpioneer.testkit;
 
 import static java.util.stream.Collectors.toList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
+import org.junit.platform.engine.reporting.ReportEntry;
+import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junit.platform.testkit.engine.EngineExecutionResults;
 import org.junit.platform.testkit.engine.EngineTestKit;
 import org.junit.platform.testkit.engine.Events;
@@ -137,6 +141,23 @@ public class ExecutionResults {
 				.getMessage();
 	}
 
+	public Map.Entry<String, String> singleReportEntry() {
+		List<Map<String, String>> reportEntries = reportEntries();
+		assertThat(reportEntries).hasSize(1);
+		Map<String, String> reportEntry = reportEntries.get(0);
+		assertThat(reportEntry).hasSize(1);
+		return reportEntry.entrySet().iterator().next();
+	}
+
+	public List<Map<String, String>> reportEntries() {
+		return executionResults.all().reportingEntryPublished().stream()
+				.map(event -> event.getPayload(ReportEntry.class))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.map(ReportEntry::getKeyValuePairs)
+				.collect(toList());
+	}
+
 	/**
 	 * Returns the {@link Throwable} of the first failed event.
 	 * This can be used if you expect a test to fail with a specific exception type.
@@ -153,6 +174,11 @@ public class ExecutionResults {
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable)
 				.orElseThrow(AssertionError::new);
+	}
+
+	public void assertTestFailedWithExtensionConfigurationException() {
+		assertThat(numberOfFailedTests()).isEqualTo(1);
+		assertThat(firstFailuresThrowable()).isInstanceOf(ExtensionConfigurationException.class);
 	}
 
 	/**
