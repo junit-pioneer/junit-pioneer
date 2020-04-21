@@ -10,15 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.AbstractMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import org.junit.platform.engine.reporting.ReportEntry;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 
 public class TestUtils {
 

@@ -21,7 +21,6 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.engine.reporting.ReportEntry;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junit.platform.testkit.engine.EngineExecutionResults;
 import org.junit.platform.testkit.engine.EngineTestKit;
 import org.junit.platform.testkit.engine.Events;
@@ -137,8 +136,7 @@ public class ExecutionResults {
 	 * @return message of the first failed event
 	 */
 	public String firstFailuresThrowableMessage() {
-		return firstFailuresThrowable()
-				.getMessage();
+		return firstFailuresThrowable().getMessage();
 	}
 
 	public Map.Entry<String, String> singleReportEntry() {
@@ -150,7 +148,10 @@ public class ExecutionResults {
 	}
 
 	public List<Map<String, String>> reportEntries() {
-		return executionResults.all().reportingEntryPublished().stream()
+		return executionResults
+				.all()
+				.reportingEntryPublished()
+				.stream()
 				.map(event -> event.getPayload(ReportEntry.class))
 				.filter(Optional::isPresent)
 				.map(Optional::get)

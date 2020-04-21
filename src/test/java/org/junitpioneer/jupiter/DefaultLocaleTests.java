@@ -184,7 +184,7 @@ class DefaultLocaleTests {
 			@DisplayName("should fail when variant is set but country is not")
 			void shouldFailWhenVariantIsSetButCountryIsNot() {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-						"shouldFailMissingCountry");
+					"shouldFailMissingCountry");
 
 				results.assertTestFailedWithExtensionConfigurationException();
 			}
@@ -193,7 +193,7 @@ class DefaultLocaleTests {
 			@DisplayName("should fail when languageTag and language is set")
 			void shouldFailWhenLanguageTagAndLanguageIsSet() {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-						"shouldFailLanguageTagAndLanguage");
+					"shouldFailLanguageTagAndLanguage");
 
 				results.assertTestFailedWithExtensionConfigurationException();
 			}
@@ -202,10 +202,10 @@ class DefaultLocaleTests {
 			@DisplayName("should fail when languageTag and country is set")
 			void shouldFailWhenLanguageTagAndCountryIsSet() {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-						"shouldFailLanguageTagAndCountry");
+					"shouldFailLanguageTagAndCountry");
 
-//				TODO: assertThat(results).hasSingleTestFailedWith(ExtensionConfigurationException.class);
-//				TODON'T: result.hasThrowable().isInstanceOf().hasMessage() // because `hasThrowable` implicitly asserts that there is a throwable
+				//				TODO: assertThat(results).hasSingleTestFailedWith(ExtensionConfigurationException.class);
+				//				TODON'T: result.hasThrowable().isInstanceOf().hasMessage() // because `hasThrowable` implicitly asserts that there is a throwable
 				results.assertTestFailedWithExtensionConfigurationException();
 			}
 
@@ -213,7 +213,7 @@ class DefaultLocaleTests {
 			@DisplayName("should fail when languageTag and variant is set")
 			void shouldFailWhenLanguageTagAndVariantIsSet() {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-						"shouldFailLanguageTagAndVariant");
+					"shouldFailLanguageTagAndVariant");
 
 				results.assertTestFailedWithExtensionConfigurationException();
 			}

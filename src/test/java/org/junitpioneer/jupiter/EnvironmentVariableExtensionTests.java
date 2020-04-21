@@ -16,9 +16,6 @@ import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_VALU
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +23,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("EnvironmentVariable extension")
@@ -211,7 +207,7 @@ class EnvironmentVariableExtensionTests {
 		@DisplayName("should fail when clear and set same environment variable")
 		void shouldFailWhenClearAndSetSameEnvironmentVariable() {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailWhenClearAndSetSameEnvironmentVariable");
+				"shouldFailWhenClearAndSetSameEnvironmentVariable");
 
 			results.assertTestFailedWithExtensionConfigurationException();
 		}
@@ -223,7 +219,7 @@ class EnvironmentVariableExtensionTests {
 				+ "https://github.com/junit-team/junit5/issues/2131")
 		void shouldFailWhenClearSameEnvironmentVariableTwice() {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailWhenClearSameEnvironmentVariableTwice");
+				"shouldFailWhenClearSameEnvironmentVariableTwice");
 
 			results.assertTestFailedWithExtensionConfigurationException();
 		}
@@ -232,7 +228,7 @@ class EnvironmentVariableExtensionTests {
 		@DisplayName("should fail when set same environment variable twice")
 		void shouldFailWhenSetSameEnvironmentVariableTwice() {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailWhenSetSameEnvironmentVariableTwice");
+				"shouldFailWhenSetSameEnvironmentVariableTwice");
 
 			results.assertTestFailedWithExtensionConfigurationException();
 		}
