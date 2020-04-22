@@ -200,6 +200,11 @@ public class ExecutionResults {
 		assertThat(firstFailuresThrowable()).isInstanceOf(ExtensionConfigurationException.class);
 	}
 
+	public void assertFailedTestHasMessage(String... messages) {
+		assertThat(numberOfFailedTests()).isEqualTo(1);
+		assertThat(firstFailuresThrowableMessage()).isEqualTo(String.join(",", messages));
+	}
+
 	/**
 	 * Returns the published report entries of all tests.
 	 *
