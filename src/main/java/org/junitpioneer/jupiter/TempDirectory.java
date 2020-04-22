@@ -346,9 +346,11 @@ public class TempDirectory implements ParameterResolver {
 				path.toFile().deleteOnExit();
 			}
 			catch (UnsupportedOperationException ignore) {
-				// this exception shall be ignored by purpose this method is only called in the
-				// stream of the method "createIOExceptionWithAttachedFailures".
-				// That method overrules this "UnsupportedOperationException" anyway.
+				// If the `Path` can't be turned into a `File` (which throws the UOE),
+				// it can't be registered to be deleted when the JVM terminates.
+				// Because deleting on JVM termination is just a last ditch effort and
+				// nicety towards the user, it is entirely optional and shouldn't affect
+				// the extension's behavior.
 			}
 		}
 
