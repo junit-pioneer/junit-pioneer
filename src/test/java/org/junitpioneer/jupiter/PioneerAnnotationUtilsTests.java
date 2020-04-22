@@ -12,15 +12,13 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.test.event.ExecutionEvent;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("JUnitPioneer annotation utilities")
 class PioneerAnnotationUtilsTests {
@@ -54,39 +52,44 @@ class PioneerAnnotationUtilsTests {
 
 				@Test
 				void discoversMethodAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.class, "methodIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "method");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.class,
+								"methodIsAnnotated");
+					assertFailedTestHasMessage(results, "method");
 				}
 
 				@Test
 				void discoversRootClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.RootClassTestCases.class, "rootClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.RootClassTestCases.class,
+								"rootClassIsAnnotated");
+					assertFailedTestHasMessage(results, "root class");
 				}
 
 				@Test
 				void discoversClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.class, "classIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.class,
+								"classIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class");
 				}
 
 				@Test
 				void discoversOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.class,
-						"outerClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.class,
+								"outerClassIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class");
 				}
 
 				@Test
 				void discoversOuterOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
-						"outerClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
+								"outerClassIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class");
 				}
 
 			}
@@ -102,39 +105,44 @@ class PioneerAnnotationUtilsTests {
 
 				@Test
 				void discoversMethodAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.class, "methodIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "method", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.class,
+								"methodIsAnnotated");
+					assertFailedTestHasMessage(results, "method", "root class");
 				}
 
 				@Test
 				void discoversRootClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.RootClassTestCases.class, "rootClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.RootClassTestCases.class,
+								"rootClassIsAnnotated");
+					assertFailedTestHasMessage(results, "root class");
 				}
 
 				@Test
 				void discoversClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.class, "classIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.class,
+								"classIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class", "root class");
 				}
 
 				@Test
 				void discoversOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.class,
-						"outerClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.class,
+								"outerClassIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class", "root class");
 				}
 
 				@Test
 				void discoversOuterOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
-						"outerClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
+								"outerClassIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class", "root class");
 				}
 
 			}
@@ -156,56 +164,63 @@ class PioneerAnnotationUtilsTests {
 
 				@Test
 				void discoversMethodAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class, "methodIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "method");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
+								"methodIsAnnotated");
+					assertFailedTestHasMessage(results, "method");
 				}
 
 				@Test
 				void discoversRootClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.RootClassTestCases.class,
-						"rootClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.RootClassTestCases.class,
+								"rootClassIsAnnotated");
+					assertFailedTestHasMessage(results, "root class");
 				}
 
 				@Test
 				void discoversRepeatedMethodAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class, "methodIsRepeatablyAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "repeated", "annotation");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
+								"methodIsRepeatablyAnnotated");
+					assertFailedTestHasMessage(results, "repeated", "annotation");
 				}
 
 				@Test
 				void discoversClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.class,
-						"classIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.class,
+								"classIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class");
 				}
 
 				@Test
 				void discoversOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.class,
-						"outerClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.class,
+								"outerClassIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class");
 				}
 
 				@Test
 				void discoversOuterOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
-						"outerClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
+								"outerClassIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class");
 				}
 
 				@Test
 				void discoversRepeatedOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedRepeatableTestCases.class,
-						"outerClassIsRepeatablyAnnotatedAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "repeated", "annotation");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedRepeatableTestCases.class,
+								"outerClassIsRepeatablyAnnotatedAnnotated");
+					assertFailedTestHasMessage(results, "repeated", "annotation");
 				}
 
 			}
@@ -221,66 +236,73 @@ class PioneerAnnotationUtilsTests {
 
 				@Test
 				void discoversMethodAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class, "methodIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "method", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
+								"methodIsAnnotated");
+					assertFailedTestHasMessage(results, "method", "root class");
 				}
 
 				@Test
 				void discoversRootClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.RootClassTestCases.class,
-						"rootClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.RootClassTestCases.class,
+								"rootClassIsAnnotated");
+					assertFailedTestHasMessage(results, "root class");
 				}
 
 				@Test
 				void discoversRepeatedMethodAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class, "methodIsRepeatablyAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "repeated", "annotation", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
+								"methodIsRepeatablyAnnotated");
+					assertFailedTestHasMessage(results, "repeated", "annotation", "root class");
 				}
 
 				@Test
 				void discoversClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.class,
-						"classIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.class,
+								"classIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class", "root class");
 				}
 
 				@Test
 				void discoversOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.class,
-						"outerClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.class,
+								"outerClassIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class", "root class");
 				}
 
 				@Test
 				void discoversOuterOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
-						"outerClassIsAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "nested class", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
+								"outerClassIsAnnotated");
+					assertFailedTestHasMessage(results, "nested class", "root class");
 				}
 
 				@Test
 				void discoversRepeatedOuterClassAnnotation() {
-					ExecutionEventRecorder eventRecorder = executeTests(
-						PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedRepeatableTestCases.class,
-						"outerClassIsRepeatablyAnnotatedAnnotated");
-					assertFailedTestHasMessage(eventRecorder, "repeated", "annotation", "root class");
+					ExecutionResults results = PioneerTestKit
+							.executeTestMethod(
+								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedRepeatableTestCases.class,
+								"outerClassIsRepeatablyAnnotatedAnnotated");
+
+					assertFailedTestHasMessage(results, "repeated", "annotation", "root class");
 				}
 
 			}
 
 		}
 
-		private void assertFailedTestHasMessage(ExecutionEventRecorder eventRecorder, String... messages) {
-			List<ExecutionEvent> failed = eventRecorder.getFailedTestFinishedEvents();
-			assertThat(failed).hasSize(1);
-			assertThat(getFirstFailuresThrowable(eventRecorder).getMessage()).isEqualTo(String.join(",", messages));
+		private void assertFailedTestHasMessage(ExecutionResults results, String... messages) {
+			assertThat(results.numberOfFailedTests()).isEqualTo(1);
+			assertThat(results.firstFailuresThrowableMessage()).isEqualTo(String.join(",", messages));
 		}
 
 	}
