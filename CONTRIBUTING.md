@@ -4,6 +4,11 @@ The following guidelines were chosen very deliberately to make sure the project 
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
+* [If you're new to Open Source](#if-youre-new-to-open-source)
+* [Writing Code](writing-code)
+	* [Code Organization](code-organization)
+	* [Code Style](code-style)
+	* [Documentation](documentation)
 * [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
 	* [Branching Strategy](#branching-strategy)
 	* [Commits](#commits)
@@ -25,19 +30,72 @@ The guidelines apply to maintainers as well as contributors!
   This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
 * Whatever content you contribute will be provided under the project license(s).
 
+## If you're new to Open Source
 
-## Fixing Bugs, Developing Features
+First of all, welcome!
+We really appreciate that you consider contributing to JUnit Pioneer.
 
-This section governs how features or bug fixes are developed.
-See the next section for how to adapt to upstream changes.
+We know that this can be quite daunting at first:
+Everybody uses a vocabulary and techniques that appear quite cryptic to those not steeped in them.
+We can't fix that in a short file like this, but we want to provide some pointers to get you started.
+If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and ask us to explain it better.
 
-### Branching Strategy
+First off, like for many open source projects, contributing code changes to JUnit Pioneer should be done via pull requests from a fork.
+If you are not familiar with this concept, please have a look at the [GitHub help page](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks).
 
-By default, development happens in branches, which are merged via pull requests.
-Special cases, like fixing problems with the CI pipeline, are of course exempt from this guideline.
+## Writing Code
 
-Please make sure to give branches a meaningful name!
-As an example, the one creating this documentation was called `branching-merging-documentation`.
+We have a few guidelines on how to organize, style, and document extensions. 
+Everything related to branches, commits, and more is described [further below](#fixing-bugs-developing-features).
+
+### Code Organization
+
+Where to put types and how to name them.
+
+#### Annotations
+
+Many extensions will come with their own annotations.
+These have to be top-level types, i.e. they have to be in their own source file with the annotation's name.
+
+#### Extension Classes
+
+Classes implementing an extension's functionality should reflect that in their name:
+
+* if a class (indirectly) implements `Extension`, it should end with that word
+* if a class (indirectly) implements `ArgumentsProvider`, it should end with that word
+
+Note _should_, not _must_ - there can be exceptions if well argued.
+
+#### Namespaces
+
+Interacting with [Jupiter's extension `Store`](https://junit.org/junit5/docs/current/user-guide/#extensions-keeping-state) requires a `Namespace` instance.
+These should always be created from a class as follows:
+
+```java
+private static final Namespace NAMESPACE = Namespace.create(YourExtension.class);
+```
+
+It usually makes sense to store them in a static final field.
+
+### Code Style
+
+How to write the code itself.
+
+#### `Optional`
+
+[There shall be no `null` - use `Optional` instead](https://blog.codefx.org/techniques/intention-revealing-code-java-8-optional/):
+
+* design code to avoid optionality wherever feasibly possible
+* in all remaining cases, prefer `Optional` over `null`
+
+#### Assertions
+
+All tests shall use [AssertJ](https://joel-costigliola.github.io/assertj/)'s assertions and not the ones build into Jupiter:
+
+* more easily discoverable API
+* more detailed assertion failures
+
+Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue(bool)` vs `assertThat(bool).isTrue()`) - that will spare us the discussion which assertion to use in a specific case.
 
 ### Documentation
 
@@ -56,6 +114,20 @@ One project-specific requirement:
 
 Finally, do **not** update the `release-notes.md` file!
 This file is generated automatically.
+
+
+## Fixing Bugs, Developing Features
+
+This section governs how features or bug fixes are developed.
+See the next section for how to adapt to upstream changes.
+
+### Branching Strategy
+
+By default, development happens in branches, which are merged via pull requests.
+Special cases, like fixing problems with the CI pipeline, are of course exempt from this guideline.
+
+Please make sure to give branches a meaningful name!
+As an example, the one creating this documentation was called `branching-merging-documentation`.
 
 ### Commits
 

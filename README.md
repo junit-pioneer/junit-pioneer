@@ -50,7 +50,7 @@ We welcome contributions of all shapes and forms! 🌞
 
 * If you have an idea for an extension, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and let's discuss.
 * If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly [unassigned ones](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee) and those [marked as up for grabs](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs).
-* If you want to have a chat about JUnit Pioneer, [join our discord](https://discord.gg/6aWYe8) - we have a `#junit-pioneer` channel. 😊
+* If you want to have a chat about JUnit Pioneer, [join our discord](https://discord.gg/rHfJeCF) - we have a `#junit-pioneer` channel. 😊
 
 Before contributing, please read the [contribution guide](CONTRIBUTING.md).
 
@@ -69,20 +69,3 @@ For our own infrastructure, we rely on the following compile and test dependenci
 * Log4J (to configure logging during test runs)
 * Jimfs (as an in-memory file system for our test)
 
-### Code Style
-
-#### `Optional`
-
-[There shall be no null - use `Optional` instead.](https://blog.codefx.org/techniques/intention-revealing-code-java-8-optional/):
-
-* design code to avoid optionality wherever feasibly possible
-* in all remaining cases, prefer `Optional` over `null`
-
-#### Assertions
-
-All tests shall use [AssertJ](https://joel-costigliola.github.io/assertj/)'s assertions and not the ones build into Jupiter:
-
-* more easily discoverable API
-* more detailed assertion failures
-
-Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue(bool)` vs `assertThat(bool).isTrue()`) - that will spare us the discussion which assertion to use in a specific case.
