@@ -67,7 +67,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 							throw error;
 						});
 			case WAS_THROWN_AS_EXPECTED:
-				// The exception was thrown as expected so there is nothing to do
+				// the exception was thrown as expected so there is nothing to do
 				break;
 			case WAS_THROWN_NOT_AS_EXPECTED:
 				// An exception was thrown but of the wrong type.
