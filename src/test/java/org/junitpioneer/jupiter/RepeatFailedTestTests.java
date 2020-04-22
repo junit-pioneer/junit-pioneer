@@ -13,36 +13,37 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
 
 class RepeatFailedTestTests extends AbstractPioneerTestEngineTests {
 
 	@Test
 	void failsNever_executedOnce_passes() throws Exception {
-		ExecutionEventRecorder eventRecorder = executeTests(RepeatFailedTestTestCase.class, "failsNever");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RepeatFailedTestTestCase.class, "failsNever");
 
-		assertThat(eventRecorder.getDynamicTestRegisteredCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 	}
 
 	@Test
 	void failsOnlyOnFirstInvocation_executedTwice_passes() throws Exception {
-		ExecutionEventRecorder eventRecorder = executeTests(RepeatFailedTestTestCase.class,
-			"failsOnlyOnFirstInvocation");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RepeatFailedTestTestCase.class, "failsOnlyOnFirstInvocation");
 
-		assertThat(eventRecorder.getDynamicTestRegisteredCount()).isEqualTo(2);
-		assertThat(eventRecorder.getTestAbortedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(2);
+		assertThat(results.numberOfAbortedTests()).isEqualTo(1);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 	}
 
 	@Test
 	void failsAlways_executedThreeTimes_fails() throws Exception {
-		ExecutionEventRecorder eventRecorder = executeTests(RepeatFailedTestTestCase.class, "failsAlways");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RepeatFailedTestTestCase.class, "failsAlways");
 
-		assertThat(eventRecorder.getDynamicTestRegisteredCount()).isEqualTo(3);
-		assertThat(eventRecorder.getTestAbortedCount()).isEqualTo(2);
-		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);
+		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(3);
+		assertThat(results.numberOfAbortedTests()).isEqualTo(2);
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
 	}
 
 	// TEST CASES -------------------------------------------------------------------

@@ -130,6 +130,24 @@ public class ExecutionResults {
 	}
 
 	/**
+	 * Returns the number of dynamically registered tests.
+	 *
+	 * @return number of dynamically registered tests
+	 */
+	public long numberOfDynamicRegisteredTests() {
+		return executionResults.tests().dynamicallyRegistered().count();
+	}
+
+	/**
+	 * Returns the number of published report entries.
+	 *
+	 * @return number of published report entries
+	 */
+	public long numberOfPublishedReportEntries() {
+		return executionResults.all().reportingEntryPublished().count();
+	}
+
+	/**
 	 * Returns the message of the first failed event.
 	 * This can be used if you expect a test to fail with an exception and want to check the exception message.
 	 *
