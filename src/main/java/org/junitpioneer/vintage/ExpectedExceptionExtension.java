@@ -74,6 +74,8 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 				// It was rethrown in `handleTestExecutionException` so there is nothing to do here
 				break;
 			default:
+				// This default block can't be reached without the EXCEPTION enum is changed via reflection.
+				// So there is no test case for it.
 				throw new IllegalArgumentException("Invalid exceptionStatus");
 		}
 	}
