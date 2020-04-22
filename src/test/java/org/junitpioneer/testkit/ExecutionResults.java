@@ -85,6 +85,15 @@ public class ExecutionResults {
 	}
 
 	/**
+	 * Returns the number of started tests.
+	 *
+	 * @return number of started tests
+	 */
+	public long numberOfStartedTests() {
+		return executionResults.tests().started().count();
+	}
+
+	/**
 	 * Returns the number of failed tests.
 	 *
 	 * @return number of failed tests
@@ -193,6 +202,17 @@ public class ExecutionResults {
 				.getPayload(TestExecutionResult.class)
 				.flatMap(TestExecutionResult::getThrowable)
 				.orElseThrow(AssertionError::new);
+	}
+
+	public void assertTestFailedWithThrowableWhichContainsMessage(Class<? extends Throwable> thrown, String message) {
+		assertThat(numberOfFailedTests()).isEqualTo(1);
+		assertThat(firstFailuresThrowable()).isInstanceOf(thrown);
+		assertThat(firstFailuresThrowableMessage()).contains(message);
+	}
+
+	public void assertTestFailedWithThrowable(Class<? extends Throwable> thrown) {
+		assertThat(numberOfFailedTests()).isEqualTo(1);
+		assertThat(firstFailuresThrowable()).isInstanceOf(thrown);
 	}
 
 	public void assertTestFailedWithExtensionConfigurationException() {

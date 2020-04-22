@@ -177,7 +177,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 					"shouldFailMissingConfiguration");
 
-				results.assertTestFailedWithExtensionConfigurationException();
+				results.assertTestFailedWithThrowable(ExtensionConfigurationException.class);
 			}
 
 			@Test
