@@ -1,0 +1,6 @@
+:page-title: Standard input/output
+:page-description: JUnit Jupiter extension for catchin standard input or output.
+
+The `StdIOExtension` adds a simple way to test your classes that read from the standard
+input (`System.in`) or write to the standard output (`System.out`).
+
