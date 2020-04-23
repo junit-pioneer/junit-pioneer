@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -23,7 +22,7 @@ class PioneerAnnotationUtilsTests {
 
 	@Nested
 	@DisplayName("for annotations")
-	class AnnotationUtilsTests extends AbstractPioneerTestEngineTests {
+	class AnnotationUtilsTests {
 
 		/*
 		 * Cases covered here:

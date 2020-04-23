@@ -25,18 +25,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.platform.commons.util.PreconditionViolationException;
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEvent;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junit.platform.testkit.engine.Events;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 /**
  * Tests for the {@link RangeSourceArgumentsProvider}.
  */
-class RangeSourceArgumentsProviderTests extends AbstractPioneerTestEngineTests {
+class RangeSourceArgumentsProviderTests {
 
 	private Number[] expectedValues;
 
@@ -63,7 +58,8 @@ class RangeSourceArgumentsProviderTests extends AbstractPioneerTestEngineTests {
 	void assertAllValuesSupplied() {
 		ExecutionResults results = PioneerTestKit.executeTestClass(RangeTestCases.class);
 
-		List<Number> actualValues = results.dynamicallyRegisteredEvents()
+		List<Number> actualValues = results
+				.dynamicallyRegisteredEvents()
 				.map(e -> e.getTestDescriptor().getDisplayName())
 				.map(RangeSourceArgumentsProviderTests::displayNameToNumber)
 				.collect(Collectors.toList());
@@ -172,26 +168,34 @@ class RangeSourceArgumentsProviderTests extends AbstractPioneerTestEngineTests {
 		@Test
 		void twoAnnotations() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "twoAnnotations");
-			results.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class, "Expected exactly one annotation to provide an ArgumentSource, found 2.");
-			
+			results
+					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
+						"Expected exactly one annotation to provide an ArgumentSource, found 2.");
+
 		}
 
 		@Test
 		void zeroStep() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "zeroStep");
-			results.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class, "Illegal range. The step cannot be zero.");
+			results
+					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
+						"Illegal range. The step cannot be zero.");
 		}
 
 		@Test
 		void illegalStep() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "illegalStep");
-			results.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class, "Illegal range. There's no way to get from 10 to 0 with a step of 1.");
+			results
+					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
+						"Illegal range. There's no way to get from 10 to 0 with a step of 1.");
 		}
 
 		@Test
 		void emptyRange() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "emptyRange");
-			results.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class, "Illegal range. Equal from and to will produce an empty range.");
+			results
+					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
+						"Illegal range. Equal from and to will produce an empty range.");
 		}
 
 	}

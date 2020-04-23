@@ -217,7 +217,8 @@ public class ExecutionResults {
 		assertThat(firstFailuresThrowableMessage()).contains(message);
 	}
 
-	public void assertContainerFailedWithThrowableWhichContainsMessage(Class<? extends Throwable> thrown, String message) {
+	public void assertContainerFailedWithThrowableWhichContainsMessage(Class<? extends Throwable> thrown,
+			String message) {
 		assertThat(numberOfFailedContainers()).isEqualTo(1);
 		assertThat(firstFailuresThrowable()).isInstanceOf(thrown);
 		assertThat(firstFailuresThrowableMessage()).contains(message);

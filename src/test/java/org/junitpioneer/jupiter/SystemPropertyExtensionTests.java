@@ -19,11 +19,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("SystemProperty extension")
-class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
+class SystemPropertyExtensionTests {
 
 	@BeforeAll
 	static void globalSetUp() {
@@ -155,7 +154,7 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 	@ClearSystemProperty(key = "set prop A")
 	@SetSystemProperty(key = "set prop B", value = "new B")
 	@Nested
-	class NestedSystemPropertyTests extends AbstractPioneerTestEngineTests {
+	class NestedSystemPropertyTests {
 
 		@Nested
 		@DisplayName("without SystemProperty annotations")

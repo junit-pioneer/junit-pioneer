@@ -13,14 +13,13 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
-class RepeatFailedTestTests extends AbstractPioneerTestEngineTests {
+class RepeatFailedTestTests {
 
 	@Test
-	void failsNever_executedOnce_passes() throws Exception {
+	void failsNever_executedOnce_passes() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(RepeatFailedTestTestCase.class, "failsNever");
 
 		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
@@ -28,7 +27,7 @@ class RepeatFailedTestTests extends AbstractPioneerTestEngineTests {
 	}
 
 	@Test
-	void failsOnlyOnFirstInvocation_executedTwice_passes() throws Exception {
+	void failsOnlyOnFirstInvocation_executedTwice_passes() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RepeatFailedTestTestCase.class, "failsOnlyOnFirstInvocation");
 
@@ -38,7 +37,7 @@ class RepeatFailedTestTests extends AbstractPioneerTestEngineTests {
 	}
 
 	@Test
-	void failsAlways_executedThreeTimes_fails() throws Exception {
+	void failsAlways_executedThreeTimes_fails() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(RepeatFailedTestTestCase.class, "failsAlways");
 
 		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(3);

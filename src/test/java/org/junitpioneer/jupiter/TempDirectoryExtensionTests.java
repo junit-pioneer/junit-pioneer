@@ -47,12 +47,11 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("TempDirectory extension")
-class TempDirectoryExtensionTests extends AbstractPioneerTestEngineTests {
+class TempDirectoryExtensionTests {
 
 	@BeforeEach
 	@AfterEach

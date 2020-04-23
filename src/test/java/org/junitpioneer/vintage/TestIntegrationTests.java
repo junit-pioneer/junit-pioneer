@@ -15,18 +15,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
 import java.nio.file.InvalidPathException;
-import java.util.Optional;
 
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 /**
  * Tests the vintage {@link Test @Test} annotation by running the entire test engine.
  */
-class TestIntegrationTests  {
+class TestIntegrationTests {
 
 	@org.junit.jupiter.api.Test
 	void test_successfulTest_passes() throws Exception {
@@ -48,8 +44,8 @@ class TestIntegrationTests  {
 
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_successfulTest_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class,
-			"testWithExpectedException_successfulTest");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithExpectedException_successfulTest");
 
 		assertThat(results.numberOfStartedTests()).isEqualTo(1);
 		assertThat(results.numberOfFailedTests()).isEqualTo(1);
@@ -61,8 +57,8 @@ class TestIntegrationTests  {
 
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_exceptionThrownOfRightType_passes() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class,
-			"testWithExpectedException_exceptionThrownOfRightType");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfRightType");
 
 		assertThat(results.numberOfStartedTests()).isEqualTo(1);
 		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
@@ -70,8 +66,8 @@ class TestIntegrationTests  {
 
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_exceptionThrownOfSubtype_passes() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class,
-			"testWithExpectedException_exceptionThrownOfSubtype");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSubtype");
 
 		assertThat(results.numberOfStartedTests()).isEqualTo(1);
 		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
@@ -79,8 +75,8 @@ class TestIntegrationTests  {
 
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_exceptionThrownOfSupertype_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class,
-			"testWithExpectedException_exceptionThrownOfSupertype");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSupertype");
 
 		assertThat(results.numberOfStartedTests()).isEqualTo(1);
 		assertThat(results.numberOfFailedTests()).isEqualTo(1);
@@ -100,7 +96,8 @@ class TestIntegrationTests  {
 
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_exceedsTimeout_fails() throws Exception {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_exceedsTimeout");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithTimeout_exceedsTimeout");
 
 		assertThat(results.numberOfStartedTests()).isEqualTo(1);
 		assertThat(results.numberOfFailedTests()).isEqualTo(1);
