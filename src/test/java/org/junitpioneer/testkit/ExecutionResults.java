@@ -56,6 +56,13 @@ public class ExecutionResults {
 	}
 
 	/**
+	 * Get recorded dynamically registered events.
+	 */
+	public Events dynamicallyRegisteredEvents() {
+		return executionResults.all().dynamicallyRegistered();
+	}
+
+	/**
 	 * Get recorded events for containers.
 	 *
 	 * <p>In this context, the word "container" applies to {@link org.junit.platform.engine.TestDescriptor
@@ -206,6 +213,12 @@ public class ExecutionResults {
 
 	public void assertTestFailedWithThrowableWhichContainsMessage(Class<? extends Throwable> thrown, String message) {
 		assertThat(numberOfFailedTests()).isEqualTo(1);
+		assertThat(firstFailuresThrowable()).isInstanceOf(thrown);
+		assertThat(firstFailuresThrowableMessage()).contains(message);
+	}
+
+	public void assertContainerFailedWithThrowableWhichContainsMessage(Class<? extends Throwable> thrown, String message) {
+		assertThat(numberOfFailedContainers()).isEqualTo(1);
 		assertThat(firstFailuresThrowable()).isInstanceOf(thrown);
 		assertThat(firstFailuresThrowableMessage()).contains(message);
 	}
