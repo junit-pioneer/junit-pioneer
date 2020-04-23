@@ -48,6 +48,13 @@ public class ExecutionResults {
 				.execute();
 	}
 
+	ExecutionResults(Class<?> testClass, String testMethodName, String methodParameterTypes) {
+		executionResults = EngineTestKit
+				.engine("junit-jupiter")
+				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes))
+				.execute();
+	}
+
 	/**
 	 * Get all recorded events.
 	 */

@@ -156,7 +156,7 @@ class TempDirectoryExtensionTests {
 		@DisplayName("after test execution")
 		void deletesTempDirAfterExecution() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(DeletionTestCase.class, "test(java.nio.file.Path)");
+					.executeTestMethodWithParameterTypes(DeletionTestCase.class, "test", "java.nio.file.Path");
 
 			assertThat(results.numberOfStartedTests()).isEqualTo(1);
 			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
@@ -169,7 +169,8 @@ class TempDirectoryExtensionTests {
 		@DisplayName("and ignores deleted directory without failing")
 		void ignoresDeletedDirectory() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(DeletionTestCase.class, "testThatDeletes(java.nio.file.Path)");
+					.executeTestMethodWithParameterTypes(DeletionTestCase.class, "testThatDeletes",
+						"java.nio.file.Path");
 
 			assertThat(results.numberOfStartedTests()).isEqualTo(1);
 			assertThat(results.numberOfSucceededTests()).isEqualTo(1);

@@ -33,4 +33,17 @@ public class PioneerTestKit {
 		return new ExecutionResults(testClass, testMethodName);
 	}
 
+	/**
+	 * Returns the execution results of the given method of a given test class.
+	 *
+	 * @param testClass Name of the test class
+	 * @param testMethodName Name of the test method (of the given class)
+	 * @param methodParameterTypes Full qualified types names of the parameters (e.g. "java.nio.file.Path")
+	 * @return The execution results
+	 */
+	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
+			String methodParameterTypes) {
+		return new ExecutionResults(testClass, testMethodName, methodParameterTypes);
+	}
+
 }
