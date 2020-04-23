@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.platform.engine.test.event.ExecutionEvent;
+import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 
 public class TestUtils {
@@ -25,11 +25,10 @@ public class TestUtils {
 	static List<Map<String, String>> reportEntries(ExecutionEventRecorder recorder) {
 		return recorder
 				.eventStream()
-				.filter(event -> event.getType().equals(ExecutionEvent.Type.REPORTING_ENTRY_PUBLISHED))
-				.map(executionEvent -> executionEvent.getPayload(org.junit.platform.engine.reporting.ReportEntry.class))
+				.map(executionEvent -> executionEvent.getPayload(ReportEntry.class))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
-				.map(org.junit.platform.engine.reporting.ReportEntry::getKeyValuePairs)
+				.map(ReportEntry::getKeyValuePairs)
 				.collect(toList());
 	}
 

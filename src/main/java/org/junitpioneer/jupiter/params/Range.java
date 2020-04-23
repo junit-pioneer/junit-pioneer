@@ -17,7 +17,7 @@ import org.junit.platform.commons.util.PreconditionViolationException;
 import org.junit.platform.commons.util.Preconditions;
 
 /**
- * An iterator for numerical ranges, used as the backing logic for {@link RangeSourceProvider}.
+ * An iterator for numerical ranges, used as the backing logic for {@link RangeSourceArgumentsProvider}.
  * @param <N> The numerical type used by the range.
  */
 abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {

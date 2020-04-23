@@ -31,9 +31,9 @@ import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 /**
- * Tests for the {@link RangeSourceProvider}.
+ * Tests for the {@link RangeSourceArgumentsProvider}.
  */
-class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
+class RangeSourceArgumentsProviderTests extends AbstractPioneerTestEngineTests {
 
 	private Number[] expectedValues;
 
@@ -64,7 +64,7 @@ class RangeSourceProviderTests extends AbstractPioneerTestEngineTests {
 				.eventStream()
 				.filter(e -> e.getType() == ExecutionEvent.Type.DYNAMIC_TEST_REGISTERED)
 				.map(e -> e.getTestDescriptor().getDisplayName())
-				.map(RangeSourceProviderTests::displayNameToNumber)
+				.map(RangeSourceArgumentsProviderTests::displayNameToNumber)
 				.collect(Collectors.toList());
 
 		assertThat(actualValues).containsExactlyInAnyOrder(expectedValues);
