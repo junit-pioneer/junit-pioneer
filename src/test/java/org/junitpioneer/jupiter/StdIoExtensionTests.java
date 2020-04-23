@@ -29,7 +29,6 @@ import org.junitpioneer.jupiter.StdIOExtension.StdOut;
 /**
  * Shakespeare's Sonnet VII is in the public domain.
  */
-@ExtendWith(StdIOExtension.class)
 @DisplayName("StdIOExtension ")
 public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 
@@ -79,37 +78,44 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 
 	}
 
-	@Test
-	@DisplayName("catches the output on the standard out")
-	void catchesOut(StdOut out) {
-		app.write();
+	@Nested
+	@ExtendWith(StdIOExtension.class)
+	class ExtendWithTests {
 
-		assertThat(out.capturedLines())
-				.containsExactly("Lo! in the orient when the gracious light",
-					"Lifts up his burning head, each under eye");
-	}
+		@Test
+		@DisplayName("catches the output on the standard out as lines")
+		void catchesOut(StdOut out) {
+			app.write();
 
-	@Test
-	@DisplayName("catches the input from the standard in")
-	@StdInSource({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
-	void catchesIn(StdIn in) throws IOException {
-		app.read();
+			assertThat(out.capturedLines())
+					.containsExactly("Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye");
+		}
 
-		assertThat(in.capturedLines())
-				.containsExactly("Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;");
-	}
+		@Test
+		@DisplayName("catches the input from the standard in")
+		@StdInSource({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
+		void catchesIn(StdIn in) throws IOException {
+			app.read();
 
-	@Test
-	@DisplayName("catches the input from the standard in and the output on the standard out")
-	@StdInSource({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
-	void catchesBoth(StdIn in, StdOut out) throws IOException {
-		app.readAndWrite();
+			assertThat(in.capturedLines())
+					.containsExactly("Doth homage to his new-appearing sight",
+						"Serving with looks his sacred majesty;");
+		}
 
-		assertThat(in.capturedLines())
-				.containsExactly("And having climbed the steep-up heavenly hill,",
-					"Resembling strong youth in his middle age,");
-		assertThat(out.capturedLines())
-				.containsExactly("Yet mortal looks adore his beauty still,", "Attending on his golden pilgrimage:");
+		@Test
+		@DisplayName("catches the input from the standard in and the output on the standard out")
+		@StdInSource({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
+		void catchesBoth(StdIn in, StdOut out) throws IOException {
+			app.readAndWrite();
+
+			assertThat(in.capturedLines())
+					.containsExactly("And having climbed the steep-up heavenly hill,",
+						"Resembling strong youth in his middle age,");
+			assertThat(out.capturedLines())
+					.containsExactly("Yet mortal looks adore his beauty still,", "Attending on his golden pilgrimage:");
+		}
+
 	}
 
 	@ExtendWith(StdIOExtension.class)
@@ -140,7 +146,8 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 	private static class BasicCommandLineApp {
 
 		public void write() {
-			System.out.println("Lo! in the orient when the gracious light");
+			System.out.print("Lo! in the orient ");
+			System.out.println("when the gracious light");
 			System.out.println("Lifts up his burning head, each under eye");
 		}
 

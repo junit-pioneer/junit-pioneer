@@ -4,3 +4,55 @@
 The `StdIOExtension` adds a simple way to test your classes that read from the standard
 input (`System.in`) or write to the standard output (`System.out`).
 
+== How to use the extension
+
+You annotate your test class with `@ExtendWith(StdIOExtension.class)`. This lets JUnit know
+that you would like to use the special parameters provided by the extension in your tests.
+Then, when writing your tests, you can pass two arguments provided by the extension:
+
+StdIn::
+This is for catching input from the standard in. If you are using this parameter, you have to
+annotate you method with `@StdInSource` which takes a String array and provides the values that
+you would like to read instead of waiting for input on the standard input.
+
+This would look like something like this:
+
+[source,java]
+----
+    @ExtendWith(StdIOExtension.class)
+    public class StandardInputOutputTests {
+        ...
+    @Test
+    @StdInSource({"Hello", "World"})
+    void test(StdIn in) {
+        ...
+
+----
+
+StdOut::
+This is for catching output going to the standard out. This parameter does not require any special annotations
+(except for the `@ExtendWith(StdIOExtension.class)` on your test class).
+
+This would look like something like this:
+
+[source,java]
+----
+    @ExtendWith(StdIOExtension.class)
+    public class StandardInputOutputTests {
+        ...
+    @Test
+    void test(StdOut out) {
+        ...
+
+----
+
+After calling your method that reads or writes to the standard in or out, you can call
+`capturedLines()` (available in both `StdIn` and `StdOut`) to verify the interactions.
+This contains the redirected in- or output as lines.
+
+For example, after calling `System.out.print("Hello")` and `System.out.println("World")`,
+the `capturedLines()` method would contain "HelloWorld".
+
+Please note that some readers might read all lines from your `@StdInSource` eagerly,
+even if you only wanted to read a single line. This is the specific characteristic
+of that reader and is not considered a bug within the extension.

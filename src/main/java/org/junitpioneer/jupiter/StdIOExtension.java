@@ -20,7 +20,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Optional;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -41,10 +40,22 @@ public class StdIOExtension implements ParameterResolver {
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		Class<?> parameterType = parameterContext.getParameter().getType();
 		if (parameterType == StdOut.class) {
-			return new StdOut();
+			return getOut();
 		}
 		String[] source = getSourceValuesFromAnnotation(extensionContext);
-		return new StdIn(source);
+		return getIn(source);
+	}
+
+	private Object getIn(String[] source) {
+		StdIn in = new StdIn(source);
+		System.setIn(in);
+		return in;
+	}
+
+	private Object getOut() {
+		StdOut out = new StdOut();
+		System.setOut(new PrintStream(out));
+		return out;
 	}
 
 	private String[] getSourceValuesFromAnnotation(ExtensionContext context) {
@@ -60,10 +71,6 @@ public class StdIOExtension implements ParameterResolver {
 	public static class StdOut extends OutputStream {
 
 		Writer writer = new StringWriter();
-
-		public StdOut() {
-			System.setOut(new PrintStream(this));
-		}
 
 		@Override
 		public void write(int i) throws IOException {
@@ -88,7 +95,6 @@ public class StdIOExtension implements ParameterResolver {
 
 		public StdIn(String... values) {
 			reader = new StringReader(String.join(SEPARATOR, values));
-			System.setIn(this);
 		}
 
 		@Override
