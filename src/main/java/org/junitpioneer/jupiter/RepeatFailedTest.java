@@ -37,10 +37,12 @@ import org.junit.jupiter.api.parallel.Execution;
  * Each ignored/aborted or failed execution includes the underlying
  * exception.
  *
+ *
  * <p>{@code @RepeatFailedTest} has a number of limitations:
  *
  * <ul>
  *     <li>it can only be applied to methods</li>
+ *     <li>methods annotated with this annotation <b>MUST NOT</b> be annotated with {@code @Test} to avoid multiple executions!</li>
  *     <li>it can't be used with other {@link TestTemplate}-based mechanisms
  *         like {@code org.junit.jupiter.api.RepeatedTest @RepeatedTest} or
  *         {@code org.junit.jupiter.params.ParameterizedTest @ParameterizedTest}</li>

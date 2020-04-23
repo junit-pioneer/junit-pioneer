@@ -7,7 +7,8 @@ Such tests make a suite fragile and it makes sense to try and avoid them, but if
 
 == Basic Use
 
-`@RepeatFailedTest(n)` is used instead of `@Test` or other such annotations (e.g. `@RepeatedTest`).
+`@RepeatFailedTest(n)` is used *instead* of `@Test` or other such annotations (e.g. `@RepeatedTest`).
+If combined with `@Test` or other such annotations the test gets executed once for every used annotation!
 The attribute `n` specifies how often the test is executed before giving up.
 
 ```java
