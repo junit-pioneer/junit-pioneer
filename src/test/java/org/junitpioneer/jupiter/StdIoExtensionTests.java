@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,6 +26,9 @@ import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.jupiter.StdIOExtension.StdIn;
 import org.junitpioneer.jupiter.StdIOExtension.StdOut;
 
+/**
+ * Shakespeare's Sonnet VII is in the public domain.
+ */
 @ExtendWith(StdIOExtension.class)
 @DisplayName("StdIOExtension ")
 public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
@@ -38,17 +40,6 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 	class ConfigurationTests {
 
 		@Test
-		@DisplayName("fails if parameter is not annotated with @StdIntercept")
-		void needsAnnotation() {
-			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
-				"noAnnotation", StdIn.class);
-
-			assertThat(getFirstFailuresThrowable(recorder))
-					.isInstanceOf(ParameterResolutionException.class)
-					.hasMessageContaining("No ParameterResolver registered for");
-		}
-
-		@Test
 		@DisplayName("fails if the parameter type is not StdIn or StdOut")
 		void needsType() {
 			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
@@ -56,71 +47,89 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 
 			assertThat(getFirstFailuresThrowable(recorder))
 					.isInstanceOf(ParameterResolutionException.class)
-					.hasMessageContaining("Can only resolve parameter of type %s or %s but was:",
-						StdOut.class.getName(), StdIn.class.getName());
+					.hasMessageContaining("No ParameterResolver registered");
+		}
+
+		@Test
+		@DisplayName("fails if the parameter is StdIn but test method is not annotated with @StdInSource")
+		void needsAnnotation() {
+			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
+				"noAnnotation", StdIn.class);
+
+			assertThat(getFirstFailuresThrowable(recorder))
+					.isInstanceOf(ParameterResolutionException.class)
+					.hasMessageContainingAll("Can not resolve parameter", "because test method is missing annotation");
 		}
 
 		@Test
 		@DisplayName("resolves parameter for type StdIn and annotation")
 		void goodConfig_stdIn() {
-			try {
-				ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(
-					StdIOExtensionConfigurations.class, "resolveStdIn", StdIn.class);
-				assertThat(recorder.getTestStartedCount()).isGreaterThan(0);
-			}
-			catch (Throwable ignored) {
-				fail();
-			}
+			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
+				"resolveStdIn", StdIn.class);
+			assertThat(recorder.getTestStartedCount()).isGreaterThan(0);
 		}
 
 		@Test
-		@DisplayName("resolves parameter for type StdOut and annotation")
+		@DisplayName("resolves parameter for type StdOut")
 		void goodConfig_stdOut() {
-			try {
-				ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(
-					StdIOExtensionConfigurations.class, "resolveStdOut", StdOut.class);
-				assertThat(recorder.getTestStartedCount()).isGreaterThan(0);
-			}
-			catch (Throwable ignored) {
-				fail();
-			}
+			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
+				"resolveStdOut", StdOut.class);
+			assertThat(recorder.getTestStartedCount()).isGreaterThan(0);
 		}
 
 	}
 
 	@Test
 	@DisplayName("catches the output on the standard out")
-	void catchesOut(@StdIntercept StdOut out) {
+	void catchesOut(StdOut out) {
 		app.write();
 
-		assertThat(out.capturedLines()).containsExactly("Hello", "World!");
+		assertThat(out.capturedLines())
+				.containsExactly("Lo! in the orient when the gracious light",
+					"Lifts up his burning head, each under eye");
 	}
 
 	@Test
 	@DisplayName("catches the input from the standard in")
-	void catchesIn(@StdIntercept({ "Hello", "World!" }) StdIn in) throws IOException {
+	@StdInSource({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
+	void catchesIn(StdIn in) throws IOException {
 		app.read();
 
-		assertThat(in.capturedLines()).containsExactly("Hello", "World!");
+		assertThat(in.capturedLines())
+				.containsExactly("Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;");
+	}
+
+	@Test
+	@DisplayName("catches the input from the standard in and the output on the standard out")
+	@StdInSource({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
+	void catchesBoth(StdIn in, StdOut out) throws IOException {
+		app.readAndWrite();
+
+		assertThat(in.capturedLines())
+				.containsExactly("And having climbed the steep-up heavenly hill,",
+					"Resembling strong youth in his middle age,");
+		assertThat(out.capturedLines())
+				.containsExactly("Yet mortal looks adore his beauty still,", "Attending on his golden pilgrimage:");
 	}
 
 	@ExtendWith(StdIOExtension.class)
 	static class StdIOExtensionConfigurations {
 
 		@Test
+		void badType(Boolean b) {
+		}
+
+		@Test
 		void noAnnotation(StdIn in) {
 		}
 
 		@Test
-		void badType(@StdIntercept Boolean b) {
+		@StdInSource("value")
+		void resolveStdIn(StdIn in) {
 		}
 
 		@Test
-		void resolveStdIn(@StdIntercept StdIn in) {
-		}
-
-		@Test
-		void resolveStdOut(@StdIntercept StdOut out) {
+		void resolveStdOut(StdOut out) {
 		}
 
 	}
@@ -131,8 +140,8 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 	private static class BasicCommandLineApp {
 
 		public void write() {
-			System.out.println("Hello");
-			System.out.println("World!");
+			System.out.println("Lo! in the orient when the gracious light");
+			System.out.println("Lifts up his burning head, each under eye");
 		}
 
 		public void read() throws IOException {
@@ -141,6 +150,14 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 			System.out.println(read);
 			read = reader.readLine();
 			System.out.println(read);
+		}
+
+		public void readAndWrite() throws IOException {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			String read = reader.readLine();
+			System.out.println("Yet mortal looks adore his beauty still,");
+			read = reader.readLine();
+			System.out.println("Attending on his golden pilgrimage:");
 		}
 
 	}

@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.lang.String.format;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,6 +20,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Optional;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -30,29 +33,28 @@ public class StdIOExtension implements ParameterResolver {
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		return parameterContext.isAnnotated(StdIntercept.class);
+		Class<?> type = parameterContext.getParameter().getType();
+		return type == StdIn.class || type == StdOut.class;
 	}
 
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		Class<?> parameterType = parameterContext.getParameter().getType();
-		StdIntercept stdIntercept = getInterceptAnnotation(parameterContext);
 		if (parameterType == StdOut.class) {
 			return new StdOut();
 		}
-		if (parameterType == StdIn.class) {
-			return new StdIn(stdIntercept.value());
-		}
-		throw new ParameterResolutionException("Can only resolve parameter of type " + StdOut.class.getName() + " or "
-				+ StdIn.class.getName() + " but was: " + parameterType.getName());
-
+		String[] source = getSourceValuesFromAnnotation(extensionContext);
+		return new StdIn(source);
 	}
 
-	private StdIntercept getInterceptAnnotation(ParameterContext context) {
+	private String[] getSourceValuesFromAnnotation(ExtensionContext context) {
 		return context
-				.findAnnotation(StdIntercept.class)
+				.getTestMethod()
+				.map(method -> method.getAnnotation(StdInSource.class))
+				.map(StdInSource::value)
 				.orElseThrow(() -> new ParameterResolutionException(
-					"This can never happen because this extension only supplies parameters if the parameter is annotated with @StdIntercept"));
+					format("Can not resolve parameter %s because test method is missing annotation %s",
+						StdIn.class.getName(), StdInSource.class.getName())));
 	}
 
 	public static class StdOut extends OutputStream {
