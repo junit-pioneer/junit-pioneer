@@ -10,13 +10,42 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.METHOD;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.parallel.Execution;
 import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.AbstractPioneerTestEngineTests;
 
 class RepeatFailedTestTests extends AbstractPioneerTestEngineTests {
+
+	@Test
+	void invalidConfigurationWithTest() {
+		ExecutionEventRecorder eventRecorder = executeTests(RepeatFailedTestTestCase.class,
+			"invalidConfigurationWithTest");
+
+		assertThat(eventRecorder.getDynamicTestRegisteredCount()).isEqualTo(1);
+		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(2);
+		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(2);
+	}
+
+	@Test
+	void executedOneEvenWithTwoTestTemplatesTest() {
+		ExecutionEventRecorder eventRecorder = executeTests(RepeatFailedTestTestCase.class,
+			"executedOneEvenWithTwoTestTemplates");
+
+		assertThat(eventRecorder.getDynamicTestRegisteredCount()).isEqualTo(1);
+		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
+		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+	}
 
 	@Test
 	void failsNever_executedOnce_passes() throws Exception {
@@ -51,6 +80,16 @@ class RepeatFailedTestTests extends AbstractPioneerTestEngineTests {
 
 		private static int FAILS_ONLY_ON_FIRST_INVOCATION;
 
+		@Test
+		@RepeatFailedTest(3)
+		void invalidConfigurationWithTest() {
+		}
+
+		@DummyTestTemplate
+		@RepeatFailedTest(3)
+		void executedOneEvenWithTwoTestTemplates() {
+		}
+
 		@RepeatFailedTest(3)
 		void failsNever() {
 		}
@@ -67,6 +106,16 @@ class RepeatFailedTestTests extends AbstractPioneerTestEngineTests {
 		void failsAlways() {
 			throw new IllegalArgumentException();
 		}
+
+	}
+
+	@Target({ METHOD, ANNOTATION_TYPE })
+	@Retention(RetentionPolicy.RUNTIME)
+	// the extension is not thread-safe, so it forces execution of all repetitions
+	// onto the same thread
+	@Execution(SAME_THREAD)
+	@TestTemplate
+	public @interface DummyTestTemplate {
 
 	}
 
