@@ -5,18 +5,24 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
 * [If you're new to Open Source](#if-youre-new-to-open-source)
-* [Writing Code](writing-code)
-	* [Code Organization](code-organization)
-	* [Code Style](code-style)
-	* [Documentation](documentation)
+* [Writing Code](#writing-code)
+	* [Code Organization](#code-organization)
+	* [Code Style](#code-style)
+	* [Documentation](#documentation)
 * [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
 	* [Branching Strategy](#branching-strategy)
 	* [Commits](#commits)
 	* [Pull Requests](#pull-requests)
 	* [Merging](#merging)
+	* [Commit Message](#commit-message)
 * [Updating Dependency on JUnit 5](#updating-dependency-on-junit-5)
 * [Publishing](#publishing)
 	* [Versioning](#versioning)
+* [Pioneer Maintainers](#pioneer-maintainers)
+	* [What We Do](#what-we-do)
+	* [When We Do It](#when-we-do-it)
+	* [Communication](#communication)
+	* [Where The Buck Stops](#where-the-buck-stops)
 
 The guidelines apply to maintainers as well as contributors!
 
