@@ -311,7 +311,7 @@ These are the channels we use to communicate with one another, our contributors,
 3. Git commit messages
 4. issues/PRs [on GitHub](https://github.com/junit-pioneer/junit-pioneer)
 5. _#junit-pioneer_ channel [in Discord](https://discord.gg/rHfJeCF)
-6. team calls
+6. team calls (organized in said Discord)
 7. occasional [Twitch streams](https://twitch.tv/nipafx)
 
 Whatever channel is being used to discuss a topic, the goal is always to push a summary and the conclusion of that conversation up the list as far as possible.
