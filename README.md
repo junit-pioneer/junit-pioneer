@@ -94,7 +94,7 @@ In lexicographic order, these are:
 
 ### Contributors
 
-JUnit Pioneer, as small as it is, would be much smaller without kind-hearted souls contributing their time, energy, and skills.
+JUnit Pioneer, as small as it is, would be much smaller without kind souls contributing their time, energy, and skills.
 Thank you for your efforts! 🙏
 
 The least we can do is to thank them and list their accomplishments here (in lexicographic order).
