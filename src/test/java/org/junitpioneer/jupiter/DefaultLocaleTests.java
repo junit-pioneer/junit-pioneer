@@ -204,8 +204,6 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 					"shouldFailLanguageTagAndCountry");
 
-				//				TODO: assertThat(results).hasSingleTestFailedWith(ExtensionConfigurationException.class);
-				//				TODON'T: result.hasThrowable().isInstanceOf().hasMessage() // because `hasThrowable` implicitly asserts that there is a throwable
 				results.assertTestFailedWithExtensionConfigurationException();
 			}
 
