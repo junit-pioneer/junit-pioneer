@@ -15,116 +15,100 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
 import java.nio.file.InvalidPathException;
-import java.util.Optional;
 
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
 
 /**
  * Tests the vintage {@link Test @Test} annotation by running the entire test engine.
  */
-class TestIntegrationTests extends AbstractPioneerTestEngineTests {
+class TestIntegrationTests {
 
 	@org.junit.jupiter.api.Test
 	void test_successfulTest_passes() throws Exception {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class, "test_successfulTest");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_successfulTest");
 
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(1);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 	}
 
 	@org.junit.jupiter.api.Test
 	void test_exceptionThrown_fails() throws Exception {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class, "test_exceptionThrown");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_exceptionThrown");
 
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(1);
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
 	}
 
 	// expected exception
 
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_successfulTest_fails() {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class,
-			"testWithExpectedException_successfulTest");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithExpectedException_successfulTest");
 
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(1);
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
 
-		Optional<String> failedTestMessage = eventRecorder
-				.getFailedTestFinishedEvents()
-				.get(0)
-				.getPayload(TestExecutionResult.class)
-				.flatMap(TestExecutionResult::getThrowable)
-				.map(Throwable::getMessage);
+		String failedTestMessage = results.firstFailuresThrowableMessage();
 		String expectedMessage = format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class);
 		assertThat(failedTestMessage).contains(expectedMessage);
 	}
 
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_exceptionThrownOfRightType_passes() {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class,
-			"testWithExpectedException_exceptionThrownOfRightType");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfRightType");
 
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(1);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 	}
 
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_exceptionThrownOfSubtype_passes() {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class,
-			"testWithExpectedException_exceptionThrownOfSubtype");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSubtype");
 
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(1);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 	}
 
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_exceptionThrownOfSupertype_fails() {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class,
-			"testWithExpectedException_exceptionThrownOfSupertype");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSupertype");
 
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(1);
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
 
-		Optional<Throwable> failedTestThrowable = eventRecorder
-				.getFailedTestFinishedEvents()
-				.get(0)
-				.getPayload(TestExecutionResult.class)
-				.flatMap(TestExecutionResult::getThrowable);
-		assertThat(failedTestThrowable).containsInstanceOf(RuntimeException.class);
+		results.assertTestFailedWithThrowable(RuntimeException.class);
 	}
 
 	// timeout
 
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_belowTimeout_passes() {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class, "testWithTimeout_belowTimeout");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowTimeout");
 
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(1);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 	}
 
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_exceedsTimeout_fails() throws Exception {
-		ExecutionEventRecorder eventRecorder = executeTests(TestTestCase.class, "testWithTimeout_exceedsTimeout");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCase.class, "testWithTimeout_exceedsTimeout");
 
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestFailedCount()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(1);
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
 
-		Optional<String> failedTestMessage = eventRecorder
-				.getFailedTestFinishedEvents()
-				.get(0)
-				.getPayload(TestExecutionResult.class)
-				.flatMap(TestExecutionResult::getThrowable)
-				.map(Throwable::getMessage);
+		String failedTestMessage = results.firstFailuresThrowableMessage();
 		String expectedMessage = String
 				.format(TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1, 10);
 		// the message contains the actual run time, which is unpredictable, so it has to be cut off for the assertion
 		String expectedKnownPrefix = expectedMessage.substring(0, expectedMessage.length() - 6);
-		assertThat(failedTestMessage).isNotEmpty();
-		assertThat(failedTestMessage.get()).startsWith(expectedKnownPrefix);
+		assertThat(failedTestMessage).isNotNull();
+		assertThat(failedTestMessage).startsWith(expectedKnownPrefix);
 	}
 
 	// TEST CASES -------------------------------------------------------------------

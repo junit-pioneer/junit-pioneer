@@ -13,9 +13,8 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_KEY;
 import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_VALUE;
-
-import java.util.List;
-import java.util.Map;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,14 +23,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEvent;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("EnvironmentVariable extension")
-class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
+class EnvironmentVariableExtensionTests {
 
 	@BeforeAll
 	static void globalSetUp() {
@@ -167,7 +162,7 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 	@ClearEnvironmentVariable(key = "set prop A")
 	@SetEnvironmentVariable(key = "set prop B", value = "new B")
 	@Nested
-	class NestedEnvironmentVariableTests extends AbstractPioneerTestEngineTests {
+	class NestedEnvironmentVariableTests {
 
 		@Nested
 		@DisplayName("without EnvironmentVariable annotations")
@@ -211,10 +206,10 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 		@Test
 		@DisplayName("should fail when clear and set same environment variable")
 		void shouldFailWhenClearAndSetSameEnvironmentVariable() {
-			ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 				"shouldFailWhenClearAndSetSameEnvironmentVariable");
 
-			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			results.assertTestFailedWithExtensionConfigurationException();
 		}
 
 		@Test
@@ -223,25 +218,25 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 				+ "deduplicates identical annotations like the ones required for this test: "
 				+ "https://github.com/junit-team/junit5/issues/2131")
 		void shouldFailWhenClearSameEnvironmentVariableTwice() {
-			ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 				"shouldFailWhenClearSameEnvironmentVariableTwice");
 
-			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			results.assertTestFailedWithExtensionConfigurationException();
 		}
 
 		@Test
 		@DisplayName("should fail when set same environment variable twice")
 		void shouldFailWhenSetSameEnvironmentVariableTwice() {
-			ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 				"shouldFailWhenSetSameEnvironmentVariableTwice");
 
-			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			results.assertTestFailedWithExtensionConfigurationException();
 		}
 
 	}
 
 	@Nested
-	class ReportWarningTests extends AbstractPioneerTestEngineTests {
+	class ReportWarningTests {
 
 		@BeforeEach
 		void resetWarning() {
@@ -250,27 +245,23 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 
 		@Test
 		void shouldNotReportWarningIfExtensionNotUsed() {
-			ExecutionEventRecorder eventRecorder = executeTests(ReportWarningTestCases.class, "testWithoutExtension");
+			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithoutExtension");
 
-			assertThat(eventRecorder.getReportingEntryPublishedCount()).isEqualTo(0);
+			assertThat(results.reportEntries()).hasSize(0);
 		}
 
 		@Test
 		void shouldReportWarningIfExtensionUsed() {
-			ExecutionEventRecorder eventRecorder = executeTests(ReportWarningTestCases.class, "testWithExtension");
+			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithExtension");
 
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(eventRecorder);
-			assertThat(reportEntries).hasSize(1);
-			Map<String, String> reportEntry = reportEntries.get(0);
-			assertThat(reportEntry).containsExactly(TestUtils.entryOf(WARNING_KEY, WARNING_VALUE));
+			assertThat(results.singleReportEntry()).isEqualTo(TestUtils.entryOf(WARNING_KEY, WARNING_VALUE));
 		}
 
 		@Test
 		void shouldReportWarningExactlyOnce() {
-			ExecutionEventRecorder eventRecorder = executeTests(ReportWarningTestCases.class);
+			ExecutionResults results = executeTestClass(ReportWarningTestCases.class);
 
-			List<Map<String, String>> reportEntries = TestUtils.reportEntries(eventRecorder);
-			assertThat(reportEntries).hasSize(1);
+			assertThat(results.reportEntries()).hasSize(1);
 		}
 
 	}
@@ -314,16 +305,6 @@ class EnvironmentVariableExtensionTests extends AbstractPioneerTestEngineTests {
 		void shouldFailWhenSetSameEnvironmentVariableTwice() {
 		}
 
-	}
-
-	private static void assertExtensionConfigurationFailure(List<ExecutionEvent> failedTestFinishedEvents) {
-		assertThat(failedTestFinishedEvents.size()).isEqualTo(1);
-		Throwable thrown = failedTestFinishedEvents
-				.get(0)
-				.getPayload(TestExecutionResult.class)
-				.flatMap(TestExecutionResult::getThrowable)
-				.orElseThrow(AssertionError::new);
-		assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
 	}
 
 }
