@@ -77,7 +77,8 @@ In lexicographic order, these are:
 
 <dl>
 	<dt>Matthias Bünger aka <a href="https://github.com/Bukama">Bukama</a></dt>
-	<dd>Maintainer since April 2020.</dd>
+	<dd>(Always tries to become a better) Java developer, loves testing and reads <a href="https://twitter.com/bukamabish">tweets</a>.
+		Became a maintainer in April 2020, after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
 
 	<dt>Nicolai Parlog aka  <a href="https://github.com/nicolaiparlog">nicolaiparlog</a></dt>
 	<dd>Java enthusiast with a passion for learning and sharing.
