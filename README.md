@@ -82,7 +82,7 @@ In lexicographic order, these are:
 	<dt>Nicolai Parlog aka  <a href="https://github.com/nicolaiparlog">nicolaiparlog</a></dt>
 	<dd>Java enthusiast with a passion for learning and sharing.
 		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://codefx.org">codefx.org</a>.
-		That aside, he's best known for his haircut.
+		That aside, he's best known for his head decor.
 		He co-founded the project in November 2016 and has maintained it ever since (although often very negligently).</dd>
 	
 	<dt>Simon Schrottner aka <a href="https://github.com/aepfli">aepfli</a></dt>
@@ -103,7 +103,7 @@ The least we can do is to thank them and list their accomplishments here (in lex
 
 * [Allon Murienik](https://github.com/mureinik) contributed [the range sources](https://junit-pioneer.org/docs/range-sources/) (#44 / #123)
 * [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133)
-* [Hancho 2009](https://github.com/Hancho2009) controbuted the environment variable extension (#167 / #174)
+* [Hancho 2009](https://github.com/Hancho2009) contributed the environment variable extension (#167 / #174)
 * [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
 * [Matthias Bünger](https://github.com/Bukama) opened, vetted, and groomed countless issues and PRs and contributed multiple refactorings (e.g. #165 / #168) and fixes (e.g. #190 / #200) before getting promoted to maintainer
 * [Mihály Verhás](https://github.com/Michael1993) commented on multiple issues and PRs

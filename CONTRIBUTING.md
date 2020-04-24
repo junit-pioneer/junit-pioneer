@@ -42,7 +42,7 @@ If anything that follows in this document isn't clear, [open an issue](https://g
 
 * First off, like for many open source projects, contributing code changes to JUnit Pioneer should be done via pull requests from a fork.
 If you are not familiar with this concept, please have a look at the [GitHub help page](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks).
-* `RAEDME.md` and `CONTRIBUTING.md` are written in Markdown.
+* `README.md` and `CONTRIBUTING.md` are written in Markdown.
 For information on how to use it, see [GitHub's documentation](https://guides.github.com/features/mastering-markdown/).
 * The [feature documentation](#documentation) is written in AsciiDoctor.
 For information on how to use it, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
@@ -129,7 +129,7 @@ One aspect that's relevant to contributors is the list of contributions at the e
 
 * `$NAME` can be your actual name or your GitHub account name
 * `$GITHUB-URL` is the URL to your GitHub account
-* `$CONTRIBUTIONS` is a list of one or two contributions (possibly with an appended "and more" of there are more)
+* `$CONTRIBUTIONS` is a list of one or two contributions (possibly with an appended "and more" if there are more)
 	* for new features, link to the feature documentation on [junit-pioneer.org](https://junit-pioneer.org)
 	* include issue and pull request IDs in the form `(#123 / #125)`
 
