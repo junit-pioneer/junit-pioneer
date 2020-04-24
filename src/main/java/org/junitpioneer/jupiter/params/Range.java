@@ -42,7 +42,7 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 	 * Asserts the range is valid.
 	 * @throws PreconditionViolationException if the range is not valid
 	 */
-	void validate() throws PreconditionViolationException {
+	void validate() {
 		Preconditions.condition(!step.equals(getZero()), "Illegal range. The step cannot be zero.");
 
 		Preconditions

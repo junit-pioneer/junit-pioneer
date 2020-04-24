@@ -172,7 +172,7 @@ class TestIntegrationTests extends AbstractPioneerTestEngineTests {
 
 		@Test(timeout = 1)
 		void testWithTimeout_exceedsTimeout() throws Exception {
-			Thread.sleep(10);
+			Thread.sleep(10); //NOSONAR wanted behaviour for testing
 		}
 
 	}
