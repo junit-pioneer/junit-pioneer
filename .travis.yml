@@ -26,12 +26,13 @@ script:
   - ./gradlew -version
   - ./gradlew --refresh-dependencies --stacktrace --scan clean build
 
-deploy:
-  - provider: script
-    skip_cleanup:
-    script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
-    on:
-      branch: master
+#deploy:
+# Commenting this out so our travis build is happy      
+#  - provider: script
+#    skip_cleanup:
+#    script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
+#    on:
+#      branch: master
 
 env:
   global:

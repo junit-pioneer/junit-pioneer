@@ -28,6 +28,7 @@ dependencies {
 
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.4.2")
     testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.4.2")
+    testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.4.2")
 
     testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
     testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
@@ -63,9 +64,8 @@ spotless {
 }
 
 checkstyle {
-    toolVersion = "6.11"
-    configFile = rootProject.file(".infra/checkstyle/checkstyle.xml")
-    sourceSets = listOf(project.sourceSets.main.get())
+    toolVersion = "7.8.2"
+    configDir = rootProject.file(".infra/checkstyle")
 }
 
 yamlValidator {
@@ -87,11 +87,20 @@ sonarqube {
 tasks {
 
     test {
+        testLogging {
+            setExceptionFormat("full")
+        }
         useJUnitPlatform()
         filter {
             includeTestsMatching("*Tests")
         }
         systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
+        // `SystemPropertyExtension` uses reflection to change environment variables;
+        // this prevents the corresponding warning (and keeps working on Java 8)
+        // IF YOU ADD MORE OPTIONS; CONSIDER REPLACING `-XX:+IgnoreUnrecognizedVMOptions WITH A CONDITIONAL
+        jvmArgs(
+                "-XX:+IgnoreUnrecognizedVMOptions",
+                "--add-opens=java.base/java.util=ALL-UNNAMED")
     }
 
     javadoc {

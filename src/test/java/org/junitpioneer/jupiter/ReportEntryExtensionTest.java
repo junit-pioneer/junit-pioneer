@@ -10,92 +10,71 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
-import org.junit.platform.engine.test.event.ExecutionEvent;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.testkit.ExecutionResults;
 
-public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
+public class ReportEntryExtensionTest {
 
 	@Test
 	void explicitKey_keyAndValueAreReported() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "explicitKey");
+		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "explicitKey")
+				.publishedTestReportEntries();
 
-		List<Map<String, String>> reportEntries = reportEntries(recorder);
 		assertThat(reportEntries).hasSize(1);
 		Map<String, String> reportEntry = reportEntries.get(0);
 		assertThat(reportEntry).hasSize(1);
-		assertThat(reportEntry).containsExactly(entryOf("Crow2", "While I pondered weak and weary"));
+		assertThat(reportEntry).containsExactly(TestUtils.entryOf("Crow2", "While I pondered weak and weary"));
 	}
 
 	@Test
 	void implicitKey_keyIsNamedValue() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "implicitKey");
+		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "implicitKey")
+				.publishedTestReportEntries();
 
-		List<Map<String, String>> reportEntries = reportEntries(recorder);
 		assertThat(reportEntries).hasSize(1);
 		assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 			assertThat(reportEntry).hasSize(1);
-			assertThat(reportEntry).containsExactly(entryOf("value", "Once upon a midnight dreary"));
+			assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Once upon a midnight dreary"));
 		});
 	}
 
 	@Test
 	void emptyKey_fails() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "emptyKey");
+		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "emptyKey");
 
-		assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
-		assertThat(getFirstFailuresThrowable(recorder).getMessage())
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results.firstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value",
 					"Over many a quaint and curious volume of forgotten lore");
 	}
 
 	@Test
 	void emptyValue_fails() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "emptyValue");
-
-		assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
-		assertThat(getFirstFailuresThrowable(recorder).getMessage())
+		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "emptyValue");
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results.firstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value", "While I nodded, nearly napping");
 	}
 
 	@Test
 	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedAnnotation");
-
-		List<Map<String, String>> reportEntries = reportEntries(recorder);
+		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "repeatedAnnotation")
+				.publishedTestReportEntries();
 
 		assertAll("Verifying report entries " + reportEntries, //
 			() -> assertThat(reportEntries).hasSize(3),
-			() -> assertThat(reportEntries).extracting(entry -> entry.size()).containsExactlyInAnyOrder(1, 1, 1),
+			() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1, 1),
 			() -> assertThat(reportEntries)
 					.extracting(entry -> entry.get("value"))
 					.containsExactlyInAnyOrder("suddenly there came a tapping", "As if some one gently rapping",
 						"rapping at my chamber door"));
-	}
-
-	private static List<Map<String, String>> reportEntries(ExecutionEventRecorder recorder) {
-		return recorder
-				.eventStream()
-				.filter(event -> event.getType().equals(ExecutionEvent.Type.REPORTING_ENTRY_PUBLISHED))
-				.map(executionEvent -> executionEvent.getPayload(org.junit.platform.engine.reporting.ReportEntry.class))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.map(org.junit.platform.engine.reporting.ReportEntry::getKeyValuePairs)
-				.collect(toList());
-	}
-
-	private static Map.Entry<String, String> entryOf(String key, String value) {
-		return new AbstractMap.SimpleEntry<>(key, value);
 	}
 
 	static class ReportEntriesTest {
