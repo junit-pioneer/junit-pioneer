@@ -25,22 +25,22 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
 import org.opentest4j.TestAbortedException;
 
 /**
  * Edgar Allan Poe: The Raven is in the public domain.
  */
 @DisplayName("ReportEntry extension")
-public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
+public class ReportEntryExtensionTests {
 
 	@Test
 	@DisplayName("reports given explicit key and value")
 	void explicitKey_keyAndValueAreReported() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "explicitKey");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "explicitKey");
 
-		List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+		List<Map<String, String>> reportEntries = results.reportEntries();
 		assertThat(reportEntries).hasSize(1);
 		Map<String, String> reportEntry = reportEntries.get(0);
 		assertThat(reportEntry).hasSize(1);
@@ -50,9 +50,9 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 	@Test
 	@DisplayName("reports given explicit value with default key 'value'")
 	void implicitKey_keyIsNamedValue() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "implicitKey");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "implicitKey");
 
-		List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+		List<Map<String, String>> reportEntries = results.reportEntries();
 		assertThat(reportEntries).hasSize(1);
 		assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 			assertThat(reportEntry).hasSize(1);
@@ -63,10 +63,10 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 	@Test
 	@DisplayName("fails when given an empty key explicitly")
 	void emptyKey_fails() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "emptyKey");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "emptyKey");
 
-		assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
-		assertThat(getFirstFailuresThrowable(recorder).getMessage())
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results.firstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value",
 					"Over many a quaint and curious volume of forgotten lore");
 	}
@@ -74,19 +74,19 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 	@Test
 	@DisplayName("fails when given an empty value")
 	void emptyValue_fails() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "emptyValue");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "emptyValue");
 
-		assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
-		assertThat(getFirstFailuresThrowable(recorder).getMessage())
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results.firstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value", "While I nodded, nearly napping");
 	}
 
 	@Test
 	@DisplayName("logs each value as individual entry when annotation is repeated")
 	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedAnnotation");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeatedAnnotation");
 
-		List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+		List<Map<String, String>> reportEntries = results.reportEntries();
 
 		assertAll("Verifying report entries " + reportEntries, //
 			() -> assertThat(reportEntries).hasSize(3),
@@ -108,11 +108,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("logs for successful test")
 			void successfulTest_logsMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_success");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_success");
 
-				List<Map<String, String>> successReportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> successReportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
+				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 				assertThat(successReportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
 					assertThat(reportEntry)
@@ -123,11 +123,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("logs for failed test")
 			void failingTest_logsMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_failure");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_failure");
 
-				List<Map<String, String>> failureReportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> failureReportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
+				assertThat(results.numberOfFailedTests()).isEqualTo(1);
 				assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
 					assertThat(reportEntry)
@@ -138,11 +138,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("logs for aborted test")
 			void abortedTest_logsMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_aborted");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_aborted");
 
-				List<Map<String, String>> failureReportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> failureReportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
 				assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
 					assertThat(reportEntry)
@@ -153,11 +153,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "always_disabled");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_disabled");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
+				assertThat(results.numberOfStartedTests()).isEqualTo(0);
 				assertThat(reportEntries).isEmpty();
 			}
 
@@ -170,11 +170,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("logs for successful test")
 			void successfulTest_logsMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_success");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onSuccess_success");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
+				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
 					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "it was in the bleak December"));
@@ -184,33 +184,33 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("does not log for failed test")
 			void failedTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_failure");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onSuccess_failure");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
+				assertThat(results.numberOfFailedTests()).isEqualTo(1);
 				assertThat(reportEntries).isEmpty();
 			}
 
 			@Test
 			@DisplayName("does not log for aborted test")
 			void abortedTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_aborted");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onSuccess_aborted");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
 				assertThat(reportEntries).isEmpty();
 			}
 
 			@Test
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onSuccess_disabled");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onSuccess_disabled");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
+				assertThat(results.numberOfStartedTests()).isEqualTo(0);
 				assertThat(reportEntries).isEmpty();
 			}
 
@@ -223,22 +223,22 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("does not log for successful test")
 			void successfulTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_success");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onFailure_success");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
+				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 				assertThat(reportEntries).isEmpty();
 			}
 
 			@Test
 			@DisplayName("logs for failed test")
 			void failedTest_logsMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_failure");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onFailure_failure");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
+				assertThat(results.numberOfFailedTests()).isEqualTo(1);
 				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
 					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Nameless here for evermore."));
@@ -248,22 +248,22 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("does not log for aborted test")
 			void abortedTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_aborted");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onFailure_aborted");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
 				assertThat(reportEntries).isEmpty();
 			}
 
 			@Test
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onFailure_disabled");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onFailure_disabled");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
+				assertThat(results.numberOfStartedTests()).isEqualTo(0);
 				assertThat(reportEntries).isEmpty();
 			}
 
@@ -276,33 +276,33 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("does not log for successful test")
 			void successfulTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onAborted_success");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onAborted_success");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
+				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 				assertThat(reportEntries).isEmpty();
 			}
 
 			@Test
 			@DisplayName("does not log for failed test")
 			void failedTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onAborted_failure");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onAborted_failure");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
+				assertThat(results.numberOfFailedTests()).isEqualTo(1);
 				assertThat(reportEntries).isEmpty();
 			}
 
 			@Test
 			@DisplayName("logs for aborted test")
 			void abortedTest_logsMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onAborted_aborted");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onAborted_aborted");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
 				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 					assertThat(reportEntry).hasSize(1);
 					assertThat(reportEntry)
@@ -314,11 +314,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "onAborted_disabled");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onAborted_disabled");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
+				assertThat(results.numberOfStartedTests()).isEqualTo(0);
 				assertThat(reportEntries).isEmpty();
 			}
 
@@ -331,11 +331,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("logs entries independently on success, based on publish condition")
 			void conditional_logOnSuccessIndependently() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeated_success");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeated_success");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestSuccessfulCount()).isEqualTo(1);
+				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 				assertAll("Verifying report entries " + reportEntries, //
 					() -> assertThat(reportEntries).hasSize(2),
 					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
@@ -349,11 +349,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("logs entries independently on failure, based on publish condition")
 			void conditional_logOnFailureIndependently() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeated_failure");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeated_failure");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestFailedCount()).isEqualTo(1);
+				assertThat(results.numberOfFailedTests()).isEqualTo(1);
 				assertAll("Verifying report entries " + reportEntries, //
 					() -> assertThat(reportEntries).hasSize(2),
 					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
@@ -367,11 +367,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("logs entries independently on abortion, based on publish condition")
 			void conditional_logOnAbortedIndependently() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeated_aborted");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeated_aborted");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestAbortedCount()).isEqualTo(1);
+				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
 				assertAll("Verifying report entries " + reportEntries, //
 					() -> assertThat(reportEntries).hasSize(2),
 					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
@@ -384,11 +384,11 @@ public class ReportEntryExtensionTests extends AbstractJupiterTestEngineTests {
 			@Test
 			@DisplayName("does not log entries if disabled")
 			void conditional_doesNotLogOnDisabled() {
-				ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeated_disabled");
+				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeated_disabled");
 
-				List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+				List<Map<String, String>> reportEntries = results.reportEntries();
 
-				assertThat(recorder.getTestStartedCount()).isEqualTo(0);
+				assertThat(results.numberOfStartedTests()).isEqualTo(0);
 				assertThat(reportEntries).isEmpty();
 			}
 
