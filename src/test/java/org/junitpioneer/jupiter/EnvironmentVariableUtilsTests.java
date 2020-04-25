@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.security.AccessControlException;
+import java.security.Policy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ class EnvironmentVariableUtilsTests {
 
 	@Test
 	@SetSystemProperty(key = "java.security.policy", value = "file:src/test/resources/reflect-permission-testing.policy")
-	void shouldModifyEnvironmentVariableIfReflectPermissionIsGiven() {
+	void shouldModifyEnvironmentVariableIfPermissionIsGiven() {
 		executeWithSecurityManager(() -> {
 			assertThatCode(() -> EnvironmentVariableUtils.set("TEST", "TEST")).doesNotThrowAnyException();
 			assertThat(System.getenv("TEST")).isEqualTo("TEST");
@@ -44,12 +45,14 @@ class EnvironmentVariableUtilsTests {
 	 * because junit uses reflection and the default SecurityManager prevents that.
 	 */
 	private void executeWithSecurityManager(Runnable runnable) {
+		Policy.getPolicy().refresh();
+		SecurityManager securityManager = System.getSecurityManager();
 		System.setSecurityManager(new SecurityManager());
 		try {
 			runnable.run();
 		}
 		finally {
-			System.setSecurityManager(null);
+			System.setSecurityManager(securityManager);
 		}
 	}
 

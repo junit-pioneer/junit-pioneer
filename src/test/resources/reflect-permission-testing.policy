@@ -5,6 +5,10 @@ grant {
         // necessary for gradle
         permission javax.management.MBeanServerPermission "createMBeanServer";
 
+        // needed EnvironmentVariableUtilsTests#shouldModifyEnvironmentVariableIfReflectPermissionIsGiven
+        permission java.lang.RuntimePermission "getenv.TEST";
+
+        // needed for EnvironmentVariableUtils
         permission java.lang.RuntimePermission "accessDeclaredMembers";
         permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
 };
