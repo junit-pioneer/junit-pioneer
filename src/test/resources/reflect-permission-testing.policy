@@ -5,8 +5,8 @@ grant {
         // necessary for gradle
         permission javax.management.MBeanServerPermission "createMBeanServer";
 
-        // needed EnvironmentVariableUtilsTests#shouldModifyEnvironmentVariableIfReflectPermissionIsGiven
-        permission java.lang.RuntimePermission "getenv.TEST";
+        // needed for EnvironmentVariableUtilsTests#shouldModifyEnvironmentVariableIfPermissionIsGiven
+        permission java.lang.RuntimePermission "getenv.*";
 
         // needed for assertj
         permission java.util.logging.LoggingPermission "control";
