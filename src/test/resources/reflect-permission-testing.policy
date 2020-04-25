@@ -8,6 +8,9 @@ grant {
         // needed EnvironmentVariableUtilsTests#shouldModifyEnvironmentVariableIfReflectPermissionIsGiven
         permission java.lang.RuntimePermission "getenv.TEST";
 
+        // needed for assertj
+        permission java.util.logging.LoggingPermission "control";
+
         // needed for EnvironmentVariableUtils
         permission java.lang.RuntimePermission "accessDeclaredMembers";
         permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
