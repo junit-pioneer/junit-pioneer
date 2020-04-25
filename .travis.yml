@@ -39,11 +39,12 @@ deploy:
     file: "./build/libs/junit-pioneer-*.jar"
     on:
       tags: true
-  - provider: script
-    skip_cleanup:
-    script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
-    on:
-      branch: master
+# Commenting this out so our travis build is happy      
+#  - provider: script
+#    skip_cleanup:
+#    script: ./gradlew triggerSiteBuild -P travisApiToken=$TRAVIS_API_TOKEN --stacktrace
+#    on:
+#      branch: master
 
 env:
   global:

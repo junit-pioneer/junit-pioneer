@@ -55,7 +55,7 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider {
 								.stream(annotations.annotationType().getAnnotationsByType(ArgumentsSource.class))
 								.anyMatch(annotation -> getClass().equals(annotation.value())))
 						.collect(Collectors.toList()))
-				.get();
+				.orElseThrow(IllegalStateException::new);
 
 		Preconditions
 				.condition(argumentsSources.size() == 1,
