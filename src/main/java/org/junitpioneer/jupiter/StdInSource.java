@@ -16,8 +16,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Provide values that the extension will read instead of reading the
- * standard input ({@code System.out}).
+ * Provide values that the {@link StdIOExtension extension} will read instead of reading the
+ * standard input ({@code System.in}).
  * This should be used with {@link org.junitpioneer.jupiter.StdIOExtension.StdIn}.
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -21,16 +21,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
 import org.junitpioneer.jupiter.StdIOExtension.StdIn;
 import org.junitpioneer.jupiter.StdIOExtension.StdOut;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
 
 /**
  * Shakespeare's Sonnet VII is in the public domain.
  */
 @DisplayName("StdIOExtension ")
-public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
+public class StdIoExtensionTests {
 
 	final BasicCommandLineApp app = new BasicCommandLineApp();
 
@@ -41,10 +41,11 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("fails if the parameter type is not StdIn or StdOut")
 		void needsType() {
-			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
-				"badType", Boolean.class);
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "badType",
+						Boolean.class.getName());
 
-			assertThat(getFirstFailuresThrowable(recorder))
+			assertThat(results.firstFailuresThrowable())
 					.isInstanceOf(ParameterResolutionException.class)
 					.hasMessageContaining("No ParameterResolver registered");
 		}
@@ -52,28 +53,31 @@ public class StdIoExtensionTests extends AbstractJupiterTestEngineTests {
 		@Test
 		@DisplayName("fails if the parameter is StdIn but test method is not annotated with @StdInSource")
 		void needsAnnotation() {
-			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
-				"noAnnotation", StdIn.class);
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "noAnnotation",
+						StdIn.class.getName());
 
-			assertThat(getFirstFailuresThrowable(recorder))
+			assertThat(results.firstFailuresThrowable())
 					.isInstanceOf(ParameterResolutionException.class)
-					.hasMessageContainingAll("Can not resolve parameter", "because test method is missing annotation");
+					.hasMessageContainingAll("Can not resolve test method parameter", "Method has to be annotated");
 		}
 
 		@Test
 		@DisplayName("resolves parameter for type StdIn and annotation")
 		void goodConfig_stdIn() {
-			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
-				"resolveStdIn", StdIn.class);
-			assertThat(recorder.getTestStartedCount()).isGreaterThan(0);
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdIn",
+						StdIn.class.getName());
+			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
 		}
 
 		@Test
 		@DisplayName("resolves parameter for type StdOut")
 		void goodConfig_stdOut() {
-			ExecutionEventRecorder recorder = executeTestsForMethodWithParameters(StdIOExtensionConfigurations.class,
-				"resolveStdOut", StdOut.class);
-			assertThat(recorder.getTestStartedCount()).isGreaterThan(0);
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdOut",
+						StdOut.class.getName());
+			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
 		}
 
 	}

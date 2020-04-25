@@ -33,7 +33,7 @@ public class StdIOExtension implements ParameterResolver {
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		Class<?> type = parameterContext.getParameter().getType();
-		return type == StdIn.class || type == StdOut.class;
+		return (type == StdIn.class || type == StdOut.class);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class StdIOExtension implements ParameterResolver {
 				.map(method -> method.getAnnotation(StdInSource.class))
 				.map(StdInSource::value)
 				.orElseThrow(() -> new ParameterResolutionException(
-					format("Can not resolve parameter %s because test method is missing annotation %s",
+					format("Can not resolve test method parameter %s. Method has to be annotated with '%s'",
 						StdIn.class.getName(), StdInSource.class.getName())));
 	}
 

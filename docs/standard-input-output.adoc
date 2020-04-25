@@ -1,21 +1,22 @@
 :page-title: Standard input/output
-:page-description: JUnit Jupiter extension for catchin standard input or output.
+:page-description: JUnit Jupiter extension for simulating standard input or catching standard output.
 
 The `StdIOExtension` adds a simple way to test your classes that read from the standard
 input (`System.in`) or write to the standard output (`System.out`).
 
 == How to use the extension
 
-You annotate your test class with `@ExtendWith(StdIOExtension.class)`. This lets JUnit know
-that you would like to use the special parameters provided by the extension in your tests.
-Then, when writing your tests, you can pass two arguments provided by the extension:
+If you would like to use the special parameters provided by the extension
+just annotate your test class with `@ExtendWith(StdIOExtension.class)`.
+Then, when writing your tests, you can pass the following two classes as arguments (provided by the extension):
 
-StdIn::
-This is for catching input from the standard in. If you are using this parameter, you have to
-annotate you method with `@StdInSource` which takes a String array and provides the values that
-you would like to read instead of waiting for input on the standard input.
+StdIn(`org.junitpioneer.jupiter.StdIOExtension.StdIn`)::
+This is for simulating input from the standard in. If you are using this parameter, you have to
+annotate you method with `@StdInSource`. This annotation takes a String array which holds the values that
+you would like to read instead of waiting for input on the standard input. Each value of the array
+represents one line of input.
 
-This would look like something like this:
+The following example shows how to pass the values `Hello` and `World` as standard input:
 
 [source,java]
 ----
@@ -29,11 +30,9 @@ This would look like something like this:
 
 ----
 
-StdOut::
-This is for catching output going to the standard out. This parameter does not require any special annotations
-(except for the `@ExtendWith(StdIOExtension.class)` on your test class).
-
-This would look like something like this:
+StdOut(`org.junitpioneer.jupiter.StdIOExtension.StdOut`)::
+This is for catching output going to the standard out. This parameter does not require any additional annotations
+except for the `@ExtendWith(StdIOExtension.class)` on your test class (see below).
 
 [source,java]
 ----
@@ -46,13 +45,20 @@ This would look like something like this:
 
 ----
 
-After calling your method that reads or writes to the standard in or out, you can call
-`capturedLines()` (available in both `StdIn` and `StdOut`) to verify the interactions.
-This contains the redirected in- or output as lines.
+To check your method under tests interactions with `StdIn` or `StdOut`, you can call
+`capturedLines()` (available in both `StdIn` and `StdOut`) inside your test to verify
+the lines read by `StdIn` or written by `StdOut`.
+This array contains the redirected in- or output as lines.
 
 For example, after calling `System.out.print("Hello")` and `System.out.println("World")`,
-the `capturedLines()` method would contain "HelloWorld".
+the `capturedLines()` method would contain an array of the String "HelloWorld" because
+the first method does not print a line break.
 
 Please note that some readers might read all lines from your `@StdInSource` eagerly,
 even if you only wanted to read a single line. This is the specific characteristic
 of that reader and is not considered a bug within the extension.
+
+[source]
+----
+IMPORTANT: The extension redirects the standard input/output and nothing gets forwarded to System.in or System.out.
+----
