@@ -170,7 +170,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("logs for successful test")
 			void successfulTest_logsMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onSuccess_success");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onSuccess_success");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -184,7 +185,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for failed test")
 			void failedTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onSuccess_failure");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onSuccess_failure");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -195,7 +197,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for aborted test")
 			void abortedTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onSuccess_aborted");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onSuccess_aborted");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -206,7 +209,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onSuccess_disabled");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onSuccess_disabled");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -223,7 +227,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for successful test")
 			void successfulTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onFailure_success");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onFailure_success");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -234,7 +239,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("logs for failed test")
 			void failedTest_logsMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onFailure_failure");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onFailure_failure");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -248,7 +254,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for aborted test")
 			void abortedTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onFailure_aborted");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onFailure_aborted");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -259,7 +266,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onFailure_disabled");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onFailure_disabled");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -276,7 +284,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for successful test")
 			void successfulTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onAborted_success");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onAborted_success");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -287,7 +296,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for failed test")
 			void failedTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onAborted_failure");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onAborted_failure");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -298,7 +308,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("logs for aborted test")
 			void abortedTest_logsMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onAborted_aborted");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onAborted_aborted");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -314,7 +325,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "onAborted_disabled");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "onAborted_disabled");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -331,7 +343,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("logs entries independently on success, based on publish condition")
 			void conditional_logOnSuccessIndependently() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeated_success");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "repeated_success");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -349,7 +362,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("logs entries independently on failure, based on publish condition")
 			void conditional_logOnFailureIndependently() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeated_failure");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "repeated_failure");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -367,7 +381,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("logs entries independently on abortion, based on publish condition")
 			void conditional_logOnAbortedIndependently() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeated_aborted");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "repeated_aborted");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
@@ -384,7 +399,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log entries if disabled")
 			void conditional_doesNotLogOnDisabled() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeated_disabled");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntriesTest.class, "repeated_disabled");
 
 				List<Map<String, String>> reportEntries = results.reportEntries();
 
