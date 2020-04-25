@@ -1,5 +1,4 @@
 grant {
-        // This is for testing purposes only.
-        // It allows to properly reset the security manager after the unit test completes.
+        // allow to reset the SecurityManager after the unit test
         permission java.lang.RuntimePermission "setSecurityManager";
 };
