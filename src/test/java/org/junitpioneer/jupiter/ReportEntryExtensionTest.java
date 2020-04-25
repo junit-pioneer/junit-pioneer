@@ -12,21 +12,21 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.engine.AbstractJupiterTestEngineTests;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
+import org.junitpioneer.testkit.ExecutionResults;
 
-public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
+public class ReportEntryExtensionTest {
 
 	@Test
 	void explicitKey_keyAndValueAreReported() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "explicitKey");
+		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "explicitKey")
+				.publishedTestReportEntries();
 
-		List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 		assertThat(reportEntries).hasSize(1);
 		Map<String, String> reportEntry = reportEntries.get(0);
 		assertThat(reportEntry).hasSize(1);
@@ -35,9 +35,9 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 
 	@Test
 	void implicitKey_keyIsNamedValue() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "implicitKey");
+		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "implicitKey")
+				.publishedTestReportEntries();
 
-		List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
 		assertThat(reportEntries).hasSize(1);
 		assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
 			assertThat(reportEntry).hasSize(1);
@@ -47,32 +47,30 @@ public class ReportEntryExtensionTest extends AbstractJupiterTestEngineTests {
 
 	@Test
 	void emptyKey_fails() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "emptyKey");
+		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "emptyKey");
 
-		assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
-		assertThat(getFirstFailuresThrowable(recorder).getMessage())
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results.firstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value",
 					"Over many a quaint and curious volume of forgotten lore");
 	}
 
 	@Test
 	void emptyValue_fails() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "emptyValue");
-
-		assertThat(recorder.getFailedTestFinishedEvents()).hasSize(1);
-		assertThat(getFirstFailuresThrowable(recorder).getMessage())
+		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "emptyValue");
+		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results.firstFailuresThrowableMessage())
 				.contains("Report entries can't have blank key or value", "While I nodded, nearly napping");
 	}
 
 	@Test
 	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
-		ExecutionEventRecorder recorder = executeTestsForMethod(ReportEntriesTest.class, "repeatedAnnotation");
-
-		List<Map<String, String>> reportEntries = TestUtils.reportEntries(recorder);
+		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "repeatedAnnotation")
+				.publishedTestReportEntries();
 
 		assertAll("Verifying report entries " + reportEntries, //
 			() -> assertThat(reportEntries).hasSize(3),
-			() -> assertThat(reportEntries).extracting(entry -> entry.size()).containsExactlyInAnyOrder(1, 1, 1),
+			() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1, 1),
 			() -> assertThat(reportEntries)
 					.extracting(entry -> entry.get("value"))
 					.containsExactlyInAnyOrder("suddenly there came a tapping", "As if some one gently rapping",
