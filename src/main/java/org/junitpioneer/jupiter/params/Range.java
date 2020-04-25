@@ -17,7 +17,7 @@ import org.junit.platform.commons.util.PreconditionViolationException;
 import org.junit.platform.commons.util.Preconditions;
 
 /**
- * An iterator for numerical ranges, used as the backing logic for {@link RangeSourceProvider}.
+ * An iterator for numerical ranges, used as the backing logic for {@link RangeSourceArgumentsProvider}.
  * @param <N> The numerical type used by the range.
  */
 abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
@@ -42,7 +42,7 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 	 * Asserts the range is valid.
 	 * @throws PreconditionViolationException if the range is not valid
 	 */
-	void validate() throws PreconditionViolationException {
+	void validate() {
 		Preconditions.condition(!step.equals(getZero()), "Illegal range. The step cannot be zero.");
 
 		Preconditions

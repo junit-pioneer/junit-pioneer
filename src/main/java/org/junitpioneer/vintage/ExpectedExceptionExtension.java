@@ -44,14 +44,14 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 				.filter(expected -> expected.isInstance(throwable))
 				.isPresent();
 
-		// in the `afterTestExecution` callback we have to pass or fail the test
-		// depending on whether the exception was thrown or not;
-		// to do that we need to register whether the exception was thrown;
-		// (NOTE that if no exception was thrown, NOTHING is registered)
+		// In the `afterTestExecution` callback we have to pass or fail the test
+		// depending on whether the exception was thrown or not.
+		// To do that we need to register whether the exception was thrown
+		// (NOTE that if no exception was thrown, NOTHING is registered).
 		if (throwableMatchesExpectedException) {
 			storeExceptionStatus(context, EXCEPTION.WAS_THROWN_AS_EXPECTED);
 		} else {
-			// this extension is not in charge of the throwable, so we need to rethrow;
+			// this extension is not in charge of the throwable, so we need to rethrow
 			storeExceptionStatus(context, EXCEPTION.WAS_THROWN_NOT_AS_EXPECTED);
 			throw throwable;
 		}
@@ -70,10 +70,13 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 				// the exception was thrown as expected so there is nothing to do
 				break;
 			case WAS_THROWN_NOT_AS_EXPECTED:
-				// an exception was thrown but of the wrong type;
-				// it was rethrown in `handleTestExecutionException`
-				// so there is nothing to do here
+				// An exception was thrown but of the wrong type.
+				// It was rethrown in `handleTestExecutionException` so there is nothing to do here
 				break;
+			default:
+				// This default block can't be reached without the EXCEPTION enum is changed via reflection.
+				// So there is no test case for it.
+				throw new IllegalArgumentException("Invalid exceptionStatus");
 		}
 	}
 
