@@ -25,15 +25,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.platform.commons.util.PreconditionViolationException;
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEvent;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
 
 /**
  * Tests for the {@link RangeSourceArgumentsProvider}.
  */
-class RangeSourceArgumentsProviderTests extends AbstractPioneerTestEngineTests {
+class RangeSourceArgumentsProviderTests {
 
 	private Number[] expectedValues;
 
@@ -58,11 +56,10 @@ class RangeSourceArgumentsProviderTests extends AbstractPioneerTestEngineTests {
 
 	@Test
 	void assertAllValuesSupplied() {
-		ExecutionEventRecorder eventRecorder = executeTestsForClass(RangeTestCases.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(RangeTestCases.class);
 
-		List<Number> actualValues = eventRecorder
-				.eventStream()
-				.filter(e -> e.getType() == ExecutionEvent.Type.DYNAMIC_TEST_REGISTERED)
+		List<Number> actualValues = results
+				.dynamicallyRegisteredEvents()
 				.map(e -> e.getTestDescriptor().getDisplayName())
 				.map(RangeSourceArgumentsProviderTests::displayNameToNumber)
 				.collect(Collectors.toList());
@@ -170,26 +167,35 @@ class RangeSourceArgumentsProviderTests extends AbstractPioneerTestEngineTests {
 
 		@Test
 		void twoAnnotations() {
-			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "twoAnnotations");
-			assertInvalidRange(eventRecorder, "Expected exactly one annotation to provide an ArgumentSource, found 2.");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "twoAnnotations");
+			results
+					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
+						"Expected exactly one annotation to provide an ArgumentSource, found 2.");
+
 		}
 
 		@Test
 		void zeroStep() {
-			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "zeroStep");
-			assertInvalidRange(eventRecorder, "Illegal range. The step cannot be zero.");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "zeroStep");
+			results
+					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
+						"Illegal range. The step cannot be zero.");
 		}
 
 		@Test
 		void illegalStep() {
-			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "illegalStep");
-			assertInvalidRange(eventRecorder, "Illegal range. There's no way to get from 10 to 0 with a step of 1.");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "illegalStep");
+			results
+					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
+						"Illegal range. There's no way to get from 10 to 0 with a step of 1.");
 		}
 
 		@Test
 		void emptyRange() {
-			ExecutionEventRecorder eventRecorder = executeTests(InvalidRanges.class, "emptyRange");
-			assertInvalidRange(eventRecorder, "Illegal range. Equal from and to will produce an empty range.");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "emptyRange");
+			results
+					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
+						"Illegal range. Equal from and to will produce an empty range.");
 		}
 
 	}
@@ -217,19 +223,6 @@ class RangeSourceArgumentsProviderTests extends AbstractPioneerTestEngineTests {
 		void emptyRange() {
 		}
 
-	}
-
-	private static void assertInvalidRange(ExecutionEventRecorder eventRecorder, String message) {
-		List<ExecutionEvent> failedContainerFinishedEvents = eventRecorder.getFailedContainerEvents();
-		assertThat(failedContainerFinishedEvents.size()).isEqualTo(1);
-
-		Throwable thrown = failedContainerFinishedEvents
-				.get(0)
-				.getPayload(TestExecutionResult.class)
-				.flatMap(TestExecutionResult::getThrowable)
-				.orElseThrow(AssertionError::new);
-		assertThat(thrown).isInstanceOf(PreconditionViolationException.class);
-		assertThat(thrown.getMessage()).isEqualTo(message);
 	}
 
 }

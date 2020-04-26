@@ -101,7 +101,8 @@ public class TempDirectoryExtension implements ParameterResolver {
 		 *
 		 * @return the parent directory for all temporary directories
 		 */
-		Path get(ParameterContext parameterContext, ExtensionContext extensionContext) throws Exception;
+		// excluded from Sonar as java.util.concurrent.Callable<V> is root of this generic exception
+		Path get(ParameterContext parameterContext, ExtensionContext extensionContext) throws Exception; //NOSONAR
 
 	}
 
@@ -321,6 +322,11 @@ public class TempDirectoryExtension implements ParameterResolver {
 				path.toFile().deleteOnExit();
 			}
 			catch (UnsupportedOperationException ignore) {
+				// If the `Path` can't be turned into a `File` (which throws the UOE),
+				// it can't be registered to be deleted when the JVM terminates.
+				// Because deleting on JVM termination is just a last ditch effort and
+				// nicety towards the user, it is entirely optional and shouldn't affect
+				// the extension's behavior.
 			}
 		}
 

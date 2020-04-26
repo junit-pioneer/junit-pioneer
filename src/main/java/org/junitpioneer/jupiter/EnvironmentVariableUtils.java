@@ -99,7 +99,7 @@ class EnvironmentVariableUtils {
 	 */
 	private static void setInSystemEnvClass(Consumer<Map<String, String>> consumer)
 			throws ReflectiveOperationException {
-		Map<String, String> env = System.getenv(); // NOSONAR access required to implement the extension
+		Map<String, String> env = System.getenv(); //NOSONAR access required to implement the extension
 		consumer.accept(getFieldValue(env.getClass(), env, "m"));
 	}
 
@@ -107,7 +107,7 @@ class EnvironmentVariableUtils {
 	private static Map<String, String> getFieldValue(Class<?> clazz, Object object, String name)
 			throws ReflectiveOperationException {
 		Field field = clazz.getDeclaredField(name);
-		field.setAccessible(true); // NOSONAR illegal access required to implement the extension
+		field.setAccessible(true); //NOSONAR illegal access required to implement the extension
 		return (Map<String, String>) field.get(object);
 	}
 
