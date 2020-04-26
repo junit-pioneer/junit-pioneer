@@ -1,5 +1,5 @@
 :page-title: Stopwatch
-:page-description: JUnit Jupiter extension to measure elapsed time of a test method or class
+:page-description: JUnit Jupiter extension to measure elapsed time of a test method
 
 == Introduction
 
@@ -9,7 +9,7 @@ It will measure elapsed time and pass the result to the test reporter, which wil
 
 == Usage
 
-To measure elapsed time just at the `@Stopwatch` annotation to a class or, like in the following example, on to a method:
+To measure elapsed time just add the `@Stopwatch` annotation to a class or, like in the following example, on to a method:
 
 [source,java]
 ----
