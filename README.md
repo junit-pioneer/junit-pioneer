@@ -87,7 +87,9 @@ In lexicographic order, these are:
 		He co-founded the project in November 2016 and has maintained it ever since (although often very negligently).</dd>
 	
 	<dt>Simon Schrottner aka <a href="https://github.com/aepfli">aepfli</a></dt>
-	<dd>Maintainer since April 2020.</dd>
+	<dd>Bearded guy in Lederhosen, who loves to code, and loves to explore code quality, testing, and other tools that can improve the live of a software craftsman.
+		<a href="https://www.couchsurfing.com/people/simmens">Passionated couchsurfer</a> and <a href="https://www.facebook.com/togtrama">hobby event planner</a>.
+		Maintainer since April 2020.</dd>
 
 	<dt>Steve Moyer aka <a href="https://github.com/smoyer64">smoyer64</a></dt>
 	<dd>Co-founded the project in November 2016.</dd>
