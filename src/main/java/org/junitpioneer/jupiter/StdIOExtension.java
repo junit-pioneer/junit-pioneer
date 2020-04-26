@@ -48,7 +48,7 @@ public class StdIOExtension implements ParameterResolver {
 
 	private Object getIn(String[] source) {
 		StdIn in = new StdIn(source);
-		System.setIn(in);
+		System.setIn(in); //NOSONAR required to redirect output
 		return in;
 	}
 
@@ -78,6 +78,11 @@ public class StdIOExtension implements ParameterResolver {
 		}
 
 		@Override
+		public void write(byte[] b, int off, int len) throws IOException {
+			super.write(b, off, len);
+		}
+
+		@Override
 		public String toString() {
 			return writer.toString();
 		}
@@ -104,6 +109,11 @@ public class StdIOExtension implements ParameterResolver {
 				writer.write(reading);
 			}
 			return reading;
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			return super.read(b, off, len);
 		}
 
 		@Override
