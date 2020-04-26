@@ -22,15 +22,17 @@ class ReportEntryExtension implements BeforeEachCallback {
 	public void beforeEach(ExtensionContext context) throws Exception {
 		PioneerAnnotationUtils
 				.findAllEnclosingRepeatableAnnotations(context, ReportEntry.class)
-				.peek(ReportEntryExtension::verifyKeyValueAreNotBlank)
+				.map(this::verifyKeyValueAreNotBlank)
 				.forEach(entry -> context.publishReportEntry(entry.key(), entry.value()));
 	}
 
-	private static void verifyKeyValueAreNotBlank(ReportEntry entry) {
+	private ReportEntry verifyKeyValueAreNotBlank(ReportEntry entry) {
 		if (entry.key().isEmpty() || entry.value().isEmpty()) {
 			String message = "Report entries can't have blank key or value: { key=\"%s\", value=\"%s\" }";
 			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
 		}
+
+		return entry;
 	}
 
 }

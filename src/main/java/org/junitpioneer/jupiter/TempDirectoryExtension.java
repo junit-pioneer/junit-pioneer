@@ -306,7 +306,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 			String joinedPaths = failures
 					.keySet()
 					.stream()
-					.peek(this::tryToDeleteOnExit)
+					.map(this::tryToDeleteOnExit)
 					.map(this::relativizeSafely)
 					.map(String::valueOf)
 					.collect(joining(", "));
@@ -317,7 +317,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 			return exception;
 		}
 
-		private void tryToDeleteOnExit(Path path) {
+		private Path tryToDeleteOnExit(Path path) {
 			try {
 				path.toFile().deleteOnExit();
 			}
@@ -328,6 +328,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 				// nicety towards the user, it is entirely optional and shouldn't affect
 				// the extension's behavior.
 			}
+			return path;
 		}
 
 		private Path relativizeSafely(Path path) {
