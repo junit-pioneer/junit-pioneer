@@ -53,7 +53,7 @@ Note that class level configurations are overwritten by method level configurati
 [source,java]
 ----
 @ClearEnvironmentVariable(key = "some variable")
-class MySystemPropertyTest {
+class MyEnvironmentVariableTest {
 	@Test
 	@SetEnvironmentVariable(key = "some variable", value = "new value")
 	void test() {
