@@ -14,82 +14,61 @@ import static java.lang.System.currentTimeMillis;
 
 import java.time.Clock;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junitpioneer.jupiter.enumerations.TestunitEnum;
 
 /**
  * The StopwatchExtension implements callback methods for the {@code @Stopwatch} annotation.
  */
-class StopwatchExtension
-		implements BeforeAllCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback, AfterAllCallback {
+class StopwatchExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
 	private final Clock clock = Clock.systemUTC();
 	private static final Namespace NAMESPACE = Namespace.create(StopwatchExtension.class);
 
 	@Override
-	public void beforeAll(ExtensionContext context) {
-		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
-			storeNowAsLaunchTime(context, TestunitEnum.CLASS);
-		}
-	}
-
-	@Override
 	public void beforeTestExecution(ExtensionContext context) {
 		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
-			storeNowAsLaunchTime(context, TestunitEnum.TEST);
+			storeNowAsLaunchTime(context);
 		}
 	}
 
 	@Override
 	public void afterTestExecution(ExtensionContext context) {
 		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
-			calculateAndReportElapsedTime(context, TestunitEnum.TEST);
-		}
-	}
-
-	@Override
-	public void afterAll(ExtensionContext context) {
-		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
-			calculateAndReportElapsedTime(context, TestunitEnum.CLASS);
+			calculateAndReportElapsedTime(context);
 		}
 	}
 
 	/**
-	 * Stores the current time for the given testunit in the execution context.
+	 * Stores the current time for the method in the execution context.
 	 *
 	 * @param context Extension context of the class
-	 * @param unit Testobject for which the time should be stored
 	 */
-	void storeNowAsLaunchTime(ExtensionContext context, TestunitEnum unit) {
-		context.getStore(NAMESPACE).put(unit, clock.instant().toEpochMilli());
+	void storeNowAsLaunchTime(ExtensionContext context) {
+		context.getStore(NAMESPACE).put(context.getUniqueId(), clock.instant().toEpochMilli());
 	}
 
 	/**
-	 * Loads the stored time for the given testunit from the execution context.
+	 * Loads the stored time for method from the execution context.
 	 *
 	 * @param context Extension context of the class
-	 * @param unit Testobject for which the time should be stored
 	 */
-	long loadLaunchTime(ExtensionContext context, TestunitEnum unit) {
-		return context.getStore(NAMESPACE).get(unit, long.class);
+	long loadLaunchTime(ExtensionContext context) {
+		return context.getStore(NAMESPACE).get(context.getUniqueId(), long.class);
 	}
 
 	/**
-	 * Calculates the elapsed time for the testunit and publishs it to the execution context.
+	 * Calculates the elapsed time method and publishes it to the execution context.
 	 *
 	 * @param context Extension context of the class
-	 * @param unit Testunit for which the time should be calculated and published
 	 */
-	void calculateAndReportElapsedTime(ExtensionContext context, TestunitEnum unit) {
-		long launchTime = loadLaunchTime(context, unit);
+	void calculateAndReportElapsedTime(ExtensionContext context) {
+		long launchTime = loadLaunchTime(context);
 		long elapsedTime = currentTimeMillis() - launchTime;
 
-		String message = String.format("%s '%s' took %d ms.", unit.name(), context.getDisplayName(), elapsedTime);
+		String message = String.format("Execution of '%s' took [%d] ms.", context.getDisplayName(), elapsedTime);
 		context.publishReportEntry("stopwatch", message);
 	}
 
