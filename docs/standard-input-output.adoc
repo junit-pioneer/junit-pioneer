@@ -51,7 +51,7 @@ the lines read by `StdIn` or written by `StdOut`.
 This array contains the redirected in- or output as lines.
 
 For example, after calling `System.out.print("Hello")` and `System.out.println("World")`,
-the `capturedLines()` method would contain an array of the String "HelloWorld" because
+the `capturedLines()` method would contain an array of the String "HelloWorld", because
 the first method does not print a line break.
 
 Please note that some readers might read all lines from your `@StdInSource` eagerly,
