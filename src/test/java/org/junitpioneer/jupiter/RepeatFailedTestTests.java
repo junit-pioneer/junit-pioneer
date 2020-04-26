@@ -20,33 +20,31 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.PioneerTestKit;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.parallel.Execution;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
 
 class RepeatFailedTestTests {
 
 	@Test
 	void invalidConfigurationWithTest() {
-		ExecutionEventRecorder eventRecorder = executeTests(RepeatFailedTestTestCase.class,
-			"invalidConfigurationWithTest");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RepeatFailedTestTestCase.class, "invalidConfigurationWithTest");
 
-		assertThat(eventRecorder.getDynamicTestRegisteredCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(2);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(2);
+		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(2);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(2);
 	}
 
 	@Test
 	void executedOneEvenWithTwoTestTemplatesTest() {
-		ExecutionEventRecorder eventRecorder = executeTests(RepeatFailedTestTestCase.class,
-			"executedOneEvenWithTwoTestTemplates");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RepeatFailedTestTestCase.class, "executedOneEvenWithTwoTestTemplates");
 
-		assertThat(eventRecorder.getDynamicTestRegisteredCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
+		assertThat(results.numberOfStartedTests()).isEqualTo(1);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 	}
 
 	@Test
