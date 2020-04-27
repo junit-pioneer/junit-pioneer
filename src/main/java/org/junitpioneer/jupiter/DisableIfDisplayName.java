@@ -24,18 +24,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 /**
  * {@code @DisableIfDisplayName} is a JUnit Jupiter extension which can be used to
- * selectively disable {@link ParameterizedTest} based on their {@link ExtensionContext#getDisplayName()}
+ * selectively disable {@link ParameterizedTest} based on their {@link ExtensionContext#getDisplayName()}.
  *
  * <p>
- * The extension is an {@link ExecutionCondition} which validates dynamically registered tests
+ * The extension is an {@link ExecutionCondition}, which validates dynamically registered tests.
  * This is highly useful since current {@link Disabled} or {@link DisabledIf} annotations disable
- * the whole test but not the Parameterized tests selectively
+ * the whole test, but not the Parameterized tests selectively.
  *
  * If it is required to disable selective tests out of the plethora of dynamically
- * registered Parameterized tests, then we can utilize the following
+ * registered Parameterized tests, then we can utilize the following.
  *
- * Each repeatable annotation will be processed for each test and test will be skipped if
- * any of them evaluates true against the display name
+ * Each repeatable annotation will be processed for each test and the test will be skipped if
+ * any of them evaluates true against the display name.
  *
  * @since 0.5.6
  * @see DisableIfNameExtension
@@ -47,9 +47,9 @@ public @interface DisableIfDisplayName {
 
 	/**
 	 *
-	 * Display names of the test cases to be disabled. The whole test case name can be passed as well as sub string
-	 * The values will be evaluated with {@link String#contains(CharSequence)} by default
-	 * If, {@code regex} is provided, the string will be evaluated with {@link String#matches(String)} against the display name
+	 * Display names of the test cases to be disabled. The whole test case name can be passed as well as a sub string.
+	 * The values will be evaluated with {@link String#contains(CharSequence)} by default.
+	 * If, {@code isRegEx} is provided, the string will be evaluated with {@link String#matches(String)} against the display name
 	 * @return Test Case display name
 	 */
 	String[] value();
