@@ -16,17 +16,17 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
 
-class DisabledIfNameExtensionTests extends AbstractPioneerTestEngineTests {
+class DisabledIfNameExtensionTests {
 
 	@Test
 	void test_testShouldAlwaysBeDisabled() {
-		ExecutionEventRecorder eventRecorder = executeTestsForClass(DisabledIfTests.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(DisabledIfTests.class);
 
-		assertThat(eventRecorder.getTestSkippedCount()).isEqualTo(7);
-		assertThat(eventRecorder.getTestSuccessfulCount()).isEqualTo(4);
+		assertThat(results.numberOfSkippedTests()).isEqualTo(7);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(4);
 	}
 
 	// TEST CASES -------------------------------------------------------------------
