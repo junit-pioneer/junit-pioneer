@@ -49,7 +49,7 @@ public @interface DisableIfDisplayName {
 	 *
 	 * Display names of the test cases to be disabled. The whole test case name can be passed as well as sub string
 	 * The values will be evaluated with {@link String#contains(CharSequence)} by default
-	 * If, {@code regex} is provided, the string will be evaluated with {@link String#matches(String)} against the display name
+	 * If, {@code isRegEx} is provided, the string will be evaluated with {@link String#matches(String)} against the display name
 	 * @return Test Case display name
 	 */
 	String[] value();
