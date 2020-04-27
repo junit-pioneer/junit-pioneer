@@ -12,7 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
-import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
+import static org.junitpioneer.jupiter.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class DisableIfNameExtension implements ExecutionCondition {
 			return enabled("Only disable at method level so the parameterized tests could be registered");
 		}
 
-		Optional<DisableIfDisplayName> disableIf = findAnnotation(testMethod, DisableIfDisplayName.class);
+		Optional<DisableIfDisplayName> disableIf = findClosestEnclosingAnnotation(context, DisableIfDisplayName.class);
 		if (!disableIf.isPresent()) {
 			return enabled("No instructions to disable");
 		}
@@ -41,7 +41,7 @@ public class DisableIfNameExtension implements ExecutionCondition {
 
 		//@formatter:off
 		for (String value : disableInstruction.value()) {
-			boolean toDisable = disableInstruction.regex()
+			boolean toDisable = disableInstruction.isRegEx()
 					? displayName.matches(value)
 					: context.getDisplayName().contains(value);
 			if (toDisable)
