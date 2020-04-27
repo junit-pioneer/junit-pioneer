@@ -10,7 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 
 import java.util.TimeZone;
 
@@ -21,11 +22,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("DefaultTimeZone extension")
-class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
+class DefaultTimeZoneTests {
 
 	private static TimeZone TEST_DEFAULT_TIMEZONE;
 	private static TimeZone DEFAULT_TIMEZONE_BEFORE_TEST;
@@ -57,21 +57,21 @@ class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 		@Test
 		@DisplayName("does nothing when annotation is not present")
 		void doesNothingWhenAnnotationNotPresent() {
-			assertEquals(TEST_DEFAULT_TIMEZONE, TimeZone.getDefault());
+			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
 		}
 
 		@DefaultTimeZone("CET")
 		@Test
 		@DisplayName("sets the default time zone using an abbreviation")
 		void setsTimeZoneFromAbbreviation() {
-			assertEquals(TimeZone.getTimeZone("CET"), TimeZone.getDefault());
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("CET"));
 		}
 
 		@DefaultTimeZone("America/Los_Angeles")
 		@Test
 		@DisplayName("sets the default time zone using a full name")
 		void setsTimeZoneFromFullName() {
-			assertEquals(TimeZone.getTimeZone("America/Los_Angeles"), TimeZone.getDefault());
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("America/Los_Angeles"));
 		}
 
 	}
@@ -82,20 +82,20 @@ class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 
 		@BeforeEach
 		void setUp() {
-			assertEquals(TEST_DEFAULT_TIMEZONE, TimeZone.getDefault());
+			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
 		}
 
 		@Test
 		@DisplayName("should execute tests with configured TimeZone")
 		void shouldExecuteTestsWithConfiguredTimeZone() {
-			ExecutionEventRecorder eventRecorder = executeTestsForClass(DefaultTimeZoneTests.ClassLevelTestCase.class);
+			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
 
-			assertEquals(2, eventRecorder.getTestSuccessfulCount());
+			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
 		}
 
 		@AfterEach
 		void tearDown() {
-			assertEquals(TEST_DEFAULT_TIMEZONE, TimeZone.getDefault());
+			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
 		}
 
 	}
@@ -105,13 +105,13 @@ class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 
 		@Test
 		void shouldExecuteWithClassLevelTimeZone() {
-			assertEquals(TimeZone.getTimeZone("GMT-8:00"), TimeZone.getDefault());
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
 		}
 
 		@Test
 		@DefaultTimeZone("GMT-12:00")
 		void shouldBeOverriddenWithMethodLevelTimeZone() {
-			assertEquals(TimeZone.getTimeZone("GMT-12:00"), TimeZone.getDefault());
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
 		}
 
 	}
@@ -119,7 +119,7 @@ class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 	@DisplayName("with nested classes")
 	@DefaultTimeZone("GMT-8:00")
 	@Nested
-	class NestedDefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
+	class NestedDefaultTimeZoneTests {
 
 		@Nested
 		@DisplayName("without DefaultTimeZone annotation")
@@ -128,7 +128,7 @@ class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 			@Test
 			@DisplayName("DefaultTimeZone should be set from enclosed class when it is not provided in nested")
 			public void shouldSetTimeZoneFromEnclosedClass() {
-				assertEquals(TimeZone.getTimeZone("GMT-8:00"), TimeZone.getDefault());
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
 			}
 
 		}
@@ -141,14 +141,14 @@ class DefaultTimeZoneTests extends AbstractPioneerTestEngineTests {
 			@Test
 			@DisplayName("DefaultTimeZone should be set from nested class when it is provided")
 			public void shouldSetTimeZoneFromNestedClass() {
-				assertEquals(TimeZone.getTimeZone("GMT-12:00"), TimeZone.getDefault());
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
 			}
 
 			@Test
 			@DefaultTimeZone("GMT-6:00")
 			@DisplayName("DefaultTimeZone should be set from method when it is provided")
 			public void shouldSetTimeZoneFromMethodOfNestedClass() {
-				assertEquals(TimeZone.getTimeZone("GMT-6:00"), TimeZone.getDefault());
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-6:00"));
 			}
 
 		}

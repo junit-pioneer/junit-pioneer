@@ -28,32 +28,26 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
-		setDefaultLocale(context);
+		PioneerAnnotationUtils
+				.findClosestEnclosingAnnotation(context, DefaultLocale.class)
+				.ifPresent(annotation -> setDefaultLocale(context, annotation));
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		if (Utils.annotationPresentOnTestMethod(context, DefaultLocale.class)) {
-			setDefaultLocale(context);
-		}
+		PioneerAnnotationUtils
+				.findClosestEnclosingAnnotation(context, DefaultLocale.class)
+				.ifPresent(annotation -> setDefaultLocale(context, annotation));
 	}
 
-	private void setDefaultLocale(ExtensionContext context) {
+	private void setDefaultLocale(ExtensionContext context, DefaultLocale annotation) {
 		storeDefaultLocale(context);
-		Locale configuredLocale = readLocaleFromAnnotation(context);
+		Locale configuredLocale = createLocale(annotation);
 		Locale.setDefault(configuredLocale);
 	}
 
 	private void storeDefaultLocale(ExtensionContext context) {
 		context.getStore(NAMESPACE).put(KEY, Locale.getDefault());
-	}
-
-	private Locale readLocaleFromAnnotation(ExtensionContext context) {
-		return Utils
-				.findAnnotation(context, DefaultLocale.class)
-				.map(DefaultLocaleExtension::createLocale)
-				.orElseThrow(() -> new ExtensionConfigurationException(
-					"The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
 	}
 
 	private static Locale createLocale(DefaultLocale annotation) {
@@ -91,7 +85,7 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (Utils.annotationPresentOnTestMethod(context, DefaultLocale.class)) {
+		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, DefaultLocale.class)) {
 			resetDefaultLocale(context);
 		}
 	}
