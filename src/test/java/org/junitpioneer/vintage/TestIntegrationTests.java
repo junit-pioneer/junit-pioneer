@@ -12,6 +12,7 @@ package org.junitpioneer.vintage;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.PioneerAssertContainer.PioneerAssert.assertThat;
 import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
 import java.nio.file.InvalidPathException;
@@ -48,11 +49,11 @@ class TestIntegrationTests {
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_successfulTest");
 
 		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
 
-		String failedTestMessage = results.firstFailuresThrowableMessage();
-		String expectedMessage = format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class);
-		assertThat(failedTestMessage).contains(expectedMessage);
+		assertThat(results)
+				.hasSingleFailedTest()
+				.andHasException()
+				.withMessageContaining(format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class));
 	}
 
 	@org.junit.jupiter.api.Test
@@ -79,9 +80,7 @@ class TestIntegrationTests {
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSupertype");
 
 		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
-
-		results.assertTestFailedWithThrowable(RuntimeException.class);
+		assertThat(results).hasSingleFailedTest().andHasException(RuntimeException.class);
 	}
 
 	// timeout
@@ -100,15 +99,11 @@ class TestIntegrationTests {
 				.executeTestMethod(TestTestCase.class, "testWithTimeout_exceedsTimeout");
 
 		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
 
-		String failedTestMessage = results.firstFailuresThrowableMessage();
-		String expectedMessage = String
-				.format(TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1, 10);
+		String expectedMessage = format(TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1, 10);
 		// the message contains the actual run time, which is unpredictable, so it has to be cut off for the assertion
 		String expectedKnownPrefix = expectedMessage.substring(0, expectedMessage.length() - 6);
-		assertThat(failedTestMessage).isNotNull();
-		assertThat(failedTestMessage).startsWith(expectedKnownPrefix);
+		assertThat(results).hasSingleFailedTest().andHasException().withMessageContaining(expectedKnownPrefix);
 	}
 
 	// TEST CASES -------------------------------------------------------------------

@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_KEY;
 import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_VALUE;
+import static org.junitpioneer.testkit.PioneerAssertContainer.PioneerAssert.assertThat;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("EnvironmentVariable extension")
@@ -209,7 +211,7 @@ class EnvironmentVariableExtensionTests {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 				"shouldFailWhenClearAndSetSameEnvironmentVariable");
 
-			results.assertTestFailedWithExtensionConfigurationException();
+			assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -221,7 +223,7 @@ class EnvironmentVariableExtensionTests {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 				"shouldFailWhenClearSameEnvironmentVariableTwice");
 
-			results.assertTestFailedWithExtensionConfigurationException();
+			assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -230,7 +232,7 @@ class EnvironmentVariableExtensionTests {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 				"shouldFailWhenSetSameEnvironmentVariableTwice");
 
-			results.assertTestFailedWithExtensionConfigurationException();
+			assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
 		}
 
 	}
@@ -254,14 +256,14 @@ class EnvironmentVariableExtensionTests {
 		void shouldReportWarningIfExtensionUsed() {
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithExtension");
 
-			assertThat(results.singleReportEntry()).isEqualTo(TestUtils.entryOf(WARNING_KEY, WARNING_VALUE));
+			assertThat(results).hasSingleReportEntry().withKeyAndValue(WARNING_KEY, WARNING_VALUE);
 		}
 
 		@Test
 		void shouldReportWarningExactlyOnce() {
 			ExecutionResults results = executeTestClass(ReportWarningTestCases.class);
 
-			assertThat(results.reportEntries()).hasSize(1);
+			assertThat(results).hasSingleReportEntry();
 		}
 
 	}

@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junitpioneer.testkit.PioneerAssertContainer.PioneerAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -190,9 +191,10 @@ class TempDirectoryExtensionTests {
 		void onlySupportsParametersOfTypePath() {
 			ExecutionResults results = PioneerTestKit.executeTestClass(InvalidTestCase.class);
 
-			results
-					.assertTestFailedWithThrowableWhichContainsMessage(ParameterResolutionException.class,
-						"Can only resolve parameter of type java.nio.file.Path");
+			assertThat(results)
+					.hasSingleFailedTest()
+					.andHasException(ParameterResolutionException.class)
+					.withMessageContaining("Can only resolve parameter of type java.nio.file.Path");
 		}
 
 		@Test
@@ -200,9 +202,10 @@ class TempDirectoryExtensionTests {
 		void failedCreationAttemptMakesTestFail() {
 			ExecutionResults results = PioneerTestKit.executeTestClass(FailedCreationAttemptTestCase.class);
 
-			results
-					.assertTestFailedWithThrowableWhichContainsMessage(ParameterResolutionException.class,
-						"Failed to create custom temp directory");
+			assertThat(results)
+					.hasSingleFailedTest()
+					.andHasException(ParameterResolutionException.class)
+					.withMessageContaining("Failed to create custom temp directory");
 		}
 
 		@Test
@@ -210,9 +213,10 @@ class TempDirectoryExtensionTests {
 		void failedDeletionAttemptMakesTestFail() {
 			ExecutionResults results = PioneerTestKit.executeTestClass(FailedDeletionAttemptTestCase.class);
 
-			results
-					.assertTestFailedWithThrowableWhichContainsMessage(IOException.class,
-						"Failed to delete temp directory");
+			assertThat(results)
+					.hasSingleFailedTest()
+					.andHasException(IOException.class)
+					.withMessageContaining("Failed to delete temp directory");
 		}
 
 		@Test
@@ -220,9 +224,10 @@ class TempDirectoryExtensionTests {
 		void erroneousParentDirProviderMakesTestFail() {
 			ExecutionResults results = PioneerTestKit.executeTestClass(ErroneousParentDirProviderTestCase.class);
 
-			results
-					.assertTestFailedWithThrowableWhichContainsMessage(ParameterResolutionException.class,
-						"Failed to get parent directory");
+			assertThat(results)
+					.hasSingleFailedTest()
+					.andHasException(ParameterResolutionException.class)
+					.withMessageContaining("Failed to get parent directory");
 		}
 
 	}

@@ -11,14 +11,11 @@
 package org.junitpioneer.testkit;
 
 import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.testkit.engine.EngineExecutionResults;
@@ -170,24 +167,6 @@ public class ExecutionResults {
 		return executionResults.all().reportingEntryPublished().count();
 	}
 
-	/**
-	 * Returns the message of the first failed event.
-	 * This can be used if you expect a test to fail with an exception and want to check the exception message.
-	 *
-	 * @return message of the first failed event
-	 */
-	public String firstFailuresThrowableMessage() {
-		return firstFailuresThrowable().getMessage();
-	}
-
-	public Map.Entry<String, String> singleReportEntry() {
-		List<Map<String, String>> reportEntries = reportEntries();
-		assertThat(reportEntries).hasSize(1);
-		Map<String, String> reportEntry = reportEntries.get(0);
-		assertThat(reportEntry).hasSize(1);
-		return reportEntry.entrySet().iterator().next();
-	}
-
 	public List<Map<String, String>> reportEntries() {
 		return executionResults
 				.all()
@@ -201,52 +180,6 @@ public class ExecutionResults {
 	}
 
 	/**
-	 * Returns the {@link Throwable} of the first failed event.
-	 * This can be used if you expect a test to fail with a specific exception type.
-	 *
-	 * @return Throwable of the first failed event
-	 */
-	public Throwable firstFailuresThrowable() {
-		return executionResults
-				.all()
-				.failed()
-				.stream()
-				.findFirst()
-				.orElseThrow(AssertionError::new)
-				.getPayload(TestExecutionResult.class)
-				.flatMap(TestExecutionResult::getThrowable)
-				.orElseThrow(AssertionError::new);
-	}
-
-	public void assertTestFailedWithThrowableWhichContainsMessage(Class<? extends Throwable> thrown, String message) {
-		assertThat(numberOfFailedTests()).isEqualTo(1);
-		assertThat(firstFailuresThrowable()).isInstanceOf(thrown);
-		assertThat(firstFailuresThrowableMessage()).contains(message);
-	}
-
-	public void assertContainerFailedWithThrowableWhichContainsMessage(Class<? extends Throwable> thrown,
-			String message) {
-		assertThat(numberOfFailedContainers()).isEqualTo(1);
-		assertThat(firstFailuresThrowable()).isInstanceOf(thrown);
-		assertThat(firstFailuresThrowableMessage()).contains(message);
-	}
-
-	public void assertTestFailedWithThrowable(Class<? extends Throwable> thrown) {
-		assertThat(numberOfFailedTests()).isEqualTo(1);
-		assertThat(firstFailuresThrowable()).isInstanceOf(thrown);
-	}
-
-	public void assertTestFailedWithExtensionConfigurationException() {
-		assertThat(numberOfFailedTests()).isEqualTo(1);
-		assertThat(firstFailuresThrowable()).isInstanceOf(ExtensionConfigurationException.class);
-	}
-
-	public void assertFailedTestHasMessage(String... messages) {
-		assertThat(numberOfFailedTests()).isEqualTo(1);
-		assertThat(firstFailuresThrowableMessage()).isEqualTo(String.join(",", messages));
-	}
-
-	/**
 	 * Returns the published report entries of all tests.
 	 *
 	 * @return published report entries of all tests
@@ -256,10 +189,10 @@ public class ExecutionResults {
 				.tests()
 				.reportingEntryPublished()
 				.stream()
-				.map(executionEvent -> executionEvent.getPayload(org.junit.platform.engine.reporting.ReportEntry.class))
+				.map(executionEvent -> executionEvent.getPayload(ReportEntry.class))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
-				.map(org.junit.platform.engine.reporting.ReportEntry::getKeyValuePairs)
+				.map(ReportEntry::getKeyValuePairs)
 				.collect(toList());
 	}
 

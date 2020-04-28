@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junitpioneer.testkit.PioneerAssertContainer.PioneerAssert.assertThat;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 
 import java.util.List;
@@ -24,43 +25,38 @@ public class ReportEntryExtensionTest {
 
 	@Test
 	void explicitKey_keyAndValueAreReported() {
-		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "explicitKey")
-				.publishedTestReportEntries();
+		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "explicitKey");
 
-		assertThat(reportEntries).hasSize(1);
-		Map<String, String> reportEntry = reportEntries.get(0);
-		assertThat(reportEntry).hasSize(1);
-		assertThat(reportEntry).containsExactly(TestUtils.entryOf("Crow2", "While I pondered weak and weary"));
+		assertThat(results).hasSingleReportEntry().withKeyAndValue("Crow2", "While I pondered weak and weary");
 	}
 
 	@Test
 	void implicitKey_keyIsNamedValue() {
-		List<Map<String, String>> reportEntries = executeTestMethod(ReportEntriesTest.class, "implicitKey")
-				.publishedTestReportEntries();
+		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "implicitKey");
 
-		assertThat(reportEntries).hasSize(1);
-		assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
-			assertThat(reportEntry).hasSize(1);
-			assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Once upon a midnight dreary"));
-		});
+		assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "Once upon a midnight dreary");
 	}
 
 	@Test
 	void emptyKey_fails() {
 		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "emptyKey");
 
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
-		assertThat(results.firstFailuresThrowableMessage())
-				.contains("Report entries can't have blank key or value",
+		assertThat(results)
+				.hasSingleFailedTest()
+				.andHasException()
+				.withMessageContaining("Report entries can't have blank key or value",
 					"Over many a quaint and curious volume of forgotten lore");
 	}
 
 	@Test
 	void emptyValue_fails() {
 		ExecutionResults results = executeTestMethod(ReportEntriesTest.class, "emptyValue");
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
-		assertThat(results.firstFailuresThrowableMessage())
-				.contains("Report entries can't have blank key or value", "While I nodded, nearly napping");
+
+		assertThat(results)
+				.hasSingleFailedTest()
+				.andHasException()
+				.withMessageContaining("Report entries can't have blank key or value",
+					"While I nodded, nearly napping");
 	}
 
 	@Test
