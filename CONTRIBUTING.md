@@ -125,7 +125,7 @@ This file is generated automatically.
 ## Fixing Bugs, Developing Features
 
 This section governs how features or bug fixes are developed.
-See the next section for how to adapt to upstream changes.
+See [the section _Updating Dependency on JUnit 5_](#updating-dependency-on-junit-5) for how to adapt to upstream changes.
 
 ### Branching Strategy
 
@@ -139,8 +139,8 @@ For bonus points, adhere to the following rule.
 For branches that are pushed directly to this repo (take note maintainers!), this naming strategy is obligatory:
 
 * branches intended to fix an issue must be named `issue/$NUMBER-$TITLE` where `$NUMBER` is the issue number on GitHub and `$TITLE` a very short summary of what the issue is about (for those of us who don't know all issues by heart) in lower case letters and dash-separated, e.g. `issue/226-team-of-maintainers`
-* Branches intended to fix an issue that is already being worked on (hence the name is already blocked), copy its name but append the maintainer's name, e.g. `issue/226-team-of-maintainers_bukama`
-* branches intended to experiment with something must be named `lab/$TITLE`, where `$TITLE` works like above
+* branches intended to fix an issue that is already being worked on (hence the name is already blocked), copy its name but append an underscore and the maintainer's name, e.g. `issue/226-team-of-maintainers_bukama`
+* branches intended to experiment with something, for which no issue exists, must be named `lab/$TITLE`, where `$TITLE` works like above
 
 Issue branches should be deleted after they are merged.
 Lab branches should be deleted once they become obsolete - when that is the case will be different for each branch.
@@ -290,7 +290,7 @@ As maintainers, we may work on features, but it is perfectly ok to leave that to
 Our main focus should be to keep the project moving forward:
 
 * vet, label, relate, and reply to issues
-* provide technical guidance in issues and PRs
+* provide technical guidance for contributors in issues and PRs
 * work on behind-the-scenes tasks like CI, documentation, etc.
 * release new versions
 
@@ -307,7 +307,7 @@ This applies to users opening issues, contributors providing PRs, and other main
 These are the channels we use to communicate with one another, our contributors, and users - in decreasing order of importance:
 
 1. [project website](https://junit-pioneer.org)
-2. files in the repository
+2. files in the repository (like [`README.md`](README.md) and and this `CONTRIBUTING.md`)
 3. Git commit messages
 4. issues/PRs [on GitHub](https://github.com/junit-pioneer/junit-pioneer)
 5. _#junit-pioneer_ channel [in Discord](https://discord.gg/rHfJeCF)
@@ -319,7 +319,7 @@ This is particularly important for the last three channels - "document or didn't
 A few examples:
 
 * when we discover a problem or possible feature on stream, a new GitHub issue will be created
-* when a team call or Discord discussion shapes our opinion on an issue or PR, the discussion (not just the conclusion!) is summarized in the issue or PR
+* when a team call or Discord discussion shapes our opinion on an issue or PR, the discussion (not just the conclusion!) is summarized in the issue or PR (see [the comments on the ShipKit evaluation](https://github.com/junit-pioneer/junit-pioneer/issues/193#issuecomment-611620554) for an example)
 * when a PR is merged, the commit message summarizes what it is about (see [_Commit Message_](#commit-message) above)
 * when a decision regarding the project structure or the development processes is made, it is reflected in `README.md`, `CONTRIBUTING.md`, or another suitable file or even the website  
 * when a new feature is merged, documentation is added to the website
