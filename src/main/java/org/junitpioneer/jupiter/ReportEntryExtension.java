@@ -64,10 +64,10 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback {
 	}
 
 	private void publishOnConditions(ExtensionContext context, ReportEntry.PublishCondition... conditions) {
-		// we filter for empty keys/values because this is called if the test failed -
-		// even if it's due to bad extension configuration (but we don't publish for those).
 		findAnnotations(context)
 				.filter(entry -> Arrays.asList(conditions).contains(entry.when()))
+				// we filter for empty keys/values because this is called if the test failed -
+				// even if it's due to bad extension configuration (but we don't publish for those)
 				.filter(entry -> !entry.key().isEmpty() && !entry.value().isEmpty())
 				.forEach(entry -> context.publishReportEntry(entry.key(), entry.value()));
 	}

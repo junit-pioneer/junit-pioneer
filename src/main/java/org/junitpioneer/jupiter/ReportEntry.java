@@ -53,7 +53,7 @@ public @interface ReportEntry {
 	PublishCondition when() default PublishCondition.ALWAYS;
 
 	/**
-	 * The available values you can choose from to define when
+	 * The available values you can choose from to define for which test outcomes
 	 * the extension should publish the report entry.
 	 */
 	enum PublishCondition {
