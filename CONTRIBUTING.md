@@ -139,7 +139,7 @@ For bonus points, adhere to the following rule.
 For branches that are pushed directly to this repo (take note maintainers!), this naming strategy is obligatory:
 
 * branches intended to fix an issue must be named `issue/$NUMBER-$TITLE` where `$NUMBER` is the issue number on GitHub and `$TITLE` a very short summary of what the issue is about (for those of us who don't know all issues by heart) in lower case letters and dash-separated, e.g. `issue/226-team-of-maintainers`
-* branches intended to fix an issue that is already being worked on (hence the name is already blocked), copy its name but append the maintainer's name
+* Branches intended to fix an issue that is already being worked on (hence the name is already blocked), copy its name but append the maintainer's name, e.g. `issue/226-team-of-maintainers_bukama`
 * branches intended to experiment with something must be named `lab/$TITLE`, where `$TITLE` works like above
 
 Issue branches should be deleted after they are merged.
