@@ -79,18 +79,15 @@ In lexicographic order, these are:
 	<dt>Matthias Bünger aka <a href="https://github.com/Bukama">Bukama</a></dt>
 	<dd>(Always tries to become a better) Java developer, loves testing and reads <a href="https://twitter.com/bukamabish">tweets</a>.
 		Became a maintainer in April 2020, after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
-
-	<dt>Nicolai Parlog aka  <a href="https://github.com/nicolaiparlog">nicolaiparlog</a></dt>
+	<dt>Nicolai Parlog aka <a href="https://github.com/nicolaiparlog">nicolaiparlog</a></dt>
 	<dd>Java enthusiast with a passion for learning and sharing.
 		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://codefx.org">codefx.org</a>.
 		That aside, he's best known for his head decor.
 		He co-founded the project in November 2016 and has maintained it ever since (although often very negligently).</dd>
-	
 	<dt>Simon Schrottner aka <a href="https://github.com/aepfli">aepfli</a></dt>
 	<dd>Bearded guy in Lederhosen, who loves to code, and loves to explore code quality, testing, and other tools that can improve the live of a software craftsman.
 		<a href="https://www.couchsurfing.com/people/simmens">Passionated couchsurfer</a> and <a href="https://www.facebook.com/togtrama">hobby event planner</a>.
 		Maintainer since April 2020.</dd>
-
 	<dt>Steve Moyer aka <a href="https://github.com/smoyer64">smoyer64</a></dt>
 	<dd>Co-founded the project in November 2016.</dd>
 </dl>
