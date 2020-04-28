@@ -5,18 +5,24 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
 * [If you're new to Open Source](#if-youre-new-to-open-source)
-* [Writing Code](writing-code)
-	* [Code Organization](code-organization)
-	* [Code Style](code-style)
-	* [Documentation](documentation)
+* [Writing Code](#writing-code)
+	* [Code Organization](#code-organization)
+	* [Code Style](#code-style)
+	* [Documentation](#documentation)
 * [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
 	* [Branching Strategy](#branching-strategy)
 	* [Commits](#commits)
 	* [Pull Requests](#pull-requests)
 	* [Merging](#merging)
+	* [Commit Message](#commit-message)
 * [Updating Dependency on JUnit 5](#updating-dependency-on-junit-5)
 * [Publishing](#publishing)
 	* [Versioning](#versioning)
+* [Pioneer Maintainers](#pioneer-maintainers)
+	* [What We Do](#what-we-do)
+	* [When We Do It](#when-we-do-it)
+	* [Communication](#communication)
+	* [Where The Buck Stops](#where-the-buck-stops)
 
 The guidelines apply to maintainers as well as contributors!
 
@@ -142,15 +148,25 @@ This file is generated automatically.
 ## Fixing Bugs, Developing Features
 
 This section governs how features or bug fixes are developed.
-See the next section for how to adapt to upstream changes.
+See [the section _Updating Dependency on JUnit 5_](#updating-dependency-on-junit-5) for how to adapt to upstream changes.
 
 ### Branching Strategy
 
-By default, development happens in branches, which are merged via pull requests.
+By default, development happens in branches, which are merged via pull requests (PRs from `master` will be closed).
 Special cases, like fixing problems with the CI pipeline, are of course exempt from this guideline.
 
 Please make sure to give branches a meaningful name!
 As an example, the one creating this documentation was called `branching-merging-documentation`.
+For bonus points, adhere to the following rule.
+
+For branches that are pushed directly to this repo (take note maintainers!), this naming strategy is obligatory:
+
+* branches intended to fix an issue must be named `issue/$NUMBER-$TITLE` where `$NUMBER` is the issue number on GitHub and `$TITLE` a very short summary of what the issue is about (for those of us who don't know all issues by heart) in lower case letters and dash-separated, e.g. `issue/226-team-of-maintainers`
+* branches intended to fix an issue that is already being worked on (hence the name is already blocked), copy its name but append an underscore and the maintainer's name, e.g. `issue/226-team-of-maintainers_bukama`
+* branches intended to experiment with something, for which no issue exists, must be named `lab/$TITLE`, where `$TITLE` works like above
+
+Issue branches should be deleted after they are merged.
+Lab branches should be deleted once they become obsolete - when that is the case will be different for each branch.
 
 ### Commits
 
@@ -172,10 +188,18 @@ To enforce the [branching strategy](#branching-strategy) pull requests from `mas
 
 ### Merging
 
+Only maintainers can merge pull requests, so PRs from contributors require that at least one maintainer agrees with the changes.
+Ideally, two should give their thumbs up, though.
+Likewise, PRs opened by a maintainer should be reviewed and agreed to by at least one other maintainer.
+Going further, we should avoid merging PRs that one maintainer outright disagrees with and instead work towards a solution that is acceptable to everybody.
+Note all the _should_-s - exceptions can be made if justifiable (e.g. maintainers don't react or there is reason to hurry).
+
 A pull request is accepted by squashing the commits and fast-forwarding master, making each bug fix or feature appear atomically on master.
 This can be achieved with GitHub's [_squash and merge_](https://help.github.com/articles/about-pull-request-merges/#squash-and-merge-your-pull-request-commits) feature.
 
-To make the single commit expressive its message must be detailed and [good]((http://chris.beams.io/posts/git-commit/)) (really, read that post!).
+### Commit Message
+
+To make the single commit expressive, its message must be detailed and [good]((http://chris.beams.io/posts/git-commit/)) (really, read that post!).
 Furthermore, it must follow this structure:
 
 ```
@@ -277,3 +301,56 @@ That means, for now, contributors only have to care about _minor_.
 Since each non-trivial change is developed in a PR, this is the place to discuss whether the minor version should be increased, i.e. whether a change or feature is "substantial".
 If it is, the PR needs to update `version-properties` to the next minor version.
 Note that the feature's Javadoc needs to reference the same version in its `@since` tag.
+
+
+## Pioneer Maintainers
+
+JUnit Pioneer is maintained by a small team of people who work on it in their free time - see [`README.md`](README.md) for a list.
+
+### What We Do
+
+As maintainers, we may work on features, but it is perfectly ok to leave that to contributors.
+Our main focus should be to keep the project moving forward:
+
+* vet, label, relate, and reply to issues
+* provide technical guidance for contributors in issues and PRs
+* work on behind-the-scenes tasks like CI, documentation, etc.
+* release new versions
+
+While maintainers will naturally gravitate towards tasks they prefer working on, there is no formal separation of duties and everybody's opinion on every topic is valued.
+
+### When We Do It
+
+We all have a soft spot for the project, but we also have jobs, families, hobbies, and other human afflictions.
+There's no expectation of availability!
+This applies to users opening issues, contributors providing PRs, and other maintainers - none of them can _expect_ a maintainer to have time to reply to their request. 
+
+### Communication
+
+These are the channels we use to communicate with one another, our contributors, and users - in decreasing order of importance:
+
+1. [project website](https://junit-pioneer.org)
+2. files in the repository (like [`README.md`](README.md) and and this `CONTRIBUTING.md`)
+3. Git commit messages
+4. issues/PRs [on GitHub](https://github.com/junit-pioneer/junit-pioneer)
+5. _#junit-pioneer_ channel [in Discord](https://discord.gg/rHfJeCF)
+6. team calls (organized in said Discord)
+7. occasional [Twitch streams](https://twitch.tv/nipafx)
+
+Whatever channel is being used to discuss a topic, the goal is always to push a summary and the conclusion of that conversation up the list as far as possible.
+This is particularly important for the last three channels - "document or didn't happen".
+A few examples:
+
+* when we discover a problem or possible feature on stream, a new GitHub issue will be created
+* when a team call or Discord discussion shapes our opinion on an issue or PR, the discussion (not just the conclusion!) is summarized in the issue or PR (see [the comments on the ShipKit evaluation](https://github.com/junit-pioneer/junit-pioneer/issues/193#issuecomment-611620554) for an example)
+* when a PR is merged, the commit message summarizes what it is about (see [_Commit Message_](#commit-message) above)
+* when a decision regarding the project structure or the development processes is made, it is reflected in `README.md`, `CONTRIBUTING.md`, or another suitable file or even the website  
+* when a new feature is merged, documentation is added to the website
+
+### Where The Buck Stops
+
+This project was founded by [Nicolai Parlog](https://github.com/nicolaiparlog) (together with [Steve Moyer](https://github.com/smoyer64)) and I (surprise, it's me writing this section) maintained it almost exclusively for the first two years.
+As such, I have the right to overrule any decision that was made by other maintainers.
+This also translates to a duty to do that with any decision that could end up harming the project in any form.
+On other words, the buck stops with me and, ultimately, I bare responsibility for all mistakes.
+(Moral responsibility, that is - legally, nobody has any responsibility. 😉)

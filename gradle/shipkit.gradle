@@ -8,7 +8,7 @@ shipkit {
    gitHub.writeAuthToken = System.getenv('GITHUB_WRITE_TOKEN')
 
    // Needed for uploading to Maven Central
-   team.developers = ['nicolaiparlog:Nicolai Parlog']
+   team.developers = ['nicolaiparlog:Nicolai Parlog', 'smoyer64:Steve Moyer', 'Bukama:Matthias Bünger', 'aepfli:Simon Schrottner']
 }
 
 allprojects {
