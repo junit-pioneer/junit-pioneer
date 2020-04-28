@@ -23,6 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * infrastructure. This is functionally identical to calling
  * {@link org.junit.jupiter.api.extension.ExtensionContext#publishReportEntry(String, String) ExtensionContext::publishReportEntry}
  * from within the test method.
+ *
+ * @since 0.5.6
  */
 @Repeatable(ReportEntry.ReportEntries.class)
 @Retention(RetentionPolicy.RUNTIME)
@@ -55,6 +57,8 @@ public @interface ReportEntry {
 	/**
 	 * The available values you can choose from to define for which test outcomes
 	 * the extension should publish the report entry.
+	 *
+	 * @since 0.6
 	 */
 	enum PublishCondition {
 		/**
