@@ -40,8 +40,12 @@ Everybody uses a vocabulary and techniques that appear quite cryptic to those no
 We can't fix that in a short file like this, but we want to provide some pointers to get you started.
 If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and ask us to explain it better.
 
-First off, like for many open source projects, contributing code changes to JUnit Pioneer should be done via pull requests from a fork.
+* First off, like for many open source projects, contributing code changes to JUnit Pioneer should be done via pull requests from a fork.
 If you are not familiar with this concept, please have a look at the [GitHub help page](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks).
+* `README.md` and `CONTRIBUTING.md` are written in Markdown.
+For information on how to use it, see [GitHub's documentation](https://guides.github.com/features/mastering-markdown/).
+* The [feature documentation](#documentation) is written in AsciiDoctor.
+For information on how to use it, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
 
 ## Writing Code
 
@@ -99,6 +103,14 @@ Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue
 
 ### Documentation
 
+There are several aspects of this project's documentation.
+Some project-specific requirements apply to all files:
+
+* one sentence per line, i.e. no matter how short or long a sentence is, it will occupy a single line, not shared with any other sentences
+* to start a new paragraph, add a single blank line
+
+#### Feature Documentation
+
 Each feature is documented on [the project website](https://junit-pioneer.org/docs/), which is pulled from the files in the `docs/` folder, where each feature has:
 
 * an entry in `docs-nav.yml` (lexicographically ordered)
@@ -106,13 +118,24 @@ Each feature is documented on [the project website](https://junit-pioneer.org/do
 
 Add these entries when implementing a new feature and update them when changing an existing one.
 
-For information on how to use AsciiDoctor, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
-One project-specific requirement:
+#### README.md and CONTRIBUTING.md
 
-* one sentence per line, i.e. no matter how short or long a sentence is, it will occupy a single line, not shared with any other sentences
-* to start a new paragraph, add a single blank line
+Changes to project processes are usually reflected in these files (and are thus mostly done by maintainers).
+One aspect that's relevant to contributors is the list of contributions at the end of [README.md](README.md) - if you fixed a bug or added a feature, please add yourself to that list in the following form:
 
-Finally, do **not** update the `release-notes.md` file!
+```md
+* [$NAME]($GITHUB-URL) $CONTRIBUTIONS
+```
+
+* `$NAME` can be your actual name or your GitHub account name
+* `$GITHUB-URL` is the URL to your GitHub account
+* `$CONTRIBUTIONS` is a list of one or two contributions (possibly with an appended "and more" if there are more)
+	* for new features, link to the feature documentation on [junit-pioneer.org](https://junit-pioneer.org)
+	* include issue and pull request IDs in the form `(#123 / #125)`
+
+#### Release Notes
+
+Do **not** update the `release-notes.md` file!
 This file is generated automatically.
 
 

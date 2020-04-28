@@ -11,6 +11,7 @@ A melting pot for all kinds of extensions to
 
 Check out [junit-pioneer.org](http://junit-pioneer.org), particularly [the documentation section](http://junit-pioneer.org/docs).
 
+
 ## A Pioneer's Mission
 
 JUnit Pioneer provides extensions for [JUnit 5](https://github.com/junit-team/junit5/) and its Jupiter API.
@@ -18,6 +19,7 @@ It does not limit itself to proven ideas with wide application but is purposely 
 It aims to spin off successful and cohesive portions into sibling projects or back into the JUnit 5 code base.
 
 To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its infrastructure, from code style to build tool and configuration to continuous integration.
+
 
 ## Getting on Board
 
@@ -44,19 +46,8 @@ For Gradle:
 testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
 ```
 
-## Contributing
 
-We welcome contributions of all shapes and forms! 🌞
-
-* If you have an idea for an extension, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and let's discuss.
-* If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly [unassigned ones](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee) and those [marked as up for grabs](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs).
-* If you want to have a chat about JUnit Pioneer, [join our discord](https://discord.gg/rHfJeCF) - we have a `#junit-pioneer` channel. 😊
-
-Before contributing, please read the [contribution guide](CONTRIBUTING.md).
-
-## Project Structure
-
-### Dependencies
+## Dependencies
 
 To not add to user's [JAR hell](https://blog.codefx.org/java/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
 Pioneer always depends on the lowest JUnit 5 version that supports its feature set, but that should not keep you from using 5's latest and greatest.
@@ -69,3 +60,67 @@ For our own infrastructure, we rely on the following compile and test dependenci
 * Log4J (to configure logging during test runs)
 * Jimfs (as an in-memory file system for our test)
 
+## Contributing
+
+We welcome contributions of all shapes and forms! 🌞
+
+* If you have an idea for an extension, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and let's discuss.
+* If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly [unassigned ones](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee) and those [marked as up for grabs](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs).
+* If you want to have a chat about JUnit Pioneer, [join our discord](https://discord.gg/rHfJeCF) - we have a `#junit-pioneer` channel. 😊
+
+Before contributing, please read the [contribution guide](CONTRIBUTING.md).
+
+### Maintainers
+
+JUnit Pioneer is maintained by a small team of people who work on it in their free time - see [`CONTRIBUTING.md`](CONTRIBUTING.md) for details on how they do that.
+In lexicographic order, these are:
+
+<dl>
+	<dt>Matthias Bünger aka <a href="https://github.com/Bukama">Bukama</a></dt>
+	<dd>(Always tries to become a better) Java developer, loves testing and reads <a href="https://twitter.com/bukamabish">tweets</a>.
+		Became a maintainer in April 2020, after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
+
+	<dt>Nicolai Parlog aka  <a href="https://github.com/nicolaiparlog">nicolaiparlog</a></dt>
+	<dd>Java enthusiast with a passion for learning and sharing.
+		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://codefx.org">codefx.org</a>.
+		That aside, he's best known for his head decor.
+		He co-founded the project in November 2016 and has maintained it ever since (although often very negligently).</dd>
+	
+	<dt>Simon Schrottner aka <a href="https://github.com/aepfli">aepfli</a></dt>
+	<dd>Bearded guy in Lederhosen, who loves to code, and loves to explore code quality, testing, and other tools that can improve the live of a software craftsman.
+		<a href="https://www.couchsurfing.com/people/simmens">Passionated couchsurfer</a> and <a href="https://www.facebook.com/togtrama">hobby event planner</a>.
+		Maintainer since April 2020.</dd>
+
+	<dt>Steve Moyer aka <a href="https://github.com/smoyer64">smoyer64</a></dt>
+	<dd>Co-founded the project in November 2016.</dd>
+</dl>
+
+### Contributors
+
+JUnit Pioneer, as small as it is, would be much smaller without kind souls contributing their time, energy, and skills.
+Thank you for your efforts! 🙏
+
+The least we can do is to thank them and list their accomplishments here (in lexicographic order).
+
+#### 2020
+
+* [Allon Murienik](https://github.com/mureinik) contributed [the range sources](https://junit-pioneer.org/docs/range-sources/) (#44 / #123)
+* [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133)
+* [Mark Rösler](https://github.com/Hancho2009) contributed the environment variable extension (#167 / #174)
+* [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
+* [Matthias Bünger](https://github.com/Bukama) opened, vetted, and groomed countless issues and PRs and contributed multiple refactorings (e.g. #165 / #168) and fixes (e.g. #190 / #200) before getting promoted to maintainer
+* [Mihály Verhás](https://github.com/Michael1993) commented on multiple issues and PRs
+* [Simon Schrottner](https://github.com/aepfli) contributed to multiple issues and PRs and almost single-handedly revamped the build and QA process (e.g. #192 / #185) before getting promoted to maintainer
+
+#### 2019
+
+* [Alex Panchenko](https://github.com/panchenko) fixed a noteworthy bug in the `TempDirectory` extension (#140)
+* [Christian Stein](https://github.com/sormuras) helped get the project back on track (yes, again, I told you Nicolai was negligent)
+* [Daniel Kraus](https://github.com/beatngu13) improved Shipkit integration (#148 / #151)
+* [Marc Philipp](https://github.com/marcphilipp) helped get the project back on track and converted `build.gradle` to Kotlin (#145)
+
+#### 2018
+
+* [Benedikt Ritter](https://github.com/britter) contributed [the default locale and time zone extensions](https://junit-pioneer.org/docs/default-locale-timezone/) (#103 / #104)
+* [Christian Stein](https://github.com/sormuras) introduced Shipkit-based continuous delivery (#87) and build scans (#124 / #132)
+* [Marc Philipp](https://github.com/marcphilipp) helped get the project back on track and contributed [the `TempDirectory` extension](https://junit-pioneer.org/docs/temp-directory/) (#39 / #69)
