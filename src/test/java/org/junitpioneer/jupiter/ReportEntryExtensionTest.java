@@ -12,8 +12,8 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junitpioneer.testkit.PioneerAssertContainer.PioneerAssert.assertThat;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.util.List;
 import java.util.Map;

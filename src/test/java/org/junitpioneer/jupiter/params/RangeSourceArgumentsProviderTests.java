@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter.params;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.testkit.PioneerAssertContainer.PioneerAssert.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.List;
