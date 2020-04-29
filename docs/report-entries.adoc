@@ -25,8 +25,8 @@ So, you would use it like this:
 ----
 @Test
 void reportingTest(TestReporter reporter) {
-    reporter.publishEntry("Hello World!");
     // YOUR TEST CODE HERE
+    reporter.publishEntry("Hello World!");
 }
 ----
 
@@ -51,7 +51,9 @@ void reportingTest() {
 }
 ----
 
-...and the extension will publish your report entry for you!
+...and the extension will publish your report entry for you after the test was executed!
+
+=== Multiple entries
 
 You can declare multiple report entries on the same test (the annotation is repeatable).
 
@@ -78,3 +80,34 @@ void edgarAllanPoe() {
 ----
 
 Again, just like `TestReporter::publishEntry`, if no key is given it defaults to `"value"` (yes, that's not a mixup).
+
+=== Publish conditions
+
+You can specify a `PublishCondition` parameter on the `@ReportEntry` annotation for better control when the extension should publish your entry.
+Just so:
+
+[source,java]
+----
+@Test
+@ReportEntry(key = "line", value = "success entry", when = ReportEntry.PublishCondition.ON_SUCCESS)
+void sufferingFromSuccess() {
+    // YOUR TEST CODE HERE
+}
+----
+
+The publish condition must be a value of the `ReportEntry.PublishCondition` enum, which has the following values:
+
+ALWAYS::
+The extension will always publish your entry when the test runs, regardless of its outcome.
+(This is the default.)
+
+ON_SUCCESS::
+The extension will publish your report entry if the test finishes successfully.
+
+ON_FAILURE::
+The extension will publish your report entry if the test fails.
+
+ON_ABORTED::
+The extension will publish your report entry if the test was aborted (for example because of an https://junit.org/junit5/docs/current/user-guide/#writing-tests-assumptions[Assumption]).
+
+Entries will always be published after the test finished.
