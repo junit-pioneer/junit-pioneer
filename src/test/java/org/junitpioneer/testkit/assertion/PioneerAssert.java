@@ -10,18 +10,16 @@
 
 package org.junitpioneer.testkit.assertion;
 
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
-import org.junit.platform.engine.TestExecutionResult;
 import org.junitpioneer.testkit.ExecutionResults;
 
-public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults>
-		implements SingleReportEntryAssert, FailureAssert, ExceptionAssert, ExecutionResultAssert {
+public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults> implements ExecutionResultAssert {
 
 	private PioneerAssert(ExecutionResults actual) {
 		super(actual, PioneerAssert.class);
@@ -32,94 +30,59 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public SingleReportEntryAssert hasSingleReportEntry() {
-		isNotNull();
+	public ReportEntryAssert hasNumberOfReportEntries(int expected) {
+		List<Map<String, String>> entries = actual.reportEntries();
+		Assertions.assertThat(entries).hasSize(expected);
+		Integer[] ones = IntStream.generate(() -> 1).limit(expected).boxed().toArray(Integer[]::new);
+		Assertions.assertThat(entries).extracting(Map::size).containsExactly(ones);
 
-		List<Map<String, String>> reportEntries = actual.reportEntries();
-		Assertions.assertThat(reportEntries).hasSize(1);
-		Map<String, String> reportEntry = reportEntries.get(0);
-		Assertions.assertThat(reportEntry).hasSize(1);
-
-		return this;
-	}
-
-	@Override
-	public FailureAssert hasSingleFailedTest() {
-		return hasNumberOfFailedTests(1);
-	}
-
-	@Override
-	public FailureAssert hasSingleFailedContainer() {
-		return hasNumberOfFailedContainers(1);
-	}
-
-	@Override
-	public FailureAssert hasNumberOfFailedTests(long expected) {
-		isNotNull();
-		Assertions.assertThat(actual.numberOfFailedTests()).isEqualTo(expected);
-
-		return this;
-	}
-
-	@Override
-	public FailureAssert hasNumberOfFailedContainers(long expected) {
-		isNotNull();
-		Assertions.assertThat(actual.numberOfFailedContainers()).isEqualTo(expected);
-
-		return this;
-	}
-
-	@Override
-	public void hasSingleStartedTest() {
-		hasNumberOfStartedTests(1);
-	}
-
-	@Override
-	public void hasNumberOfStartedTests(long expected) {
-		Assertions.assertThat(actual.numberOfStartedTests()).isEqualTo(expected);
-	}
-
-	@Override
-	public void withKeyAndValue(String key, String value) {
-		Assertions
-				.assertThat(actual.reportEntries().get(0).entrySet().iterator().next())
-				.isEqualTo(new AbstractMap.SimpleEntry<>(key, value));
-	}
-
-	/**
-	 * This method should only be called from methods belonging to {@code FailureAssert} or after.
-	 */
-	private Optional<Throwable> firstFailureThrowable() {
-		return actual
-				.allEvents()
-				.failed()
+		List<Map.Entry<String, String>> entryList = actual
+				.reportEntries()
 				.stream()
-				.findFirst()
-				.flatMap(first -> first.getPayload(TestExecutionResult.class))
-				.flatMap(TestExecutionResult::getThrowable);
+				.flatMap(map -> map.entrySet().stream())
+				.collect(Collectors.toList());
 
+		return new ReportEntryAssert(entryList, expected);
 	}
 
 	@Override
-	public ExceptionAssert andHasException(Class<? extends Throwable> exceptionType) {
-		Optional<Throwable> exception = firstFailureThrowable();
-
-		Assertions.assertThat(exception).isPresent();
-		Assertions.assertThat(exception.get()).isInstanceOf(exceptionType);
-
-		return this;
+	public ReportEntryAssert hasSingleReportEntry() {
+		return hasNumberOfReportEntries(1);
 	}
 
 	@Override
-	public ExceptionAssert andHasException() {
-		Assertions.assertThat(firstFailureThrowable()).isPresent();
-
-		return this;
+	public void hasNoReportEntries() {
+		Assertions.assertThat(actual.reportEntries()).isEmpty();
 	}
 
 	@Override
-	public void withMessageContaining(String... values) {
-		Assertions.assertThat(firstFailureThrowable().get()).hasMessageContainingAll(values);
+	public TestAssert hasNumberOfTests(int expected) {
+		return new TestAssertBase(actual.testEvents(), expected);
+	}
+
+	@Override
+	public TestAssert hasSingleTest() {
+		return hasNumberOfTests(1);
+	}
+
+	@Override
+	public TestAssert hasNoTests() {
+		return hasNumberOfTests(0);
+	}
+
+	@Override
+	public TestAssert hasNumberOfContainers(int expected) {
+		return new TestAssertBase(actual.containerEvents(), expected);
+	}
+
+	@Override
+	public TestAssert hasSingleContainer() {
+		return hasNumberOfContainers(1);
+	}
+
+	@Override
+	public TestAssert hasNoContainers() {
+		return hasNumberOfContainers(0);
 	}
 
 }

@@ -10,11 +10,16 @@
 
 package org.junitpioneer.testkit.assertion;
 
-/**
- * Used to assert a single report entry.
- */
-public interface SingleReportEntryAssert {
+public interface TestAssert {
 
-	void withKeyAndValue(String key, String value);
+	FollowingTestAssert thatStarted();
+
+	FailureAssert thatFailed();
+
+	void thatSucceeded();
+
+	void thatAborted();
+
+	TestAssert dynamicallyRegistered();
 
 }

@@ -204,7 +204,7 @@ class SystemPropertyExtensionTests {
 					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailWhenClearAndSetSameSystemProperty");
 
-			assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -217,7 +217,7 @@ class SystemPropertyExtensionTests {
 					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailWhenClearSameSystemPropertyTwice");
 
-			assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -226,7 +226,7 @@ class SystemPropertyExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailWhenSetSameSystemPropertyTwice");
-			assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 		}
 
 	}

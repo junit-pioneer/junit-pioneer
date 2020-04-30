@@ -10,13 +10,12 @@
 
 package org.junitpioneer.testkit.assertion;
 
-/**
- * Used to assert failed containers/tests.
- */
-public interface FailureAssert {
+public interface FollowingTestAssert {
 
-	ExceptionAssert withException(Class<? extends Throwable> exceptionType);
+	FailureAssert thenFailed();
 
-	ExceptionAssert withException();
+	void thenSucceeded();
+
+	void thenAborted();
 
 }

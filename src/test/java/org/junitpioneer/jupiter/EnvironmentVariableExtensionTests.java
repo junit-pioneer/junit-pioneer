@@ -211,7 +211,7 @@ class EnvironmentVariableExtensionTests {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 				"shouldFailWhenClearAndSetSameEnvironmentVariable");
 
-			assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -223,7 +223,7 @@ class EnvironmentVariableExtensionTests {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 				"shouldFailWhenClearSameEnvironmentVariableTwice");
 
-			assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -232,7 +232,7 @@ class EnvironmentVariableExtensionTests {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 				"shouldFailWhenSetSameEnvironmentVariableTwice");
 
-			assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 		}
 
 	}

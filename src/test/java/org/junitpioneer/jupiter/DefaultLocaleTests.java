@@ -99,7 +99,7 @@ class DefaultLocaleTests {
 		void shouldExecuteTestsWithConfiguredLocale() {
 			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
 
-			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+			assertThat(results).hasNumberOfTests(2).thatSucceeded();
 		}
 
 		@AfterEach
@@ -178,7 +178,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 					"shouldFailMissingConfiguration");
 
-				assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+				assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 			}
 
 			@Test
@@ -187,7 +187,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 					"shouldFailMissingCountry");
 
-				assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+				assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 			}
 
 			@Test
@@ -196,7 +196,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 					"shouldFailLanguageTagAndLanguage");
 
-				assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+				assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 			}
 
 			@Test
@@ -205,7 +205,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 					"shouldFailLanguageTagAndCountry");
 
-				assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+				assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 			}
 
 			@Test
@@ -214,7 +214,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 					"shouldFailLanguageTagAndVariant");
 
-				assertThat(results).hasSingleFailedTest().andHasException(ExtensionConfigurationException.class);
+				assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
 			}
 
 		}
@@ -228,7 +228,10 @@ class DefaultLocaleTests {
 			void shouldFailWhenVariantIsSetButCountryIsNot() {
 				ExecutionResults results = executeTestClass(ClassLevelInitializationFailureTestCase.class);
 
-				assertThat(results).hasSingleFailedContainer().andHasException(ExtensionConfigurationException.class);
+				assertThat(results)
+						.hasSingleContainer()
+						.thatFailed()
+						.withException(ExtensionConfigurationException.class);
 			}
 
 		}

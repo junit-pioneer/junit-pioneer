@@ -10,13 +10,16 @@
 
 package org.junitpioneer.testkit.assertion;
 
-/**
- * Used to assert failed containers/tests.
- */
-public interface FailureAssert {
+import org.assertj.core.api.AbstractAssert;
 
-	ExceptionAssert withException(Class<? extends Throwable> exceptionType);
+public abstract class AbstractPioneerAssert<SELF extends AbstractAssert<SELF, ACTUAL>, ACTUAL>
+		extends AbstractAssert<SELF, ACTUAL> {
 
-	ExceptionAssert withException();
+	protected final int expected;
+
+	protected AbstractPioneerAssert(ACTUAL actual, Class<?> self, int expected) {
+		super(actual, self);
+		this.expected = expected;
+	}
 
 }

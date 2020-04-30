@@ -12,18 +12,22 @@ package org.junitpioneer.testkit.assertion;
 
 public interface ExecutionResultAssert {
 
-	SingleReportEntryAssert hasSingleReportEntry();
+	ReportEntryAssert hasNumberOfReportEntries(int expected);
 
-	FailureAssert hasSingleFailedTest();
+	ReportEntryAssert hasSingleReportEntry();
 
-	FailureAssert hasSingleFailedContainer();
+	void hasNoReportEntries();
 
-	void hasSingleStartedTest();
+	TestAssert hasNumberOfTests(int expected);
 
-	FailureAssert hasNumberOfFailedTests(long expected);
+	TestAssert hasSingleTest();
 
-	FailureAssert hasNumberOfFailedContainers(long expected);
+	TestAssert hasNoTests();
 
-	void hasNumberOfStartedTests(long expected);
+	TestAssert hasNumberOfContainers(int expected);
+
+	TestAssert hasSingleContainer();
+
+	TestAssert hasNoContainers();
 
 }

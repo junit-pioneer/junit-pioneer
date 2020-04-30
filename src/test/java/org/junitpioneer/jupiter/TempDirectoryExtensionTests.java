@@ -102,9 +102,8 @@ class TempDirectoryExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestClass(AnnotationOnAfterAllMethodParameterTestCase.class);
 
-			assertThat(results.numberOfStartedTests()).isEqualTo(1);
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+			assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
+			assertThat(results).hasNoTests().thatFailed();
 
 			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir).isPresent();
 			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir.get()).doesNotExist();
@@ -159,8 +158,7 @@ class TempDirectoryExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(DeletionTestCase.class, "test", "java.nio.file.Path");
 
-			assertThat(results.numberOfStartedTests()).isEqualTo(1);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+			assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
 
 			assertThat(DeletionTestCase.tempDir).isPresent();
 			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
@@ -173,8 +171,7 @@ class TempDirectoryExtensionTests {
 					.executeTestMethodWithParameterTypes(DeletionTestCase.class, "testThatDeletes",
 						"java.nio.file.Path");
 
-			assertThat(results.numberOfStartedTests()).isEqualTo(1);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+			assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
 
 			assertThat(DeletionTestCase.tempDir).isPresent();
 			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
@@ -192,9 +189,10 @@ class TempDirectoryExtensionTests {
 			ExecutionResults results = PioneerTestKit.executeTestClass(InvalidTestCase.class);
 
 			assertThat(results)
-					.hasSingleFailedTest()
-					.andHasException(ParameterResolutionException.class)
-					.withMessageContaining("Can only resolve parameter of type java.nio.file.Path");
+					.hasSingleTest()
+					.thatFailed()
+					.withException(ParameterResolutionException.class)
+					.thatHasMessageContaining("Can only resolve parameter of type java.nio.file.Path");
 		}
 
 		@Test
@@ -203,9 +201,10 @@ class TempDirectoryExtensionTests {
 			ExecutionResults results = PioneerTestKit.executeTestClass(FailedCreationAttemptTestCase.class);
 
 			assertThat(results)
-					.hasSingleFailedTest()
-					.andHasException(ParameterResolutionException.class)
-					.withMessageContaining("Failed to create custom temp directory");
+					.hasSingleTest()
+					.thatFailed()
+					.withException(ParameterResolutionException.class)
+					.thatHasMessageContaining("Failed to create custom temp directory");
 		}
 
 		@Test
@@ -214,9 +213,10 @@ class TempDirectoryExtensionTests {
 			ExecutionResults results = PioneerTestKit.executeTestClass(FailedDeletionAttemptTestCase.class);
 
 			assertThat(results)
-					.hasSingleFailedTest()
-					.andHasException(IOException.class)
-					.withMessageContaining("Failed to delete temp directory");
+					.hasSingleTest()
+					.thatFailed()
+					.withException(IOException.class)
+					.thatHasMessageContaining("Failed to delete temp directory");
 		}
 
 		@Test
@@ -225,9 +225,10 @@ class TempDirectoryExtensionTests {
 			ExecutionResults results = PioneerTestKit.executeTestClass(ErroneousParentDirProviderTestCase.class);
 
 			assertThat(results)
-					.hasSingleFailedTest()
-					.andHasException(ParameterResolutionException.class)
-					.withMessageContaining("Failed to get parent directory");
+					.hasSingleTest()
+					.thatFailed()
+					.withException(ParameterResolutionException.class)
+					.thatHasMessageContaining("Failed to get parent directory");
 		}
 
 	}
@@ -235,9 +236,8 @@ class TempDirectoryExtensionTests {
 	private void assertResolvesShareTempDir(Class<? extends BaseSharedTempDirTestCase> testClass) {
 		ExecutionResults results = PioneerTestKit.executeTestClass(testClass);
 
-		assertThat(results.numberOfStartedTests()).isEqualTo(2);
-		assertThat(results.numberOfFailedTests()).isEqualTo(0);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+		assertThat(results).hasNumberOfTests(2).thatStarted().thenSucceeded();
+		assertThat(results).hasNoTests().thatFailed();
 
 		assertThat(BaseSharedTempDirTestCase.tempDir).isPresent();
 		assertThat(BaseSharedTempDirTestCase.tempDir.get()).doesNotExist();
@@ -246,9 +246,8 @@ class TempDirectoryExtensionTests {
 	private void assertResolvesSeparateTempDirs(Class<? extends BaseSeparateTempDirsTestCase> testClass) {
 		ExecutionResults results = PioneerTestKit.executeTestClass(testClass);
 
-		assertThat(results.numberOfStartedTests()).isEqualTo(2);
-		assertThat(results.numberOfFailedTests()).isEqualTo(0);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+		assertThat(results).hasNumberOfTests(2).thatStarted().thenSucceeded();
+		assertThat(results).hasNoTests().thatFailed();
 		Deque<Path> tempDirs = BaseSeparateTempDirsTestCase.tempDirs;
 		assertThat(tempDirs).hasSize(2);
 	}

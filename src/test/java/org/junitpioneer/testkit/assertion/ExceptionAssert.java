@@ -15,6 +15,8 @@ package org.junitpioneer.testkit.assertion;
  */
 public interface ExceptionAssert {
 
-	void withMessageContaining(String... values);
+	void thatHasMessage(String message);
+
+	void thatHasMessageContaining(String... values);
 
 }

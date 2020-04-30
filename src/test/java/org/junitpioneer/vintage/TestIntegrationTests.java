@@ -29,16 +29,14 @@ class TestIntegrationTests {
 	void test_successfulTest_passes() throws Exception {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_successfulTest");
 
-		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+		assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
 	void test_exceptionThrown_fails() throws Exception {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_exceptionThrown");
 
-		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results).hasSingleTest().thatStarted().thenFailed();
 	}
 
 	// expected exception
@@ -48,12 +46,12 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_successfulTest");
 
-		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-
 		assertThat(results)
-				.hasSingleFailedTest()
-				.andHasException()
-				.withMessageContaining(format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class));
+				.hasSingleTest()
+				.thatStarted()
+				.thenFailed()
+				.withException()
+				.thatHasMessageContaining(format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class));
 	}
 
 	@org.junit.jupiter.api.Test
@@ -61,8 +59,7 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfRightType");
 
-		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+		assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -70,8 +67,7 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSubtype");
 
-		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+		assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -79,8 +75,7 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSupertype");
 
-		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results).hasSingleFailedTest().andHasException(RuntimeException.class);
+		assertThat(results).hasSingleTest().thatStarted().thenFailed().withException(RuntimeException.class);
 	}
 
 	// timeout
@@ -89,21 +84,23 @@ class TestIntegrationTests {
 	void testWithTimeout_belowTimeout_passes() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowTimeout");
 
-		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+		assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_exceedsTimeout_fails() throws Exception {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithTimeout_exceedsTimeout");
-
-		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-
 		String expectedMessage = format(TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1, 10);
 		// the message contains the actual run time, which is unpredictable, so it has to be cut off for the assertion
 		String expectedKnownPrefix = expectedMessage.substring(0, expectedMessage.length() - 6);
-		assertThat(results).hasSingleFailedTest().andHasException().withMessageContaining(expectedKnownPrefix);
+
+		assertThat(results)
+				.hasSingleTest()
+				.thatStarted()
+				.thenFailed()
+				.withException()
+				.thatHasMessageContaining(expectedKnownPrefix);
 	}
 
 	// TEST CASES -------------------------------------------------------------------
