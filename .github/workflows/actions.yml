@@ -57,7 +57,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     name: Deploy with Shipkit
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/lab/deploymentWithGithub'
     steps:
       - uses: actions/checkout@v2
       - name: Setup java
@@ -71,8 +71,8 @@ jobs:
           GH_WRITE_TOKEN: ${{ secrets.GH_WRITE_TOKEN }}
           BINTRAY_USER_NAME: ${{ secrets.BINTRAY_USER_NAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          NEXUS_TOKEN_USERNAME: "<fill this out>"
-          NEXUS_TOKEN_PASSWORD: "<fill this out>"
+          NEXUS_TOKEN_USERNAME: ${{ secrets.NEXUS_TOKEN_USERNAME }}
+          NEXUS_TOKEN_PASSWORD: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
         with:
           arguments: ciPerformRelease 
 
