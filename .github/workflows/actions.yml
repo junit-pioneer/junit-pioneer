@@ -61,11 +61,11 @@ jobs:
     name: Deploy with Shipkit
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/lab/deploymentWithGithub'
     steps:
-      - name: Run string replace
+      - name: Sanitize Branch
         uses: frabert/replace-string-action@master
         id: gitbranch
         with:
-          pattern: 'refs/head/(.*)'
+          pattern: 'refs/heads/(.*)'
           string: "${{ github.ref }}"
           replace-with: '$1'
       - uses: actions/checkout@v2
