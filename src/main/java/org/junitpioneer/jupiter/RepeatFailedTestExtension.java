@@ -17,6 +17,7 @@ import static java.util.stream.StreamSupport.stream;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -29,7 +30,7 @@ import org.opentest4j.TestAbortedException;
 
 public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
 
-	private static final Namespace NAMESPACE = Namespace.create("org", "codefx", "RepeatFailedTestExtension");
+	private static final Namespace NAMESPACE = Namespace.create(RepeatFailedTestExtension.class);
 
 	@Override
 	public boolean supportsTestTemplate(ExtensionContext context) {
@@ -83,7 +84,7 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 			return new FailedTestRepeater(repeatFailedTest.value());
 		}
 
-		void failed(Throwable exception) throws Throwable {
+		void failed(Throwable exception) {
 			exceptionsSoFar++;
 
 			boolean allRepetitionsFailed = exceptionsSoFar == maxRepetitions;
@@ -112,6 +113,8 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 
 		@Override
 		public RepeatFailedTestInvocationContext next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
 			repetitionsSoFar++;
 			return new RepeatFailedTestInvocationContext();
 		}

@@ -13,7 +13,6 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-import static org.junit.platform.engine.TestExecutionResult.Status.FAILED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -48,14 +47,11 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEvent;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("TempDirectory extension")
-class TempDirectoryTests extends AbstractPioneerTestEngineTests {
+class TempDirectoryExtensionTests {
 
 	@BeforeEach
 	@AfterEach
@@ -102,12 +98,12 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		@Test
 		@DisplayName("for @AfterAll method parameter when @TempDir is not used on constructor or @BeforeAll method parameter")
 		void resolvesSeparateTempDirWhenAnnotationIsUsedOnAfterAllMethodParameterOnly() {
-			ExecutionEventRecorder executionEventRecorder = executeTests(
-				AnnotationOnAfterAllMethodParameterTestCase.class);
+			ExecutionResults results = PioneerTestKit
+					.executeTestClass(AnnotationOnAfterAllMethodParameterTestCase.class);
 
-			assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(1);
-			assertThat(executionEventRecorder.getTestFailedCount()).isEqualTo(0);
-			assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+			assertThat(results.numberOfStartedTests()).isEqualTo(1);
+			assertThat(results.numberOfFailedTests()).isEqualTo(0);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 
 			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir).isPresent();
 			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir.get()).doesNotExist();
@@ -159,11 +155,11 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		@Test
 		@DisplayName("after test execution")
 		void deletesTempDirAfterExecution() {
-			ExecutionEventRecorder executionEventRecorder = //
-				executeTests(DeletionTestCase.class, "test(java.nio.file.Path)");
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(DeletionTestCase.class, "test", "java.nio.file.Path");
 
-			assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(1);
-			assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+			assertThat(results.numberOfStartedTests()).isEqualTo(1);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 
 			assertThat(DeletionTestCase.tempDir).isPresent();
 			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
@@ -172,11 +168,12 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		@Test
 		@DisplayName("and ignores deleted directory without failing")
 		void ignoresDeletedDirectory() {
-			ExecutionEventRecorder executionEventRecorder = //
-				executeTests(DeletionTestCase.class, "testThatDeletes(java.nio.file.Path)");
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(DeletionTestCase.class, "testThatDeletes",
+						"java.nio.file.Path");
 
-			assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(1);
-			assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(1);
+			assertThat(results.numberOfStartedTests()).isEqualTo(1);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 
 			assertThat(DeletionTestCase.tempDir).isPresent();
 			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
@@ -191,78 +188,67 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		@Test
 		@DisplayName("when @TempDir is used on parameter of wrong type")
 		void onlySupportsParametersOfTypePath() {
-			ExecutionEventRecorder executionEventRecorder = executeTests(InvalidTestCase.class);
+			ExecutionResults results = PioneerTestKit.executeTestClass(InvalidTestCase.class);
 
-			assertSingleFailedTest(executionEventRecorder, ParameterResolutionException.class,
-				"Can only resolve parameter of type java.nio.file.Path");
+			results
+					.assertTestFailedWithThrowableWhichContainsMessage(ParameterResolutionException.class,
+						"Can only resolve parameter of type java.nio.file.Path");
 		}
 
 		@Test
 		@DisplayName("when attempt to create temp dir fails")
 		void failedCreationAttemptMakesTestFail() {
-			ExecutionEventRecorder executionEventRecorder = executeTests(FailedCreationAttemptTestCase.class);
+			ExecutionResults results = PioneerTestKit.executeTestClass(FailedCreationAttemptTestCase.class);
 
-			assertSingleFailedTest(executionEventRecorder, ParameterResolutionException.class,
-				"Failed to create custom temp directory");
+			results
+					.assertTestFailedWithThrowableWhichContainsMessage(ParameterResolutionException.class,
+						"Failed to create custom temp directory");
 		}
 
 		@Test
 		@DisplayName("when attempt to delete temp dir fails")
 		void failedDeletionAttemptMakesTestFail() {
-			ExecutionEventRecorder executionEventRecorder = executeTests(FailedDeletionAttemptTestCase.class);
+			ExecutionResults results = PioneerTestKit.executeTestClass(FailedDeletionAttemptTestCase.class);
 
-			assertSingleFailedTest(executionEventRecorder, IOException.class, "Failed to delete temp directory");
+			results
+					.assertTestFailedWithThrowableWhichContainsMessage(IOException.class,
+						"Failed to delete temp directory");
 		}
 
 		@Test
 		@DisplayName("when attempt to get parent dir from ParentDirProvider fails")
 		void erroneousParentDirProviderMakesTestFail() {
-			ExecutionEventRecorder executionEventRecorder = executeTests(ErroneousParentDirProviderTestCase.class);
+			ExecutionResults results = PioneerTestKit.executeTestClass(ErroneousParentDirProviderTestCase.class);
 
-			assertSingleFailedTest(executionEventRecorder, ParameterResolutionException.class,
-				"Failed to get parent directory");
+			results
+					.assertTestFailedWithThrowableWhichContainsMessage(ParameterResolutionException.class,
+						"Failed to get parent directory");
 		}
 
 	}
 
 	private void assertResolvesShareTempDir(Class<? extends BaseSharedTempDirTestCase> testClass) {
-		ExecutionEventRecorder executionEventRecorder = executeTests(testClass);
+		ExecutionResults results = PioneerTestKit.executeTestClass(testClass);
 
-		assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(2);
-		assertThat(executionEventRecorder.getTestFailedCount()).isEqualTo(0);
-		assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(2);
+		assertThat(results.numberOfStartedTests()).isEqualTo(2);
+		assertThat(results.numberOfFailedTests()).isEqualTo(0);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(2);
 
 		assertThat(BaseSharedTempDirTestCase.tempDir).isPresent();
 		assertThat(BaseSharedTempDirTestCase.tempDir.get()).doesNotExist();
 	}
 
 	private void assertResolvesSeparateTempDirs(Class<? extends BaseSeparateTempDirsTestCase> testClass) {
-		ExecutionEventRecorder executionEventRecorder = executeTests(testClass);
+		ExecutionResults results = PioneerTestKit.executeTestClass(testClass);
 
-		assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(2);
-		assertThat(executionEventRecorder.getTestFailedCount()).isEqualTo(0);
-		assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(2);
+		assertThat(results.numberOfStartedTests()).isEqualTo(2);
+		assertThat(results.numberOfFailedTests()).isEqualTo(0);
+		assertThat(results.numberOfSucceededTests()).isEqualTo(2);
 		Deque<Path> tempDirs = BaseSeparateTempDirsTestCase.tempDirs;
 		assertThat(tempDirs).hasSize(2);
 	}
 
-	private void assertSingleFailedTest(ExecutionEventRecorder executionEventRecorder, Class<? extends Throwable> clazz,
-			String message) {
-
-		assertThat(executionEventRecorder.getTestStartedCount()).isEqualTo(1);
-		assertThat(executionEventRecorder.getTestFailedCount()).isEqualTo(1);
-		assertThat(executionEventRecorder.getTestSuccessfulCount()).isEqualTo(0);
-
-		ExecutionEvent executionEvent = executionEventRecorder.getFailedTestFinishedEvents().get(0);
-		Optional<TestExecutionResult> result = executionEvent.getPayload(TestExecutionResult.class);
-		assertThat(result).isPresent();
-		assertThat(result.get().getStatus()).isEqualTo(FAILED);
-		Optional<Throwable> throwable = result.get().getThrowable();
-		assertThat(throwable).containsInstanceOf(clazz);
-		assertThat(throwable.get()).hasMessageContaining(message);
-	}
-
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class BaseSharedTempDirTestCase {
 
 		static Optional<Path> tempDir;
@@ -336,7 +322,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			extends AnnotationOnBeforeAllMethodParameterTestCase {
 	}
 
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class AnnotationOnAfterAllMethodParameterTestCase {
 
 		static Optional<Path> firstTempDir = Optional.empty();
@@ -396,7 +382,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 	}
 
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class SeparateTempDirsWhenUsedOnForEachLifecycleMethodsTestCase extends BaseSeparateTempDirsTestCase {
 	}
 
@@ -405,7 +391,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 			extends SeparateTempDirsWhenUsedOnForEachLifecycleMethodsTestCase {
 	}
 
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class DeletionTestCase {
 
 		static Optional<Path> tempDir;
@@ -433,7 +419,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 
 	}
 
-	@ExtendWith(TempDirectory.class)
+	@ExtendWith(TempDirectoryExtension.class)
 	static class InvalidTestCase {
 
 		@Test
@@ -460,7 +446,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory
+		Extension tempDirectory = TempDirectoryExtension
 				.createInCustomDirectory(() -> Files.createDirectories(fileSystem.getPath("tmp")));
 
 	}
@@ -468,14 +454,15 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 	static class ParentDirFromProviderTestCase extends BaseSeparateTempDirsTestCase {
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory.createInCustomDirectory((parameterContext, extensionContext) -> {
-			Store store = extensionContext.getRoot().getStore(Namespace.GLOBAL);
-			FileSystem fileSystem = store
-					.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
-						JimfsFileSystemResource.class)
-					.get();
-			return Files.createDirectories(fileSystem.getPath("tmp"));
-		});
+		Extension tempDirectory = TempDirectoryExtension
+				.createInCustomDirectory((parameterContext, extensionContext) -> {
+					Store store = extensionContext.getRoot().getStore(Namespace.GLOBAL);
+					FileSystem fileSystem = store
+							.getOrComputeIfAbsent("jimfs.fileSystem", key -> new JimfsFileSystemResource(),
+								JimfsFileSystemResource.class)
+							.get();
+					return Files.createDirectories(fileSystem.getPath("tmp"));
+				});
 
 		static class JimfsFileSystemResource implements CloseableResource {
 
@@ -514,7 +501,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
+		Extension tempDirectory = TempDirectoryExtension.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
 
 		@Test
 		void test(@TempDir Path tempDir) {
@@ -548,7 +535,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		}
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
+		Extension tempDirectory = TempDirectoryExtension.createInCustomDirectory(() -> fileSystem.getPath("tmp"));
 
 		@Test
 		void test(@TempDir Path tempDir) {
@@ -562,7 +549,7 @@ class TempDirectoryTests extends AbstractPioneerTestEngineTests {
 		private FileSystem fileSystem = mock(FileSystem.class);
 
 		@RegisterExtension
-		Extension tempDirectory = TempDirectory.createInCustomDirectory(() -> {
+		Extension tempDirectory = TempDirectoryExtension.createInCustomDirectory(() -> {
 			throw new IOException("something went horribly wrong");
 		});
 

@@ -10,15 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.AbstractMap;
+import java.util.Map;
 
-import org.junit.jupiter.api.extension.ExtendWith;
+public class TestUtils {
 
-@Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(ReportEntryExtension.class)
-public @interface ReportEntries {
-
-	ReportEntry[] value();
+	static Map.Entry<String, String> entryOf(String key, String value) {
+		return new AbstractMap.SimpleEntry<>(key, value);
+	}
 
 }

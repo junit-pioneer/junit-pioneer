@@ -12,8 +12,6 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -21,13 +19,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.test.event.ExecutionEvent;
-import org.junit.platform.engine.test.event.ExecutionEventRecorder;
-import org.junitpioneer.AbstractPioneerTestEngineTests;
+import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("SystemProperty extension")
-class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
+class SystemPropertyExtensionTests {
 
 	@BeforeAll
 	static void globalSetUp() {
@@ -159,7 +154,7 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 	@ClearSystemProperty(key = "set prop A")
 	@SetSystemProperty(key = "set prop B", value = "new B")
 	@Nested
-	class NestedSystemPropertyTests extends AbstractPioneerTestEngineTests {
+	class NestedSystemPropertyTests {
 
 		@Nested
 		@DisplayName("without SystemProperty annotations")
@@ -203,10 +198,12 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 		@Test
 		@DisplayName("should fail when clear and set same system property")
 		void shouldFailWhenClearAndSetSameSystemProperty() {
-			ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
-				"shouldFailWhenClearAndSetSameSystemProperty");
+			Throwable thrown = PioneerTestKit
+					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+						"shouldFailWhenClearAndSetSameSystemProperty")
+					.firstFailuresThrowable();
 
-			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -215,19 +212,23 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 				+ "deduplicates identical annotations like the ones required for this test: "
 				+ "https://github.com/junit-team/junit5/issues/2131")
 		void shouldFailWhenClearSameSystemPropertyTwice() {
-			ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
-				"shouldFailWhenClearSameSystemPropertyTwice");
+			Throwable thrown = PioneerTestKit
+					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+						"shouldFailWhenClearSameSystemPropertyTwice")
+					.firstFailuresThrowable();
 
-			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
 		}
 
 		@Test
 		@DisplayName("should fail when set same system property twice")
 		void shouldFailWhenSetSameSystemPropertyTwice() {
-			ExecutionEventRecorder eventRecorder = executeTests(MethodLevelInitializationFailureTestCase.class,
-				"shouldFailWhenSetSameSystemPropertyTwice");
+			Throwable thrown = PioneerTestKit
+					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+						"shouldFailWhenSetSameSystemPropertyTwice")
+					.firstFailuresThrowable();
 
-			assertExtensionConfigurationFailure(eventRecorder.getFailedTestFinishedEvents());
+			assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
 		}
 
 	}
@@ -253,16 +254,6 @@ class SystemPropertyExtensionTests extends AbstractPioneerTestEngineTests {
 		void shouldFailWhenSetSameSystemPropertyTwice() {
 		}
 
-	}
-
-	private static void assertExtensionConfigurationFailure(List<ExecutionEvent> failedTestFinishedEvents) {
-		assertThat(failedTestFinishedEvents.size()).isEqualTo(1);
-		Throwable thrown = failedTestFinishedEvents
-				.get(0)
-				.getPayload(TestExecutionResult.class)
-				.flatMap(TestExecutionResult::getThrowable)
-				.orElseThrow(AssertionError::new);
-		assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
 	}
 
 }
