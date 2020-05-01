@@ -9,6 +9,7 @@ shipkit {
     gitHub.writeAuthToken = System.getenv('GH_WRITE_TOKEN')
 
     ciManagement.system = 'GitHub Actions'
+    ciManagement.url = 'https://github.com/junit-pioneer/junit-pioneer/actions'
 
     git.releasableBranchRegex = "refs/heads/(master|lab/deploymentWithGithub)"
 
@@ -43,6 +44,12 @@ allprojects {
         }
     }
 
+    /**
+     * This block is needed, as there is a bug in shipkit and its usage with bintray plugin,
+     *     therefore the version in the pom was always MIT
+     *
+     * @see <a href="https://github.com/mockito/shipkit/issues/755">shipkit#755</a>
+     */
     plugins.withId("org.shipkit.java-publish") {
         publishing.publications.javaLibrary.pom.withXml {
             //refer to Groovy xml Node reference for more info how to manipulate xml
