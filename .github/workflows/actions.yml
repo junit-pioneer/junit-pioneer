@@ -5,7 +5,9 @@ name: JUnit Pioneer
 
 on:
   push:
-    branches: 'master'
+    branches:
+      - 'master'
+      - 'lab/deploymentWithGithub'
     tags-ignore: 
       - 'v**'
   pull_request:
