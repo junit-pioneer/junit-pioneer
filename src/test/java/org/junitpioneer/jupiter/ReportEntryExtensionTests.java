@@ -542,7 +542,7 @@ public class ReportEntryExtensionTests {
 		}
 
 		@Test
-		@ReportEntry(value = "And the only word there spoken was the whispered word, “Lenore?”", when = ALWAYS)
+		@ReportEntry(value = "And the only word there spoken was the whispered word, 'Lenore?'", when = ALWAYS)
 		@ReportEntry(value = "This I whispered, and an echo", when = ON_SUCCESS)
 		@ReportEntry(value = "murmured back the word, “Lenore!”—", when = ON_FAILURE)
 		@ReportEntry(value = "Merely this and nothing more.", when = ON_ABORTED)
