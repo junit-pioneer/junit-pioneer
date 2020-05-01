@@ -57,7 +57,7 @@ public class ReportEntryExtensionTests {
 				.hasSingleTest()
 				.thatFailed()
 				.withException()
-				.thatHasMessageContaining("Report entries can't have blank key or value",
+				.hasMessageContainingAll("Report entries can't have blank key or value",
 					"Over many a quaint and curious volume of forgotten lore");
 	}
 
@@ -70,7 +70,7 @@ public class ReportEntryExtensionTests {
 				.hasSingleTest()
 				.thatFailed()
 				.withException()
-				.thatHasMessageContaining("Report entries can't have blank key or value",
+				.hasMessageContainingAll("Report entries can't have blank key or value",
 					"While I nodded, nearly napping");
 	}
 

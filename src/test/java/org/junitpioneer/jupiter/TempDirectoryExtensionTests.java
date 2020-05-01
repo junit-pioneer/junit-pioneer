@@ -192,7 +192,7 @@ class TempDirectoryExtensionTests {
 					.hasSingleTest()
 					.thatFailed()
 					.withException(ParameterResolutionException.class)
-					.thatHasMessageContaining("Can only resolve parameter of type java.nio.file.Path");
+					.hasMessageContainingAll("Can only resolve parameter of type java.nio.file.Path");
 		}
 
 		@Test
@@ -204,7 +204,7 @@ class TempDirectoryExtensionTests {
 					.hasSingleTest()
 					.thatFailed()
 					.withException(ParameterResolutionException.class)
-					.thatHasMessageContaining("Failed to create custom temp directory");
+					.hasMessageContainingAll("Failed to create custom temp directory");
 		}
 
 		@Test
@@ -216,7 +216,7 @@ class TempDirectoryExtensionTests {
 					.hasSingleTest()
 					.thatFailed()
 					.withException(IOException.class)
-					.thatHasMessageContaining("Failed to delete temp directory");
+					.hasMessageContainingAll("Failed to delete temp directory");
 		}
 
 		@Test
@@ -228,7 +228,7 @@ class TempDirectoryExtensionTests {
 					.hasSingleTest()
 					.thatFailed()
 					.withException(ParameterResolutionException.class)
-					.thatHasMessageContaining("Failed to get parent directory");
+					.hasMessageContainingAll("Failed to get parent directory");
 		}
 
 	}

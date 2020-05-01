@@ -174,7 +174,7 @@ class RangeSourceArgumentsProviderTests {
 					.hasSingleContainer()
 					.thatFailed()
 					.withException(PreconditionViolationException.class)
-					.thatHasMessageContaining("Expected exactly one annotation to provide an ArgumentSource, found 2.");
+					.hasMessageContainingAll("Expected exactly one annotation to provide an ArgumentSource, found 2.");
 		}
 
 		@Test
@@ -185,7 +185,7 @@ class RangeSourceArgumentsProviderTests {
 					.hasSingleContainer()
 					.thatFailed()
 					.withException(PreconditionViolationException.class)
-					.thatHasMessageContaining("Illegal range. The step cannot be zero.");
+					.hasMessageContainingAll("Illegal range. The step cannot be zero.");
 		}
 
 		@Test
@@ -196,7 +196,7 @@ class RangeSourceArgumentsProviderTests {
 					.hasSingleContainer()
 					.thatFailed()
 					.withException(PreconditionViolationException.class)
-					.thatHasMessageContaining("Illegal range. There's no way to get from 10 to 0 with a step of 1.");
+					.hasMessageContainingAll("Illegal range. There's no way to get from 10 to 0 with a step of 1.");
 		}
 
 		@Test
@@ -207,7 +207,7 @@ class RangeSourceArgumentsProviderTests {
 					.hasSingleContainer()
 					.thatFailed()
 					.withException(PreconditionViolationException.class)
-					.thatHasMessageContaining("Illegal range. Equal from and to will produce an empty range.");
+					.hasMessageContainingAll("Illegal range. Equal from and to will produce an empty range.");
 		}
 
 	}

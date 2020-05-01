@@ -54,7 +54,7 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.class,
 								"methodIsAnnotated");
-					assertThat(results).hasSingleTest().thatFailed().withException().thatHasMessageContaining("method");
+					assertThat(results).hasSingleTest().thatFailed().withException().hasMessageContainingAll("method");
 				}
 
 				@Test
@@ -66,7 +66,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("root class");
+							.hasMessageContainingAll("root class");
 				}
 
 				@Test
@@ -78,7 +78,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class");
+							.hasMessageContainingAll("nested class");
 				}
 
 				@Test
@@ -91,7 +91,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class");
+							.hasMessageContainingAll("nested class");
 				}
 
 				@Test
@@ -104,7 +104,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class");
+							.hasMessageContainingAll("nested class");
 				}
 
 			}
@@ -127,7 +127,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("method", "root class");
+							.hasMessageContainingAll("method", "root class");
 				}
 
 				@Test
@@ -139,7 +139,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("root class");
+							.hasMessageContainingAll("root class");
 				}
 
 				@Test
@@ -151,7 +151,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class", "root class");
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -164,7 +164,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class", "root class");
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -177,7 +177,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class", "root class");
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 			}
@@ -202,7 +202,7 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
 								"methodIsAnnotated");
-					assertThat(results).hasSingleTest().thatFailed().withException().thatHasMessageContaining("method");
+					assertThat(results).hasSingleTest().thatFailed().withException().hasMessageContainingAll("method");
 				}
 
 				@Test
@@ -215,7 +215,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("root class");
+							.hasMessageContainingAll("root class");
 				}
 
 				@Test
@@ -227,7 +227,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("repeated", "annotation");
+							.hasMessageContainingAll("repeated", "annotation");
 				}
 
 				@Test
@@ -240,7 +240,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class");
+							.hasMessageContainingAll("nested class");
 				}
 
 				@Test
@@ -253,7 +253,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class");
+							.hasMessageContainingAll("nested class");
 				}
 
 				@Test
@@ -266,7 +266,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class");
+							.hasMessageContainingAll("nested class");
 				}
 
 				@Test
@@ -279,7 +279,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("repeated", "annotation");
+							.hasMessageContainingAll("repeated", "annotation");
 				}
 
 			}
@@ -302,7 +302,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("method", "root class");
+							.hasMessageContainingAll("method", "root class");
 				}
 
 				@Test
@@ -315,7 +315,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("root class");
+							.hasMessageContainingAll("root class");
 				}
 
 				@Test
@@ -327,7 +327,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("repeated", "annotation", "root class");
+							.hasMessageContainingAll("repeated", "annotation", "root class");
 				}
 
 				@Test
@@ -340,7 +340,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class", "root class");
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -353,7 +353,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class", "root class");
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -366,7 +366,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("nested class", "root class");
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -380,7 +380,7 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleTest()
 							.thatFailed()
 							.withException()
-							.thatHasMessageContaining("repeated", "annotation", "root class");
+							.hasMessageContainingAll("repeated", "annotation", "root class");
 				}
 
 			}

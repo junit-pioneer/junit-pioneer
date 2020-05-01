@@ -18,34 +18,22 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.testkit.engine.Events;
 
 public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events>
-		implements TestAssert, FollowingTestAssert, FailureAssert, ExceptionAssert {
+		implements TestAssert, FollowingTestAssert, FailureAssert {
 
 	TestAssertBase(Events events, int expected) {
 		super(events, TestAssertBase.class, expected);
 	}
 
 	@Override
-	public void thatHasMessage(String message) {
-		// We can only get here if we already asserted the throwable exists
-		assertThat(throwable().get()).hasMessage(message);
-	}
-
-	@Override
-	public void thatHasMessageContaining(String... values) {
-		// We can only get here if we already asserted the throwable exists
-		assertThat(throwable().get()).hasMessageContainingAll(values);
-	}
-
-	@Override
 	public ExceptionAssert withException(Class<? extends Throwable> exceptionType) {
 		assertThat(throwable()).isPresent().containsInstanceOf(exceptionType);
-		return this;
+		return new ExceptionAssert(throwable().get());
 	}
 
 	@Override
 	public ExceptionAssert withException() {
 		assertThat(throwable()).isPresent();
-		return this;
+		return new ExceptionAssert(throwable().get());
 	}
 
 	private Optional<Throwable> throwable() {

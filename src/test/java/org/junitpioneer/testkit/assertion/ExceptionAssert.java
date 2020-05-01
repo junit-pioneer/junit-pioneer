@@ -10,13 +10,12 @@
 
 package org.junitpioneer.testkit.assertion;
 
-/**
- * Used to assert exceptions thrown by failed tests/containers.
- */
-public interface ExceptionAssert {
+import org.assertj.core.api.AbstractThrowableAssert;
 
-	void thatHasMessage(String message);
+public class ExceptionAssert extends AbstractThrowableAssert<ExceptionAssert, Throwable> {
 
-	void thatHasMessageContaining(String... values);
+	public ExceptionAssert(Throwable throwable) {
+		super(throwable, ExceptionAssert.class);
+	}
 
 }

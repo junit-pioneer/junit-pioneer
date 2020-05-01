@@ -51,7 +51,7 @@ class TestIntegrationTests {
 				.thatStarted()
 				.thenFailed()
 				.withException()
-				.thatHasMessageContaining(format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class));
+				.hasMessageContainingAll(format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class));
 	}
 
 	@org.junit.jupiter.api.Test
@@ -100,7 +100,7 @@ class TestIntegrationTests {
 				.thatStarted()
 				.thenFailed()
 				.withException()
-				.thatHasMessageContaining(expectedKnownPrefix);
+				.hasMessageContainingAll(expectedKnownPrefix);
 	}
 
 	// TEST CASES -------------------------------------------------------------------
