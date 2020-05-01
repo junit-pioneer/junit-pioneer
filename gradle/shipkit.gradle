@@ -7,7 +7,7 @@ shipkit {
     gitHub.readOnlyAuthToken = '584daca204258e2a397d0c029010732a994382dd'
     ciManagement.system = 'GitHub Actions'
 
-    git.releasableBranchRegex = "refs/heads/(master|refs/heads/lab/deploymentWithGithub)"
+    git.releasableBranchRegex = "refs/heads/(master|lab/deploymentWithGithub)"
 
     // Needed for uploading to Maven Central
     team.developers = ['nicolaiparlog:Nicolai Parlog', 'smoyer64:Steve Moyer', 'Bukama:Matthias Bünger', 'aepfli:Simon Schrottner']
