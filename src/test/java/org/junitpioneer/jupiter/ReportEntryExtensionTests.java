@@ -374,7 +374,7 @@ public class ReportEntryExtensionTests {
 					() -> assertThat(reportEntries)
 							.extracting(entry -> entry.get("value"))
 							.containsExactlyInAnyOrder(
-								"And the only word there spoken was the whispered word, “Lenore?”",
+								"And the only word there spoken was the whispered word, 'Lenore?'",
 								"murmured back the word, “Lenore!”—"));
 			}
 
