@@ -76,7 +76,13 @@ jobs:
           NEXUS_TOKEN_USERNAME: ${{ secrets.NEXUS_TOKEN_USERNAME }}
           NEXUS_TOKEN_PASSWORD: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
         with:
-          arguments: ciPerformRelease 
+          arguments: ciPerformRelease
+      # this is needed because github actions seems to not successfully push to our branch,
+      # hence that we trigger a push manually once again
+      - name: Push changes
+          uses: ad-m/github-push-action@master
+          with:
+            github_token: ${{ secrets.GH_WRITE_TOKEN }}
 
   #     - name: Update Page
   #       uses: eskatos/gradle-command-action@v1
