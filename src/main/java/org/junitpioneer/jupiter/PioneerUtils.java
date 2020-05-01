@@ -44,8 +44,4 @@ class PioneerUtils {
 		}
 	}
 
-	private static void changingBinary() {
-		throw new IllegalStateException("big nonono");
-	}
-
 }
