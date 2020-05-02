@@ -16,8 +16,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
-val travisApiToken: String? by project
-
 repositories {
     mavenCentral()
 }
