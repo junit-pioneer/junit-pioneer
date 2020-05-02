@@ -16,6 +16,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * {@code @DefaultTimeZone} is a JUnit Jupiter extension to change the value
@@ -36,6 +39,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @see java.util.TimeZone#getDefault()
  * @see DefaultLocale
  */
+@ResourceLock(value = Resources.TIME_ZONE, mode = ResourceAccessMode.READ_WRITE)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(DefaultTimeZoneExtension.class)
