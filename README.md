@@ -28,6 +28,7 @@ JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pio
 * group ID: `org.junit-pioneer`
 * artifact ID: `junit-pioneer`
 * version: [![Latest Junit Pioneer on Maven Central](https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat)](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer)
+* automatic module name: `org.junit-pioneer`
 
 For Maven:
 
