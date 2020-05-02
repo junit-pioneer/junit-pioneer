@@ -74,7 +74,7 @@ spotless {
 
 checkstyle {
     toolVersion = "7.8.2"
-    configDir = rootProject.file(".infra/checkstyle")
+    configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
 yamlValidator {
