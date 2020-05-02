@@ -17,6 +17,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * {@code @SetSystemProperty} is a JUnit Jupiter extension to set the value of a
@@ -24,15 +27,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>The key and value of the system property to be set must be specified via
  * {@link #key()} and {@link #value()}. After the annotated method has been
- * executed, the initial default value is restored.
+ * executed, the initial default value is restored.</p>
  *
  * <p>{@code SetSystemProperty} is repeatable and can be used on the method and on
  * the class level. If a class is annotated, the configured property will be set
  * for all tests inside that class. Any method level configurations will
- * override the class level configurations.
+ * override the class level configurations.</p>
+ *
+ * <p>The system properties are locked for read and write access to guarantee thread safety!</p>
  *
  * @since 0.5
  */
+@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(SetSystemProperties.class)

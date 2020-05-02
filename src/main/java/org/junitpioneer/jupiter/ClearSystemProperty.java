@@ -17,6 +17,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * {@code @ClearSystemProperty} is a JUnit Jupiter extension to clear the value
@@ -24,14 +27,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>The key of the system property to be cleared must be specified via
  * {@link #key()}. After the annotated element has been executed, After the
- * annotated method has been executed, the initial default value is restored.
+ * annotated method has been executed, the initial default value is restored.</p>
  *
  * <p>{@code ClearSystemProperty} is repeatable and can be used on the method and
  * on the class level. If a class is annotated, the configured property will be
- * cleared for all tests inside that class.
+ * cleared for all tests inside that class.</p>
+ *
+ * <p>The system properties are locked for read and write access to guarantee thread safety!</p>
  *
  * @since 0.5
  */
+@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(ClearSystemProperties.class)
