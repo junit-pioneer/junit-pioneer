@@ -37,6 +37,7 @@ public class ExecutionResults {
 	ExecutionResults(Class<?> testClass) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
+				.configurationParameter("junit.jupiter.execution.parallel.enabled", "false")
 				.selectors(DiscoverySelectors.selectClass(testClass))
 				.execute();
 	}
@@ -44,6 +45,7 @@ public class ExecutionResults {
 	ExecutionResults(Class<?> testClass, String testMethodName) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
+				.configurationParameter("junit.jupiter.execution.parallel.enabled", "false")
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName))
 				.execute();
 	}
@@ -51,6 +53,7 @@ public class ExecutionResults {
 	ExecutionResults(Class<?> testClass, String testMethodName, String methodParameterTypes) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
+				.configurationParameter("junit.jupiter.execution.parallel.enabled", "false")
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes))
 				.execute();
 	}
