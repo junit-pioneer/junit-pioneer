@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -18,8 +20,6 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
-
-import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 /**
  * {@code @SetEnvironmentVariable} is a JUnit Jupiter extension to set the value of a
