@@ -37,6 +37,9 @@ public class ExecutionResults {
 	ExecutionResults(Class<?> testClass) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
+				// This disables the parallel execution for the TestKitEngine as it should not be executed by default
+				// Can be removed, when default value is updated by JUnit Jupiter
+				// See https://github.com/junit-team/junit5/issues/2285
 				.configurationParameter("junit.jupiter.execution.parallel.enabled", "false")
 				.selectors(DiscoverySelectors.selectClass(testClass))
 				.execute();
@@ -45,6 +48,9 @@ public class ExecutionResults {
 	ExecutionResults(Class<?> testClass, String testMethodName) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
+				// This disables the parallel execution for the TestKitEngine as it should not be executed by default
+				// Can be removed, when default value is updated by JUnit Jupiter
+				// See https://github.com/junit-team/junit5/issues/2285
 				.configurationParameter("junit.jupiter.execution.parallel.enabled", "false")
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName))
 				.execute();
@@ -53,6 +59,9 @@ public class ExecutionResults {
 	ExecutionResults(Class<?> testClass, String testMethodName, String methodParameterTypes) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
+				// This disables the parallel execution for the TestKitEngine as it should not be executed by default
+				// Can be removed, when default value is updated by JUnit Jupiter
+				// See https://github.com/junit-team/junit5/issues/2285
 				.configurationParameter("junit.jupiter.execution.parallel.enabled", "false")
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes))
 				.execute();
