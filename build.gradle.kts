@@ -137,7 +137,7 @@ tasks {
     jar {
         manifest {
             attributes(
-                    "Automatic-Module-Name" to "org.junitpioneer"
+                    "Automatic-Module-Name" to "org.junit-pioneer"
             )
         }
     }
