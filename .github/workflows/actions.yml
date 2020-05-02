@@ -1,23 +1,25 @@
 # This workflow will build a Java project with Gradle
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: JUnit Pioneer Flow
+name: JUnit Pioneer
 
 on:
   push:
-    branches: [ master ]
+    branches: 'master'
+    tags-ignore: 
+      - 'v**'
   pull_request:
     branches: '*'
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         java: [ 8, 11, 14 ]
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    name: ${{ matrix.os }} - Java ${{ matrix.java }}
+        os: [ubuntu, windows, macos]
+    name: Build on ${{ matrix.os }} with Java ${{ matrix.java }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
@@ -36,7 +38,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-
       - name: Cache Sonar
         uses: actions/cache@v1
-        if: matrix.java == '8' && matrix.os == 'ubuntu-latest'
+        if: matrix.java == '8' && matrix.os == 'ubuntu'
         with:
           path: ~/.sonar/cache/
           key: ${{ runner.os }}-sonar
@@ -45,42 +47,44 @@ jobs:
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
       - name: Sonarqube
-        if: matrix.java == '8' && matrix.os == 'ubuntu-latest'
+        if: matrix.java == '8' && matrix.os == 'ubuntu'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
 
-  # This will be handled on a later stage
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   name: Deploy
-  #   if: github.ref == 'refs/heads/master'
-  #   steps:
-  #     - name: Check out repo
-  #       uses: actions/checkout@v2
-  #     - name: Setup java
-  #       uses: actions/setup-java@v1
-  #       with:
-  #         java-version: 8
-  #     - name: Cache Gradle
-  #       uses: actions/cache@v1
-  #       with:
-  #         path: ~/.gradle/caches
-  #         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-  #         restore-keys: ${{ runner.os }}-gradle-
-  #     - name: Perform Release
-  #       uses: eskatos/gradle-command-action@v1
-  #       if:
-  #       with:
-  #         arguments: ciPerformRelease
-  #     - name: Upload Release to GitHub
-  #       uses: softprops/action-gh-release@v1
-  #       if: startsWith(github.ref, 'refs/tags/')
-  #       with:
-  #         files: ./build/libs/junit-pioneer-*.jar
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy with Shipkit
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Sanitize Branch
+        uses: frabert/replace-string-action@master
+        id: gitbranch
+        with:
+          pattern: 'refs/heads/(.*)'
+          string: "${{ github.ref }}"
+          replace-with: '$1'
+      - uses: actions/checkout@v2
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Perform Release
+        uses: eskatos/gradle-command-action@v1
+        env:
+          TRAVIS_BRANCH: ${{ steps.gitbranch.outputs.replaced }}
+          TRAVIS_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          TRAVIS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
+          GH_WRITE_TOKEN: ${{ secrets.GH_WRITE_TOKEN }}
+          BINTRAY_USER_NAME: ${{ secrets.BINTRAY_USER_NAME }}
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          NEXUS_TOKEN_USERNAME: ${{ secrets.NEXUS_TOKEN_USERNAME }}
+          NEXUS_TOKEN_PASSWORD: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
+        with:
+          arguments: ciPerformRelease
+
   #     - name: Update Page
   #       uses: eskatos/gradle-command-action@v1
   #       with:

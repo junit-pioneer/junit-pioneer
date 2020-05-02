@@ -4,7 +4,7 @@ plugins {
     checkstyle
     `maven-publish`
     id("com.diffplug.gradle.spotless") version "3.27.1"
-    id("org.shipkit.java") version "2.2.5"
+    id("org.shipkit.java") version "2.3.1"
     id("at.zierler.yamlvalidator") version "1.5.0"
     id("org.sonarqube") version "2.8"
 }
@@ -16,19 +16,8 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
-// assign empty user name and password, so Gradle does not fail due to
-// missing properties when eagerly configuring the Maven credentials
-val mavenUserName: String? by project
-val mavenPassword: String? by project
-val isReleaseVersion = !version.toString().endsWith("-SNAPSHOT")
-val travisApiToken: String? by project
-
 repositories {
     mavenCentral()
-    maven {
-        name = "MavenSnapshot"
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
 }
 
 dependencies {
@@ -148,67 +137,4 @@ tasks {
             into("META-INF")
         }
     }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("complete") {
-            from(components["java"])
-
-            artifact(tasks.sourcesJar.get())
-            artifact(tasks.javadocJar.get())
-
-            pom {
-                name.set("JUnit Pioneer")
-                description.set("JUnit 5 Extension Pack")
-                url.set("https://github.com/junit-pioneer/junit-pioneer")
-                scm {
-                    url.set("https://github.com/junit-pioneer/junit-pioneer")
-                    connection.set("scm:git:git://github.com:junit-pioneer/junit-pioneer.git")
-                }
-                issueManagement {
-                    url.set("https://github.com/junit-pioneer/junit-pioneer/issues")
-                    system.set("GitHub")
-                }
-                licenses {
-                    license {
-                        name.set("Eclipse Public License v2.0")
-                        url.set("http://www.eclipse.org/legal/epl-v20.html")
-                    }
-                }
-                organization {
-                    name.set("JUnit Pioneer")
-                    url.set("https://github.com/junit-pioneer")
-                }
-                developers {
-                    developer {
-                        id.set("nipa")
-                        name.set("Nicolai Parlog")
-                        email.set("nipa@codefx.org")
-                        organization.set("CodeFX")
-                        organizationUrl.set("http://codefx.org")
-                        timezone.set("1")
-                    }
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            val stagingRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            val snapshotRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-            url = if (isReleaseVersion) stagingRepoUrl else snapshotRepoUrl
-            credentials {
-                username = mavenUserName
-                password = mavenPassword
-            }
-        }
-    }
-}
-
-tasks.register<org.junitpioneer.gradle.TriggerTravisTask>("triggerSiteBuild") {
-    travisProject = "junit-pioneer/junit-pioneer.github.io"
-    branch = "grandmaster"
-    apiToken = travisApiToken
-    message = "Triggered by successful JUnit Pioneer build for %COMMIT"
 }
