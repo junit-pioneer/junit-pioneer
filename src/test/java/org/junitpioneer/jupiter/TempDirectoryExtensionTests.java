@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -47,9 +48,15 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
+/**
+* Execution in single thread, because of many static variables as suggested by
+* <a href="https://github.com/junit-pioneer/junit-pioneer/issues/131#issuecomment-622953047">Marc Philipp</a>.
+ */
+@Execution(SAME_THREAD)
 @DisplayName("TempDirectory extension")
 class TempDirectoryExtensionTests {
 
