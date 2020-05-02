@@ -10,6 +10,8 @@ on:
       - 'v**'
   pull_request:
     branches: '*'
+  repository_dispatch:
+    types: [releaseTrigger]
 
 jobs:
   build:
@@ -57,7 +59,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     name: Deploy with Shipkit
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' && github.event.client_payload.release
     steps:
       - name: Sanitize Branch
         uses: frabert/replace-string-action@master
@@ -84,9 +86,10 @@ jobs:
           NEXUS_TOKEN_PASSWORD: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
         with:
           arguments: ciPerformRelease
-
-  #     - name: Update Page
-  #       uses: eskatos/gradle-command-action@v1
-  #       with:
-  #         arguments: triggerSiteBuild -P travisApiToken=${{ secrets.TRAVIS_API_TOKEN }} --stacktrace
-      
+      - run: git push --delete origin releaseTrigger
+      - name: Trigger Website Build
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GH_WRITE_TOKEN }}
+          repository: junit-pioneer/junit-pioneer.github.io
+          event-type: triggerSiteBuild
