@@ -76,7 +76,7 @@ jobs:
         env:
           TRAVIS_BRANCH: ${{ steps.gitbranch.outputs.replaced }}
           TRAVIS_COMMIT_MESSAGE: ${{ github.event.commit.message }}
-          TRAVIS_PULL_REQUEST: ${{ github.event_name == "pull_request" }}
+          TRAVIS_PULL_REQUEST: ${{ github.event_name == 'pull_request' }}
           GH_WRITE_TOKEN: ${{ secrets.GH_WRITE_TOKEN }}
           BINTRAY_USER_NAME: ${{ secrets.BINTRAY_USER_NAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
