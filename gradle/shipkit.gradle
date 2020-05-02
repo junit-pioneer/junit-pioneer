@@ -4,7 +4,7 @@
 //
 shipkit {
     gitHub.repository = 'junit-pioneer/junit-pioneer' // https://github.com/junit-pioneer/junit-pioneer
-    gitHub.readOnlyAuthToken = System.getenv('GITHUB_TOKEN')
+    gitHub.readOnlyAuthToken = '584daca204258e2a397d0c029010732a994382dd'
     gitHub.writeAuthToken = System.getenv('GITHUB_WRITE_TOKEN')
 
     ciManagement.system = 'GitHub Actions'
