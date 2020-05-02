@@ -277,7 +277,7 @@ Follow these steps when updating JUnit 5:
 
 ## Publishing
 
-Like [Mockito](http://mockito.org/), JUnit Pioneer implements a continuous delivery model using [Shipkit](http://shipkit.org/) and [Travis CI](https://travis-ci.org/).
+Like [Mockito](http://mockito.org/), JUnit Pioneer implements a continuous delivery model using [Shipkit](http://shipkit.org/) and [GitHub Actions](https://github.com/features/actions/).
 Every change on the `master` branch (for example when merging a pull request) triggers a release build that publishes a new version if the following criteria are met:
 
 - the commit message doesn't contain `[ci skip-release]`

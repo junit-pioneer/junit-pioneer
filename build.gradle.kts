@@ -140,10 +140,3 @@ tasks {
         }
     }
 }
-
-tasks.register<org.junitpioneer.gradle.TriggerTravisTask>("triggerSiteBuild") {
-    travisProject = "junit-pioneer/junit-pioneer.github.io"
-    branch = "grandmaster"
-    apiToken = travisApiToken
-    message = "Triggered by successful JUnit Pioneer build for %COMMIT"
-}
