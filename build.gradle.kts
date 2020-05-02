@@ -104,16 +104,6 @@ tasks {
             includeTestsMatching("*Tests")
         }
         systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
-        // Enable parallel execution of JUnit tests
-        systemProperty("junit.jupiter.execution.parallel.enabled", "true")
-        // Run all tests methods inside a class in parallel as default
-        systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
-        // Run all tests classes in parallel as default
-        systemProperty("junit.jupiter.execution.parallel.mode.classes.default", "concurrent")
-        // Explicit set the execution strategy to dynamic (default strategy) to make it visible in the config
-        systemProperty("junit.jupiter.execution.parallel.config.strategy", "dynamic")
-        // Explicit set the factor of dynamic strategy to its default value to make it visible in the config
-        systemProperty("junit.jupiter.execution.parallel.config.dynamic.factor", "1")
         // `EnvironmentVariableExtension` uses reflection to change environment variables;
         // this prevents the corresponding warning (and keeps working on Java 8)
         // IF YOU ADD MORE OPTIONS; CONSIDER REPLACING `-XX:+IgnoreUnrecognizedVMOptions WITH A CONDITIONAL
