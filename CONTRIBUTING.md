@@ -46,9 +46,17 @@ Everybody uses a vocabulary and techniques that appear quite cryptic to those no
 We can't fix that in a short file like this, but we want to provide some pointers to get you started.
 If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and ask us to explain it better.
 
-* First off, like for many open source projects, contributing code changes to JUnit Pioneer should be done via pull requests from a fork.
-If you are not familiar with this concept, please have a look at the [GitHub help page](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks).
-* `README.md` and `CONTRIBUTING.md` are written in Markdown.
+To get you started, have a look at the [Open Source Guide](https://opensource.guide/) article [_How to Contribute to Open Source_](https://opensource.guide/how-to-contribute/).
+We particularly recommend the following sections:
+
+* [Orienting yourself to a new project](https://opensource.guide/how-to-contribute/#orienting-yourself-to-a-new-project)
+* [How to submit a contribution](https://opensource.guide/how-to-contribute/#how-to-submit-a-contribution), especially
+	* [Opening a pull request](https://opensource.guide/how-to-contribute/#opening-a-pull-request) (the links for [forking](https://guides.github.com/activities/forking/) and [branching](https://guides.github.com/introduction/flow/) are really helpful!)
+* [What happens after you submit a contribution](https://opensource.guide/how-to-contribute/#what-happens-after-you-submit-a-contribution)
+
+With (some of) the basics covered, let's turn to JUnit Pioneer:
+
+* [`README.md`](README.md) and `CONTRIBUTING.md` are written in Markdown.
 For information on how to use it, see [GitHub's documentation](https://guides.github.com/features/mastering-markdown/).
 * The [feature documentation](#documentation) is written in AsciiDoctor.
 For information on how to use it, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
