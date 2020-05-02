@@ -17,6 +17,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.Execution;
+
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 /**
  * {@code @ClearEnvironmentVariable} is a JUnit Jupiter extension to clear the value
@@ -28,7 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>{@code ClearEnvironmentVariable} is repeatable and can be used on the method and
  * on the class level. If a class is annotated, the configured variable will be
- * cleared for all tests inside that class.
+ * cleared for all tests inside that class.</p>
  *
  * <p>WARNING: Java considers environment variables to be immutable, so this extension
  * uses reflection to change them. This requires that the {@link SecurityManager}
@@ -36,10 +39,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * Java versions. Be aware that this is a fragile solution and consider finding a
  * better one for your specific situation. If you're running on Java 9 or later, you
  * may have to add {@code --add-opens=java.base/java.util=ALL-UNNAMED} to your test
- * execution to prevent warnings or even errors.
+ * execution to prevent warnings or even errors.</p>
+ *
+ * <p>The extension will run single threaded to guarantee thread safety!</p>
  *
  * @since 0.6
  */
+@Execution(SAME_THREAD)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(ClearEnvironmentVariables.class)
