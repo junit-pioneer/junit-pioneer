@@ -102,8 +102,8 @@ The least we can do is to thank them and list their accomplishments here (in lex
 
 * [Allon Murienik](https://github.com/mureinik) contributed [the range sources](https://junit-pioneer.org/docs/range-sources/) (#44 / #123)
 * [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133)
-* [Mark Rösler](https://github.com/Hancho2009) contributed the environment variable extension (#167 / #174)
 * [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
+* [Mark Rösler](https://github.com/Hancho2009) contributed the environment variable extension (#167 / #174)
 * [Matthias Bünger](https://github.com/Bukama) opened, vetted, and groomed countless issues and PRs and contributed multiple refactorings (e.g. #165 / #168) and fixes (e.g. #190 / #200) before getting promoted to maintainer
 * [Mihály Verhás](https://github.com/Michael1993) commented on multiple issues and PRs
 * [Simon Schrottner](https://github.com/aepfli) contributed to multiple issues and PRs and almost single-handedly revamped the build and QA process (e.g. #192 / #185) before getting promoted to maintainer
