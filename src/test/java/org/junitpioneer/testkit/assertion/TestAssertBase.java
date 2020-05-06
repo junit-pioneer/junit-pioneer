@@ -14,26 +14,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
+import org.assertj.core.api.AbstractThrowableAssert;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.testkit.engine.Events;
 
 public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events>
-		implements TestAssert, FollowingTestAssert, FailureAssert {
+		implements TestAssert, StartedTestAssert, FailureAssert {
 
 	TestAssertBase(Events events, int expected) {
 		super(events, TestAssertBase.class, expected);
 	}
 
 	@Override
-	public ExceptionAssert withException(Class<? extends Throwable> exceptionType) {
-		assertThat(throwable()).isPresent().containsInstanceOf(exceptionType);
-		return new ExceptionAssert(throwable().get());
+	public AbstractThrowableAssert<?, ? extends Throwable> withException(Class<? extends Throwable> exceptionType) {
+		Optional<Throwable> thrown = throwable();
+		assertThat(thrown).isPresent().containsInstanceOf(exceptionType);
+		return new ThrowableAssert(thrown.get());
 	}
 
 	@Override
-	public ExceptionAssert withException() {
-		assertThat(throwable()).isPresent();
-		return new ExceptionAssert(throwable().get());
+	public AbstractThrowableAssert<?, ? extends Throwable> withException() {
+		Optional<Throwable> thrown = throwable();
+		assertThat(thrown).isPresent();
+		return new ThrowableAssert(thrown.get());
 	}
 
 	private Optional<Throwable> throwable() {
@@ -61,7 +65,7 @@ public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events
 	}
 
 	@Override
-	public FollowingTestAssert thatStarted() {
+	public StartedTestAssert thatStarted() {
 		assertThat(actual.started().count()).isEqualTo(expected);
 		return this;
 	}

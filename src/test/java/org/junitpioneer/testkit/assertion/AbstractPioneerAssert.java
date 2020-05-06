@@ -12,6 +12,18 @@ package org.junitpioneer.testkit.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 
+/**
+ * A very basic extension of the AbstractAssert, used to add a quantity to assertions.
+ * By storing this value in a field we don't have to refer back to it every time.
+ *
+ * Instead of
+ * <p>assertThat(results).hasTests().thatStarted(3).thenFailed(3)</p>
+ *
+ * We can write
+ * <p>assertThat(results).hasNumberOfTests(3).thatStarted().thenFailed()</p>
+ * @param <SELF>
+ * @param <ACTUAL>
+ */
 public abstract class AbstractPioneerAssert<SELF extends AbstractAssert<SELF, ACTUAL>, ACTUAL>
 		extends AbstractAssert<SELF, ACTUAL> {
 

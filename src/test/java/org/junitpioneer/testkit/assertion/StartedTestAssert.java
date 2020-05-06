@@ -10,12 +10,12 @@
 
 package org.junitpioneer.testkit.assertion;
 
-import org.assertj.core.api.AbstractThrowableAssert;
+public interface StartedTestAssert {
 
-public class ExceptionAssert extends AbstractThrowableAssert<ExceptionAssert, Throwable> {
+	FailureAssert thenFailed();
 
-	public ExceptionAssert(Throwable throwable) {
-		super(throwable, ExceptionAssert.class);
-	}
+	void thenSucceeded();
+
+	void thenAborted();
 
 }
