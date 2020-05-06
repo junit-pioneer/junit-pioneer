@@ -20,7 +20,11 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.testkit.engine.Events;
 
 public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events>
-		implements TestAssert, StartedTestAssert, FailureAssert {
+		implements TestAssert, StartedTestAssert, FailureAssert, RemainderAssert {
+
+	private int assertedSuccess = 0;
+	private int assertedAbort = 0;
+	private int assertedFail = 0;
 
 	TestAssertBase(Events events, int expected) {
 		super(events, TestAssertBase.class, expected);
@@ -50,17 +54,17 @@ public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events
 	}
 
 	@Override
-	public FailureAssert thenFailed() {
+	public FailureAssert andAllOfThemFailed() {
 		return thatFailed();
 	}
 
 	@Override
-	public void thenSucceeded() {
+	public void andAllOfThemSucceeded() {
 		thatSucceeded();
 	}
 
 	@Override
-	public void thenAborted() {
+	public void andAllOfThemAborted() {
 		thatAborted();
 	}
 
@@ -92,4 +96,47 @@ public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events
 		return this;
 	}
 
+	@Override
+	public RemainderAssert andThisManyFailed(int count) {
+		assertThat(count).isLessThanOrEqualTo(expected);
+		assertThat(actual.failed().count()).isEqualTo(count);
+		assertedFail = count;
+		return this;
+	}
+
+	@Override
+	public RemainderAssert andThisManyAborted(int count) {
+		assertThat(count).isLessThanOrEqualTo(expected);
+		assertThat(actual.aborted().count()).isEqualTo(count);
+		assertedAbort = count;
+		return this;
+	}
+
+	@Override
+	public RemainderAssert andThisManySucceeded(int count) {
+		assertThat(count).isLessThanOrEqualTo(expected);
+		assertThat(actual.succeeded().count()).isEqualTo(count);
+		assertedSuccess = count;
+		return this;
+	}
+
+	@Override
+	public FailureAssert theRestFailed() {
+		assertThat(actual.failed().count()).isEqualTo(expected - alreadyAsserted());
+		return this;
+	}
+
+	@Override
+	public void theRestAborted() {
+		assertThat(actual.aborted().count()).isEqualTo(expected - alreadyAsserted());
+	}
+
+	@Override
+	public void theRestSucceeded() {
+		assertThat(actual.succeeded().count()).isEqualTo(expected - alreadyAsserted());
+	}
+
+	private int alreadyAsserted() {
+		return assertedSuccess + assertedAbort + assertedFail;
+	}
 }

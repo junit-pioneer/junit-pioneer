@@ -102,7 +102,7 @@ class TempDirectoryExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestClass(AnnotationOnAfterAllMethodParameterTestCase.class);
 
-			assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
+			assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
 			assertThat(results).hasNoTests().thatFailed();
 
 			assertThat(AnnotationOnAfterAllMethodParameterTestCase.firstTempDir).isPresent();
@@ -158,7 +158,7 @@ class TempDirectoryExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(DeletionTestCase.class, "test", "java.nio.file.Path");
 
-			assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
+			assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
 
 			assertThat(DeletionTestCase.tempDir).isPresent();
 			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
@@ -171,7 +171,7 @@ class TempDirectoryExtensionTests {
 					.executeTestMethodWithParameterTypes(DeletionTestCase.class, "testThatDeletes",
 						"java.nio.file.Path");
 
-			assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
+			assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
 
 			assertThat(DeletionTestCase.tempDir).isPresent();
 			assertThat(DeletionTestCase.tempDir.get()).doesNotExist();
@@ -236,7 +236,7 @@ class TempDirectoryExtensionTests {
 	private void assertResolvesShareTempDir(Class<? extends BaseSharedTempDirTestCase> testClass) {
 		ExecutionResults results = PioneerTestKit.executeTestClass(testClass);
 
-		assertThat(results).hasNumberOfTests(2).thatStarted().thenSucceeded();
+		assertThat(results).hasNumberOfTests(2).thatStarted().andAllOfThemSucceeded();
 		assertThat(results).hasNoTests().thatFailed();
 
 		assertThat(BaseSharedTempDirTestCase.tempDir).isPresent();
@@ -246,7 +246,7 @@ class TempDirectoryExtensionTests {
 	private void assertResolvesSeparateTempDirs(Class<? extends BaseSeparateTempDirsTestCase> testClass) {
 		ExecutionResults results = PioneerTestKit.executeTestClass(testClass);
 
-		assertThat(results).hasNumberOfTests(2).thatStarted().thenSucceeded();
+		assertThat(results).hasNumberOfTests(2).thatStarted().andAllOfThemSucceeded();
 		assertThat(results).hasNoTests().thatFailed();
 		Deque<Path> tempDirs = BaseSeparateTempDirsTestCase.tempDirs;
 		assertThat(tempDirs).hasSize(2);

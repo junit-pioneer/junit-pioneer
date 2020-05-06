@@ -29,14 +29,14 @@ class TestIntegrationTests {
 	void test_successfulTest_passes() throws Exception {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_successfulTest");
 
-		assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
+		assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
 	void test_exceptionThrown_fails() throws Exception {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_exceptionThrown");
 
-		assertThat(results).hasSingleTest().thatStarted().thenFailed();
+		assertThat(results).hasSingleTest().thatStarted().andAllOfThemFailed();
 	}
 
 	// expected exception
@@ -49,7 +49,7 @@ class TestIntegrationTests {
 		assertThat(results)
 				.hasSingleTest()
 				.thatStarted()
-				.thenFailed()
+				.andAllOfThemFailed()
 				.withException()
 				.hasMessageContainingAll(format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class));
 	}
@@ -59,7 +59,7 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfRightType");
 
-		assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
+		assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -67,7 +67,7 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSubtype");
 
-		assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
+		assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -75,7 +75,7 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSupertype");
 
-		assertThat(results).hasSingleTest().thatStarted().thenFailed().withException(RuntimeException.class);
+		assertThat(results).hasSingleTest().thatStarted().andAllOfThemFailed().withException(RuntimeException.class);
 	}
 
 	// timeout
@@ -84,7 +84,7 @@ class TestIntegrationTests {
 	void testWithTimeout_belowTimeout_passes() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowTimeout");
 
-		assertThat(results).hasSingleTest().thatStarted().thenSucceeded();
+		assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -98,7 +98,7 @@ class TestIntegrationTests {
 		assertThat(results)
 				.hasSingleTest()
 				.thatStarted()
-				.thenFailed()
+				.andAllOfThemFailed()
 				.withException()
 				.hasMessageContainingAll(expectedKnownPrefix);
 	}

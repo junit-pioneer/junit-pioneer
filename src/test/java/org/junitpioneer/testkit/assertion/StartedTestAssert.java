@@ -10,12 +10,12 @@
 
 package org.junitpioneer.testkit.assertion;
 
-public interface StartedTestAssert {
+public interface StartedTestAssert extends ThisManyAssert{
 
-	FailureAssert thenFailed();
+	FailureAssert andAllOfThemFailed();
 
-	void thenSucceeded();
+	void andAllOfThemSucceeded();
 
-	void thenAborted();
+	void andAllOfThemAborted();
 
 }

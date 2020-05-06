@@ -20,7 +20,7 @@ import org.assertj.core.api.AbstractAssert;
  * <p>assertThat(results).hasTests().thatStarted(3).thenFailed(3)</p>
  *
  * We can write
- * <p>assertThat(results).hasNumberOfTests(3).thatStarted().thenFailed()</p>
+ * <p>assertThat(results).hasNumberOfTests(3).thatStarted().andAllOfThemFailed()</p>
  * @param <SELF>
  * @param <ACTUAL>
  */
