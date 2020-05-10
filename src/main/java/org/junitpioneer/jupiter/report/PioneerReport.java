@@ -53,8 +53,8 @@ public class PioneerReport {
 	protected String name;
 
 	public PioneerReport() {
-		this.testcontainer = new ArrayList<Testcontainer>();
-		this.testcase = new ArrayList<Testcase>();
+		this.testcontainer = new ArrayList<>();
+		this.testcase = new ArrayList<>();
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class PioneerReport {
 	 */
 	public List<Testcontainer> getTestcontainer() {
 		if (testcontainer == null) {
-			testcontainer = new ArrayList<Testcontainer>();
+			testcontainer = new ArrayList<>();
 		}
 		return this.testcontainer;
 	}
@@ -134,7 +134,7 @@ public class PioneerReport {
 	 */
 	public List<Testcase> getTestcase() {
 		if (testcase == null) {
-			testcase = new ArrayList<Testcase>();
+			testcase = new ArrayList<>();
 		}
 		return this.testcase;
 	}

@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Testcontainer {
 
 	protected Properties properties;
-	protected List<Testcontainer> testcontainer;
+	protected List<Testcontainer> testcontainer; //NOSONAR renaming would produce invalid XML
 	protected List<Testcase> testcase;
 	@XmlAttribute(name = "name")
 	protected String name;
@@ -58,8 +58,8 @@ public class Testcontainer {
 	public Testcontainer(String name) {
 		this.name = name;
 
-		this.testcontainer = new ArrayList<Testcontainer>();
-		this.testcase = new ArrayList<Testcase>();
+		this.testcontainer = new ArrayList<>();
+		this.testcase = new ArrayList<>();
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class Testcontainer {
 	 */
 	public List<Testcontainer> getTestcontainer() {
 		if (testcontainer == null) {
-			testcontainer = new ArrayList<Testcontainer>();
+			testcontainer = new ArrayList<>();
 		}
 		return this.testcontainer;
 	}
@@ -139,7 +139,7 @@ public class Testcontainer {
 	 */
 	public List<Testcase> getTestcase() {
 		if (testcase == null) {
-			testcase = new ArrayList<Testcase>();
+			testcase = new ArrayList<>();
 		}
 		return this.testcase;
 	}

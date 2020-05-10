@@ -47,7 +47,7 @@ public class Properties {
 	protected List<Property> property;
 
 	public Properties() {
-		this.property = new ArrayList<Property>();
+		this.property = new ArrayList<>();
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class Properties {
 	 */
 	public List<Property> getProperty() {
 		if (property == null) {
-			property = new ArrayList<Property>();
+			property = new ArrayList<>();
 		}
 		return this.property;
 	}
