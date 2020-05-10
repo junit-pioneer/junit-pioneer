@@ -8,6 +8,8 @@
         url: /docs/environment-variables/
       - title: "@DefaultLocale and @DefaultTimeZone"
         url: /docs/default-locale-timezone/
+      - title: "@Issue"
+        url: /docs/issue/
       - title: "Range Sources"
         url: /docs/range-sources/
       - title: "@RepeatFailedTest"

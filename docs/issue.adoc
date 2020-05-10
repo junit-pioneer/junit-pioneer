@@ -1,0 +1,31 @@
+:page-title: @Issue
+:page-description: JUnit Jupiter extensions to add information about a related issue
+
+== Introduction
+
+The main reason tests are written to ensure the functionality of a requirement of to avoid technical problems.
+The `@Issue` allows to mark tests with the related issue, like a requirement or a bugfix, of an issue-tracker like JIRA or Redmine.
+
+It's a JUnit Jupiter extension to show that tests exist to cover an specific issue.
+The annotated issue will be enlisted in the test results, so that it's easy so see if all tests of an issue are completed successfully.
+
+== Usage
+
+To show that a test related to an issue just add the annotation and provide a value, e.g. a JIRA issue, like in the following example:
+
+[source,java]
+----
+@Issue("REQ-123")
+@Test
+void test() {
+	// One of the tests for the issue with the id "REQ-123"
+}
+----
+
+The `@Issue` annotation can be used on the method level only.
+This is done by purpose, so that the test class can contain tests which cover the professional requirements but also tests which are only exist to ensure technical functionality / implementation details.
+
+The `@Issue` annotation can only be used once per method.
+This is done by purpose too, because a test case should only cover exactly one aspect of a method.
+
+
