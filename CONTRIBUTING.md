@@ -80,7 +80,7 @@ These have to be top-level types, i.e. they have to be in their own source file 
 Classes implementing an extension's functionality should reflect that in their name:
 
 * if a class (indirectly) implements `Extension`, it should end with that word
-* if a class (indirectly) implements `ArgumentsProvider`, it should end with that word
+* if a class (indirectly) implements `ArgumentsProvider`, `ParameterResolver` or `InvocationContext`, it should end with that word
 
 Note _should_, not _must_ - there can be exceptions if well argued.
 
