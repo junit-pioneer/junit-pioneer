@@ -51,21 +51,11 @@ class IssueExtension implements BeforeEachCallback {
 	 * @return The read value
 	 */
 	String readIssueIdFromAnnotation(ExtensionContext context) {
-		//@formatter:off
 		return AnnotationSupport
 				.findAnnotation(context.getElement(), Issue.class)
-				.map(IssueExtension::convertIssueIdValueAsString)
-				.orElseThrow(() -> new ExtensionConfigurationException("The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
-		//@formatter:on
-	}
-
-	/**
-	 * Converts the value of the {@code @Issue} into a string.
-	 * @param annotation The annotations instance
-	 * @return Converted issue Id
-	 */
-	static String convertIssueIdValueAsString(Issue annotation) {
-		return annotation.value();
+				.map(Issue::value)
+				.orElseThrow(() -> new ExtensionConfigurationException(
+					"The extension is active, but the corresponding annotation could not be found. (This may be a bug.)"));
 	}
 
 }

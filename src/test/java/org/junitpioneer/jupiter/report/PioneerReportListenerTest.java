@@ -13,6 +13,9 @@ package org.junitpioneer.jupiter.report;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -46,8 +49,8 @@ public class PioneerReportListenerTest {
 	@Test
 	void reportingCorrectCounts() {
 
-		ReportEntry succContainerEntry = ReportEntry.from("key: succContainer", "value: succContainer");
-		ReportEntry succTestEntry = ReportEntry.from("key: succTest", "value: succTest");
+		ReportEntry successfulContainerEntry = ReportEntry.from("key: succContainer", "value: succContainer");
+		ReportEntry successfulTestEntry = ReportEntry.from("key: succTest", "value: succTest");
 
 		TestIdentifier successfulContainer = createContainerIdentifier("c1");
 		TestIdentifier failedContainer = createContainerIdentifier("c2");
@@ -67,12 +70,12 @@ public class PioneerReportListenerTest {
 		listener.executionStarted(successfulContainer);
 		listener.executionFinished(successfulContainer, TestExecutionResult.successful());
 
-		listener.reportingEntryPublished(successfulContainer, succContainerEntry);
+		listener.reportingEntryPublished(successfulContainer, successfulContainerEntry);
 
 		listener.executionStarted(successfulTest);
 		listener.executionFinished(successfulTest, TestExecutionResult.successful());
 
-		listener.reportingEntryPublished(successfulTest, succTestEntry);
+		listener.reportingEntryPublished(successfulTest, successfulTestEntry);
 
 		listener.executionStarted(failedContainer);
 		listener.executionFinished(failedContainer, TestExecutionResult.failed(new RuntimeException("failed")));
@@ -93,30 +96,42 @@ public class PioneerReportListenerTest {
 		assertThat(report.getProperties()).isNull();
 
 		// Verify test containers
-		assertThat(report.getTestcontainer().size()).isEqualTo(4);
-		assertThat(report.getTestcontainer().get(0).getName()).isIn("c1", "c2", "c3", "c4");
 
-		for (Testcontainer testcontainer : report.getTestcontainer()) {
-			if (testcontainer.getName().equals("c1")) {
-				Property property = testcontainer.getProperties().getProperty().get(0);
-				assertThat(property.getName()).isEqualTo("key: succContainer");
-				assertThat(property.getValue()).isEqualTo("value: succContainer");
-			}
-		}
+		assertThat(report.getTestcontainer().size()).isEqualTo(4);
+
+		List<String> actualContainerNames = report
+				.getTestcontainer()
+				.stream()
+				.map(Testcontainer::getName)
+				.collect(Collectors.toList());
+		assertThat(actualContainerNames).containsExactlyInAnyOrder("c1", "c2", "c3", "c4");
+
+		Optional<Testcontainer> testcontainer = report
+				.getTestcontainer()
+				.stream()
+				.filter(e -> e.getName().equals("c1"))
+				.findFirst();
+		assertThat(testcontainer.isPresent()).isTrue();
+		Property testcontainerProperty = testcontainer.get().getProperties().getProperty().get(0);
+		assertThat(testcontainerProperty.getName()).isEqualTo("key: succContainer");
+		assertThat(testcontainerProperty.getValue()).isEqualTo("value: succContainer");
 
 		// Verify test cases
 		assertThat(report.getTestcase().size()).isEqualTo(4);
-		assertThat(report.getTestcase().get(0).getName()).isIn("t1", "t2", "t3", "t4");
-		for (Testcase testcase : report.getTestcase()) {
-			if (testcase.getName().equals("t1")) {
-				assertThat(testcase.getStatus()).isEqualTo("SUCCESSFUL");
 
-				Property property = testcase.getProperties().getProperty().get(0);
-				assertThat(property.getName()).isEqualTo("key: succTest");
-				assertThat(property.getValue()).isEqualTo("value: succTest");
-			}
-		}
+		List<String> actualTestcaseNames = report
+				.getTestcase()
+				.stream()
+				.map(Testcase::getName)
+				.collect(Collectors.toList());
+		assertThat(actualTestcaseNames).containsExactlyInAnyOrder("t1", "t2", "t3", "t4");
 
+		Optional<Testcase> testcase = report.getTestcase().stream().filter(e -> e.getName().equals("t1")).findFirst();
+		assertThat(testcase.isPresent()).isTrue();
+		assertThat(testcase.get().getStatus()).isEqualTo("SUCCESSFUL");
+		Property testcaseProperty = testcase.get().getProperties().getProperty().get(0);
+		assertThat(testcaseProperty.getName()).isEqualTo("key: succTest");
+		assertThat(testcaseProperty.getValue()).isEqualTo("value: succTest");
 	}
 
 	@SuppressWarnings("deprecation")

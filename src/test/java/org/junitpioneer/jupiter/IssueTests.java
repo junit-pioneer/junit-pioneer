@@ -14,17 +14,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
+@DisplayName("IssueTest extension")
 public class IssueTests {
 
+	@DisplayName("s output should be listed as property in the pioneer report by the PioneerReportListener")
 	@Issue("bishue 135")
 	@Test
 	void writeToReport() {
 		// This tests should get covered by the registered PioneerReportListener.
-		// In the report should then be an property with key "issue" and value "bishue 135" for this test
+		// In the report should then be a property with key "issue" and value "bishue 135" for this test
 
 		/*
 		    <testcase name="writeToReport()" status="SUCCESSFUL">
@@ -34,13 +37,14 @@ public class IssueTests {
 		    </testcase>
 		 */
 
-		// The report can't be accessed within this test as the file is written after this (and all others)
+		// The report can't be accessed within this test as the file is written after this (and all other)
 		// tests are finished
 		assertThat(true).isTrue();
 	}
 
+	@DisplayName(" publishes nothing, if method is not annotated")
 	@Test
-	void checkMethodNotAnnotated() {
+	void publishNothingIfMethodIsNotAnnotated() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(IssueTests.IssueDummyTestClass.class, "testNoAnnotation");
 
@@ -48,8 +52,9 @@ public class IssueTests {
 		assertThat(results.reportEntries()).isEmpty();
 	}
 
+	@DisplayName(" publishes the annotations value with key 'Issue'")
 	@Test
-	void checkMethodIsAnnotated() {
+	void publishAnnotationsValueWithKeyIssue() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(IssueTests.IssueDummyTestClass.class, "testIsAnnotated");
 		assertThat(results.numberOfSucceededTests()).isEqualTo(1);

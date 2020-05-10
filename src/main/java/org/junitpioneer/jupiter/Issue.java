@@ -25,15 +25,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * it's easy so see if all tests of an issue are completed successfully.
  *
  * <p>{@code @Issue} can be used on the method level only.
- * This is done by purpose, so that the test class can contain tests
+ * This is done on purpose, so that the test class can contain tests
  * which cover the professional requirements but also tests which are only
  * exist to ensure technical functionality / implementation details.</p>
  *
  * <p>{@code @Issue} can only be used once per method.
- * This is done by purpose because a test case should only cover exactly
+ * This is done on purpose because a test case should only cover exactly
  * one aspect of a method.</p>
- *
- * @since 0.6
  */
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -42,8 +40,6 @@ public @interface Issue {
 
 	/**
 	 * The id of the issue as defined by the issue-tracker, e.g. "REQ-123".
-	 *
-	 * @since 0.6
 	 */
 	String value();
 
