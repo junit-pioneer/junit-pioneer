@@ -74,6 +74,7 @@ Where to put types and how to name them.
 
 Many extensions will come with their own annotations.
 These have to be top-level types, i.e. they have to be in their own source file with the annotation's name.
+If an annotation is repeatable, the repeatable annotation must be placed inside the non-repeatable annotations file, e.g. in `ReportEntry.java`
 
 #### Extension Classes
 
