@@ -195,9 +195,13 @@ public class PioneerReportListener implements TestExecutionListener {
 			// Validate
 			Source xmlFileSource = new StreamSource(xmlFile.toFile());
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			File xsdFile = new File(ClassLoader.getSystemResource("xsd/pioneerreport.xsd").toURI());
 			Schema schema = schemaFactory.newSchema(xsdFile);
 			Validator validator = schema.newValidator();
+			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			validator.validate(xmlFileSource);
 		}
 		catch (JAXBException | IOException | SAXException | URISyntaxException e) {
