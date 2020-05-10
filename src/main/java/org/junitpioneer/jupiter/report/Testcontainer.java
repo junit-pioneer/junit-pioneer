@@ -109,9 +109,6 @@ public class Testcontainer {
 	 *
 	 */
 	public List<Testcontainer> getTestcontainer() {
-		if (testcontainer == null) {
-			testcontainer = new ArrayList<>();
-		}
 		return this.testcontainer;
 	}
 
@@ -138,9 +135,6 @@ public class Testcontainer {
 	 *
 	 */
 	public List<Testcase> getTestcase() {
-		if (testcase == null) {
-			testcase = new ArrayList<>();
-		}
 		return this.testcase;
 	}
 

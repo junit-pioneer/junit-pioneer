@@ -104,9 +104,6 @@ public class PioneerReport {
 	 *
 	 */
 	public List<Testcontainer> getTestcontainer() {
-		if (testcontainer == null) {
-			testcontainer = new ArrayList<>();
-		}
 		return this.testcontainer;
 	}
 
@@ -133,9 +130,6 @@ public class PioneerReport {
 	 *
 	 */
 	public List<Testcase> getTestcase() {
-		if (testcase == null) {
-			testcase = new ArrayList<>();
-		}
 		return this.testcase;
 	}
 
