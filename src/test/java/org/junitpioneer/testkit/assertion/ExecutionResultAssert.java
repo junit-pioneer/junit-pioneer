@@ -10,6 +10,9 @@
 
 package org.junitpioneer.testkit.assertion;
 
+/**
+ * An intermediary interface for choosing what you want to assert (except if you want to assert that no report entries were published).
+ */
 public interface ExecutionResultAssert {
 
 	ReportEntryAssert hasNumberOfReportEntries(int expected);

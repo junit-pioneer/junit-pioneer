@@ -139,4 +139,5 @@ public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events
 	private int alreadyAsserted() {
 		return assertedSuccess + assertedAbort + assertedFail;
 	}
+
 }

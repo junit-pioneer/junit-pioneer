@@ -21,8 +21,11 @@ import org.assertj.core.api.AbstractAssert;
  *
  * We can write
  * <p>assertThat(results).hasNumberOfTests(3).thatStarted().andAllOfThemFailed()</p>
- * @param <SELF>
- * @param <ACTUAL>
+ *
+ * @param <SELF> the "self" type of this assertion class. Please read &quot;<a href="http://bit.ly/1IZIRcY"
+ *          target="_blank">Emulating 'self types' using Java Generics to simplify fluent API implementation</a>&quot;
+ *          for more details.
+ * @param <ACTUAL> the type of the "actual" value.
  */
 public abstract class AbstractPioneerAssert<SELF extends AbstractAssert<SELF, ACTUAL>, ACTUAL>
 		extends AbstractAssert<SELF, ACTUAL> {

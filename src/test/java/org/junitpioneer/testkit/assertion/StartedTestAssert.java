@@ -10,7 +10,7 @@
 
 package org.junitpioneer.testkit.assertion;
 
-public interface StartedTestAssert extends ThisManyAssert{
+public interface StartedTestAssert extends ThisManyAssert {
 
 	FailureAssert andAllOfThemFailed();
 
