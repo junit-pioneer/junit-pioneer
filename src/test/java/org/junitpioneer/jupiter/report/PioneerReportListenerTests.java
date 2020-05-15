@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -110,11 +110,7 @@ public class PioneerReportListenerTests {
 
 			assertThat(report.getTestcontainer().size()).isEqualTo(4);
 
-			List<String> actualContainerNames = report
-					.getTestcontainer()
-					.stream()
-					.map(Testcontainer::getName)
-					.collect(Collectors.toList());
+			Stream<String> actualContainerNames = report.getTestcontainer().stream().map(Testcontainer::getName);
 			assertThat(actualContainerNames).containsExactlyInAnyOrder("c1", "c2", "c3", "c4");
 
 			Optional<Testcontainer> testcontainer = report
@@ -130,11 +126,7 @@ public class PioneerReportListenerTests {
 			// Verify test cases
 			assertThat(report.getTestcase().size()).isEqualTo(4);
 
-			List<String> actualTestcaseNames = report
-					.getTestcase()
-					.stream()
-					.map(Testcase::getName)
-					.collect(Collectors.toList());
+			Stream<String> actualTestcaseNames = report.getTestcase().stream().map(Testcase::getName);
 			assertThat(actualTestcaseNames).containsExactlyInAnyOrder("t1", "t2", "t3", "t4");
 
 			Optional<Testcase> testcase = report
