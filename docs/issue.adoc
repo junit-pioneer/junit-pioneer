@@ -23,9 +23,9 @@ void test() {
 ----
 
 The `@Issue` annotation can be used on the method level only.
-This is done by purpose, so that the test class can contain tests which cover the professional requirements but also tests which are only exist to ensure technical functionality / implementation details.
+This is done on purpose, so that the test class can contain tests which cover the professional requirements but also tests which only exist to ensure technical functionality / implementation details.
 
 The `@Issue` annotation can only be used once per method.
-This is done by purpose too, because a test case should only cover exactly one aspect of a method.
+This is done on purpose too, because a test case should only cover exactly one aspect of a method.
 
 
