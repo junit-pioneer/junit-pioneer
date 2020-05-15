@@ -40,7 +40,7 @@ public class PioneerReportListenerTest {
 		listener.testPlanExecutionFinished(testPlan);
 
 		// Verify result
-		PioneerReport report = listener.getPioneerReport();
+		PioneerReport report = listener.pioneerReport;
 		assertThat(report.getProperties()).isNull();
 		assertThat(report.getTestcontainer().isEmpty()).isTrue();
 		assertThat(report.getTestcase().isEmpty()).isTrue();
@@ -92,7 +92,7 @@ public class PioneerReportListenerTest {
 		listener.testPlanExecutionFinished(testPlan);
 
 		// Verify result
-		PioneerReport report = listener.getPioneerReport();
+		PioneerReport report = listener.pioneerReport;
 		assertThat(report.getProperties()).isNull();
 
 		// Verify test containers

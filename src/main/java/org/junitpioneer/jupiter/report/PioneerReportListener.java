@@ -210,15 +210,4 @@ public class PioneerReportListener implements TestExecutionListener {
 		}
 	}
 
-	/*
-	 Implementation note:
-	 Package private for test purpose, because the listener overwrites its own file.
-	 When testing the listener itself the report is created the first time (by the tested listener)
-	 and then overwritten by the registered listener after all tests are done.
-	 A system property to configure the report name from outside was seen as too much overhead by the author.
-	 */
-	PioneerReport getPioneerReport() {
-		return pioneerReport;
-	}
-
 }
