@@ -3,7 +3,7 @@
 
 == Introduction
 
-The main reason tests are written to ensure the functionality of a requirement of to avoid technical problems.
+The main reason tests are written is to ensure the functionality of a requirement or to avoid technical problems.
 The `@Issue` allows to mark tests with the related issue, like a requirement or a bugfix, of an issue-tracker like JIRA or Redmine.
 
 It's a JUnit Jupiter extension to show that tests exist to cover an specific issue.

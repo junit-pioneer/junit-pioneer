@@ -14,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
@@ -25,24 +24,15 @@ import org.junit.platform.commons.support.AnnotationSupport;
 @DisplayName("Issue extension")
 class IssueExtension implements BeforeEachCallback {
 
-	static final Namespace NAMESPACE = Namespace.create(IssueExtension.class);
 	static final String KEY = "Issue";
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
 		//noinspection unchecked
 		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Issue.class)) {
-			storeIssueId(context);
+			String issueId = readIssueIdFromAnnotation(context);
+			context.publishReportEntry(KEY, issueId);
 		}
-	}
-
-	/**
-	 * Reads the {@code @Issue} value from the annotation and publishes it in the extension context.
-	 * @param context The Extensions context
-	 */
-	void storeIssueId(ExtensionContext context) {
-		String issueId = readIssueIdFromAnnotation(context);
-		context.publishReportEntry(KEY, issueId);
 	}
 
 	/**
