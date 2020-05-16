@@ -52,8 +52,8 @@ public class PioneerReportListenerTests {
 			// Verify result
 			PioneerReport report = listener.pioneerReport;
 			assertThat(report.getProperties()).isNull();
-			assertThat(report.getTestcontainer().isEmpty()).isTrue();
-			assertThat(report.getTestcase().isEmpty()).isTrue();
+			assertThat(report.getTestContainer().isEmpty()).isTrue();
+			assertThat(report.getTestCase().isEmpty()).isTrue();
 		}
 
 		@DisplayName("contains test containers and tests with published entries as their properties")
@@ -108,13 +108,13 @@ public class PioneerReportListenerTests {
 
 			// Verify test containers
 
-			assertThat(report.getTestcontainer().size()).isEqualTo(4);
+			assertThat(report.getTestContainer().size()).isEqualTo(4);
 
-			Stream<String> actualContainerNames = report.getTestcontainer().stream().map(Testcontainer::getName);
+			Stream<String> actualContainerNames = report.getTestContainer().stream().map(TestContainer::getName);
 			assertThat(actualContainerNames).containsExactlyInAnyOrder("c1", "c2", "c3", "c4");
 
-			Optional<Testcontainer> testcontainer = report
-					.getTestcontainer()
+			Optional<TestContainer> testcontainer = report
+					.getTestContainer()
 					.stream()
 					.filter(e -> e.getName().equals("c1"))
 					.findFirst();
@@ -124,13 +124,13 @@ public class PioneerReportListenerTests {
 			assertThat(testcontainerProperty.getValue()).isEqualTo("value: succContainer");
 
 			// Verify test cases
-			assertThat(report.getTestcase().size()).isEqualTo(4);
+			assertThat(report.getTestCase().size()).isEqualTo(4);
 
-			Stream<String> actualTestcaseNames = report.getTestcase().stream().map(Testcase::getName);
+			Stream<String> actualTestcaseNames = report.getTestCase().stream().map(TestCase::getName);
 			assertThat(actualTestcaseNames).containsExactlyInAnyOrder("t1", "t2", "t3", "t4");
 
-			Optional<Testcase> testcase = report
-					.getTestcase()
+			Optional<TestCase> testcase = report
+					.getTestCase()
 					.stream()
 					.filter(e -> e.getName().equals("t1"))
 					.findFirst();
@@ -198,7 +198,7 @@ public class PioneerReportListenerTests {
 			void processTestReturnsTestcaseWithPropertiesIfPropertiesAndStatusAreStored() {
 				TestIdentifier testCaseIdentifier = createTestIdentifier("t1");
 
-				Testcase result = listener.processTest(testCaseIdentifier);
+				TestCase result = listener.processTest(testCaseIdentifier);
 
 				assertThat(result).isNotNull();
 				assertThat(result.getName()).isEqualTo("t1");
@@ -212,7 +212,7 @@ public class PioneerReportListenerTests {
 			void processTestReturnsTestcaseWithoutPropertiesAndUnknownStatusIfNothingIsStored() {
 				TestIdentifier testCaseIdentifier = createTestIdentifier("t3");
 
-				Testcase result = listener.processTest(testCaseIdentifier);
+				TestCase result = listener.processTest(testCaseIdentifier);
 
 				assertThat(result).isNotNull();
 				assertThat(result.getName()).isEqualTo("t3");
@@ -231,13 +231,13 @@ public class PioneerReportListenerTests {
 			void processContainerReturnsTestcontainerWithoutPropertiesContainersAndTestcasesIfNothingIsStored() {
 				TestIdentifier testContainerIdentifier = createContainerIdentifier("c1");
 
-				Testcontainer result = listener.processContainer(testContainerIdentifier);
+				TestContainer result = listener.processContainer(testContainerIdentifier);
 
 				assertThat(result).isNotNull();
 				assertThat(result.getName()).isEqualTo("c1");
 				assertThat(result.getProperties()).isNull();
-				assertThat(result.getTestcase()).isEmpty();
-				assertThat(result.getTestcontainer()).isEmpty();
+				assertThat(result.getTestCase()).isEmpty();
+				assertThat(result.getTestContainer()).isEmpty();
 			}
 
 			@DisplayName(" with properties, Testcontainer and Testcases, if stored")
@@ -250,24 +250,24 @@ public class PioneerReportListenerTests {
 				TestIdentifier testCase1 = createTestIdentifier("t1", testContainer1);
 				TestIdentifier testCase2 = createTestIdentifier("t2", testContainerIdentifier);
 
-				Testcontainer result = listener.processContainer(testContainerIdentifier);
+				TestContainer result = listener.processContainer(testContainerIdentifier);
 
 				// verify root level
 				assertThat(result).isNotNull();
 				assertThat(result.getName()).isEqualTo("c2");
 				assertThat(result.getProperties().getProperty()).containsAll(allPropsOfC2);
 				assertThat(result.getProperties().getProperty()).doesNotContainAnyElementsOf(allPropsOfC3);
-				assertThat(result.getTestcase().size()).isEqualTo(1);
-				assertThat(result.getTestcase().get(0).getName()).isEqualTo(testCase2.getDisplayName());
-				assertThat(result.getTestcontainer().size()).isEqualTo(1);
-				assertThat(result.getTestcontainer().get(0).getName()).isEqualTo(testContainer1.getDisplayName());
+				assertThat(result.getTestCase().size()).isEqualTo(1);
+				assertThat(result.getTestCase().get(0).getName()).isEqualTo(testCase2.getDisplayName());
+				assertThat(result.getTestContainer().size()).isEqualTo(1);
+				assertThat(result.getTestContainer().get(0).getName()).isEqualTo(testContainer1.getDisplayName());
 
 				// Verify first child container
-				Testcontainer container1 = result.getTestcontainer().get(0);
-				assertThat(container1.getTestcase().size()).isEqualTo(1);
-				assertThat(container1.getTestcase().get(0).getName()).isEqualTo(testCase1.getDisplayName());
-				assertThat(container1.getTestcontainer().size()).isEqualTo(1);
-				assertThat(container1.getTestcontainer().get(0).getName()).isEqualTo(testContainer3.getDisplayName());
+				TestContainer container1 = result.getTestContainer().get(0);
+				assertThat(container1.getTestCase().size()).isEqualTo(1);
+				assertThat(container1.getTestCase().get(0).getName()).isEqualTo(testCase1.getDisplayName());
+				assertThat(container1.getTestContainer().size()).isEqualTo(1);
+				assertThat(container1.getTestContainer().get(0).getName()).isEqualTo(testContainer3.getDisplayName());
 			}
 
 		}

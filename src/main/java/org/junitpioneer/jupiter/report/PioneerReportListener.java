@@ -95,9 +95,9 @@ public class PioneerReportListener implements TestExecutionListener {
 
 		for (TestIdentifier identifier : allRoots) {
 			if (identifier.isContainer()) {
-				pioneerReport.getTestcontainer().add(processContainer(identifier));
+				pioneerReport.getTestContainer().add(processContainer(identifier));
 			} else if (identifier.isTest()) {
-				pioneerReport.getTestcase().add(processTest(identifier));
+				pioneerReport.getTestCase().add(processTest(identifier));
 			}
 		}
 		writeReport(pioneerReport);
@@ -109,8 +109,8 @@ public class PioneerReportListener implements TestExecutionListener {
 	 * @param container Object to be converted into {@code Testcontainer}
 	 * @return Created object
 	 */
-	Testcontainer processContainer(TestIdentifier container) {
-		Testcontainer testcontainer = new Testcontainer(container.getDisplayName());
+	TestContainer processContainer(TestIdentifier container) {
+		TestContainer testcontainer = new TestContainer(container.getDisplayName());
 
 		// Add properties, if there are any
 		String uniqueId = container.getUniqueId();
@@ -124,9 +124,9 @@ public class PioneerReportListener implements TestExecutionListener {
 
 		for (TestIdentifier identifier : allChildren) {
 			if (identifier.isContainer()) {
-				testcontainer.getTestcontainer().add(processContainer(identifier));
+				testcontainer.getTestContainer().add(processContainer(identifier));
 			} else if (identifier.isTest()) {
-				testcontainer.getTestcase().add(processTest(identifier));
+				testcontainer.getTestCase().add(processTest(identifier));
 			}
 		}
 
@@ -139,9 +139,9 @@ public class PioneerReportListener implements TestExecutionListener {
 	 * @param test Object to be converted into {@code Testcase} element
 	 * @return Created object
 	 */
-	Testcase processTest(TestIdentifier test) {
+	TestCase processTest(TestIdentifier test) {
 		String status = testStatusCache.getOrDefault(test.getUniqueId(), "UNKNOWN");
-		Testcase testcase = new Testcase(test.getDisplayName(), status);
+		TestCase testcase = new TestCase(test.getDisplayName(), status);
 
 		// Add properties, if there are any
 		Properties allProps = getProperties(test.getUniqueId());

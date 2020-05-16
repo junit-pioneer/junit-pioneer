@@ -39,8 +39,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "properties" })
-@XmlRootElement(name = "testcase")
-public class Testcase {
+@XmlRootElement(name = "testCase")
+public class TestCase {
 
 	protected Properties properties;
 	@XmlAttribute(name = "name", required = true)
@@ -48,10 +48,10 @@ public class Testcase {
 	@XmlAttribute(name = "status")
 	protected String status;
 
-	public Testcase() {
+	public TestCase() {
 	}
 
-	public Testcase(String name, String status) {
+	public TestCase(String name, String status) {
 		this.name = name;
 		this.status = status;
 	}

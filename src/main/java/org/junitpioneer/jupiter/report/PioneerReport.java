@@ -30,8 +30,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{}properties" minOccurs="0"/&gt;
- *         &lt;element ref="{}testcontainer" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{}testcase" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{}testContainer" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element ref="{}testCase" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/restriction&gt;
@@ -42,19 +42,19 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "properties", "testcontainer", "testcase" })
+@XmlType(name = "", propOrder = { "properties", "testContainer", "testCase" })
 @XmlRootElement(name = "pioneerReport")
 public class PioneerReport {
 
 	protected Properties properties;
-	protected List<Testcontainer> testcontainer;
-	protected List<Testcase> testcase;
+	protected List<TestContainer> testContainer;
+	protected List<TestCase> testCase;
 	@XmlAttribute(name = "name")
 	protected String name;
 
 	public PioneerReport() {
-		this.testcontainer = new ArrayList<>();
-		this.testcase = new ArrayList<>();
+		this.testContainer = new ArrayList<>();
+		this.testCase = new ArrayList<>();
 	}
 
 	/**
@@ -82,29 +82,29 @@ public class PioneerReport {
 	}
 
 	/**
-	 * Gets the value of the testcontainer property.
+	 * Gets the value of the testContainer property.
 	 *
 	 * <p>
 	 * This accessor method returns a reference to the live list,
 	 * not a snapshot. Therefore any modification you make to the
 	 * returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the testcontainer property.
+	 * This is why there is not a <CODE>set</CODE> method for the testContainer property.
 	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
 	 * <pre>
-	 *    getTestcontainer().add(newItem);
+	 *    getTestContainer().add(newItem);
 	 * </pre>
 	 *
 	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list
-	 * {@link Testcontainer }
+	 * {@link TestContainer }
 	 *
 	 *
 	 */
-	public List<Testcontainer> getTestcontainer() {
-		return this.testcontainer;
+	public List<TestContainer> getTestContainer() {
+		return this.testContainer;
 	}
 
 	/**
@@ -114,23 +114,23 @@ public class PioneerReport {
 	 * This accessor method returns a reference to the live list,
 	 * not a snapshot. Therefore any modification you make to the
 	 * returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the testcase property.
+	 * This is why there is not a <CODE>set</CODE> method for the testCase property.
 	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
 	 * <pre>
-	 *    getTestcase().add(newItem);
+	 *    getTestCase().add(newItem);
 	 * </pre>
 	 *
 	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list
-	 * {@link Testcase }
+	 * {@link TestCase }
 	 *
 	 *
 	 */
-	public List<Testcase> getTestcase() {
-		return this.testcase;
+	public List<TestCase> getTestCase() {
+		return this.testCase;
 	}
 
 	/**

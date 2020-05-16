@@ -46,7 +46,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="testcase">
+    <xs:element name="testCase">
         <xs:annotation>
             <xs:documentation xml:lang="en">
                 A specific test case
@@ -61,7 +61,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="testcontainer">
+    <xs:element name="testContainer">
         <xs:annotation>
             <xs:documentation xml:lang="en">
                 Container holding test cases and other containers (e.g. nested classes).
@@ -70,8 +70,8 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="properties" minOccurs="0" maxOccurs="1"/>
-                <xs:element ref="testcontainer" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="testcase" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="testContainer" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="testCase" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="optional"/>
         </xs:complexType>
@@ -86,8 +86,8 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="properties" minOccurs="0" maxOccurs="1"/>
-                <xs:element ref="testcontainer" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="testcase" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="testContainer" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="testCase" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="optional"/>
         </xs:complexType>
