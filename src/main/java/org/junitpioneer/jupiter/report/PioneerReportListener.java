@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -63,18 +62,9 @@ public class PioneerReportListener implements TestExecutionListener {
 	public void reportingEntryPublished(TestIdentifier testIdentifier, ReportEntry entry) {
 		String id = testIdentifier.getUniqueId();
 
-		// Read value from published entry
-		for (Map.Entry<String, String> singleEntry : entry.getKeyValuePairs().entrySet()) {
-			Property property = new Property(singleEntry.getKey(), singleEntry.getValue());
-			// Add to cache
-			if (propertyCache.containsKey(id)) {
-				propertyCache.get(id).add(property);
-			} else {
-				List<Property> currentProperties = new ArrayList<>();
-				currentProperties.add(property);
-				propertyCache.put(id, currentProperties);
-			}
-		}
+		// Store published entries in cache
+		propertyCache.putIfAbsent(id, new ArrayList<>());
+		entry.getKeyValuePairs().forEach((key, value) -> propertyCache.get(id).add(new Property(key, value)));
 	}
 
 	@Override
