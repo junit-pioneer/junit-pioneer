@@ -2,23 +2,22 @@
 :page-description: JUnit Jupiter extensions to selectively disable parameterized tests
 
 The `@DisableIfDisplayName` annotation can be used to selectively disable parameterized tests based on their display names which are dynamically registered on runtime.
-The annotations is only supported on test method level for parameterized tests.
-Unlike the `@Disabled` API provided in Junit which disables the test on first encounter of the annotation
-`@DisableIfDisplayName` is validated before each `@ParameterizedTest` so that each test (name) can be individually evaluated.
+The annotation is only supported on test method level for parameterized tests.
+Unlike the `@Disabled` API provided in JUnit Jupiter, which disables the test on first encounter of the annotation, `@DisableIfDisplayName` is validated before each parameterized test execution, so that each test (name) can be evaluated individually.
 
 [source,java]
 ----
-
+// disable invocations whose display name contains "disable"
 @DisableIfDisplayName("disable")
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(
         strings = {
-                "disable who",
-                "you, disable you",
-                "why am I disabled",
-                "what has been disabled must stay disabled",
-                "fine disable me all you want",
-                "not those one, though!"
+                "disable who", // ~> disabled
+                "you, disable you", // ~> disabled
+                "why am I disabled", // ~> disabled
+                "what has been disabled must stay disabled", // ~> disabled
+                "fine disable me all you want", // ~> disabled
+                "not those one, though!" // ~> NOT disabled
         }
 )
 void testExecutionDisabled(String reason) {
@@ -27,16 +26,37 @@ void testExecutionDisabled(String reason) {
 }
 ----
 
-Similarly, it can be used to disable any number of tests repeatably
+You can also specify more than one substring at a time:
 
 [source,java]
 ----
-
 @DisableIfDisplayName({"1", "2"})
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(ints = { 1, 2, 3, 4, 5 })
 void testDisplayNameString(int num) {
     if (num == 1 || num == 2)
         fail("Test should've been disabled for " + num);
+}
+----
+
+If substrings are not powerful enough, you can also use regular expressions:
+
+[source,java]
+----
+// disable invocations whose display name contains "disable " or "disabled "
+@DisableIfDisplayName(value = ".*disabled?\\s.*", isRegEx = true)
+@ParameterizedTest(name = "See if enabled with {0}")
+@ValueSource(
+        strings = {
+                "disable who", // ~> disabled
+                "you, disable you", // ~> disabled
+                "why am I disabled", // ~> NOT disabled
+                "what has been disabled must stay disabled", // ~> disabled
+                "fine disable me all you want", // ~> disabled
+                "not those one, though!" // ~> NOT disabled
+        }
+)
+void single(String reason) {
+    // ...
 }
 ----
