@@ -321,7 +321,7 @@ Like [Mockito](http://mockito.org/), JUnit Pioneer used Shipkit for a continuous
 - all checks (e.g. tests) are successful
 - at least one main artifact (that includes `...-source.jar` and `...-javadoc.jar`) has changed
 
-Due to the fact that this project's development often happens in sporadic bursts, where a lot of PRs are merged within a few hours, this approach lead to some superfluous releases.
+Because this project's development often happens in sporadic bursts, where a lot of PRs are merged within a few hours, this approach lead to some superfluous releases.
 We also weren't 100% successful in predicting whether Shipkit would make a release and so we started cluttering our commit messages with `[ci skip-release]`, which was a bit annoying.
 Hence the change to the model described above.
 
