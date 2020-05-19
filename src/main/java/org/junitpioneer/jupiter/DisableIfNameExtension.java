@@ -25,6 +25,13 @@ public class DisableIfNameExtension implements ExecutionCondition {
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+		/* We need to make sure not to accidentally disable the @ParameterizedTest method itself.
+		 * Since the Jupiter API offers no way to identify that case directly, we use a hack that relies
+		 * on the fact that the invocations' unique IDs end with a "test-template-invocation section."
+		 * The @ParameterizedTest-annotated method's own unique ID does not contain that string.
+		 */
+		if (!context.getUniqueId().contains("test-template-invocation"))
+			return enabled("Never disable parameterized test method itself");
 		return findClosestEnclosingAnnotation(context, DisableIfDisplayName.class)
 				.map(annotation -> disable(context, annotation))
 				.orElseGet(() -> enabled("No instructions to disable"));

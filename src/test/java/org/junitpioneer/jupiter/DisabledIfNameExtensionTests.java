@@ -47,6 +47,14 @@ class DisabledIfNameExtensionTests {
 			assertThat(results.numberOfSkippedTests()).isEqualTo(2);
 		}
 
+		@Test
+		void methodNameContainsSubstring_containerNotSkipped() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "methodNameContains", "int");
+
+			assertThat(results.numberOfStartedTests()).isEqualTo(3);
+		}
+
 	}
 
 	@Nested
@@ -70,6 +78,14 @@ class DisabledIfNameExtensionTests {
 			assertThat(results.numberOfFailedTests()).isEqualTo(0);
 			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
 			assertThat(results.numberOfSkippedTests()).isEqualTo(3);
+		}
+
+		@Test
+		void methodNameMatchesRegExp_containerNotSkipped() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "methodNameMatches", "int");
+
+			assertThat(results.numberOfStartedTests()).isEqualTo(3);
 		}
 
 	}
@@ -103,6 +119,12 @@ class DisabledIfNameExtensionTests {
 		void multiple(int num) {
 			if (num == 1 || num == 2)
 				fail("Test should've been disabled for " + num);
+		}
+
+		@DisableIfDisplayName("Contains")
+		@ParameterizedTest(name = "See if enabled with {0}")
+		@ValueSource(ints = { 1, 2, 3 })
+		void methodNameContains(int unusedParameter) {
 		}
 
 	}
@@ -140,6 +162,12 @@ class DisabledIfNameExtensionTests {
 		void multiple(int num) {
 			if (num == 10 || num == 1_000 || num == 10_000)
 				fail("Test should've been disabled for " + num);
+		}
+
+		@DisableIfDisplayName(value = ".*Matches.*", isRegEx = true)
+		@ParameterizedTest(name = "See if enabled with {0}")
+		@ValueSource(ints = { 1, 2, 3 })
+		void methodNameMatches(int unusedParameter) {
 		}
 
 	}
