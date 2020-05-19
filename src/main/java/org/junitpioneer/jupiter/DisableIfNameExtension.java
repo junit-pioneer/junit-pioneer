@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
 import static org.junitpioneer.jupiter.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
-import java.lang.reflect.Method;
-import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
@@ -25,31 +25,42 @@ public class DisableIfNameExtension implements ExecutionCondition {
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-		Optional<Method> testMethod = context.getTestMethod();
+		return findClosestEnclosingAnnotation(context, DisableIfDisplayName.class)
+				.map(annotation -> disable(context, annotation))
+				.orElseGet(() -> enabled("No instructions to disable"));
+	}
 
-		if (!testMethod.isPresent()) {
-			return enabled("Only disable at method level so the parameterized tests could be registered");
-		}
-
-		Optional<DisableIfDisplayName> disableIf = findClosestEnclosingAnnotation(context, DisableIfDisplayName.class);
-		if (!disableIf.isPresent()) {
-			return enabled("No instructions to disable");
-		}
-		DisableIfDisplayName disableInstruction = disableIf.get();
-		String displayName = context.getDisplayName();
-		StringBuilder reasonToDisable = new StringBuilder();
-
+	private ConditionEvaluationResult disable(ExtensionContext context, DisableIfDisplayName disableInstruction) {
 		//@formatter:off
-		for (String value : disableInstruction.value()) {
-			boolean toDisable = disableInstruction.isRegEx()
-					? displayName.matches(value)
-					: context.getDisplayName().contains(value);
-			if (toDisable)
-				reasonToDisable.append(displayName).append(" matches ").append(disableInstruction);
-		}
+		String displayName = context.getDisplayName();
+		return disableInstruction.isRegEx()
+				? disableIfMatches(displayName, disableInstruction.value())
+				: disableIfContains(displayName, disableInstruction.value());
 		//@formatter:on
-		String anyReason = reasonToDisable.toString();
-		return anyReason.isEmpty() ? enabled("No reason to disable on display name identified") : disabled(anyReason);
+	}
+
+	private ConditionEvaluationResult disableIfMatches(String displayName, String[] regExps) {
+		//@formatter:off
+		String matches = Stream
+				.of(regExps)
+				.filter(displayName::matches)
+				.collect(Collectors.joining("', '"));
+		return matches.isEmpty()
+				? enabled("Display name '" + displayName + " doesn't match any regular expression")
+				: disabled("Display name '" + displayName + "' matches '" + matches + "'");
+		//@formatter:on
+	}
+
+	private ConditionEvaluationResult disableIfContains(String displayName, String[] substrings) {
+		//@formatter:off
+		String matches = Stream
+				.of(substrings)
+				.filter(displayName::contains)
+				.collect(Collectors.joining("', '"));
+		return matches.isEmpty()
+				? enabled("Display name '" + displayName + " doesn't contain any substring")
+				: disabled("Display name '" + displayName + "' contains '" + matches + "'");
+		//@formatter:on
 	}
 
 }

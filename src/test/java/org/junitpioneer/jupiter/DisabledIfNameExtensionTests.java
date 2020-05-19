@@ -125,9 +125,9 @@ class DisabledIfNameExtensionTests {
 		void single(String reason) {
 			boolean shouldBeDisabled = Arrays
 					.asList(
-						"you, disable you",
-						"what has been disabled must stay disabled",
-						"fine disable me all you want")
+							"you, disable you",
+							"what has been disabled must stay disabled",
+							"fine disable me all you want")
 					.contains(reason);
 			if (shouldBeDisabled)
 				fail("Test should've been disabled " + reason);
