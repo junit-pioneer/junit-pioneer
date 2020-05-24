@@ -30,6 +30,7 @@ public class Property {
 	protected String value;
 
 	public Property() {
+		// Needed for marshalling
 	}
 
 	public Property(String name, String value) {

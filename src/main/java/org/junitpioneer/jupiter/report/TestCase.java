@@ -31,6 +31,7 @@ public class TestCase {
 	protected String status;
 
 	public TestCase() {
+		// Needed for marshalling
 	}
 
 	public TestCase(String name, String status) {
@@ -57,9 +58,5 @@ public class TestCase {
 	public String getStatus() {
 		return status;
 	}
-
-	//	public void setStatus(String value) {
-	//		this.status = value;
-	//	}
 
 }

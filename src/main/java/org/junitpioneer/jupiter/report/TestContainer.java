@@ -34,6 +34,7 @@ public class TestContainer {
 	protected String name;
 
 	public TestContainer() {
+		// Needed for marshalling
 	}
 
 	public TestContainer(String name) {
