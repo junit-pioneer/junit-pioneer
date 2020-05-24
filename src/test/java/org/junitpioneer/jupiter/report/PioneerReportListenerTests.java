@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -36,27 +37,40 @@ import org.junit.platform.launcher.TestPlan;
 @Execution(ExecutionMode.SAME_THREAD)
 public class PioneerReportListenerTests {
 
-	private final PioneerReportListener listener = new PioneerReportListener();
+	private final PioneerReportListener sut = new PioneerReportListener();
 	private final TestPlan testPlan = TestPlan.from(Collections.emptyList());
 
 	@Nested
-	@DisplayName("creates a report that ")
+	@DisplayName("writeReport method ")
 	class CreateReportTests {
 
-		@DisplayName("is empty, if no container or test were executed and no entry was published")
+		@DisplayName("throws and PioneerReportException when an exception was caught")
+		@Test
+		void throwRuntimeExceptionWhileCreatingReport() {
+			Throwable thrown = Assertions.assertThrows(Throwable.class, () -> {
+				sut.writeReport(null);
+			});
+
+			assertThat(thrown).isExactlyInstanceOf(PioneerReportException.class);
+			assertThat(thrown.getMessage()).isEqualTo("Error while creating the pioneer report");
+			assertThat(thrown.getCause()).isExactlyInstanceOf(IllegalArgumentException.class);
+
+		}
+
+		@DisplayName("creates an empty report, if no container or test were executed and no entry was published")
 		@Test
 		void emptyReport() {
-			listener.testPlanExecutionStarted(testPlan);
-			listener.testPlanExecutionFinished(testPlan);
+			sut.testPlanExecutionStarted(testPlan);
+			sut.testPlanExecutionFinished(testPlan);
 
 			// Verify result
-			PioneerReport report = listener.pioneerReport;
+			PioneerReport report = sut.pioneerReport;
 			assertThat(report.getProperties()).isNull();
 			assertThat(report.getTestContainer().isEmpty()).isTrue();
 			assertThat(report.getTestCase().isEmpty()).isTrue();
 		}
 
-		@DisplayName("contains test containers and tests with published entries as their properties")
+		@DisplayName("creates a report with test containers and tests with published entries as their properties")
 		@Test
 		void reportingCorrectCounts() {
 
@@ -73,37 +87,37 @@ public class PioneerReportListenerTests {
 			TestIdentifier abortedTest = createTestIdentifier("t3");
 			TestIdentifier skippedTest = createTestIdentifier("t4");
 
-			listener.testPlanExecutionStarted(testPlan);
+			sut.testPlanExecutionStarted(testPlan);
 
-			listener.executionSkipped(skippedContainer, "skipped");
-			listener.executionSkipped(skippedTest, "skipped");
+			sut.executionSkipped(skippedContainer, "skipped");
+			sut.executionSkipped(skippedTest, "skipped");
 
-			listener.executionStarted(successfulContainer);
-			listener.executionFinished(successfulContainer, TestExecutionResult.successful());
+			sut.executionStarted(successfulContainer);
+			sut.executionFinished(successfulContainer, TestExecutionResult.successful());
 
-			listener.reportingEntryPublished(successfulContainer, successfulContainerEntry);
+			sut.reportingEntryPublished(successfulContainer, successfulContainerEntry);
 
-			listener.executionStarted(successfulTest);
-			listener.executionFinished(successfulTest, TestExecutionResult.successful());
+			sut.executionStarted(successfulTest);
+			sut.executionFinished(successfulTest, TestExecutionResult.successful());
 
-			listener.reportingEntryPublished(successfulTest, successfulTestEntry);
+			sut.reportingEntryPublished(successfulTest, successfulTestEntry);
 
-			listener.executionStarted(failedContainer);
-			listener.executionFinished(failedContainer, TestExecutionResult.failed(new RuntimeException("failed")));
+			sut.executionStarted(failedContainer);
+			sut.executionFinished(failedContainer, TestExecutionResult.failed(new RuntimeException("failed")));
 
-			listener.executionStarted(failedTest);
-			listener.executionFinished(failedTest, TestExecutionResult.failed(new RuntimeException("failed")));
+			sut.executionStarted(failedTest);
+			sut.executionFinished(failedTest, TestExecutionResult.failed(new RuntimeException("failed")));
 
-			listener.executionStarted(abortedContainer);
-			listener.executionFinished(abortedContainer, TestExecutionResult.aborted(new RuntimeException("aborted")));
+			sut.executionStarted(abortedContainer);
+			sut.executionFinished(abortedContainer, TestExecutionResult.aborted(new RuntimeException("aborted")));
 
-			listener.executionStarted(abortedTest);
-			listener.executionFinished(abortedTest, TestExecutionResult.aborted(new RuntimeException("aborted")));
+			sut.executionStarted(abortedTest);
+			sut.executionFinished(abortedTest, TestExecutionResult.aborted(new RuntimeException("aborted")));
 
-			listener.testPlanExecutionFinished(testPlan);
+			sut.testPlanExecutionFinished(testPlan);
 
 			// Verify result
-			PioneerReport report = listener.pioneerReport;
+			PioneerReport report = sut.pioneerReport;
 			assertThat(report.getProperties()).isNull();
 
 			// Verify test containers
@@ -153,17 +167,17 @@ public class PioneerReportListenerTests {
 
 		@BeforeEach
 		void setUp() {
-			listener.testStatusCache.clear();
-			listener.propertyCache.clear();
-			listener.propertyCache.put("[test:t1]", allPropsOfT1);
-			listener.propertyCache.put("[test:t2]", allPropsOfT2);
-			listener.propertyCache.put("[container:c2]", allPropsOfC2);
-			listener.propertyCache.put("[container:c3]", allPropsOfC3);
+			sut.testStatusCache.clear();
+			sut.propertyCache.clear();
+			sut.propertyCache.put("[test:t1]", allPropsOfT1);
+			sut.propertyCache.put("[test:t2]", allPropsOfT2);
+			sut.propertyCache.put("[container:c2]", allPropsOfC2);
+			sut.propertyCache.put("[container:c3]", allPropsOfC3);
 
-			listener.testStatusCache.clear();
-			listener.testStatusCache.put("[test:t1]", "FAILED");
+			sut.testStatusCache.clear();
+			sut.testStatusCache.put("[test:t1]", "FAILED");
 
-			listener.storedTestPlan = testPlan;
+			sut.storedTestPlan = testPlan;
 		}
 
 		@Nested
@@ -173,7 +187,7 @@ public class PioneerReportListenerTests {
 			@DisplayName(" an empty list, if no properties are stored")
 			@Test
 			void getPropertyReturnsEmptyListIfNoPropertiesAreStored() {
-				Properties result = listener.getProperties("[test:t3]");
+				Properties result = sut.getProperties("[test:t3]");
 
 				assertThat(result).isNotNull();
 				assertThat(result.getProperty()).isEmpty();
@@ -182,7 +196,7 @@ public class PioneerReportListenerTests {
 			@DisplayName(" list with properties, matching the ones stored for the identifier")
 			@Test
 			void getPropertyReturnsListWithPropertiesIfPropertiesAreStored() {
-				Properties result = listener.getProperties("[test:t1]");
+				Properties result = sut.getProperties("[test:t1]");
 
 				assertThat(result.getProperty()).containsAll(allPropsOfT1);
 				assertThat(result.getProperty()).doesNotContainAnyElementsOf(allPropsOfT2);
@@ -198,7 +212,7 @@ public class PioneerReportListenerTests {
 			void processTestReturnsTestcaseWithPropertiesIfPropertiesAndStatusAreStored() {
 				TestIdentifier testCaseIdentifier = createTestIdentifier("t1");
 
-				TestCase result = listener.processTest(testCaseIdentifier);
+				TestCase result = sut.processTest(testCaseIdentifier);
 
 				assertThat(result).isNotNull();
 				assertThat(result.getName()).isEqualTo("t1");
@@ -212,7 +226,7 @@ public class PioneerReportListenerTests {
 			void processTestReturnsTestcaseWithoutPropertiesAndUnknownStatusIfNothingIsStored() {
 				TestIdentifier testCaseIdentifier = createTestIdentifier("t3");
 
-				TestCase result = listener.processTest(testCaseIdentifier);
+				TestCase result = sut.processTest(testCaseIdentifier);
 
 				assertThat(result).isNotNull();
 				assertThat(result.getName()).isEqualTo("t3");
@@ -231,7 +245,7 @@ public class PioneerReportListenerTests {
 			void processContainerReturnsTestcontainerWithoutPropertiesContainersAndTestcasesIfNothingIsStored() {
 				TestIdentifier testContainerIdentifier = createContainerIdentifier("c1");
 
-				TestContainer result = listener.processContainer(testContainerIdentifier);
+				TestContainer result = sut.processContainer(testContainerIdentifier);
 
 				assertThat(result).isNotNull();
 				assertThat(result.getName()).isEqualTo("c1");
@@ -250,7 +264,7 @@ public class PioneerReportListenerTests {
 				TestIdentifier testCase1 = createTestIdentifier("t1", testContainer1);
 				TestIdentifier testCase2 = createTestIdentifier("t2", testContainerIdentifier);
 
-				TestContainer result = listener.processContainer(testContainerIdentifier);
+				TestContainer result = sut.processContainer(testContainerIdentifier);
 
 				// verify root level
 				assertThat(result).isNotNull();

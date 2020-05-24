@@ -11,8 +11,6 @@
 package org.junitpioneer.jupiter.report;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -36,7 +33,6 @@ import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
-import org.xml.sax.SAXException;
 
 /**
  * <p>This listener creates an additional report for pioneer extension and validates it against the "pioneerreport.xsd".
@@ -194,9 +190,9 @@ public class PioneerReportListener implements TestExecutionListener {
 			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			validator.validate(xmlFileSource);
 		}
-		catch (JAXBException | IOException | SAXException | URISyntaxException e) {
-			// Throw RuntimeException to break execution regardless of caller
-			throw new RuntimeException("Error while creating the pioneer report", e); //NOSONAR
+		catch (Throwable t) { //NOSONAR
+			// Throw PioneerReportException regardless of checked or unchecked exceptions during execution
+			throw new PioneerReportException("Error while creating the pioneer report", t); //NOSONAR
 		}
 	}
 
