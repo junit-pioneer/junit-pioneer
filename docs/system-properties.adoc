@@ -24,7 +24,7 @@ And setting a system property for a test execution:
 @Test
 @SetSystemProperty(key = "some property", value = "new value")
 void test() {
-	assertThat(System.getProperty("some property")).isEqualsTo("new value");
+	assertThat(System.getProperty("some property")).isEqualTo("new value");
 }
 ----
 
@@ -39,7 +39,7 @@ As mentioned before, both annotations are repeatable and they can also be combin
 void test() {
 	assertThat(System.getProperty("1st property")).isNull();
 	assertThat(System.getProperty("2nd property")).isNull();
-	assertThat(System.getProperty("3rd property")).isEqualsTo("new value");
+	assertThat(System.getProperty("3rd property")).isEqualTo("new value");
 }
 ----
 
@@ -52,7 +52,7 @@ class MySystemPropertyTest {
 	@Test
 	@SetSystemProperty(key = "some property", value = "new value")
 	void test() {
-		assertThat(System.getProperty("some property")).isEqualsTo("new value");
+		assertThat(System.getProperty("some property")).isEqualTo("new value");
 	}
 }
 ----
