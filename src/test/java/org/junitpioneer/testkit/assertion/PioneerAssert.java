@@ -10,6 +10,8 @@
 
 package org.junitpioneer.testkit.assertion;
 
+import static org.junitpioneer.testkit.assertion.PioneerAssert.EntryPoint.assertThat;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,8 +20,6 @@ import java.util.stream.IntStream;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.junitpioneer.testkit.ExecutionResults;
-
-import static org.junitpioneer.testkit.assertion.PioneerAssert.EntryPoint.assertThat;
 
 public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults> implements ExecutionResultAssert {
 
