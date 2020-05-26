@@ -19,6 +19,8 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.junitpioneer.testkit.ExecutionResults;
 
+import static org.junitpioneer.testkit.assertion.PioneerAssert.EntryPoint.assertThat;
+
 public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults> implements ExecutionResultAssert {
 
 	public static class EntryPoint extends Assertions {
@@ -33,12 +35,15 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 		super(actual, PioneerAssert.class);
 	}
 
+	// This is different from the test/container methods because we can immediately assert that
+	// the results contain the expected number of report entries (but can't do the same for
+	// tests because we assert the outcomes which in this step is not yet specified).
 	@Override
 	public ReportEntryAssert hasNumberOfReportEntries(int expected) {
 		List<Map<String, String>> entries = actual.reportEntries();
-		Assertions.assertThat(entries).hasSize(expected);
+		assertThat(entries).hasSize(expected);
 		Integer[] ones = IntStream.generate(() -> 1).limit(expected).boxed().toArray(Integer[]::new);
-		Assertions.assertThat(entries).extracting(Map::size).containsExactly(ones);
+		assertThat(entries).extracting(Map::size).containsExactly(ones);
 
 		List<Map.Entry<String, String>> entryList = actual
 				.reportEntries()
@@ -56,7 +61,7 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public void hasNoReportEntries() {
-		Assertions.assertThat(actual.reportEntries()).isEmpty();
+		assertThat(actual.reportEntries()).isEmpty();
 	}
 
 	@Override
