@@ -11,8 +11,7 @@
 package org.junitpioneer.vintage;
 
 import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.EntryPoint.assertThat;
 import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
 import java.nio.file.InvalidPathException;

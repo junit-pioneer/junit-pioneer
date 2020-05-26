@@ -10,13 +10,12 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_ABORTED;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.EntryPoint.assertThat;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

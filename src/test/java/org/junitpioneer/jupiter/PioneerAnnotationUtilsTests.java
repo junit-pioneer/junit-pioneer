@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.EntryPoint.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
