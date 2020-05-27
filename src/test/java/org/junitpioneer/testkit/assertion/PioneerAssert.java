@@ -10,8 +10,6 @@
 
 package org.junitpioneer.testkit.assertion;
 
-import static org.junitpioneer.testkit.assertion.PioneerAssert.EntryPoint.assertThat;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,9 +39,9 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	@Override
 	public ReportEntryAssert hasNumberOfReportEntries(int expected) {
 		List<Map<String, String>> entries = actual.reportEntries();
-		assertThat(entries).hasSize(expected);
+		Assertions.assertThat(entries).hasSize(expected);
 		Integer[] ones = IntStream.generate(() -> 1).limit(expected).boxed().toArray(Integer[]::new);
-		assertThat(entries).extracting(Map::size).containsExactly(ones);
+		Assertions.assertThat(entries).extracting(Map::size).containsExactly(ones);
 
 		List<Map.Entry<String, String>> entryList = actual
 				.reportEntries()
@@ -61,7 +59,7 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public void hasNoReportEntries() {
-		assertThat(actual.reportEntries()).isEmpty();
+		Assertions.assertThat(actual.reportEntries()).isEmpty();
 	}
 
 	@Override
