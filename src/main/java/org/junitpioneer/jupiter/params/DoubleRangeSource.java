@@ -23,6 +23,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  *
  * <p>The supplied values will be provided as arguments to the annotated {@code @ParameterizedTest} method.
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/range-sources/" target="_top">the documentation on <code>Range Sources</code></a>
+ *
  * @since 0.5
  * @see ArgumentsSource
  * @see org.junit.jupiter.params.ParameterizedTest
