@@ -50,6 +50,9 @@ import org.junit.jupiter.api.parallel.Execution;
  *         <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution">parallel test execution</a></li>
  * </ul>
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/repeat-failed-test/" target="_top">the documentation on <code>@RepeatFailedTest</code></a>
+ *
  * @since 0.4
  */
 @Target({ METHOD, ANNOTATION_TYPE })
