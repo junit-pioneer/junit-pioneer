@@ -27,6 +27,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>See {@link org.junit.jupiter.api.Test the official @Test} for more information regarding JUnit Jupiter integration.
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/vintage-test/" target="_top">the documentation on <code>Vintage @Test</code></a>
+ *
  * @deprecated This annotation is an intermediate step on a full migration from JUnit 4's {@code @Test} to Jupiter's.
  * To emphasize its character as a temporary solution and to reduce risk of accidental use, it's marked as deprecated.
  * Deprecated since v0.4; not intended to be removed.
