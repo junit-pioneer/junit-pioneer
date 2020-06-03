@@ -39,6 +39,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * may have to add {@code --add-opens=java.base/java.util=ALL-UNNAMED} to your test
  * execution to prevent warnings or even errors.
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable and @SetEnvironmentVariable</code></a>
+ *
  * @since 0.6
  */
 @Retention(RetentionPolicy.RUNTIME)
