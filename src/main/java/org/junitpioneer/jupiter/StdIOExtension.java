@@ -26,6 +26,10 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
+/**
+ * <p>For details and examples, see
+ * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
+ */
 public class StdIOExtension implements ParameterResolver {
 
 	private static final String SEPARATOR = System.getProperty("line.separator");
@@ -68,6 +72,10 @@ public class StdIOExtension implements ParameterResolver {
 						StdIn.class.getName(), StdInSource.class.getName())));
 	}
 
+	/**
+	 * <p>For details and examples, see
+	 * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
+	 */
 	public static class StdOut extends OutputStream {
 
 		Writer writer = new StringWriter();
@@ -88,6 +96,10 @@ public class StdIOExtension implements ParameterResolver {
 
 	}
 
+	/**
+	 * <p>For details and examples, see
+	 * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
+	 */
 	public static class StdIn extends InputStream {
 
 		Reader reader;
