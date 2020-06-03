@@ -77,6 +77,9 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * arbitrary file systems, you should consider using that instead of this
  * extension.
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/temp-directory/" target="_top">the documentation on <code>TempDirectory</code></a>
+ *
  * @since 0.1
  * @see TempDir
  * @see ParentDirProvider

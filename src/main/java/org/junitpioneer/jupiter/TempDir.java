@@ -28,6 +28,9 @@ import java.nio.file.Path;
  * arbitrary file systems, you should consider using that instead of this
  * extension.
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/temp-directory/" target="_top">the documentation on <code>TempDirectory</code></a>
+ *
  * @see TempDirectoryExtension
  */
 @Target(ElementType.PARAMETER)
