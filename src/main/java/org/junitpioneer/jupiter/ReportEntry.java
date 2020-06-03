@@ -24,6 +24,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@link org.junit.jupiter.api.extension.ExtensionContext#publishReportEntry(String, String) ExtensionContext::publishReportEntry}
  * from within the test method.
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/report-entries/" target="_top">the documentation on <code>Report entries</code></a>
+ *
  * @since 0.5.6
  */
 @Repeatable(ReportEntry.ReportEntries.class)
