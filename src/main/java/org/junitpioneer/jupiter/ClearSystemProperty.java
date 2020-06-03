@@ -30,6 +30,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * on the class level. If a class is annotated, the configured property will be
  * cleared for all tests inside that class.
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on <code>@ClearSystemProperty and @SetSystemProperty</code></a>
+ *
  * @since 0.5
  */
 @Retention(RetentionPolicy.RUNTIME)

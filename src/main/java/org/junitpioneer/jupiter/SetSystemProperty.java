@@ -31,6 +31,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * for all tests inside that class. Any method level configurations will
  * override the class level configurations.
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on <code>@ClearSystemProperty and @SetSystemProperty</code></a>
+ *
  * @since 0.5
  */
 @Retention(RetentionPolicy.RUNTIME)
