@@ -44,6 +44,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@code Locale} for all tests inside that class. Any method level
  * configurations will override the class level default {@code Locale}.</p>
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale and @DefaultTimeZone</code></a>
+ *
  * @since 0.2
  * @see java.util.Locale#getDefault()
  * @see DefaultTimeZone

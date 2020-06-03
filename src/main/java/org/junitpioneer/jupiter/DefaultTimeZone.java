@@ -32,6 +32,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * default {@code TimeZone} for all tests inside that class. Any method level
  * configurations will override the class level default {@code TimeZone}.</p>
  *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale and @DefaultTimeZone</code></a>
+ *
  * @since 0.2
  * @see java.util.TimeZone#getDefault()
  * @see DefaultLocale
