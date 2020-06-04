@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
@@ -43,6 +44,10 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	private void setDefaultTimeZone(Store store, DefaultTimeZone annotation) {
 		storeDefaultTimeZone(store);
 		TimeZone configuredTimeZone = TimeZone.getTimeZone(annotation.value());
+		if (configuredTimeZone.equals(TimeZone.getTimeZone("GMT")) && !annotation.value().equals("GMT")) {
+			throw new ExtensionConfigurationException(
+				"@DefaultTimeZone not configured correctly. Could not find the specified TimeZone.");
+		}
 		TimeZone.setDefault(configuredTimeZone);
 	}
 
