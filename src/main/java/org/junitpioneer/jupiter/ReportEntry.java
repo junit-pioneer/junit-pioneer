@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/report-entries/" target="_top">the documentation on <code>Report entries</code></a>
+ * </p>
  *
  * @since 0.5.6
  */

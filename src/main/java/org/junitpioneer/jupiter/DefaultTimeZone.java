@@ -34,6 +34,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale and @DefaultTimeZone</code></a>
+ * </p>
  *
  * @since 0.2
  * @see java.util.TimeZone#getDefault()

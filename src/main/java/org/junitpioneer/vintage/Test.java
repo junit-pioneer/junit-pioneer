@@ -23,12 +23,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>Like JUnit 4's annotation it offers the possibility to {@link #expected() expect exceptions} and to
  * {@link #timeout() time out} long running tests. The latter functions slightly different from the original - see the
- * attached Javadoc.
+ * attached Javadoc.</p>
  *
- * <p>See {@link org.junit.jupiter.api.Test the official @Test} for more information regarding JUnit Jupiter integration.
+ * <p>See {@link org.junit.jupiter.api.Test the official @Test} for more information regarding JUnit Jupiter integration.</p>
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/vintage-test/" target="_top">the documentation on <code>Vintage @Test</code></a>
+ * </p>
  *
  * @deprecated This annotation is an intermediate step on a full migration from JUnit 4's {@code @Test} to Jupiter's.
  * To emphasize its character as a temporary solution and to reduce risk of accidental use, it's marked as deprecated.

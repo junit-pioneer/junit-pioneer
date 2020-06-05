@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 /**
  * <p>For details and examples, see
  * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
+ * </p>
  */
 public class StdIOExtension implements ParameterResolver {
 
@@ -75,6 +76,7 @@ public class StdIOExtension implements ParameterResolver {
 	/**
 	 * <p>For details and examples, see
 	 * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
+	 * </p>
 	 */
 	public static class StdOut extends OutputStream {
 
@@ -99,6 +101,7 @@ public class StdIOExtension implements ParameterResolver {
 	/**
 	 * <p>For details and examples, see
 	 * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
+	 * </p>
 	 */
 	public static class StdIn extends InputStream {
 
