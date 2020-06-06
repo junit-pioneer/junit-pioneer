@@ -88,6 +88,14 @@ sonarqube {
 
 tasks {
 
+    compileJava {
+        options.encoding = "UTF-8"
+    }
+
+    compileTestJava {
+        options.encoding = "UTF-8"
+    }
+
     test {
         testLogging {
             setExceptionFormat("full")
@@ -111,6 +119,7 @@ tasks {
         // disable the warning for missing comments and tags because they spam the output
         // (it does often not make sense to comment every tag; e.g. the @return tag on annotations)
         (options as CoreJavadocOptions).addStringOption("Xdoclint:accessibility,html,syntax,reference", "-quiet")
+        options.encoding = "UTF-8"
         shouldRunAfter(test)
     }
 

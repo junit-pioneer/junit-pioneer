@@ -14,7 +14,7 @@ The default `Locale` can be specified using an https://docs.oracle.com/javase/8/
 @Test
 @DefaultLocale("zh-Hant-TW")
 void test_with_lanuage() {
-	assertThat(Locale.getDefault()).isEqualsTo(Locale.forLanguageTag("zh-Hant-TW"));
+	assertThat(Locale.getDefault()).isEqualTo(Locale.forLanguageTag("zh-Hant-TW"));
 }
 ----
 
@@ -29,19 +29,19 @@ Alternatively the default `Locale` can be specified according to https://docs.or
 @Test
 @DefaultLocale(language = "en")
 void test_with_lanuage() {
-	assertThat(Locale.getDefault()).isEqualsTo(new Locale("en"));
+	assertThat(Locale.getDefault()).isEqualTo(new Locale("en"));
 }
 
 @Test
 @DefaultLocale(language = "en", country = "EN")
 void test_with_lanuage_and_country() {
-	assertThat(Locale.getDefault()).isEqualsTo(new Locale("en", "EN"));
+	assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN"));
 }
 
 @Test
 @DefaultLocale(language = "en", country = "EN", variant = "gb")
 void test_with_lanuage_and_country_and_vairant() {
-	assertThat(Locale.getDefault()).isEqualsTo(new Locale("en", "EN", "gb"));
+	assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN", "gb"));
 }
 ----
 
@@ -58,13 +58,13 @@ class MyLocaleTests {
 
 	@Test
 	void test_with_class_level_configuration() {
-		assertThat(Locale.getDefault()).isEqualsTo(new Locale("fr"));
+		assertThat(Locale.getDefault()).isEqualTo(new Locale("fr"));
 	}
 
 	@Test
 	@DefaultLocale(language = "en")
 	void test_with_method_level_configuration() {
-		assertThat(Locale.getDefault()).isEqualsTo(new Locale("en"));
+		assertThat(Locale.getDefault()).isEqualTo(new Locale("en"));
 	}
 }
 ----
@@ -78,13 +78,13 @@ The default `TimeZone` is specified according to the https://docs.oracle.com/jav
 @Test
 @DefaulTimeZone("CET")
 void test_with_short_zone_id() {
-	assertThat(TimeZone.getDefault()).isEqualsTo(TimeZone.getTimeZone("CET"));
+	assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("CET"));
 }
 
 @Test
 @DefaultTimeZone("America/Los_Angeles")
 void test_with_long_zone_id() {
-	assertThat(TimeZone.getDefault()).isEqualsTo(TimeZone.getTimeZone("America/Los_Angeles"));
+	assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("America/Los_Angeles"));
 }
 ----
 
@@ -97,13 +97,13 @@ class MyTimeZoneTests {
 
 	@Test
 	void test_with_class_level_configuration() {
-		assertThat(TimeZone.getDefault()).isEqualsTo(TimeZone.getTimeZone("CET"));
+		assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("CET"));
 	}
 
 	@Test
 	@DefaultTimeZone("America/Los_Angeles")
 	void test_with_method_level_configuration() {
-        assertThat(TimeZone.getDefault()).isEqualsTo(TimeZone.getTimeZone("America/Los_Angeles"));
+        assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("America/Los_Angeles"));
 	}
 }
 ----
