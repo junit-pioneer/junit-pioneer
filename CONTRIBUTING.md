@@ -46,9 +46,17 @@ Everybody uses a vocabulary and techniques that appear quite cryptic to those no
 We can't fix that in a short file like this, but we want to provide some pointers to get you started.
 If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and ask us to explain it better.
 
-* First off, like for many open source projects, contributing code changes to JUnit Pioneer should be done via pull requests from a fork.
-If you are not familiar with this concept, please have a look at the [GitHub help page](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/working-with-forks).
-* `README.md` and `CONTRIBUTING.md` are written in Markdown.
+To get you started, have a look at the [Open Source Guide](https://opensource.guide/) article [_How to Contribute to Open Source_](https://opensource.guide/how-to-contribute/).
+We particularly recommend the following sections:
+
+* [Orienting yourself to a new project](https://opensource.guide/how-to-contribute/#orienting-yourself-to-a-new-project)
+* [How to submit a contribution](https://opensource.guide/how-to-contribute/#how-to-submit-a-contribution), especially
+	* [Opening a pull request](https://opensource.guide/how-to-contribute/#opening-a-pull-request) (the links for [forking](https://guides.github.com/activities/forking/) and [branching](https://guides.github.com/introduction/flow/) are really helpful!)
+* [What happens after you submit a contribution](https://opensource.guide/how-to-contribute/#what-happens-after-you-submit-a-contribution)
+
+With (some of) the basics covered, let's turn to JUnit Pioneer:
+
+* [`README.md`](README.md) and `CONTRIBUTING.md` are written in Markdown.
 For information on how to use it, see [GitHub's documentation](https://guides.github.com/features/mastering-markdown/).
 * The [feature documentation](#documentation) is written in AsciiDoctor.
 For information on how to use it, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
@@ -277,14 +285,17 @@ Follow these steps when updating JUnit 5:
 
 ## Publishing
 
-Like [Mockito](http://mockito.org/), JUnit Pioneer implements a continuous delivery model using [Shipkit](http://shipkit.org/) and [Travis CI](https://travis-ci.org/).
-Every change on the `master` branch (for example when merging a pull request) triggers a release build that publishes a new version if the following criteria are met:
+JUnit Pioneer uses [Shipkit](http://shipkit.org/) and [GitHub Actions](https://github.com/features/actions/) to automate the release process, but unlike Shipkit's default we don't release on every commit to `master`.
+Instead, releases must be triggered manually:
 
-- the commit message doesn't contain `[ci skip-release]`
-- all checks (e.g. tests) are successful
-- at least one main artifact (that includes `...-source.jar` and `...-javadoc.jar`) has changed
+1. make sure that the file [`version-properties`](version.properties) defines the correct version (see next section)
+2. push a tag `releaseTrigger` to `master`
+
+GitHub Actions will then tell Shipkit to do its thing and afterwards delete the tag.
+The tag is always deleted, even if the release fails, so it is easy to trigger another one.
 
 Every new version is published to the `junit-pioneer/maven` Bintray repository as well as to Maven Central and JCenter.
+This also triggers a website build - [see its `README.md`](https://github.com/junit-pioneer/junit-pioneer.github.io) for more information.
 
 ### Versioning
 
@@ -301,6 +312,18 @@ That means, for now, contributors only have to care about _minor_.
 Since each non-trivial change is developed in a PR, this is the place to discuss whether the minor version should be increased, i.e. whether a change or feature is "substantial".
 If it is, the PR needs to update `version-properties` to the next minor version.
 Note that the feature's Javadoc needs to reference the same version in its `@since` tag.
+
+### Background
+
+Like [Mockito](http://mockito.org/), JUnit Pioneer used Shipkit for a continuous delivery model, where every change on the `master` branch (for example when merging a pull request) triggered a release build that published a new version if the following criteria were met:
+
+- the commit message doesn't contain `[ci skip-release]`
+- all checks (e.g. tests) are successful
+- at least one main artifact (that includes `...-source.jar` and `...-javadoc.jar`) has changed
+
+Because this project's development often happens in sporadic bursts, where a lot of PRs are merged within a few hours, this approach lead to some superfluous releases.
+We also weren't 100% successful in predicting whether Shipkit would make a release and so we started cluttering our commit messages with `[ci skip-release]`, which was a bit annoying.
+Hence the change to the model described above.
 
 
 ## Pioneer Maintainers

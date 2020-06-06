@@ -14,6 +14,8 @@
         url: /docs/repeat-failed-test/
       - title: "Report entries"
         url: /docs/report-entries/
+      - title: "Standard input/output"
+        url: /docs/standard-input-output/
       - title: "TempDirectory"
         url: /docs/temp-directory/
       - title: "Vintage @Test"
