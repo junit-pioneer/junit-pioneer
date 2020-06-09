@@ -58,7 +58,7 @@ public @interface SetEnvironmentVariable {
 	String value();
 
 	/**
-	 * Repeatable annotation of {@code @SetEnvironmentVariable}.
+	 * Containing annotation of repeatable {@code @SetEnvironmentVariable}.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })

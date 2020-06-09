@@ -44,7 +44,7 @@ public @interface ClearSystemProperty {
 	String key();
 
 	/**
-	 * Repeatable annotation of {@code @ClearSystemProperty}.
+	 * Containing annotation of repeatable {@code @ClearSystemProperty}.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })

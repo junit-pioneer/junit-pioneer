@@ -52,7 +52,7 @@ public @interface ClearEnvironmentVariable {
 	String key();
 
 	/**
-	 * Repeatable annotation of {@code @ClearEnvironmentVariable}.
+	 * Containing annotation of repeatable {@code @ClearEnvironmentVariable}.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })

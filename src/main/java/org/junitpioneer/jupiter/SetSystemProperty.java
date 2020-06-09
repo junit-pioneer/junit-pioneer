@@ -50,7 +50,7 @@ public @interface SetSystemProperty {
 	String value();
 
 	/**
-	 * Repeatable annotation of {@code @SetSystemProperty}.
+	 * Containing annotation of repeatable {@code @SetSystemProperty}.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
