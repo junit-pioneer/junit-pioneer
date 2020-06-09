@@ -25,12 +25,12 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
-class RepeatFailedTestTests {
+class RetryingTestTests {
 
 	@Test
 	void invalidConfigurationWithTest() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RepeatFailedTestTestCase.class, "invalidConfigurationWithTest");
+				.executeTestMethod(RetryingTestTestCase.class, "invalidConfigurationWithTest");
 
 		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
 		assertThat(results.numberOfStartedTests()).isEqualTo(2);
@@ -40,7 +40,7 @@ class RepeatFailedTestTests {
 	@Test
 	void executedOneEvenWithTwoTestTemplatesTest() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RepeatFailedTestTestCase.class, "executedOneEvenWithTwoTestTemplates");
+				.executeTestMethod(RetryingTestTestCase.class, "executedOneEvenWithTwoTestTemplates");
 
 		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
 		assertThat(results.numberOfStartedTests()).isEqualTo(1);
@@ -49,7 +49,7 @@ class RepeatFailedTestTests {
 
 	@Test
 	void failsNever_executedOnce_passes() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RepeatFailedTestTestCase.class, "failsNever");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsNever");
 
 		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
 		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
@@ -58,7 +58,7 @@ class RepeatFailedTestTests {
 	@Test
 	void failsOnlyOnFirstInvocation_executedTwice_passes() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RepeatFailedTestTestCase.class, "failsOnlyOnFirstInvocation");
+				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocation");
 
 		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(2);
 		assertThat(results.numberOfAbortedTests()).isEqualTo(1);
@@ -67,7 +67,7 @@ class RepeatFailedTestTests {
 
 	@Test
 	void failsAlways_executedThreeTimes_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RepeatFailedTestTestCase.class, "failsAlways");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsAlways");
 
 		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(3);
 		assertThat(results.numberOfAbortedTests()).isEqualTo(2);
@@ -76,25 +76,25 @@ class RepeatFailedTestTests {
 
 	// TEST CASES -------------------------------------------------------------------
 
-	static class RepeatFailedTestTestCase {
+	static class RetryingTestTestCase {
 
 		private static int FAILS_ONLY_ON_FIRST_INVOCATION;
 
 		@Test
-		@RepeatFailedTest(3)
+		@RetryingTest(3)
 		void invalidConfigurationWithTest() {
 		}
 
 		@DummyTestTemplate
-		@RepeatFailedTest(3)
+		@RetryingTest(3)
 		void executedOneEvenWithTwoTestTemplates() {
 		}
 
-		@RepeatFailedTest(3)
+		@RetryingTest(3)
 		void failsNever() {
 		}
 
-		@RepeatFailedTest(3)
+		@RetryingTest(3)
 		void failsOnlyOnFirstInvocation() {
 			FAILS_ONLY_ON_FIRST_INVOCATION++;
 			if (FAILS_ONLY_ON_FIRST_INVOCATION == 1) {
@@ -102,7 +102,7 @@ class RepeatFailedTestTests {
 			}
 		}
 
-		@RepeatFailedTest(3)
+		@RetryingTest(3)
 		void failsAlways() {
 			throw new IllegalArgumentException();
 		}
@@ -111,7 +111,7 @@ class RepeatFailedTestTests {
 
 	@Target({ METHOD, ANNOTATION_TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
-	// the extension is not thread-safe, so it forces execution of all repetitions
+	// the extension is not thread-safe, so it forces execution of all retries
 	// onto the same thread
 	@Execution(SAME_THREAD)
 	@TestTemplate
