@@ -10,9 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -20,11 +22,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * Publish the specified key-value pair to be consumed by an
  * {@code org.junit.platform.engine.EngineExecutionListener}
  * in order to supply additional information to the reporting
- * infrastructure. This is funtionally identical to calling
+ * infrastructure. This is functionally identical to calling
  * {@link org.junit.jupiter.api.extension.ExtensionContext#publishReportEntry(String, String) ExtensionContext::publishReportEntry}
  * from within the test method.
+ *
+ * <p>{@code ReportEntry} is repeatable and can be used on methods.
+ *
+ * @since 0.5.6
  */
-@Repeatable(ReportEntries.class)
+@Repeatable(ReportEntry.ReportEntries.class)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(ReportEntryExtension.class)
 public @interface ReportEntry {
@@ -44,5 +51,53 @@ public @interface ReportEntry {
 	 * @see org.junit.jupiter.api.extension.ExtensionContext#publishReportEntry(String, String) ExtensionContext::publishReportEntry
 	 */
 	String value();
+
+	/**
+	 * Specifies when the extension should publish the report entry.
+	 * Defaults to {@link org.junitpioneer.jupiter.ReportEntry.PublishCondition#ALWAYS ALWAYS}.
+	 * @see PublishCondition
+	 */
+	PublishCondition when() default PublishCondition.ALWAYS;
+
+	/**
+	 * The available values you can choose from to define for which test outcomes
+	 * the extension should publish the report entry.
+	 *
+	 * @since 0.6
+	 */
+	enum PublishCondition {
+		/**
+		 * Publish report entry after test run, regardless of its outcome
+		 * (this is the default value)
+		 */
+		ALWAYS,
+
+		/**
+		 * Publish report entry after successful test run
+		 */
+		ON_SUCCESS,
+
+		/**
+		 * Publish report entry after failed test run
+		 */
+		ON_FAILURE,
+
+		/**
+		 * Publish report entry after test was aborted
+		 */
+		ON_ABORTED
+	}
+
+	/**
+	 * Containing annotation of repeatable {@code ReportEntry}.
+	 */
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@ExtendWith(ReportEntryExtension.class)
+	@interface ReportEntries {
+
+		ReportEntry[] value();
+
+	}
 
 }
