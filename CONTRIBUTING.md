@@ -74,13 +74,14 @@ Where to put types and how to name them.
 
 Many extensions will come with their own annotations.
 These have to be top-level types, i.e. they have to be in their own source file with the annotation's name.
+If an annotation is repeatable (e.g. `@ReportEntry`), the containing annotation (`ReportEntries`) must be placed in the same file as the repeatable annotation itself (`ReportEntry.java`) and must be package visible, so users don't get distracted by it.
 
 #### Extension Classes
 
 Classes implementing an extension's functionality should reflect that in their name:
 
 * if a class (indirectly) implements `Extension`, it should end with that word
-* if a class (indirectly) implements `ArgumentsProvider`, it should end with that word
+* if a class (indirectly) implements `ArgumentsProvider`, `ParameterResolver` or `InvocationContext`, it should end with that word
 
 Note _should_, not _must_ - there can be exceptions if well argued.
 

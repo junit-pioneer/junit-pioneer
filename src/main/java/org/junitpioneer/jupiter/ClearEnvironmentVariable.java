@@ -42,7 +42,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
-@Repeatable(ClearEnvironmentVariables.class)
+@Repeatable(ClearEnvironmentVariable.ClearEnvironmentVariables.class)
 @ExtendWith(EnvironmentVariableExtension.class)
 public @interface ClearEnvironmentVariable {
 
@@ -50,5 +50,17 @@ public @interface ClearEnvironmentVariable {
 	 * The key of the environment variable to be cleared.
 	 */
 	String key();
+
+	/**
+	 * Containing annotation of repeatable {@code @ClearEnvironmentVariable}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@ExtendWith(EnvironmentVariableExtension.class)
+	@interface ClearEnvironmentVariables {
+
+		ClearEnvironmentVariable[] value();
+
+	}
 
 }
