@@ -49,7 +49,7 @@ import org.junit.jupiter.api.parallel.Execution;
 @Execution(SAME_THREAD)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
-@Repeatable(SetEnvironmentVariables.class)
+@Repeatable(SetEnvironmentVariable.SetEnvironmentVariables.class)
 @ExtendWith(EnvironmentVariableExtension.class)
 public @interface SetEnvironmentVariable {
 
@@ -62,5 +62,17 @@ public @interface SetEnvironmentVariable {
 	 * The value of the system property to be set.
 	 */
 	String value();
+
+	/**
+	 * Containing annotation of repeatable {@code @SetEnvironmentVariable}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@ExtendWith(EnvironmentVariableExtension.class)
+	@interface SetEnvironmentVariables {
+
+		SetEnvironmentVariable[] value();
+
+	}
 
 }

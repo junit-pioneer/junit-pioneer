@@ -40,7 +40,7 @@ import org.junit.jupiter.api.parallel.Resources;
 @ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
-@Repeatable(ClearSystemProperties.class)
+@Repeatable(ClearSystemProperty.ClearSystemProperties.class)
 @ExtendWith(SystemPropertyExtension.class)
 public @interface ClearSystemProperty {
 
@@ -48,5 +48,17 @@ public @interface ClearSystemProperty {
 	 * The key of the system property to be cleared.
 	 */
 	String key();
+
+	/**
+	 * Containing annotation of repeatable {@code @ClearSystemProperty}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@ExtendWith(SystemPropertyExtension.class)
+	@interface ClearSystemProperties {
+
+		ClearSystemProperty[] value();
+
+	}
 
 }

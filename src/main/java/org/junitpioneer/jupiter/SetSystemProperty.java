@@ -41,7 +41,7 @@ import org.junit.jupiter.api.parallel.Resources;
 @ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
-@Repeatable(SetSystemProperties.class)
+@Repeatable(SetSystemProperty.SetSystemProperties.class)
 @ExtendWith(SystemPropertyExtension.class)
 public @interface SetSystemProperty {
 
@@ -54,5 +54,17 @@ public @interface SetSystemProperty {
 	 * The value of the system property to be set.
 	 */
 	String value();
+
+	/**
+	 * Containing annotation of repeatable {@code @SetSystemProperty}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@ExtendWith(SystemPropertyExtension.class)
+	@interface SetSystemProperties {
+
+		SetSystemProperty[] value();
+
+	}
 
 }
