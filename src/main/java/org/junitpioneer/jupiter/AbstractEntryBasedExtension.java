@@ -15,9 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -60,19 +57,19 @@ abstract class AbstractEntryBasedExtension<K, V>
 	protected abstract Map<K, V> entriesToSet(ExtensionContext context);
 
 	/**
-	 * @return How to clear an entry based on its key.
+	 * Clear an entry based on its key.
 	 */
-	protected abstract Consumer<? super K> clearer();
+	protected abstract void clearEntry(K key);
 
 	/**
-	 * @return How to get an entry value based on its key.
+	 * Get an entry value based on its key.
 	 */
-	protected abstract Function<? super K, ? extends V> getter();
+	protected abstract V getValue(K key);
 
 	/**
-	 * @return How to set an entry value based on its key.
+	 * Put a key/value pair as an entry.
 	 */
-	protected abstract BiConsumer<? super K, ? super V> setter();
+	protected abstract void put(K key, V value);
 
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
@@ -123,11 +120,11 @@ abstract class AbstractEntryBasedExtension<K, V>
 	}
 
 	private void clearEntries(Collection<K> entriesToClear) {
-		entriesToClear.forEach(clearer());
+		entriesToClear.forEach(this::clearEntry);
 	}
 
 	private void setEntries(Map<K, V> entriesToSet) {
-		entriesToSet.forEach(setter());
+		entriesToSet.forEach(this::put);
 	}
 
 	@Override
@@ -152,7 +149,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 
 		public EntriesBackup(Collection<K> entriesToClear, Collection<K> entriesToSet) {
 			Stream.concat(entriesToClear.stream(), entriesToSet.stream()).forEach(entry -> {
-				V backup = AbstractEntryBasedExtension.this.getter().apply(entry);
+				V backup = AbstractEntryBasedExtension.this.getValue(entry);
 				if (backup == null)
 					this.entriesToClear.add(entry);
 				else
@@ -161,8 +158,8 @@ abstract class AbstractEntryBasedExtension<K, V>
 		}
 
 		public void restoreBackup() {
-			entriesToClear.forEach(AbstractEntryBasedExtension.this.clearer());
-			entriesToSet.forEach(AbstractEntryBasedExtension.this.setter());
+			entriesToClear.forEach(AbstractEntryBasedExtension.this::clearEntry);
+			entriesToSet.forEach(AbstractEntryBasedExtension.this::put);
 		}
 
 	}

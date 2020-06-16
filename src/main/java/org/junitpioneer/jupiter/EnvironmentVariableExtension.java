@@ -15,9 +15,6 @@ import static java.util.stream.Collectors.toMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -58,18 +55,19 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 			context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
 	}
 
-	protected Consumer<String> clearer() {
-		return EnvironmentVariableUtils::clear;
+	@Override
+	protected void clearEntry(String key) {
+		EnvironmentVariableUtils.clear(key);
 	}
 
 	@Override
-	protected Function<String, String> getter() {
-		return System::getenv;
+	protected String getValue(String key) {
+		return System.getenv(key);
 	}
 
 	@Override
-	protected BiConsumer<String, String> setter() {
-		return EnvironmentVariableUtils::set;
+	protected void put(String key, String value) {
+		EnvironmentVariableUtils.set(key, value);
 	}
 
 }

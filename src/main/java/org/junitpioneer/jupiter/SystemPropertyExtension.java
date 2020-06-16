@@ -14,9 +14,6 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -44,18 +41,18 @@ class SystemPropertyExtension extends AbstractEntryBasedExtension<String, String
 	}
 
 	@Override
-	protected Consumer<String> clearer() {
-		return System::clearProperty;
+	protected void clearEntry(String key) {
+		System.clearProperty(key);
 	}
 
 	@Override
-	protected Function<String, String> getter() {
-		return System::getProperty;
+	protected String getValue(String key) {
+		return System.getProperty(key);
 	}
 
 	@Override
-	protected BiConsumer<String, String> setter() {
-		return System::setProperty;
+	protected void put(String key, String value) {
+		System.setProperty(key, value);
 	}
 
 }
