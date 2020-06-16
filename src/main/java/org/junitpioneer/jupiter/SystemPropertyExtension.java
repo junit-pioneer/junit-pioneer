@@ -95,8 +95,9 @@ class SystemPropertyExtension implements BeforeAllCallback, BeforeEachCallback, 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
 		boolean present = PioneerAnnotationUtils
-				.isAnyAnnotationPresent(context, ClearSystemProperty.class, ClearSystemProperties.class,
-					SetSystemProperty.class, SetSystemProperties.class);
+				.isAnyAnnotationPresent(context, ClearSystemProperty.class,
+					ClearSystemProperty.ClearSystemProperties.class, SetSystemProperty.class,
+					SetSystemProperty.SetSystemProperties.class);
 		if (present) {
 			restoreOriginalSystemProperties(context);
 		}

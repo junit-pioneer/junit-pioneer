@@ -10,9 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -24,6 +26,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@link org.junit.jupiter.api.extension.ExtensionContext#publishReportEntry(String, String) ExtensionContext::publishReportEntry}
  * from within the test method.
  *
+ * <p>{@code ReportEntry} is repeatable and can be used on methods.
+ *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/report-entries/" target="_top">the documentation on <code>Report entries</code></a>
  * </p>
@@ -31,6 +35,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @since 0.5.6
  */
 @Repeatable(ReportEntry.ReportEntries.class)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(ReportEntryExtension.class)
 public @interface ReportEntry {
@@ -88,8 +93,9 @@ public @interface ReportEntry {
 	}
 
 	/**
-	 * This makes the {@code ReportEntry} repeatable.
+	 * Containing annotation of repeatable {@code ReportEntry}.
 	 */
+	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	@ExtendWith(ReportEntryExtension.class)
 	@interface ReportEntries {
