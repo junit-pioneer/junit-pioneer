@@ -150,7 +150,7 @@ public class StdIoExtensionTests {
 	private static class BasicCommandLineApp {
 
 		public void write() {
-			System.out.print("Lo! in the orient ");
+			System.out.print("Lo! in the orient");
 			System.out.println("when the gracious light");
 			System.out.println("Lifts up his burning head, each under eye");
 		}

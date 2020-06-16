@@ -3,6 +3,8 @@
 
 The `StdIOExtension` adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out`).
 
+WARNING: The extension redirects the standard input/output and nothing gets forwarded to `System.in` or `System.out`.
+
 == Basic use
 
 The extension has to be registered with the annotation `@ExtendWith(StdIOExtension.class)`.
@@ -18,14 +20,18 @@ The following example shows how to pass the values `Hello` and `World` as standa
 
 [source,java]
 ----
-    @ExtendWith(StdIOExtension.class)
-    public class StandardInputOutputTests {
-        ...
+@ExtendWith(StdIOExtension.class)
+public class StandardInputOutputTests {
+
+    // ...
+
     @Test
     @StdInSource({"Hello", "World"})
     void test(StdIn in) {
-        ...
+        // ...
+    }
 
+}
 ----
 
 StdOut(`org.junitpioneer.jupiter.StdIOExtension.StdOut`)::
@@ -34,26 +40,25 @@ This parameter does not require any additional annotations except for the `@Exte
 
 [source,java]
 ----
-    @ExtendWith(StdIOExtension.class)
-    public class StandardInputOutputTests {
-        ...
+@ExtendWith(StdIOExtension.class)
+public class StandardInputOutputTests {
+
+	// ...
+
     @Test
     void test(StdOut out) {
-        ...
+        // ...
+    }
 
+}
 ----
 
-The `StdIn` and `StdOut` classes both contain the `capturedLines()` method that returns the lines read by `StdIn` or written by `StdOut`.
+The `StdIn` and `StdOut` classes both contain the `capturedLines()` method that returns the lines read by `StdIn` or written to `StdOut`.
 This array contains the redirected in- or output as lines.
 This can be used to verify interactions.
 
 For example, after calling `System.out.print("Hello")` and `System.out.println("World")`,  the `capturedLines()` method would contain an array of the String "HelloWorld".
 Note that the first method does not print a line break.
 
-Some readers read all lines from `@StdInSource` eagerly (e.g.: `BufferedReader`) which can lead to unexpected behaviour.
-This is the specific characteristic  of that reader and is not considered a bug within the extension.
-
-[source]
-----
-IMPORTANT: The extension redirects the standard input/output and nothing gets forwarded to System.in or System.out.
-----
+Some readers read all lines from `@StdInSource` eagerly (e.g.: `BufferedReader`) which can lead to unexpected behavior.
+This is the specific characteristic of that reader and is not considered a bug within the extension.

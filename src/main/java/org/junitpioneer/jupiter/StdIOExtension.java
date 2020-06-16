@@ -26,7 +26,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-public class StdIOExtension implements ParameterResolver {
+class StdIOExtension implements ParameterResolver {
 
 	private static final String SEPARATOR = System.getProperty("line.separator");
 
