@@ -228,11 +228,16 @@ It is followed, in parenthesis, by a comma-separated list of all related issues,
 This can usually be a summary of the issue description and discussion as well as commit messages.
 Markdown syntax can be used and lines should usually not exceed 70 characters (exceptions are possible, e.g. to include stack traces).
 
+Optionally, the message ends with a list of related issues:
+
+* `${references}` is usually _Closes_, _Fixes_, or _Resolves_, but if none of that is the case, can also be _Issue(s)_
+* `${issues}` is a comma-separated list of all related issues
+
 This makes the related issues and pull request easy to find from a look at the log.
 
 Once a pull request is ready to be merged, the contributor will be asked to propose an action and body for the squashed commit and the maintainer will refine them when merging.
 
-As an example, the squashed commit 22996a2, which created this documentation, had the following message:
+As an example, the squashed commit 22996a2, which created this documentation, could have had the following message:
 
 ```
 Document branching and merging (#30, #31 / #40)
@@ -252,6 +257,9 @@ The chosen approach to squash and merge fulfills all of them except
 the detailed history, which will be more coarse than with merge commits
 or fast-forward merges. This was deemed acceptable in order to achieve
 the other points, particularly the last one.
+
+Closes: #30
+Closes: #31
 ```
 
 ## Updating Dependency on JUnit 5
