@@ -61,12 +61,12 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 	}
 
 	@Override
-	protected String getValue(String key) {
+	protected String getEntry(String key) {
 		return System.getenv(key);
 	}
 
 	@Override
-	protected void put(String key, String value) {
+	protected void setEntry(String key, String value) {
 		EnvironmentVariableUtils.set(key, value);
 	}
 

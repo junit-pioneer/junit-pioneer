@@ -46,12 +46,12 @@ class SystemPropertyExtension extends AbstractEntryBasedExtension<String, String
 	}
 
 	@Override
-	protected String getValue(String key) {
+	protected String getEntry(String key) {
 		return System.getProperty(key);
 	}
 
 	@Override
-	protected void put(String key, String value) {
+	protected void setEntry(String key, String value) {
 		System.setProperty(key, value);
 	}
 

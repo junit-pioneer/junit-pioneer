@@ -57,19 +57,19 @@ abstract class AbstractEntryBasedExtension<K, V>
 	protected abstract Map<K, V> entriesToSet(ExtensionContext context);
 
 	/**
-	 * Clear an entry based on its key.
+	 * Removes the entry indicated by the specified key.
 	 */
 	protected abstract void clearEntry(K key);
 
 	/**
-	 * Get an entry value based on its key.
+	 * Gets the entry indicated by the specified key.
 	 */
-	protected abstract V getValue(K key);
+	protected abstract V getEntry(K key);
 
 	/**
-	 * Put a key/value pair as an entry.
+	 * Sets the entry indicated by the specified key.
 	 */
-	protected abstract void put(K key, V value);
+	protected abstract void setEntry(K key, V value);
 
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
@@ -124,7 +124,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 	}
 
 	private void setEntries(Map<K, V> entriesToSet) {
-		entriesToSet.forEach(this::put);
+		entriesToSet.forEach(this::setEntry);
 	}
 
 	@Override
@@ -149,7 +149,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 
 		public EntriesBackup(Collection<K> entriesToClear, Collection<K> entriesToSet) {
 			Stream.concat(entriesToClear.stream(), entriesToSet.stream()).forEach(entry -> {
-				V backup = AbstractEntryBasedExtension.this.getValue(entry);
+				V backup = AbstractEntryBasedExtension.this.getEntry(entry);
 				if (backup == null)
 					this.entriesToClear.add(entry);
 				else
@@ -159,7 +159,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 
 		public void restoreBackup() {
 			entriesToClear.forEach(AbstractEntryBasedExtension.this::clearEntry);
-			entriesToSet.forEach(AbstractEntryBasedExtension.this::put);
+			entriesToSet.forEach(AbstractEntryBasedExtension.this::setEntry);
 		}
 
 	}
