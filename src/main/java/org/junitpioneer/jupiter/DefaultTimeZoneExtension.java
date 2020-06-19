@@ -44,6 +44,7 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	private void setDefaultTimeZone(Store store, DefaultTimeZone annotation) {
 		storeDefaultTimeZone(store);
 		TimeZone configuredTimeZone = TimeZone.getTimeZone(annotation.value());
+		// TimeZone::getTimeZone returns with GMT as fallback if the given ID cannot be understood
 		if (configuredTimeZone.equals(TimeZone.getTimeZone("GMT")) && !annotation.value().equals("GMT")) {
 			throw new ExtensionConfigurationException(
 				"@DefaultTimeZone not configured correctly. Could not find the specified TimeZone.");

@@ -62,7 +62,7 @@ import org.junit.jupiter.api.parallel.Execution;
 public @interface RepeatFailedTest {
 
 	/**
-	 * Specifies how many times the test is executed at most.
+	 * Specifies often times the test is executed at most.
 	 */
 	int value();
 
