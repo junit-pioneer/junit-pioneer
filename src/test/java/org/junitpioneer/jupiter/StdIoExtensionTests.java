@@ -10,7 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,16 +24,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junitpioneer.jupiter.StdIOExtension.StdIn;
-import org.junitpioneer.jupiter.StdIOExtension.StdOut;
+import org.junitpioneer.jupiter.StdIoExtension.StdIn;
+import org.junitpioneer.jupiter.StdIoExtension.StdOut;
 import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.PioneerTestKit;
 
 /**
  * Shakespeare's Sonnet VII is in the public domain.
  */
-@DisplayName("StdIOExtension ")
+@DisplayName("StdIoExtension ")
 public class StdIoExtensionTests {
 
 	final BasicCommandLineApp app = new BasicCommandLineApp();
@@ -39,55 +43,73 @@ public class StdIoExtensionTests {
 	class ConfigurationTests {
 
 		@Test
+		@DisplayName("fails if the method is annotated but no parameter is passed to the test")
+		void needsParameter() {
+			ExecutionResults results = executeTestMethod(StdIoExtensionConfigurations.class, "noParameter");
+
+			assertThat(results.firstFailuresThrowable())
+					.isInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage(format("Method is annotated with %s but no %s or %s parameters were found.",
+						StdIo.class.getName(), StdIn.class.getName(), StdOut.class.getName()));
+		}
+
+		@Test
 		@DisplayName("fails if the parameter type is not StdIn or StdOut")
 		void needsType() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "badType",
-						Boolean.class.getName());
+			ExecutionResults results = executeTestMethodWithParameterTypes(StdIoExtensionConfigurations.class,
+				"badType", Boolean.class.getName());
 
 			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ParameterResolutionException.class)
-					.hasMessageContaining("No ParameterResolver registered");
+					.isInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage(format("Method is annotated with %s but no %s or %s parameters were found.",
+						StdIo.class.getName(), StdIn.class.getName(), StdOut.class.getName()));
 		}
 
 		@Test
-		@DisplayName("fails if the parameter is StdIn but test method is not annotated with @StdInSource")
+		@DisplayName("fails if the parameter is StdIn or StdOut but StdIoExtension is not active")
+		void needsExtension() {
+			ExecutionResults results = executeTestMethodWithParameterTypes(
+				NotAnnotatedStdIoExtensionConfiguration.class, "noAnnotation", StdOut.class.getName());
+
+			assertThat(results.firstFailuresThrowable())
+					.isInstanceOf(ParameterResolutionException.class)
+					.hasMessageStartingWith("No ParameterResolver registered");
+		}
+
+		@Test
+		@DisplayName("fails if the parameter is StdIn or StdOut but test method is not annotated with @StdIo")
 		void needsAnnotation() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "noAnnotation",
-						StdIn.class.getName());
+			ExecutionResults results = executeTestMethodWithParameterTypes(StdIoExtensionConfigurations.class,
+				"noAnnotation", StdIn.class.getName());
 
 			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ParameterResolutionException.class)
-					.hasMessageContainingAll("Can not resolve test method parameter", "Method has to be annotated");
+					// This is because the class is annotated with @ExtendWith
+					.isInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage(
+						format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName()));
 		}
 
 		@Test
-		@DisplayName("resolves parameter for type StdIn and annotation")
-		void goodConfig_stdIn() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdIn",
-						StdIn.class.getName());
-			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
-		}
+		@DisplayName("fails if the method is annotated and has input sources but no StdIn parameter")
+		void needsStdIn() {
+			ExecutionResults results = executeTestMethodWithParameterTypes(StdIoExtensionConfigurations.class,
+				"noStdIn", StdOut.class.getName());
 
-		@Test
-		@DisplayName("resolves parameter for type StdOut")
-		void goodConfig_stdOut() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdOut",
-						StdOut.class.getName());
-			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
+			assertThat(results.firstFailuresThrowable())
+					.isInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage(format(
+						"Method has no %s parameter but input sources were provided in the %s annotation (Did you forget to add a test parameter?).",
+						StdIn.class.getName(), StdIo.class.getName()));
 		}
 
 	}
 
 	@Nested
-	@ExtendWith(StdIOExtension.class)
 	class ExtendWithTests {
 
 		@Test
 		@DisplayName("catches the output on the standard out as lines")
+		@StdIo
 		void catchesOut(StdOut out) {
 			app.write();
 
@@ -98,7 +120,7 @@ public class StdIoExtensionTests {
 
 		@Test
 		@DisplayName("catches the input from the standard in")
-		@StdInSource({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
+		@StdIo({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
 		void catchesIn(StdIn in) throws IOException {
 			app.read();
 
@@ -109,7 +131,7 @@ public class StdIoExtensionTests {
 
 		@Test
 		@DisplayName("catches the input from the standard in and the output on the standard out")
-		@StdInSource({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
+		@StdIo({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
 		void catchesBoth(StdIn in, StdOut out) throws IOException {
 			app.readAndWrite();
 
@@ -122,10 +144,18 @@ public class StdIoExtensionTests {
 
 	}
 
-	@ExtendWith(StdIOExtension.class)
-	static class StdIOExtensionConfigurations {
+	// We use the extend with to test that the @StdIo annotation is required in every scenario,
+	// essentially ensuring this is considered a wrong configuration.
+	@ExtendWith(StdIoExtension.class)
+	static class StdIoExtensionConfigurations {
 
 		@Test
+		@StdIo
+		void noParameter() {
+		}
+
+		@Test
+		@StdIo
 		void badType(Boolean b) {
 		}
 
@@ -134,12 +164,17 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
-		@StdInSource("value")
-		void resolveStdIn(StdIn in) {
+		@StdIo("value")
+		void noStdIn(StdOut out) {
 		}
 
+	}
+
+	static class NotAnnotatedStdIoExtensionConfiguration {
+
 		@Test
-		void resolveStdOut(StdOut out) {
+		void noAnnotation(StdOut out) {
+			fail("This should never execute");
 		}
 
 	}
@@ -150,7 +185,7 @@ public class StdIoExtensionTests {
 	private static class BasicCommandLineApp {
 
 		public void write() {
-			System.out.print("Lo! in the orient");
+			System.out.print("Lo! in the orient ");
 			System.out.println("when the gracious light");
 			System.out.println("Lifts up his burning head, each under eye");
 		}
