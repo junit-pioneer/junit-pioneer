@@ -75,6 +75,13 @@ class DefaultTimeZoneTests {
 					.contains("@DefaultTimeZone not configured correctly.");
 		}
 
+		@DefaultTimeZone("GMT")
+		@Test
+		@DisplayName("does not throw when explicitly set to GMT")
+		void doesNotThrowForExplicitGmt() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
+		}
+
 		@DefaultTimeZone("CET")
 		@Test
 		@DisplayName("sets the default time zone using an abbreviation")
@@ -116,6 +123,14 @@ class DefaultTimeZoneTests {
 			assertThat(results.numberOfStartedTests()).isEqualTo(0);
 			assertThat(results.firstFailuresThrowable()).isExactlyInstanceOf(ExtensionConfigurationException.class);
 			assertThat(results.firstFailuresThrowableMessage()).contains("@DefaultTimeZone not configured correctly.");
+		}
+
+		@Test
+		@DisplayName("does not throw when explicitly set to GMT")
+		void shouldNotThrowForExplicitGmt() {
+			ExecutionResults results = executeTestClass(ExplicitGmtClassLevelTestCase.class);
+
+			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 		}
 
 		@AfterEach
@@ -196,6 +211,16 @@ class DefaultTimeZoneTests {
 		@Test
 		void badConfiguration() {
 			fail("This test should never execute");
+		}
+
+	}
+
+	@DefaultTimeZone("GMT")
+	static class ExplicitGmtClassLevelTestCase {
+
+		@Test
+		void explicitGmt() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
 		}
 
 	}
