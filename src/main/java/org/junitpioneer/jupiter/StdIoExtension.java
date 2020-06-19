@@ -68,7 +68,7 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 	}
 
 	private void storeStdIn(ExtensionContext context) {
-		context.getStore(NAMESPACE).put(IN_KEY, System.in);
+		context.getStore(NAMESPACE).put(IN_KEY, System.in); //NOSONAR never reading from System.in, only storing it
 	}
 
 	private Object getIn(String[] source) {
@@ -78,7 +78,7 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 	}
 
 	private void storeStdOut(ExtensionContext context) {
-		context.getStore(NAMESPACE).put(OUT_KEY, System.out);
+		context.getStore(NAMESPACE).put(OUT_KEY, System.out); //NOSONAR never writing to System.out, only storing it
 	}
 
 	private Object getOut() {
