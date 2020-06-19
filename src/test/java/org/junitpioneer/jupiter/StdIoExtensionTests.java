@@ -16,10 +16,18 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -179,6 +187,7 @@ public class StdIoExtensionTests {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
 		}
+
 	}
 
 	// We use the @ExtendWith to test that the @StdIo annotation is required in every scenario,
