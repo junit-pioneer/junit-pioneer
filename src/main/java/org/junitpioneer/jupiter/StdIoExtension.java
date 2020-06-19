@@ -25,16 +25,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback {
+class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, AfterEachCallback {
 
 	private static final String SEPARATOR = System.getProperty("line.separator");
+
+	private static final Namespace NAMESPACE = Namespace.create(DefaultLocaleExtension.class);
+
+	private static final String IN_KEY = "StdIo_In";
+	private static final String OUT_KEY = "StdIo_Out";
+
+	@Override
+	public void afterEach(ExtensionContext context) {
+		System.setIn(context.getStore(NAMESPACE).get(IN_KEY, InputStream.class)); //NOSONAR resetting input
+		System.setOut(context.getStore(NAMESPACE).get(OUT_KEY, PrintStream.class));
+	}
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
@@ -44,19 +57,28 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback {
 
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-
 		Class<?> parameterType = parameterContext.getParameter().getType();
 		if (parameterType == StdOut.class) {
+			storeStdOut(extensionContext);
 			return getOut();
 		}
 		String[] source = getSourceValuesFromAnnotation(extensionContext);
+		storeStdIn(extensionContext);
 		return getIn(source);
+	}
+
+	private void storeStdIn(ExtensionContext context) {
+		context.getStore(NAMESPACE).put(IN_KEY, System.in);
 	}
 
 	private Object getIn(String[] source) {
 		StdIn in = new StdIn(source);
 		System.setIn(in); //NOSONAR required to redirect output
 		return in;
+	}
+
+	private void storeStdOut(ExtensionContext context) {
+		context.getStore(NAMESPACE).put(OUT_KEY, System.out);
 	}
 
 	private Object getOut() {

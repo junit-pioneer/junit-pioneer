@@ -16,13 +16,10 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -37,6 +34,9 @@ import org.junitpioneer.testkit.ExecutionResults;
 public class StdIoExtensionTests {
 
 	final BasicCommandLineApp app = new BasicCommandLineApp();
+
+	private final static PrintStream STDOUT = System.out;
+	private final static InputStream STDIN = System.in;
 
 	@Nested
 	@DisplayName("with specific configuration ")
@@ -105,7 +105,8 @@ public class StdIoExtensionTests {
 	}
 
 	@Nested
-	class ExtendWithTests {
+	@DisplayName("with standard configuration ")
+	class StdIoTests {
 
 		@Test
 		@DisplayName("catches the output on the standard out as lines")
@@ -144,7 +145,43 @@ public class StdIoExtensionTests {
 
 	}
 
-	// We use the extend with to test that the @StdIo annotation is required in every scenario,
+	@Nested
+	@TestMethodOrder(OrderAnnotation.class)
+	@DisplayName("resets the standard in and out ")
+	class ResettingTests {
+
+		@Test
+		@DisplayName("1: System.in and System.out is untouched")
+		@Order(1)
+		void untouched() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+		}
+
+		@Test
+		@DisplayName("2: System.in and System.out is redirected")
+		@Order(2)
+		@StdIo({ "line1", "line2", "line3" })
+		void redirected(StdIn in, StdOut out) throws IOException {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+			String line = reader.readLine();
+			System.out.println(line);
+
+			assertThat(in.capturedLines()).containsExactlyInAnyOrder("line1", "line2", "line3");
+			assertThat(out.capturedLines()).containsExactlyInAnyOrder("line1");
+		}
+
+		@Test
+		@DisplayName("3: System.in and System.out is reset to their original value")
+		@Order(3)
+		void reset() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+		}
+	}
+
+	// We use the @ExtendWith to test that the @StdIo annotation is required in every scenario,
 	// essentially ensuring this is considered a wrong configuration.
 	@ExtendWith(StdIoExtension.class)
 	static class StdIoExtensionConfigurations {
