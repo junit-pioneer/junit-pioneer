@@ -156,7 +156,7 @@ class TestIntegrationTests {
 
 		@Test(timeout = 1)
 		void testWithTimeout_exceedsTimeout() throws Exception {
-			Thread.sleep(10); //NOSONAR wanted behaviour for testing
+			Thread.sleep(100); //NOSONAR wanted behaviour for testing
 		}
 
 	}
