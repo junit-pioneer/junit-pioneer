@@ -8,13 +8,6 @@ Such tests make a suite fragile and it makes sense to try and avoid them, but if
 == Basic Use
 
 `@RetryingTest(n)` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
-If combined with `@Test` or `TestTemplate`-based mechanisms, the test engine will execute it according to each annotation (i.e. more than once).
-This is most likely unwanted and thus the engine warns:
-
-> Possible configuration error:
-> method [...] resulted in multiple TestDescriptors [...].
-> This is typically the result of annotating a method with multiple competing annotations such as @Test, @RepeatedTest, @ParameterizedTest, @TestFactory, etc.
-
 The attribute `n` specifies how often the test is executed before giving up.
 
 ```java
@@ -46,3 +39,12 @@ void failsAlways() {
 
 The test `failsAlways` is executed three times (all of which fail).
 The first two executions are marked as ignored/aborted, while the last as failed - each contains the underlying exception.
+
+== Combining `@RetryingTest` with `@Test` et al
+
+If `@RetryingTest` is combined with `@Test` or `TestTemplate`-based mechanisms (like `@RepeatedTest` or `@ParameterizedTest`), the test engine will execute it according to each annotation (i.e. more than once).
+This is most likely unwanted and thus the engine warns:
+
+> Possible configuration error:
+> method [...] resulted in multiple TestDescriptors [...].
+> This is typically the result of annotating a method with multiple competing annotations such as @Test, @RepeatedTest, @ParameterizedTest, @TestFactory, etc.
