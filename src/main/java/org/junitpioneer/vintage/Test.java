@@ -18,17 +18,16 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @Test} is used to signal to JUnit Jupiter that the annotated method is a <em>test</em> method - it is designed
- * to be a drop-in replacement for JUnit 4's {@code @Test}.
+ * {@code @Test} is used to signal to JUnit Jupiter that the annotated method is a <em>test</em> method - it is
+ * a drop-in replacement for <a href="https://junit.org/junit4/javadoc/latest/index.html">JUnit 4's <code>@Test</code></a>.
  *
  * <p>Like JUnit 4's annotation it offers the possibility to {@link #expected() expect exceptions} and to
- * {@link #timeout() time out} long running tests. The latter functions slightly different from the original - see the
- * attached Javadoc.</p>
+ * {@link #timeout() time out} long running tests.</p>
  *
  * <p>Also check
- * <a href="https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Test.html" target="_top">the documentation on Jupiter's <code>@Test</code></a>
+ * <a href="https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Test.html" target="_top">Jupiter's <code>@Test</code></a>
  * for more information regarding JUnit Jupiter integration and
- * <a href="https://junit-pioneer.org/docs/vintage-test/" target="_top">the documentation of Pioneer's <code>@Test</code></a>
+ * <a href="https://junit-pioneer.org/docs/vintage-test/" target="_top">Pioneer's documentation on this <code>@Test</code></a>
  * for more details and examples.</p>
  *
  * @deprecated This annotation is an intermediate step on a full migration from JUnit 4's {@code @Test} to Jupiter's.
