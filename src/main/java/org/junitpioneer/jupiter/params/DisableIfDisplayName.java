@@ -23,18 +23,21 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 
 /**
- * {@code @DisableIfDisplayName} is a JUnit Jupiter extension which can be used to
+ * {@code @DisableIfDisplayName} is a JUnit Jupiter extension that can be used to
  * selectively disable {@link ParameterizedTest} based on their
  * {@link ExtensionContext#getDisplayName() display name}.
  *
- * <p>
- * The extension is an {@link ExecutionCondition}, which validates dynamically registered tests.
- * This is highly useful since current {@link Disabled} or {@link DisabledIf} annotations disable
- * the whole test, but not the Parameterized tests selectively.
- * With {@code DisableIfDisplayName}, it is possible to selectively disable tests out of the
- * plethora of dynamically registered parameterized tests.
+ * <p>The extension is an {@link ExecutionCondition} that validates dynamically registered tests.
+ * Unlike {@link Disabled} or {@link DisabledIf} annotations, this extension doesn't disable
+ * the whole test method. With {@code DisableIfDisplayName}, it is possible to selectively disable
+ * tests out of the plethora of dynamically registered parameterized tests.</p>
  *
- * @since 0.5.6
+ * <p>If neither {@link DisableIfDisplayName#contains() contains} nor
+ * {@link DisableIfDisplayName#matches() matches} is configured, the extension will throw an exception.
+ * It is possible to configure both, in which case the test gets disabled if at least one substring
+ * was found <em>or</em> at least one regular expression matched.</p>
+ *
+ * @since 0.8
  * @see DisableIfNameExtension
  */
 @Target(ElementType.METHOD)
@@ -43,15 +46,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 public @interface DisableIfDisplayName {
 
 	/**
-	 * Display names of the test cases to be disabled. The whole test case name can be passed as well as a sub string.
-	 * The values will be evaluated with {@link String#contains(CharSequence)} by default.
-	 * If {@link #isRegEx} is {@code true}, the string will be evaluated with {@link String#matches(String)}
-	 * against the display name
+	 * Disable test cases whose display name contain the specified strings
+	 * (according to {@link String#contains(CharSequence)}).
 	 *
-	 * @return test case display name
+	 * @return test case display name substrings
 	 */
-	String[] contains() default { };
+	String[] contains() default {};
 
-	String[] matches() default { };
+	/**
+	 * Disable test cases whose display name matches the specified regular rxpression
+	 * (according to {@link String#matches(java.lang.String)}).
+	 *
+	 * @return test case display name regular expressions
+	 */
+	String[] matches() default {};
 
 }
