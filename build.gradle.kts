@@ -21,12 +21,12 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.4.2")
-    implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.4.2")
+    implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.5.2")
+    implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.5.2")
 
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.4.2")
-    testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.4.2")
-    testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.4.2")
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.5.2")
+    testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.5.2")
+    testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.5.2")
 
     testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
     testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
