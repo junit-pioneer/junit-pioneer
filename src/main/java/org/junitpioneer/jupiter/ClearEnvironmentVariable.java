@@ -26,7 +26,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  *
  * <p>The key of the environment variable to be cleared must be specified via
  * {@link #key()}. After the annotated element has been executed, After the
- * annotated method has been executed, the initial default value is restored.
+ * annotated method has been executed, the initial default value is restored.</p>
  *
  * <p>{@code ClearEnvironmentVariable} is repeatable and can be used on the method and
  * on the class level. If a class is annotated, the configured variable will be
@@ -40,7 +40,15 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  * may have to add {@code --add-opens=java.base/java.util=ALL-UNNAMED} to your test
  * execution to prevent warnings or even errors.</p>
  *
- * <p>The extension will run single threaded to guarantee thread safety!</p>
+ * <p>During
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
+ * all tests annotated with {@link ClearEnvironmentVariable}, {@link SetEnvironmentVariable}, {@link ReadsEnvironmentVariable}, and {@link WritesEnvironmentVariable}
+ * are executed sequentially to guarantee correctness under mutation of shared global state.
+ * </p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable and @SetEnvironmentVariable</code></a>.
+ * </p>
  *
  * @since 0.6
  */

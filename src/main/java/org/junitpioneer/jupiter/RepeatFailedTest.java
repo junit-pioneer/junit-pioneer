@@ -37,7 +37,7 @@ import org.junit.jupiter.api.parallel.Execution;
  * Each ignored/aborted or failed execution includes the underlying
  * exception.
  *
- * <p>{@code @RepeatFailedTest} has a number of limitations:
+ * <p>{@code @RepeatFailedTest} has a number of limitations:</p>
  *
  * <ul>
  *     <li>it can only be applied to methods</li>
@@ -49,6 +49,10 @@ import org.junit.jupiter.api.parallel.Execution;
  *     <li>all repetitions are run sequentially, even when used with
  *         <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution">parallel test execution</a></li>
  * </ul>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/repeat-failed-test/" target="_top">the documentation on <code>@RepeatFailedTest</code></a>.
+ * </p>
  *
  * @since 0.4
  */

@@ -33,7 +33,15 @@ import org.junit.jupiter.api.parallel.Resources;
  * on the class level. If a class is annotated, the configured property will be
  * cleared for all tests inside that class.</p>
  *
- * <p>The system properties are locked for read and write access to guarantee thread safety!</p>
+ * <p>During
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
+ * all tests annotated with {@link ClearSystemProperty}, {@link SetSystemProperty}, {@link ReadsSystemProperty}, and {@link WritesSystemProperty}
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.
+ * </p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on <code>@ClearSystemProperty and @SetSystemProperty</code></a>.
+ * </p>
  *
  * @since 0.5
  */
