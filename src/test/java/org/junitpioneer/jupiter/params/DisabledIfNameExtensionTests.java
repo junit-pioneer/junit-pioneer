@@ -90,6 +90,53 @@ class DisabledIfNameExtensionTests {
 
 	}
 
+	@Nested
+	class MisconfigurationTests {
+
+		@Test
+		void noContainsNoMatches_configurationException() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "noContainsNoMatches",
+							"java.lang.String");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		}
+
+		@Test
+		void containsAndMatches_contains_correctTestsSkipped() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_contains",
+							"int");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(0);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(3);
+			assertThat(results.numberOfSkippedTests()).isEqualTo(2);
+		}
+
+		@Test
+		void containsAndMatches_matches_correctTestsSkipped() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_matches",
+							"int");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(0);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+			assertThat(results.numberOfSkippedTests()).isEqualTo(3);
+		}
+
+		@Test
+		void containsAndMatches_containsAndMatches_correctTestsSkipped() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class,
+							"containsAndMatches_containsAndMatches", "int");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(0);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+			assertThat(results.numberOfSkippedTests()).isEqualTo(4);
+		}
+
+	}
+
 	// TEST CASES -------------------------------------------------------------------
 
 	static class SubstringTestCases {
@@ -172,53 +219,6 @@ class DisabledIfNameExtensionTests {
 
 	}
 
-	@Nested
-	class MisconfigurationTests {
-
-		@Test
-		void noContainsNoMatches_configurationException() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "noContainsNoMatches",
-						"java.lang.String");
-
-			assertThat(results.numberOfFailedTests()).isEqualTo(1);
-		}
-
-		@Test
-		void containsAndMatches_contains_correctTestsSkipped() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_contains",
-						"int");
-
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(3);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(2);
-		}
-
-		@Test
-		void containsAndMatches_matches_correctTestsSkipped() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_matches",
-						"int");
-
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(3);
-		}
-
-		@Test
-		void containsAndMatches_containsAndMatches_correctTestsSkipped() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class,
-						"containsAndMatches_containsAndMatches", "int");
-
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(4);
-		}
-
-	}
-
 	static class ConfigurationTestCases {
 
 		@DisableIfDisplayName
@@ -248,7 +248,7 @@ class DisabledIfNameExtensionTests {
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
 		void containsAndMatches_containsAndMatches(int number) {
-			if (number == 100)
+			if (number != 100)
 				fail("Test should've been disabled for " + number);
 		}
 
