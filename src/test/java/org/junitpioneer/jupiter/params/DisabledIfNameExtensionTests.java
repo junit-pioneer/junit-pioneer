@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junitpioneer.jupiter.params.DisableIfDisplayName;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -96,7 +95,7 @@ class DisabledIfNameExtensionTests {
 	static class SubstringTestCases {
 
 		//@formatter:off
-		@DisableIfDisplayName("disable")
+		@DisableIfDisplayName(contains = "disable")
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(
 				strings = {
@@ -114,15 +113,15 @@ class DisabledIfNameExtensionTests {
 				fail("Test should've been disabled " + reason);
 		}
 
-		@DisableIfDisplayName({ "1", "2" })
+		@DisableIfDisplayName(contains = { "1", "2" })
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(ints = { 1, 2, 3, 4, 5 })
-		void multiple(int num) {
-			if (num == 1 || num == 2)
-				fail("Test should've been disabled for " + num);
+		void multiple(int number) {
+			if (number == 1 || number == 2)
+				fail("Test should've been disabled for " + number);
 		}
 
-		@DisableIfDisplayName("Contains")
+		@DisableIfDisplayName(contains = "Contains")
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(ints = { 1, 2, 3 })
 		void methodNameContains(int unusedParameter) {
@@ -133,7 +132,7 @@ class DisabledIfNameExtensionTests {
 	static class RegExpTestCases {
 
 		//@formatter:off
-		@DisableIfDisplayName(value = ".*disabled?\\s.*", isRegEx = true)
+		@DisableIfDisplayName(matches = ".*disabled?\\s.*")
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(
 				strings = {
@@ -157,20 +156,97 @@ class DisabledIfNameExtensionTests {
 		}
 		//@formatter:on
 
-		@DisableIfDisplayName(value = { ".*10[^0]*", ".*10{3,4}[^0]*" }, isRegEx = true)
+		@DisableIfDisplayName(matches = { ".*10[^0]*", ".*10{3,4}[^0]*" })
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
-		void multiple(int num) {
-			if (num == 10 || num == 1_000 || num == 10_000)
-				fail("Test should've been disabled for " + num);
+		void multiple(int number) {
+			if (number == 10 || number == 1_000 || number == 10_000)
+				fail("Test should've been disabled for " + number);
 		}
 
-		@DisableIfDisplayName(value = ".*Matches.*", isRegEx = true)
+		@DisableIfDisplayName(matches = ".*Matches.*")
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(ints = { 1, 2, 3 })
 		void methodNameMatches(int unusedParameter) {
 		}
 
+	}
+
+	@Nested
+	class MisconfigurationTests {
+
+		@Test
+		void noContainsNoMatches_configurationException() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "noContainsNoMatches", "java.lang.String");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		}
+
+		@Test
+		void containsAndMatches_contains_correctTestsSkipped() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_contains", "int");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(0);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(3);
+			assertThat(results.numberOfSkippedTests()).isEqualTo(2);
+		}
+
+		@Test
+		void containsAndMatches_matches_correctTestsSkipped() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_matches", "int");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(0);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+			assertThat(results.numberOfSkippedTests()).isEqualTo(3);
+		}
+
+		@Test
+		void containsAndMatches_containsAndMatches_correctTestsSkipped() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_containsAndMatches", "int");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(0);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+			assertThat(results.numberOfSkippedTests()).isEqualTo(4);
+		}
+
+	}
+
+	static class ConfigurationTestCases {
+
+		@DisableIfDisplayName
+		@ParameterizedTest
+		@ValueSource(strings = "a string")
+		void noContainsNoMatches(String reason) {
+			fail("Test should never have been executed because of misconfiguration.");
+		}
+
+		@DisableIfDisplayName(contains = { "1", "2" }, matches = "\\w*")
+		@ParameterizedTest(name = "See if enabled with {0}")
+		@ValueSource(ints = { 1, 2, 3, 4, 5 })
+		void containsAndMatches_contains(int number) {
+			if (number == 1 || number == 2)
+				fail("Test should've been disabled for " + number);
+		}
+
+		@DisableIfDisplayName(contains = "  ", matches = { ".*10[^0]*", ".*10{3,4}[^0]*" })
+		@ParameterizedTest(name = "See if enabled with {0}")
+		@ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
+		void containsAndMatches_matches(int number) {
+			if (number == 10 || number == 1_000 || number == 10_000)
+				fail("Test should've been disabled for " + number);
+		}
+
+		@DisableIfDisplayName(contains = "000", matches = ".*10?" )
+		@ParameterizedTest(name = "See if enabled with {0}")
+		@ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
+		void containsAndMatches_containsAndMatches(int number) {
+			if (number == 10 || number == 1_000 || number == 10_000)
+				fail("Test should've been disabled for " + number);
+		}
 	}
 
 }

@@ -43,7 +43,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 public @interface DisableIfDisplayName {
 
 	/**
-	 *
 	 * Display names of the test cases to be disabled. The whole test case name can be passed as well as a sub string.
 	 * The values will be evaluated with {@link String#contains(CharSequence)} by default.
 	 * If {@link #isRegEx} is {@code true}, the string will be evaluated with {@link String#matches(String)}
@@ -51,11 +50,8 @@ public @interface DisableIfDisplayName {
 	 *
 	 * @return test case display name
 	 */
-	String[] value();
+	String[] contains() default { };
 
-	/**
-	 * @return whether the {@code value} is to be evaluated as regular expression or substring
-	 */
-	boolean isRegEx() default false;
+	String[] matches() default { };
 
 }

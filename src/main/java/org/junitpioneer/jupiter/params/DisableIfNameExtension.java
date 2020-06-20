@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
 import static org.junitpioneer.jupiter.params.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
@@ -19,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class DisableIfNameExtension implements ExecutionCondition {
@@ -38,13 +40,35 @@ public class DisableIfNameExtension implements ExecutionCondition {
 	}
 
 	private ConditionEvaluationResult disable(ExtensionContext context, DisableIfDisplayName disableInstruction) {
-		//@formatter:off
+		String[] substrings = disableInstruction.contains();
+		String[] regExps = disableInstruction.matches();
+		boolean checkSubstrings = substrings.length > 0;
+		boolean checkRegExps = regExps.length > 0;
+
+		if (!checkSubstrings && !checkRegExps)
+			throw new ExtensionConfigurationException("@DisableIfDisplayName requires that either `contains` or `matches` is specified, but both are empty.");
+
 		String displayName = context.getDisplayName();
-		return disableInstruction.isRegEx()
-				? disableIfMatches(displayName, disableInstruction.value())
-				: disableIfContains(displayName, disableInstruction.value());
-		//@formatter:on
+		ConditionEvaluationResult substringResults = disableIfContains(displayName, substrings);
+		ConditionEvaluationResult regExpResults = disableIfMatches(displayName, regExps);
+
+		if (checkSubstrings && checkRegExps)
+			return checkResults(substringResults, regExpResults);
+		if (checkSubstrings)
+			return substringResults;
+		if (checkRegExps)
+			return regExpResults;
+
+		// can't happen, all four combinations are covered
+		return null;
 	}
+
+	private ConditionEvaluationResult checkResults(ConditionEvaluationResult substringResults, ConditionEvaluationResult regExpResults) {
+		boolean disabled = substringResults.isDisabled() || regExpResults.isDisabled();
+		String reason = format("%s %s", substringResults.getReason(), regExpResults.getReason());
+		return disabled ? disabled(reason) : enabled(reason);
+	}
+
 
 	private ConditionEvaluationResult disableIfMatches(String displayName, String[] regExps) {
 		//@formatter:off
@@ -53,8 +77,8 @@ public class DisableIfNameExtension implements ExecutionCondition {
 				.filter(displayName::matches)
 				.collect(Collectors.joining("', '"));
 		return matches.isEmpty()
-				? enabled("Display name '" + displayName + " doesn't match any regular expression")
-				: disabled("Display name '" + displayName + "' matches '" + matches + "'");
+				? enabled("Display name '" + displayName + " doesn't match any regular expression.")
+				: disabled("Display name '" + displayName + "' matches '" + matches + "'.");
 		//@formatter:on
 	}
 
@@ -65,8 +89,8 @@ public class DisableIfNameExtension implements ExecutionCondition {
 				.filter(displayName::contains)
 				.collect(Collectors.joining("', '"));
 		return matches.isEmpty()
-				? enabled("Display name '" + displayName + " doesn't contain any substring")
-				: disabled("Display name '" + displayName + "' contains '" + matches + "'");
+				? enabled("Display name '" + displayName + " doesn't contain any substring.")
+				: disabled("Display name '" + displayName + "' contains '" + matches + "'.");
 		//@formatter:on
 	}
 
