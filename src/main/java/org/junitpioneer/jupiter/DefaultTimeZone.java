@@ -33,7 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * configurations will override the class level default {@code TimeZone}.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale and @DefaultTimeZone</code></a>
+ * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale and @DefaultTimeZone</code></a>.
  * </p>
  *
  * @since 0.2

@@ -51,7 +51,7 @@ import org.junit.jupiter.api.parallel.Execution;
  * </ul>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/repeat-failed-test/" target="_top">the documentation on <code>@RepeatFailedTest</code></a>
+ * <a href="https://junit-pioneer.org/docs/repeat-failed-test/" target="_top">the documentation on <code>@RepeatFailedTest</code></a>.
  * </p>
  *
  * @since 0.4

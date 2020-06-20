@@ -40,7 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * execution to prevent warnings or even errors.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable and @SetEnvironmentVariable</code></a>
+ * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable and @SetEnvironmentVariable</code></a>.
  * </p>
  *
  * @since 0.6

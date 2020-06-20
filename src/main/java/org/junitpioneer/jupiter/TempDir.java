@@ -29,7 +29,7 @@ import java.nio.file.Path;
  * extension.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/temp-directory/" target="_top">the documentation on <code>TempDirectory</code></a>
+ * <a href="https://junit-pioneer.org/docs/temp-directory/" target="_top">the documentation on <code>TempDirectory</code></a>.
  * </p>
  *
  * @see TempDirectoryExtension

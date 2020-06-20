@@ -119,7 +119,7 @@ Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue
 ### Documentation
 
 There are several aspects of this project's documentation.
-Some project-specific requirements apply to all files:
+Some project-specific requirements apply to all non-`.java` files:
 
 * one sentence per line, i.e. no matter how short or long a sentence is, it will occupy a single line, not shared with any other sentences
 * to start a new paragraph, add a single blank line
@@ -132,6 +132,7 @@ Each feature is documented on [the project website](https://junit-pioneer.org/do
 * it's own `.adoc` file
 
 Add these entries when implementing a new feature and update them when changing an existing one.
+The Javadoc on an extension's annotations should link back to the documentation on the website "for more information".
 
 #### README.md and CONTRIBUTING.md
 

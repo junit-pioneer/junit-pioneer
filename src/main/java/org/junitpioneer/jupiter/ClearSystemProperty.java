@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * cleared for all tests inside that class.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on <code>@ClearSystemProperty and @SetSystemProperty</code></a>
+ * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on <code>@ClearSystemProperty and @SetSystemProperty</code></a>.
  * </p>
  *
  * @since 0.5
