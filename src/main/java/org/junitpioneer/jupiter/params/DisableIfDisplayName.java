@@ -37,7 +37,7 @@ import org.junit.jupiter.params.ParameterizedTest;
  * It is possible to configure both, in which case the test gets disabled if at least one substring
  * was found <em>or</em> at least one regular expression matched.</p>
  *
- * @since 0.8
+ * @since 0.7
  * @see DisableIfNameExtension
  */
 @Target(ElementType.METHOD)

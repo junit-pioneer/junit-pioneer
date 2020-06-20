@@ -23,6 +23,8 @@ import java.lang.annotation.Target;
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>.
  * </p>
+ *
+ * @since 0.7
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

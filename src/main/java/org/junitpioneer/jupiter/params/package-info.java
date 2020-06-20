@@ -3,6 +3,11 @@
  *
  * <p>Check out the following types for details:
  * <ul>
+ *     <li>{@link org.junitpioneer.jupiter.params.DisableIfDisplayName}</li>
+ * </ul>
+ *
+ * <p>Check out the following types for details on providing values for parameterized tests:
+ * <ul>
  *     <li>{@link org.junitpioneer.jupiter.params.ByteRange}</li>
  *     <li>{@link org.junitpioneer.jupiter.params.ShortRange}</li>
  *     <li>{@link org.junitpioneer.jupiter.params.IntRange}</li>

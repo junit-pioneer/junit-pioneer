@@ -34,6 +34,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * To emphasize its character as a temporary solution and to reduce risk of accidental use, it's marked as deprecated.
  * Deprecated since v0.4; not intended to be removed.
  *
+ * @since 0.1
  */
 @Deprecated
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
@@ -61,12 +62,13 @@ public @interface Test {
 	/**
 	 * Optionally specify <code>timeout</code> in milliseconds to cause a test method to fail if it
 	 * takes longer than that number of milliseconds.
-	 * <p>
-	 * <b>NOTE:</b> Unlike the same parameter on JUnit 4's {@code @Test} annotation, this one
-	 * <b>does not</b> lead to a long running test being abandoned.
-	 * Tests will always be allowed to finish (if they do that at all) and their run time might lead
-	 * to the test being failed retroactively.
-	 * </p>
+	 *
+	 * <p>If the timeout is exceeded, the test will be abandoned (i.e. the test execution moves on
+	 * to the next test) and the thread running it is interrupted.</p>
+	 *
+	 * <p>In accordance with JUnit 4, the default value is {@code 0}, which means that while
+	 * configuring 0 milliseconds is possible, it is indistinguishable from the default value
+	 * and thus ignored. Negative values are rejected with an exception.</p>
 	 */
 	long timeout() default 0L;
 
