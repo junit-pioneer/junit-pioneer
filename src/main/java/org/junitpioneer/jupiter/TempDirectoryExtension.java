@@ -86,7 +86,6 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * @see ParentDirProvider
  * @see Files#createTempDirectory
  */
-// TODO: The extension may or may not be thread-safe - the tests definitely aren't
 public class TempDirectoryExtension implements ParameterResolver {
 
 	/**

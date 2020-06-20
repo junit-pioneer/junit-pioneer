@@ -19,6 +19,21 @@ import org.junit.jupiter.api.parallel.ResourceAccessMode;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.api.parallel.Resources;
 
+/**
+ * Marks tests that read the default time zone but don't use the time zone extension themselves.
+ *
+ * <p>During
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
+ * all tests annotated with {@link DefaultTimeZone}, {@link ReadsDefaultTimeZone}, and {@link WritesDefaultTimeZone}
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.
+ * </p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable and @SetEnvironmentVariable</code></a>.
+ * </p>
+ *
+ * @since 0.7
+ */
 @ResourceLock(value = Resources.TIME_ZONE, mode = ResourceAccessMode.READ)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PACKAGE,

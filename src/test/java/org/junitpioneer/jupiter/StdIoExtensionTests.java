@@ -32,7 +32,6 @@ import org.junitpioneer.testkit.PioneerTestKit;
  * Shakespeare's Sonnet VII is in the public domain.
  */
 @DisplayName("StdIOExtension ")
-// TODO: The extension is not thread-safe, yet.
 @Execution(ExecutionMode.SAME_THREAD)
 public class StdIoExtensionTests {
 
