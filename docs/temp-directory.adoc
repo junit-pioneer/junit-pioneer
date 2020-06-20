@@ -50,3 +50,8 @@ class MyTests {
 	}
 }
 ----
+
+== Thread-Safety
+
+This extension's thread-safety is undetermined, we recommend to be cautious when using it during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].
+(We're working on it.)

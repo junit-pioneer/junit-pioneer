@@ -111,3 +111,7 @@ ON_ABORTED::
 The extension will publish your report entry if the test was aborted (for example because of an https://junit.org/junit5/docs/current/user-guide/#writing-tests-assumptions[Assumption]).
 
 Entries will always be published after the test finished.
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

@@ -59,3 +59,7 @@ void legalRrange(long arg) {
 == Empty ranges
 
 The range sources check whether the range defined by `from`, `to`, and `step` is empty and throws a `PreconditionViolationException` if it is.
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

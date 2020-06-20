@@ -39,3 +39,8 @@ void failsAlways() {
 
 The test `failsAlways` is executed three times (all of which fail).
 The first two executions are marked as ignored/aborted and the last as failed - each contains the underlying exception.
+
+== Thread-Safety
+
+This extension is thread-safe.
+During https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution], all repetitions of a `@RepeatFailedTest` are executed sequentially.

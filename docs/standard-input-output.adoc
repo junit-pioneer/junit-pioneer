@@ -57,3 +57,8 @@ This is the specific characteristic  of that reader and is not considered a bug 
 ----
 IMPORTANT: The extension redirects the standard input/output and nothing gets forwarded to System.in or System.out.
 ----
+
+== Thread-Safety
+
+This extension is not thread-safe, it should not be used during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].
+(We're working on it.)
