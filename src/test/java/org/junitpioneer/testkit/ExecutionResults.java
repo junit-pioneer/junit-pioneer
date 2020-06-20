@@ -37,6 +37,8 @@ public class ExecutionResults {
 	ExecutionResults(Class<?> testClass) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
+				// See comment in src/test/resources/junit-platform.properties
+				//
 				// Once https://github.com/junit-team/junit5/issues/2285 is fixed and released,
 				// the Test Engine Kit no longer picks up our parallel test execution configuration,
 				// which means tests running our extensions would be sequential by default.
