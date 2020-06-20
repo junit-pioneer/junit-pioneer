@@ -8,11 +8,11 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.params;
 
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
-import static org.junitpioneer.jupiter.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
+import static org.junitpioneer.jupiter.params.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
