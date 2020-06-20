@@ -97,7 +97,7 @@ class DisabledIfNameExtensionTests {
 		void noContainsNoMatches_configurationException() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "noContainsNoMatches",
-							"java.lang.String");
+						"java.lang.String");
 
 			assertThat(results.numberOfFailedTests()).isEqualTo(1);
 		}
@@ -106,7 +106,7 @@ class DisabledIfNameExtensionTests {
 		void containsAndMatches_contains_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_contains",
-							"int");
+						"int");
 
 			assertThat(results.numberOfFailedTests()).isEqualTo(0);
 			assertThat(results.numberOfSucceededTests()).isEqualTo(3);
@@ -117,7 +117,7 @@ class DisabledIfNameExtensionTests {
 		void containsAndMatches_matches_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_matches",
-							"int");
+						"int");
 
 			assertThat(results.numberOfFailedTests()).isEqualTo(0);
 			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
@@ -128,7 +128,7 @@ class DisabledIfNameExtensionTests {
 		void containsAndMatches_containsAndMatches_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class,
-							"containsAndMatches_containsAndMatches", "int");
+						"containsAndMatches_containsAndMatches", "int");
 
 			assertThat(results.numberOfFailedTests()).isEqualTo(0);
 			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
