@@ -8,6 +8,8 @@
         url: /docs/environment-variables/
       - title: "@DefaultLocale and @DefaultTimeZone"
         url: /docs/default-locale-timezone/
+      - title: "@DisableIfDisplayName"
+        url: /docs/disable-if-display-name/
       - title: "Range Sources"
         url: /docs/range-sources/
       - title: "@RetryingTest"
@@ -20,3 +22,4 @@
         url: /docs/temp-directory/
       - title: "Vintage @Test"
         url: /docs/vintage-test/
+
