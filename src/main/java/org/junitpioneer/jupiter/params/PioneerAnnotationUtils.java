@@ -10,12 +10,11 @@
 
 package org.junitpioneer.jupiter.params;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
-
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
+
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * Copy of {@code org.junitpioneer.jupiter.PioneerAnnotationUtils}.
@@ -35,7 +34,8 @@ class PioneerAnnotationUtils {
 			FIND_CLOSEST_ENCLOSING_ANNOTATION = PIONEER_ANNOTATION_UTILS
 					.getMethod("findClosestEnclosingAnnotation", ExtensionContext.class, Class.class);
 			FIND_CLOSEST_ENCLOSING_ANNOTATION.setAccessible(true);
-		} catch (ReflectiveOperationException ex) {
+		}
+		catch (ReflectiveOperationException ex) {
 			throw new RuntimeException("Pioneer could not initialize itself.", ex);
 		}
 	}
@@ -49,7 +49,8 @@ class PioneerAnnotationUtils {
 			Class<A> annotationType) {
 		try {
 			return (Optional<A>) FIND_CLOSEST_ENCLOSING_ANNOTATION.invoke(null, context, annotationType);
-		} catch (ReflectiveOperationException ex) {
+		}
+		catch (ReflectiveOperationException ex) {
 			throw new RuntimeException("Internal Pioneer error.", ex);
 		}
 	}

@@ -178,7 +178,8 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void noContainsNoMatches_configurationException() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "noContainsNoMatches", "java.lang.String");
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "noContainsNoMatches",
+						"java.lang.String");
 
 			assertThat(results.numberOfFailedTests()).isEqualTo(1);
 		}
@@ -186,7 +187,8 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void containsAndMatches_contains_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_contains", "int");
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_contains",
+						"int");
 
 			assertThat(results.numberOfFailedTests()).isEqualTo(0);
 			assertThat(results.numberOfSucceededTests()).isEqualTo(3);
@@ -196,7 +198,8 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void containsAndMatches_matches_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_matches", "int");
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_matches",
+						"int");
 
 			assertThat(results.numberOfFailedTests()).isEqualTo(0);
 			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
@@ -206,7 +209,8 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void containsAndMatches_containsAndMatches_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_containsAndMatches", "int");
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class,
+						"containsAndMatches_containsAndMatches", "int");
 
 			assertThat(results.numberOfFailedTests()).isEqualTo(0);
 			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
@@ -240,13 +244,14 @@ class DisabledIfNameExtensionTests {
 				fail("Test should've been disabled for " + number);
 		}
 
-		@DisableIfDisplayName(contains = "000", matches = ".*10?" )
+		@DisableIfDisplayName(contains = "000", matches = ".*10?")
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
 		void containsAndMatches_containsAndMatches(int number) {
-			if (number == 10 || number == 1_000 || number == 10_000)
+			if (number == 100)
 				fail("Test should've been disabled for " + number);
 		}
+
 	}
 
 }

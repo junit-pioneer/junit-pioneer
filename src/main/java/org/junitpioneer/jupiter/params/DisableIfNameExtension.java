@@ -46,7 +46,8 @@ public class DisableIfNameExtension implements ExecutionCondition {
 		boolean checkRegExps = regExps.length > 0;
 
 		if (!checkSubstrings && !checkRegExps)
-			throw new ExtensionConfigurationException("@DisableIfDisplayName requires that either `contains` or `matches` is specified, but both are empty.");
+			throw new ExtensionConfigurationException(
+				"@DisableIfDisplayName requires that either `contains` or `matches` is specified, but both are empty.");
 
 		String displayName = context.getDisplayName();
 		ConditionEvaluationResult substringResults = disableIfContains(displayName, substrings);
@@ -63,12 +64,12 @@ public class DisableIfNameExtension implements ExecutionCondition {
 		return null;
 	}
 
-	private ConditionEvaluationResult checkResults(ConditionEvaluationResult substringResults, ConditionEvaluationResult regExpResults) {
+	private ConditionEvaluationResult checkResults(ConditionEvaluationResult substringResults,
+			ConditionEvaluationResult regExpResults) {
 		boolean disabled = substringResults.isDisabled() || regExpResults.isDisabled();
 		String reason = format("%s %s", substringResults.getReason(), regExpResults.getReason());
 		return disabled ? disabled(reason) : enabled(reason);
 	}
-
 
 	private ConditionEvaluationResult disableIfMatches(String displayName, String[] regExps) {
 		//@formatter:off
