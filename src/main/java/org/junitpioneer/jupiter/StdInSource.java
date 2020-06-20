@@ -19,6 +19,10 @@ import java.lang.annotation.Target;
  * Provide values that the {@link StdIOExtension extension} will read instead of reading the
  * standard input ({@code System.in}).
  * This should be used with {@link org.junitpioneer.jupiter.StdIOExtension.StdIn}.
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>.
+ * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

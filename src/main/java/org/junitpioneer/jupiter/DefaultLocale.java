@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * returned by {@link java.util.Locale#getDefault()} for a test execution.
  *
  * <p>The {@link java.util.Locale} to set as the default locale can be
- * configured in several ways:
+ * configured in several ways:</p>
  *
  * <ul>
  *     <li>using a {@link java.util.Locale#forLanguageTag(String) language tag}</li>
@@ -43,6 +43,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * If a class is annotated, the configured {@code Locale} will be the default
  * {@code Locale} for all tests inside that class. Any method level
  * configurations will override the class level default {@code Locale}.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale and @DefaultTimeZone</code></a>.
+ * </p>
  *
  * @since 0.2
  * @see java.util.Locale#getDefault()
