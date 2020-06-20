@@ -10,8 +10,8 @@
         url: /docs/default-locale-timezone/
       - title: "Range Sources"
         url: /docs/range-sources/
-      - title: "@RepeatFailedTest"
-        url: /docs/repeat-failed-test/
+      - title: "@RetryingTest"
+        url: /docs/retrying-test/
       - title: "Report entries"
         url: /docs/report-entries/
       - title: "Standard input/output"
