@@ -38,10 +38,10 @@ import org.junit.jupiter.api.parallel.Resources;
  *
  * @since 0.5
  */
-@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(SetSystemProperty.SetSystemProperties.class)
+@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 @ExtendWith(SystemPropertyExtension.class)
 public @interface SetSystemProperty {
 
@@ -60,6 +60,7 @@ public @interface SetSystemProperty {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 	@ExtendWith(SystemPropertyExtension.class)
 	@interface SetSystemProperties {
 

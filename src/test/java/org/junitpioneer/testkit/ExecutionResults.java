@@ -37,10 +37,16 @@ public class ExecutionResults {
 	ExecutionResults(Class<?> testClass) {
 		executionResults = EngineTestKit
 				.engine("junit-jupiter")
-				// This disables the parallel execution for the TestKitEngine as it should not be executed by default
-				// Can be removed, when default value is updated by JUnit Jupiter
-				// See https://github.com/junit-team/junit5/issues/2285
-				.configurationParameter("junit.jupiter.execution.parallel.enabled", "false")
+				// Once https://github.com/junit-team/junit5/issues/2285 is fixed and released,
+				// the Test Engine Kit no longer picks up our parallel test execution configuration,
+				// which means tests running our extensions would be sequential by default.
+				// To tease out concurrency-related bugs, we want parallel execution, though,
+				// so we configure that explicitly.
+				.configurationParameter("junit.jupiter.execution.parallel.enabled", "true")
+				.configurationParameter("junit.jupiter.execution.parallel.mode.default", "concurrent")
+				.configurationParameter("junit.jupiter.execution.parallel.mode.classes.default", "concurrent")
+				.configurationParameter("junit.jupiter.execution.parallel.config.strategy", "dynamic")
+				.configurationParameter("junit.jupiter.execution.parallel.config.dynamic.factor", "1")
 				.selectors(DiscoverySelectors.selectClass(testClass))
 				.execute();
 	}

@@ -58,6 +58,7 @@ import org.junitpioneer.testkit.PioneerTestKit;
  */
 @Execution(SAME_THREAD)
 @DisplayName("TempDirectory extension")
+// TODO: The extension may or may not be thread-safe - the tests definitely aren't
 class TempDirectoryExtensionTests {
 
 	@BeforeEach
@@ -256,6 +257,7 @@ class TempDirectoryExtensionTests {
 	}
 
 	@ExtendWith(TempDirectoryExtension.class)
+	@Execution(SAME_THREAD)
 	static class BaseSharedTempDirTestCase {
 
 		static Optional<Path> tempDir;
@@ -330,6 +332,7 @@ class TempDirectoryExtensionTests {
 	}
 
 	@ExtendWith(TempDirectoryExtension.class)
+	@Execution(SAME_THREAD)
 	static class AnnotationOnAfterAllMethodParameterTestCase {
 
 		static Optional<Path> firstTempDir = Optional.empty();
@@ -351,6 +354,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class BaseSeparateTempDirsTestCase {
 
 		static final Deque<Path> tempDirs = new LinkedList<>();
@@ -399,6 +403,7 @@ class TempDirectoryExtensionTests {
 	}
 
 	@ExtendWith(TempDirectoryExtension.class)
+	@Execution(SAME_THREAD)
 	static class DeletionTestCase {
 
 		static Optional<Path> tempDir;
@@ -427,6 +432,7 @@ class TempDirectoryExtensionTests {
 	}
 
 	@ExtendWith(TempDirectoryExtension.class)
+	@Execution(SAME_THREAD)
 	static class InvalidTestCase {
 
 		@Test
@@ -436,6 +442,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class ParentDirFromCallableTestCase extends BaseSeparateTempDirsTestCase {
 
 		private static FileSystem fileSystem;
@@ -458,6 +465,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class ParentDirFromProviderTestCase extends BaseSeparateTempDirsTestCase {
 
 		@RegisterExtension
@@ -494,6 +502,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class FailedCreationAttemptTestCase {
 
 		private FileSystem fileSystem = mock(FileSystem.class);
@@ -517,6 +526,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class FailedDeletionAttemptTestCase {
 
 		private FileSystem fileSystem = mock(FileSystem.class);
@@ -551,6 +561,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class ErroneousParentDirProviderTestCase {
 
 		private FileSystem fileSystem = mock(FileSystem.class);

@@ -49,34 +49,35 @@ class DefaultLocaleTests {
 	class MethodLevelTests {
 
 		@Test
+		@ReadsDefaultLocale
 		@DisplayName("does nothing when annotation is not present")
 		void testDefaultLocaleNoAnnotation() {
 			assertThat(Locale.getDefault()).isEqualTo(TEST_DEFAULT_LOCALE);
 		}
 
-		@DefaultLocale("zh-Hant-TW")
 		@Test
+		@DefaultLocale("zh-Hant-TW")
 		@DisplayName("sets the default locale using a language tag")
 		void setsLocaleViaLanguageTag() {
 			assertThat(Locale.getDefault()).isEqualTo(Locale.forLanguageTag("zh-Hant-TW"));
 		}
 
-		@DefaultLocale(language = "en_EN")
 		@Test
+		@DefaultLocale(language = "en_EN")
 		@DisplayName("sets the default locale using a language")
 		void setsLanguage() {
 			assertThat(Locale.getDefault()).isEqualTo(new Locale("en_EN"));
 		}
 
-		@DefaultLocale(language = "en", country = "EN")
 		@Test
+		@DefaultLocale(language = "en", country = "EN")
 		@DisplayName("sets the default locale using a language and a country")
 		void setsLanguageAndCountry() {
 			assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN"));
 		}
 
-		@DefaultLocale(language = "en", country = "EN", variant = "gb")
 		@Test
+		@DefaultLocale(language = "en", country = "EN", variant = "gb")
 		@DisplayName("sets the default locale using a language, a country and a variant")
 		void setsLanguageAndCountryAndVariant() {
 			assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN", "gb"));
@@ -84,6 +85,7 @@ class DefaultLocaleTests {
 
 	}
 
+	@WritesDefaultLocale
 	@Nested
 	@DisplayName("applied on the class level")
 	class ClassLevelTests {
@@ -112,6 +114,7 @@ class DefaultLocaleTests {
 	static class ClassLevelTestCase {
 
 		@Test
+		@ReadsDefaultLocale
 		void shouldExecuteWithClassLevelLocale() {
 			assertThat(Locale.getDefault()).isEqualTo(new Locale("fr", "FR"));
 		}
@@ -124,9 +127,9 @@ class DefaultLocaleTests {
 
 	}
 
+	@Nested
 	@DisplayName("with nested classes")
 	@DefaultLocale(language = "en")
-	@Nested
 	class NestedDefaultLocaleTests {
 
 		@Nested
@@ -134,9 +137,10 @@ class DefaultLocaleTests {
 		class NestedClass {
 
 			@Test
+			@ReadsDefaultLocale
 			@DisplayName("DefaultLocale should be set from enclosed class when it is not provided in nested")
 			public void shouldSetLocaleFromEnclosedClass() {
-				assertThat("en").isEqualTo(Locale.getDefault().getLanguage());
+				assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
 			}
 
 		}
@@ -147,16 +151,17 @@ class DefaultLocaleTests {
 		class AnnotatedNestedClass {
 
 			@Test
+			@ReadsDefaultLocale
 			@DisplayName("DefaultLocale should be set from nested class when it is provided")
 			public void shouldSetLocaleFromNestedClass() {
-				assertThat("de").isEqualTo(Locale.getDefault().getLanguage());
+				assertThat(Locale.getDefault().getLanguage()).isEqualTo("de");
 			}
 
 			@Test
 			@DefaultLocale(language = "ch")
 			@DisplayName("DefaultLocale should be set from method when it is provided")
 			public void shouldSetLocaleFromMethodOfNestedClass() {
-				assertThat("ch").isEqualTo(Locale.getDefault().getLanguage());
+				assertThat(Locale.getDefault().getLanguage()).isEqualTo("ch");
 			}
 
 		}

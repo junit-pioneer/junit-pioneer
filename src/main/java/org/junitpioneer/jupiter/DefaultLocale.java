@@ -51,9 +51,9 @@ import org.junit.jupiter.api.parallel.Resources;
  * @see java.util.Locale#getDefault()
  * @see DefaultTimeZone
  */
-@ResourceLock(value = Resources.LOCALE, mode = ResourceAccessMode.READ_WRITE)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@ResourceLock(value = Resources.LOCALE, mode = ResourceAccessMode.READ_WRITE)
 @ExtendWith(DefaultLocaleExtension.class)
 public @interface DefaultLocale {
 

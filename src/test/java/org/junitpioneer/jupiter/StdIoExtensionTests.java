@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junitpioneer.jupiter.StdIOExtension.StdIn;
 import org.junitpioneer.jupiter.StdIOExtension.StdOut;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -30,6 +32,8 @@ import org.junitpioneer.testkit.PioneerTestKit;
  * Shakespeare's Sonnet VII is in the public domain.
  */
 @DisplayName("StdIOExtension ")
+// TODO: The extension is not thread-safe, yet.
+@Execution(ExecutionMode.SAME_THREAD)
 public class StdIoExtensionTests {
 
 	final BasicCommandLineApp app = new BasicCommandLineApp();

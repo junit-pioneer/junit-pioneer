@@ -15,18 +15,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Provide values that the {@link StdIOExtension extension} will read instead of reading the
- * standard input ({@code System.in}).
- * This should be used with {@link org.junitpioneer.jupiter.StdIOExtension.StdIn}.
- */
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
+
+@ResourceLock(value = Resources.LOCALE, mode = ResourceAccessMode.READ)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface StdInSource {
-
-	/**
-	 * Provides the intercepted standard input with values.
-	 */
-	String[] value();
-
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PACKAGE,
+		ElementType.TYPE })
+public @interface ReadsDefaultLocale {
 }

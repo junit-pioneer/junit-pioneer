@@ -10,8 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -19,7 +17,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 /**
  * {@code @ClearEnvironmentVariable} is a JUnit Jupiter extension to clear the value
@@ -45,10 +44,10 @@ import org.junit.jupiter.api.parallel.Execution;
  *
  * @since 0.6
  */
-@Execution(SAME_THREAD)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(ClearEnvironmentVariable.ClearEnvironmentVariables.class)
+@ResourceLock(value = "java.lang.System.environment", mode = ResourceAccessMode.READ_WRITE)
 @ExtendWith(EnvironmentVariableExtension.class)
 public @interface ClearEnvironmentVariable {
 
@@ -62,6 +61,7 @@ public @interface ClearEnvironmentVariable {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@ResourceLock(value = "java.lang.System.environment", mode = ResourceAccessMode.READ_WRITE)
 	@ExtendWith(EnvironmentVariableExtension.class)
 	@interface ClearEnvironmentVariables {
 

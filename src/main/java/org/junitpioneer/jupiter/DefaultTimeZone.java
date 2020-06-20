@@ -39,9 +39,9 @@ import org.junit.jupiter.api.parallel.Resources;
  * @see java.util.TimeZone#getDefault()
  * @see DefaultLocale
  */
-@ResourceLock(value = Resources.TIME_ZONE, mode = ResourceAccessMode.READ_WRITE)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@ResourceLock(value = Resources.TIME_ZONE, mode = ResourceAccessMode.READ_WRITE)
 @ExtendWith(DefaultTimeZoneExtension.class)
 public @interface DefaultTimeZone {
 

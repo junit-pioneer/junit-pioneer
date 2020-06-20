@@ -55,20 +55,21 @@ class DefaultTimeZoneTests {
 	class MethodLevelTests {
 
 		@Test
+		@ReadsDefaultTimeZone
 		@DisplayName("does nothing when annotation is not present")
 		void doesNothingWhenAnnotationNotPresent() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
 		}
 
-		@DefaultTimeZone("CET")
 		@Test
+		@DefaultTimeZone("CET")
 		@DisplayName("sets the default time zone using an abbreviation")
 		void setsTimeZoneFromAbbreviation() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("CET"));
 		}
 
-		@DefaultTimeZone("America/Los_Angeles")
 		@Test
+		@DefaultTimeZone("America/Los_Angeles")
 		@DisplayName("sets the default time zone using a full name")
 		void setsTimeZoneFromFullName() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("America/Los_Angeles"));
@@ -77,6 +78,7 @@ class DefaultTimeZoneTests {
 	}
 
 	@Nested
+	@WritesDefaultTimeZone
 	@DisplayName("applied on the class level")
 	class ClassLevelTests {
 
@@ -104,6 +106,7 @@ class DefaultTimeZoneTests {
 	static class ClassLevelTestCase {
 
 		@Test
+		@ReadsDefaultTimeZone
 		void shouldExecuteWithClassLevelTimeZone() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
 		}
@@ -116,9 +119,9 @@ class DefaultTimeZoneTests {
 
 	}
 
-	@DisplayName("with nested classes")
-	@DefaultTimeZone("GMT-8:00")
 	@Nested
+	@DefaultTimeZone("GMT-8:00")
+	@DisplayName("with nested classes")
 	class NestedDefaultTimeZoneTests {
 
 		@Nested
@@ -126,6 +129,7 @@ class DefaultTimeZoneTests {
 		class NestedClass {
 
 			@Test
+			@ReadsDefaultTimeZone
 			@DisplayName("DefaultTimeZone should be set from enclosed class when it is not provided in nested")
 			public void shouldSetTimeZoneFromEnclosedClass() {
 				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
@@ -139,6 +143,7 @@ class DefaultTimeZoneTests {
 		class AnnotatedNestedClass {
 
 			@Test
+			@ReadsDefaultTimeZone
 			@DisplayName("DefaultTimeZone should be set from nested class when it is provided")
 			public void shouldSetTimeZoneFromNestedClass() {
 				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
