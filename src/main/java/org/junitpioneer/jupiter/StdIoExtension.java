@@ -34,7 +34,12 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, AfterEachCallback {
+/**
+ * <p>For details and examples, see
+ * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
+ * </p>
+ */
+public class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, AfterEachCallback {
 
 	private static final String SEPARATOR = System.getProperty("line.separator");
 
@@ -120,6 +125,11 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 		}
 	}
 
+	/**
+	 * <p>For details and examples, see
+	 * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
+	 * </p>
+	 */
 	public static class StdOut extends OutputStream {
 
 		Writer writer = new StringWriter();
@@ -140,6 +150,11 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 
 	}
 
+	/**
+	 * <p>For details and examples, see
+	 * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
+	 * </p>
+	 */
 	public static class StdIn extends InputStream {
 
 		Reader reader;
