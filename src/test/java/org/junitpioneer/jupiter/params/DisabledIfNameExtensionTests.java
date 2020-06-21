@@ -38,6 +38,28 @@ class DisabledIfNameExtensionTests {
 		}
 
 		@Test
+		void single_correctTestsSkippedWithParameterClassnameArray() {
+			Class<?>[] classes = { String.class };
+
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "single", classes);
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(0);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+			assertThat(results.numberOfSkippedTests()).isEqualTo(5);
+		}
+
+		@Test
+		void single_correctTestsSkippedWithParameterClass() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "single", String.class);
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(0);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+			assertThat(results.numberOfSkippedTests()).isEqualTo(5);
+		}
+
+		@Test
 		void multiple_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "multiple", "int");

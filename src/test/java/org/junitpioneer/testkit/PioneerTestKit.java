@@ -46,4 +46,30 @@ public class PioneerTestKit {
 		return new ExecutionResults(testClass, testMethodName, methodParameterTypes);
 	}
 
+	/**
+	 * Returns the execution results of the given method of a given test class.
+	 *
+	 * @param testClass Name of the test class
+	 * @param testMethodName Name of the test method (of the given class)
+	 * @param methodParameterTypes Array containing the types of for the parameters
+	 * @return The execution results
+	 */
+	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
+			Class<?>[] methodParameterTypes) {
+		return new ExecutionResults(testClass, testMethodName, methodParameterTypes);
+	}
+
+	/**
+	 * Returns the execution results of the given method of a given test class.
+	 *
+	 * @param testClass Name of the test class
+	 * @param testMethodName Name of the test method (of the given class)
+	 * @param methodParameterTyp Class types of for the parameters
+	 * @return The execution results
+	 */
+	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
+			Class<?> methodParameterTyp) {
+		return new ExecutionResults(testClass, testMethodName, methodParameterTyp.getCanonicalName());
+	}
+
 }
