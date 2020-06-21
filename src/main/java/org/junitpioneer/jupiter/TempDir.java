@@ -26,7 +26,11 @@ import java.nio.file.Path;
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory">
  * built-in {@code @TempDir} extension</a>. If you don't need support for
  * arbitrary file systems, you should consider using that instead of this
- * extension.
+ * extension.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/temp-directory/" target="_top">the documentation on <code>TempDirectory</code></a>.
+ * </p>
  *
  * @see TempDirectoryExtension
  */
