@@ -28,6 +28,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * If values are provided but there is no {@link StdIoExtension.StdIn} parameter
  * an {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will be thrown.
  * The opposite is not true to enable testing for empty inputs.
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>.
+ * </p>
+ *
+ * @since 0.7
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
