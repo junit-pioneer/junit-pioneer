@@ -3,7 +3,7 @@ plugins {
     jacoco
     checkstyle
     `maven-publish`
-    id("com.diffplug.gradle.spotless") version "3.27.1"
+    id("com.diffplug.gradle.spotless") version "4.0.0"
     id("org.shipkit.java") version "2.3.1"
     id("at.zierler.yamlvalidator") version "1.5.0"
     id("org.sonarqube") version "2.8"
@@ -21,16 +21,16 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.4.2")
-    implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.4.2")
-    implementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.4.2")
+    implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.5.2")
+    implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.5.2")
+    implementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.5.2")
     // For Java 8 provided would be enough as its part of the JRE,
     // but Java 11 and 14 need this dependency cause of Jigsaw
     implementation(group = "javax.xml.bind", name ="jaxb-api", version = "2.3.1")
     implementation(group = "com.sun.xml.bind", name ="jaxb-impl", version = "2.3.3")
 
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.4.2")
-    testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.4.2")
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.5.2")
+    testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.5.2")
 
     testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
     testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
