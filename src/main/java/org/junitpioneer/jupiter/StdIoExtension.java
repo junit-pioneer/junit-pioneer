@@ -23,7 +23,6 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 /**
@@ -93,35 +91,26 @@ public class StdIoExtension implements ParameterResolver, BeforeTestExecutionCal
 	}
 
 	private String[] getSourceValuesFromAnnotation(ExtensionContext context) {
-		return context
-				.getTestMethod()
-				.map(method -> method.getAnnotation(StdIo.class))
-				.map(StdIo::value)
-				.orElseThrow(() -> new ParameterResolutionException(
-					format("Can not resolve test method parameter %s. Method has to be annotated with '%s'.",
-						StdIn.class.getName(), StdIo.class.getName())));
+		return context.getRequiredTestMethod().getAnnotation(StdIo.class).value();
 	}
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) {
-		Optional<Method> method = context.getTestMethod();
-		if (method.isPresent()) {
-			if (method.get().getAnnotation(StdIo.class) == null) {
-				throw new ExtensionConfigurationException(
-					format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName()));
-			}
-			List<Class<?>> params = Arrays.asList(method.get().getParameterTypes());
-			if (!params.contains(StdIn.class) && !params.contains(StdOut.class)) {
-				throw new ExtensionConfigurationException(
-					format("Method is annotated with %s but no %s or %s parameters were found.", StdIo.class.getName(),
-						StdIn.class.getName(), StdOut.class.getName()));
-			}
-			if (!String.join("", method.get().getAnnotation(StdIo.class).value()).isEmpty()
-					&& !params.contains(StdIn.class)) {
-				throw new ExtensionConfigurationException(format(
-					"Method has no %s parameter but input sources were provided in the %s annotation (Did you forget to add a test parameter?).",
-					StdIn.class.getName(), StdIo.class.getName()));
-			}
+		Method method = context.getRequiredTestMethod();
+		if (method.getAnnotation(StdIo.class) == null) {
+			throw new ExtensionConfigurationException(
+				format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName()));
+		}
+		List<Class<?>> params = Arrays.asList(method.getParameterTypes());
+		if (!params.contains(StdIn.class) && !params.contains(StdOut.class)) {
+			throw new ExtensionConfigurationException(
+				format("Method is annotated with %s but no %s or %s parameters were found.", StdIo.class.getName(),
+					StdIn.class.getName(), StdOut.class.getName()));
+		}
+		if (!String.join("", method.getAnnotation(StdIo.class).value()).isEmpty() && !params.contains(StdIn.class)) {
+			throw new ExtensionConfigurationException(format(
+				"Method has no %s parameter but input sources were provided in the %s annotation (Did you forget to add a test parameter?).",
+				StdIn.class.getName(), StdIo.class.getName()));
 		}
 	}
 
