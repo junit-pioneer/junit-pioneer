@@ -99,8 +99,9 @@ class EnvironmentVariableExtension
 	@Override
 	public void afterEach(ExtensionContext context) {
 		boolean present = PioneerAnnotationUtils
-				.isAnyAnnotationPresent(context, ClearEnvironmentVariable.class, ClearEnvironmentVariables.class,
-					SetEnvironmentVariable.class, SetEnvironmentVariables.class);
+				.isAnyAnnotationPresent(context, ClearEnvironmentVariable.class,
+					ClearEnvironmentVariable.ClearEnvironmentVariables.class, SetEnvironmentVariable.class,
+					SetEnvironmentVariable.SetEnvironmentVariables.class);
 		if (present) {
 			restoreOriginalEnvironmentVariables(context);
 		}

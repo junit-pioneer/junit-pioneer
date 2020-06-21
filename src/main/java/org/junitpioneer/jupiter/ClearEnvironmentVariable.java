@@ -30,13 +30,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * on the class level. If a class is annotated, the configured variable will be
  * cleared for all tests inside that class.
  *
- * <p>Warning: If your {@link SecurityManager} does not allow modifications, it fails.
+ * <p>WARNING: Java considers environment variables to be immutable, so this extension
+ * uses reflection to change them. This requires that the {@link SecurityManager}
+ * allows modifications and can potentially break on different operating systems and
+ * Java versions. Be aware that this is a fragile solution and consider finding a
+ * better one for your specific situation. If you're running on Java 9 or later, you
+ * may have to add {@code --add-opens=java.base/java.util=ALL-UNNAMED} to your test
+ * execution to prevent warnings or even errors.
  *
  * @since 0.6
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
-@Repeatable(ClearEnvironmentVariables.class)
+@Repeatable(ClearEnvironmentVariable.ClearEnvironmentVariables.class)
 @ExtendWith(EnvironmentVariableExtension.class)
 public @interface ClearEnvironmentVariable {
 
@@ -44,5 +50,17 @@ public @interface ClearEnvironmentVariable {
 	 * The key of the environment variable to be cleared.
 	 */
 	String key();
+
+	/**
+	 * Containing annotation of repeatable {@code @ClearEnvironmentVariable}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@ExtendWith(EnvironmentVariableExtension.class)
+	@interface ClearEnvironmentVariables {
+
+		ClearEnvironmentVariable[] value();
+
+	}
 
 }
