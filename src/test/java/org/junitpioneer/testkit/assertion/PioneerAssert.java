@@ -21,12 +21,8 @@ import org.junitpioneer.testkit.ExecutionResults;
 
 public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults> implements ExecutionResultAssert {
 
-	public static class EntryPoint extends Assertions {
-
-		public static ExecutionResultAssert assertThat(ExecutionResults actual) {
-			return new PioneerAssert(actual);
-		}
-
+	public static ExecutionResultAssert assertThat(ExecutionResults actual) {
+		return new PioneerAssert(actual);
 	}
 
 	private PioneerAssert(ExecutionResults actual) {

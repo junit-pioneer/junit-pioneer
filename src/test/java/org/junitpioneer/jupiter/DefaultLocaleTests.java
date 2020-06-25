@@ -12,7 +12,8 @@ package org.junitpioneer.jupiter;
 
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
-import static org.junitpioneer.testkit.assertion.PioneerAssert.EntryPoint.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Locale;
 

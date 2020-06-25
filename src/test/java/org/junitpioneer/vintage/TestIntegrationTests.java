@@ -11,11 +11,13 @@
 package org.junitpioneer.vintage;
 
 import static java.lang.String.format;
-import static org.junitpioneer.testkit.assertion.PioneerAssert.EntryPoint.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
 import java.nio.file.InvalidPathException;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -83,7 +85,9 @@ class TestIntegrationTests {
 	void testWithTimeout_belowZero_failsConfiguration() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowZero");
 
-		results.assertTestFailedWithExtensionConfigurationException();
+		assertThat(results).hasSingleTest()
+				.thatFailed().withException(ExtensionConfigurationException.class);
+		//results.assertTestFailedWithExtensionConfigurationException();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -97,7 +101,7 @@ class TestIntegrationTests {
 	void testWithTimeout_exceedsTimeout_fails() throws Exception {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithTimeout_exceedsTimeout");
-		String expectedMessage = format(TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1, 10);
+		String expectedMessage = format(TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1);
 		// the message contains the actual run time, which is unpredictable, so it has to be cut off for the assertion
 		String expectedKnownPrefix = expectedMessage.substring(0, expectedMessage.length() - 6);
 

@@ -12,8 +12,8 @@ package org.junitpioneer.jupiter;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.METHOD;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,9 +32,8 @@ class RetryingTestTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCase.class, "invalidConfigurationWithTest");
 
-		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
-		assertThat(results.numberOfStartedTests()).isEqualTo(2);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+		assertThat(results).hasSingleTest().dynamicallyRegistered();
+		assertThat(results).hasNumberOfTests(2).thatStarted().andAllOfThemSucceeded();
 	}
 
 	@Test
@@ -42,17 +41,14 @@ class RetryingTestTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCase.class, "executedOneEvenWithTwoTestTemplates");
 
-		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
-		assertThat(results.numberOfStartedTests()).isEqualTo(1);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+		assertThat(results).hasSingleTest().dynamicallyRegistered().thatStarted().andAllOfThemSucceeded();
 	}
 
 	@Test
 	void failsNever_executedOnce_passes() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsNever");
 
-		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+		assertThat(results).hasSingleTest().dynamicallyRegistered().thatSucceeded();
 	}
 
 	@Test
@@ -60,18 +56,24 @@ class RetryingTestTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocation");
 
-		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(2);
-		assertThat(results.numberOfAbortedTests()).isEqualTo(1);
-		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+		assertThat(results)
+				.hasNumberOfTests(2)
+				.dynamicallyRegistered()
+				.thatStarted()
+				.andThisManyAborted(1)
+				.theRestSucceeded();
 	}
 
 	@Test
 	void failsAlways_executedThreeTimes_fails() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsAlways");
 
-		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(3);
-		assertThat(results.numberOfAbortedTests()).isEqualTo(2);
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
+		assertThat(results)
+				.hasNumberOfTests(3)
+				.dynamicallyRegistered()
+				.thatStarted()
+				.andThisManyAborted(2)
+				.theRestSucceeded();
 	}
 
 	// TEST CASES -------------------------------------------------------------------

@@ -10,8 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,11 +18,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junitpioneer.jupiter.StdIOExtension.StdIn;
 import org.junitpioneer.jupiter.StdIOExtension.StdOut;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Shakespeare's Sonnet VII is in the public domain.
@@ -45,8 +47,9 @@ public class StdIoExtensionTests {
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "badType",
 						Boolean.class.getName());
 
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ParameterResolutionException.class)
+			assertThat(results).hasSingleTest()
+					.thatFailed()
+					.withException(ParameterResolutionException.class)
 					.hasMessageContaining("No ParameterResolver registered");
 		}
 
@@ -57,8 +60,10 @@ public class StdIoExtensionTests {
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "noAnnotation",
 						StdIn.class.getName());
 
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ParameterResolutionException.class)
+			assertThat(results)
+					.hasSingleTest()
+					.thatFailed()
+					.withException(ExtensionConfigurationException.class)
 					.hasMessageContainingAll("Can not resolve test method parameter", "Method has to be annotated");
 		}
 

@@ -10,10 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.TimeZone;
 
@@ -68,11 +69,12 @@ class DefaultTimeZoneTests {
 		void throwsWhenConfigurationIsBad() {
 			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCase.class, "badConfiguration");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(1);
-			assertThat(results.firstFailuresThrowable()).isExactlyInstanceOf(ExtensionConfigurationException.class);
-			assertThat(results.firstFailuresThrowableMessage())
-					.doesNotContain("should never execute")
-					.contains("@DefaultTimeZone not configured correctly.");
+			assertThat(results)
+					.hasSingleTest()
+					.thatFailed()
+					.withException(ExtensionConfigurationException.class)
+					.hasMessageNotContaining("should never execute")
+					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
 		}
 
 		@DefaultTimeZone("GMT")
@@ -120,9 +122,12 @@ class DefaultTimeZoneTests {
 		void shouldThrowWithBadConfiguration() {
 			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
 
-			assertThat(results.numberOfStartedTests()).isEqualTo(0);
-			assertThat(results.firstFailuresThrowable()).isExactlyInstanceOf(ExtensionConfigurationException.class);
-			assertThat(results.firstFailuresThrowableMessage()).contains("@DefaultTimeZone not configured correctly.");
+			assertThat(results).hasNoTests().thatStarted();
+			assertThat(results)
+					.hasNumberOfContainers(1)
+					.thatFailed()
+					.withException(ExtensionConfigurationException.class)
+					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
 		}
 
 		@Test
@@ -130,7 +135,7 @@ class DefaultTimeZoneTests {
 		void shouldNotThrowForExplicitGmt() {
 			ExecutionResults results = executeTestClass(ExplicitGmtClassLevelTestCase.class);
 
-			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+			assertThat(results).hasSingleTest().thatSucceeded();
 		}
 
 		@AfterEach
