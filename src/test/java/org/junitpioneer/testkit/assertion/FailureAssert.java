@@ -17,8 +17,17 @@ import org.assertj.core.api.AbstractThrowableAssert;
  */
 public interface FailureAssert {
 
+	/**
+	 * Asserts that the test/container failed because of a specific type of exception.
+	 * @param exceptionType the expected type of the thrown exception
+	 * @return an {@link AbstractThrowableAssert} for further assertions
+	 */
 	AbstractThrowableAssert<?, ? extends Throwable> withExceptionInstanceOf(Class<? extends Throwable> exceptionType);
 
+	/**
+	 * Asserts that the test/container failed because an exception was thrown.
+	 * @return an {@link AbstractThrowableAssert} for further assertions
+	 */
 	AbstractThrowableAssert<?, ? extends Throwable> withException();
 
 }

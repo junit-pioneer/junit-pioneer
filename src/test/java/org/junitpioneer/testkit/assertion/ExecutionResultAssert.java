@@ -11,14 +11,26 @@
 package org.junitpioneer.testkit.assertion;
 
 /**
- * An intermediary interface for choosing what you want to assert (except if you want to assert that no report entries were published).
+ * Base interface for all assertions.
  */
 public interface ExecutionResultAssert {
 
+	/**
+	 * Asserts that the expected number of report entries were published across all executed tests.
+	 * @param expected the number of report entries expected to be published
+	 * @return a {@link ReportEntryAssert} for further assertions.
+	 */
 	ReportEntryAssert hasNumberOfReportEntries(int expected);
 
+	/**
+	 * Asserts that exactly one report entry was published across all executed tests.
+	 * @return a {@link ReportEntryAssert} for further assertions.
+	 */
 	ReportEntryAssert hasSingleReportEntry();
 
+	/**
+	 * Asserts that no report entries were published across all executed tests.
+	 */
 	void hasNoReportEntries();
 
 	TestCaseAssert hasSingleStartedTest();
@@ -27,6 +39,14 @@ public interface ExecutionResultAssert {
 
 	void hasSingleAbortedTest();
 
+	/**
+	 * Asserts that there was exactly one successful test.
+	 * <p>
+	 * This is a convenience method that should be used by itself.
+	 * If you want to assert an entire test suite with multiple tests,
+	 * you should use {@code hasNumberOfSucceededTests(1)} (even if
+	 * it is your last method) for better clarity.
+	 */
 	void hasSingleSucceededTest();
 
 	void hasSingleSkippedTest();

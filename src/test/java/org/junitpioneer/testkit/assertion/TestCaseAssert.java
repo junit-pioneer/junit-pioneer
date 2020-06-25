@@ -15,10 +15,20 @@ package org.junitpioneer.testkit.assertion;
  */
 public interface TestCaseAssert {
 
+	/**
+	 * Asserts that the test/container has succeeded.
+	 */
 	void whichSucceeded();
 
+	/**
+	 * Asserts that the test/container was aborted.
+	 */
 	void whichAborted();
 
+	/**
+	 * Asserts that the test/container has failed.
+	 * @return a {@link FailureAssert} for further assertions.
+	 */
 	FailureAssert whichFailed();
 
 }
