@@ -32,8 +32,8 @@ class RetryingTestTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCase.class, "invalidConfigurationWithTest");
 
-		assertThat(results).hasSingleTest().dynamicallyRegistered();
-		assertThat(results).hasNumberOfTests(2).thatStarted().andAllOfThemSucceeded();
+		assertThat(results).hasSingleDynamicallyRegisteredTest();
+		assertThat(results).hasNumberOfStartedTests(2).hasNumberOfSucceededTests(2);
 	}
 
 	@Test
@@ -41,14 +41,14 @@ class RetryingTestTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCase.class, "executedOneEvenWithTwoTestTemplates");
 
-		assertThat(results).hasSingleTest().dynamicallyRegistered().thatStarted().andAllOfThemSucceeded();
+		assertThat(results).hasSingleDynamicallyRegisteredTest().whichSucceeded();
 	}
 
 	@Test
 	void failsNever_executedOnce_passes() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsNever");
 
-		assertThat(results).hasSingleTest().dynamicallyRegistered().thatSucceeded();
+		assertThat(results).hasSingleDynamicallyRegisteredTest().whichSucceeded();
 	}
 
 	@Test
@@ -57,11 +57,9 @@ class RetryingTestTests {
 				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocation");
 
 		assertThat(results)
-				.hasNumberOfTests(2)
-				.dynamicallyRegistered()
-				.thatStarted()
-				.andThisManyAborted(1)
-				.theRestSucceeded();
+				.hasNumberOfDynamicallyRegisteredTests(2)
+				.hasNumberOfAbortedTests(1)
+				.hasNumberOfSucceededTests(1);
 	}
 
 	@Test
@@ -69,11 +67,9 @@ class RetryingTestTests {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsAlways");
 
 		assertThat(results)
-				.hasNumberOfTests(3)
-				.dynamicallyRegistered()
-				.thatStarted()
-				.andThisManyAborted(2)
-				.theRestSucceeded();
+				.hasNumberOfDynamicallyRegisteredTests(3)
+				.hasNumberOfAbortedTests(2)
+				.hasNumberOfFailedTests(1);
 	}
 
 	// TEST CASES -------------------------------------------------------------------

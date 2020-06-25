@@ -11,8 +11,8 @@
 package org.junitpioneer.vintage;
 
 import static java.lang.String.format;
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
 import java.nio.file.InvalidPathException;
@@ -30,14 +30,14 @@ class TestIntegrationTests {
 	void test_successfulTest_passes() throws Exception {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_successfulTest");
 
-		assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
+		assertThat(results).hasSingleStartedTest().whichSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
 	void test_exceptionThrown_fails() throws Exception {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_exceptionThrown");
 
-		assertThat(results).hasSingleTest().thatStarted().andAllOfThemFailed();
+		assertThat(results).hasSingleStartedTest().whichFailed();
 	}
 
 	// expected exception
@@ -48,9 +48,8 @@ class TestIntegrationTests {
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_successfulTest");
 
 		assertThat(results)
-				.hasSingleTest()
-				.thatStarted()
-				.andAllOfThemFailed()
+				.hasSingleStartedTest()
+				.whichFailed()
 				.withException()
 				.hasMessageContainingAll(format(EXPECTED_EXCEPTION_WAS_NOT_THROWN, IllegalArgumentException.class));
 	}
@@ -60,7 +59,7 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfRightType");
 
-		assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
+		assertThat(results).hasSingleStartedTest().whichSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -68,7 +67,7 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSubtype");
 
-		assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
+		assertThat(results).hasSingleStartedTest().whichSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -76,7 +75,7 @@ class TestIntegrationTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSupertype");
 
-		assertThat(results).hasSingleTest().thatStarted().andAllOfThemFailed().withException(RuntimeException.class);
+		assertThat(results).hasSingleStartedTest().whichFailed().withExceptionInstanceOf(RuntimeException.class);
 	}
 
 	// timeout
@@ -85,16 +84,14 @@ class TestIntegrationTests {
 	void testWithTimeout_belowZero_failsConfiguration() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowZero");
 
-		assertThat(results).hasSingleTest()
-				.thatFailed().withException(ExtensionConfigurationException.class);
-		//results.assertTestFailedWithExtensionConfigurationException();
+		assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 	}
 
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_belowTimeout_passes() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowTimeout");
 
-		assertThat(results).hasSingleTest().thatStarted().andAllOfThemSucceeded();
+		assertThat(results).hasSingleStartedTest().whichSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
@@ -106,9 +103,8 @@ class TestIntegrationTests {
 		String expectedKnownPrefix = expectedMessage.substring(0, expectedMessage.length() - 6);
 
 		assertThat(results)
-				.hasSingleTest()
-				.thatStarted()
-				.andAllOfThemFailed()
+				.hasSingleStartedTest()
+				.whichFailed()
 				.withException()
 				.hasMessageContainingAll(expectedKnownPrefix);
 	}

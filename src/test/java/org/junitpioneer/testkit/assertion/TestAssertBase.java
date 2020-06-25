@@ -20,20 +20,18 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.testkit.engine.Events;
 
 public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events>
-		implements TestAssert, StartedTestAssert, FailureAssert, RemainderAssert {
+		implements TestCaseAssert, FailureAssert {
 
-	private int assertedSuccess = 0;
-	private int assertedAbort = 0;
-	private int assertedFail = 0;
-
-	TestAssertBase(Events events, int expected) {
-		super(events, TestAssertBase.class, expected);
+	TestAssertBase(Events events) {
+		super(events, TestAssertBase.class, 1);
 	}
 
 	@Override
-	public AbstractThrowableAssert<?, ? extends Throwable> withException(Class<? extends Throwable> exceptionType) {
+	public AbstractThrowableAssert<?, ? extends Throwable> withExceptionInstanceOf(
+			Class<? extends Throwable> exceptionType) {
 		Optional<Throwable> thrown = throwable();
-		assertThat(thrown).isPresent().containsInstanceOf(exceptionType);
+		assertThat(thrown).isPresent();
+		assertThat(thrown.get()).isInstanceOf(exceptionType);
 		return new ThrowableAssert(thrown.get());
 	}
 
@@ -54,90 +52,19 @@ public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events
 	}
 
 	@Override
-	public FailureAssert andAllOfThemFailed() {
-		return thatFailed();
-	}
-
-	@Override
-	public void andAllOfThemSucceeded() {
-		thatSucceeded();
-	}
-
-	@Override
-	public void andAllOfThemAborted() {
-		thatAborted();
-	}
-
-	@Override
-	public StartedTestAssert thatStarted() {
-		assertThat(actual.started().count()).isEqualTo(expected);
+	public FailureAssert whichFailed() {
+		assertThat(actual.failed().count()).isEqualTo(1);
 		return this;
 	}
 
 	@Override
-	public FailureAssert thatFailed() {
-		assertThat(actual.failed().count()).isEqualTo(expected);
-		return this;
+	public void whichSucceeded() {
+		assertThat(actual.succeeded().count()).isEqualTo(1);
 	}
 
 	@Override
-	public void thatSucceeded() {
-		assertThat(actual.succeeded().count()).isEqualTo(expected);
-	}
-
-	@Override
-	public void thatAborted() {
-		assertThat(actual.aborted().count()).isEqualTo(expected);
-	}
-
-	@Override
-	public TestAssert dynamicallyRegistered() {
-		assertThat(actual.dynamicallyRegistered().count()).isEqualTo(expected);
-		return this;
-	}
-
-	@Override
-	public RemainderAssert andThisManyFailed(int count) {
-		assertThat(count).isLessThanOrEqualTo(expected);
-		assertThat(actual.failed().count()).isEqualTo(count);
-		assertedFail = count;
-		return this;
-	}
-
-	@Override
-	public RemainderAssert andThisManyAborted(int count) {
-		assertThat(count).isLessThanOrEqualTo(expected);
-		assertThat(actual.aborted().count()).isEqualTo(count);
-		assertedAbort = count;
-		return this;
-	}
-
-	@Override
-	public RemainderAssert andThisManySucceeded(int count) {
-		assertThat(count).isLessThanOrEqualTo(expected);
-		assertThat(actual.succeeded().count()).isEqualTo(count);
-		assertedSuccess = count;
-		return this;
-	}
-
-	@Override
-	public FailureAssert theRestFailed() {
-		assertThat(actual.failed().count()).isEqualTo(expected - alreadyAsserted());
-		return this;
-	}
-
-	@Override
-	public void theRestAborted() {
-		assertThat(actual.aborted().count()).isEqualTo(expected - alreadyAsserted());
-	}
-
-	@Override
-	public void theRestSucceeded() {
-		assertThat(actual.succeeded().count()).isEqualTo(expected - alreadyAsserted());
-	}
-
-	private int alreadyAsserted() {
-		return assertedSuccess + assertedAbort + assertedFail;
+	public void whichAborted() {
+		assertThat(actual.aborted().count()).isEqualTo(1);
 	}
 
 }

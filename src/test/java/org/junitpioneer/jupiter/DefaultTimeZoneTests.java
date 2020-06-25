@@ -10,11 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.TimeZone;
 
@@ -70,9 +70,8 @@ class DefaultTimeZoneTests {
 			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCase.class, "badConfiguration");
 
 			assertThat(results)
-					.hasSingleTest()
-					.thatFailed()
-					.withException(ExtensionConfigurationException.class)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageNotContaining("should never execute")
 					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
 		}
@@ -114,7 +113,7 @@ class DefaultTimeZoneTests {
 		void shouldExecuteTestsWithConfiguredTimeZone() {
 			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
 
-			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+			assertThat(results).hasNumberOfSucceededTests(2);
 		}
 
 		@Test
@@ -122,11 +121,10 @@ class DefaultTimeZoneTests {
 		void shouldThrowWithBadConfiguration() {
 			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
 
-			assertThat(results).hasNoTests().thatStarted();
+			assertThat(results).hasNumberOfStartedTests(0);
 			assertThat(results)
-					.hasNumberOfContainers(1)
-					.thatFailed()
-					.withException(ExtensionConfigurationException.class)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
 		}
 
@@ -135,7 +133,7 @@ class DefaultTimeZoneTests {
 		void shouldNotThrowForExplicitGmt() {
 			ExecutionResults results = executeTestClass(ExplicitGmtClassLevelTestCase.class);
 
-			assertThat(results).hasSingleTest().thatSucceeded();
+			assertThat(results).hasSingleSucceededTest();
 		}
 
 		@AfterEach

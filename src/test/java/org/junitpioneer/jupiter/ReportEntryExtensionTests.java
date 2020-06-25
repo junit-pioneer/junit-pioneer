@@ -53,8 +53,7 @@ public class ReportEntryExtensionTests {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "emptyKey");
 
 		assertThat(results)
-				.hasSingleTest()
-				.thatFailed()
+				.hasSingleFailedTest()
 				.withException()
 				.hasMessageContainingAll("Report entries can't have blank key or value",
 					"Over many a quaint and curious volume of forgotten lore");
@@ -66,8 +65,7 @@ public class ReportEntryExtensionTests {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "emptyValue");
 
 		assertThat(results)
-				.hasSingleTest()
-				.thatFailed()
+				.hasSingleFailedTest()
 				.withException()
 				.hasMessageContainingAll("Report entries can't have blank key or value",
 					"While I nodded, nearly napping");
@@ -97,7 +95,7 @@ public class ReportEntryExtensionTests {
 			void successfulTest_logsMessage() {
 				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_success");
 
-				assertThat(results).hasSingleTest().thatSucceeded();
+				assertThat(results).hasSingleSucceededTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "'Tis some visitor', I muttered");
 			}
 
@@ -106,7 +104,7 @@ public class ReportEntryExtensionTests {
 			void failingTest_logsMessage() {
 				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_failure");
 
-				assertThat(results).hasSingleTest().thatFailed();
+				assertThat(results).hasSingleFailedTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "'Tapping at my chamber door' -");
 			}
 
@@ -115,7 +113,7 @@ public class ReportEntryExtensionTests {
 			void abortedTest_logsMessage() {
 				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_aborted");
 
-				assertThat(results).hasSingleTest().thatAborted();
+				assertThat(results).hasSingleAbortedTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "'Only this and nothing more.'");
 			}
 
@@ -124,7 +122,7 @@ public class ReportEntryExtensionTests {
 			void disabledTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_disabled");
 
-				assertThat(results).hasNoTests().thatStarted();
+				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -140,7 +138,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onSuccess_success");
 
-				assertThat(results).hasSingleTest().thatSucceeded();
+				assertThat(results).hasSingleSucceededTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "it was in the bleak December");
 			}
 
@@ -150,7 +148,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onSuccess_failure");
 
-				assertThat(results).hasSingleTest().thatFailed();
+				assertThat(results).hasSingleFailedTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -160,7 +158,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onSuccess_aborted");
 
-				assertThat(results).hasSingleTest().thatAborted();
+				assertThat(results).hasSingleAbortedTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -170,7 +168,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onSuccess_disabled");
 
-				assertThat(results).hasNoTests().thatStarted();
+				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -186,7 +184,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onFailure_success");
 
-				assertThat(results).hasSingleTest().thatSucceeded();
+				assertThat(results).hasSingleSucceededTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -196,7 +194,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onFailure_failure");
 
-				assertThat(results).hasSingleTest().thatFailed();
+				assertThat(results).hasSingleFailedTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "Nameless here for evermore.");
 			}
 
@@ -206,7 +204,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onFailure_aborted");
 
-				assertThat(results).hasSingleTest().thatAborted();
+				assertThat(results).hasSingleAbortedTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -216,7 +214,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onFailure_disabled");
 
-				assertThat(results).hasNoTests().thatStarted();
+				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -232,7 +230,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onAborted_success");
 
-				assertThat(results).hasSingleTest().thatSucceeded();
+				assertThat(results).hasSingleSucceededTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -242,7 +240,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onAborted_failure");
 
-				assertThat(results).hasSingleTest().thatFailed();
+				assertThat(results).hasSingleFailedTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -263,7 +261,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onAborted_disabled");
 
-				assertThat(results).hasNoTests().thatStarted();
+				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
 			}
 
@@ -279,7 +277,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "repeated_success");
 
-				assertThat(results).hasSingleTest().thatSucceeded();
+				assertThat(results).hasSingleSucceededTest();
 				assertThat(results)
 						.hasNumberOfReportEntries(2)
 						.withValues("Deep into that darkness peering, long I stood there wondering, fearing,",
@@ -292,7 +290,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "repeated_failure");
 
-				assertThat(results).hasSingleTest().thatFailed();
+				assertThat(results).hasSingleFailedTest();
 				assertThat(results)
 						.hasNumberOfReportEntries(2)
 						.withValues("And the only word there spoken was the whispered word, “Lenore?”",
@@ -305,7 +303,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "repeated_aborted");
 
-				assertThat(results).hasSingleTest().thatAborted();
+				assertThat(results).hasSingleAbortedTest();
 				assertThat(results)
 						.hasNumberOfReportEntries(2)
 						.withValues("Back into the chamber turning, all my soul within me burning,",
@@ -318,7 +316,7 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "repeated_disabled");
 
-				assertThat(results).hasNoTests().thatStarted();
+				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
 			}
 

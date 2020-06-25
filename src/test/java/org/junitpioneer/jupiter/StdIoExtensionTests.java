@@ -10,6 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,15 +21,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junitpioneer.jupiter.StdIOExtension.StdIn;
 import org.junitpioneer.jupiter.StdIOExtension.StdOut;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Shakespeare's Sonnet VII is in the public domain.
@@ -47,9 +46,9 @@ public class StdIoExtensionTests {
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "badType",
 						Boolean.class.getName());
 
-			assertThat(results).hasSingleTest()
-					.thatFailed()
-					.withException(ParameterResolutionException.class)
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
 					.hasMessageContaining("No ParameterResolver registered");
 		}
 
@@ -61,9 +60,8 @@ public class StdIoExtensionTests {
 						StdIn.class.getName());
 
 			assertThat(results)
-					.hasSingleTest()
-					.thatFailed()
-					.withException(ExtensionConfigurationException.class)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
 					.hasMessageContainingAll("Can not resolve test method parameter", "Method has to be annotated");
 		}
 
@@ -73,7 +71,7 @@ public class StdIoExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdIn",
 						StdIn.class.getName());
-			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
+			assertThat(results).hasSingleSucceededTest();
 		}
 
 		@Test
@@ -82,7 +80,7 @@ public class StdIoExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdOut",
 						StdOut.class.getName());
-			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
+			assertThat(results).hasSingleSucceededTest();
 		}
 
 	}

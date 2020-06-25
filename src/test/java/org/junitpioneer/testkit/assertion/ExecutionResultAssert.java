@@ -21,16 +21,52 @@ public interface ExecutionResultAssert {
 
 	void hasNoReportEntries();
 
-	TestAssert hasNumberOfTests(int expected);
+	TestCaseAssert hasSingleStartedTest();
 
-	TestAssert hasSingleTest();
+	FailureAssert hasSingleFailedTest();
 
-	TestAssert hasNoTests();
+	void hasSingleAbortedTest();
 
-	TestAssert hasNumberOfContainers(int expected);
+	void hasSingleSucceededTest();
 
-	TestAssert hasSingleContainer();
+	void hasSingleSkippedTest();
 
-	TestAssert hasNoContainers();
+	TestCaseAssert hasSingleDynamicallyRegisteredTest();
+
+	TestCaseAssert hasSingleStartedContainer();
+
+	FailureAssert hasSingleFailedContainer();
+
+	void hasSingleAbortedContainer();
+
+	void hasSingleSucceededContainer();
+
+	void hasSingleSkippedContainer();
+
+	TestCaseAssert hasSingleDynamicallyRegisteredContainer();
+
+	ExecutionResultAssert hasNumberOfStartedTests(int expected);
+
+	ExecutionResultAssert hasNumberOfFailedTests(int expected);
+
+	ExecutionResultAssert hasNumberOfAbortedTests(int expected);
+
+	ExecutionResultAssert hasNumberOfSucceededTests(int expected);
+
+	ExecutionResultAssert hasNumberOfSkippedTests(int expected);
+
+	ExecutionResultAssert hasNumberOfDynamicallyRegisteredTests(int expected);
+
+	ExecutionResultAssert hasNumberOfStartedContainers(int expected);
+
+	ExecutionResultAssert hasNumberOfFailedContainers(int expected);
+
+	ExecutionResultAssert hasNumberOfAbortedContainers(int expected);
+
+	ExecutionResultAssert hasNumberOfSucceededContainers(int expected);
+
+	ExecutionResultAssert hasNumberOfSkippedContainers(int expected);
+
+	ExecutionResultAssert hasNumberOfDynamicallyRegisteredContainers(int expected);
 
 }

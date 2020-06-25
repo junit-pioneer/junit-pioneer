@@ -10,12 +10,15 @@
 
 package org.junitpioneer.testkit.assertion;
 
-public interface RemainderAssert extends ThisManyAssert {
+/**
+ * This interface contains methods for asserting a single test or a single container.
+ */
+public interface TestCaseAssert {
 
-	FailureAssert theRestFailed();
+	void whichSucceeded();
 
-	void theRestAborted();
+	void whichAborted();
 
-	void theRestSucceeded();
+	FailureAssert whichFailed();
 
 }

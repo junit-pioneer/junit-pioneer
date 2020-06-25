@@ -10,8 +10,8 @@
 
 package org.junitpioneer.jupiter.params;
 
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.platform.commons.PreconditionViolationException;
+import org.junit.platform.commons.util.PreconditionViolationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -171,9 +171,8 @@ class RangeSourceArgumentsProviderTests {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "twoAnnotations");
 
 			assertThat(results)
-					.hasSingleContainer()
-					.thatFailed()
-					.withException(PreconditionViolationException.class)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(PreconditionViolationException.class)
 					.hasMessageContainingAll("Expected exactly one annotation to provide an ArgumentSource, found 2.");
 		}
 
@@ -182,9 +181,8 @@ class RangeSourceArgumentsProviderTests {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "zeroStep");
 
 			assertThat(results)
-					.hasSingleContainer()
-					.thatFailed()
-					.withException(PreconditionViolationException.class)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(PreconditionViolationException.class)
 					.hasMessageContainingAll("Illegal range. The step cannot be zero.");
 		}
 
@@ -193,9 +191,8 @@ class RangeSourceArgumentsProviderTests {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "illegalStep");
 
 			assertThat(results)
-					.hasSingleContainer()
-					.thatFailed()
-					.withException(PreconditionViolationException.class)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(PreconditionViolationException.class)
 					.hasMessageContainingAll("Illegal range. There's no way to get from 10 to 0 with a step of 1.");
 		}
 
@@ -204,9 +201,8 @@ class RangeSourceArgumentsProviderTests {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "emptyRange");
 
 			assertThat(results)
-					.hasSingleContainer()
-					.thatFailed()
-					.withException(PreconditionViolationException.class)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(PreconditionViolationException.class)
 					.hasMessageContainingAll("Illegal range. Equal from and to will produce an empty range.");
 		}
 

@@ -10,8 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -204,7 +204,7 @@ class SystemPropertyExtensionTests {
 					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailWhenClearAndSetSameSystemProperty");
 
-			assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -217,7 +217,7 @@ class SystemPropertyExtensionTests {
 					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailWhenClearSameSystemPropertyTwice");
 
-			assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -226,7 +226,7 @@ class SystemPropertyExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
 						"shouldFailWhenSetSameSystemPropertyTwice");
-			assertThat(results).hasSingleTest().thatFailed().withException(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
 	}
