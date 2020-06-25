@@ -80,6 +80,13 @@ class TestIntegrationTests {
 	// timeout
 
 	@org.junit.jupiter.api.Test
+	void testWithTimeout_belowZero_failsConfiguration() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowZero");
+
+		results.assertTestFailedWithExtensionConfigurationException();
+	}
+
+	@org.junit.jupiter.api.Test
 	void testWithTimeout_belowTimeout_passes() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowTimeout");
 
@@ -140,6 +147,10 @@ class TestIntegrationTests {
 
 		// timeout
 
+		@Test(timeout = -1)
+		void testWithTimeout_belowZero() {
+		}
+
 		@Test(timeout = 10_000)
 		void testWithTimeout_belowTimeout() {
 			assertThat(true).isTrue();
@@ -147,7 +158,7 @@ class TestIntegrationTests {
 
 		@Test(timeout = 1)
 		void testWithTimeout_exceedsTimeout() throws Exception {
-			Thread.sleep(10); //NOSONAR wanted behaviour for testing
+			Thread.sleep(100); //NOSONAR wanted behaviour for testing
 		}
 
 	}

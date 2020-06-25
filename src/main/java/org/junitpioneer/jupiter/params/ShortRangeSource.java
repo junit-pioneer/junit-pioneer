@@ -21,7 +21,11 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 /**
  * {@code @ShortRangeSource} is an {@link ArgumentsSource} that provides access to a range of {@code short} values.
  *
- * <p>The supplied values will be provided as arguments to the annotated {@code @ParameterizedTest} method.
+ * <p>The supplied values will be provided as arguments to the annotated {@code @ParameterizedTest} method.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/range-sources/" target="_top">the documentation on <code>Range Sources</code></a>
+ * </p>
  *
  * @since 0.5
  * @see ArgumentsSource

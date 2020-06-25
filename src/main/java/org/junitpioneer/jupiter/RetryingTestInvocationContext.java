@@ -12,6 +12,6 @@ package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
-class RepeatFailedTestInvocationContext implements TestTemplateInvocationContext {
+class RetryingTestInvocationContext implements TestTemplateInvocationContext {
 
 }

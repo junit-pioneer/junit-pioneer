@@ -24,17 +24,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>The key of the system property to be cleared must be specified via
  * {@link #key()}. After the annotated element has been executed, After the
- * annotated method has been executed, the initial default value is restored.
+ * annotated method has been executed, the initial default value is restored.</p>
  *
  * <p>{@code ClearSystemProperty} is repeatable and can be used on the method and
  * on the class level. If a class is annotated, the configured property will be
- * cleared for all tests inside that class.
+ * cleared for all tests inside that class.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on <code>@ClearSystemProperty and @SetSystemProperty</code></a>.
+ * </p>
  *
  * @since 0.5
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
-@Repeatable(ClearSystemProperties.class)
+@Repeatable(ClearSystemProperty.ClearSystemProperties.class)
 @ExtendWith(SystemPropertyExtension.class)
 public @interface ClearSystemProperty {
 
@@ -42,5 +46,17 @@ public @interface ClearSystemProperty {
 	 * The key of the system property to be cleared.
 	 */
 	String key();
+
+	/**
+	 * Containing annotation of repeatable {@code @ClearSystemProperty}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@ExtendWith(SystemPropertyExtension.class)
+	@interface ClearSystemProperties {
+
+		ClearSystemProperty[] value();
+
+	}
 
 }

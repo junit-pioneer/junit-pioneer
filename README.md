@@ -3,9 +3,8 @@
 <img src="docs/project-logo.jpg" align="right" width="150px"/>
 
 [![Latest Junit Pioneer on Maven Central](https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat)](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer)
-[![Travis build status](https://api.travis-ci.org/junit-pioneer/junit-pioneer.svg?branch=master)](https://travis-ci.org/junit-pioneer/junit-pioneer)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/ijrlfaa2fpnxwm3r?svg=true)](https://ci.appveyor.com/project/nicolaiparlog/junit-pioneer)
- 
+[![JUnit Pioneer build status](https://github.com/junit-pioneer/junit-pioneer/workflows/JUnit%20Pioneer/badge.svg)](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3A%22JUnit+Pioneer%22+branch%3Amaster)
+
 A melting pot for all kinds of extensions to
 [JUnit 5](https://github.com/junit-team/junit5), particular to its Jupiter API.
 
@@ -102,11 +101,13 @@ The least we can do is to thank them and list their accomplishments here (in lex
 #### 2020
 
 * [Allon Murienik](https://github.com/mureinik) contributed [the range sources](https://junit-pioneer.org/docs/range-sources/) (#44 / #123)
-* [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133)
-* [Mark Rösler](https://github.com/Hancho2009) contributed the environment variable extension (#167 / #174)
+* [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133), further improved it as well as the environment variable extension (#180 / #248), and helped with build infrastructure (e.g. #269)
+* [Dirk Witzel](https://github.com/NPException) improved the documentation (#149 / #271) 
 * [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
+* [Mark Rösler](https://github.com/Hancho2009) contributed the [environment variable extension](https://junit-pioneer.org/docs/environment-variables/) (#167 / #174)
 * [Matthias Bünger](https://github.com/Bukama) opened, vetted, and groomed countless issues and PRs and contributed multiple refactorings (e.g. #165 / #168) and fixes (e.g. #190 / #200) before getting promoted to maintainer
-* [Mihály Verhás](https://github.com/Michael1993) commented on multiple issues and PRs
+* [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), added tests to other extensions (#164 / #272), and commented on multiple issues and PRs
+* [Nishant Vashisth](https://github.com/nishantvas) contributed an [extension to disable parameterized tests](https://junit-pioneer.org/docs/disable-if-display-name/) by display name (#163 / #175)
 * [Simon Schrottner](https://github.com/aepfli) contributed to multiple issues and PRs and almost single-handedly revamped the build and QA process (e.g. #192 / #185) before getting promoted to maintainer
 
 #### 2019

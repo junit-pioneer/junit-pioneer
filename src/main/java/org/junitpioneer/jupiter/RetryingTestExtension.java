@@ -28,21 +28,21 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
 
-public class RepeatFailedTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
+public class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
 
-	private static final Namespace NAMESPACE = Namespace.create(RepeatFailedTestExtension.class);
+	private static final Namespace NAMESPACE = Namespace.create(RetryingTestExtension.class);
 
 	@Override
 	public boolean supportsTestTemplate(ExtensionContext context) {
 		// the annotation only applies to methods (see its `@Target`),
 		// so it doesn't matter that this method checks meta-annotations
-		return PioneerAnnotationUtils.isAnyAnnotationPresent(context, RepeatFailedTest.class);
+		return PioneerAnnotationUtils.isAnyAnnotationPresent(context, RetryingTest.class);
 	}
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		FailedTestRepeater repeater = repeaterFor(context);
-		return stream(spliteratorUnknownSize(repeater, ORDERED), false);
+		FailedTestRetrier retrier = retrierFor(context);
+		return stream(spliteratorUnknownSize(retrier, ORDERED), false);
 	}
 
 	@Override
@@ -53,70 +53,70 @@ public class RepeatFailedTestExtension implements TestTemplateInvocationContextP
 				.getParent()
 				.orElseThrow(() -> new IllegalStateException(
 					"Extension context \"" + context + "\" should have a parent context."));
-		repeaterFor(templateContext).failed(throwable);
+		retrierFor(templateContext).failed(throwable);
 	}
 
-	private static FailedTestRepeater repeaterFor(ExtensionContext context) {
-		Method repeatedTest = context.getRequiredTestMethod();
+	private static FailedTestRetrier retrierFor(ExtensionContext context) {
+		Method test = context.getRequiredTestMethod();
 		return context
 				.getStore(NAMESPACE)
-				.getOrComputeIfAbsent(repeatedTest.toString(), __ -> FailedTestRepeater.createFor(repeatedTest),
-					FailedTestRepeater.class);
+				.getOrComputeIfAbsent(test.toString(), __ -> FailedTestRetrier.createFor(test),
+					FailedTestRetrier.class);
 	}
 
-	private static class FailedTestRepeater implements Iterator<RepeatFailedTestInvocationContext> {
+	private static class FailedTestRetrier implements Iterator<RetryingTestInvocationContext> {
 
-		private final int maxRepetitions;
+		private final int maxRetries;
 
-		private int repetitionsSoFar;
+		private int retriesSoFar;
 		private int exceptionsSoFar;
 
-		private FailedTestRepeater(int maxRepetitions) {
-			this.maxRepetitions = maxRepetitions;
-			this.repetitionsSoFar = 0;
+		private FailedTestRetrier(int maxRetries) {
+			this.maxRetries = maxRetries;
+			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
 		}
 
-		static FailedTestRepeater createFor(Method repeatedTest) {
-			RepeatFailedTest repeatFailedTest = AnnotationSupport
-					.findAnnotation(repeatedTest, RepeatFailedTest.class)
-					.orElseThrow(() -> new IllegalStateException("@RepeatFailedTest is missing."));
-			return new FailedTestRepeater(repeatFailedTest.value());
+		static FailedTestRetrier createFor(Method test) {
+			RetryingTest retryingTest = AnnotationSupport
+					.findAnnotation(test, RetryingTest.class)
+					.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."));
+			return new FailedTestRetrier(retryingTest.value());
 		}
 
 		void failed(Throwable exception) {
 			exceptionsSoFar++;
 
-			boolean allRepetitionsFailed = exceptionsSoFar == maxRepetitions;
-			if (allRepetitionsFailed)
+			boolean allRetriesFailed = exceptionsSoFar == maxRetries;
+			if (allRetriesFailed)
 				throw new AssertionError(
 					format("Test execution #%d (of up to %d) failed ~> test fails - see cause for details",
-						exceptionsSoFar, maxRepetitions),
+						exceptionsSoFar, maxRetries),
 					exception);
 			else
 				throw new TestAbortedException(
-					format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRepetitions),
+					format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRetries),
 					exception);
 		}
 
 		@Override
 		public boolean hasNext() {
 			// there's always at least one execution
-			if (repetitionsSoFar == 0)
+			if (retriesSoFar == 0)
 				return true;
 
-			// if we caught an exception in each repetition, each repetition failed, including the previous one
-			boolean previousFailed = repetitionsSoFar == exceptionsSoFar;
-			boolean maxRepetitionsReached = repetitionsSoFar == maxRepetitions;
-			return previousFailed && !maxRepetitionsReached;
+			// if we caught an exception in each execution, each execution failed, including the previous one
+			boolean previousFailed = retriesSoFar == exceptionsSoFar;
+			boolean maxRetriesReached = retriesSoFar == maxRetries;
+			return previousFailed && !maxRetriesReached;
 		}
 
 		@Override
-		public RepeatFailedTestInvocationContext next() {
+		public RetryingTestInvocationContext next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			repetitionsSoFar++;
-			return new RepeatFailedTestInvocationContext();
+			retriesSoFar++;
+			return new RetryingTestInvocationContext();
 		}
 
 	}

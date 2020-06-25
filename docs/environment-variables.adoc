@@ -29,7 +29,7 @@ And setting a environment variable for a test execution:
 @Test
 @SetEnvironmentVariable(key = "some variable", value = "new value")
 void test() {
-	assertThat(System.getenv("some variable")).isEqualsTo("new value");
+	assertThat(System.getenv("some variable")).isEqualTo("new value");
 }
 ----
 
@@ -44,7 +44,7 @@ As mentioned before, both annotations are repeatable and they can also be combin
 void test() {
 	assertThat(System.getenv("1st variable")).isNull();
 	assertThat(System.getenv("2nd variable")).isNull();
-	assertThat(System.getenv("3rd variable")).isEqualsTo("new value");
+	assertThat(System.getenv("3rd variable")).isEqualTo("new value");
 }
 ----
 
@@ -57,7 +57,7 @@ class MyEnvironmentVariableTest {
 	@Test
 	@SetEnvironmentVariable(key = "some variable", value = "new value")
 	void test() {
-		assertThat(System.getenv("some variable")).isEqualsTo("new value");
+		assertThat(System.getenv("some variable")).isEqualTo("new value");
 	}
 }
 ----

@@ -41,7 +41,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * test class constructor has a parameter annotated with
  * {@link TempDir @TempDir}. If the parameter type is not {@link Path} or if the
  * temporary directory could not be created, this extension will throw a
- * {@link ParameterResolutionException}.
+ * {@link ParameterResolutionException}.</p>
  *
  * <p>The scope of the temporary directory depends on where the first
  * {@link TempDir @TempDir} annotation is encountered when executing a test
@@ -51,14 +51,14 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * constructor. Otherwise, e.g. when only used on test or
  * {@link org.junit.jupiter.api.BeforeEach @BeforeEach} or
  * {@link org.junit.jupiter.api.AfterEach @AfterEach} methods, each test will
- * use its own temporary directory.
+ * use its own temporary directory.</p>
  *
  * <p>When the end of the scope of a temporary directory is reached, i.e. when
  * the test method or class has finished execution, this extension will attempt
  * to recursively delete all files and directories in the temporary directory
  * and, finally, the temporary directory itself. In case deletion of a file or
  * directory fails, this extension will throw an {@link IOException} that will
- * cause the test to fail.
+ * cause the test to fail.</p>
  *
  * <p>By default, this extension will use the default
  * {@link java.nio.file.FileSystem FileSystem} to create temporary directories
@@ -69,13 +69,17 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * to pass a custom provider to configure the parent directory for all temporary
  * directories created by this extension. This allows the use of this extension
  * with any third-party {@code FileSystem} implementation, e.g.
- * <a href="https://github.com/google/jimfs">Jimfs</a>.
+ * <a href="https://github.com/google/jimfs">Jimfs</a>.</p>
  *
  * <p>Since JUnit Jupiter 5.4, there's a
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory">
  * built-in {@code @TempDir} extension</a>. If you don't need support for
  * arbitrary file systems, you should consider using that instead of this
- * extension.
+ * extension.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/temp-directory/" target="_top">the documentation on <code>TempDirectory</code></a>
+ * </p>
  *
  * @since 0.1
  * @see TempDir
@@ -113,7 +117,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 	 * <p>The temporary directory is by default created on the regular
 	 * file system, but the user can also provide a custom file system
 	 * by using the {@link ParentDirProvider}. An instance of
-	 * {@code TempDirProvider} executes these (and possibly other) strategies.
+	 * {@code TempDirProvider} executes these (and possibly other) strategies.</p>
 	 *
 	 * @see TempDirectoryExtension.ParentDirProvider
 	 */
@@ -141,7 +145,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 	 *
 	 * <p>This constructor is used by the JUnit Jupiter Engine when the
 	 * extension is registered via
-	 * {@link org.junit.jupiter.api.extension.ExtendWith @ExtendWith}.
+	 * {@link org.junit.jupiter.api.extension.ExtendWith @ExtendWith}.</p>
 	 */
 	public TempDirectoryExtension() {
 		this((__, ___, dirPrefix) -> createDefaultTempDir(dirPrefix));
@@ -155,7 +159,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 	 * <p>You may use this factory method when registering this extension via
 	 * {@link org.junit.jupiter.api.extension.RegisterExtension @RegisterExtension},
 	 * although you might prefer the simpler registration via
-	 * {@link org.junit.jupiter.api.extension.ExtendWith @ExtendWith}.
+	 * {@link org.junit.jupiter.api.extension.ExtendWith @ExtendWith}.</p>
 	 *
 	 * @return a {@code TempDirectory} extension
 	 */
@@ -169,7 +173,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 	 * temporary directories created by this extension.
 	 *
 	 * <p>You may use this factory method when registering this extension via
-	 * {@link org.junit.jupiter.api.extension.RegisterExtension @RegisterExtension}.
+	 * {@link org.junit.jupiter.api.extension.RegisterExtension @RegisterExtension}.</p>
 	 *
 	 * @param parentDirProvider used to configure the parent directory for the
 	 * temporary directories created by this extension
@@ -186,7 +190,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 	 * directories created by this extension.
 	 *
 	 * <p>You may use this factory method when registering this extension via
-	 * {@link org.junit.jupiter.api.extension.RegisterExtension @RegisterExtension}.
+	 * {@link org.junit.jupiter.api.extension.RegisterExtension @RegisterExtension}.</p>
 	 *
 	 * @param parentDirProvider used to configure the parent directory for the
 	 * temporary directories created by this extension

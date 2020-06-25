@@ -1,17 +1,17 @@
-:page-title: @RepeatFailedTest
-:page-description: Repeats a failing test a certain number of times; only marking it failed if none of them pass
+:page-title: @RetryingTest
+:page-description: Retries a failing test a certain number of times; only marking it failed if none of them pass
 
 Some tests, e.g. those depending on external systems, may fail through no fault of the code under test.
 Such tests make a suite fragile and it makes sense to try and avoid them, but if that's infeasible, it may help to retry a number of times before eventually assuming actual failure.
-`@RepeatFailedTest` provides that functionality.
+`RetryingTest` provides that functionality.
 
 == Basic Use
 
-`@RepeatFailedTest(n)` is used instead of `@Test` or other such annotations (e.g. `@RepeatedTest`).
+`@RetryingTest(n)` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
 The attribute `n` specifies how often the test is executed before giving up.
 
 ```java
-@RepeatFailedTest(3)
+@RetryingTest(3)
 void failsNever() {
 	// passing test code
 }
@@ -20,7 +20,7 @@ void failsNever() {
 The test `failsNever` is executed once (which succeeds) and marked as passed.
 
 ```java
-@RepeatFailedTest(3)
+@RetryingTest(3)
 void failsOnlyOnFirstInvocation() {
 	// test code that fails on first execution
 	// but passes on the second
@@ -31,11 +31,20 @@ The test `failsOnlyOnFirstInvocation` is executed once (which fails) and then on
 To allow the entire test suite to pass, the first execution is marked as ignored/aborted, which includes the underlying exception - the second is of course marked as passing.
 
 ```java
-@RepeatFailedTest(3)
+@RetryingTest(3)
 void failsAlways() {
 	// test code that always fails
 }
 ```
 
 The test `failsAlways` is executed three times (all of which fail).
-The first two executions are marked as ignored/aborted and the last as failed - each contains the underlying exception.
+The first two executions are marked as ignored/aborted, while the last as failed - each contains the underlying exception.
+
+== Combining `@RetryingTest` with `@Test` et al
+
+If `@RetryingTest` is combined with `@Test` or `TestTemplate`-based mechanisms (like `@RepeatedTest` or `@ParameterizedTest`), the test engine will execute it according to each annotation (i.e. more than once).
+This is most likely unwanted and thus the engine warns:
+
+> Possible configuration error:
+> method [...] resulted in multiple TestDescriptors [...].
+> This is typically the result of annotating a method with multiple competing annotations such as @Test, @RepeatedTest, @ParameterizedTest, @TestFactory, etc.
