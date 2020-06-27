@@ -13,11 +13,9 @@ package org.junitpioneer.testkit;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.engine.TestExecutionResult;
@@ -36,39 +34,27 @@ public class ExecutionResults {
 
 	EngineExecutionResults executionResults;
 
+	private static final String JUPITER_ENGINE_NAME = "junit-jupiter";
+
 	ExecutionResults(Class<?> testClass) {
 		executionResults = EngineTestKit
-				.engine("junit-jupiter")
+				.engine(JUPITER_ENGINE_NAME)
 				.selectors(DiscoverySelectors.selectClass(testClass))
 				.execute();
 	}
 
 	ExecutionResults(Class<?> testClass, String testMethodName) {
 		executionResults = EngineTestKit
-				.engine("junit-jupiter")
+				.engine(JUPITER_ENGINE_NAME)
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName))
 				.execute();
 	}
 
 	ExecutionResults(Class<?> testClass, String testMethodName, String methodParameterTypes) {
 		executionResults = EngineTestKit
-				.engine("junit-jupiter")
+				.engine(JUPITER_ENGINE_NAME)
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes))
 				.execute();
-	}
-
-	ExecutionResults(Class<?> testClass, String testMethodName, Class[] methodParameterTypes) {
-
-		String allTypNames = Arrays
-				.stream(methodParameterTypes)
-				.map(Class::getCanonicalName)
-				.collect(Collectors.joining(","));
-
-		executionResults = EngineTestKit
-				.engine("junit-jupiter")
-				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, allTypNames))
-				.execute();
-
 	}
 
 	/**

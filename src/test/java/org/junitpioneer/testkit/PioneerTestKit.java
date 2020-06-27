@@ -10,6 +10,9 @@
 
 package org.junitpioneer.testkit;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+
 public class PioneerTestKit {
 
 	/**
@@ -38,38 +41,21 @@ public class PioneerTestKit {
 	 *
 	 * @param testClass Name of the test class
 	 * @param testMethodName Name of the test method (of the given class)
-	 * @param methodParameterTypes Full qualified types names of the parameters (e.g. "java.nio.file.Path")
+	 * @param methodParameterTypes Class type(s) of for the parameters
 	 * @return The execution results
+	 * @throws IllegalArgumentException when methodParameterTypes is null
 	 */
 	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
-			String methodParameterTypes) {
-		return new ExecutionResults(testClass, testMethodName, methodParameterTypes);
-	}
+			Class<?>... methodParameterTypes) {
 
-	/**
-	 * Returns the execution results of the given method of a given test class.
-	 *
-	 * @param testClass Name of the test class
-	 * @param testMethodName Name of the test method (of the given class)
-	 * @param methodParameterTypes Array containing the types of for the parameters
-	 * @return The execution results
-	 */
-	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
-			Class<?>[] methodParameterTypes) {
-		return new ExecutionResults(testClass, testMethodName, methodParameterTypes);
-	}
+		if (null == methodParameterTypes) {
+			throw new IllegalArgumentException("methodParameterTypes must not be null");
+		}
 
-	/**
-	 * Returns the execution results of the given method of a given test class.
-	 *
-	 * @param testClass Name of the test class
-	 * @param testMethodName Name of the test method (of the given class)
-	 * @param methodParameterTyp Class types of for the parameters
-	 * @return The execution results
-	 */
-	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
-			Class<?> methodParameterTyp) {
-		return new ExecutionResults(testClass, testMethodName, methodParameterTyp.getCanonicalName());
+		// Concatenating all type names, because DiscoverySelectors.selectMethod only takes String as a parameter.
+		String allTypeNames = stream(methodParameterTypes).map(Class::getName).collect(joining(","));
+
+		return new ExecutionResults(testClass, testMethodName, allTypeNames);
 	}
 
 }

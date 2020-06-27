@@ -42,8 +42,7 @@ public class StdIoExtensionTests {
 		@DisplayName("fails if the parameter type is not StdIn or StdOut")
 		void needsType() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "badType",
-						Boolean.class.getName());
+					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "badType", Boolean.class);
 
 			assertThat(results.firstFailuresThrowable())
 					.isInstanceOf(ParameterResolutionException.class)
@@ -55,7 +54,7 @@ public class StdIoExtensionTests {
 		void needsAnnotation() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "noAnnotation",
-						StdIn.class.getName());
+						StdIn.class);
 
 			assertThat(results.firstFailuresThrowable())
 					.isInstanceOf(ParameterResolutionException.class)
@@ -67,7 +66,7 @@ public class StdIoExtensionTests {
 		void goodConfig_stdIn() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdIn",
-						StdIn.class.getName());
+						StdIn.class);
 			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
 		}
 
@@ -76,7 +75,7 @@ public class StdIoExtensionTests {
 		void goodConfig_stdOut() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdOut",
-						StdOut.class.getName());
+						StdOut.class);
 			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
 		}
 
