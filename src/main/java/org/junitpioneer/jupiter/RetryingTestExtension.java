@@ -85,6 +85,9 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 		}
 
 		void failed(Throwable exception) {
+			if (exception instanceof TestAbortedException)
+				throw new TestAbortedException("Test did not execute, did an assumption fail?");
+
 			exceptionsSoFar++;
 
 			boolean allRetriesFailed = exceptionsSoFar == maxRetries;
