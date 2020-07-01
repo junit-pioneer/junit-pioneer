@@ -86,7 +86,7 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 
 		void failed(Throwable exception) {
 			if (exception instanceof TestAbortedException)
-				throw new TestAbortedException("Test did not execute, did an assumption fail?");
+				throw new TestAbortedException("Test execution was skipped, possibly because of a failed assumption.");
 
 			exceptionsSoFar++;
 
