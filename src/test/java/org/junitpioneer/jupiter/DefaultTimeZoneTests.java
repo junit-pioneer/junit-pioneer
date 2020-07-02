@@ -85,7 +85,6 @@ class DefaultTimeZoneTests {
 
 		@DefaultTimeZone("CET")
 		@Test
-		@DefaultTimeZone("CET")
 		@DisplayName("sets the default time zone using an abbreviation")
 		void setsTimeZoneFromAbbreviation() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("CET"));
