@@ -18,23 +18,23 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @Test} is used to signal to JUnit Jupiter that the annotated method is a <em>test</em> method - it is designed
- * to be a drop-in replacement for JUnit 4's {@code @Test}.
+ * {@code @Test} is used to signal to JUnit Jupiter that the annotated method is a <em>test</em> method - it is
+ * a drop-in replacement for <a href="https://junit.org/junit4/javadoc/latest/index.html">JUnit 4's <code>@Test</code></a>.
  *
  * <p>Like JUnit 4's annotation it offers the possibility to {@link #expected() expect exceptions} and to
- * {@link #timeout() time out} long running tests. The latter functions slightly different from the original - see the
- * attached Javadoc.</p>
+ * {@link #timeout() time out} long running tests.</p>
  *
  * <p>Also check
- * <a href="https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Test.html" target="_top">the documentation on Jupiter's <code>@Test</code></a>
+ * <a href="https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Test.html" target="_top">Jupiter's <code>@Test</code></a>
  * for more information regarding JUnit Jupiter integration and
- * <a href="https://junit-pioneer.org/docs/vintage-test/" target="_top">the documentation of Pioneer's <code>@Test</code></a>
+ * <a href="https://junit-pioneer.org/docs/vintage-test/" target="_top">Pioneer's documentation on this <code>@Test</code></a>
  * for more details and examples.</p>
  *
  * @deprecated This annotation is an intermediate step on a full migration from JUnit 4's {@code @Test} to Jupiter's.
  * To emphasize its character as a temporary solution and to reduce risk of accidental use, it's marked as deprecated.
  * Deprecated since v0.4; not intended to be removed.
  *
+ * @since 0.1
  */
 @Deprecated
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
@@ -62,12 +62,13 @@ public @interface Test {
 	/**
 	 * Optionally specify <code>timeout</code> in milliseconds to cause a test method to fail if it
 	 * takes longer than that number of milliseconds.
-	 * <p>
-	 * <b>NOTE:</b> Unlike the same parameter on JUnit 4's {@code @Test} annotation, this one
-	 * <b>does not</b> lead to a long running test being abandoned.
-	 * Tests will always be allowed to finish (if they do that at all) and their run time might lead
-	 * to the test being failed retroactively.
-	 * </p>
+	 *
+	 * <p>If the timeout is exceeded, the test will be abandoned (i.e. the test execution moves on
+	 * to the next test) and the thread running it is interrupted.</p>
+	 *
+	 * <p>In accordance with JUnit 4, the default value is {@code 0}, which means that while
+	 * configuring 0 milliseconds is possible, it is indistinguishable from the default value
+	 * and thus ignored. Negative values are rejected with an exception.</p>
 	 */
 	long timeout() default 0L;
 

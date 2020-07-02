@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
@@ -42,8 +43,21 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	private void setDefaultTimeZone(Store store, DefaultTimeZone annotation) {
 		storeDefaultTimeZone(store);
-		TimeZone configuredTimeZone = TimeZone.getTimeZone(annotation.value());
-		TimeZone.setDefault(configuredTimeZone);
+		String timeZoneId = annotation.value();
+		TimeZone.setDefault(getTimeZone(timeZoneId));
+	}
+
+	private TimeZone getTimeZone(String timeZoneId) {
+		TimeZone configuredTimeZone = TimeZone.getTimeZone(timeZoneId);
+		// TimeZone::getTimeZone returns with GMT as fallback if the given ID cannot be understood
+		if (configuredTimeZone.equals(TimeZone.getTimeZone("GMT")) && !timeZoneId.equals("GMT")) {
+			throw new ExtensionConfigurationException(String
+					.format("@DefaultTimeZone not configured correctly. "
+							+ "Could not find the specified time zone + '%s'. "
+							+ "Please use correct identifiers, e.g. \"GMT\" for Greenwich Mean Time.",
+						timeZoneId));
+		}
+		return configuredTimeZone;
 	}
 
 	private void storeDefaultTimeZone(Store store) {
