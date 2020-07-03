@@ -48,8 +48,9 @@ void aborted() {
 ```
 
 If a test is aborted (e.g.: because of a failed Assumption) `@RetryingTest` won't try again after that.
-The test `aborted` is executed once (because it is aborted).
-The test suite is marked as aborted/skipped, containing the underlying cause.
+The test `aborted` is aborted before (or during) its first execution.
+The first execution is marked as aborted/skipped, containing the underlying cause.
+The test suite as a whole is also marked as aborted/skipped.
 
 == Combining `@RetryingTest` with `@Test` et al
 
