@@ -25,6 +25,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 import org.opentest4j.TestAbortedException;
@@ -412,6 +415,46 @@ public class ReportEntryExtensionTests {
 
 	}
 
+	@Nested
+	@DisplayName("with parameterized tests")
+	class ParameterEntriesTests {
+
+		@Test
+		@DisplayName("publishes the parameter")
+		void parameterized_publishes() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_basic",
+						"java.lang.String");
+
+			List<Map<String, String>> reportEntries = results.reportEntries();
+
+			assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(2);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+			assertAll("Verifying report entries " + reportEntries, //
+				() -> assertThat(reportEntries).hasSize(2),
+				() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
+				() -> assertThat(reportEntries)
+						.extracting(entry -> entry.get("value"))
+						.containsExactlyInAnyOrder(
+							"Open here I flung the shutter, when, with many a flirt and flutter,",
+							"In there stepped a stately Raven of the saintly days of yore;"));
+		}
+
+		@Test
+		@DisplayName("throws if there are unresolved (too many) parameter variables")
+		void parameterized_unresolvedVars() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_unresolved",
+						"java.lang.String");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(2);
+			assertThat(results.firstFailuresThrowable())
+					.isInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageStartingWith("Report entry contains unresolved variable(s)");
+		}
+
+	}
+
 	static class ReportEntriesTest {
 
 		@Test
@@ -566,6 +609,23 @@ public class ReportEntryExtensionTests {
 		@ReportEntry(value = "and this mystery explore;—", when = ON_FAILURE)
 		@ReportEntry(value = "’Tis the wind and nothing more!”", when = ON_ABORTED)
 		void repeated_disabled() {
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "Open here I flung the shutter, when, with many a flirt and flutter,",
+				"In there stepped a stately Raven of the saintly days of yore;" })
+		@ReportEntry("{0}")
+		void parameterized_basic(String line) {
+			assertThat(line)
+					.isIn("Open here I flung the shutter, when, with many a flirt and flutter,",
+						"In there stepped a stately Raven of the saintly days of yore;");
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "Not the least obeisance made he; not a minute stopped or stayed he;",
+				"But, with mien of lord or lady, perched above my chamber door—" })
+		@ReportEntry("{0}, {1}")
+		void parameterized_unresolved(String line) {
 		}
 
 	}

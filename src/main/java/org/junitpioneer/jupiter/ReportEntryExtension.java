@@ -16,24 +16,52 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_ABORTED;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.InvocationInterceptor;
+import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.jupiter.api.extension.TestWatcher;
 
-class ReportEntryExtension implements TestWatcher, BeforeEachCallback {
+class ReportEntryExtension implements TestWatcher, BeforeEachCallback, InvocationInterceptor {
+
+	private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace
+			.create(ReportEntryExtension.class);
+
+	private static final String KEY = "ReportEntry";
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		findAnnotations(context).forEach(ReportEntryExtension::verifyKeyValueAreNotBlank);
+		findAnnotations(context).forEach(entry -> verifyReportEntry(context, entry));
 	}
 
 	private Stream<ReportEntry> findAnnotations(ExtensionContext context) {
 		return PioneerAnnotationUtils.findAllEnclosingRepeatableAnnotations(context, ReportEntry.class);
+	}
+
+	private static void verifyReportEntry(ExtensionContext context, ReportEntry entry) {
+		verifyParameterCount(context, entry);
+		verifyKeyValueAreNotBlank(entry);
+	}
+
+	private static void verifyParameterCount(ExtensionContext context, ReportEntry entry) {
+		Matcher matcher = Pattern.compile("\\{([0-9])+}").matcher(entry.value());
+		int variableCount = 0;
+		while (matcher.find())
+			variableCount++;
+
+		if (context.getRequiredTestMethod().getParameterCount() < variableCount) {
+			String message = "Report entry contains unresolved variable(s): { key=\"%s\" value=\"%s\" }";
+			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
+		}
 	}
 
 	private static void verifyKeyValueAreNotBlank(ReportEntry entry) {
@@ -60,16 +88,35 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback {
 
 	@Override
 	public void testFailed(ExtensionContext context, Throwable cause) {
-		publishOnConditions(context, ALWAYS, ON_FAILURE);
+		if (!(cause instanceof ExtensionConfigurationException)) {
+			publishOnConditions(context, ALWAYS, ON_FAILURE);
+		}
 	}
 
 	private void publishOnConditions(ExtensionContext context, ReportEntry.PublishCondition... conditions) {
 		findAnnotations(context)
 				.filter(entry -> Arrays.asList(conditions).contains(entry.when()))
-				// we filter for empty keys/values because this is called if the test failed -
-				// even if it's due to bad extension configuration (but we don't publish for those)
-				.filter(entry -> !entry.key().isEmpty() && !entry.value().isEmpty())
-				.forEach(entry -> context.publishReportEntry(entry.key(), entry.value()));
+				.forEach(entry -> context.publishReportEntry(entry.key(), parseVariables(entry.value(), context)));
+	}
+
+	private String parseVariables(String value, ExtensionContext context) {
+		if (!value.matches(".*\\{.*}.*"))
+			return value;
+
+		String parsed = value;
+		List list = context.getStore(NAMESPACE).get(KEY, List.class);
+		for (int i = 0; i < list.size(); i++) {
+			parsed = parsed.replaceAll("\\{" + i + "}", list.get(i).toString());
+		}
+
+		return parsed;
+	}
+
+	@Override
+	public void interceptTestTemplateMethod(Invocation<Void> invocation,
+			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+		extensionContext.getStore(NAMESPACE).put(KEY, invocationContext.getArguments());
+		invocation.proceed();
 	}
 
 }
