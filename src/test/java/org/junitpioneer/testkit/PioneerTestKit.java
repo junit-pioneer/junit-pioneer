@@ -41,7 +41,7 @@ public class PioneerTestKit {
 	 *
 	 * @param testClass Name of the test class
 	 * @param testMethodName Name of the test method (of the given class)
-	 * @param methodParameterTypes Class type(s) of for the parameters
+	 * @param methodParameterTypes Class type(s) of the parameter(s)
 	 * @return The execution results
 	 * @throws IllegalArgumentException when methodParameterTypes is null
 	 */
