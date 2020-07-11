@@ -13,7 +13,7 @@ package org.junitpioneer.jupiter.params;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.junit.platform.commons.util.PreconditionViolationException;
+import org.junit.platform.commons.PreconditionViolationException;
 import org.junit.platform.commons.util.Preconditions;
 
 /**

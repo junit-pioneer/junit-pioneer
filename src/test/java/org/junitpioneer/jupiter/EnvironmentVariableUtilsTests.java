@@ -16,13 +16,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.security.AccessControlException;
 import java.security.Policy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("EnvironmentVariableUtils")
+@DisplayName("JUnitPioneer system environment utilities")
 @ClearEnvironmentVariable(key = "TEST")
 class EnvironmentVariableUtilsTests {
+
 
 	@Test
 	@SetSystemProperty(key = "java.security.policy", value = "file:src/test/resources/default-testing.policy")
@@ -54,6 +59,16 @@ class EnvironmentVariableUtilsTests {
 		finally {
 			System.setSecurityManager(original);
 		}
-	}
 
+
+	@Test
+	void theEnvironmentIsNotCorruptedAfterSet() {
+		EnvironmentVariableUtils.set("A_VARIABLE", "A value");
+
+		// By using this method, the entire environment is read and copied from the field
+		// ProcessEnvironment.theEnvironment. If that field is corrupted by a String having been stored
+		// as key or value, this copy operation will fail with a ClassCastException.
+		Map<String, String> environmentCopy = new HashMap<>(System.getenv());
+		assertEquals("A value", environmentCopy.get("A_VARIABLE"));
+	}
 }

@@ -52,7 +52,7 @@ void illegalRange(byte arg) {
 @LongRangeSource(from = 0L, to = 0L, closed = true)
 void legalRrange(long arg) {
 	// But this is fine
-	assertThat(arg).isEqualsTo(0L);
+	assertThat(arg).isEqualTo(0L);
 }
 ----
 
