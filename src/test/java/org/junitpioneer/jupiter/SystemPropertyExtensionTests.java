@@ -236,6 +236,7 @@ class SystemPropertyExtensionTests {
 	static class MethodLevelInitializationFailureTestCase {
 
 		@Test
+		@DisplayName("clearing and setting the same property")
 		@ClearSystemProperty(key = "set prop A")
 		@SetSystemProperty(key = "set prop A", value = "new A")
 		void shouldFailWhenClearAndSetSameSystemProperty() {
@@ -248,7 +249,6 @@ class SystemPropertyExtensionTests {
 		}
 
 		@Test
-		@DisplayName("clearing and setting the same property")
 		@SetSystemProperty(key = "set prop A", value = "new A")
 		@SetSystemProperty(key = "set prop A", value = "new B")
 		void shouldFailWhenSetSameSystemPropertyTwice() {

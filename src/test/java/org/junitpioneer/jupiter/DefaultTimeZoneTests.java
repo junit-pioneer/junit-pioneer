@@ -11,7 +11,9 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 
 import java.util.TimeZone;
 
@@ -22,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("DefaultTimeZone extension")
@@ -60,6 +63,25 @@ class DefaultTimeZoneTests {
 			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
 		}
 
+		@Test
+		@DisplayName("throws exception on bad configuration")
+		void throwsWhenConfigurationIsBad() {
+			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCase.class, "badConfiguration");
+
+			assertThat(results.numberOfFailedTests()).isEqualTo(1);
+			assertThat(results.firstFailuresThrowable()).isExactlyInstanceOf(ExtensionConfigurationException.class);
+			assertThat(results.firstFailuresThrowableMessage())
+					.doesNotContain("should never execute")
+					.contains("@DefaultTimeZone not configured correctly.");
+		}
+
+		@DefaultTimeZone("GMT")
+		@Test
+		@DisplayName("does not throw when explicitly set to GMT")
+		void doesNotThrowForExplicitGmt() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
+		}
+
 		@DefaultTimeZone("CET")
 		@Test
 		@DisplayName("sets the default time zone using an abbreviation")
@@ -86,11 +108,29 @@ class DefaultTimeZoneTests {
 		}
 
 		@Test
-		@DisplayName("should execute tests with configured TimeZone")
+		@DisplayName("executes tests with configured TimeZone")
 		void shouldExecuteTestsWithConfiguredTimeZone() {
 			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
 
 			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+		}
+
+		@Test
+		@DisplayName("throws when configuration is bad")
+		void shouldThrowWithBadConfiguration() {
+			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
+
+			assertThat(results.numberOfStartedTests()).isEqualTo(0);
+			assertThat(results.firstFailuresThrowable()).isExactlyInstanceOf(ExtensionConfigurationException.class);
+			assertThat(results.firstFailuresThrowableMessage()).contains("@DefaultTimeZone not configured correctly.");
+		}
+
+		@Test
+		@DisplayName("does not throw when explicitly set to GMT")
+		void shouldNotThrowForExplicitGmt() {
+			ExecutionResults results = executeTestClass(ExplicitGmtClassLevelTestCase.class);
+
+			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
 		}
 
 		@AfterEach
@@ -151,6 +191,36 @@ class DefaultTimeZoneTests {
 				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-6:00"));
 			}
 
+		}
+
+	}
+
+	static class BadMethodLevelConfigurationTestCase {
+
+		@DefaultTimeZone("Gibberish")
+		@Test
+		void badConfiguration() {
+			fail("This test should never execute");
+		}
+
+	}
+
+	@DefaultTimeZone("Gibberish")
+	static class BadClassLevelConfigurationTestCase {
+
+		@Test
+		void badConfiguration() {
+			fail("This test should never execute");
+		}
+
+	}
+
+	@DefaultTimeZone("GMT")
+	static class ExplicitGmtClassLevelTestCase {
+
+		@Test
+		void explicitGmt() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
 		}
 
 	}
