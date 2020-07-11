@@ -68,7 +68,9 @@ class EnvironmentVariableUtilsTests {
 	void theEnvironmentIsNotCorruptedAfterSet() {
 		EnvironmentVariableUtils.set("A_VARIABLE", "A value");
 
-		/* By using this method, the entire environment is read and copied from the field ProcessEnvironment.theEnvironment. If that field is corrupted by a String having been stored as key or value, this copy operation will fail with a ClassCastException. */
+		/* By using this method, the entire environment is read and copied from the field
+		   ProcessEnvironment.theEnvironment. If that field is corrupted by a String having
+		   been stored as key or value, this copy operation will fail with a ClassCastException. */
 		Map<String, String> environmentCopy = new HashMap<>(System.getenv());
 		assertThat(environmentCopy.get("A_VARIABLE")).isEqualTo("A value");
 	}
