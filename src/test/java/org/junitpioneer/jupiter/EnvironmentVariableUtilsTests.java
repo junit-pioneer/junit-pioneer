@@ -46,13 +46,13 @@ class EnvironmentVariableUtilsTests {
 	 */
 	private void executeWithSecurityManager(Runnable runnable) {
 		Policy.getPolicy().refresh();
-		SecurityManager securityManager = System.getSecurityManager();
+		SecurityManager original = System.getSecurityManager();
 		System.setSecurityManager(new SecurityManager());
 		try {
 			runnable.run();
 		}
 		finally {
-			System.setSecurityManager(securityManager);
+			System.setSecurityManager(original);
 		}
 	}
 
