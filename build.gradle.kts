@@ -20,13 +20,18 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.5.2")
-    implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.5.2")
+val junitVersion : String by project
 
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.5.2")
-    testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.5.2")
-    testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.5.2")
+// TODO remove debug messge :)
+println("using Junit5 version 5.$junitVersion")
+
+dependencies {
+    implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.$junitVersion")
+    implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.$junitVersion")
+
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.$junitVersion")
+    testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.$junitVersion")
+    testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.$junitVersion")
 
     testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
     testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
