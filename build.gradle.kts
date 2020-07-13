@@ -22,9 +22,6 @@ repositories {
 
 val junitVersion : String by project
 
-// TODO remove debug messge :)
-println("using Junit5 version 5.$junitVersion")
-
 dependencies {
     implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.$junitVersion")
     implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.$junitVersion")
