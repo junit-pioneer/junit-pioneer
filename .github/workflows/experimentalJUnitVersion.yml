@@ -18,7 +18,7 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        junit5: [ 5.0, 5.1, 5.2, 6.0, 6.1, 6.2 ]
+        junit5: [ '5.0', '5.1', '5.2', '6.0', '6.1', '6.2' ]
     name: build with 5.${{ matrix.junit5 }}
     steps:
       - name: Check out repo
