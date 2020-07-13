@@ -5,12 +5,12 @@ name: Experimental JUnit5 build
 
 on:
   push:
-    branches: 'issue/296-multiversion'
+    branches: 'master'
     tags-ignore:
       - 'v**'
       - 'releaseTrigger'
-#  pull_request:
-#    branches: '*'
+  pull_request:
+    branches: '*'
 
 jobs:
   build:
