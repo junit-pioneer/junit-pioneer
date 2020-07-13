@@ -11,7 +11,9 @@
 package org.junitpioneer.jupiter;
 
 import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 
@@ -201,7 +203,7 @@ public class StdIoExtensionTests {
 		@Test
 		@DisplayName("4: Only System.in is redirected.")
 		@Order(4)
-		@StdIo({"line1", "line2"})
+		@StdIo({ "line1", "line2" })
 		void redirected_single_in(StdIn in) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
