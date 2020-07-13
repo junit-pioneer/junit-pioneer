@@ -11,8 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 
@@ -41,7 +40,7 @@ import org.junitpioneer.testkit.ExecutionResults;
 @DisplayName("StdIoExtension ")
 public class StdIoExtensionTests {
 
-	final BasicCommandLineApp app = new BasicCommandLineApp();
+	private final BasicCommandLineApp app = new BasicCommandLineApp();
 
 	private final static PrintStream STDOUT = System.out;
 	private final static InputStream STDIN = System.in;
@@ -139,6 +138,14 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
+		@DisplayName("catches empty input and reads nothing")
+		@StdIo
+		void catchesNothing(StdIn in) {
+			assertThatCode(app::read).doesNotThrowAnyException();
+			assertThat(in.capturedLines()).containsExactly("");
+		}
+
+		@Test
 		@DisplayName("catches the input from the standard in and the output on the standard out")
 		@StdIo({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
 		void catchesBoth(StdIn in, StdOut out) throws IOException {
@@ -178,12 +185,60 @@ public class StdIoExtensionTests {
 
 			assertThat(in.capturedLines()).containsExactlyInAnyOrder("line1", "line2", "line3");
 			assertThat(out.capturedLines()).containsExactlyInAnyOrder("line1");
+
+			assertThat(System.in).isNotEqualTo(STDIN);
+			assertThat(System.out).isNotEqualTo(STDOUT);
 		}
 
 		@Test
 		@DisplayName("3: System.in and System.out is reset to their original value")
 		@Order(3)
 		void reset() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+		}
+
+		@Test
+		@DisplayName("4: Only System.in is redirected.")
+		@Order(4)
+		@StdIo({"line1", "line2"})
+		void redirected_single_in(StdIn in) throws IOException {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+			reader.readLine();
+
+			assertThat(in.capturedLines()).containsExactlyInAnyOrder("line1", "line2");
+
+			assertThat(System.in).isNotEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+		}
+
+		@Test
+		@DisplayName("5: System.in is reset, System.out is unaffected.")
+		@Order(5)
+		void reset_single_in() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+		}
+
+		@Test
+		@DisplayName("6: Only System.out is redirected.")
+		@Order(6)
+		@StdIo
+		void redirected_single_out(StdOut out) {
+			System.out.println("line1");
+			System.out.println("line2");
+
+			assertThat(out.capturedLines()).containsExactlyInAnyOrder("line1", "line2");
+
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isNotEqualTo(STDOUT);
+		}
+
+		@Test
+		@DisplayName("7: System.out is reset, System.in is unaffected.")
+		@Order(7)
+		void reset_single_out() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
 		}
@@ -239,9 +294,7 @@ public class StdIoExtensionTests {
 		public void read() throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			String read = reader.readLine();
-			System.out.println(read);
 			read = reader.readLine();
-			System.out.println(read);
 		}
 
 		public void readAndWrite() throws IOException {

@@ -45,6 +45,6 @@ public @interface StdIo {
 	 * If this is not blank, the annotated method has to
 	 * have a {@link StdIoExtension.StdIn} parameter.
 	 */
-	String[] value() default "";
+	String[] value() default {};
 
 }

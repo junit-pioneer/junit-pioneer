@@ -41,15 +41,15 @@ public class StdIoExtension implements ParameterResolver, BeforeTestExecutionCal
 
 	private static final String SEPARATOR = System.getProperty("line.separator");
 
-	private static final Namespace NAMESPACE = Namespace.create(DefaultLocaleExtension.class);
+	private static final Namespace NAMESPACE = Namespace.create(StdIoExtension.class);
 
 	private static final String IN_KEY = "StdIo_In";
 	private static final String OUT_KEY = "StdIo_Out";
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		System.setIn(context.getStore(NAMESPACE).get(IN_KEY, InputStream.class)); //NOSONAR resetting input
-		System.setOut(context.getStore(NAMESPACE).get(OUT_KEY, PrintStream.class));
+		System.setIn(context.getStore(NAMESPACE).getOrDefault(IN_KEY, InputStream.class, System.in)); //NOSONAR resetting input
+		System.setOut(context.getStore(NAMESPACE).getOrDefault(OUT_KEY, PrintStream.class, System.out));
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class StdIoExtension implements ParameterResolver, BeforeTestExecutionCal
 			storeStdOut(extensionContext);
 			return getOut();
 		}
-		String[] source = getSourceValuesFromAnnotation(extensionContext);
+		String[] source = extensionContext.getRequiredTestMethod().getAnnotation(StdIo.class).value();
 		storeStdIn(extensionContext);
 		return getIn(source);
 	}
@@ -90,13 +90,9 @@ public class StdIoExtension implements ParameterResolver, BeforeTestExecutionCal
 		return out;
 	}
 
-	private String[] getSourceValuesFromAnnotation(ExtensionContext context) {
-		return context.getRequiredTestMethod().getAnnotation(StdIo.class).value();
-	}
-
 	@Override
 	public void beforeTestExecution(ExtensionContext context) {
-		Method method = context.getRequiredTestMethod();
+		final Method method = context.getRequiredTestMethod();
 		if (method.getAnnotation(StdIo.class) == null) {
 			throw new ExtensionConfigurationException(
 				format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName()));
@@ -121,20 +117,15 @@ public class StdIoExtension implements ParameterResolver, BeforeTestExecutionCal
 	 */
 	public static class StdOut extends OutputStream {
 
-		Writer writer = new StringWriter();
+		private final Writer writer = new StringWriter();
 
 		@Override
 		public void write(int i) throws IOException {
 			writer.write(i);
 		}
 
-		@Override
-		public String toString() {
-			return writer.toString();
-		}
-
 		public String[] capturedLines() {
-			return this.toString().split(SEPARATOR);
+			return writer.toString().split(SEPARATOR);
 		}
 
 	}
@@ -146,8 +137,8 @@ public class StdIoExtension implements ParameterResolver, BeforeTestExecutionCal
 	 */
 	public static class StdIn extends InputStream {
 
-		Reader reader;
-		Writer writer = new StringWriter();
+		private final Reader reader;
+		private final Writer writer = new StringWriter();
 
 		public StdIn(String... values) {
 			reader = new StringReader(String.join(SEPARATOR, values));
@@ -162,13 +153,8 @@ public class StdIoExtension implements ParameterResolver, BeforeTestExecutionCal
 			return reading;
 		}
 
-		@Override
-		public String toString() {
-			return writer.toString();
-		}
-
 		public String[] capturedLines() {
-			return this.toString().split(SEPARATOR);
+			return writer.toString().split(SEPARATOR);
 		}
 
 	}

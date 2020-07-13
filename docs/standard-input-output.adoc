@@ -7,7 +7,7 @@ WARNING: The extension redirects the standard input/output and nothing gets forw
 
 == Basic use
 
-The extension is in two parts.
+The extension consists of two parts which must be used together:
 An annotation (`@StdIo`) and special parameters (`StdIn` and `StdOut`).
 To use a parameter, you have to use the annotation and if you use the annotation, you have to use a parameter.
 The extension provides the following two parameters:
@@ -102,12 +102,12 @@ class ExampleConsoleReaderTest {
 
         consoleReader.readLines();
 
-        assertEquals(in.capturedLines(), "line1", "line2");
+        // assertEquals(in.capturedLines(), "line1", "line2"); // This is failing
+        // assertEquals(in.capturedLines(), "line1", "line2", "line3"); // This is passing
     }
 
 }
 ----
 
-This fails!
 The underlying reader (`BufferedReader`) eagerly reads all three supplied lines during the first `readLine` call.
 This means that the assertion fails, because `in.capturedLines()` contains three lines - even though `consoleReader.lines` only contains two.
