@@ -26,6 +26,21 @@ import org.junit.jupiter.api.Test;
 @DisplayName("JUnitPioneer system environment utilities")
 class EnvironmentVariableUtilsTests {
 
+	@Test
+	void theEnvironmentIsNotCorruptedAfterSet() {
+		EnvironmentVariableUtils.set("A_VARIABLE", "A value");
+
+		/* By using this method, the entire environment is read and copied from the field
+		   ProcessEnvironment.theEnvironment. If that field is corrupted by a String having been stored
+		   as key or value, this copy operation will fail with a ClassCastException. */
+		Map<String, String> environmentCopy = new HashMap<>(System.getenv());
+		assertThat(environmentCopy.get("A_VARIABLE")).isEqualTo("A value");
+	}
+
+	/*
+	 * The documentation mentions that without proper permissions an enabled security manager will not
+	 * give access to the internals we need to change environment variables. These tests confirm that.
+	 */
 	@ClearEnvironmentVariable(key = "TEST")
 	@Nested
 	class With_SecurityManager {
@@ -33,8 +48,11 @@ class EnvironmentVariableUtilsTests {
 		@Test
 		@SetSystemProperty(key = "java.security.policy", value = "file:src/test/resources/default-testing.policy")
 		void shouldThrowAccessControlExceptionWithDefaultSecurityManager() {
-			executeWithSecurityManager(() -> assertThatThrownBy(() -> EnvironmentVariableUtils.set("TEST", "TEST"))
-					.isInstanceOf(AccessControlException.class));
+			//@formatter:off
+			executeWithSecurityManager(
+					() -> assertThatThrownBy(() -> EnvironmentVariableUtils.set("TEST", "TEST"))
+							.isInstanceOf(AccessControlException.class));
+			//@formatter:on
 		}
 
 		@Test
@@ -62,17 +80,6 @@ class EnvironmentVariableUtilsTests {
 			}
 		}
 
-	}
-
-	@Test
-	void theEnvironmentIsNotCorruptedAfterSet() {
-		EnvironmentVariableUtils.set("A_VARIABLE", "A value");
-
-		/* By using this method, the entire environment is read and copied from the field
-		   ProcessEnvironment.theEnvironment. If that field is corrupted by a String having been stored
-		   as key or value, this copy operation will fail with a ClassCastException. */
-		Map<String, String> environmentCopy = new HashMap<>(System.getenv());
-		assertThat(environmentCopy.get("A_VARIABLE")).isEqualTo("A value");
 	}
 
 }
