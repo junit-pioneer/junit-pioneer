@@ -1,0 +1,7 @@
+grant {
+        // allow to reset the SecurityManager after the unit test
+        permission java.lang.RuntimePermission "setSecurityManager";
+
+        // necessary for gradle
+        permission javax.management.MBeanServerPermission "createMBeanServer";
+};

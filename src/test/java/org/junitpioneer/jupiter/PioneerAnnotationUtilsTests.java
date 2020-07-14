@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -52,7 +54,7 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.class,
 								"methodIsAnnotated");
-					results.assertFailedTestHasMessage("method");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("method");
 				}
 
 				@Test
@@ -60,7 +62,7 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.RootClassTestCases.class,
 								"rootClassIsAnnotated");
-					results.assertFailedTestHasMessage("root class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("root class");
 				}
 
 				@Test
@@ -68,7 +70,7 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.class,
 								"classIsAnnotated");
-					results.assertFailedTestHasMessage("nested class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("nested class");
 				}
 
 				@Test
@@ -77,7 +79,7 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.class,
 								"outerClassIsAnnotated");
-					results.assertFailedTestHasMessage("nested class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("nested class");
 				}
 
 				@Test
@@ -86,7 +88,7 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
 								"outerClassIsAnnotated");
-					results.assertFailedTestHasMessage("nested class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("nested class");
 				}
 
 			}
@@ -105,7 +107,10 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.class,
 								"methodIsAnnotated");
-					results.assertFailedTestHasMessage("method", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("method", "root class");
 				}
 
 				@Test
@@ -113,7 +118,7 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.RootClassTestCases.class,
 								"rootClassIsAnnotated");
-					results.assertFailedTestHasMessage("root class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("root class");
 				}
 
 				@Test
@@ -121,7 +126,10 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.class,
 								"classIsAnnotated");
-					results.assertFailedTestHasMessage("nested class", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -130,7 +138,10 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.class,
 								"outerClassIsAnnotated");
-					results.assertFailedTestHasMessage("nested class", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -139,7 +150,10 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
 								"outerClassIsAnnotated");
-					results.assertFailedTestHasMessage("nested class", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 			}
@@ -164,7 +178,7 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
 								"methodIsAnnotated");
-					results.assertFailedTestHasMessage("method");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("method");
 				}
 
 				@Test
@@ -173,7 +187,7 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.RootClassTestCases.class,
 								"rootClassIsAnnotated");
-					results.assertFailedTestHasMessage("root class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("root class");
 				}
 
 				@Test
@@ -181,7 +195,10 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
 								"methodIsRepeatablyAnnotated");
-					results.assertFailedTestHasMessage("repeated", "annotation");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("repeated", "annotation");
 				}
 
 				@Test
@@ -190,7 +207,7 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.class,
 								"classIsAnnotated");
-					results.assertFailedTestHasMessage("nested class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("nested class");
 				}
 
 				@Test
@@ -199,7 +216,7 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.class,
 								"outerClassIsAnnotated");
-					results.assertFailedTestHasMessage("nested class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("nested class");
 				}
 
 				@Test
@@ -208,7 +225,7 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
 								"outerClassIsAnnotated");
-					results.assertFailedTestHasMessage("nested class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("nested class");
 				}
 
 				@Test
@@ -217,7 +234,10 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedRepeatableTestCases.class,
 								"outerClassIsRepeatablyAnnotatedAnnotated");
-					results.assertFailedTestHasMessage("repeated", "annotation");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("repeated", "annotation");
 				}
 
 			}
@@ -236,7 +256,10 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
 								"methodIsAnnotated");
-					results.assertFailedTestHasMessage("method", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("method", "root class");
 				}
 
 				@Test
@@ -245,7 +268,7 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.RootClassTestCases.class,
 								"rootClassIsAnnotated");
-					results.assertFailedTestHasMessage("root class");
+					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("root class");
 				}
 
 				@Test
@@ -253,7 +276,10 @@ class PioneerAnnotationUtilsTests {
 					ExecutionResults results = PioneerTestKit
 							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
 								"methodIsRepeatablyAnnotated");
-					results.assertFailedTestHasMessage("repeated", "annotation", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("repeated", "annotation", "root class");
 				}
 
 				@Test
@@ -262,7 +288,10 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.class,
 								"classIsAnnotated");
-					results.assertFailedTestHasMessage("nested class", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -271,7 +300,10 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.class,
 								"outerClassIsAnnotated");
-					results.assertFailedTestHasMessage("nested class", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -280,7 +312,10 @@ class PioneerAnnotationUtilsTests {
 							.executeTestMethod(
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
 								"outerClassIsAnnotated");
-					results.assertFailedTestHasMessage("nested class", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("nested class", "root class");
 				}
 
 				@Test
@@ -290,7 +325,10 @@ class PioneerAnnotationUtilsTests {
 								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedRepeatableTestCases.class,
 								"outerClassIsRepeatablyAnnotatedAnnotated");
 
-					results.assertFailedTestHasMessage("repeated", "annotation", "root class");
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withException()
+							.hasMessageContainingAll("repeated", "annotation", "root class");
 				}
 
 			}

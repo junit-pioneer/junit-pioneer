@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.params;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -168,34 +169,41 @@ class RangeSourceArgumentsProviderTests {
 		@Test
 		void twoAnnotations() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "twoAnnotations");
-			results
-					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
-						"Expected exactly one annotation to provide an ArgumentSource, found 2.");
 
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.hasMessageContainingAll("Expected exactly one annotation to provide an ArgumentSource, found 2.");
 		}
 
 		@Test
 		void zeroStep() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "zeroStep");
-			results
-					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
-						"Illegal range. The step cannot be zero.");
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.hasMessageContainingAll("Illegal range. The step cannot be zero.");
 		}
 
 		@Test
 		void illegalStep() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "illegalStep");
-			results
-					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
-						"Illegal range. There's no way to get from 10 to 0 with a step of 1.");
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.hasMessageContainingAll("Illegal range. There's no way to get from 10 to 0 with a step of 1.");
 		}
 
 		@Test
 		void emptyRange() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "emptyRange");
-			results
-					.assertContainerFailedWithThrowableWhichContainsMessage(PreconditionViolationException.class,
-						"Illegal range. Equal from and to will produce an empty range.");
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.hasMessageContainingAll("Illegal range. Equal from and to will produce an empty range.");
 		}
 
 	}
