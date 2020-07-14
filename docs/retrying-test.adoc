@@ -40,6 +40,18 @@ void failsAlways() {
 The test `failsAlways` is executed three times (all of which fail).
 The first two executions are marked as ignored/aborted, while the last as failed - each contains the underlying exception.
 
+```java
+@RetryingTest(3)
+void aborted() {
+    // test code that is aborted e.g. because of an Assumption.
+}
+```
+
+If a test is aborted (e.g.: because of a failed Assumption) `@RetryingTest` won't try again after that.
+The test `aborted` is aborted before (or during) its first execution.
+The first execution is marked as aborted/skipped, containing the underlying cause.
+The test suite as a whole is also marked as aborted/skipped.
+
 == Combining `@RetryingTest` with `@Test` et al
 
 If `@RetryingTest` is combined with `@Test` or `TestTemplate`-based mechanisms (like `@RepeatedTest` or `@ParameterizedTest`), the test engine will execute it according to each annotation (i.e. more than once).

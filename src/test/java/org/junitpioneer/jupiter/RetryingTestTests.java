@@ -19,6 +19,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.parallel.Execution;
@@ -72,6 +73,14 @@ class RetryingTestTests {
 				.hasNumberOfFailedTests(1);
 	}
 
+	@Test
+	void skipByAssumption_executedOnce_skipped() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "skipByAssumption");
+
+		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
+		assertThat(results.numberOfAbortedTests()).isEqualTo(1);
+	}
+
 	// TEST CASES -------------------------------------------------------------------
 
 	static class RetryingTestTestCase {
@@ -103,6 +112,11 @@ class RetryingTestTests {
 		@RetryingTest(3)
 		void failsAlways() {
 			throw new IllegalArgumentException();
+		}
+
+		@RetryingTest(3)
+		void skipByAssumption() {
+			Assumptions.assumeFalse(true);
 		}
 
 	}

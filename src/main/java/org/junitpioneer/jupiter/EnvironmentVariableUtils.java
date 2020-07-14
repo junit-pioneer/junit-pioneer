@@ -90,8 +90,11 @@ class EnvironmentVariableUtils {
 	private static void setInProcessEnvironmentClass(Consumer<Map<String, String>> consumer)
 			throws ReflectiveOperationException {
 		Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-		consumer.accept(getFieldValue(processEnvironmentClass, null, "theEnvironment"));
-		consumer.accept(getFieldValue(processEnvironmentClass, null, "theCaseInsensitiveEnvironment"));
+		Map<String, String> theEnvironment = getFieldValue(processEnvironmentClass, null, "theEnvironment");
+		Map<String, String> theCaseInsensitiveEnvironment = getFieldValue(processEnvironmentClass, null,
+			"theCaseInsensitiveEnvironment");
+		consumer.accept(theEnvironment);
+		consumer.accept(theCaseInsensitiveEnvironment);
 	}
 
 	/*
