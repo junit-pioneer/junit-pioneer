@@ -20,6 +20,7 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -453,6 +456,38 @@ public class ReportEntryExtensionTests {
 					.hasMessageStartingWith("Report entry contains unresolved variable(s)");
 		}
 
+		@Test
+		@DisplayName("throw if the key has a parameter variable")
+		void parameterized_keyCantBeParameterized() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_key_fail",
+						"java.lang.String");
+
+			assertThat(results.firstFailuresThrowable())
+					.isInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageStartingWith("Report entry can not have variables in the key");
+		}
+
+		@Test
+		@DisplayName("can publish multiple parameters")
+		void parameterized_multiple() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_multiple",
+						"java.lang.String,int");
+
+			List<Map<String, String>> reportEntries = results.reportEntries();
+
+			assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(2);
+			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
+			assertAll("Verifying report entries " + reportEntries, //
+				() -> assertThat(reportEntries).hasSize(2),
+				() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
+				() -> assertThat(reportEntries)
+						.extracting(entry -> entry.get("value"))
+						.containsExactlyInAnyOrder("[1]: Then this ebony bird beguiling my sad fancy into smiling,",
+							"[2]: By the grave and stern decorum of the countenance it wore,"));
+		}
+
 	}
 
 	static class ReportEntriesTest {
@@ -626,6 +661,24 @@ public class ReportEntryExtensionTests {
 				"But, with mien of lord or lady, perched above my chamber door—" })
 		@ReportEntry("{0}, {1}")
 		void parameterized_unresolved(String line) {
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "Perched upon a bust of Pallas just above my chamber door—" })
+		@ReportEntry(key = "{0}", value = "Perched, and sat, and nothing more.")
+		void parameterized_key_fail(String line) {
+		}
+
+		@ParameterizedTest
+		@MethodSource("linesAndNumbers")
+		@ReportEntry("[{1}]: {0}")
+		void parameterized_multiple(String line, int number) {
+		}
+
+		private static Stream<Arguments> linesAndNumbers() {
+			return Stream
+					.of(Arguments.of("Then this ebony bird beguiling my sad fancy into smiling,", 1),
+						Arguments.of("By the grave and stern decorum of the countenance it wore,", 2));
 		}
 
 	}

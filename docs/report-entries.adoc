@@ -111,3 +111,30 @@ ON_ABORTED::
 The extension will publish your report entry if the test was aborted (for example because of an https://junit.org/junit5/docs/current/user-guide/#writing-tests-assumptions[Assumption]).
 
 Entries will always be published after the test finished.
+
+=== Publishing test parameters
+
+You can access `@ParameterizedTest` parameter values and publish them with the `@ReportEntry` annotation.
+Add a number (starting from zero) between curly braces to reference the parameter with that index.
+For example, if you have a `@ParameterizedTest` like the following:
+
+[source, java]
+----
+@ParameterizedTest
+@MethodSource("params")
+@ReportEntry("{1} - {0}")
+void test(String line, int number) {
+    // YOUR TEST CODE HERE
+}
+
+Stream<Arguments> params() {
+    return Stream.of(
+            Arguments.of("Hello", 1),
+            Arguments.of("World", 2);
+    );
+}
+
+----
+Then the extension will publish `{1} - Hello` and `{2} - World`.
+
+Accessing test parameters in the key is unsupported.
