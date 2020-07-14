@@ -77,8 +77,8 @@ class RetryingTestTests {
 	void skipByAssumption_executedOnce_skipped() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "skipByAssumption");
 
-		assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(1);
-		assertThat(results.numberOfAbortedTests()).isEqualTo(1);
+		assertThat(results).hasSingleDynamicallyRegisteredTest();
+		assertThat(results).hasSingleAbortedTest();
 	}
 
 	// TEST CASES -------------------------------------------------------------------
