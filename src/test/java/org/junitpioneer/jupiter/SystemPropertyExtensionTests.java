@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("SystemProperty extension")
@@ -198,12 +200,11 @@ class SystemPropertyExtensionTests {
 		@Test
 		@DisplayName("should fail when clear and set same system property")
 		void shouldFailWhenClearAndSetSameSystemProperty() {
-			Throwable thrown = PioneerTestKit
+			ExecutionResults results = PioneerTestKit
 					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-						"shouldFailWhenClearAndSetSameSystemProperty")
-					.firstFailuresThrowable();
+						"shouldFailWhenClearAndSetSameSystemProperty");
 
-			assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -212,23 +213,20 @@ class SystemPropertyExtensionTests {
 				+ "deduplicates identical annotations like the ones required for this test: "
 				+ "https://github.com/junit-team/junit5/issues/2131")
 		void shouldFailWhenClearSameSystemPropertyTwice() {
-			Throwable thrown = PioneerTestKit
+			ExecutionResults results = PioneerTestKit
 					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-						"shouldFailWhenClearSameSystemPropertyTwice")
-					.firstFailuresThrowable();
+						"shouldFailWhenClearSameSystemPropertyTwice");
 
-			assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
 		@Test
 		@DisplayName("should fail when set same system property twice")
 		void shouldFailWhenSetSameSystemPropertyTwice() {
-			Throwable thrown = PioneerTestKit
+			ExecutionResults results = PioneerTestKit
 					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-						"shouldFailWhenSetSameSystemPropertyTwice")
-					.firstFailuresThrowable();
-
-			assertThat(thrown).isInstanceOf(ExtensionConfigurationException.class);
+						"shouldFailWhenSetSameSystemPropertyTwice");
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
 	}
