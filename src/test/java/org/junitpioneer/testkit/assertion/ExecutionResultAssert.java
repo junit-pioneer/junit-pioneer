@@ -11,7 +11,7 @@
 package org.junitpioneer.testkit.assertion;
 
 /**
- * Base interface for all assertions.
+ * Base interface for all {@link org.junitpioneer.testkit.ExecutionResults} assertions.
  */
 public interface ExecutionResultAssert {
 

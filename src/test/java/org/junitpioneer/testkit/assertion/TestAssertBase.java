@@ -19,8 +19,7 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.testkit.engine.Events;
 
-public class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events>
-		implements TestCaseAssert, FailureAssert {
+class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events> implements TestCaseAssert, FailureAssert {
 
 	TestAssertBase(Events events) {
 		super(events, TestAssertBase.class, 1);
