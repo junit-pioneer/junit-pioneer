@@ -1,0 +1,17 @@
+grant {
+        // allow to reset the SecurityManager after the unit test
+        permission java.lang.RuntimePermission "setSecurityManager";
+
+        // necessary for gradle
+        permission javax.management.MBeanServerPermission "createMBeanServer";
+
+        // needed for EnvironmentVariableUtilsTests#shouldModifyEnvironmentVariableIfPermissionIsGiven
+        permission java.lang.RuntimePermission "getenv.*";
+
+        // needed for assertj
+        permission java.util.logging.LoggingPermission "control";
+
+        // needed for EnvironmentVariableUtils
+        permission java.lang.RuntimePermission "accessDeclaredMembers";
+        permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
