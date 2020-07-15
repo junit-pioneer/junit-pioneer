@@ -129,12 +129,12 @@ void test(String line, int number) {
 
 Stream<Arguments> params() {
     return Stream.of(
-            Arguments.of("Hello", 1),
-            Arguments.of("World", 2);
+            Arguments.of("Hello", 21),
+            Arguments.of("World", 42);
     );
 }
 
 ----
-Then the extension will publish `{1} - Hello` and `{2} - World`.
+Then the extension will publish `21 - Hello` and `42 - World`.
 
 Accessing test parameters in the key is unsupported.
