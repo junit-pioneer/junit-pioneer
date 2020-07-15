@@ -17,8 +17,6 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
@@ -344,18 +342,11 @@ public class ReportEntryExtensionTests {
 					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_basic",
 						"java.lang.String");
 
-			List<Map<String, String>> reportEntries = results.reportEntries();
-
-			assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(2);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
-			assertAll("Verifying report entries " + reportEntries, //
-				() -> assertThat(reportEntries).hasSize(2),
-				() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
-				() -> assertThat(reportEntries)
-						.extracting(entry -> entry.get("value"))
-						.containsExactlyInAnyOrder(
-							"Open here I flung the shutter, when, with many a flirt and flutter,",
-							"In there stepped a stately Raven of the saintly days of yore;"));
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results)
+					.hasNumberOfReportEntries(2)
+					.withValues("Open here I flung the shutter, when, with many a flirt and flutter,",
+						"In there stepped a stately Raven of the saintly days of yore;");
 		}
 
 		@Test
@@ -365,10 +356,12 @@ public class ReportEntryExtensionTests {
 					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_unresolved",
 						"java.lang.String");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(2);
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageStartingWith("Report entry contains unresolved variable(s)");
+			assertThat(results).hasNumberOfFailedTests(2);
+			assertThat(results).hasNoReportEntries();
+			/*assertThat(results)
+					.hasFailedTests()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageStartingWith("Report entry contains unresolved variable(s)");*/
 		}
 
 		@Test
@@ -378,9 +371,11 @@ public class ReportEntryExtensionTests {
 					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_key_fail",
 						"java.lang.String");
 
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageStartingWith("Report entry can not have variables in the key");
+			assertThat(results).hasNoReportEntries();
+			/*assertThat(results)
+					.hasFailedTests()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageStartingWith("Report entry can not have variables in the key");*/
 		}
 
 		@Test
@@ -390,17 +385,11 @@ public class ReportEntryExtensionTests {
 					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_multiple",
 						"java.lang.String,int");
 
-			List<Map<String, String>> reportEntries = results.reportEntries();
-
-			assertThat(results.numberOfDynamicRegisteredTests()).isEqualTo(2);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
-			assertAll("Verifying report entries " + reportEntries, //
-				() -> assertThat(reportEntries).hasSize(2),
-				() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
-				() -> assertThat(reportEntries)
-						.extracting(entry -> entry.get("value"))
-						.containsExactlyInAnyOrder("[1]: Then this ebony bird beguiling my sad fancy into smiling,",
-							"[2]: By the grave and stern decorum of the countenance it wore,"));
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results)
+					.hasNumberOfReportEntries(2)
+					.withValues("[1]: Then this ebony bird beguiling my sad fancy into smiling,",
+						"[2]: By the grave and stern decorum of the countenance it wore,");
 		}
 
 	}
@@ -566,9 +555,6 @@ public class ReportEntryExtensionTests {
 				"In there stepped a stately Raven of the saintly days of yore;" })
 		@ReportEntry("{0}")
 		void parameterized_basic(String line) {
-			assertThat(line)
-					.isIn("Open here I flung the shutter, when, with many a flirt and flutter,",
-						"In there stepped a stately Raven of the saintly days of yore;");
 		}
 
 		@ParameterizedTest
