@@ -18,11 +18,13 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.testkit.engine.Events;
+import org.junitpioneer.testkit.assertion.single.TestCaseFailureAssert;
+import org.junitpioneer.testkit.assertion.single.TestCaseStartedAssert;
 
-class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events> implements TestCaseAssert, FailureAssert {
+class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Events> implements TestCaseStartedAssert, TestCaseFailureAssert {
 
-	TestAssertBase(Events events) {
-		super(events, TestAssertBase.class, 1);
+	TestCaseAssertBase(Events events) {
+		super(events, TestCaseAssertBase.class, 1);
 	}
 
 	@Override
@@ -51,7 +53,7 @@ class TestAssertBase extends AbstractPioneerAssert<TestAssertBase, Events> imple
 	}
 
 	@Override
-	public FailureAssert whichFailed() {
+	public TestCaseFailureAssert whichFailed() {
 		assertThat(actual.failed().count()).isEqualTo(1);
 		return this;
 	}

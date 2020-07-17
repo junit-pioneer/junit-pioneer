@@ -8,14 +8,14 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.testkit.assertion;
+package org.junitpioneer.testkit.assertion.single;
 
 import org.assertj.core.api.AbstractThrowableAssert;
 
 /**
  * Used to assert a single failed container or test.
  */
-public interface FailureAssert {
+public interface TestCaseFailureAssert {
 
 	/**
 	 * Asserts that the test/container failed because of a specific type of exception.

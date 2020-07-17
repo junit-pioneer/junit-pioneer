@@ -10,6 +10,8 @@
 
 package org.junitpioneer.testkit.assertion;
 
+import org.junitpioneer.testkit.assertion.reportentry.ReportEntryValueAssert;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.AbstractMap;
@@ -21,23 +23,26 @@ import java.util.stream.Stream;
 /**
  * Used to assert a report entries.
  */
-public class ReportEntryAssert extends AbstractPioneerAssert<ReportEntryAssert, List<Map.Entry<String, String>>> {
+class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase, List<Map.Entry<String, String>>> implements ReportEntryValueAssert {
 
-	ReportEntryAssert(List<Map.Entry<String, String>> entries, int expected) {
-		super(entries, ReportEntryAssert.class, expected);
+	ReportEntryAssertBase(List<Map.Entry<String, String>> entries, int expected) {
+		super(entries, ReportEntryAssertBase.class, expected);
 	}
 
+	@Override
 	public void withKeyAndValue(String key, String value) {
 		if (expected != 1)
 			throw new IllegalArgumentException("Can not verify key and value for non-single report entry!");
 		assertThat(actual).containsExactly(new AbstractMap.SimpleEntry<>(key, value));
 	}
 
+	@Override
 	public void withValues(String... expected) {
 		Stream<String> values = actual.stream().map(Map.Entry::getValue);
 		assertThat(values).containsExactlyInAnyOrder(expected);
 	}
 
+	@Override
 	public void withKeyValuePairs(String... keyAndValuePairs) {
 		if (keyAndValuePairs.length % 2 != 0)
 			throw new IllegalArgumentException("Can not verify key-value pairs because some elements are missing.");

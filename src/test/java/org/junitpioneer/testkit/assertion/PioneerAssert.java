@@ -22,6 +22,11 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.assertion.reportentry.ReportEntryValueAssert;
+import org.junitpioneer.testkit.assertion.single.TestCaseFailureAssert;
+import org.junitpioneer.testkit.assertion.single.TestCaseStartedAssert;
+import org.junitpioneer.testkit.assertion.suite.TestSuiteAssert;
+import org.junitpioneer.testkit.assertion.suite.TestSuiteFailureAssert;
 
 public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults> implements ExecutionResultAssert {
 
@@ -34,7 +39,7 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public ReportEntryAssert hasNumberOfReportEntries(int expected) {
+	public ReportEntryValueAssert hasNumberOfReportEntries(int expected) {
 		List<Map<String, String>> entries = reportEntries();
 		Assertions.assertThat(entries).hasSize(expected);
 		Integer[] ones = IntStream.generate(() -> 1).limit(expected).boxed().toArray(Integer[]::new);
@@ -45,11 +50,11 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 				.flatMap(map -> map.entrySet().stream())
 				.collect(Collectors.toList());
 
-		return new ReportEntryAssert(entryList, expected);
+		return new ReportEntryAssertBase(entryList, expected);
 	}
 
 	@Override
-	public ReportEntryAssert hasSingleReportEntry() {
+	public ReportEntryValueAssert hasSingleReportEntry() {
 		return hasNumberOfReportEntries(1);
 	}
 
@@ -59,12 +64,12 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public TestCaseAssert hasSingleStartedTest() {
+	public TestCaseStartedAssert hasSingleStartedTest() {
 		return assertSingleTest(actual.testEvents().started().count());
 	}
 
 	@Override
-	public FailureAssert hasSingleFailedTest() {
+	public TestCaseFailureAssert hasSingleFailedTest() {
 		return assertSingleTest(actual.testEvents().failed().count());
 	}
 
@@ -84,22 +89,22 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public TestCaseAssert hasSingleDynamicallyRegisteredTest() {
+	public TestCaseStartedAssert hasSingleDynamicallyRegisteredTest() {
 		return assertSingleTest(actual.testEvents().dynamicallyRegistered().count());
 	}
 
-	private TestAssertBase assertSingleTest(long numberOfTestsWithOutcome) {
+	private TestCaseAssertBase assertSingleTest(long numberOfTestsWithOutcome) {
 		Assertions.assertThat(numberOfTestsWithOutcome).isEqualTo(1);
-		return new TestAssertBase(actual.testEvents());
+		return new TestCaseAssertBase(actual.testEvents());
 	}
 
 	@Override
-	public TestCaseAssert hasSingleStartedContainer() {
+	public TestCaseStartedAssert hasSingleStartedContainer() {
 		return assertSingleContainer(actual.containerEvents().started().count());
 	}
 
 	@Override
-	public FailureAssert hasSingleFailedContainer() {
+	public TestCaseFailureAssert hasSingleFailedContainer() {
 		return assertSingleContainer(actual.containerEvents().failed().count());
 	}
 
@@ -119,85 +124,97 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public TestCaseAssert hasSingleDynamicallyRegisteredContainer() {
+	public TestCaseStartedAssert hasSingleDynamicallyRegisteredContainer() {
 		return assertSingleContainer(actual.containerEvents().dynamicallyRegistered().count());
 	}
 
-	private TestAssertBase assertSingleContainer(long numberOfContainersWithOutcome) {
+	private TestCaseAssertBase assertSingleContainer(long numberOfContainersWithOutcome) {
 		Assertions.assertThat(numberOfContainersWithOutcome).isEqualTo(1);
-		return new TestAssertBase(actual.containerEvents());
+		return new TestCaseAssertBase(actual.containerEvents());
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfStartedTests(int expected) {
+	public TestSuiteAssert hasNumberOfStartedTests(int expected) {
 		Assertions.assertThat(actual.testEvents().started().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfFailedTests(int expected) {
+	public TestSuiteAssert hasNumberOfFailedTests(int expected) {
 		Assertions.assertThat(actual.testEvents().failed().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfAbortedTests(int expected) {
+	public TestSuiteAssert hasNumberOfAbortedTests(int expected) {
 		Assertions.assertThat(actual.testEvents().aborted().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfSucceededTests(int expected) {
+	public TestSuiteAssert hasNumberOfSucceededTests(int expected) {
 		Assertions.assertThat(actual.testEvents().succeeded().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfSkippedTests(int expected) {
+	public TestSuiteAssert hasNumberOfSkippedTests(int expected) {
 		Assertions.assertThat(actual.testEvents().skipped().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfDynamicallyRegisteredTests(int expected) {
+	public TestSuiteAssert hasNumberOfDynamicallyRegisteredTests(int expected) {
 		Assertions.assertThat(actual.testEvents().dynamicallyRegistered().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfStartedContainers(int expected) {
+	public TestSuiteAssert hasNumberOfStartedContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().started().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfFailedContainers(int expected) {
+	public TestSuiteAssert hasNumberOfFailedContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().failed().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfAbortedContainers(int expected) {
+	public TestSuiteAssert hasNumberOfAbortedContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().aborted().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfSucceededContainers(int expected) {
+	public TestSuiteAssert hasNumberOfSucceededContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().succeeded().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfSkippedContainers(int expected) {
+	public TestSuiteAssert hasNumberOfSkippedContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().skipped().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public ExecutionResultAssert hasNumberOfDynamicallyRegisteredContainers(int expected) {
+	public TestSuiteAssert hasNumberOfDynamicallyRegisteredContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().dynamicallyRegistered().count()).isEqualTo(expected);
 		return this;
+	}
+
+	@Override
+	public TestSuiteFailureAssert hasFailingTests() {
+		Assertions.assertThat(actual.testEvents().failed().count()).isGreaterThan(0);
+		return new TestSuiteAssertBase(actual.testEvents());
+	}
+
+	@Override
+	public TestSuiteFailureAssert hasFailingContainers() {
+		Assertions.assertThat(actual.containerEvents().failed().count()).isGreaterThan(0);
+		return new TestSuiteAssertBase(actual.containerEvents());
 	}
 
 	private List<Map<String, String>> reportEntries() {
