@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -371,10 +372,9 @@ public class ReportEntryExtensionTests {
 						"java.lang.String");
 
 			assertThat(results).hasNoReportEntries();
-			/*assertThat(results)
-					.hasFailedTests()
+			assertThat(results).hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageStartingWith("Report entry can not have variables in the key");*/
+					.hasMessageStartingWith("Report entry can not have variables in the key");
 		}
 
 		@Test
