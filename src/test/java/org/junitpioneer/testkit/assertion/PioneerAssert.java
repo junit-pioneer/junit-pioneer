@@ -27,8 +27,9 @@ import org.junitpioneer.testkit.assertion.single.TestCaseFailureAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseStartedAssert;
 import org.junitpioneer.testkit.assertion.suite.TestSuiteAssert;
 import org.junitpioneer.testkit.assertion.suite.TestSuiteFailureAssert;
+import org.junitpioneer.testkit.assertion.suite.TestSuiteFailureMessageAssert;
 
-public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults> implements ExecutionResultAssert {
+public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults> implements ExecutionResultAssert, TestSuiteFailureAssert {
 
 	public static ExecutionResultAssert assertThat(ExecutionResults actual) {
 		return new PioneerAssert(actual);
@@ -229,4 +230,13 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 				.collect(toList());
 	}
 
+	@Override
+	public TestSuiteFailureMessageAssert withExceptionInstancesOf(Class<? extends Throwable>... exceptionTypes) {
+		return null;
+	}
+
+	@Override
+	public TestSuiteFailureMessageAssert withExceptions() {
+		return null;
+	}
 }
