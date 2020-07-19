@@ -54,7 +54,7 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 	}
 
 	private static void verifyKeyNotParameterized(ReportEntry entry) {
-		if (entry.key().matches(".*\\{([0-9])+}.*")) {
+		if (entry.key().matches(".*\\{[0-9]+}.*")) {
 			String message = "Report entry can not have variables in the key: { key=\"%s\" value=\"%s\" }";
 			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
 		}
