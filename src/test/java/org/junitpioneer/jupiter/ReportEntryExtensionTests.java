@@ -356,12 +356,12 @@ public class ReportEntryExtensionTests {
 					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_unresolved",
 						"java.lang.String");
 
-			assertThat(results).hasNumberOfFailedTests(2);
+			assertThat(results).hasNumberOfFailedTests(1);
 			assertThat(results).hasNoReportEntries();
-			/*assertThat(results)
-					.hasFailedTests()
+			assertThat(results)
+					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageStartingWith("Report entry contains unresolved variable(s)");*/
+					.hasMessageStartingWith("Report entry contains unresolved variable(s)");
 		}
 
 		@Test
@@ -372,7 +372,8 @@ public class ReportEntryExtensionTests {
 						"java.lang.String");
 
 			assertThat(results).hasNoReportEntries();
-			assertThat(results).hasSingleFailedTest()
+			assertThat(results)
+					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageStartingWith("Report entry can not have variables in the key");
 		}
@@ -387,8 +388,8 @@ public class ReportEntryExtensionTests {
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
 			assertThat(results)
 					.hasNumberOfReportEntries(2)
-					.withValues("[1]: Then this ebony bird beguiling my sad fancy into smiling,",
-						"[2]: By the grave and stern decorum of the countenance it wore,");
+					.withValues("1 - 1: Perched, and sat, and nothing more.",
+						"2 - 2: Then this ebony bird beguiling my sad fancy into smiling,");
 		}
 
 	}
@@ -557,28 +558,27 @@ public class ReportEntryExtensionTests {
 		}
 
 		@ParameterizedTest
-		@ValueSource(strings = { "Not the least obeisance made he; not a minute stopped or stayed he;",
-				"But, with mien of lord or lady, perched above my chamber door—" })
+		@ValueSource(strings = { "Not the least obeisance made he; not a minute stopped or stayed he;" })
 		@ReportEntry("{0}, {1}")
 		void parameterized_unresolved(String line) {
 		}
 
 		@ParameterizedTest
-		@ValueSource(strings = { "Perched upon a bust of Pallas just above my chamber door—" })
-		@ReportEntry(key = "{0}", value = "Perched, and sat, and nothing more.")
+		@ValueSource(strings = { "But, with mien of lord or lady, perched above my chamber door—" })
+		@ReportEntry(key = "{0}", value = "Perched upon a bust of Pallas just above my chamber door—")
 		void parameterized_key_fail(String line) {
 		}
 
 		@ParameterizedTest
 		@MethodSource("linesAndNumbers")
-		@ReportEntry("[{1}]: {0}")
+		@ReportEntry("{1} - {1}: {0}")
 		void parameterized_multiple(String line, int number) {
 		}
 
 		private static Stream<Arguments> linesAndNumbers() {
 			return Stream
-					.of(Arguments.of("Then this ebony bird beguiling my sad fancy into smiling,", 1),
-						Arguments.of("By the grave and stern decorum of the countenance it wore,", 2));
+					.of(Arguments.of("Perched, and sat, and nothing more.", 1),
+						Arguments.of("Then this ebony bird beguiling my sad fancy into smiling,", 2));
 		}
 
 	}

@@ -61,15 +61,23 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 	}
 
 	private static void verifyParameterCount(ExtensionContext context, ReportEntry entry) {
-		Matcher matcher = Pattern.compile("\\{([0-9])+}").matcher(entry.value());
-		int variableCount = 0;
-		while (matcher.find())
-			variableCount++;
-
-		if (context.getRequiredTestMethod().getParameterCount() < variableCount) {
-			String message = "Report entry contains unresolved variable(s): { key=\"%s\" value=\"%s\" }";
-			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
+		if (entry.value().matches(".*\\{[0-9]+}.*")) {
+			int highest = getHighestNumberedParam(entry);
+			if (context.getRequiredTestMethod().getParameterCount() <= highest) {
+				String message = "Report entry contains unresolved variable(s): { key=\"%s\" value=\"%s\" }";
+				throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
+			}
 		}
+
+	}
+
+	private static int getHighestNumberedParam(ReportEntry entry) {
+		int highest = 0;
+		Matcher matcher = Pattern.compile("\\{[0-9]+}").matcher(entry.value());
+		while (matcher.find())
+			highest = Math
+					.max(Integer.parseInt(entry.value().substring(matcher.start() + 1, matcher.end() - 1)), highest);
+		return highest;
 	}
 
 	private static void verifyKeyValueAreNotBlank(ReportEntry entry) {

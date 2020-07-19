@@ -116,13 +116,14 @@ Entries will always be published after the test finished.
 
 You can access `@ParameterizedTest` parameter values and publish them with the `@ReportEntry` annotation.
 Add a number (starting from zero) between curly braces to reference the parameter with that index.
+Inside the report entry, the parameters can be referenced in any order and multiple times.
 For example, if you have a `@ParameterizedTest` like the following:
 
 [source, java]
 ----
 @ParameterizedTest
 @MethodSource("params")
-@ReportEntry("{1} - {0}")
+@ReportEntry("{1} - {0} - {1}")
 void test(String line, int number) {
     // YOUR TEST CODE HERE
 }
@@ -135,6 +136,6 @@ Stream<Arguments> params() {
 }
 
 ----
-Then the extension will publish `21 - Hello` and `42 - World`.
+Then the extension will publish `21 - Hello - 21` and `42 - World - 42`.
 
 Accessing test parameters in the key is unsupported.
