@@ -10,14 +10,19 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.engine.reporting.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+import org.junitpioneer.testkit.assertion.PioneerAssert;
 
 @DisplayName("Stopwatch extension ")
 public class StopwatchExtensionTests {
@@ -29,14 +34,10 @@ public class StopwatchExtensionTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestClass(StopwatchExtensionTests.ClassLevelAnnotationTest.class);
 
-		org.junitpioneer.testkit.assertion.PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
+		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
 
-		//		List<Map<String, String>> reportEntries = results.
-		//
-		//
-		//		Map<String, String> classEntry = results.allEvents().reportingEntryPublished().get(0);
-		//		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel";
-		//		assertStringStartWithUnitAndContainsName(classEntry, methodName);
+		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel";
+		assertStringStartWithUnitAndContainsName(results, methodName);
 
 	}
 
@@ -47,15 +48,9 @@ public class StopwatchExtensionTests {
 
 		ExecutionResults results = PioneerTestKit
 				.executeTestClass(StopwatchExtensionTests.ClassAndMethodLevelAnnotationTest.class);
-		org.junitpioneer.testkit.assertion.PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
+		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
 
-		//		List<Map<String, String>> reportEntries = PioneerTestKit
-		//				.executeTestClass(StopwatchExtensionTests.ClassAndMethodLevelAnnotationTest.class)
-		//				.publishedTestReportEntries();
-		//		assertThat(reportEntries).hasSize(1);
-		//
-		//		Map<String, String> methodEntry = reportEntries.get(0);
-		//		assertStringStartWithUnitAndContainsName(methodEntry, methodName);
+		assertStringStartWithUnitAndContainsName(results, methodName);
 	}
 
 	@DisplayName("should be executed with annotation on test method and report an entry for test method")
@@ -65,14 +60,9 @@ public class StopwatchExtensionTests {
 
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(StopwatchExtensionTests.MethodLevelAnnotationTest.class, methodName);
-		org.junitpioneer.testkit.assertion.PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
+		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
 
-		//		List<Map<String, String>> reportEntries = PioneerTestKit
-		//				.executeTestMethod(StopwatchExtensionTests.MethodLevelAnnotationTest.class, methodName)
-		//				.publishedTestReportEntries();
-		//
-		//		Map<String, String> reportEntry = reportEntries.get(0);
-		//		assertStringStartWithUnitAndContainsName(reportEntry, methodName);
+		assertStringStartWithUnitAndContainsName(results, methodName);
 	}
 
 	@DisplayName("should not be executed and therefore no entry should be published")
@@ -82,11 +72,14 @@ public class StopwatchExtensionTests {
 
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(StopwatchExtensionTests.MethodLevelAnnotationTest.class, methodName);
-		org.junitpioneer.testkit.assertion.PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
+		PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
 
 	}
 
-	private void assertStringStartWithUnitAndContainsName(Map<String, String> reportEntry, String name) {
+	private void assertStringStartWithUnitAndContainsName(ExecutionResults results, String name) {
+
+		Map<String, String> reportEntry = firstReportEntry(results);
+
 		assertThat(reportEntry).hasSize(1);
 
 		String result = reportEntry.get("stopwatch");
@@ -96,6 +89,28 @@ public class StopwatchExtensionTests {
 
 		assertThat(result).startsWith(startsWith);
 		assertThat(result).endsWith("] ms.");
+	}
+
+	/**
+	 * Retrieves the first published ReportEntry.
+	 * The possibility to retrieve the ReportEntries of a test execution was removed during
+	 * the improvement of the PioneerAssertions.
+	 *
+	 * @param results Results of the test execution
+	 * @return The first ReportEntry
+	 */
+	private Map<String, String> firstReportEntry(ExecutionResults results) {
+		List<Map<String, String>> reportEntries = results
+				.allEvents()
+				.reportingEntryPublished()
+				.stream()
+				.map(event -> event.getPayload(org.junit.platform.engine.reporting.ReportEntry.class))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.map(ReportEntry::getKeyValuePairs)
+				.collect(toList());
+
+		return reportEntries.get(0);
 	}
 
 	/**
