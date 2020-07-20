@@ -101,6 +101,7 @@ The least we can do is to thank them and list their accomplishments here (in lex
 #### 2020
 
 * [Allon Murienik](https://github.com/mureinik) contributed [the range sources](https://junit-pioneer.org/docs/range-sources/) (#44 / #123)
+* [Bradford Hovinen](https://github.com/hovinen) improved the execution of the EnvironmentVariableUtils on different OS (#287 / #288)
 * [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133), further improved it as well as the environment variable extension (#180 / #248), and helped with build infrastructure (e.g. #269)
 * [Dirk Witzel](https://github.com/NPException) improved the documentation (#149 / #271)
 * [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
