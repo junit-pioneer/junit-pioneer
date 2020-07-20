@@ -29,16 +29,12 @@ class StopwatchExtension implements BeforeTestExecutionCallback, AfterTestExecut
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) {
-		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
-			storeNowAsLaunchTime(context);
-		}
+		storeNowAsLaunchTime(context);
 	}
 
 	@Override
 	public void afterTestExecution(ExtensionContext context) {
-		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Stopwatch.class)) {
-			calculateAndReportElapsedTime(context);
-		}
+		calculateAndReportElapsedTime(context);
 	}
 
 	/**
