@@ -44,10 +44,15 @@ public class PioneerTestKit {
 	 * @param methodParameterTypes Class type(s) of the parameter(s)
 	 * @return The execution results
 	 * @throws IllegalArgumentException when methodParameterTypes is null
+	 * 			This method only checks parameters which are not part of the underlying
+	 * 			Jupiter TestKit. The Jupiter TestKit may throw other exceptions!
 	 */
 	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
 			Class<?>... methodParameterTypes) {
 
+		// This check is by purpose to throw an IAE.
+		// E.g. Objects.requireNonNull(T value, String message) throws a NPE,
+		// which has a total different meaning.
 		if (null == methodParameterTypes) {
 			throw new IllegalArgumentException("methodParameterTypes must not be null");
 		}
