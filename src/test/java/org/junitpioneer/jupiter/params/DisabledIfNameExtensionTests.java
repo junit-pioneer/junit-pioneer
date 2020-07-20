@@ -10,8 +10,8 @@
 
 package org.junitpioneer.jupiter.params;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.util.Arrays;
 
@@ -32,9 +32,7 @@ class DisabledIfNameExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "single", "java.lang.String");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(5);
+			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(1).hasNumberOfSkippedTests(5);
 		}
 
 		@Test
@@ -42,9 +40,7 @@ class DisabledIfNameExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "multiple", "int");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(3);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(2);
+			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(3).hasNumberOfSkippedTests(2);
 		}
 
 		@Test
@@ -52,7 +48,7 @@ class DisabledIfNameExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "methodNameContains", "int");
 
-			assertThat(results.numberOfStartedTests()).isEqualTo(3);
+			assertThat(results).hasNumberOfStartedTests(3);
 		}
 
 	}
@@ -65,9 +61,7 @@ class DisabledIfNameExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "single", "java.lang.String");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(4);
+			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(2).hasNumberOfSkippedTests(4);
 		}
 
 		@Test
@@ -75,9 +69,7 @@ class DisabledIfNameExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "multiple", "int");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(3);
+			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSkippedTests(3).hasNumberOfSucceededTests(2);
 		}
 
 		@Test
@@ -85,7 +77,7 @@ class DisabledIfNameExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "methodNameMatches", "int");
 
-			assertThat(results.numberOfStartedTests()).isEqualTo(3);
+			assertThat(results).hasNumberOfStartedTests(3);
 		}
 
 	}
@@ -99,7 +91,7 @@ class DisabledIfNameExtensionTests {
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "noContainsNoMatches",
 						"java.lang.String");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(1);
+			assertThat(results).hasSingleFailedTest();
 		}
 
 		@Test
@@ -108,9 +100,7 @@ class DisabledIfNameExtensionTests {
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_contains",
 						"int");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(3);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(2);
+			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSkippedTests(2).hasNumberOfSucceededTests(3);
 		}
 
 		@Test
@@ -119,9 +109,7 @@ class DisabledIfNameExtensionTests {
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_matches",
 						"int");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(2);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(3);
+			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(2).hasNumberOfSkippedTests(3);
 		}
 
 		@Test
@@ -130,9 +118,7 @@ class DisabledIfNameExtensionTests {
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class,
 						"containsAndMatches_containsAndMatches", "int");
 
-			assertThat(results.numberOfFailedTests()).isEqualTo(0);
-			assertThat(results.numberOfSucceededTests()).isEqualTo(1);
-			assertThat(results.numberOfSkippedTests()).isEqualTo(4);
+			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(1).hasNumberOfSkippedTests(4);
 		}
 
 	}
