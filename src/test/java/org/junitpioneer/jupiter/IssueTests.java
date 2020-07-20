@@ -10,9 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Map;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,8 +36,9 @@ public class IssueTests {
 		 */
 
 		// The report can't be accessed within this test as the file is written after this (and all other)
-		// tests are finished
-		assertThat(true).isTrue();
+		// tests are finished, so we only check the number of started tests in this assertion.
+		ExecutionResults results = PioneerTestKit.executeTestClass(IssueTests.IssueDummyTestClass.class);
+		assertThat(results).hasNumberOfStartedTests(2);
 	}
 
 	@DisplayName(" publishes nothing, if method is not annotated")
@@ -48,8 +47,8 @@ public class IssueTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(IssueTests.IssueDummyTestClass.class, "testNoAnnotation");
 
-		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
-		assertThat(results.reportEntries()).isEmpty();
+		assertThat(results).hasNumberOfSucceededTests(1);
+		assertThat(results).hasNumberOfReportEntries(0);
 	}
 
 	@DisplayName(" publishes the annotations value with key 'Issue'")
@@ -57,14 +56,9 @@ public class IssueTests {
 	void publishAnnotationsValueWithKeyIssue() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(IssueTests.IssueDummyTestClass.class, "testIsAnnotated");
-		assertThat(results.numberOfSucceededTests()).isEqualTo(1);
+		assertThat(results).hasNumberOfSucceededTests(1);
 
-		Map<String, String> reportEntry = results.reportEntries().get(0);
-		assertThat(reportEntry).hasSize(1);
-
-		String result = reportEntry.get("Issue");
-		assertThat(result).isNotNull();
-		assertThat(result).isEqualTo("Req 11");
+		assertThat(results).hasSingleReportEntry().withKeyAndValue("Issue", "Req 11");
 	}
 
 	static class IssueDummyTestClass {
