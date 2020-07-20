@@ -12,11 +12,11 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("Stopwatch extension ")
@@ -25,14 +25,18 @@ public class StopwatchExtensionTests {
 	@DisplayName("should be executed with annotation on class level and report an entry for test method")
 	@Test
 	void runClassLevelAnnotationTest() {
-		List<Map<String, String>> reportEntries = PioneerTestKit
-				.executeTestClass(StopwatchExtensionTests.ClassLevelAnnotationTest.class)
-				.publishedTestReportEntries();
-		assertThat(reportEntries).hasSize(1);
 
-		Map<String, String> classEntry = reportEntries.get(0);
-		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel";
-		assertStringStartWithUnitAndContainsName(classEntry, methodName);
+		ExecutionResults results = PioneerTestKit
+				.executeTestClass(StopwatchExtensionTests.ClassLevelAnnotationTest.class);
+
+		org.junitpioneer.testkit.assertion.PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
+
+		//		List<Map<String, String>> reportEntries = results.
+		//
+		//
+		//		Map<String, String> classEntry = results.allEvents().reportingEntryPublished().get(0);
+		//		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel";
+		//		assertStringStartWithUnitAndContainsName(classEntry, methodName);
 
 	}
 
@@ -41,13 +45,17 @@ public class StopwatchExtensionTests {
 	void runClassAndMethodLevelAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassAndMethodLevel";
 
-		List<Map<String, String>> reportEntries = PioneerTestKit
-				.executeTestClass(StopwatchExtensionTests.ClassAndMethodLevelAnnotationTest.class)
-				.publishedTestReportEntries();
-		assertThat(reportEntries).hasSize(1);
+		ExecutionResults results = PioneerTestKit
+				.executeTestClass(StopwatchExtensionTests.ClassAndMethodLevelAnnotationTest.class);
+		org.junitpioneer.testkit.assertion.PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
 
-		Map<String, String> methodEntry = reportEntries.get(0);
-		assertStringStartWithUnitAndContainsName(methodEntry, methodName);
+		//		List<Map<String, String>> reportEntries = PioneerTestKit
+		//				.executeTestClass(StopwatchExtensionTests.ClassAndMethodLevelAnnotationTest.class)
+		//				.publishedTestReportEntries();
+		//		assertThat(reportEntries).hasSize(1);
+		//
+		//		Map<String, String> methodEntry = reportEntries.get(0);
+		//		assertStringStartWithUnitAndContainsName(methodEntry, methodName);
 	}
 
 	@DisplayName("should be executed with annotation on test method and report an entry for test method")
@@ -55,23 +63,27 @@ public class StopwatchExtensionTests {
 	void runMethodLevelAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel";
 
-		List<Map<String, String>> reportEntries = PioneerTestKit
-				.executeTestMethod(StopwatchExtensionTests.MethodLevelAnnotationTest.class, methodName)
-				.publishedTestReportEntries();
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(StopwatchExtensionTests.MethodLevelAnnotationTest.class, methodName);
+		org.junitpioneer.testkit.assertion.PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
 
-		Map<String, String> reportEntry = reportEntries.get(0);
-		assertStringStartWithUnitAndContainsName(reportEntry, methodName);
+		//		List<Map<String, String>> reportEntries = PioneerTestKit
+		//				.executeTestMethod(StopwatchExtensionTests.MethodLevelAnnotationTest.class, methodName)
+		//				.publishedTestReportEntries();
+		//
+		//		Map<String, String> reportEntry = reportEntries.get(0);
+		//		assertStringStartWithUnitAndContainsName(reportEntry, methodName);
 	}
 
 	@DisplayName("should not be executed and therefore no entry should be published")
 	@Test
 	void runAnnotationTest() {
-		List<Map<String, String>> reportEntries = PioneerTestKit
-				.executeTestMethod(StopwatchExtensionTests.NonAnnotationTest.class,
-					"stopwatchExtensionShouldNotBeExecuted")
-				.publishedTestReportEntries();
+		String methodName = "stopwatchExtensionShouldNotBeExecuted";
 
-		assertThat(reportEntries).isEmpty();
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(StopwatchExtensionTests.MethodLevelAnnotationTest.class, methodName);
+		org.junitpioneer.testkit.assertion.PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
+
 	}
 
 	private void assertStringStartWithUnitAndContainsName(Map<String, String> reportEntry, String name) {
