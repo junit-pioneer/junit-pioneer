@@ -13,6 +13,7 @@ package org.junitpioneer.testkit;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -75,8 +76,8 @@ public class PioneerTestKitTests {
 
 				String expectedMessage = "methodParameterTypes must not be null";
 
-				org.assertj.core.api.Assertions.assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
-				org.assertj.core.api.Assertions.assertThat(thrown.getMessage()).isEqualTo(expectedMessage);
+				Assertions.assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
+				Assertions.assertThat(thrown.getMessage()).isEqualTo(expectedMessage);
 
 			}
 
