@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,8 +45,9 @@ public class StdIoExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "badType", Boolean.class);
 
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ParameterResolutionException.class)
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
 					.hasMessageContaining("No ParameterResolver registered");
 		}
 
@@ -56,8 +58,9 @@ public class StdIoExtensionTests {
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "noAnnotation",
 						StdIn.class);
 
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ParameterResolutionException.class)
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
 					.hasMessageContainingAll("Can not resolve test method parameter", "Method has to be annotated");
 		}
 
@@ -67,7 +70,7 @@ public class StdIoExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdIn",
 						StdIn.class);
-			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
+			assertThat(results).hasSingleSucceededTest();
 		}
 
 		@Test
@@ -76,7 +79,7 @@ public class StdIoExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdOut",
 						StdOut.class);
-			assertThat(results.numberOfStartedTests()).isGreaterThan(0);
+			assertThat(results).hasSingleSucceededTest();
 		}
 
 	}
