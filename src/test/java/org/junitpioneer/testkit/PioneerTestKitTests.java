@@ -10,8 +10,8 @@
 
 package org.junitpioneer.testkit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -30,7 +30,7 @@ public class PioneerTestKitTests {
 		void executeTestClass() {
 			ExecutionResults results = PioneerTestKit.executeTestClass(DummyClass.class);
 
-			assertThat(results.numberOfStartedTests()).isEqualTo(1);
+			assertThat(results).hasNumberOfStartedTests(1);
 		}
 
 		@DisplayName("a specific method")
@@ -38,7 +38,7 @@ public class PioneerTestKitTests {
 		void executeTestMethod() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(DummyClass.class, "nothing");
 
-			assertThat(results.numberOfStartedTests()).isEqualTo(1);
+			assertThat(results).hasNumberOfStartedTests(1);
 		}
 
 		@DisplayName("a specific parametrized method")
@@ -51,7 +51,7 @@ public class PioneerTestKitTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", String.class);
 
-				assertThat(results.numberOfStartedTests()).isEqualTo(1);
+				assertThat(results).hasNumberOfStartedTests(1);
 			}
 
 			@DisplayName(" where parameter is an array of classes")
@@ -62,7 +62,7 @@ public class PioneerTestKitTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", classes);
 
-				assertThat(results.numberOfStartedTests()).isEqualTo(1);
+				assertThat(results).hasNumberOfStartedTests(1);
 			}
 
 			@DisplayName("without parameter results in IllegalArgumentException")
@@ -74,8 +74,9 @@ public class PioneerTestKitTests {
 				});
 
 				String expectedMessage = "methodParameterTypes must not be null";
-				assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
-				assertThat(thrown.getMessage()).isEqualTo(expectedMessage);
+
+				org.assertj.core.api.Assertions.assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
+				org.assertj.core.api.Assertions.assertThat(thrown.getMessage()).isEqualTo(expectedMessage);
 
 			}
 
