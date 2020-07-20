@@ -8,6 +8,7 @@ on:
     branches: 'master'
     tags-ignore: 
       - 'v**'
+      - 'releaseTrigger'
   pull_request:
     branches: '*'
 
@@ -53,3 +54,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
+
+  buildDone:
+    name: buildOk
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: buildOk
+        run: echo 'all builds passed'
