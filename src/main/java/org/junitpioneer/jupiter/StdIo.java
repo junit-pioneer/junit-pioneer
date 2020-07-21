@@ -19,13 +19,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Marks a method to be extended with {@link StdIoExtension} and provided with
- * {@link StdIoExtension.StdIn StdIn} or {@link StdIoExtension.StdOut StdOut}.
+ * {@link StdIn StdIn} or {@link StdOut StdOut}.
  * The annotated method must take one or both parameters or an
  * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will be thrown.
  *
  * Provide values that the {@link StdIoExtension extension} will read instead of reading the
  * standard input ({@code System.in}).
- * If values are provided but there is no {@link StdIoExtension.StdIn} parameter
+ * If values are provided but there is no {@link StdIn} parameter
  * an {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will be thrown.
  * The opposite is not true to enable testing for empty inputs.
  *
@@ -42,8 +42,8 @@ public @interface StdIo {
 
 	/**
 	 * Provides the intercepted standard input with values.
-	 * If this is not blank, the annotated method has to
-	 * have a {@link StdIoExtension.StdIn} parameter.
+	 * If this is not blank, the annotated method can
+	 * have a {@link StdIn} parameter.
 	 */
 	String[] value() default {};
 

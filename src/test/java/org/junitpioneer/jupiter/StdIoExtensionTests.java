@@ -10,11 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.fail;
-import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
@@ -30,11 +28,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junitpioneer.jupiter.StdIoExtension.StdIn;
-import org.junitpioneer.jupiter.StdIoExtension.StdOut;
 import org.junitpioneer.testkit.ExecutionResults;
 
 /**
@@ -47,73 +40,6 @@ public class StdIoExtensionTests {
 
 	private final static PrintStream STDOUT = System.out;
 	private final static InputStream STDIN = System.in;
-
-	@Nested
-	@DisplayName("with specific configuration ")
-	class ConfigurationTests {
-
-		@Test
-		@DisplayName("fails if the method is annotated but no parameter is passed to the test")
-		void needsParameter() {
-			ExecutionResults results = executeTestMethod(StdIoExtensionConfigurations.class, "noParameter");
-
-			assertThat(results)
-					.hasSingleFailedTest()// TODO: single?
-					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage(format("Method is annotated with %s but no %s or %s parameters were found.",
-						StdIo.class.getName(), StdIn.class.getName(), StdOut.class.getName()));
-		}
-
-		@Test
-		@DisplayName("fails if the parameter type is not StdIn or StdOut")
-		void needsType() {
-			ExecutionResults results = executeTestMethodWithParameterTypes(StdIoExtensionConfigurations.class,
-				"badType", Boolean.class.getName());
-
-			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
-		}
-
-		@Test
-		@DisplayName("fails if the parameter is StdIn or StdOut but StdIoExtension is not active")
-		void needsExtension() {
-			ExecutionResults results = executeTestMethodWithParameterTypes(
-				NotAnnotatedStdIoExtensionConfiguration.class, "noAnnotation", StdOut.class.getName());
-
-			assertThat(results)
-					.hasSingleFailedTest()// TODO: single?
-					.withExceptionInstanceOf(ParameterResolutionException.class)
-					.hasMessageStartingWith("No ParameterResolver registered");
-		}
-
-		@Test
-		@DisplayName("fails if the parameter is StdIn or StdOut but test method is not annotated with @StdIo")
-		void needsAnnotation() {
-			ExecutionResults results = executeTestMethodWithParameterTypes(StdIoExtensionConfigurations.class,
-				"noAnnotation", StdIn.class.getName());
-
-			assertThat(results)
-					.hasSingleFailedTest()// TODO: single?
-					// This is because the class is annotated with @ExtendWith
-					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage(
-						format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName()));
-		}
-
-		@Test
-		@DisplayName("fails if the method is annotated and has input sources but no StdIn parameter")
-		void needsStdIn() {
-			ExecutionResults results = executeTestMethodWithParameterTypes(StdIoExtensionConfigurations.class,
-				"noStdIn", StdOut.class.getName());
-
-			assertThat(results)
-					.hasSingleFailedTest()// TODO: single?
-					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage(format(
-						"Method has no %s parameter but input sources were provided in the %s annotation (Did you forget to add a test parameter?).",
-						StdIn.class.getName(), StdIo.class.getName()));
-		}
-
-	}
 
 	@Nested
 	@DisplayName("with standard configuration ")
@@ -143,7 +69,7 @@ public class StdIoExtensionTests {
 
 		@Test
 		@DisplayName("catches empty input and reads nothing")
-		@StdIo
+		@StdIo("")
 		void catchesNothing(StdIn in) {
 			assertThatCode(app::read).doesNotThrowAnyException();
 			assertThat(in.capturedLines()).containsExactly("");
@@ -187,6 +113,8 @@ public class StdIoExtensionTests {
 			String line = reader.readLine();
 			System.out.println(line);
 
+			// even though `BufferedReader::readLine` was called just once,
+			// all three lines were read because the reader buffers
 			assertThat(in.capturedLines()).containsExactlyInAnyOrder("line1", "line2", "line3");
 			assertThat(out.capturedLines()).containsExactlyInAnyOrder("line1");
 
@@ -249,10 +177,30 @@ public class StdIoExtensionTests {
 
 	}
 
-	// We use the @ExtendWith to test that the @StdIo annotation is required in every scenario,
-	// essentially ensuring this is considered a wrong configuration.
-	@ExtendWith(StdIoExtension.class)
-	static class StdIoExtensionConfigurations {
+	@Nested
+	@DisplayName("when configured ")
+	class ConfigurationTests {
+
+		@Test
+		@DisplayName("correctly, no exception is thrown")
+		void correctConfigurations() {
+			ExecutionResults results = executeTestClass(CorrectConfigurations.class);
+
+			assertThat(results).hasNumberOfStartedTests(3).hasNumberOfSucceededTests(3);
+		}
+
+		@Test
+		@DisplayName("without input but StdIn parameter, an exception is thrown")
+		void withoutInputWithStdInParameter() {
+			ExecutionResults results = executeTestMethodWithParameterTypes(IllegalConfigurations.class,
+				"noInputButStdIn", "org.junitpioneer.jupiter.StdIn");
+
+			assertThat(results).hasSingleFailedTest();
+		}
+
+	}
+
+	static class CorrectConfigurations {
 
 		@Test
 		@StdIo
@@ -261,25 +209,21 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo
-		void badType(Boolean b) {
-		}
-
-		@Test
-		void noAnnotation(StdIn in) {
-		}
-
-		@Test
-		@StdIo("value")
 		void noStdIn(StdOut out) {
+		}
+
+		@Test
+		@StdIo("Hello, World")
+		void noStdOut(StdIn in) {
 		}
 
 	}
 
-	static class NotAnnotatedStdIoExtensionConfiguration {
+	static class IllegalConfigurations {
 
 		@Test
-		void noAnnotation(StdOut out) {
-			fail("This should never execute");
+		@StdIo
+		void noInputButStdIn(StdIn in) {
 		}
 
 	}
