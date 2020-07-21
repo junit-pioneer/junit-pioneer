@@ -10,16 +10,12 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_ABORTED;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
-
-import java.util.List;
-import java.util.Map;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -40,11 +36,7 @@ public class ReportEntryExtensionTests {
 	void explicitKey_keyAndValueAreReported() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "explicitKey");
 
-		List<Map<String, String>> reportEntries = results.reportEntries();
-		assertThat(reportEntries).hasSize(1);
-		Map<String, String> reportEntry = reportEntries.get(0);
-		assertThat(reportEntry).hasSize(1);
-		assertThat(reportEntry).containsExactly(TestUtils.entryOf("Crow2", "While I pondered weak and weary"));
+		assertThat(results).hasSingleReportEntry().withKeyAndValue("Crow2", "While I pondered weak and weary");
 	}
 
 	@Test
@@ -52,12 +44,7 @@ public class ReportEntryExtensionTests {
 	void implicitKey_keyIsNamedValue() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "implicitKey");
 
-		List<Map<String, String>> reportEntries = results.reportEntries();
-		assertThat(reportEntries).hasSize(1);
-		assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
-			assertThat(reportEntry).hasSize(1);
-			assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Once upon a midnight dreary"));
-		});
+		assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "Once upon a midnight dreary");
 	}
 
 	@Test
@@ -65,9 +52,10 @@ public class ReportEntryExtensionTests {
 	void emptyKey_fails() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "emptyKey");
 
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
-		assertThat(results.firstFailuresThrowableMessage())
-				.contains("Report entries can't have blank key or value",
+		assertThat(results)
+				.hasSingleFailedTest()
+				.withException()
+				.hasMessageContainingAll("Report entries can't have blank key or value",
 					"Over many a quaint and curious volume of forgotten lore");
 	}
 
@@ -76,9 +64,11 @@ public class ReportEntryExtensionTests {
 	void emptyValue_fails() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "emptyValue");
 
-		assertThat(results.numberOfFailedTests()).isEqualTo(1);
-		assertThat(results.firstFailuresThrowableMessage())
-				.contains("Report entries can't have blank key or value", "While I nodded, nearly napping");
+		assertThat(results)
+				.hasSingleFailedTest()
+				.withException()
+				.hasMessageContainingAll("Report entries can't have blank key or value",
+					"While I nodded, nearly napping");
 	}
 
 	@Test
@@ -86,15 +76,10 @@ public class ReportEntryExtensionTests {
 	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeatedAnnotation");
 
-		List<Map<String, String>> reportEntries = results.reportEntries();
-
-		assertAll("Verifying report entries " + reportEntries, //
-			() -> assertThat(reportEntries).hasSize(3),
-			() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1, 1),
-			() -> assertThat(reportEntries)
-					.extracting(entry -> entry.get("value"))
-					.containsExactlyInAnyOrder("suddenly there came a tapping", "As if some one gently rapping",
-						"rapping at my chamber door"));
+		assertThat(results)
+				.hasNumberOfReportEntries(3)
+				.withValues("suddenly there came a tapping", "As if some one gently rapping",
+					"rapping at my chamber door");
 	}
 
 	@Nested
@@ -110,14 +95,8 @@ public class ReportEntryExtensionTests {
 			void successfulTest_logsMessage() {
 				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_success");
 
-				List<Map<String, String>> successReportEntries = results.reportEntries();
-
-				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
-				assertThat(successReportEntries.get(0)).satisfies(reportEntry -> {
-					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry)
-							.containsExactly(TestUtils.entryOf("value", "'Tis some visitor', I muttered"));
-				});
+				assertThat(results).hasSingleSucceededTest();
+				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "'Tis some visitor', I muttered");
 			}
 
 			@Test
@@ -125,14 +104,8 @@ public class ReportEntryExtensionTests {
 			void failingTest_logsMessage() {
 				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_failure");
 
-				List<Map<String, String>> failureReportEntries = results.reportEntries();
-
-				assertThat(results.numberOfFailedTests()).isEqualTo(1);
-				assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
-					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry)
-							.containsExactly(TestUtils.entryOf("value", "'Tapping at my chamber door' -"));
-				});
+				assertThat(results).hasSingleFailedTest();
+				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "'Tapping at my chamber door' -");
 			}
 
 			@Test
@@ -140,14 +113,8 @@ public class ReportEntryExtensionTests {
 			void abortedTest_logsMessage() {
 				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_aborted");
 
-				List<Map<String, String>> failureReportEntries = results.reportEntries();
-
-				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
-				assertThat(failureReportEntries.get(0)).satisfies(reportEntry -> {
-					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry)
-							.containsExactly(TestUtils.entryOf("value", "'Only this and nothing more.'"));
-				});
+				assertThat(results).hasSingleAbortedTest();
+				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "'Only this and nothing more.'");
 			}
 
 			@Test
@@ -155,10 +122,8 @@ public class ReportEntryExtensionTests {
 			void disabledTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_disabled");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfStartedTests()).isEqualTo(0);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleSkippedTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 		}
@@ -173,13 +138,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onSuccess_success");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
-				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
-					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "it was in the bleak December"));
-				});
+				assertThat(results).hasSingleSucceededTest();
+				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "it was in the bleak December");
 			}
 
 			@Test
@@ -188,10 +148,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onSuccess_failure");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfFailedTests()).isEqualTo(1);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleFailedTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 			@Test
@@ -200,10 +158,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onSuccess_aborted");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleAbortedTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 			@Test
@@ -212,10 +168,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onSuccess_disabled");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfStartedTests()).isEqualTo(0);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleSkippedTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 		}
@@ -230,10 +184,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onFailure_success");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleSucceededTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 			@Test
@@ -242,13 +194,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onFailure_failure");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfFailedTests()).isEqualTo(1);
-				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
-					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry).containsExactly(TestUtils.entryOf("value", "Nameless here for evermore."));
-				});
+				assertThat(results).hasSingleFailedTest();
+				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "Nameless here for evermore.");
 			}
 
 			@Test
@@ -257,10 +204,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onFailure_aborted");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleAbortedTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 			@Test
@@ -269,10 +214,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onFailure_disabled");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfStartedTests()).isEqualTo(0);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleSkippedTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 		}
@@ -287,10 +230,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onAborted_success");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleSucceededTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 			@Test
@@ -299,10 +240,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onAborted_failure");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfFailedTests()).isEqualTo(1);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleFailedTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 			@Test
@@ -311,15 +250,9 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onAborted_aborted");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
-				assertThat(reportEntries.get(0)).satisfies(reportEntry -> {
-					assertThat(reportEntry).hasSize(1);
-					assertThat(reportEntry)
-							.containsExactly(TestUtils
-									.entryOf("value", "Some late visitor entreating entrance at my chamber door;—"));
-				});
+				assertThat(results)
+						.hasSingleReportEntry()
+						.withKeyAndValue("value", "Some late visitor entreating entrance at my chamber door;—");
 			}
 
 			@Test
@@ -328,10 +261,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "onAborted_disabled");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfStartedTests()).isEqualTo(0);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleSkippedTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 		}
@@ -346,17 +277,11 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "repeated_success");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfSucceededTests()).isEqualTo(1);
-				assertAll("Verifying report entries " + reportEntries, //
-					() -> assertThat(reportEntries).hasSize(2),
-					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
-					() -> assertThat(reportEntries)
-							.extracting(entry -> entry.get("value"))
-							.containsExactlyInAnyOrder(
-								"Deep into that darkness peering, long I stood there wondering, fearing,",
-								"Doubting, dreaming dreams no mortal ever dared to dream before;"));
+				assertThat(results).hasSingleSucceededTest();
+				assertThat(results)
+						.hasNumberOfReportEntries(2)
+						.withValues("Deep into that darkness peering, long I stood there wondering, fearing,",
+							"Doubting, dreaming dreams no mortal ever dared to dream before;");
 			}
 
 			@Test
@@ -365,17 +290,11 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "repeated_failure");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfFailedTests()).isEqualTo(1);
-				assertAll("Verifying report entries " + reportEntries, //
-					() -> assertThat(reportEntries).hasSize(2),
-					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
-					() -> assertThat(reportEntries)
-							.extracting(entry -> entry.get("value"))
-							.containsExactlyInAnyOrder(
-								"And the only word there spoken was the whispered word, “Lenore?”",
-								"murmured back the word, “Lenore!”—"));
+				assertThat(results).hasSingleFailedTest();
+				assertThat(results)
+						.hasNumberOfReportEntries(2)
+						.withValues("And the only word there spoken was the whispered word, “Lenore?”",
+							"murmured back the word, “Lenore!”—");
 			}
 
 			@Test
@@ -384,16 +303,11 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "repeated_aborted");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfAbortedTests()).isEqualTo(1);
-				assertAll("Verifying report entries " + reportEntries, //
-					() -> assertThat(reportEntries).hasSize(2),
-					() -> assertThat(reportEntries).extracting(Map::size).containsExactlyInAnyOrder(1, 1),
-					() -> assertThat(reportEntries)
-							.extracting(entry -> entry.get("value"))
-							.containsExactlyInAnyOrder("Back into the chamber turning, all my soul within me burning,",
-								"“surely that is something at my window lattice;"));
+				assertThat(results).hasSingleAbortedTest();
+				assertThat(results)
+						.hasNumberOfReportEntries(2)
+						.withValues("Back into the chamber turning, all my soul within me burning,",
+							"“surely that is something at my window lattice;");
 			}
 
 			@Test
@@ -402,10 +316,8 @@ public class ReportEntryExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethod(ReportEntriesTest.class, "repeated_disabled");
 
-				List<Map<String, String>> reportEntries = results.reportEntries();
-
-				assertThat(results.numberOfStartedTests()).isEqualTo(0);
-				assertThat(reportEntries).isEmpty();
+				assertThat(results).hasSingleSkippedTest();
+				assertThat(results).hasNoReportEntries();
 			}
 
 		}

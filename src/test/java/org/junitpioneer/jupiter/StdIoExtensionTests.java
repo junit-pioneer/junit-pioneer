@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,8 +57,9 @@ public class StdIoExtensionTests {
 		void needsParameter() {
 			ExecutionResults results = executeTestMethod(StdIoExtensionConfigurations.class, "noParameter");
 
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ExtensionConfigurationException.class)
+			assertThat(results)
+					.hasSingleFailedTest()// TODO: single?
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessage(format("Method is annotated with %s but no %s or %s parameters were found.",
 						StdIo.class.getName(), StdIn.class.getName(), StdOut.class.getName()));
 		}
@@ -68,10 +70,7 @@ public class StdIoExtensionTests {
 			ExecutionResults results = executeTestMethodWithParameterTypes(StdIoExtensionConfigurations.class,
 				"badType", Boolean.class.getName());
 
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage(format("Method is annotated with %s but no %s or %s parameters were found.",
-						StdIo.class.getName(), StdIn.class.getName(), StdOut.class.getName()));
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
 		@Test
@@ -80,8 +79,9 @@ public class StdIoExtensionTests {
 			ExecutionResults results = executeTestMethodWithParameterTypes(
 				NotAnnotatedStdIoExtensionConfiguration.class, "noAnnotation", StdOut.class.getName());
 
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ParameterResolutionException.class)
+			assertThat(results)
+					.hasSingleFailedTest()// TODO: single?
+					.withExceptionInstanceOf(ParameterResolutionException.class)
 					.hasMessageStartingWith("No ParameterResolver registered");
 		}
 
@@ -91,9 +91,10 @@ public class StdIoExtensionTests {
 			ExecutionResults results = executeTestMethodWithParameterTypes(StdIoExtensionConfigurations.class,
 				"noAnnotation", StdIn.class.getName());
 
-			assertThat(results.firstFailuresThrowable())
+			assertThat(results)
+					.hasSingleFailedTest()// TODO: single?
 					// This is because the class is annotated with @ExtendWith
-					.isInstanceOf(ExtensionConfigurationException.class)
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessage(
 						format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName()));
 		}
@@ -104,8 +105,9 @@ public class StdIoExtensionTests {
 			ExecutionResults results = executeTestMethodWithParameterTypes(StdIoExtensionConfigurations.class,
 				"noStdIn", StdOut.class.getName());
 
-			assertThat(results.firstFailuresThrowable())
-					.isInstanceOf(ExtensionConfigurationException.class)
+			assertThat(results)
+					.hasSingleFailedTest()// TODO: single?
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessage(format(
 						"Method has no %s parameter but input sources were provided in the %s annotation (Did you forget to add a test parameter?).",
 						StdIn.class.getName(), StdIo.class.getName()));
