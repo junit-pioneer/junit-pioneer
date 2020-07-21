@@ -1,15 +1,19 @@
 :page-title: Standard input/output
 :page-description: JUnit Jupiter extension for simulating standard input or catching standard output.
 
-The `StdIoExtension` adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out`).
+The standard IO extension adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out`).
 
 WARNING: The extension redirects the standard input/output and nothing gets forwarded to `System.in` or `System.out`.
+This becomes particularly important when running tests in parallel, where other tests may interfere with tests annotated with `StdIo`.
 
 == Basic use
 
-The extension consists of two parts which must be used together:
-An annotation (`@StdIo`) and special parameters (`StdIn` and `StdOut`).
-To use a parameter, you have to use the annotation and if you use the annotation, you have to use a parameter.
+The extension consists of two parts:
+
+* the annotation `@StdIo`, which allows defining input that is read from `System.in`
+* special parameters `StdIn` and `StdOut`, which allow capturing lines read from `System.in` or written to `System.out`
+
+To use a parameter, you have to use the annotation, but if you only use the annotation to define input, then no parameter is needed.
 The extension provides the following two parameters:
 
 StdIn(`org.junitpioneer.jupiter.StdIoExtension.StdIn`)::
@@ -58,7 +62,6 @@ The following scenarios lead to bad configurations:
 
 - Having a test method annotated with `@StdIo` that does not have `StdIn` or `StdOut` parameters
 - Having a test method with `StdIn` or `StdOut` parameters that is not annotated with `@StdIo`
-- Supplying values to the `@StdIo` annotation on a test method that does not have an `StdIn` parameter
 
 The `StdIn` and `StdOut` classes both contain the `capturedLines()` method that returns the lines read by `StdIn` or written to `StdOut`.
 This array contains the redirected in- or output as lines.
@@ -66,6 +69,8 @@ This can be used to verify interactions.
 
 For example, after calling `System.out.print("Hello")` and `System.out.println("World")`,  the `capturedLines()` method would contain an array of the String "HelloWorld".
 Note that the first method does not print a line break.
+
+== Unexpected behavior with eager/buffering readers
 
 Some readers read all lines from `StdIo` eagerly (e.g.: `BufferedReader`) which can lead to unexpected behavior.
 Take the following example:
@@ -109,5 +114,5 @@ class ExampleConsoleReaderTest {
 }
 ----
 
-The underlying reader (`BufferedReader`) eagerly reads all three supplied lines during the first `readLine` call.
+The underlying `BufferedReader` eagerly reads all three supplied lines during the first `readLine` call in the loop (that's why it's called _buffered_ reader).
 This means that the assertion fails, because `in.capturedLines()` contains three lines - even though `consoleReader.lines` only contains two.

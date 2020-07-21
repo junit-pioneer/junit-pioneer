@@ -18,16 +18,14 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Marks a method to be extended with {@link StdIoExtension} and provided with
- * {@link StdIn StdIn} or {@link StdOut StdOut}.
- * The annotated method must take one or both parameters or an
- * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will be thrown.
+ * Allows specifying the input that's read from {@code System.in} as well as capturing
+ * lines read from {@code System.in} (with parameter {@link StdIn}) or
+ * written to {@code System.out} (with parameter {@link StdOut StdOut}).
  *
- * Provide values that the {@link StdIoExtension extension} will read instead of reading the
- * standard input ({@code System.in}).
- * If values are provided but there is no {@link StdIn} parameter
- * an {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will be thrown.
- * The opposite is not true to enable testing for empty inputs.
+ * The annotated test method can have zero, one, or both parameters, but {@code StdIn} can only
+ * be provided if {@link StdIo#value()} is used to specify input - otherwise an
+ * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException ExtensionConfigurationException}
+ * will be thrown.
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>.
