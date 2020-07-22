@@ -3,17 +3,17 @@
 **PR checklist**
 
 The following checklist shall help the PR's author, the reviewers and maintainers to ensure the quality of this project.
-It bases on our contributors guidelines, especially the ["writing code" section](https://github.com/junit-pioneer/junit-pioneer/blob/master/CONTRIBUTING.md#writing-code).
+It is based on our contributors guidelines, especially the ["writing code" section](https://github.com/junit-pioneer/junit-pioneer/blob/master/CONTRIBUTING.md#writing-code).
 It shall help to check for completion of the listed points.
 If a point does not apply to the PR changes, the entry can just be marked as done. 
 
 Documentation (general)
  
 * [ ] There is documentation (Javadoc and site documentation; added or updated)
-* [ ] There are implementation information to describe _why_ non-obvious source code / solution got implemented
+* [ ] There is implementation information to describe _why_ a non-obvious source code / solution got implemented
 * [ ] Site documentation has its own `.adoc` file in the `docs` folder, e.g. `docs/report-entries.adoc`
 * [ ] Only one sentence per line (especially in `.adoc` files)
-* [ ] Javadoc uses informal style, while sites documentation uses formal style (see #265)
+* [ ] Javadoc uses formal style, while sites documentation may use informal style (see #265)
 
 Documentation (new extension)
 * [ ] The `docs/docs-nav.yml` navigation has an entry for the new extension
