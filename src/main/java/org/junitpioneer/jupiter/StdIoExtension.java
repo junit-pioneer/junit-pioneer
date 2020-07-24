@@ -33,7 +33,7 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 
 	private static final String SYSTEM_IN_KEY = "StdIo_System_In";
 	private static final String STD_IN_KEY = "StdIo_Std_In";
-	private static final String OUT_KEY = "StdIo_Out";
+	private static final String OUT_KEY = "StdIo_Std_Out";
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
@@ -46,21 +46,18 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 		Class<?> parameterType = parameterContext.getParameter().getType();
 		if (parameterType == StdOut.class)
 			return prepareStdOut(extensionContext);
-		//@formatter:off
-		if (parameterType == StdIn.class)
-			return extensionContext.getStore(NAMESPACE).getOrComputeIfAbsent(
-					STD_IN_KEY,
-					__ -> {
-						String[] source = extensionContext.getRequiredTestMethod().getAnnotation(StdIo.class).value();
-						if (source.length == 0)
-							throw new ExtensionConfigurationException(
-								"@StdIo defined no input, so System.in is still in place and no StdIn parameter can be provided. " +
-										"If you want to define empty input, use `@StdIo(\"\")`.");
-						return createSwapStoreStdIn(extensionContext, source);
-					},
-					StdIn.class);
-		//@formatter:on
-
+		if (parameterType == StdIn.class) {
+			String[] source = extensionContext.getRequiredTestMethod().getAnnotation(StdIo.class).value();
+			if (source.length == 0)
+				throw new ExtensionConfigurationException(
+					"@StdIo defined no input, so System.in is still in place and no StdIn parameter can be provided. "
+							+ "If you want to define empty input, use `@StdIo(\"\")`.");
+			else
+				return extensionContext
+						.getStore(NAMESPACE)
+						.getOrComputeIfAbsent(STD_IN_KEY, __ -> createSwapStoreStdIn(extensionContext, source),
+							StdIn.class);
+		}
 		throw new ParameterResolutionException(format("Could not resolve parameter of type %s.", parameterType));
 	}
 
@@ -94,21 +91,22 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) {
 		final Method method = context.getRequiredTestMethod();
-		if (method.getAnnotation(StdIo.class) == null)
+		if (!method.isAnnotationPresent(StdIo.class))
 			throw new ExtensionConfigurationException(
 				format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName()));
 
 		String[] source = context.getRequiredTestMethod().getAnnotation(StdIo.class).value();
-		if (source.length > 0)
-			context
-					.getStore(NAMESPACE)
-					.getOrComputeIfAbsent(STD_IN_KEY, __ -> createSwapStoreStdIn(context, source), StdIn.class);
+		if (source.length > 0 && context.getStore(NAMESPACE).get(STD_IN_KEY) == null)
+			createSwapStoreStdIn(context, source);
+		if (source.length == 0 && method.getParameterCount() == 0)
+			throw new ExtensionConfigurationException(
+				"StdIoExtension is active but neither System.out or System.in are getting redirected.");
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) {
 		System.setIn(context.getStore(NAMESPACE).getOrDefault(SYSTEM_IN_KEY, InputStream.class, System.in)); //NOSONAR resetting input
-		System.setOut(context.getStore(NAMESPACE).getOrDefault(OUT_KEY, PrintStream.class, System.out));
+		System.setOut(context.getStore(NAMESPACE).getOrDefault(OUT_KEY, PrintStream.class, System.out)); //NOSONAR resetting input
 	}
 
 }

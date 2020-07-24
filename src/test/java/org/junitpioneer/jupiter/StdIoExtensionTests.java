@@ -12,8 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
-import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
+import static org.junitpioneer.testkit.PioneerTestKit.*;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.BufferedReader;
@@ -21,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -88,6 +89,15 @@ public class StdIoExtensionTests {
 					.containsExactly("Yet mortal looks adore his beauty still,", "Attending on his golden pilgrimage:");
 		}
 
+		@Test
+		@DisplayName("catches the input from the standard in, even without StdIn parameter")
+		@StdIo({"But when from highmost pitch, with weary car,", "Like feeble age, he reeleth from the day,", "The eyes, 'fore duteous, now converted are"})
+		void catchesInWithoutParameter() throws IOException {
+			app.read();
+
+			assertThat(app.lines).containsExactlyInAnyOrder("But when from highmost pitch, with weary car,", "Like feeble age, he reeleth from the day,");
+		}
+
 	}
 
 	@Nested
@@ -106,7 +116,7 @@ public class StdIoExtensionTests {
 		@Test
 		@DisplayName("2: System.in and System.out is redirected")
 		@Order(2)
-		@StdIo({ "line1", "line2", "line3" })
+		@StdIo({ "From his low tract, and look another way:", "So thou, thyself outgoing in thy noon" })
 		void redirected(StdIn in, StdOut out) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -114,9 +124,9 @@ public class StdIoExtensionTests {
 			System.out.println(line);
 
 			// even though `BufferedReader::readLine` was called just once,
-			// all three lines were read because the reader buffers
-			assertThat(in.capturedLines()).containsExactlyInAnyOrder("line1", "line2", "line3");
-			assertThat(out.capturedLines()).containsExactlyInAnyOrder("line1");
+			// both lines were read because the reader buffers
+			assertThat(in.capturedLines()).containsExactlyInAnyOrder("From his low tract, and look another way:", "So thou, thyself outgoing in thy noon");
+			assertThat(out.capturedLines()).containsExactlyInAnyOrder("From his low tract, and look another way:");
 
 			assertThat(System.in).isNotEqualTo(STDIN);
 			assertThat(System.out).isNotEqualTo(STDOUT);
@@ -133,13 +143,13 @@ public class StdIoExtensionTests {
 		@Test
 		@DisplayName("4: Only System.in is redirected.")
 		@Order(4)
-		@StdIo({ "line1", "line2" })
+		@StdIo({ "Unlooked on diest unless thou get a son." })
 		void redirected_single_in(StdIn in) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 			reader.readLine();
 
-			assertThat(in.capturedLines()).containsExactlyInAnyOrder("line1", "line2");
+			assertThat(in.capturedLines()).containsExactlyInAnyOrder("Unlooked on diest unless thou get a son.");
 
 			assertThat(System.in).isNotEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
@@ -158,10 +168,10 @@ public class StdIoExtensionTests {
 		@Order(6)
 		@StdIo
 		void redirected_single_out(StdOut out) {
-			System.out.println("line1");
-			System.out.println("line2");
+			System.out.println("Shakespeare");
+			System.out.println("Sonnet VII");
 
-			assertThat(out.capturedLines()).containsExactlyInAnyOrder("line1", "line2");
+			assertThat(out.capturedLines()).containsExactlyInAnyOrder("Shakespeare", "Sonnet VII");
 
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isNotEqualTo(STDOUT);
@@ -198,13 +208,21 @@ public class StdIoExtensionTests {
 			assertThat(results).hasSingleFailedTest();
 		}
 
+		@Test
+		@DisplayName("without input and without parameters, an exception is thrown")
+		void withoutInputAndWithoutParameters() {
+			ExecutionResults results = executeTestMethod(IllegalConfigurations.class, "noParameterAndNoInput");
+
+			assertThat(results).hasSingleFailedTest();
+		}
+
 	}
 
 	static class CorrectConfigurations {
 
 		@Test
-		@StdIo
-		void noParameter() {
+		@StdIo("Redirected output")
+		void noParameterButInput() {
 		}
 
 		@Test
@@ -223,6 +241,11 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo
+		void noParameterAndNoInput() {
+		}
+
+		@Test
+		@StdIo
 		void noInputButStdIn(StdIn in) {
 		}
 
@@ -233,6 +256,8 @@ public class StdIoExtensionTests {
 	 */
 	private static class BasicCommandLineApp {
 
+		private final List<String> lines = new ArrayList<>();
+
 		public void write() {
 			System.out.print("Lo! in the orient ");
 			System.out.println("when the gracious light");
@@ -241,15 +266,15 @@ public class StdIoExtensionTests {
 
 		public void read() throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			String read = reader.readLine();
-			read = reader.readLine();
+			lines.add(reader.readLine());
+			lines.add(reader.readLine());
 		}
 
 		public void readAndWrite() throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			String read = reader.readLine();
+			lines.add(reader.readLine());
 			System.out.println("Yet mortal looks adore his beauty still,");
-			read = reader.readLine();
+			lines.add(reader.readLine());
 			System.out.println("Attending on his golden pilgrimage:");
 		}
 
