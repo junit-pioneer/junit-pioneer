@@ -12,7 +12,9 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.junitpioneer.testkit.PioneerTestKit.*;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.BufferedReader;
@@ -91,11 +93,14 @@ public class StdIoExtensionTests {
 
 		@Test
 		@DisplayName("catches the input from the standard in, even without StdIn parameter")
-		@StdIo({"But when from highmost pitch, with weary car,", "Like feeble age, he reeleth from the day,", "The eyes, 'fore duteous, now converted are"})
+		@StdIo({ "But when from highmost pitch, with weary car,", "Like feeble age, he reeleth from the day,",
+				"The eyes, 'fore duteous, now converted are" })
 		void catchesInWithoutParameter() throws IOException {
 			app.read();
 
-			assertThat(app.lines).containsExactlyInAnyOrder("But when from highmost pitch, with weary car,", "Like feeble age, he reeleth from the day,");
+			assertThat(app.lines)
+					.containsExactlyInAnyOrder("But when from highmost pitch, with weary car,",
+						"Like feeble age, he reeleth from the day,");
 		}
 
 	}
@@ -125,7 +130,9 @@ public class StdIoExtensionTests {
 
 			// even though `BufferedReader::readLine` was called just once,
 			// both lines were read because the reader buffers
-			assertThat(in.capturedLines()).containsExactlyInAnyOrder("From his low tract, and look another way:", "So thou, thyself outgoing in thy noon");
+			assertThat(in.capturedLines())
+					.containsExactlyInAnyOrder("From his low tract, and look another way:",
+						"So thou, thyself outgoing in thy noon");
 			assertThat(out.capturedLines()).containsExactlyInAnyOrder("From his low tract, and look another way:");
 
 			assertThat(System.in).isNotEqualTo(STDIN);
