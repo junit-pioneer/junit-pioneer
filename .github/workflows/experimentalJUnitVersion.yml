@@ -18,8 +18,8 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        junit5: [ '5.0', '5.1', '5.2', '6.0', '6.1', '6.2' ]
-    name: with 5.${{ matrix.junit5 }}
+        junit5Minor: [ '5.0', '5.1', '5.2', '6.0', '6.1', '6.2' ]
+    name: with 5.${{ matrix.junit5Minor }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
@@ -36,5 +36,5 @@ jobs:
       - name: Gradle build
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build -PjunitMinorVersion=${{ matrix.junit5 }}
+          arguments: --refresh-dependencies --stacktrace --scan clean build -PjunitMinorVersion=${{ matrix.junit5Minor }}
           wrapper-cache-enabled: false
