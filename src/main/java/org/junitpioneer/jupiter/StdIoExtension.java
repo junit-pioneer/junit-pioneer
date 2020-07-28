@@ -53,15 +53,19 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 					"@StdIo defined no input, so System.in is still in place and no StdIn parameter can be provided. "
 							+ "If you want to define empty input, use `@StdIo(\"\")`.");
 			else
+				//@formatter:off
 				return extensionContext
 						.getStore(NAMESPACE)
-						.getOrComputeIfAbsent(STD_IN_KEY, __ -> createSwapStoreStdIn(extensionContext, source),
-							StdIn.class);
+						.getOrComputeIfAbsent(
+								STD_IN_KEY,
+								__ -> createSwapStoreStdIn(extensionContext, source),
+								StdIn.class);
+				//@formatter:on
 		}
 		throw new ParameterResolutionException(format("Could not resolve parameter of type %s.", parameterType));
 	}
 
-	private Object prepareStdOut(ExtensionContext context) {
+	private StdOut prepareStdOut(ExtensionContext context) {
 		storeStdOut(context);
 		return createOut();
 	}
@@ -70,7 +74,7 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 		context.getStore(NAMESPACE).put(OUT_KEY, System.out); //NOSONAR never writing to System.out, only storing it
 	}
 
-	private Object createOut() {
+	private StdOut createOut() {
 		StdOut out = new StdOut();
 		System.setOut(new PrintStream(out));
 		return out;
@@ -96,7 +100,8 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 				format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName()));
 
 		String[] source = context.getRequiredTestMethod().getAnnotation(StdIo.class).value();
-		if (source.length > 0 && context.getStore(NAMESPACE).get(STD_IN_KEY) == null)
+		boolean stdInStillInPlace = context.getStore(NAMESPACE).get(STD_IN_KEY) == null;
+		if (source.length > 0 && stdInStillInPlace)
 			createSwapStoreStdIn(context, source);
 		if (source.length == 0 && method.getParameterCount() == 0)
 			throw new ExtensionConfigurationException(
