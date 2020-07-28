@@ -110,6 +110,7 @@ The least we can do is to thank them and list their accomplishments here (in lex
 * [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), added tests to other extensions (#164 / #272), and commented on multiple issues and PRs
 * [Nishant Vashisth](https://github.com/nishantvas) contributed an [extension to disable parameterized tests](https://junit-pioneer.org/docs/disable-if-display-name/) by display name (#163 / #175)
 * [Simon Schrottner](https://github.com/aepfli) contributed to multiple issues and PRs and almost single-handedly revamped the build and QA process (e.g. #192 / #185) before getting promoted to maintainer
+* [Sullis](https://github.com/sullis) improved GitHub Actions with Gradle Wrapper Validation check (#302)
 
 #### 2019
 
