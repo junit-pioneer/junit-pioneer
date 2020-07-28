@@ -53,25 +53,18 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 		verifyKeyNotParameterized(entry);
 	}
 
-	private static void verifyKeyNotParameterized(ReportEntry entry) {
-		if (entry.key().matches(".*\\{[0-9]+}.*")) {
-			String message = "Report entry can not have variables in the key: { key=\"%s\" value=\"%s\" }";
-			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
-		}
-	}
-
 	private static void verifyParameterCount(ExtensionContext context, ReportEntry entry) {
-		if (entry.value().matches(".*\\{[0-9]+}.*")) {
-			int highest = getHighestNumberedParam(entry);
+		boolean valueReferencesNumberedParameter = entry.value().matches(".*\\{[0-9]+}.*");
+		if (valueReferencesNumberedParameter) {
+			int highest = getHighestNumberedParameter(entry);
 			if (context.getRequiredTestMethod().getParameterCount() <= highest) {
 				String message = "Report entry contains unresolved variable(s): { key=\"%s\" value=\"%s\" }";
 				throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
 			}
 		}
-
 	}
 
-	private static int getHighestNumberedParam(ReportEntry entry) {
+	private static int getHighestNumberedParameter(ReportEntry entry) {
 		int highest = 0;
 		Matcher matcher = Pattern.compile("\\{[0-9]+}").matcher(entry.value());
 		while (matcher.find())
@@ -83,6 +76,14 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 	private static void verifyKeyValueAreNotBlank(ReportEntry entry) {
 		if (entry.key().isEmpty() || entry.value().isEmpty()) {
 			String message = "Report entries can't have blank key or value: { key=\"%s\", value=\"%s\" }";
+			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
+		}
+	}
+
+	private static void verifyKeyNotParameterized(ReportEntry entry) {
+		boolean keyReferencesNumberedParameter = entry.key().matches(".*\\{[0-9]+}.*");
+		if (keyReferencesNumberedParameter) {
+			String message = "Report entry can not have variables in the key: { key=\"%s\" value=\"%s\" }";
 			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
 		}
 	}
@@ -104,9 +105,11 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 
 	@Override
 	public void testFailed(ExtensionContext context, Throwable cause) {
-		if (!(cause instanceof ExtensionConfigurationException)) {
+		// we assume that if a message should be logged for failed tests,
+		// then because the test ran and failed - not because it was
+		// configured incorrectly; hence we don't log in this case
+		if (!(cause instanceof ExtensionConfigurationException))
 			publishOnConditions(context, ALWAYS, ON_FAILURE);
-		}
 	}
 
 	private void publishOnConditions(ExtensionContext context, ReportEntry.PublishCondition... conditions) {
