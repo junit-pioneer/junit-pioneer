@@ -116,26 +116,19 @@ Entries will always be published after the test finished.
 
 You can access `@ParameterizedTest` parameter values and publish them with the `@ReportEntry` annotation.
 Add a number (starting from zero) between curly braces to reference the parameter with that index.
+This is in line with how you reference test parameters https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-display-names[when customizing the Display Name of a `ParameterizedTest`]
 Inside the report entry, the parameters can be referenced in any order and multiple times.
 For example, if you have a `@ParameterizedTest` like the following:
 
 [source, java]
 ----
 @ParameterizedTest
-@MethodSource("params")
+@CsvSource({"Hello, 21", "World, 42"})
 @ReportEntry("{1} - {0} - {1}")
 void test(String line, int number) {
     // YOUR TEST CODE HERE
 }
-
-Stream<Arguments> params() {
-    return Stream.of(
-            Arguments.of("Hello", 21),
-            Arguments.of("World", 42);
-    );
-}
-
 ----
-Then the extension will publish `21 - Hello - 21` and `42 - World - 42`.
+Then the extension will publish `"21 - Hello - 21"` and `"42 - World - 42"`.
 
-Accessing test parameters in the key is unsupported.
+Accessing test parameters in the key of the report entry is unsupported.

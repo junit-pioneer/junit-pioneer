@@ -17,16 +17,13 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -570,15 +567,10 @@ public class ReportEntryExtensionTests {
 		}
 
 		@ParameterizedTest
-		@MethodSource("linesAndNumbers")
+		@CsvSource(value = { "Perched, and sat, and nothing more.; 1",
+				"Then this ebony bird beguiling my sad fancy into smiling,; 2" }, delimiter = ';')
 		@ReportEntry("{1} - {1}: {0}")
 		void parameterized_multiple(String line, int number) {
-		}
-
-		private static Stream<Arguments> linesAndNumbers() {
-			return Stream
-					.of(Arguments.of("Perched, and sat, and nothing more.", 1),
-						Arguments.of("Then this ebony bird beguiling my sad fancy into smiling,", 2));
 		}
 
 	}

@@ -54,8 +54,7 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 	}
 
 	private static void verifyParameterCount(ExtensionContext context, ReportEntry entry) {
-		boolean valueReferencesNumberedParameter = entry.value().matches(".*\\{[0-9]+}.*");
-		if (valueReferencesNumberedParameter) {
+		if (hasTestParameterVariables(entry.value())) {
 			int highest = getHighestNumberedParameter(entry);
 			if (context.getRequiredTestMethod().getParameterCount() <= highest) {
 				String message = "Report entry contains unresolved variable(s): { key=\"%s\" value=\"%s\" }";
@@ -68,9 +67,12 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 		int highest = 0;
 		Matcher matcher = Pattern.compile("\\{[0-9]+}").matcher(entry.value());
 		while (matcher.find())
-			highest = Math
-					.max(Integer.parseInt(entry.value().substring(matcher.start() + 1, matcher.end() - 1)), highest);
+			highest = Math.max(getVariableNumber(entry, matcher), highest);
 		return highest;
+	}
+
+	private static int getVariableNumber(ReportEntry entry, Matcher matcher) {
+		return Integer.parseInt(entry.value().substring(matcher.start() + 1, matcher.end() - 1));
 	}
 
 	private static void verifyKeyValueAreNotBlank(ReportEntry entry) {
@@ -81,8 +83,7 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 	}
 
 	private static void verifyKeyNotParameterized(ReportEntry entry) {
-		boolean keyReferencesNumberedParameter = entry.key().matches(".*\\{[0-9]+}.*");
-		if (keyReferencesNumberedParameter) {
+		if (hasTestParameterVariables(entry.key())) {
 			String message = "Report entry can not have variables in the key: { key=\"%s\" value=\"%s\" }";
 			throw new ExtensionConfigurationException(format(message, entry.key(), entry.value()));
 		}
@@ -119,16 +120,20 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 	}
 
 	private String parseVariables(String value, ExtensionContext context) {
-		if (!value.matches(".*\\{.*}.*"))
+		if (!hasTestParameterVariables(value))
 			return value;
 
 		String parsed = value;
-		List list = context.getStore(NAMESPACE).get(KEY, List.class);
+		List<?> list = context.getStore(NAMESPACE).get(KEY, List.class);
 		for (int i = 0; i < list.size(); i++) {
 			parsed = parsed.replaceAll("\\{" + i + "}", list.get(i).toString());
 		}
 
 		return parsed;
+	}
+
+	private static boolean hasTestParameterVariables(String value) {
+		return value.matches(".*\\{[0-9]+}.*");
 	}
 
 	@Override
