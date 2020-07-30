@@ -1,59 +1,163 @@
 :page-title: Standard input/output
 :page-description: JUnit Jupiter extension for simulating standard input or catching standard output.
 
-The `StdIOExtension` adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out`).
+The standard IO extension adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out`).
+
+WARNING: Depending on the configuration, the extension redirects the standard input and/or output, in which case nothing gets forwarded to the original `System.in` and/or `System.out`.
+This becomes particularly important when running tests in parallel, where other tests may interfere with tests annotated with `@StdIo`.
 
 == Basic use
 
-The extension has to be registered with the annotation `@ExtendWith(StdIOExtension.class)`.
-The extension provides the following two parameters:
+The extension consists of two parts:
 
-StdIn(`org.junitpioneer.jupiter.StdIOExtension.StdIn`)::
-This is for simulating input from the standard in.
-This parameter also requires that the method is annotated with `@StdInSource`.
-The `@StdInSource` annotation takes a String array which holds the values that the test will "read" instead of waiting for input on the standard input.
-Each value of the array represents one line of input.
+* The annotation `@StdIo`. It allows defining input that is read from `System.in` without having to wait for user input.
+* Parameters `StdIn` and `StdOut`, which you can have injected into your test. Their `capturedLines()` methods allow you to access lines read from `System.in` or written to `System.out`, so you can verify them with common assertions.
 
-The following example shows how to pass the values `Hello` and `World` as standard input:
+For example, after calling `System.out.println("Hello")` and `System.out.println("World")`,  the `StdOut::capturedLines` method would return an array ["Hello", "World"].
+With `System.out.print("Hello")` and `System.out.println("World")` (note that the first method does not print a line break), it would return `["HelloWorld"]`.
 
+Here's which combinations of this annotation (with or without values for the read lines) and parameters are valid:
+
+`@StdIo("...")`::
+In this case `System.in` gets replaced and the code under test will read the specified lines (in the snippet, that's just the line `"..."`).
++
 [source,java]
 ----
-    @ExtendWith(StdIOExtension.class)
-    public class StandardInputOutputTests {
-        ...
+public class StandardInputOutputTests {
+
     @Test
-    @StdInSource({"Hello", "World"})
+    @StdIo({"Hello", "World"})
+    void test() {
+        // `System.in` is replaced and the code under
+        // test reads lines "Hello" and "World"
+    }
+
+}
+----
+
+`@StdIo("...")` and `StdIn`::
+Like before, but the lines read by the code under test can be verified with the `StdIn` parameter.
++
+[source,java]
+----
+public class StandardInputOutputTests {
+
+    @Test
+    @StdIo({"Hello", "World"})
     void test(StdIn in) {
-        ...
+        // `System.in` is replaced, the code under
+        // test reads lines "Hello" and "World",
+        // and `StdIn` can be used to verify that
+    }
 
+}
 ----
 
-StdOut(`org.junitpioneer.jupiter.StdIOExtension.StdOut`)::
-This is for catching output going to the standard out.
-This parameter does not require any additional annotations except for the `@ExtendWith(StdIOExtension.class)` on your test class (see below).
+`@StdIo` and `StdOut`::
+`System.in` is _not_ replaced (because no input lines are defined), but `System.out` is, so the written lines can be verified with the `StdOut` parameter.
++
+[source,java]
+----
+public class StandardInputOutputTests {
+
+    @Test
+    @StdIo
+    void test(StdOut out) {
+        // `System.out` is replaced, so the written lines
+        // are captured and can be verified with `StdOut`
+    }
+----
+
+`@StdIo("...")` and `StdOut`::
+`System.in` is replaced, so the code can read the input lines and `System.out` is replaced, so the written lines can be verified with the `StdOut` parameter.
++
+[source,java]
+----
+public class StandardInputOutputTests {
+
+    @Test
+    @StdIo()
+    void test(StdOut out) {
+        // `System.in` and `System.out` are replaced
+        // and written lines can be verified with `StdOut`
+    }
+
+}
+----
+
+`@StdIo("...")`, `StdIn`, and `StdOut`::
+A combination of the two previous cases - `System.in` and `System.out` get replaced.
++
+[source,java]
+----
+public class StandardInputOutputTests {
+
+    @Test
+    @StdIo({"Hello", "World"})
+    void test(StdIn in, StdOut out) {
+        // `System.in` is replaced, the code under
+        // test reads lines "Hello" and "World",
+        // and `StdIn` can be used to verify that;
+        // `System.out` is also replaced, so the
+        // written lines can be verified with `StdOut`
+    }
+
+}
+----
+
+The remaining combinations of the annotation, its values, and `StdIn`/`StdOut` are considered misconfigurations and lead to exceptions.
+
+
+== Edge cases and unexpected behavior
+
+=== Empty input (with or without `StdIn`)
+
+Using just `@StdIo` does not redirect `System.in`, which means code reading from it will still block until input is provided and a `StdIn` parameter can't be resolved.
+To have the code under test read empty input and/or use `StdIn` to verify that, use `@StdIo("")`.
+
+=== Unexpected behavior with eager/buffering readers
+
+Some readers read all lines from `StdIo` eagerly (e.g.: `BufferedReader`) which can lead to unexpected behavior.
+Take the following example:
 
 [source,java]
 ----
-    @ExtendWith(StdIOExtension.class)
-    public class StandardInputOutputTests {
-        ...
+class ExampleConsoleReader {
+
+    private List<String> lines = new ArrayList<>();
+
+    public void readLines() {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        for (int i = 0; i < 2; i++) {
+            String line = reader.readLine();
+            lines.add(line);
+        }
+    }
+
+}
+----
+
+This is a straightforward example class.
+It reads two lines from `System.in`, using a `BufferedReader`.
+This is the unit test for this class, using `StdIoExtension`:
+
+[source, java]
+----
+class ExampleConsoleReaderTest {
+
     @Test
-    void test(StdOut out) {
-        ...
+    @StdIo({ "line1", "line2", "line3" })
+    void testReadLines(StdIn in) {
+        ExampleConsoleReader consoleReader = new ExampleConsoleReader();
 
+        consoleReader.readLines();
+
+        // assertEquals(in.capturedLines(), "line1", "line2"); // This is failing
+        // assertEquals(in.capturedLines(), "line1", "line2", "line3"); // This is passing
+    }
+
+}
 ----
 
-The `StdIn` and `StdOut` classes both contain the `capturedLines()` method that returns the lines read by `StdIn` or written by `StdOut`.
-This array contains the redirected in- or output as lines.
-This can be used to verify interactions.
-
-For example, after calling `System.out.print("Hello")` and `System.out.println("World")`,  the `capturedLines()` method would contain an array of the String "HelloWorld".
-Note that the first method does not print a line break.
-
-Some readers read all lines from `@StdInSource` eagerly (e.g.: `BufferedReader`) which can lead to unexpected behaviour.
-This is the specific characteristic  of that reader and is not considered a bug within the extension.
-
-[source]
-----
-IMPORTANT: The extension redirects the standard input/output and nothing gets forwarded to System.in or System.out.
-----
+The underlying `BufferedReader` eagerly reads all three supplied lines during the first `readLine` call in the loop (that's why it's called _buffered_ reader).
+This means that the assertion fails, because `in.capturedLines()` contains three lines - even though `consoleReader.lines` only contains two.
