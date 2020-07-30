@@ -17,7 +17,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, AfterEachCallback {
+class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEachCallback {
 
 	static final String SEPARATOR = System.getProperty("line.separator");
 
@@ -93,7 +93,7 @@ class StdIoExtension implements ParameterResolver, BeforeTestExecutionCallback, 
 	}
 
 	@Override
-	public void beforeTestExecution(ExtensionContext context) {
+	public void beforeEach(ExtensionContext context) {
 		final Method method = context.getRequiredTestMethod();
 		if (!method.isAnnotationPresent(StdIo.class))
 			throw new ExtensionConfigurationException(
