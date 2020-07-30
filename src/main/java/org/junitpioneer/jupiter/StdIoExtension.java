@@ -11,10 +11,10 @@
 package org.junitpioneer.jupiter;
 
 import static java.lang.String.format;
+import static org.junitpioneer.jupiter.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -94,18 +94,18 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		final Method method = context.getRequiredTestMethod();
-		if (!method.isAnnotationPresent(StdIo.class))
+		String[] source = findClosestEnclosingAnnotation(context, StdIo.class)
+				.orElseThrow(() -> new ExtensionConfigurationException(
+					format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName())))
+				.value();
+		boolean testMethodIsParameterless = context.getRequiredTestMethod().getParameterCount() == 0;
+		if (source.length == 0 && testMethodIsParameterless)
 			throw new ExtensionConfigurationException(
-				format("StdIoExtension is active but no %s annotation was found.", StdIo.class.getName()));
+				"StdIoExtension is active but neither System.out or System.in are getting redirected.");
 
-		String[] source = context.getRequiredTestMethod().getAnnotation(StdIo.class).value();
 		boolean stdInStillInPlace = context.getStore(NAMESPACE).get(STD_IN_KEY) == null;
 		if (source.length > 0 && stdInStillInPlace)
 			createSwapStoreStdIn(context, source);
-		if (source.length == 0 && method.getParameterCount() == 0)
-			throw new ExtensionConfigurationException(
-				"StdIoExtension is active but neither System.out or System.in are getting redirected.");
 	}
 
 	@Override
