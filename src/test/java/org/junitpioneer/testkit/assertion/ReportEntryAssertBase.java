@@ -10,20 +10,23 @@
 
 package org.junitpioneer.testkit.assertion;
 
-import org.junitpioneer.testkit.assertion.reportentry.ReportEntryValueAssert;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import org.junitpioneer.testkit.assertion.reportentry.ReportEntryValueAssert;
 
 /**
  * Used to assert a report entries.
  */
-class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase, List<Map.Entry<String, String>>> implements ReportEntryValueAssert {
+class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase, List<Map.Entry<String, String>>>
+		implements ReportEntryValueAssert {
 
 	ReportEntryAssertBase(List<Map.Entry<String, String>> entries, int expected) {
 		super(entries, ReportEntryAssertBase.class, expected);
@@ -55,6 +58,16 @@ class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase,
 			entryList.add(new AbstractMap.SimpleEntry<>(values[i], values[i + 1]));
 		}
 		return entryList;
+	}
+
+	@Override
+	public void asserting(Predicate<Map.Entry<String, String>> predicate) {
+		this.actual.forEach(entry -> assertThat(predicate.test(entry)).isTrue());
+	}
+
+	@Override
+	public void andThen(Consumer<Map.Entry<String, String>> testFunction) {
+		this.actual.forEach(testFunction);
 	}
 
 }

@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_ABORTED;
@@ -78,8 +79,9 @@ public class ReportEntryExtensionTests {
 
 		assertThat(results)
 				.hasNumberOfReportEntries(3)
-				.withValues("suddenly there came a tapping", "As if some one gently rapping",
-					"rapping at my chamber door");
+				.andThen(entry -> assertThat(entry.getValue())
+						.isIn("suddenly there came a tapping", "As if some one gently rapping",
+							"rapping at my chamber door"));
 	}
 
 	@Nested

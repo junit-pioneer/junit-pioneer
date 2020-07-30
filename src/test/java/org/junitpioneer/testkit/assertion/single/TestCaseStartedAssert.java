@@ -11,7 +11,8 @@
 package org.junitpioneer.testkit.assertion.single;
 
 /**
- * This interface contains methods for asserting a single test or a single container.
+ * This interface contains methods for asserting a single test or container
+ * which was already asserted as "started".
  */
 public interface TestCaseStartedAssert {
 

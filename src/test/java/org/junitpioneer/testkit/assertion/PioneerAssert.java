@@ -15,21 +15,31 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ListAssert;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
+import org.junit.platform.testkit.engine.Events;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.assertion.reportentry.ReportEntryValueAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseFailureAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseStartedAssert;
 import org.junitpioneer.testkit.assertion.suite.TestSuiteAssert;
-import org.junitpioneer.testkit.assertion.suite.TestSuiteFailureAssert;
-import org.junitpioneer.testkit.assertion.suite.TestSuiteFailureMessageAssert;
+import org.junitpioneer.testkit.assertion.suite.TestSuiteContainersAssert;
+import org.junitpioneer.testkit.assertion.suite.TestSuiteTestsAssert;
 
-public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults> implements ExecutionResultAssert, TestSuiteFailureAssert {
+public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResults>
+		implements ExecutionResultAssert, TestSuiteAssert, TestSuiteTestsAssert.TestSuiteTestsFailureAssert,
+		TestSuiteContainersAssert.TestSuiteContainersFailureAssert {
+
+	private boolean test = true;
 
 	public static ExecutionResultAssert assertThat(ExecutionResults actual) {
 		return new PioneerAssert(actual);
@@ -135,87 +145,77 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfStartedTests(int expected) {
+	public TestSuiteTestsAssert hasNumberOfStartedTests(int expected) {
 		Assertions.assertThat(actual.testEvents().started().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfFailedTests(int expected) {
+	public TestSuiteTestsFailureAssert hasNumberOfFailedTests(int expected) {
+		this.test = true;
 		Assertions.assertThat(actual.testEvents().failed().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfAbortedTests(int expected) {
+	public TestSuiteTestsAssert hasNumberOfAbortedTests(int expected) {
 		Assertions.assertThat(actual.testEvents().aborted().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfSucceededTests(int expected) {
+	public TestSuiteTestsAssert hasNumberOfSucceededTests(int expected) {
 		Assertions.assertThat(actual.testEvents().succeeded().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfSkippedTests(int expected) {
+	public TestSuiteTestsAssert hasNumberOfSkippedTests(int expected) {
 		Assertions.assertThat(actual.testEvents().skipped().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfDynamicallyRegisteredTests(int expected) {
+	public TestSuiteTestsAssert hasNumberOfDynamicallyRegisteredTests(int expected) {
 		Assertions.assertThat(actual.testEvents().dynamicallyRegistered().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfStartedContainers(int expected) {
+	public TestSuiteContainersAssert hasNumberOfStartedContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().started().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfFailedContainers(int expected) {
+	public TestSuiteContainersFailureAssert hasNumberOfFailedContainers(int expected) {
+		this.test = false;
 		Assertions.assertThat(actual.containerEvents().failed().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfAbortedContainers(int expected) {
+	public TestSuiteContainersAssert hasNumberOfAbortedContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().aborted().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfSucceededContainers(int expected) {
+	public TestSuiteContainersAssert hasNumberOfSucceededContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().succeeded().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfSkippedContainers(int expected) {
+	public TestSuiteContainersAssert hasNumberOfSkippedContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().skipped().count()).isEqualTo(expected);
 		return this;
 	}
 
 	@Override
-	public TestSuiteAssert hasNumberOfDynamicallyRegisteredContainers(int expected) {
+	public TestSuiteContainersAssert hasNumberOfDynamicallyRegisteredContainers(int expected) {
 		Assertions.assertThat(actual.containerEvents().dynamicallyRegistered().count()).isEqualTo(expected);
 		return this;
-	}
-
-	@Override
-	public TestSuiteFailureAssert hasFailingTests() {
-		Assertions.assertThat(actual.testEvents().failed().count()).isGreaterThan(0);
-		return new TestSuiteAssertBase(actual.testEvents());
-	}
-
-	@Override
-	public TestSuiteFailureAssert hasFailingContainers() {
-		Assertions.assertThat(actual.containerEvents().failed().count()).isGreaterThan(0);
-		return new TestSuiteAssertBase(actual.containerEvents());
 	}
 
 	private List<Map<String, String>> reportEntries() {
@@ -230,13 +230,48 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 				.collect(toList());
 	}
 
+	@SafeVarargs
 	@Override
-	public TestSuiteFailureMessageAssert withExceptionInstancesOf(Class<? extends Throwable>... exceptionTypes) {
-		return null;
+	public final ListAssert<String> withExceptionInstancesOf(Class<? extends Throwable>... exceptionTypes) {
+		Events events = getProperEvents();
+		Stream<Class<? extends Throwable>> throwableStream = getAllExceptions(events).map(Throwable::getClass);
+		Assertions.assertThat(throwableStream).containsOnly(exceptionTypes);
+		return new ListAssert<>(getAllExceptions(getProperEvents()).map(Throwable::getMessage));
 	}
 
 	@Override
-	public TestSuiteFailureMessageAssert withExceptions() {
-		return null;
+	public ListAssert<String> withExceptions() {
+		Events events = getProperEvents();
+		Assertions.assertThat(events.failed().count()).isEqualTo(getAllExceptions(events).count());
+		return new ListAssert<>(getAllExceptions(getProperEvents()).map(Throwable::getMessage));
 	}
+
+	private Events getProperEvents() {
+		return this.test ? actual.testEvents() : actual.containerEvents();
+	}
+
+	static Stream<Throwable> getAllExceptions(Events events) {
+		return events
+				.failed()
+				.stream()
+				.map(fail -> fail.getPayload(TestExecutionResult.class))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.map(TestExecutionResult::getThrowable)
+				.filter(Optional::isPresent)
+				.map(Optional::get);
+	}
+
+	@Override
+	public void assertingExceptions(Predicate<List<Throwable>> predicate) {
+		List<Throwable> thrownExceptions = getAllExceptions(getProperEvents()).collect(toList());
+		Assertions.assertThat(predicate.test(thrownExceptions)).isTrue();
+	}
+
+	@Override
+	public void andThenCheckExceptions(Consumer<List<Throwable>> testFunction) {
+		List<Throwable> thrownExceptions = getAllExceptions(getProperEvents()).collect(toList());
+		testFunction.accept(thrownExceptions);
+	}
+
 }

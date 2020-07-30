@@ -13,6 +13,8 @@ package org.junitpioneer.testkit.assertion;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.ThrowableAssert;
@@ -21,7 +23,8 @@ import org.junit.platform.testkit.engine.Events;
 import org.junitpioneer.testkit.assertion.single.TestCaseFailureAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseStartedAssert;
 
-class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Events> implements TestCaseStartedAssert, TestCaseFailureAssert {
+class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Events>
+		implements TestCaseStartedAssert, TestCaseFailureAssert {
 
 	TestCaseAssertBase(Events events) {
 		super(events, TestCaseAssertBase.class, 1);
@@ -30,26 +33,15 @@ class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Event
 	@Override
 	public AbstractThrowableAssert<?, ? extends Throwable> withExceptionInstanceOf(
 			Class<? extends Throwable> exceptionType) {
-		Optional<Throwable> thrown = throwable();
-		assertThat(thrown).isPresent();
-		assertThat(thrown.get()).isInstanceOf(exceptionType);
-		return new ThrowableAssert(thrown.get());
+		Throwable thrown = getRequiredThrowable();
+		assertThat(thrown).isInstanceOf(exceptionType);
+		return new ThrowableAssert(thrown);
 	}
 
 	@Override
 	public AbstractThrowableAssert<?, ? extends Throwable> withException() {
-		Optional<Throwable> thrown = throwable();
-		assertThat(thrown).isPresent();
-		return new ThrowableAssert(thrown.get());
-	}
-
-	private Optional<Throwable> throwable() {
-		return actual
-				.failed()
-				.stream()
-				.findFirst()
-				.flatMap(fail -> fail.getPayload(TestExecutionResult.class))
-				.flatMap(TestExecutionResult::getThrowable);
+		Throwable thrown = getRequiredThrowable();
+		return new ThrowableAssert(thrown);
 	}
 
 	@Override
@@ -66,6 +58,33 @@ class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Event
 	@Override
 	public void whichAborted() {
 		assertThat(actual.aborted().count()).isEqualTo(1);
+	}
+
+	@Override
+	public void withExceptionFulfilling(Predicate<Throwable> predicate) {
+		Throwable thrown = getRequiredThrowable();
+		predicate.test(thrown);
+	}
+
+	@Override
+	public void andThenCheckException(Consumer<Throwable> testFunction) {
+		Throwable thrown = getRequiredThrowable();
+		testFunction.accept(thrown);
+	}
+
+	private Throwable getRequiredThrowable() {
+		Optional<? extends Throwable> thrown = throwable();
+		assertThat(thrown).isPresent();
+		return thrown.get();
+	}
+
+	private Optional<? extends Throwable> throwable() {
+		return actual
+				.failed()
+				.stream()
+				.findFirst()
+				.flatMap(fail -> fail.getPayload(TestExecutionResult.class))
+				.flatMap(TestExecutionResult::getThrowable);
 	}
 
 }

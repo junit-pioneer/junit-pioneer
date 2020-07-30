@@ -10,6 +10,9 @@
 
 package org.junitpioneer.testkit.assertion.single;
 
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import org.assertj.core.api.AbstractThrowableAssert;
 
 /**
@@ -29,5 +32,17 @@ public interface TestCaseFailureAssert {
 	 * @return an {@link AbstractThrowableAssert} for further assertions
 	 */
 	AbstractThrowableAssert<?, ? extends Throwable> withException();
+
+	/**
+	 * Asserts that the test/container threw an exception that fulfills the supplied predicate.
+	 * @param predicate the condition the thrown exception must fulfill
+	 */
+	void withExceptionFulfilling(Predicate<Throwable> predicate);
+
+	/**
+	 * Applies the supplied consumer to the exception thrown by the test/container.
+	 * @param testFunction a consumer, for writing more flexible tests
+	 */
+	void andThenCheckException(Consumer<Throwable> testFunction);
 
 }
