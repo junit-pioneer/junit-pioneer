@@ -12,18 +12,18 @@ As a consequence, instead of disabling the entire set of parameterized tests, ea
 @DisableIfDisplayName(contains = "disable")
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(
-        strings = {
-                "disable who", // ~> disabled
-                "you, disable you", // ~> disabled
-                "why am I disabled", // ~> disabled
-                "what has been disabled must stay disabled", // ~> disabled
-                "fine disable me all you want", // ~> disabled
-                "not those one, though!" // ~> NOT disabled
-        }
+		strings = {
+				"disable who", // ~> disabled
+				"you, disable you", // ~> disabled
+				"why am I disabled", // ~> disabled
+				"what has been disabled must stay disabled", // ~> disabled
+				"fine disable me all you want", // ~> disabled
+				"not those one, though!" // ~> NOT disabled
+		}
 )
 void testExecutionDisabled(String reason) {
-    if (reason.contains("disable"))
-        fail("Test should've been disabled " + reason);
+	if (reason.contains("disable"))
+		fail("Test should've been disabled " + reason);
 }
 ----
 
@@ -35,8 +35,8 @@ You can also specify more than one substring at a time:
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(ints = { 1, 2, 3, 4, 5 })
 void testDisplayNameString(int num) {
-    if (num == 1 || num == 2)
-        fail("Test should've been disabled for " + num);
+	if (num == 1 || num == 2)
+		fail("Test should've been disabled for " + num);
 }
 ----
 
@@ -48,17 +48,17 @@ If substrings are not powerful enough, you can also use regular expressions:
 @DisableIfDisplayName(matches = ".*disabled?\\s.*")
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(
-        strings = {
-                "disable who", // ~> disabled
-                "you, disable you", // ~> disabled
-                "why am I disabled", // ~> NOT disabled
-                "what has been disabled must stay disabled", // ~> disabled
-                "fine disable me all you want", // ~> disabled
-                "not those one, though!" // ~> NOT disabled
-        }
+		strings = {
+				"disable who", // ~> disabled
+				"you, disable you", // ~> disabled
+				"why am I disabled", // ~> NOT disabled
+				"what has been disabled must stay disabled", // ~> disabled
+				"fine disable me all you want", // ~> disabled
+				"not those one, though!" // ~> NOT disabled
+		}
 )
 void single(String reason) {
-    // ...
+	// ...
 }
 ----
 
@@ -70,7 +70,7 @@ You can even use both, in which case a test is disabled if contains a substring 
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
 void containsAndMatches_containsAndMatches(int number) {
-    if (number != 100)
-        fail("Test should've been disabled for " + number);
+	if (number != 100)
+		fail("Test should've been disabled for " + number);
 }
 ----

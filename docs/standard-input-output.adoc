@@ -25,12 +25,12 @@ In this case `System.in` gets replaced and the code under test will read the spe
 ----
 public class StandardInputOutputTests {
 
-    @Test
-    @StdIo({"Hello", "World"})
-    void test() {
-        // `System.in` is replaced and the code under
-        // test reads lines "Hello" and "World"
-    }
+	@Test
+	@StdIo({"Hello", "World"})
+	void test() {
+		// `System.in` is replaced and the code under
+		// test reads lines "Hello" and "World"
+	}
 
 }
 ----
@@ -42,13 +42,13 @@ Like before, but the lines read by the code under test can be verified with the 
 ----
 public class StandardInputOutputTests {
 
-    @Test
-    @StdIo({"Hello", "World"})
-    void test(StdIn in) {
-        // `System.in` is replaced, the code under
-        // test reads lines "Hello" and "World",
-        // and `StdIn` can be used to verify that
-    }
+	@Test
+	@StdIo({"Hello", "World"})
+	void test(StdIn in) {
+		// `System.in` is replaced, the code under
+		// test reads lines "Hello" and "World",
+		// and `StdIn` can be used to verify that
+	}
 
 }
 ----
@@ -60,12 +60,12 @@ public class StandardInputOutputTests {
 ----
 public class StandardInputOutputTests {
 
-    @Test
-    @StdIo
-    void test(StdOut out) {
-        // `System.out` is replaced, so the written lines
-        // are captured and can be verified with `StdOut`
-    }
+	@Test
+	@StdIo
+	void test(StdOut out) {
+		// `System.out` is replaced, so the written lines
+		// are captured and can be verified with `StdOut`
+	}
 ----
 
 `@StdIo("...")` and `StdOut`::
@@ -75,12 +75,12 @@ public class StandardInputOutputTests {
 ----
 public class StandardInputOutputTests {
 
-    @Test
-    @StdIo()
-    void test(StdOut out) {
-        // `System.in` and `System.out` are replaced
-        // and written lines can be verified with `StdOut`
-    }
+	@Test
+	@StdIo()
+	void test(StdOut out) {
+		// `System.in` and `System.out` are replaced
+		// and written lines can be verified with `StdOut`
+	}
 
 }
 ----
@@ -92,15 +92,15 @@ A combination of the two previous cases - `System.in` and `System.out` get repla
 ----
 public class StandardInputOutputTests {
 
-    @Test
-    @StdIo({"Hello", "World"})
-    void test(StdIn in, StdOut out) {
-        // `System.in` is replaced, the code under
-        // test reads lines "Hello" and "World",
-        // and `StdIn` can be used to verify that;
-        // `System.out` is also replaced, so the
-        // written lines can be verified with `StdOut`
-    }
+	@Test
+	@StdIo({"Hello", "World"})
+	void test(StdIn in, StdOut out) {
+		// `System.in` is replaced, the code under
+		// test reads lines "Hello" and "World",
+		// and `StdIn` can be used to verify that;
+		// `System.out` is also replaced, so the
+		// written lines can be verified with `StdOut`
+	}
 
 }
 ----
@@ -124,15 +124,15 @@ Take the following example:
 ----
 class ExampleConsoleReader {
 
-    private List<String> lines = new ArrayList<>();
+	private List<String> lines = new ArrayList<>();
 
-    public void readLines() {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        for (int i = 0; i < 2; i++) {
-            String line = reader.readLine();
-            lines.add(line);
-        }
-    }
+	public void readLines() {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		for (int i = 0; i < 2; i++) {
+			String line = reader.readLine();
+			lines.add(line);
+		}
+	}
 
 }
 ----
@@ -145,16 +145,16 @@ This is the unit test for this class, using `StdIoExtension`:
 ----
 class ExampleConsoleReaderTest {
 
-    @Test
-    @StdIo({ "line1", "line2", "line3" })
-    void testReadLines(StdIn in) {
-        ExampleConsoleReader consoleReader = new ExampleConsoleReader();
+	@Test
+	@StdIo({ "line1", "line2", "line3" })
+	void testReadLines(StdIn in) {
+		ExampleConsoleReader consoleReader = new ExampleConsoleReader();
 
-        consoleReader.readLines();
+		consoleReader.readLines();
 
-        // assertEquals(in.capturedLines(), "line1", "line2"); // This is failing
-        // assertEquals(in.capturedLines(), "line1", "line2", "line3"); // This is passing
-    }
+		// assertEquals(in.capturedLines(), "line1", "line2"); // This is failing
+		// assertEquals(in.capturedLines(), "line1", "line2", "line3"); // This is passing
+	}
 
 }
 ----
