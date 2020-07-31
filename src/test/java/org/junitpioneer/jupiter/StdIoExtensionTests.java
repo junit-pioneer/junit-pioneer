@@ -11,86 +11,46 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junitpioneer.jupiter.StdIOExtension.StdIn;
-import org.junitpioneer.jupiter.StdIOExtension.StdOut;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.PioneerTestKit;
 
 /**
  * Shakespeare's Sonnet VII is in the public domain.
  */
-@DisplayName("StdIOExtension ")
+@DisplayName("StdIoExtension ")
 public class StdIoExtensionTests {
 
-	final BasicCommandLineApp app = new BasicCommandLineApp();
+	private final BasicCommandLineApp app = new BasicCommandLineApp();
+
+	private final static PrintStream STDOUT = System.out;
+	private final static InputStream STDIN = System.in;
 
 	@Nested
-	@DisplayName("with specific configuration ")
-	class ConfigurationTests {
-
-		@Test
-		@DisplayName("fails if the parameter type is not StdIn or StdOut")
-		void needsType() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "badType",
-						Boolean.class.getName());
-
-			assertThat(results)
-					.hasSingleFailedTest()
-					.withExceptionInstanceOf(ParameterResolutionException.class)
-					.hasMessageContaining("No ParameterResolver registered");
-		}
-
-		@Test
-		@DisplayName("fails if the parameter is StdIn but test method is not annotated with @StdInSource")
-		void needsAnnotation() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "noAnnotation",
-						StdIn.class.getName());
-
-			assertThat(results)
-					.hasSingleFailedTest()
-					.withExceptionInstanceOf(ParameterResolutionException.class)
-					.hasMessageContainingAll("Can not resolve test method parameter", "Method has to be annotated");
-		}
-
-		@Test
-		@DisplayName("resolves parameter for type StdIn and annotation")
-		void goodConfig_stdIn() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdIn",
-						StdIn.class.getName());
-			assertThat(results).hasSingleSucceededTest();
-		}
-
-		@Test
-		@DisplayName("resolves parameter for type StdOut")
-		void goodConfig_stdOut() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(StdIOExtensionConfigurations.class, "resolveStdOut",
-						StdOut.class.getName());
-			assertThat(results).hasSingleSucceededTest();
-		}
-
-	}
-
-	@Nested
-	@ExtendWith(StdIOExtension.class)
-	class ExtendWithTests {
+	@DisplayName("with standard configuration ")
+	class StdIoTests {
 
 		@Test
 		@DisplayName("catches the output on the standard out as lines")
+		@StdIo
 		void catchesOut(StdOut out) {
 			app.write();
 
@@ -101,7 +61,7 @@ public class StdIoExtensionTests {
 
 		@Test
 		@DisplayName("catches the input from the standard in")
-		@StdInSource({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
+		@StdIo({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
 		void catchesIn(StdIn in) throws IOException {
 			app.read();
 
@@ -111,8 +71,16 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
+		@DisplayName("catches empty input and reads nothing")
+		@StdIo("")
+		void catchesNothing(StdIn in) {
+			assertThatCode(app::read).doesNotThrowAnyException();
+			assertThat(in.capturedLines()).containsExactly("");
+		}
+
+		@Test
 		@DisplayName("catches the input from the standard in and the output on the standard out")
-		@StdInSource({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
+		@StdIo({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
 		void catchesBoth(StdIn in, StdOut out) throws IOException {
 			app.readAndWrite();
 
@@ -123,26 +91,169 @@ public class StdIoExtensionTests {
 					.containsExactly("Yet mortal looks adore his beauty still,", "Attending on his golden pilgrimage:");
 		}
 
+		@Test
+		@DisplayName("catches the input from the standard in, even without StdIn parameter")
+		@StdIo({ "But when from highmost pitch, with weary car,", "Like feeble age, he reeleth from the day,",
+				"The eyes, 'fore duteous, now converted are" })
+		void catchesInWithoutParameter() throws IOException {
+			app.read();
+
+			assertThat(app.lines)
+					.containsExactlyInAnyOrder("But when from highmost pitch, with weary car,",
+						"Like feeble age, he reeleth from the day,");
+		}
+
 	}
 
-	@ExtendWith(StdIOExtension.class)
-	static class StdIOExtensionConfigurations {
+	@Nested
+	@TestMethodOrder(OrderAnnotation.class)
+	@DisplayName("resets the standard in and out ")
+	class ResettingTests {
 
 		@Test
-		void badType(Boolean b) {
+		@DisplayName("1: System.in and System.out is untouched")
+		@Order(1)
+		void untouched() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
 		}
 
 		@Test
-		void noAnnotation(StdIn in) {
+		@DisplayName("2: System.in and System.out is redirected")
+		@Order(2)
+		@StdIo({ "From his low tract, and look another way:", "So thou, thyself outgoing in thy noon" })
+		void redirected(StdIn in, StdOut out) throws IOException {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+			String line = reader.readLine();
+			System.out.println(line);
+
+			// even though `BufferedReader::readLine` was called just once,
+			// both lines were read because the reader buffers
+			assertThat(in.capturedLines())
+					.containsExactlyInAnyOrder("From his low tract, and look another way:",
+						"So thou, thyself outgoing in thy noon");
+			assertThat(out.capturedLines()).containsExactlyInAnyOrder("From his low tract, and look another way:");
+
+			assertThat(System.in).isNotEqualTo(STDIN);
+			assertThat(System.out).isNotEqualTo(STDOUT);
 		}
 
 		@Test
-		@StdInSource("value")
-		void resolveStdIn(StdIn in) {
+		@DisplayName("3: System.in and System.out is reset to their original value")
+		@Order(3)
+		void reset() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
 		}
 
 		@Test
-		void resolveStdOut(StdOut out) {
+		@DisplayName("4: Only System.in is redirected.")
+		@Order(4)
+		@StdIo({ "Unlooked on diest unless thou get a son." })
+		void redirected_single_in(StdIn in) throws IOException {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+			reader.readLine();
+
+			assertThat(in.capturedLines()).containsExactlyInAnyOrder("Unlooked on diest unless thou get a son.");
+
+			assertThat(System.in).isNotEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+		}
+
+		@Test
+		@DisplayName("5: System.in is reset, System.out is unaffected.")
+		@Order(5)
+		void reset_single_in() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+		}
+
+		@Test
+		@DisplayName("6: Only System.out is redirected.")
+		@Order(6)
+		@StdIo
+		void redirected_single_out(StdOut out) {
+			System.out.println("Shakespeare");
+			System.out.println("Sonnet VII");
+
+			assertThat(out.capturedLines()).containsExactlyInAnyOrder("Shakespeare", "Sonnet VII");
+
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isNotEqualTo(STDOUT);
+		}
+
+		@Test
+		@DisplayName("7: System.out is reset, System.in is unaffected.")
+		@Order(7)
+		void reset_single_out() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+		}
+
+	}
+
+	@Nested
+	@DisplayName("when configured ")
+	class ConfigurationTests {
+
+		@Test
+		@DisplayName("correctly, no exception is thrown")
+		void correctConfigurations() {
+			ExecutionResults results = executeTestClass(CorrectConfigurations.class);
+
+			assertThat(results).hasNumberOfStartedTests(3).hasNumberOfSucceededTests(3);
+		}
+
+		@Test
+		@DisplayName("without input but StdIn parameter, an exception is thrown")
+		void withoutInputWithStdInParameter() {
+			ExecutionResults results = executeTestMethodWithParameterTypes(IllegalConfigurations.class,
+				"noInputButStdIn", "org.junitpioneer.jupiter.StdIn");
+
+			assertThat(results).hasSingleFailedTest();
+		}
+
+		@Test
+		@DisplayName("without input and without parameters, an exception is thrown")
+		void withoutInputAndWithoutParameters() {
+			ExecutionResults results = executeTestMethod(IllegalConfigurations.class, "noParameterAndNoInput");
+
+			assertThat(results).hasSingleFailedTest();
+		}
+
+	}
+
+	static class CorrectConfigurations {
+
+		@Test
+		@StdIo("Redirected output")
+		void noParameterButInput() {
+		}
+
+		@Test
+		@StdIo
+		void noStdIn(StdOut out) {
+		}
+
+		@Test
+		@StdIo("Hello, World")
+		void noStdOut(StdIn in) {
+		}
+
+	}
+
+	static class IllegalConfigurations {
+
+		@Test
+		@StdIo
+		void noParameterAndNoInput() {
+		}
+
+		@Test
+		@StdIo
+		void noInputButStdIn(StdIn in) {
 		}
 
 	}
@@ -152,6 +263,8 @@ public class StdIoExtensionTests {
 	 */
 	private static class BasicCommandLineApp {
 
+		private final List<String> lines = new ArrayList<>();
+
 		public void write() {
 			System.out.print("Lo! in the orient ");
 			System.out.println("when the gracious light");
@@ -160,17 +273,15 @@ public class StdIoExtensionTests {
 
 		public void read() throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			String read = reader.readLine();
-			System.out.println(read);
-			read = reader.readLine();
-			System.out.println(read);
+			lines.add(reader.readLine());
+			lines.add(reader.readLine());
 		}
 
 		public void readAndWrite() throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			String read = reader.readLine();
+			lines.add(reader.readLine());
 			System.out.println("Yet mortal looks adore his beauty still,");
-			read = reader.readLine();
+			lines.add(reader.readLine());
 			System.out.println("Attending on his golden pilgrimage:");
 		}
 
