@@ -43,7 +43,7 @@ The first two executions are marked as ignored/aborted, while the last as failed
 ```java
 @RetryingTest(3)
 void aborted() {
-    // test code that is aborted e.g. because of an Assumption.
+	// test code that is aborted e.g. because of an Assumption.
 }
 ```
 

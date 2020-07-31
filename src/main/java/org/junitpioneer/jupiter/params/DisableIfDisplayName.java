@@ -16,7 +16,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.condition.DisabledIf;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -28,9 +27,9 @@ import org.junit.jupiter.params.ParameterizedTest;
  * {@link ExtensionContext#getDisplayName() display name}.
  *
  * <p>The extension is an {@link ExecutionCondition} that validates dynamically registered tests.
- * Unlike {@link Disabled} or {@link DisabledIf} annotations, this extension doesn't disable
- * the whole test method. With {@code DisableIfDisplayName}, it is possible to selectively disable
- * tests out of the plethora of dynamically registered parameterized tests.</p>
+ * Unlike {@link Disabled} annotations, this extension doesn't disable the whole test method.
+ * With {@code DisableIfDisplayName}, it is possible to selectively disable tests out of the plethora
+ * of dynamically registered parameterized tests.</p>
  *
  * <p>If neither {@link DisableIfDisplayName#contains() contains} nor
  * {@link DisableIfDisplayName#matches() matches} is configured, the extension will throw an exception.
