@@ -1,62 +1,62 @@
 //To leverage Shipkit fully, refer to our Getting Started Guide for help:
 //
-//     https://github.com/mockito/shipkit/blob/master/docs/getting-started.md
+//	 https://github.com/mockito/shipkit/blob/master/docs/getting-started.md
 //
 shipkit {
-    gitHub.repository = 'junit-pioneer/junit-pioneer' // https://github.com/junit-pioneer/junit-pioneer
-    gitHub.readOnlyAuthToken = '584daca204258e2a397d0c029010732a994382dd'
-    gitHub.writeAuthToken = System.getenv('GH_WRITE_TOKEN')
+	gitHub.repository = 'junit-pioneer/junit-pioneer' // https://github.com/junit-pioneer/junit-pioneer
+	gitHub.readOnlyAuthToken = '584daca204258e2a397d0c029010732a994382dd'
+	gitHub.writeAuthToken = System.getenv('GH_WRITE_TOKEN')
 
-    ciManagement.system = 'GitHub Actions'
-    ciManagement.url = 'https://github.com/junit-pioneer/junit-pioneer/actions'
+	ciManagement.system = 'GitHub Actions'
+	ciManagement.url = 'https://github.com/junit-pioneer/junit-pioneer/actions'
 
-    // Needed for uploading to Maven Central
-    team.developers = ['nicolaiparlog:Nicolai Parlog', 'smoyer64:Steve Moyer', 'Bukama:Matthias Bünger', 'aepfli:Simon Schrottner']
-    team.ignoredContributors = ['shipkit-org']
+	// Needed for uploading to Maven Central
+	team.developers = ['nicolaiparlog:Nicolai Parlog', 'smoyer64:Steve Moyer', 'Bukama:Matthias Bünger', 'aepfli:Simon Schrottner']
+	team.ignoredContributors = ['shipkit-org']
 }
 
 allprojects {
-    plugins.withId('org.shipkit.bintray') {
+	plugins.withId('org.shipkit.bintray') {
 
-        bintray {
-            user = System.getenv('BINTRAY_USER_NAME')
-            key = System.getenv('BINTRAY_API_KEY')
+		bintray {
+			user = System.getenv('BINTRAY_USER_NAME')
+			key = System.getenv('BINTRAY_API_KEY')
 
-            pkg {
-                userOrg = 'junit-pioneer' // https://bintray.com/junit-pioneer
-                repo = 'junit-pioneer'    // https://bintray.com/junit-pioneer/junit-pioneer
-                name = 'junit-pioneer'    // https://bintray.com/junit-pioneer/junit-pioneer/junit-pioneer
-                licenses = ['EPL-2.0']
-                vcsUrl = 'https://github.com/junit-pioneer/junit-pioneer.git'
-                labels = ['testing', 'junit', 'extensions']
+			pkg {
+				userOrg = 'junit-pioneer' // https://bintray.com/junit-pioneer
+				repo = 'junit-pioneer'	// https://bintray.com/junit-pioneer/junit-pioneer
+				name = 'junit-pioneer'	// https://bintray.com/junit-pioneer/junit-pioneer/junit-pioneer
+				licenses = ['EPL-2.0']
+				vcsUrl = 'https://github.com/junit-pioneer/junit-pioneer.git'
+				labels = ['testing', 'junit', 'extensions']
 
-                version {
-                    mavenCentralSync {
-                        sync = true
-                        user = System.getenv('NEXUS_TOKEN_USERNAME')
-                        password = System.getenv('NEXUS_TOKEN_PASSWORD')
-                    }
-                }
-            }
-        }
-    }
-    /**
-     * This block is needed, as there is a bug in shipkit and its usage with bintray plugin,
-     *     therefore the version in the pom was always MIT
-     *
-     * @see <a href="https://github.com/mockito/shipkit/issues/755">shipkit#755</a>
-     */
-    plugins.withId("org.shipkit.java-publish") {
-        publishing.publications.javaLibrary.pom.withXml {
-            //refer to Groovy xml Node reference for more info how to manipulate xml
-            asNode().licenses.replaceNode {
-                licenses {
-                    license {
-                        name "Eclipse Public License v2.0"
-                        url "http://www.eclipse.org/legal/epl-v20.html"
-                    }
-                }
-            }
-        }
-    }
+				version {
+					mavenCentralSync {
+						sync = true
+						user = System.getenv('NEXUS_TOKEN_USERNAME')
+						password = System.getenv('NEXUS_TOKEN_PASSWORD')
+					}
+				}
+			}
+		}
+	}
+	/**
+	 * This block is needed, as there is a bug in shipkit and its usage with bintray plugin,
+	 *	 therefore the version in the pom was always MIT
+	 *
+	 * @see <a href="https://github.com/mockito/shipkit/issues/755">shipkit#755</a>
+	 */
+	plugins.withId("org.shipkit.java-publish") {
+		publishing.publications.javaLibrary.pom.withXml {
+			//refer to Groovy xml Node reference for more info how to manipulate xml
+			asNode().licenses.replaceNode {
+				licenses {
+					license {
+						name "Eclipse Public License v2.0"
+						url "http://www.eclipse.org/legal/epl-v20.html"
+					}
+				}
+			}
+		}
+	}
 }

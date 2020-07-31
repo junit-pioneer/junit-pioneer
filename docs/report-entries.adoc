@@ -25,8 +25,8 @@ So, you would use it like this:
 ----
 @Test
 void reportingTest(TestReporter reporter) {
-    // YOUR TEST CODE HERE
-    reporter.publishEntry("Hello World!");
+	// YOUR TEST CODE HERE
+	reporter.publishEntry("Hello World!");
 }
 ----
 
@@ -47,7 +47,7 @@ You can write...
 @Test
 @ReportEntry("Hello World!")
 void reportingTest() {
-    // YOUR TEST CODE HERE
+	// YOUR TEST CODE HERE
 }
 ----
 
@@ -63,7 +63,7 @@ You can declare multiple report entries on the same test (the annotation is repe
 @ReportEntry("foo")
 @ReportEntry("bar")
 void reportingTest() {
-    // YOUR TEST CODE HERE
+	// YOUR TEST CODE HERE
 }
 ----
 
@@ -75,7 +75,7 @@ Just like `TestReporter::publishEntry` accepts a single string as value or a key
 @ReportEntry(key = "line1", value = "Once upon a midnight dreary")
 @ReportEntry(key = "line2", value = "While I pondered weak and weary")
 void edgarAllanPoe() {
-    // YOUR TEST CODE HERE
+	// YOUR TEST CODE HERE
 }
 ----
 
@@ -91,7 +91,7 @@ Just so:
 @Test
 @ReportEntry(key = "line", value = "success entry", when = ReportEntry.PublishCondition.ON_SUCCESS)
 void sufferingFromSuccess() {
-    // YOUR TEST CODE HERE
+	// YOUR TEST CODE HERE
 }
 ----
 

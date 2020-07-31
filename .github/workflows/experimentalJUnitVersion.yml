@@ -1,0 +1,40 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Experimental JUnit5 build
+
+on:
+  push:
+    branches: 'master'
+    tags-ignore:
+      - 'v**'
+      - 'releaseTrigger'
+  pull_request:
+    branches: '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      matrix:
+        junit5Minor: [ '5.0', '5.1', '5.2', '6.0', '6.1', '6.2' ]
+    name: with 5.${{ matrix.junit5Minor }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - name: Gradle build
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: --refresh-dependencies --stacktrace --scan clean build -PjunitMinorVersion=${{ matrix.junit5Minor }}
+          wrapper-cache-enabled: false
