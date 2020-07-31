@@ -210,7 +210,7 @@ public class StdIoExtensionTests {
 		@DisplayName("without input but StdIn parameter, an exception is thrown")
 		void withoutInputWithStdInParameter() {
 			ExecutionResults results = executeTestMethodWithParameterTypes(IllegalConfigurations.class,
-				"noInputButStdIn", "org.junitpioneer.jupiter.StdIn");
+				"noInputButStdIn", StdIn.class);
 
 			assertThat(results).hasSingleFailedTest();
 		}
