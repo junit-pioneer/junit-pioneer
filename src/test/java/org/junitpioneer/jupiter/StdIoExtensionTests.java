@@ -31,12 +31,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junitpioneer.testkit.ExecutionResults;
 
 /**
  * Shakespeare's Sonnet VII is in the public domain.
  */
 @DisplayName("StdIoExtension ")
+@Execution(ExecutionMode.SAME_THREAD)
 public class StdIoExtensionTests {
 
 	private final BasicCommandLineApp app = new BasicCommandLineApp();
