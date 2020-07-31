@@ -15,10 +15,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+
 /**
- * Provide values that the {@link StdIOExtension extension} will read instead of reading the
- * standard input ({@code System.in}).
- * This should be used with {@link org.junitpioneer.jupiter.StdIOExtension.StdIn}.
+ * Allows specifying the input that's read from {@code System.in} as well as capturing
+ * lines read from {@code System.in} (with parameter {@link StdIn}) or
+ * written to {@code System.out} (with parameter {@link StdOut StdOut}).
+ *
+ * The annotated test method can have zero, one, or both parameters, but {@code StdIn} can only
+ * be provided if {@link StdIo#value()} is used to specify input - otherwise an
+ * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException ExtensionConfigurationException}
+ * will be thrown.
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>.
@@ -28,11 +35,14 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface StdInSource {
+@ExtendWith(StdIoExtension.class)
+public @interface StdIo {
 
 	/**
 	 * Provides the intercepted standard input with values.
+	 * If this is not blank, the annotated method can
+	 * have a {@link StdIn} parameter.
 	 */
-	String[] value();
+	String[] value() default {};
 
 }

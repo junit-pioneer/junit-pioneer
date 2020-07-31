@@ -103,7 +103,7 @@ class MyTimeZoneTests {
 	@Test
 	@DefaultTimeZone("America/Los_Angeles")
 	void test_with_method_level_configuration() {
-        assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("America/Los_Angeles"));
+		assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("America/Los_Angeles"));
 	}
 }
 ----
