@@ -20,6 +20,7 @@ interface TestSuiteFailureAssert {
 
 	/**
 	 * Asserts that all thrown exceptions are of certain types.
+	 *
 	 * @param exceptionTypes the exception types you want to check
 	 * @return a {@link ListAssert} for asserting exception messages
 	 */
@@ -27,18 +28,21 @@ interface TestSuiteFailureAssert {
 
 	/**
 	 * Asserts that all failed tests failed because of a Throwable.
+	 *
 	 * @return a {@link ListAssert} for asserting exception messages
 	 */
 	ListAssert<String> withExceptions();
 
 	/**
 	 * Asserts that the thrown exceptions fulfill the condition of the given predicate.
+	 *
 	 * @param predicate the condition the exceptions must fulfill
 	 */
 	void assertingExceptions(Predicate<List<Throwable>> predicate);
 
 	/**
 	 * Applies the supplied consumer to the exceptions thrown by the tests/containers.
+	 *
 	 * @param testFunction a consumer, for writing more flexible tests
 	 */
 	void andThenCheckExceptions(Consumer<List<Throwable>> testFunction);

@@ -22,6 +22,7 @@ public interface TestCaseFailureAssert {
 
 	/**
 	 * Asserts that the test/container failed because of a specific type of exception.
+	 *
 	 * @param exceptionType the expected type of the thrown exception
 	 * @return an {@link AbstractThrowableAssert} for further assertions
 	 */
@@ -29,18 +30,21 @@ public interface TestCaseFailureAssert {
 
 	/**
 	 * Asserts that the test/container failed because an exception was thrown.
+	 *
 	 * @return an {@link AbstractThrowableAssert} for further assertions
 	 */
 	AbstractThrowableAssert<?, ? extends Throwable> withException();
 
 	/**
 	 * Asserts that the test/container threw an exception that fulfills the supplied predicate.
+	 *
 	 * @param predicate the condition the thrown exception must fulfill
 	 */
 	void withExceptionFulfilling(Predicate<Throwable> predicate);
 
 	/**
 	 * Applies the supplied consumer to the exception thrown by the test/container.
+	 *
 	 * @param testFunction a consumer, for writing more flexible tests
 	 */
 	void andThenCheckException(Consumer<Throwable> testFunction);

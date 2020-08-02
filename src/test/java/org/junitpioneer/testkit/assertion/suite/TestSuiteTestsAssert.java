@@ -14,6 +14,7 @@ public interface TestSuiteTestsAssert {
 
 	/**
 	 * Asserts that there were exactly {@code expected} number of started tests.
+	 *
 	 * @param expected the expected number of started tests
 	 * @return a {@code TestSuiteTestsAssert} for further assertions.
 	 */
@@ -21,6 +22,7 @@ public interface TestSuiteTestsAssert {
 
 	/**
 	 * Asserts that there were exactly {@code expected} number of failed tests.
+	 *
 	 * @param expected the expected number of failed tests
 	 * @return a {@code TestSuiteTestsFailureAssert} for further assertions.
 	 */
@@ -28,6 +30,7 @@ public interface TestSuiteTestsAssert {
 
 	/**
 	 * Asserts that there were exactly {@code expected} number of aborted tests.
+	 *
 	 * @param expected the expected number of aborted tests
 	 * @return a {@code TestSuiteTestsAssert} for further assertions.
 	 */
@@ -35,6 +38,7 @@ public interface TestSuiteTestsAssert {
 
 	/**
 	 * Asserts that there were exactly {@code expected} number of succeeded tests.
+	 *
 	 * @param expected the expected number of succeeded tests
 	 * @return a {@code TestSuiteTestsAssert} for further assertions.
 	 */
@@ -42,6 +46,7 @@ public interface TestSuiteTestsAssert {
 
 	/**
 	 * Asserts that there were exactly {@code expected} number of skipped tests.
+	 *
 	 * @param expected the expected number of skipped tests
 	 * @return a {@code TestSuiteTestsAssert} for further assertions.
 	 */
@@ -49,6 +54,7 @@ public interface TestSuiteTestsAssert {
 
 	/**
 	 * Asserts that there were exactly {@code expected} number of dynamically registered tests.
+	 *
 	 * @param expected the expected number of dynamically registered tests
 	 * @return a {@code TestSuiteTestsAssert} for further assertions.
 	 */

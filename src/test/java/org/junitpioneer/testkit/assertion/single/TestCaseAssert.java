@@ -17,12 +17,14 @@ public interface TestCaseAssert {
 
 	/**
 	 * Asserts that there was exactly one started test.
+	 *
 	 * @return a {@link TestCaseStartedAssert} for further assertions
 	 */
 	TestCaseStartedAssert hasSingleStartedTest();
 
 	/**
 	 * Asserts that there was exactly one failed test.
+	 *
 	 * @return a {@link TestCaseFailureAssert} for further assertions
 	 */
 	TestCaseFailureAssert hasSingleFailedTest();
@@ -42,18 +44,47 @@ public interface TestCaseAssert {
 	 */
 	void hasSingleSkippedTest();
 
+	/**
+	 * Asserts that there was exactly one dynamically registered test.
+	 *
+	 * @return a {@link TestCaseStartedAssert} for further assertions
+	 */
 	TestCaseStartedAssert hasSingleDynamicallyRegisteredTest();
 
+	/**
+	 * Asserts that there was exactly one started container.
+	 *
+	 * @return a {@link TestCaseStartedAssert} for further assertions
+	 */
 	TestCaseStartedAssert hasSingleStartedContainer();
 
+	/**
+	 * Asserts that there was exactly one failed container.
+	 *
+	 * @return a {@link TestCaseFailureAssert} for further assertions
+	 */
 	TestCaseFailureAssert hasSingleFailedContainer();
 
+	/**
+	 * Asserts that there was exactly one aborted container.
+	 */
 	void hasSingleAbortedContainer();
 
+	/**
+	 * Asserts that there was exactly one succeeded container.
+	 */
 	void hasSingleSucceededContainer();
 
+	/**
+	 * Asserts that there was exactly one skipped container.
+	 */
 	void hasSingleSkippedContainer();
 
+	/**
+	 * Asserts that there was exactly one aborted container.
+	 *
+	 * @return a {@link TestCaseStartedAssert} for further assertions
+	 */
 	TestCaseStartedAssert hasSingleDynamicallyRegisteredContainer();
 
 }

@@ -28,6 +28,7 @@ public interface TestCaseStartedAssert {
 
 	/**
 	 * Asserts that the test/container has failed.
+	 *
 	 * @return a {@link TestCaseFailureAssert} for further assertions.
 	 */
 	TestCaseFailureAssert whichFailed();

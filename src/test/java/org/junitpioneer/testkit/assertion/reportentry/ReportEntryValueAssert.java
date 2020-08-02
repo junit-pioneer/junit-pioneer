@@ -50,6 +50,11 @@ public interface ReportEntryValueAssert {
 	 */
 	void asserting(Predicate<Map.Entry<String, String>> predicate);
 
+	/**
+	 * Applies the supplied consumer to the report entries reported by the tests/containers.
+	 *
+	 * @param testFunction a consumer, for writing more flexible tests
+	 */
 	void andThen(Consumer<Map.Entry<String, String>> testFunction);
 
 }

@@ -17,6 +17,7 @@ public interface ReportEntryAssert {
 
 	/**
 	 * Asserts that the expected number of report entries were published across all executed tests.
+	 *
 	 * @param expected the number of report entries expected to be published
 	 * @return a {@link ReportEntryValueAssert} for further assertions.
 	 */
@@ -24,6 +25,7 @@ public interface ReportEntryAssert {
 
 	/**
 	 * Asserts that exactly one report entry was published across all executed tests or containers.
+	 *
 	 * @return a {@link ReportEntryValueAssert} for further assertions.
 	 */
 	ReportEntryValueAssert hasSingleReportEntry();
