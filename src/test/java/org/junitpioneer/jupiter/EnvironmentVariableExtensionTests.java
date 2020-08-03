@@ -250,12 +250,14 @@ class EnvironmentVariableExtensionTests {
 	class ReportWarningTests {
 
 		@BeforeEach
-		void resetWarning() {
+		void resetWarning() throws InterruptedException {
+			System.out.println(Thread.currentThread().getName() + " starts");
 			EnvironmentVariableExtension.REPORTED_WARNING.set(false);
 		}
 
 		@Test
 		void shouldNotReportWarningIfExtensionNotUsed() {
+			System.out.println("shouldNotReportWarningIfExtensionNotUsed: " + Thread.currentThread().getName());
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithoutExtension");
 
 			assertThat(results).hasNoReportEntries();
@@ -263,6 +265,7 @@ class EnvironmentVariableExtensionTests {
 
 		@Test
 		void shouldReportWarningIfExtensionUsed() {
+			System.out.println("shouldReportWarningIfExtensionUsed: " + Thread.currentThread().getName());
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithExtension");
 
 			assertThat(results).hasSingleReportEntry().withKeyAndValue(WARNING_KEY, WARNING_VALUE);
@@ -270,6 +273,7 @@ class EnvironmentVariableExtensionTests {
 
 		@Test
 		void shouldReportWarningExactlyOnce() {
+			System.out.println("shouldReportWarningExactlyOnce: " + Thread.currentThread().getName());
 			ExecutionResults results = executeTestClass(ReportWarningTestCases.class);
 
 			assertThat(results).hasSingleReportEntry();
@@ -281,16 +285,19 @@ class EnvironmentVariableExtensionTests {
 
 		@Test
 		void testWithoutExtension() {
+			System.out.println("testWithoutExtension: " + Thread.currentThread().getName());
 		}
 
 		@Test
 		@ClearEnvironmentVariable(key = "set prop A")
 		void testWithExtension() {
+			System.out.println("ClearEnvironmentVariable: " + Thread.currentThread().getName());
 		}
 
 		@Test
 		@ClearEnvironmentVariable(key = "set prop A")
 		void anotherTestWithExtension() {
+			System.out.println("anotherTestWithExtension: " + Thread.currentThread().getName());
 		}
 
 	}

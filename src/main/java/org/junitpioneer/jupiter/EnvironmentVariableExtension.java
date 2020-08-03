@@ -51,6 +51,7 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 
 	private void reportWarning(ExtensionContext context) {
 		boolean wasReported = REPORTED_WARNING.getAndSet(true);
+		System.out.println(Thread.currentThread().getName() + " : " + wasReported);
 		if (!wasReported)
 			context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
 	}

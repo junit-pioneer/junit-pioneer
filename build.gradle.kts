@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+
 plugins {
 	java
 	jacoco
@@ -96,7 +98,8 @@ tasks {
 
 	test {
 		testLogging {
-			setExceptionFormat("full")
+			exceptionFormat = FULL
+			showStandardStreams = true
 		}
 		useJUnitPlatform()
 		filter {
