@@ -240,13 +240,6 @@ class EnvironmentVariableExtensionTests {
 	}
 
 	@Nested
-	// These tests verify whether warnings are reported correctly. For the warnings to be
-	// actually reported, `EnvironmentVariableExtension.REPORTED_WARNING` needs to be reset
-	// to `false` before each test and no other test must run in parallel because it may
-	// generate its own warning, thus setting the flag to `true`, preventing that these
-	// tests here can report anything. To make sure, these tests are not run in parallel
-	// with any other environment-variable-writing test, we apply the following annotation:
-	@WritesEnvironmentVariable
 	class ReportWarningTests {
 
 		@BeforeEach
@@ -255,6 +248,13 @@ class EnvironmentVariableExtensionTests {
 		}
 
 		@Test
+		// These tests verify whether warnings are reported correctly. For the warnings to be
+		// actually reported, `EnvironmentVariableExtension.REPORTED_WARNING` needs to be reset
+		// to `false` before each test and no other test must run in parallel because it may
+		// generate its own warning, thus setting the flag to `true`, preventing that these
+		// tests here can report anything. To make sure, these tests are not run in parallel
+		// with any other environment-variable-writing test, we apply the following annotation:
+		@WritesEnvironmentVariable
 		void shouldNotReportWarningIfExtensionNotUsed() {
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithoutExtension");
 
@@ -262,6 +262,8 @@ class EnvironmentVariableExtensionTests {
 		}
 
 		@Test
+		// see comment above
+		@WritesEnvironmentVariable
 		void shouldReportWarningIfExtensionUsed() {
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithExtension");
 
@@ -269,6 +271,8 @@ class EnvironmentVariableExtensionTests {
 		}
 
 		@Test
+		// see comment above
+		@WritesEnvironmentVariable
 		void shouldReportWarningExactlyOnce() {
 			ExecutionResults results = executeTestClass(ReportWarningTestCases.class);
 
