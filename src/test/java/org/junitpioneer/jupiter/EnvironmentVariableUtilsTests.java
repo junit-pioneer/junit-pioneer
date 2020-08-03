@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 class EnvironmentVariableUtilsTests {
 
 	@Test
+	@WritesEnvironmentVariable
 	void theEnvironmentIsNotCorruptedAfterSet() {
 		EnvironmentVariableUtils.set("A_VARIABLE", "A value");
 
