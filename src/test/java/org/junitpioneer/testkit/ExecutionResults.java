@@ -25,7 +25,11 @@ public class ExecutionResults {
 	EngineExecutionResults executionResults;
 
 	ExecutionResults(Class<?> testClass) {
-		executionResults = EngineTestKit
+		executionResults = getConfiguredJupiterEngine().selectors(DiscoverySelectors.selectClass(testClass)).execute();
+	}
+
+	private EngineTestKit.Builder getConfiguredJupiterEngine() {
+		return EngineTestKit
 				.engine("junit-jupiter")
 				// See comment in src/test/resources/junit-platform.properties
 				//
@@ -38,29 +42,17 @@ public class ExecutionResults {
 				.configurationParameter("junit.jupiter.execution.parallel.mode.default", "concurrent")
 				.configurationParameter("junit.jupiter.execution.parallel.mode.classes.default", "concurrent")
 				.configurationParameter("junit.jupiter.execution.parallel.config.strategy", "dynamic")
-				.configurationParameter("junit.jupiter.execution.parallel.config.dynamic.factor", "1")
-				.selectors(DiscoverySelectors.selectClass(testClass))
-				.execute();
+				.configurationParameter("junit.jupiter.execution.parallel.config.dynamic.factor", "1");
 	}
 
 	ExecutionResults(Class<?> testClass, String testMethodName) {
-		executionResults = EngineTestKit
-				.engine("junit-jupiter")
-				// This disables the parallel execution for the TestKitEngine as it should not be executed by default
-				// Can be removed, when default value is updated by JUnit Jupiter
-				// See https://github.com/junit-team/junit5/issues/2285
-				.configurationParameter("junit.jupiter.execution.parallel.enabled", "false")
+		executionResults = getConfiguredJupiterEngine()
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName))
 				.execute();
 	}
 
 	ExecutionResults(Class<?> testClass, String testMethodName, String methodParameterTypes) {
-		executionResults = EngineTestKit
-				.engine("junit-jupiter")
-				// This disables the parallel execution for the TestKitEngine as it should not be executed by default
-				// Can be removed, when default value is updated by JUnit Jupiter
-				// See https://github.com/junit-team/junit5/issues/2285
-				.configurationParameter("junit.jupiter.execution.parallel.enabled", "false")
+		executionResults = getConfiguredJupiterEngine()
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes))
 				.execute();
 	}
