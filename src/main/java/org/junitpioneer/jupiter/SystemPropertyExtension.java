@@ -55,9 +55,4 @@ class SystemPropertyExtension extends AbstractEntryBasedExtension<String, String
 		System.setProperty(key, value);
 	}
 
-	@Override
-	void reportWarning(ExtensionContext context) {
-		// no warning printing necessary
-	}
-
 }

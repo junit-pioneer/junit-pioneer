@@ -71,15 +71,20 @@ abstract class AbstractEntryBasedExtension<K, V>
 	 */
 	protected abstract void setEntry(K key, V value);
 
-	abstract void reportWarning(ExtensionContext context);
+	/**
+	 * Reports a warning about potentially unsafe practices.
+	 */
+	protected void reportWarning(ExtensionContext context) {
+		// nothing reported by default
+	};
 
 	@Override
-	public void beforeAll(ExtensionContext context) throws Exception {
+	public void beforeAll(ExtensionContext context) {
 		clearAndSetEntries(context);
 	}
 
 	@Override
-	public void beforeEach(ExtensionContext context) throws Exception {
+	public void beforeEach(ExtensionContext context) {
 		clearAndSetEntries(context);
 	}
 
@@ -91,7 +96,6 @@ abstract class AbstractEntryBasedExtension<K, V>
 			entriesToClear = entriesToClear(context);
 			entriesToSet = entriesToSet(context);
 			preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
-			reportWarning(context);
 		}
 		catch (IllegalStateException ex) {
 			throw new ExtensionConfigurationException("Don't clear/set the same entry more than once.", ex);
@@ -100,6 +104,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 		if (entriesToClear.isEmpty() && entriesToSet.isEmpty())
 			return;
 
+		reportWarning(context);
 		storeOriginalEntries(context, entriesToClear, entriesToSet.keySet());
 		clearEntries(entriesToClear);
 		setEntries(entriesToSet);
