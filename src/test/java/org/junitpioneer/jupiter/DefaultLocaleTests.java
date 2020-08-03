@@ -169,6 +169,7 @@ class DefaultLocaleTests {
 
 	}
 
+	@WritesDefaultLocale
 	@Nested
 	@DisplayName("when configured incorrect")
 	class ConfigurationFailureTests {
