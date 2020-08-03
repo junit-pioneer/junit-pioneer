@@ -115,7 +115,7 @@ The `@DefaultLocale` and `@DefaultTimeZone` extensions are prepared for that and
 
 However, this does not cover all possible cases.
 Tested code that reads or writes default locale and time zone _independently_ of the extensions can still run in parallel to them and may thus behave erratically when, for example, it unexpectedly reads a locale set by the extension in another thread.
-Tests that cover code that reads or writes the default locale or time zone, need to be annotated with the respective annotation:
+Tests that cover code that reads or writes the default locale or time zone need to be annotated with the respective annotation:
 
 * `@ReadsDefaultLocale`
 * `@ReadsDefaultTimeZone`

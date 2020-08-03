@@ -69,7 +69,7 @@ The environment variable extension is prepared for that and tests annotated with
 
 However, this does not cover all possible cases.
 Tested code that reads or writes environment variables _independently_ of the extension can still run in parallel to it and may thus behave erratically when, for example, it unexpectedly reads a variable set by the extension in another thread.
-Tests that cover code that reads or writes environment variables, need to be annotated with the respective annotation:
+Tests that cover code that reads or writes environment variables need to be annotated with the respective annotation:
 
 * `@ReadsEnvironmentVariable`
 * `@WritesEnvironmentVariable`

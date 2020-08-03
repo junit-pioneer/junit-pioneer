@@ -64,7 +64,7 @@ The system property extension is prepared for that and tests annotated with `@Cl
 
 However, this does not cover all possible cases.
 Tested code that reads or writes system properties _independently_ of the extension can still run in parallel to it and may thus behave erratically when, for example, it unexpectedly reads a property set by the extension in another thread.
-Tests that cover code that reads or writes system properties, need to be annotated with the respective annotation:
+Tests that cover code that reads or writes system properties need to be annotated with the respective annotation:
 
 * `@ReadsSystemProperty`
 * `@WritesSystemProperty`
