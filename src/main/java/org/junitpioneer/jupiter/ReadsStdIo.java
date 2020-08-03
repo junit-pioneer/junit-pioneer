@@ -20,23 +20,25 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.api.parallel.Resources;
 
 /**
- * Marks tests that read system properties but don't use the system property extension themselves.
+ * Marks tests that read the static fields {@code System.in} or {@code System.out}
+ * but don't call {@code System.setIn()} or {@code System.setOut()}.
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
- * all tests annotated with {@link ClearSystemProperty}, {@link SetSystemProperty}, {@link ReadsSystemProperty}, and {@link WritesSystemProperty}
+ * all tests annotated with {@link StdIo}, {@link ReadsStdIo}, and {@link WritesStdIo}
  * are scheduled in a way that guarantees correctness under mutation of shared global state.
  * </p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on <code>@ClearSystemProperty</code> and <code>@SetSystemProperty</code></a>.
+ * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on Standard input/output</a>.
  * </p>
  *
  * @since 0.7
  */
-@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ)
+@ResourceLock(value = "java.lang.System.in", mode = ResourceAccessMode.READ)
+@ResourceLock(value = Resources.SYSTEM_OUT, mode = ResourceAccessMode.READ)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PACKAGE,
 		ElementType.TYPE })
-public @interface ReadsSystemProperty {
+public @interface ReadsStdIo {
 }

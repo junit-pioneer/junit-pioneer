@@ -16,6 +16,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * Allows specifying the input that's read from {@code System.in} as well as capturing
@@ -27,9 +30,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException ExtensionConfigurationException}
  * will be thrown.
  *
- * <p>This extension is not safe to use during
- * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>.
- * (We're working on it.)
+ * <p>During
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
+ * all tests annotated with {@link StdIo}, {@link ReadsStdIo}, and {@link WritesStdIo}
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.
  * </p>
  *
  * <p>For more details and examples, see
@@ -40,6 +44,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@ResourceLock(value = "java.lang.System.in", mode = ResourceAccessMode.READ_WRITE)
+@ResourceLock(value = Resources.SYSTEM_OUT, mode = ResourceAccessMode.READ_WRITE)
 @ExtendWith(StdIoExtension.class)
 public @interface StdIo {
 
