@@ -17,16 +17,12 @@ import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("EnvironmentVariable extension")
+@WritesEnvironmentVariable
 class EnvironmentVariableExtensionTests {
 
 	@BeforeAll
@@ -239,41 +235,36 @@ class EnvironmentVariableExtensionTests {
 	}
 
 	@Nested
+	// These tests verify whether warnings are reported correctly. For the warnings to be
+	// actually reported, `EnvironmentVariableExtension.REPORTED_WARNING` needs to be reset
+	// to `false` before each test and no other test must run in parallel because it may
+	// generate its own warning, thus setting the flag to `true`, preventing that these
+	// tests here can report anything. To make sure, these tests are not run in parallel
+	// with any other environment-variable-writing test, we apply the following annotation:
+	@WritesEnvironmentVariable
 	class ReportWarningTests {
 
-		@Test
-		// These tests verify whether warnings are reported correctly. For the warnings to be
-		// actually reported, `EnvironmentVariableExtension.REPORTED_WARNING` needs to be reset
-		// to `false` before each test and no other test must run in parallel because it may
-		// generate its own warning, thus setting the flag to `true`, preventing that these
-		// tests here can report anything. To make sure, these tests are not run in parallel
-		// with any other environment-variable-writing test, we apply the following annotation:
-		@WritesEnvironmentVariable
-		void shouldNotReportWarningIfExtensionNotUsed() {
+		@BeforeEach
+		void resetWarning() {
 			EnvironmentVariableExtension.REPORTED_WARNING.set(false);
+		}
 
+		@Test
+		void shouldNotReportWarningIfExtensionNotUsed() {
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithoutExtension");
 
 			assertThat(results).hasNoReportEntries();
 		}
 
 		@Test
-		// see comment above
-		@WritesEnvironmentVariable
 		void shouldReportWarningIfExtensionUsed() {
-			EnvironmentVariableExtension.REPORTED_WARNING.set(false);
-
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithExtension");
 
 			assertThat(results).hasSingleReportEntry().withKeyAndValue(WARNING_KEY, WARNING_VALUE);
 		}
 
 		@Test
-		// see comment above
-		@WritesEnvironmentVariable
 		void shouldReportWarningExactlyOnce() {
-			EnvironmentVariableExtension.REPORTED_WARNING.set(false);
-
 			ExecutionResults results = executeTestClass(ReportWarningTestCases.class);
 
 			assertThat(results).hasSingleReportEntry();
