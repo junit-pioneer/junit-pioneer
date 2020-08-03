@@ -19,7 +19,6 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -242,11 +241,6 @@ class EnvironmentVariableExtensionTests {
 	@Nested
 	class ReportWarningTests {
 
-		@BeforeEach
-		void resetWarning() {
-			EnvironmentVariableExtension.REPORTED_WARNING.set(false);
-		}
-
 		@Test
 		// These tests verify whether warnings are reported correctly. For the warnings to be
 		// actually reported, `EnvironmentVariableExtension.REPORTED_WARNING` needs to be reset
@@ -256,6 +250,8 @@ class EnvironmentVariableExtensionTests {
 		// with any other environment-variable-writing test, we apply the following annotation:
 		@WritesEnvironmentVariable
 		void shouldNotReportWarningIfExtensionNotUsed() {
+			EnvironmentVariableExtension.REPORTED_WARNING.set(false);
+
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithoutExtension");
 
 			assertThat(results).hasNoReportEntries();
@@ -265,6 +261,8 @@ class EnvironmentVariableExtensionTests {
 		// see comment above
 		@WritesEnvironmentVariable
 		void shouldReportWarningIfExtensionUsed() {
+			EnvironmentVariableExtension.REPORTED_WARNING.set(false);
+
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithExtension");
 
 			assertThat(results).hasSingleReportEntry().withKeyAndValue(WARNING_KEY, WARNING_VALUE);
@@ -274,6 +272,8 @@ class EnvironmentVariableExtensionTests {
 		// see comment above
 		@WritesEnvironmentVariable
 		void shouldReportWarningExactlyOnce() {
+			EnvironmentVariableExtension.REPORTED_WARNING.set(false);
+
 			ExecutionResults results = executeTestClass(ReportWarningTestCases.class);
 
 			assertThat(results).hasSingleReportEntry();
