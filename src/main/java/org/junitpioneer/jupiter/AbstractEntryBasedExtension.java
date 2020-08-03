@@ -71,6 +71,8 @@ abstract class AbstractEntryBasedExtension<K, V>
 	 */
 	protected abstract void setEntry(K key, V value);
 
+	abstract void reportWarning(ExtensionContext context);
+
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
 		clearAndSetEntries(context);
@@ -89,6 +91,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 			entriesToClear = entriesToClear(context);
 			entriesToSet = entriesToSet(context);
 			preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
+			reportWarning(context);
 		}
 		catch (IllegalStateException ex) {
 			throw new ExtensionConfigurationException("Don't clear/set the same entry more than once.", ex);
