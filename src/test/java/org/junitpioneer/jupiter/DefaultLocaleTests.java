@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("DefaultLocale extension")
-@WritesDefaultLocale
 class DefaultLocaleTests {
 
 	private static Locale TEST_DEFAULT_LOCALE;

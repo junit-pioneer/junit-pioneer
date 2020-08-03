@@ -145,25 +145,25 @@ class DefaultTimeZoneTests {
 
 	}
 
-	@DefaultTimeZone("GMT-8:00")
+	@DefaultTimeZone("GMT-1:00")
 	static class ClassLevelTestCase {
 
 		@Test
 		@ReadsDefaultTimeZone
 		void shouldExecuteWithClassLevelTimeZone() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-1:00"));
 		}
 
 		@Test
-		@DefaultTimeZone("GMT-12:00")
+		@DefaultTimeZone("GMT-2:00")
 		void shouldBeOverriddenWithMethodLevelTimeZone() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-2:00"));
 		}
 
 	}
 
 	@Nested
-	@DefaultTimeZone("GMT-8:00")
+	@DefaultTimeZone("GMT-3:00")
 	@DisplayName("with nested classes")
 	class NestedDefaultTimeZoneTests {
 
@@ -175,13 +175,13 @@ class DefaultTimeZoneTests {
 			@ReadsDefaultTimeZone
 			@DisplayName("DefaultTimeZone should be set from enclosed class when it is not provided in nested")
 			public void shouldSetTimeZoneFromEnclosedClass() {
-				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-3:00"));
 			}
 
 		}
 
 		@Nested
-		@DefaultTimeZone("GMT-12:00")
+		@DefaultTimeZone("GMT-4:00")
 		@DisplayName("with DefaultTimeZone annotation")
 		class AnnotatedNestedClass {
 
@@ -189,14 +189,14 @@ class DefaultTimeZoneTests {
 			@ReadsDefaultTimeZone
 			@DisplayName("DefaultTimeZone should be set from nested class when it is provided")
 			public void shouldSetTimeZoneFromNestedClass() {
-				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-4:00"));
 			}
 
 			@Test
-			@DefaultTimeZone("GMT-6:00")
+			@DefaultTimeZone("GMT-5:00")
 			@DisplayName("DefaultTimeZone should be set from method when it is provided")
 			public void shouldSetTimeZoneFromMethodOfNestedClass() {
-				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-6:00"));
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-5:00"));
 			}
 
 		}
