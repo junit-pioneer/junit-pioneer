@@ -28,8 +28,6 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("EnvironmentVariable extension")
-// see comment on `ReportWarningTests`
-@WritesEnvironmentVariable
 class EnvironmentVariableExtensionTests {
 
 	@BeforeAll
