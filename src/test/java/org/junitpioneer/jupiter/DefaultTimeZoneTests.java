@@ -55,6 +55,7 @@ class DefaultTimeZoneTests {
 	}
 
 	@Nested
+	@WritesDefaultTimeZone
 	@DisplayName("when applied on the method level")
 	class MethodLevelTests {
 
