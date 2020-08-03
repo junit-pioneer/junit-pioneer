@@ -28,7 +28,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  * </p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable and @SetEnvironmentVariable</code></a>.
+ * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable</code> and <code>@SetEnvironmentVariable</code></a>.
  * </p>
  *
  * @since 0.7
