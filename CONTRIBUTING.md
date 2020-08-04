@@ -299,7 +299,7 @@ JUnit Pioneer uses [Shipkit](http://shipkit.org/) and [GitHub Actions](https://g
 Instead, releases must be triggered manually:
 
 1. make sure that the file [`version-properties`](version.properties) defines the correct version (see next section)
-2. push a tag `releaseTrigger` to `master`
+2. trigger the [`Release` GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3ARelease) manually for the master branch.
 
 GitHub Actions will then tell Shipkit to do its thing and afterwards delete the tag.
 The tag is always deleted, even if the release fails, so it is easy to trigger another one.
