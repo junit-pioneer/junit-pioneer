@@ -16,9 +16,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.ResourceAccessMode;
-import org.junit.jupiter.api.parallel.ResourceLock;
-import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * Allows specifying the input that's read from {@code System.in} as well as capturing
@@ -44,8 +41,7 @@ import org.junit.jupiter.api.parallel.Resources;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@ResourceLock(value = "java.lang.System.in", mode = ResourceAccessMode.READ_WRITE)
-@ResourceLock(value = Resources.SYSTEM_OUT, mode = ResourceAccessMode.READ_WRITE)
+@WritesStdIo
 @ExtendWith(StdIoExtension.class)
 public @interface StdIo {
 

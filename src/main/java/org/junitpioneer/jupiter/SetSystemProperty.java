@@ -17,9 +17,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.ResourceAccessMode;
-import org.junit.jupiter.api.parallel.ResourceLock;
-import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * {@code @SetSystemProperty} is a JUnit Jupiter extension to set the value of a
@@ -49,7 +46,7 @@ import org.junit.jupiter.api.parallel.Resources;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(SetSystemProperty.SetSystemProperties.class)
-@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
+@WritesSystemProperty
 @ExtendWith(SystemPropertyExtension.class)
 public @interface SetSystemProperty {
 
@@ -68,7 +65,7 @@ public @interface SetSystemProperty {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
-	@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
+	@WritesSystemProperty
 	@ExtendWith(SystemPropertyExtension.class)
 	@interface SetSystemProperties {
 

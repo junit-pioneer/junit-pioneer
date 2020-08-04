@@ -17,9 +17,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.ResourceAccessMode;
-import org.junit.jupiter.api.parallel.ResourceLock;
-import org.junit.jupiter.api.parallel.Resources;
 
 /**
  * {@code @ClearSystemProperty} is a JUnit Jupiter extension to clear the value
@@ -48,7 +45,7 @@ import org.junit.jupiter.api.parallel.Resources;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(ClearSystemProperty.ClearSystemProperties.class)
-@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
+@WritesSystemProperty
 @ExtendWith(SystemPropertyExtension.class)
 public @interface ClearSystemProperty {
 
@@ -62,7 +59,7 @@ public @interface ClearSystemProperty {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
-	@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
+	@WritesSystemProperty
 	@ExtendWith(SystemPropertyExtension.class)
 	@interface ClearSystemProperties {
 
