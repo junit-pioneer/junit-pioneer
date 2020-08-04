@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
@@ -66,6 +65,7 @@ class DefaultTimeZoneTests {
 		}
 
 		@Test
+		@ReadsDefaultTimeZone
 		@DisplayName("throws exception on bad configuration")
 		void throwsWhenConfigurationIsBad() {
 			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCase.class, "badConfiguration");
@@ -119,6 +119,7 @@ class DefaultTimeZoneTests {
 		}
 
 		@Test
+		@ReadsDefaultTimeZone
 		@DisplayName("throws when configuration is bad")
 		void shouldThrowWithBadConfiguration() {
 			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
@@ -209,7 +210,6 @@ class DefaultTimeZoneTests {
 		@Test
 		@DefaultTimeZone("Gibberish")
 		void badConfiguration() {
-			fail("This test should never execute");
 		}
 
 	}
@@ -219,7 +219,6 @@ class DefaultTimeZoneTests {
 
 		@Test
 		void badConfiguration() {
-			fail("This test should never execute");
 		}
 
 	}
