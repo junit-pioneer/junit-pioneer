@@ -36,7 +36,7 @@ class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase,
 	public void withKeyAndValue(String key, String value) {
 		if (expected != 1)
 			throw new IllegalArgumentException("Can not verify key and value for non-single report entry!");
-		assertThat(actual).containsExactly(new AbstractMap.SimpleEntry<>(key, value));
+		withKeyValuePairs(key, value);
 	}
 
 	@Override

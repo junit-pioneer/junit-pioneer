@@ -51,17 +51,23 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public ReportEntryValueAssert hasNumberOfReportEntries(int expected) {
-		List<Map<String, String>> entries = reportEntries();
-		Assertions.assertThat(entries).hasSize(expected);
-		Integer[] ones = IntStream.generate(() -> 1).limit(expected).boxed().toArray(Integer[]::new);
-		Assertions.assertThat(entries).extracting(Map::size).containsExactly(ones);
+		try {
+			List<Map<String, String>> entries = reportEntries();
+			Assertions.assertThat(entries).hasSize(expected);
+			Integer[] ones = IntStream.generate(() -> 1).limit(expected).boxed().toArray(Integer[]::new);
+			Assertions.assertThat(entries).extracting(Map::size).containsExactly(ones);
 
-		List<Map.Entry<String, String>> entryList = entries
-				.stream()
-				.flatMap(map -> map.entrySet().stream())
-				.collect(Collectors.toList());
+			List<Map.Entry<String, String>> entryList = entries
+					.stream()
+					.flatMap(map -> map.entrySet().stream())
+					.collect(Collectors.toList());
 
-		return new ReportEntryAssertBase(entryList, expected);
+			return new ReportEntryAssertBase(entryList, expected);
+		}
+		catch (AssertionError error) {
+			getAllExceptions(actual.allEvents().reportingEntryPublished()).forEach(error::addSuppressed);
+			throw error;
+		}
 	}
 
 	@Override
@@ -71,7 +77,13 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public void hasNoReportEntries() {
-		Assertions.assertThat(reportEntries()).isEmpty();
+		try {
+			Assertions.assertThat(reportEntries()).isEmpty();
+		}
+		catch (AssertionError error) {
+			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
+			throw error;
+		}
 	}
 
 	@Override
@@ -86,17 +98,17 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public void hasSingleAbortedTest() {
-		Assertions.assertThat(actual.testEvents().aborted().count()).isEqualTo(1);
+		assertSingleTest(actual.testEvents().aborted().count());
 	}
 
 	@Override
 	public void hasSingleSucceededTest() {
-		Assertions.assertThat(actual.testEvents().succeeded().count()).isEqualTo(1);
+		assertSingleTest(actual.testEvents().succeeded().count());
 	}
 
 	@Override
 	public void hasSingleSkippedTest() {
-		Assertions.assertThat(actual.testEvents().skipped().count()).isEqualTo(1);
+		assertSingleTest(actual.testEvents().skipped().count());
 	}
 
 	@Override
@@ -105,8 +117,14 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	private TestCaseAssertBase assertSingleTest(long numberOfTestsWithOutcome) {
-		Assertions.assertThat(numberOfTestsWithOutcome).isEqualTo(1);
-		return new TestCaseAssertBase(actual.testEvents());
+		try {
+			Assertions.assertThat(numberOfTestsWithOutcome).isEqualTo(1);
+			return new TestCaseAssertBase(actual.testEvents());
+		}
+		catch (AssertionError error) {
+			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
+			throw error;
+		}
 	}
 
 	@Override
@@ -121,17 +139,17 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public void hasSingleAbortedContainer() {
-		Assertions.assertThat(actual.containerEvents().aborted().count()).isEqualTo(1);
+		assertSingleContainer(actual.containerEvents().aborted().count());
 	}
 
 	@Override
 	public void hasSingleSucceededContainer() {
-		Assertions.assertThat(actual.containerEvents().succeeded().count()).isEqualTo(1);
+		assertSingleContainer(actual.containerEvents().succeeded().count());
 	}
 
 	@Override
 	public void hasSingleSkippedContainer() {
-		Assertions.assertThat(actual.containerEvents().skipped().count()).isEqualTo(1);
+		assertSingleContainer(actual.containerEvents().skipped().count());
 	}
 
 	@Override
@@ -140,82 +158,98 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	private TestCaseAssertBase assertSingleContainer(long numberOfContainersWithOutcome) {
-		Assertions.assertThat(numberOfContainersWithOutcome).isEqualTo(1);
-		return new TestCaseAssertBase(actual.containerEvents());
+		try {
+			Assertions.assertThat(numberOfContainersWithOutcome).isEqualTo(1);
+			return new TestCaseAssertBase(actual.containerEvents());
+		}
+		catch (AssertionError error) {
+			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
+			throw error;
+		}
 	}
 
 	@Override
 	public TestSuiteTestsAssert hasNumberOfStartedTests(int expected) {
-		Assertions.assertThat(actual.testEvents().started().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificTests(actual.testEvents().started().count(), expected);
 	}
 
 	@Override
 	public TestSuiteTestsFailureAssert hasNumberOfFailedTests(int expected) {
 		this.test = true;
-		Assertions.assertThat(actual.testEvents().failed().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificTests(actual.testEvents().failed().count(), expected);
 	}
 
 	@Override
 	public TestSuiteTestsAssert hasNumberOfAbortedTests(int expected) {
-		Assertions.assertThat(actual.testEvents().aborted().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificTests(actual.testEvents().aborted().count(), expected);
 	}
 
 	@Override
 	public TestSuiteTestsAssert hasNumberOfSucceededTests(int expected) {
-		Assertions.assertThat(actual.testEvents().succeeded().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificTests(actual.testEvents().succeeded().count(), expected);
 	}
 
 	@Override
 	public TestSuiteTestsAssert hasNumberOfSkippedTests(int expected) {
-		Assertions.assertThat(actual.testEvents().skipped().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificTests(actual.testEvents().skipped().count(), expected);
 	}
 
 	@Override
 	public TestSuiteTestsAssert hasNumberOfDynamicallyRegisteredTests(int expected) {
-		Assertions.assertThat(actual.testEvents().dynamicallyRegistered().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificTests(actual.testEvents().dynamicallyRegistered().count(), expected);
+	}
+
+	private TestSuiteTestsFailureAssert hasNumberOfSpecificTests(long tests, int expected) {
+		try {
+			Assertions.assertThat(tests).isEqualTo(expected);
+			return this;
+		}
+		catch (AssertionError error) {
+			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
+			throw error;
+		}
 	}
 
 	@Override
 	public TestSuiteContainersAssert hasNumberOfStartedContainers(int expected) {
-		Assertions.assertThat(actual.containerEvents().started().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificContainers(actual.containerEvents().started().count(), expected);
 	}
 
 	@Override
 	public TestSuiteContainersFailureAssert hasNumberOfFailedContainers(int expected) {
 		this.test = false;
-		Assertions.assertThat(actual.containerEvents().failed().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificContainers(actual.containerEvents().failed().count(), expected);
 	}
 
 	@Override
 	public TestSuiteContainersAssert hasNumberOfAbortedContainers(int expected) {
-		Assertions.assertThat(actual.containerEvents().aborted().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificContainers(actual.containerEvents().aborted().count(), expected);
 	}
 
 	@Override
 	public TestSuiteContainersAssert hasNumberOfSucceededContainers(int expected) {
-		Assertions.assertThat(actual.containerEvents().succeeded().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificContainers(actual.containerEvents().succeeded().count(), expected);
 	}
 
 	@Override
 	public TestSuiteContainersAssert hasNumberOfSkippedContainers(int expected) {
-		Assertions.assertThat(actual.containerEvents().skipped().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificContainers(actual.containerEvents().skipped().count(), expected);
 	}
 
 	@Override
 	public TestSuiteContainersAssert hasNumberOfDynamicallyRegisteredContainers(int expected) {
-		Assertions.assertThat(actual.containerEvents().dynamicallyRegistered().count()).isEqualTo(expected);
-		return this;
+		return hasNumberOfSpecificContainers(actual.containerEvents().dynamicallyRegistered().count(), expected);
+	}
+
+	private TestSuiteContainersFailureAssert hasNumberOfSpecificContainers(long containers, int expected) {
+		try {
+			Assertions.assertThat(containers).isEqualTo(expected);
+			return this;
+		}
+		catch (AssertionError error) {
+			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
+			throw error;
+		}
 	}
 
 	private List<Map<String, String>> reportEntries() {
@@ -233,17 +267,27 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	@SafeVarargs
 	@Override
 	public final ListAssert<String> withExceptionInstancesOf(Class<? extends Throwable>... exceptionTypes) {
-		Events events = getProperEvents();
-		Stream<Class<? extends Throwable>> throwableStream = getAllExceptions(events).map(Throwable::getClass);
-		Assertions.assertThat(throwableStream).containsOnly(exceptionTypes);
-		return new ListAssert<>(getAllExceptions(getProperEvents()).map(Throwable::getMessage));
+		return assertExceptions(events -> {
+			Stream<Class<? extends Throwable>> classStream = getAllExceptions(events).map(Throwable::getClass);
+			Assertions.assertThat(classStream).containsOnly(exceptionTypes);
+		});
 	}
 
 	@Override
 	public ListAssert<String> withExceptions() {
-		Events events = getProperEvents();
-		Assertions.assertThat(events.failed().count()).isEqualTo(getAllExceptions(events).count());
-		return new ListAssert<>(getAllExceptions(getProperEvents()).map(Throwable::getMessage));
+		return assertExceptions(
+			events -> Assertions.assertThat(events.failed().count()).isEqualTo(getAllExceptions(events).count()));
+	}
+
+	private ListAssert<String> assertExceptions(Consumer<Events> assertion) {
+		try {
+			Events events = getProperEvents();
+			assertion.accept(events);
+			return new ListAssert<>(getAllExceptions(getProperEvents()).map(Throwable::getMessage));
+		} catch (AssertionError error) {
+			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
+			throw error;
+		}
 	}
 
 	private Events getProperEvents() {
@@ -252,7 +296,6 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	static Stream<Throwable> getAllExceptions(Events events) {
 		return events
-				.failed()
 				.stream()
 				.map(fail -> fail.getPayload(TestExecutionResult.class))
 				.filter(Optional::isPresent)
