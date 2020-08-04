@@ -64,8 +64,8 @@ import org.junit.jupiter.api.parallel.Execution;
  */
 @Target({ METHOD, ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-// the extension is not thread-safe, so it forces execution of all retries
-// onto the same thread
+// the extension is inherently thread-unsafe (has to wait for one execution before starting the next),
+// so it forces execution of all retries onto the same thread
 @Execution(SAME_THREAD)
 @ExtendWith(RetryingTestExtension.class)
 @TestTemplate
