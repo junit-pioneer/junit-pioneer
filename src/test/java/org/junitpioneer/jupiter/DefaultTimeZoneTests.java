@@ -77,15 +77,15 @@ class DefaultTimeZoneTests {
 					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
 		}
 
-		@DefaultTimeZone("GMT")
 		@Test
+		@DefaultTimeZone("GMT")
 		@DisplayName("does not throw when explicitly set to GMT")
 		void doesNotThrowForExplicitGmt() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
 		}
 
-		@DefaultTimeZone("CET")
 		@Test
+		@DefaultTimeZone("CET")
 		@DisplayName("sets the default time zone using an abbreviation")
 		void setsTimeZoneFromAbbreviation() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("CET"));
@@ -101,7 +101,6 @@ class DefaultTimeZoneTests {
 	}
 
 	@Nested
-	@WritesDefaultTimeZone
 	@DisplayName("applied on the class level")
 	class ClassLevelTests {
 
@@ -111,6 +110,7 @@ class DefaultTimeZoneTests {
 		}
 
 		@Test
+		@WritesDefaultTimeZone
 		@DisplayName("executes tests with configured TimeZone")
 		void shouldExecuteTestsWithConfiguredTimeZone() {
 			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
@@ -131,6 +131,7 @@ class DefaultTimeZoneTests {
 		}
 
 		@Test
+		@WritesDefaultTimeZone
 		@DisplayName("does not throw when explicitly set to GMT")
 		void shouldNotThrowForExplicitGmt() {
 			ExecutionResults results = executeTestClass(ExplicitGmtClassLevelTestCase.class);
@@ -205,8 +206,8 @@ class DefaultTimeZoneTests {
 
 	static class BadMethodLevelConfigurationTestCase {
 
-		@DefaultTimeZone("Gibberish")
 		@Test
+		@DefaultTimeZone("Gibberish")
 		void badConfiguration() {
 			fail("This test should never execute");
 		}

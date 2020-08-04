@@ -143,6 +143,11 @@ As we see it, the solution would be to force such tests onto a single thread, bu
 While a homegrown solution [is possible](https://github.com/junit-team/junit5/issues/2142#issuecomment-668409251), we wait for the discussion to resolve.
 We hence do not parallelize across top-level classes - just within.
 
+Most extensions verify their configuration at some point.
+It helps with writing parallel tests for them if they do not change global state until the configuration is verified.
+That particularly applies to "store in beforeEach - restore in afterEach"-extensions!
+If they fail after "store", they will still "restore" and thus potentially create a race condition with other tests.
+
 ### Documentation
 
 There are several aspects of this project's documentation.

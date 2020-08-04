@@ -86,7 +86,6 @@ class DefaultLocaleTests {
 
 	}
 
-	@WritesDefaultLocale
 	@Nested
 	@DisplayName("applied on the class level")
 	class ClassLevelTests {
@@ -97,6 +96,7 @@ class DefaultLocaleTests {
 		}
 
 		@Test
+		@WritesDefaultLocale
 		@DisplayName("should execute tests with configured Locale")
 		void shouldExecuteTestsWithConfiguredLocale() {
 			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
@@ -129,8 +129,8 @@ class DefaultLocaleTests {
 	}
 
 	@Nested
-	@DisplayName("with nested classes")
 	@DefaultLocale(language = "en")
+	@DisplayName("with nested classes")
 	class NestedDefaultLocaleTests {
 
 		@Nested
