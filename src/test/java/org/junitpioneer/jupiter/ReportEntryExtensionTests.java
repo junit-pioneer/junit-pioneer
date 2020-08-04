@@ -79,7 +79,7 @@ public class ReportEntryExtensionTests {
 		assertThat(results)
 				.hasNumberOfReportEntries(3)
 				.withValues("suddenly there came a tapping", "As if some one gently rapping",
-						"rapping at my chamber door");
+					"rapping at my chamber door");
 	}
 
 	@Nested

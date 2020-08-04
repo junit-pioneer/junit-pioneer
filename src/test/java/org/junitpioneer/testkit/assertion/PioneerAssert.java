@@ -284,7 +284,8 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 			Events events = getProperEvents();
 			assertion.accept(events);
 			return new ListAssert<>(getAllExceptions(getProperEvents()).map(Throwable::getMessage));
-		} catch (AssertionError error) {
+		}
+		catch (AssertionError error) {
 			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
 			throw error;
 		}
