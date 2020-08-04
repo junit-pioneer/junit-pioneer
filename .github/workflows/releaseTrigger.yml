@@ -2,9 +2,7 @@
 name: Release
 
 on:
-  create:
-    tags:
-      - 'releaseTrigger'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -12,8 +10,6 @@ jobs:
     name: releasing
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: master
       - name: Wait on builds
         uses: lewagon/wait-on-check-action@v0.1-beta.2
         with:
@@ -41,9 +37,6 @@ jobs:
           NEXUS_TOKEN_PASSWORD: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
         with:
           arguments: ciPerformRelease
-      - name: Delete Tag
-        if: ${{ always() }}
-        run: git push --delete origin releaseTrigger
       - name: Trigger Website Build
         uses: peter-evans/repository-dispatch@v1
         with:
