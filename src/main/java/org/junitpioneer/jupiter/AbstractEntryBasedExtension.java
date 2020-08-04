@@ -76,7 +76,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 	 */
 	protected void reportWarning(ExtensionContext context) {
 		// nothing reported by default
-	};
+	}
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
