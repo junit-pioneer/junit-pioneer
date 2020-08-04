@@ -12,9 +12,7 @@ package org.junitpioneer.jupiter;
 
 import java.util.Locale;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -78,7 +76,9 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		PioneerAnnotationUtils.findClosestEnclosingAnnotation(context, DefaultLocale.class).ifPresent(__ -> resetDefaultLocale(context));
+		PioneerAnnotationUtils
+				.findClosestEnclosingAnnotation(context, DefaultLocale.class)
+				.ifPresent(__ -> resetDefaultLocale(context));
 	}
 
 	private void resetDefaultLocale(ExtensionContext context) {
