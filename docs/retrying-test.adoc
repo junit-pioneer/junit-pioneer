@@ -1,5 +1,5 @@
-:page-title: @RetryingTest
-:page-description: Retries a failing test a certain number of times; only marking it failed if none of them pass
+:page-title: Retrying Failing Tests
+:page-description: Extends JUnit Jupiter with `@RetryingTest`, which retries a failing test a certain number of times; only marking it failed if none of them pass
 
 Some tests, e.g. those depending on external systems, may fail through no fault of the code under test.
 Such tests make a suite fragile and it makes sense to try and avoid them, but if that's infeasible, it may help to retry a number of times before eventually assuming actual failure.

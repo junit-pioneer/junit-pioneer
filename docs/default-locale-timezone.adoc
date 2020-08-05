@@ -1,5 +1,5 @@
-:page-title: @DefaultLocale and @DefaultTimeZone
-:page-description: JUnit Jupiter extensions to change the values returned from Locale.getDefault() and TimeZone.getDefault()
+:page-title: Default Locale and TimeZone
+:page-description: Extends JUnit Jupiter with `@DefaultLocale`, `@DefaultTimeZone`, which change the values returned from Locale.getDefault() and TimeZone.getDefault()
 
 The `@DefaultLocale` and `@DefaultTimeZone` annotations can be used to change the values returned from `Locale.getDefault()` and `TimeZone.getDefault()`.
 Both annotations work on the test class level and on the test method level.

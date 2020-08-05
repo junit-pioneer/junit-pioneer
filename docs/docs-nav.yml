@@ -2,23 +2,23 @@
 #       won't be highlighted.
   - title: Features
     children:
-      - title: "@ClearSystemProperty and @SetSystemProperty"
+      - title: "Clearing or Setting System Properties"
         url: /docs/system-properties/
-      - title: "@ClearEnvironmentVariable and @SetEnvironmentVariable"
+      - title: "Clearing or Setting Environment Variables"
         url: /docs/environment-variables/
-      - title: "@DefaultLocale and @DefaultTimeZone"
+      - title: "Default Locale and TimeZone"
         url: /docs/default-locale-timezone/
-      - title: "@DisableIfDisplayName"
+      - title: "Disable Based on DisplayName"
         url: /docs/disable-if-display-name/
+      - title: "Publishing Report Entries"
+        url: /docs/report-entries/
       - title: "Range Sources"
         url: /docs/range-sources/
-      - title: "@RetryingTest"
+      - title: "Retrying Failing Tests"
         url: /docs/retrying-test/
-      - title: "Report entries"
-        url: /docs/report-entries/
-      - title: "Standard input/output"
+      - title: "Standard Input and Output"
         url: /docs/standard-input-output/
-      - title: "TempDirectory"
+      - title: "Temporary Files and Directories"
         url: /docs/temp-directory/
       - title: "Vintage @Test"
         url: /docs/vintage-test/

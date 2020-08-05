@@ -1,5 +1,5 @@
-:page-title: TempDirectory
-:page-description: JUnit Jupiter extension to create and clean up a temporary directory.
+:page-title: Temporary Files and Directories
+:page-description: Extends JUnit Jupiter with `@TempDir`, which create and clean up a temporary directory.
 
 NOTE: Since JUnit Jupiter 5.4, there's a https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory[built-in `@TempDir` extension]. If you don't need support for arbitrary file systems, you should consider using that instead of this extension.
 

@@ -1,5 +1,5 @@
-:page-title: Report entries
-:page-description: JUnit Jupiter extension to report with annotations.
+:page-title: Publishing Report Entries
+:page-description: Extends JUnit Jupiter with `@ReportEntry`, which publishes report entries using `TestReporter`.
 
 You can use `@ReportEntry` as a simple way to declaratively add metadata to test methods.
 

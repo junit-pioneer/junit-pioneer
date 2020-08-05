@@ -1,5 +1,5 @@
-:page-title: Standard input/output
-:page-description: JUnit Jupiter extension for simulating standard input or catching standard output.
+:page-title: Standard Input and Output
+:page-description: Extends JUnit Jupiter with `@StdIo`, which simulates standard input or catches standard output.
 
 The standard IO extension adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out`).
 
