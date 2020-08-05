@@ -49,8 +49,8 @@ public class StdIoExtensionTests {
 	class StdIoTests {
 
 		@Test
-		@DisplayName("catches the output on the standard out as lines")
 		@StdIo
+		@DisplayName("catches the output on the standard out as lines")
 		void catchesOut(StdOut out) {
 			app.write();
 
@@ -60,8 +60,8 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
-		@DisplayName("catches the input from the standard in")
 		@StdIo({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
+		@DisplayName("catches the input from the standard in")
 		void catchesIn(StdIn in) throws IOException {
 			app.read();
 
@@ -71,16 +71,16 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
-		@DisplayName("catches empty input and reads nothing")
 		@StdIo("")
+		@DisplayName("catches empty input and reads nothing")
 		void catchesNothing(StdIn in) {
 			assertThatCode(app::read).doesNotThrowAnyException();
 			assertThat(in.capturedLines()).containsExactly("");
 		}
 
 		@Test
-		@DisplayName("catches the input from the standard in and the output on the standard out")
 		@StdIo({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
+		@DisplayName("catches the input from the standard in and the output on the standard out")
 		void catchesBoth(StdIn in, StdOut out) throws IOException {
 			app.readAndWrite();
 
@@ -92,9 +92,9 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
-		@DisplayName("catches the input from the standard in, even without StdIn parameter")
 		@StdIo({ "But when from highmost pitch, with weary car,", "Like feeble age, he reeleth from the day,",
 				"The eyes, 'fore duteous, now converted are" })
+		@DisplayName("catches the input from the standard in, even without StdIn parameter")
 		void catchesInWithoutParameter() throws IOException {
 			app.read();
 
@@ -111,17 +111,18 @@ public class StdIoExtensionTests {
 	class ResettingTests {
 
 		@Test
-		@DisplayName("1: System.in and System.out is untouched")
+		@ReadsStdIo
 		@Order(1)
+		@DisplayName("1: System.in and System.out is untouched")
 		void untouched() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
 		}
 
 		@Test
-		@DisplayName("2: System.in and System.out is redirected")
-		@Order(2)
 		@StdIo({ "From his low tract, and look another way:", "So thou, thyself outgoing in thy noon" })
+		@Order(2)
+		@DisplayName("2: System.in and System.out is redirected")
 		void redirected(StdIn in, StdOut out) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -140,17 +141,18 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
-		@DisplayName("3: System.in and System.out is reset to their original value")
+		@ReadsStdIo
 		@Order(3)
+		@DisplayName("3: System.in and System.out is reset to their original value")
 		void reset() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
 		}
 
 		@Test
-		@DisplayName("4: Only System.in is redirected.")
-		@Order(4)
 		@StdIo({ "Unlooked on diest unless thou get a son." })
+		@Order(4)
+		@DisplayName("4: Only System.in is redirected.")
 		void redirected_single_in(StdIn in) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -163,17 +165,18 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
-		@DisplayName("5: System.in is reset, System.out is unaffected.")
+		@ReadsStdIo
 		@Order(5)
+		@DisplayName("5: System.in is reset, System.out is unaffected.")
 		void reset_single_in() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
 		}
 
 		@Test
-		@DisplayName("6: Only System.out is redirected.")
-		@Order(6)
 		@StdIo
+		@Order(6)
+		@DisplayName("6: Only System.out is redirected.")
 		void redirected_single_out(StdOut out) {
 			System.out.println("Shakespeare");
 			System.out.println("Sonnet VII");
@@ -185,8 +188,9 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
-		@DisplayName("7: System.out is reset, System.in is unaffected.")
+		@ReadsStdIo
 		@Order(7)
+		@DisplayName("7: System.out is reset, System.in is unaffected.")
 		void reset_single_out() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
@@ -199,6 +203,7 @@ public class StdIoExtensionTests {
 	class ConfigurationTests {
 
 		@Test
+		@WritesStdIo
 		@DisplayName("correctly, no exception is thrown")
 		void correctConfigurations() {
 			ExecutionResults results = executeTestClass(CorrectConfigurations.class);

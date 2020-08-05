@@ -27,6 +27,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException ExtensionConfigurationException}
  * will be thrown.
  *
+ * <p>During
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
+ * all tests annotated with {@link StdIo}, {@link ReadsStdIo}, and {@link WritesStdIo}
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.
+ * </p>
+ *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>.
  * </p>
@@ -35,6 +41,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@WritesStdIo
 @ExtendWith(StdIoExtension.class)
 public @interface StdIo {
 

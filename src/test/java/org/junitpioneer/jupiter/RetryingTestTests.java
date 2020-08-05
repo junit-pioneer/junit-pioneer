@@ -12,7 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.METHOD;
-import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.annotation.Retention;
@@ -21,8 +21,8 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -83,9 +83,16 @@ class RetryingTestTests {
 
 	// TEST CASES -------------------------------------------------------------------
 
+	// The test `failsOnlyOnFirstInvocation` needs state to make sure it fails after the first execution.
+	// Storing that state in a static field keeps it around from one test suite execution to the next
+	// if they are run in the same JVM (as IntelliJ does), which breaks the test.
+	// One fix would be a @BeforeAll setup that resets the counter to zero, but for no apparent reason,
+	// this lead to flaky tests under threading. Using a `PER_CLASS` lifecycle allows us to make it an
+	// instance field and that worked.
+	@TestInstance(PER_CLASS)
 	static class RetryingTestTestCase {
 
-		private static int FAILS_ONLY_ON_FIRST_INVOCATION;
+		private int FAILS_ONLY_ON_FIRST_INVOCATION;
 
 		@Test
 		@RetryingTest(3)
@@ -123,9 +130,6 @@ class RetryingTestTests {
 
 	@Target({ METHOD, ANNOTATION_TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
-	// the extension is not thread-safe, so it forces execution of all retries
-	// onto the same thread
-	@Execution(SAME_THREAD)
 	@TestTemplate
 	public @interface DummyTestTemplate {
 

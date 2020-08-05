@@ -163,6 +163,7 @@ class SystemPropertyExtensionTests {
 		class NestedClass {
 
 			@Test
+			@ReadsSystemProperty
 			@DisplayName("system properties should be set from enclosed class when they are not provided in nested")
 			public void shouldSetSystemPropertyFromEnclosedClass() {
 				assertThat(System.getProperty("set prop A")).isNull();
@@ -177,6 +178,7 @@ class SystemPropertyExtensionTests {
 		class AnnotatedNestedClass {
 
 			@Test
+			@ReadsSystemProperty
 			@DisplayName("system property should be set from nested class when it is provided")
 			public void shouldSetSystemPropertyFromNestedClass() {
 				assertThat(System.getProperty("set prop B")).isEqualTo("newer B");
