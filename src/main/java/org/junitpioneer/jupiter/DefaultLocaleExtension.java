@@ -12,26 +12,17 @@ package org.junitpioneer.jupiter;
 
 import java.util.Locale;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 
-class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
+class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(DefaultLocaleExtension.class);
 
 	private static final String KEY = "DefaultLocale";
-
-	@Override
-	public void beforeAll(ExtensionContext context) {
-		PioneerAnnotationUtils
-				.findClosestEnclosingAnnotation(context, DefaultLocale.class)
-				.ifPresent(annotation -> setDefaultLocale(context, annotation));
-	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
@@ -85,14 +76,9 @@ class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, A
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, DefaultLocale.class)) {
-			resetDefaultLocale(context);
-		}
-	}
-
-	@Override
-	public void afterAll(ExtensionContext context) {
-		resetDefaultLocale(context);
+		PioneerAnnotationUtils
+				.findClosestEnclosingAnnotation(context, DefaultLocale.class)
+				.ifPresent(__ -> resetDefaultLocale(context));
 	}
 
 	private void resetDefaultLocale(ExtensionContext context) {
