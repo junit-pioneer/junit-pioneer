@@ -183,9 +183,8 @@ class DefaultTimeZoneTests {
 		void shouldThrowWithBadConfiguration() {
 			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
 
-			assertThat(results).hasNumberOfStartedTests(0);
 			assertThat(results)
-					.hasSingleFailedContainer()
+					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
 		}

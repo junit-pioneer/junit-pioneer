@@ -244,7 +244,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestClass(ClassLevelInitializationFailureTestCase.class);
 
 				assertThat(results)
-						.hasSingleFailedContainer()
+						.hasSingleFailedTest()
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
 			}
 
