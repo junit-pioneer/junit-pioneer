@@ -24,22 +24,13 @@ public class ExecutionResults {
 
 	EngineExecutionResults executionResults;
 
-	ExecutionResults(Class<?> testClass) {
-		executionResults = getConfiguredJupiterEngine().selectors(DiscoverySelectors.selectClass(testClass)).execute();
-	}
+	private static final String JUPITER_ENGINE_NAME = "junit-jupiter";
 
-	private EngineTestKit.Builder getConfiguredJupiterEngine() {
-		return EngineTestKit
-				.engine("junit-jupiter")
-				// to tease out concurrency-related bugs, we want parallel execution of our tests
-				// (for details, see section "Thread-safety" in CONTRIBUTING.md)
-				.configurationParameter("junit.jupiter.execution.parallel.enabled", "true")
-				.configurationParameter("junit.jupiter.execution.parallel.mode.default", "concurrent")
-				// since we have full control over which tests we execute with this engine,
-				// we can parallelize more aggressively than in the general settings in `junit-platform.properties`
-				.configurationParameter("junit.jupiter.execution.parallel.mode.classes.default", "concurrent")
-				.configurationParameter("junit.jupiter.execution.parallel.config.strategy", "dynamic")
-				.configurationParameter("junit.jupiter.execution.parallel.config.dynamic.factor", "1");
+	ExecutionResults(Class<?> testClass) {
+		executionResults = EngineTestKit
+				.engine(JUPITER_ENGINE_NAME)
+				.selectors(DiscoverySelectors.selectClass(testClass))
+				.execute();
 	}
 
 	ExecutionResults(Class<?> testClass, String testMethodName) {
@@ -52,6 +43,20 @@ public class ExecutionResults {
 		executionResults = getConfiguredJupiterEngine()
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes))
 				.execute();
+	}
+
+	private EngineTestKit.Builder getConfiguredJupiterEngine() {
+		return EngineTestKit
+				.engine(JUPITER_ENGINE_NAME)
+				// to tease out concurrency-related bugs, we want parallel execution of our tests
+				// (for details, see section "Thread-safety" in CONTRIBUTING.md)
+				.configurationParameter("junit.jupiter.execution.parallel.enabled", "true")
+				.configurationParameter("junit.jupiter.execution.parallel.mode.default", "concurrent")
+				// since we have full control over which tests we execute with this engine,
+				// we can parallelize more aggressively than in the general settings in `junit-platform.properties`
+				.configurationParameter("junit.jupiter.execution.parallel.mode.classes.default", "concurrent")
+				.configurationParameter("junit.jupiter.execution.parallel.config.strategy", "dynamic")
+				.configurationParameter("junit.jupiter.execution.parallel.config.dynamic.factor", "1");
 	}
 
 	/**
