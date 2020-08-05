@@ -1,5 +1,5 @@
 :page-title: Range Sources
-:page-description: JUnit Jupiter argument sources for a series of numbers
+:page-description: Extends JUnit Jupiter with `@IntRangeSource`, `@FloatRangeSource`, etc., which provide series of numbers as argument sources for parameterized tests.
 
 The various range sources can be used to provide a series of numeric arguments with fixed differences between them (i.e., https://en.wikipedia.org/wiki/Arithmetic_progression[arithmetic progressions]) to a `@ParameterizedTest`.
 There is a range source for every corresponding numeric primitive type: `ByteRangeSource`, `ShortRangeSource`, `IntRangeSource`, `LongRangeSource`, `FloatRangeSource`, and `DoubleRangeSource`.
