@@ -1,4 +1,4 @@
-:page-title: Report entries
+:page-title: Publishing Report Entries
 :page-description: Extends JUnit Jupiter with `@ReportEntry`, which publishes report entries using `TestReporter`.
 
 You can use `@ReportEntry` as a simple way to declaratively add metadata to test methods.
