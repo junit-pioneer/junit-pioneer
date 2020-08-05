@@ -51,7 +51,7 @@ public class PioneerTestKit {
 			Class<?>... methodParameterTypes) {
 
 		// throw IllegalArgumentException for a `null` array instead of NPE
-		// (hence no use of Objects::requireNonNull)`
+		// (hence no use of `Objects::requireNonNull`)
 		if (methodParameterTypes == null) {
 			throw new IllegalArgumentException("methodParameterTypes must not be null");
 		}
