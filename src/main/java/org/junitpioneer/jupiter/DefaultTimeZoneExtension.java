@@ -12,27 +12,18 @@ package org.junitpioneer.jupiter;
 
 import java.util.TimeZone;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
 
-class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
+class DefaultTimeZoneExtension implements BeforeEachCallback, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(DefaultTimeZoneExtension.class);
 
 	private static final String KEY = "DefaultTimeZone";
-
-	@Override
-	public void beforeAll(ExtensionContext context) {
-		PioneerAnnotationUtils
-				.findClosestEnclosingAnnotation(context, DefaultTimeZone.class)
-				.ifPresent(annotation -> setDefaultTimeZone(context.getStore(NAMESPACE), annotation));
-	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
@@ -42,12 +33,15 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 	}
 
 	private void setDefaultTimeZone(Store store, DefaultTimeZone annotation) {
+		TimeZone defaultTimeZone = createTimeZone(annotation.value());
+		// defer storing the current default time zone until the new time zone could be created from the configuration
+		// (this prevents cases where misconfigured extensions store default time zone now and restore it later,
+		// which leads to race conditions in our tests)
 		storeDefaultTimeZone(store);
-		String timeZoneId = annotation.value();
-		TimeZone.setDefault(getTimeZone(timeZoneId));
+		TimeZone.setDefault(defaultTimeZone);
 	}
 
-	private TimeZone getTimeZone(String timeZoneId) {
+	private static TimeZone createTimeZone(String timeZoneId) {
 		TimeZone configuredTimeZone = TimeZone.getTimeZone(timeZoneId);
 		// TimeZone::getTimeZone returns with GMT as fallback if the given ID cannot be understood
 		if (configuredTimeZone.equals(TimeZone.getTimeZone("GMT")) && !timeZoneId.equals("GMT")) {
@@ -66,18 +60,16 @@ class DefaultTimeZoneExtension implements BeforeAllCallback, BeforeEachCallback,
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, DefaultTimeZone.class)) {
-			resetDefaultTimeZone(context.getStore(NAMESPACE));
-		}
-	}
-
-	@Override
-	public void afterAll(ExtensionContext context) {
-		resetDefaultTimeZone(context.getStore(NAMESPACE));
+		PioneerAnnotationUtils
+				.findClosestEnclosingAnnotation(context, DefaultTimeZone.class)
+				.ifPresent(__ -> resetDefaultTimeZone(context.getStore(NAMESPACE)));
 	}
 
 	private void resetDefaultTimeZone(Store store) {
-		TimeZone.setDefault(store.get(KEY, TimeZone.class));
+		TimeZone timeZone = store.get(KEY, TimeZone.class);
+		// default time zone is null if the extension was misconfigured and execution failed in "before"
+		if (timeZone != null)
+			TimeZone.setDefault(timeZone);
 	}
 
 }

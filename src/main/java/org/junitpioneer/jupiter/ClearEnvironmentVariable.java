@@ -38,6 +38,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * may have to add {@code --add-opens=java.base/java.util=ALL-UNNAMED} to your test
  * execution to prevent warnings or even errors.</p>
  *
+ * <p>During
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
+ * all tests annotated with {@link ClearEnvironmentVariable}, {@link SetEnvironmentVariable}, {@link ReadsEnvironmentVariable}, and {@link WritesEnvironmentVariable}
+ * are executed sequentially to guarantee correctness under mutation of shared global state.
+ * </p>
+ *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable and @SetEnvironmentVariable</code></a>.
  * </p>
@@ -47,6 +53,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Repeatable(ClearEnvironmentVariable.ClearEnvironmentVariables.class)
+@WritesEnvironmentVariable
 @ExtendWith(EnvironmentVariableExtension.class)
 public @interface ClearEnvironmentVariable {
 
@@ -60,6 +67,7 @@ public @interface ClearEnvironmentVariable {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@WritesEnvironmentVariable
 	@ExtendWith(EnvironmentVariableExtension.class)
 	@interface ClearEnvironmentVariables {
 

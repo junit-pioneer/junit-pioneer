@@ -28,6 +28,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>{@code ReportEntry} is repeatable and can be used on methods.
  *
+ * <p>This extension does not interact with
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>.
+ * </p>
+ *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/report-entries/" target="_top">the documentation on <code>Report entries</code></a>.
  * </p>
