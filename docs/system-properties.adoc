@@ -1,4 +1,4 @@
-:page-title: @ClearSystemProperty and @SetSystemProperty
+:page-title: Clearing/setting system properties
 :page-description: JUnit Jupiter extensions to clear and set the values of system properties
 
 The `@ClearSystemProperty` and `@SetSystemProperty` annotations can be used to clear, respectively, set the values of system properties for a test execution.

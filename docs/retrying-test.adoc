@@ -1,4 +1,4 @@
-:page-title: @RetryingTest
+:page-title: Retrying test
 :page-description: Retries a failing test a certain number of times; only marking it failed if none of them pass
 
 Some tests, e.g. those depending on external systems, may fail through no fault of the code under test.
