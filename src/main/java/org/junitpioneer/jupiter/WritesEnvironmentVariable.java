@@ -31,7 +31,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
  * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable</code> and <code>@SetEnvironmentVariable</code></a>.
  * </p>
  *
- * @since 0.7
+ * @since 0.9
  */
 @ResourceLock(value = "java.lang.System.environment", mode = ResourceAccessMode.READ_WRITE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -33,7 +33,7 @@ import org.junit.jupiter.api.parallel.Resources;
  * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on Standard input/output</a>.
  * </p>
  *
- * @since 0.7
+ * @since 0.9
  */
 @ResourceLock(value = "java.lang.System.in", mode = ResourceAccessMode.READ)
 @ResourceLock(value = Resources.SYSTEM_OUT, mode = ResourceAccessMode.READ)

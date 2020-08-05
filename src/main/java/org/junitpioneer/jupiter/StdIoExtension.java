@@ -32,8 +32,8 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 	private static final Namespace NAMESPACE = Namespace.create(StdIoExtension.class);
 
 	private static final String SYSTEM_IN_KEY = "StdIo_System_In";
+	private static final String SYSTEM_OUT_KEY = "StdIo_System_Out";
 	private static final String STD_IN_KEY = "StdIo_Std_In";
-	private static final String SYSTEM_OUT_KEY = "StdIo_Std_Out";
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {

@@ -32,7 +32,7 @@ import org.junit.jupiter.api.parallel.Resources;
  * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale</code> and <code>@DefaultTimeZone</code></a>.
  * </p>
  *
- * @since 0.7
+ * @since 0.9
  */
 @ResourceLock(value = Resources.LOCALE, mode = ResourceAccessMode.READ)
 @Retention(RetentionPolicy.RUNTIME)
