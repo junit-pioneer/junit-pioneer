@@ -50,10 +50,9 @@ public class PioneerTestKit {
 	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
 			Class<?>... methodParameterTypes) {
 
-		// This check is by purpose to throw an IAE.
-		// E.g. Objects.requireNonNull(T value, String message) throws a NPE,
-		// which has a total different meaning.
-		if (null == methodParameterTypes) {
+		// throw IllegalArgumentException for a `null` array instead of NPE
+		// (hence no use of Objects::requireNonNull)`
+		if (methodParameterTypes == null) {
 			throw new IllegalArgumentException("methodParameterTypes must not be null");
 		}
 

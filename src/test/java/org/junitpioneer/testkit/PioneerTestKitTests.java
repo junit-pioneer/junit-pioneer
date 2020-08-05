@@ -10,77 +10,73 @@
 
 package org.junitpioneer.testkit;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class PioneerTestKitTests {
+@DisplayName("Execute")
+class PioneerTestKitTests {
 
-	@DisplayName("Execute")
+	@Test
+	@DisplayName("all tests of a class")
+	void executeTestClass() {
+		ExecutionResults results = PioneerTestKit.executeTestClass(DummyClass.class);
+
+		assertThat(results).hasNumberOfStartedTests(1);
+	}
+
+	@Test
+	@DisplayName("a specific method")
+	void executeTestMethod() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(DummyClass.class, "nothing");
+
+		assertThat(results).hasNumberOfStartedTests(1);
+	}
+
 	@Nested
-	class ExecuteTestTests {
+	@DisplayName("a specific parametrized method")
+	class ExecuteTestMethodWithParametersTests {
 
-		@DisplayName("all tests of a class")
 		@Test
-		void executeTestClass() {
-			ExecutionResults results = PioneerTestKit.executeTestClass(DummyClass.class);
+		@DisplayName(" where parameter is a single class")
+		void executeTestMethodWithParameterTypes_singleParameterType() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", String.class);
 
 			assertThat(results).hasNumberOfStartedTests(1);
 		}
 
-		@DisplayName("a specific method")
 		@Test
-		void executeTestMethod() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(DummyClass.class, "nothing");
+		@DisplayName(" where parameter is an array of classes")
+		void executeTestMethodWithParameterTypes_parameterTypeAsArray() {
+			Class<?>[] classes = { String.class };
+
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", classes);
 
 			assertThat(results).hasNumberOfStartedTests(1);
 		}
 
-		@DisplayName("a specific parametrized method")
-		@Nested
-		class ExecuteTestMethodWithParametersTests {
+		@Test
+		@DisplayName("without parameter results in IllegalArgumentException")
+		void executeTestMethodWithParameterTypes_parameterArrayIsNull_NullPointerException() {
+			assertThatThrownBy(() -> PioneerTestKit
+					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", (Class<?>) null))
+							.isInstanceOf(NullPointerException.class);
+		}
 
-			@DisplayName(" where parameter is a single class")
-			@Test
-			void executeTestMethodWithParameterTypesSingleParameterType() {
-				ExecutionResults results = PioneerTestKit
-						.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", String.class);
-
-				assertThat(results).hasNumberOfStartedTests(1);
-			}
-
-			@DisplayName(" where parameter is an array of classes")
-			@Test
-			void executeTestMethodWithParameterTypesParameterTypeAsArray() {
-				Class<?>[] classes = { String.class };
-
-				ExecutionResults results = PioneerTestKit
-						.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", classes);
-
-				assertThat(results).hasNumberOfStartedTests(1);
-			}
-
-			@DisplayName("without parameter results in IllegalArgumentException")
-			@Test
-			void executeTestMethodWithParameterTypesSingleParameterTypeIllegalArgumentExceptionIfParameterIsNull() {
-
-				Throwable thrown = assertThrows(Throwable.class, () -> {
-					PioneerTestKit.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", null);
-				});
-
-				String expectedMessage = "methodParameterTypes must not be null";
-
-				Assertions.assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
-				Assertions.assertThat(thrown.getMessage()).isEqualTo(expectedMessage);
-
-			}
-
+		@Test
+		@DisplayName("without parameter results in IllegalArgumentException")
+		void executeTestMethodWithParameterTypes_singleParameterIsNull_IllegalArgumentException() {
+			assertThatThrownBy(() -> PioneerTestKit
+					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", (Class<?>[]) null))
+							.isInstanceOf(IllegalArgumentException.class)
+							.hasMessage("methodParameterTypes must not be null");
 		}
 
 	}
