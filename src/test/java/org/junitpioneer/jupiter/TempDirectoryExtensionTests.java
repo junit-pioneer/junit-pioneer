@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -48,10 +49,17 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
+/**
+* Execution in single thread, because of many static variables as suggested by
+* <a href="https://github.com/junit-pioneer/junit-pioneer/issues/131#issuecomment-622953047">Marc Philipp</a>.
+ */
+@Execution(SAME_THREAD)
 @DisplayName("TempDirectory extension")
+// TODO: The extension may or may not be thread-safe - the tests definitely aren't
 class TempDirectoryExtensionTests {
 
 	@BeforeEach
@@ -247,6 +255,7 @@ class TempDirectoryExtensionTests {
 	}
 
 	@ExtendWith(TempDirectoryExtension.class)
+	@Execution(SAME_THREAD)
 	static class BaseSharedTempDirTestCase {
 
 		static Optional<Path> tempDir;
@@ -321,6 +330,7 @@ class TempDirectoryExtensionTests {
 	}
 
 	@ExtendWith(TempDirectoryExtension.class)
+	@Execution(SAME_THREAD)
 	static class AnnotationOnAfterAllMethodParameterTestCase {
 
 		static Optional<Path> firstTempDir = Optional.empty();
@@ -342,6 +352,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class BaseSeparateTempDirsTestCase {
 
 		static final Deque<Path> tempDirs = new LinkedList<>();
@@ -390,6 +401,7 @@ class TempDirectoryExtensionTests {
 	}
 
 	@ExtendWith(TempDirectoryExtension.class)
+	@Execution(SAME_THREAD)
 	static class DeletionTestCase {
 
 		static Optional<Path> tempDir;
@@ -418,6 +430,7 @@ class TempDirectoryExtensionTests {
 	}
 
 	@ExtendWith(TempDirectoryExtension.class)
+	@Execution(SAME_THREAD)
 	static class InvalidTestCase {
 
 		@Test
@@ -427,6 +440,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class ParentDirFromCallableTestCase extends BaseSeparateTempDirsTestCase {
 
 		private static FileSystem fileSystem;
@@ -449,6 +463,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class ParentDirFromProviderTestCase extends BaseSeparateTempDirsTestCase {
 
 		@RegisterExtension
@@ -485,6 +500,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class FailedCreationAttemptTestCase {
 
 		private FileSystem fileSystem = mock(FileSystem.class);
@@ -508,6 +524,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class FailedDeletionAttemptTestCase {
 
 		private FileSystem fileSystem = mock(FileSystem.class);
@@ -542,6 +559,7 @@ class TempDirectoryExtensionTests {
 
 	}
 
+	@Execution(SAME_THREAD)
 	static class ErroneousParentDirProviderTestCase {
 
 		private FileSystem fileSystem = mock(FileSystem.class);

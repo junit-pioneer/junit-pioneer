@@ -25,22 +25,31 @@ public class ExecutionResults {
 	EngineExecutionResults executionResults;
 
 	ExecutionResults(Class<?> testClass) {
-		executionResults = EngineTestKit
+		executionResults = getConfiguredJupiterEngine().selectors(DiscoverySelectors.selectClass(testClass)).execute();
+	}
+
+	private EngineTestKit.Builder getConfiguredJupiterEngine() {
+		return EngineTestKit
 				.engine("junit-jupiter")
-				.selectors(DiscoverySelectors.selectClass(testClass))
-				.execute();
+				// to tease out concurrency-related bugs, we want parallel execution of our tests
+				// (for details, see section "Thread-safety" in CONTRIBUTING.md)
+				.configurationParameter("junit.jupiter.execution.parallel.enabled", "true")
+				.configurationParameter("junit.jupiter.execution.parallel.mode.default", "concurrent")
+				// since we have full control over which tests we execute with this engine,
+				// we can parallelize more aggressively than in the general settings in `junit-platform.properties`
+				.configurationParameter("junit.jupiter.execution.parallel.mode.classes.default", "concurrent")
+				.configurationParameter("junit.jupiter.execution.parallel.config.strategy", "dynamic")
+				.configurationParameter("junit.jupiter.execution.parallel.config.dynamic.factor", "1");
 	}
 
 	ExecutionResults(Class<?> testClass, String testMethodName) {
-		executionResults = EngineTestKit
-				.engine("junit-jupiter")
+		executionResults = getConfiguredJupiterEngine()
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName))
 				.execute();
 	}
 
 	ExecutionResults(Class<?> testClass, String testMethodName, String methodParameterTypes) {
-		executionResults = EngineTestKit
-				.engine("junit-jupiter")
+		executionResults = getConfiguredJupiterEngine()
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes))
 				.execute();
 	}

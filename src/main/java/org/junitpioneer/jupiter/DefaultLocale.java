@@ -44,6 +44,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@code Locale} for all tests inside that class. Any method level
  * configurations will override the class level default {@code Locale}.</p>
  *
+ * <p>During
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
+ * all tests annotated with {@link DefaultLocale}, {@link ReadsDefaultLocale}, and {@link WritesDefaultLocale}
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.
+ * </p>
+ *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale and @DefaultTimeZone</code></a>.
  * </p>
@@ -54,6 +60,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@WritesDefaultLocale
 @ExtendWith(DefaultLocaleExtension.class)
 public @interface DefaultLocale {
 

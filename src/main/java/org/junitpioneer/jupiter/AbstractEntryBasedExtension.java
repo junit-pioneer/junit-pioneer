@@ -71,13 +71,20 @@ abstract class AbstractEntryBasedExtension<K, V>
 	 */
 	protected abstract void setEntry(K key, V value);
 
+	/**
+	 * Reports a warning about potentially unsafe practices.
+	 */
+	protected void reportWarning(ExtensionContext context) {
+		// nothing reported by default
+	}
+
 	@Override
-	public void beforeAll(ExtensionContext context) throws Exception {
+	public void beforeAll(ExtensionContext context) {
 		clearAndSetEntries(context);
 	}
 
 	@Override
-	public void beforeEach(ExtensionContext context) throws Exception {
+	public void beforeEach(ExtensionContext context) {
 		clearAndSetEntries(context);
 	}
 
@@ -97,6 +104,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 		if (entriesToClear.isEmpty() && entriesToSet.isEmpty())
 			return;
 
+		reportWarning(context);
 		storeOriginalEntries(context, entriesToClear, entriesToSet.keySet());
 		clearEntries(entriesToClear);
 		setEntries(entriesToSet);

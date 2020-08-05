@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
@@ -21,7 +20,6 @@ import java.util.TimeZone;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,16 +34,15 @@ class DefaultTimeZoneTests {
 
 	@BeforeAll
 	static void globalSetUp() {
-		// the extension sets UTC as test time zone unless it is already
-		// the system's time zone; in that case it uses GMT
+		// we set UTC as test time zone unless it is already
+		// the system's time zone; in that case we use UTC+12
 		DEFAULT_TIMEZONE_BEFORE_TEST = TimeZone.getDefault();
 		TimeZone utc = TimeZone.getTimeZone("UTC");
-		TimeZone gmt = TimeZone.getTimeZone("GMT");
-		if (DEFAULT_TIMEZONE_BEFORE_TEST.equals(utc)) {
-			TimeZone.setDefault(gmt);
-		} else {
+		TimeZone utcPlusTwelve = TimeZone.getTimeZone("GMT+12:00");
+		if (DEFAULT_TIMEZONE_BEFORE_TEST.equals(utc))
+			TimeZone.setDefault(utcPlusTwelve);
+		else
 			TimeZone.setDefault(utc);
-		}
 		TEST_DEFAULT_TIMEZONE = TimeZone.getDefault();
 	}
 
@@ -59,39 +56,28 @@ class DefaultTimeZoneTests {
 	class MethodLevelTests {
 
 		@Test
+		@ReadsDefaultTimeZone
 		@DisplayName("does nothing when annotation is not present")
 		void doesNothingWhenAnnotationNotPresent() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
 		}
 
 		@Test
-		@DisplayName("throws exception on bad configuration")
-		void throwsWhenConfigurationIsBad() {
-			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCase.class, "badConfiguration");
-
-			assertThat(results)
-					.hasSingleFailedTest()
-					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageNotContaining("should never execute")
-					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
-		}
-
 		@DefaultTimeZone("GMT")
-		@Test
 		@DisplayName("does not throw when explicitly set to GMT")
 		void doesNotThrowForExplicitGmt() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
 		}
 
-		@DefaultTimeZone("CET")
 		@Test
+		@DefaultTimeZone("CET")
 		@DisplayName("sets the default time zone using an abbreviation")
 		void setsTimeZoneFromAbbreviation() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("CET"));
 		}
 
-		@DefaultTimeZone("America/Los_Angeles")
 		@Test
+		@DefaultTimeZone("America/Los_Angeles")
 		@DisplayName("sets the default time zone using a full name")
 		void setsTimeZoneFromFullName() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("America/Los_Angeles"));
@@ -100,74 +86,50 @@ class DefaultTimeZoneTests {
 	}
 
 	@Nested
-	@DisplayName("applied on the class level")
-	class ClassLevelTests {
-
-		@BeforeEach
-		void setUp() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
-		}
-
-		@Test
-		@DisplayName("executes tests with configured TimeZone")
-		void shouldExecuteTestsWithConfiguredTimeZone() {
-			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
-
-			assertThat(results).hasNumberOfSucceededTests(2);
-		}
-
-		@Test
-		@DisplayName("throws when configuration is bad")
-		void shouldThrowWithBadConfiguration() {
-			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
-
-			assertThat(results)
-					.hasSingleFailedTest()
-					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
-		}
-
-		@Test
-		@DisplayName("does not throw when explicitly set to GMT")
-		void shouldNotThrowForExplicitGmt() {
-			ExecutionResults results = executeTestClass(ExplicitGmtClassLevelTestCase.class);
-
-			assertThat(results).hasSingleSucceededTest();
-		}
-
-		@AfterEach
-		void tearDown() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
-		}
-
-	}
-
 	@DefaultTimeZone("GMT-8:00")
-	static class ClassLevelTestCase {
+	@DisplayName("when applied on the class level")
+	class ClassLevelTestCase {
 
 		@Test
+		@ReadsDefaultTimeZone
+		@DisplayName("sets the default time zone")
 		void shouldExecuteWithClassLevelTimeZone() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
 		}
 
 		@Test
 		@DefaultTimeZone("GMT-12:00")
+		@DisplayName("gets overridden by annotation on the method level")
 		void shouldBeOverriddenWithMethodLevelTimeZone() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
 		}
 
 	}
 
-	@DisplayName("with nested classes")
-	@DefaultTimeZone("GMT-8:00")
 	@Nested
-	class NestedDefaultTimeZoneTests {
+	@DefaultTimeZone("GMT")
+	@DisplayName("when explicitly set to GMT on the class level")
+	class ExplicitGmtClassLevelTestCase {
+
+		@Test
+		@DisplayName("does not throw and sets to GMT ")
+		void explicitGmt() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
+		}
+
+	}
+
+	@Nested
+	@DefaultTimeZone("GMT-8:00")
+	@DisplayName("with nested classes")
+	class NestedTests {
 
 		@Nested
 		@DisplayName("without DefaultTimeZone annotation")
 		class NestedClass {
 
 			@Test
+			@ReadsDefaultTimeZone
 			@DisplayName("DefaultTimeZone should be set from enclosed class when it is not provided in nested")
 			public void shouldSetTimeZoneFromEnclosedClass() {
 				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
@@ -181,6 +143,7 @@ class DefaultTimeZoneTests {
 		class AnnotatedNestedClass {
 
 			@Test
+			@ReadsDefaultTimeZone
 			@DisplayName("DefaultTimeZone should be set from nested class when it is provided")
 			public void shouldSetTimeZoneFromNestedClass() {
 				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
@@ -197,12 +160,47 @@ class DefaultTimeZoneTests {
 
 	}
 
+	@Nested
+	@DisplayName("when misconfigured")
+	class ConfigurationTests {
+
+		@Test
+		@ReadsDefaultTimeZone
+		@DisplayName("on method level, throws exception")
+		void throwsWhenConfigurationIsBad() {
+			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCase.class, "badConfiguration");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageNotContaining("should never execute")
+					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
+		}
+
+		@Test
+		@ReadsDefaultTimeZone
+		@DisplayName("on class level, throws exception")
+		void shouldThrowWithBadConfiguration() {
+			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
+		}
+
+		@AfterEach
+		void verifyMisconfigurationSisNotChangeTimeZone() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
+		}
+
+	}
+
 	static class BadMethodLevelConfigurationTestCase {
 
-		@DefaultTimeZone("Gibberish")
 		@Test
+		@DefaultTimeZone("Gibberish")
 		void badConfiguration() {
-			fail("This test should never execute");
 		}
 
 	}
@@ -212,17 +210,6 @@ class DefaultTimeZoneTests {
 
 		@Test
 		void badConfiguration() {
-			fail("This test should never execute");
-		}
-
-	}
-
-	@DefaultTimeZone("GMT")
-	static class ExplicitGmtClassLevelTestCase {
-
-		@Test
-		void explicitGmt() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
 		}
 
 	}

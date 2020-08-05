@@ -10,12 +10,14 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -41,6 +43,7 @@ class PioneerAnnotationUtilsTests {
 		class SimpleAnnotations {
 
 			@Nested
+			@ResourceLock(value = "org.junitpioneer.jupiter.FailExtension", mode = READ_WRITE)
 			@DisplayName("and not stackable")
 			class StopOnFirst {
 
@@ -94,6 +97,7 @@ class PioneerAnnotationUtilsTests {
 			}
 
 			@Nested
+			@ResourceLock(value = "org.junitpioneer.jupiter.FailExtension", mode = READ_WRITE)
 			@DisplayName("but stackable")
 			class Stackable {
 
@@ -165,6 +169,7 @@ class PioneerAnnotationUtilsTests {
 		class RepeatableAnnotations {
 
 			@Nested
+			@ResourceLock(value = "org.junitpioneer.jupiter.RepeatableFailExtension", mode = READ_WRITE)
 			@DisplayName("but not stackable")
 			class StopOnFirst {
 
@@ -243,6 +248,7 @@ class PioneerAnnotationUtilsTests {
 			}
 
 			@Nested
+			@ResourceLock(value = "org.junitpioneer.jupiter.RepeatableFailExtension", mode = READ_WRITE)
 			@DisplayName("and stackable")
 			class Stackable {
 

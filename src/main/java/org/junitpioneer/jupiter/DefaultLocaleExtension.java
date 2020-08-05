@@ -32,8 +32,11 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 	}
 
 	private void setDefaultLocale(ExtensionContext context, DefaultLocale annotation) {
-		storeDefaultLocale(context);
 		Locale configuredLocale = createLocale(annotation);
+		// defer storing the current default locale until the new locale could be created from the configuration
+		// (this prevents cases where misconfigured extensions store default locale now and restore it later,
+		// which leads to race conditions in our tests)
+		storeDefaultLocale(context);
 		Locale.setDefault(configuredLocale);
 	}
 
@@ -82,7 +85,10 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 	}
 
 	private void resetDefaultLocale(ExtensionContext context) {
-		Locale.setDefault(context.getStore(NAMESPACE).get(KEY, Locale.class));
+		Locale defaultLocale = context.getStore(NAMESPACE).get(KEY, Locale.class);
+		// default locale is null if the extension was misconfigured and execution failed in "before"
+		if (defaultLocale != null)
+			Locale.setDefault(defaultLocale);
 	}
 
 }
