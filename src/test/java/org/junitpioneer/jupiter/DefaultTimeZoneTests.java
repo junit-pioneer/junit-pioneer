@@ -20,7 +20,6 @@ import java.util.TimeZone;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,16 +34,15 @@ class DefaultTimeZoneTests {
 
 	@BeforeAll
 	static void globalSetUp() {
-		// the extension sets UTC as test time zone unless it is already
-		// the system's time zone; in that case it uses GMT
+		// we set UTC as test time zone unless it is already
+		// the system's time zone; in that case we use UTC+12
 		DEFAULT_TIMEZONE_BEFORE_TEST = TimeZone.getDefault();
 		TimeZone utc = TimeZone.getTimeZone("UTC");
-		TimeZone gmt = TimeZone.getTimeZone("GMT");
-		if (DEFAULT_TIMEZONE_BEFORE_TEST.equals(utc)) {
-			TimeZone.setDefault(gmt);
-		} else {
+		TimeZone utcPlusTwelve = TimeZone.getTimeZone("GMT+12:00");
+		if (DEFAULT_TIMEZONE_BEFORE_TEST.equals(utc))
+			TimeZone.setDefault(utcPlusTwelve);
+		else
 			TimeZone.setDefault(utc);
-		}
 		TEST_DEFAULT_TIMEZONE = TimeZone.getDefault();
 	}
 
@@ -62,19 +60,6 @@ class DefaultTimeZoneTests {
 		@DisplayName("does nothing when annotation is not present")
 		void doesNothingWhenAnnotationNotPresent() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
-		}
-
-		@Test
-		@ReadsDefaultTimeZone
-		@DisplayName("throws exception on bad configuration")
-		void throwsWhenConfigurationIsBad() {
-			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCase.class, "badConfiguration");
-
-			assertThat(results)
-					.hasSingleFailedTest()
-					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageNotContaining("should never execute")
-					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
 		}
 
 		@Test
@@ -101,63 +86,20 @@ class DefaultTimeZoneTests {
 	}
 
 	@Nested
-	@DisplayName("applied on the class level")
-	class ClassLevelTests {
-
-		@BeforeEach
-		void setUp() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
-		}
-
-		@Test
-		@WritesDefaultTimeZone
-		@DisplayName("executes tests with configured TimeZone")
-		void shouldExecuteTestsWithConfiguredTimeZone() {
-			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
-
-			assertThat(results).hasNumberOfSucceededTests(2);
-		}
-
-		@Test
-		@ReadsDefaultTimeZone
-		@DisplayName("throws when configuration is bad")
-		void shouldThrowWithBadConfiguration() {
-			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
-
-			assertThat(results).hasNumberOfStartedTests(0);
-			assertThat(results)
-					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
-		}
-
-		@Test
-		@WritesDefaultTimeZone
-		@DisplayName("does not throw when explicitly set to GMT")
-		void shouldNotThrowForExplicitGmt() {
-			ExecutionResults results = executeTestClass(ExplicitGmtClassLevelTestCase.class);
-
-			assertThat(results).hasSingleSucceededTest();
-		}
-
-		@AfterEach
-		void tearDown() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
-		}
-
-	}
-
 	@DefaultTimeZone("GMT-8:00")
-	static class ClassLevelTestCase {
+	@DisplayName("when applied on the class level")
+	class ClassLevelTestCase {
 
 		@Test
 		@ReadsDefaultTimeZone
+		@DisplayName("sets the default time zone")
 		void shouldExecuteWithClassLevelTimeZone() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
 		}
 
 		@Test
 		@DefaultTimeZone("GMT-12:00")
+		@DisplayName("gets overridden by annotation on the method level")
 		void shouldBeOverriddenWithMethodLevelTimeZone() {
 			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
 		}
@@ -165,9 +107,22 @@ class DefaultTimeZoneTests {
 	}
 
 	@Nested
+	@DefaultTimeZone("GMT")
+	@DisplayName("when explicitly set to GMT on the class level")
+	class ExplicitGmtClassLevelTestCase {
+
+		@Test
+		@DisplayName("does not throw and sets to GMT ")
+		void explicitGmt() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
+		}
+
+	}
+
+	@Nested
 	@DefaultTimeZone("GMT-8:00")
 	@DisplayName("with nested classes")
-	class NestedDefaultTimeZoneTests {
+	class NestedTests {
 
 		@Nested
 		@DisplayName("without DefaultTimeZone annotation")
@@ -205,6 +160,43 @@ class DefaultTimeZoneTests {
 
 	}
 
+	@Nested
+	@DisplayName("when misconfigured")
+	class ConfigurationTests {
+
+		@Test
+		@ReadsDefaultTimeZone
+		@DisplayName("on method level, throws exception")
+		void throwsWhenConfigurationIsBad() {
+			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCase.class, "badConfiguration");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageNotContaining("should never execute")
+					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
+		}
+
+		@Test
+		@ReadsDefaultTimeZone
+		@DisplayName("on class level, throws exception")
+		void shouldThrowWithBadConfiguration() {
+			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
+
+			assertThat(results).hasNumberOfStartedTests(0);
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
+		}
+
+		@AfterEach
+		void verifyMisconfigurationSisNotChangeTimeZone() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
+		}
+
+	}
+
 	static class BadMethodLevelConfigurationTestCase {
 
 		@Test
@@ -219,16 +211,6 @@ class DefaultTimeZoneTests {
 
 		@Test
 		void badConfiguration() {
-		}
-
-	}
-
-	@DefaultTimeZone("GMT")
-	static class ExplicitGmtClassLevelTestCase {
-
-		@Test
-		void explicitGmt() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
 		}
 
 	}
