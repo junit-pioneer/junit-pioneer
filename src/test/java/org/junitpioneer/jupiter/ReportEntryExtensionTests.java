@@ -336,8 +336,7 @@ public class ReportEntryExtensionTests {
 		@DisplayName("publishes the parameter")
 		void parameterized_publishes() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_basic",
-						"java.lang.String");
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_basic", String.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
 			assertThat(results)
@@ -351,7 +350,7 @@ public class ReportEntryExtensionTests {
 		void parameterized_unresolvedVars() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_unresolved",
-						"java.lang.String");
+						String.class);
 
 			assertThat(results).hasNumberOfFailedTests(1);
 			assertThat(results).hasNoReportEntries();
@@ -366,7 +365,7 @@ public class ReportEntryExtensionTests {
 		void parameterized_keyCantBeParameterized() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_key_fail",
-						"java.lang.String");
+						String.class);
 
 			assertThat(results).hasNoReportEntries();
 			assertThat(results)
@@ -380,7 +379,7 @@ public class ReportEntryExtensionTests {
 		void parameterized_multiple() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_multiple",
-						"java.lang.String,int");
+						String.class, int.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
 			assertThat(results)
