@@ -16,7 +16,7 @@ jobs:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         java: [ 8, 11, 14 ]
         os: [ubuntu, windows, macos]
-    name: on ${{ matrix.os }} with Java ${{ matrix.java }}
+    name: Build on ${{ matrix.os }} with Java ${{ matrix.java }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v2

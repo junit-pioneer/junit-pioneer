@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         junit5Minor: [ '5.0', '5.1', '5.2', '6.0', '6.1', '6.2' ]
-    name: with 5.${{ matrix.junit5Minor }}
+    name: Build with JUnit 5.${{ matrix.junit5Minor }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
