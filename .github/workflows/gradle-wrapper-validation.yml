@@ -11,7 +11,7 @@ on:
 jobs:
   validation:
     runs-on: ubuntu-latest
-    name: Validate
+    name: on ubuntu-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v2

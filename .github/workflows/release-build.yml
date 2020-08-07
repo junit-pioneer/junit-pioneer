@@ -6,7 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Release
+    name: on ubuntu-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
