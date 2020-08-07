@@ -1,7 +1,4 @@
-# This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
-name: Experimental JUnit5 build
+name: Experimental JUnit 5 build
 
 on:
   push:
@@ -18,11 +15,11 @@ jobs:
     strategy:
       matrix:
         junit5Minor: [ '5.0', '5.1', '5.2', '6.0', '6.1', '6.2' ]
-    name: with 5.${{ matrix.junit5Minor }}
+    name: with JUnit 5.${{ matrix.junit5Minor }} on ubuntu-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
-      - name: Setup java
+      - name: Set up java
         uses: actions/setup-java@v1
         with:
           java-version: 11

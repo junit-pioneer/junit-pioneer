@@ -1,7 +1,4 @@
-# This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
-name: Build
+name: Main build
 
 on:
   push:
@@ -19,14 +16,14 @@ jobs:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         java: [ 8, 11, 14 ]
         os: [ubuntu, windows, macos]
-    name: on ${{ matrix.os }} with Java ${{ matrix.java }}
+    name: with Java ${{ matrix.java }} on ${{ matrix.os }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
-        # fetch unshallow to enable blame for Sonar
-      - name: Fetch unshallow
-        run: git fetch --prune --unshallow
-      - name: Setup java
+        with:
+          # fetch unshallow to enable blame for Sonar
+          fetch-depth: 0
+      - name: Set up java
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
@@ -47,7 +44,7 @@ jobs:
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
           wrapper-cache-enabled: false
-      - name: Sonarqube
+      - name: Sonar analysis
         if: matrix.java == '11' && matrix.os == 'ubuntu'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
