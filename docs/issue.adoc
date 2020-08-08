@@ -1,5 +1,6 @@
-:page-title: @Issue
-:page-description: JUnit Jupiter extensions to add information about a related issue
+:page-title: Issue Information
+:page-description: Extends JUnit Jupiter with `@Issue` to publish issue information.
+
 
 == Introduction
 
