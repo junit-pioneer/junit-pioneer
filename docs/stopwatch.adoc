@@ -1,5 +1,5 @@
 :page-title: Stopwatch
-:page-description: JUnit Jupiter extension to measure elapsed time of a test method
+:page-description: Extends JUnit Jupiter with `@Stopwatch`to measure elapsed time of a test method
 
 == Introduction
 

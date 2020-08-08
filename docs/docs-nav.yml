@@ -18,9 +18,8 @@
         url: /docs/retrying-test/
       - title: "Standard Input and Output"
         url: /docs/standard-input-output/
-      - title: "@Stopwatch"
+      - title: "Stopwatch"
         url: /docs/stopwatch/
-      - title: "TempDirectory"
       - title: "Temporary Files and Directories"
         url: /docs/temp-directory/
       - title: "Vintage @Test"
