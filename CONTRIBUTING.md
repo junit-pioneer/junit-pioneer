@@ -126,6 +126,28 @@ We can divide those kinds of assertions into two categories: test case assertion
 
 Do not mix the two - while technically correct (meaning you _can_ write `hasNumberOfFailedTests(3).hasSingleSucceededTest()`) it is better to handle them separately.
 
+#### Thread-safety
+
+It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.
+To that end it is necessary to understand [JUnit Jupiter's parallel execution](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution)), particularly [the synchronization mechanisms it offers](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution-synchronization): `@Execution` and `@ResourceLock`.
+
+For extensions touching global state (like default locales or environment variables), we've chosen the following approach:
+
+* the extension acquires a read/write lock to the global resource (this prevents extended tests from running in parallel)
+* we offer a `@Writes...` annotation that does the same thing, so users can annotate their tests that write to the same resource and prevent them from running in parallel with each other and with extended tests
+* we offer a `@Reads...` annotation that acquires read access to the same lock, so users can make sure such tests do not run in parallel with tests that write to the same resource (they can run in parallel with one another, though)
+
+To have a better chance to discover threading-related problems in our extensions, we parallelize our own tests (configured in [`junit-platform.properties`](src/test/resources/junit-platform.properties)) .
+Ideally, we'd like to run them in parallel _across_ and _within_ top-level classes, but unfortunately, [this leads to problems](https://github.com/junit-pioneer/junit-pioneer/pull/253#issuecomment-665235062) when some test setups change global state (like the security manager) that other tests rely on.
+As we see it, the solution would be to force such tests onto a single thread, but [Jupiter has no such feature, yet](https://github.com/junit-team/junit5/issues/2142).
+While a homegrown solution [is possible](https://github.com/junit-team/junit5/issues/2142#issuecomment-668409251), we wait for the discussion to resolve.
+We hence do not parallelize across top-level classes - just within.
+
+Most extensions verify their configuration at some point.
+It helps with writing parallel tests for them if they do not change global state until the configuration is verified.
+That particularly applies to "store in beforeEach - restore in afterEach"-extensions!
+If they fail after "store", they will still "restore" and thus potentially create a race condition with other tests.
+
 ### Documentation
 
 There are several aspects of this project's documentation.
@@ -299,10 +321,9 @@ JUnit Pioneer uses [Shipkit](http://shipkit.org/) and [GitHub Actions](https://g
 Instead, releases must be triggered manually:
 
 1. make sure that the file [`version-properties`](version.properties) defines the correct version (see next section)
-2. push a tag `releaseTrigger` to `master`
+2. trigger the [`Release` GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3ARelease) manually for the master branch.
 
-GitHub Actions will then tell Shipkit to do its thing and afterwards delete the tag.
-The tag is always deleted, even if the release fails, so it is easy to trigger another one.
+GitHub Actions will then tell Shipkit to do its thing.
 
 Every new version is published to the `junit-pioneer/maven` Bintray repository as well as to Maven Central and JCenter.
 This also triggers a website build - [see its `README.md`](https://github.com/junit-pioneer/junit-pioneer.github.io) for more information.

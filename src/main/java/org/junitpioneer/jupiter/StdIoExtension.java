@@ -32,8 +32,8 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 	private static final Namespace NAMESPACE = Namespace.create(StdIoExtension.class);
 
 	private static final String SYSTEM_IN_KEY = "StdIo_System_In";
+	private static final String SYSTEM_OUT_KEY = "StdIo_System_Out";
 	private static final String STD_IN_KEY = "StdIo_Std_In";
-	private static final String OUT_KEY = "StdIo_Std_Out";
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
@@ -71,7 +71,7 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 	}
 
 	private void storeStdOut(ExtensionContext context) {
-		context.getStore(NAMESPACE).put(OUT_KEY, System.out); //NOSONAR never writing to System.out, only storing it
+		context.getStore(NAMESPACE).put(SYSTEM_OUT_KEY, System.out); //NOSONAR never writing to System.out, only storing it
 	}
 
 	private StdOut createOut() {
@@ -110,8 +110,15 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		System.setIn(context.getStore(NAMESPACE).getOrDefault(SYSTEM_IN_KEY, InputStream.class, System.in)); //NOSONAR resetting input
-		System.setOut(context.getStore(NAMESPACE).getOrDefault(OUT_KEY, PrintStream.class, System.out)); //NOSONAR resetting input
+		// only reset those streams that were actually stored in "before"
+
+		InputStream storedSystemIn = context.getStore(NAMESPACE).get(SYSTEM_IN_KEY, InputStream.class);
+		if (storedSystemIn != null)
+			System.setIn(storedSystemIn); //NOSONAR resetting input
+
+		PrintStream storedSystemOut = context.getStore(NAMESPACE).get(SYSTEM_OUT_KEY, PrintStream.class);
+		if (storedSystemOut != null)
+			System.setOut(storedSystemOut); //NOSONAR resetting input
 	}
 
 }
