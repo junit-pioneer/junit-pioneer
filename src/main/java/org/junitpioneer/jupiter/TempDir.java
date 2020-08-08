@@ -28,6 +28,11 @@ import java.nio.file.Path;
  * arbitrary file systems, you should consider using that instead of this
  * extension.</p>
  *
+ * <p>This extension may or may not be safe to use during
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
+ * so please be cautious. (We're working on it.)
+ * </p>
+ *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/temp-directory/" target="_top">the documentation on <code>TempDirectory</code></a>.
  * </p>

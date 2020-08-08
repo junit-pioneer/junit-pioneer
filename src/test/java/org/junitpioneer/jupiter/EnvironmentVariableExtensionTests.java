@@ -171,6 +171,7 @@ class EnvironmentVariableExtensionTests {
 		class NestedClass {
 
 			@Test
+			@ReadsEnvironmentVariable
 			@DisplayName("environment variables should be set from enclosed class when they are not provided in nested")
 			public void shouldSetEnvironmentVariableFromEnclosedClass() {
 				assertThat(systemEnvironmentVariable("set prop A")).isNull();
@@ -185,6 +186,7 @@ class EnvironmentVariableExtensionTests {
 		class AnnotatedNestedClass {
 
 			@Test
+			@ReadsEnvironmentVariable
 			@DisplayName("environment variable should be set from nested class when it is provided")
 			public void shouldSetEnvironmentVariableFromNestedClass() {
 				assertThat(systemEnvironmentVariable("set prop B")).isEqualTo("newer B");
@@ -238,6 +240,13 @@ class EnvironmentVariableExtensionTests {
 	}
 
 	@Nested
+	// These tests verify whether warnings are reported correctly. For the warnings to be
+	// actually reported, `EnvironmentVariableExtension.REPORTED_WARNING` needs to be reset
+	// to `false` before each test and no other test must run in parallel because it may
+	// generate its own warning, thus setting the flag to `true`, preventing that these
+	// tests here can report anything. To make sure, these tests are not run in parallel
+	// with any other environment-variable-writing test, we apply the following annotation:
+	@WritesEnvironmentVariable
 	class ReportWarningTests {
 
 		@BeforeEach

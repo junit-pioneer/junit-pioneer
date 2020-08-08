@@ -96,7 +96,7 @@ In lexicographic order, these are:
 JUnit Pioneer, as small as it is, would be much smaller without kind souls contributing their time, energy, and skills.
 Thank you for your efforts! 🙏
 
-The least we can do is to thank them and list their accomplishments here (in lexicographic order).
+The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
 #### 2020
 
@@ -107,7 +107,7 @@ The least we can do is to thank them and list their accomplishments here (in lex
 * [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
 * [Mark Rösler](https://github.com/Hancho2009) contributed the [environment variable extension](https://junit-pioneer.org/docs/environment-variables/) (#167 / #174 and #241 / #242)
 * [Matthias Bünger](https://github.com/Bukama) opened, vetted, and groomed countless issues and PRs and contributed multiple refactorings (e.g. #165 / #168) and fixes (e.g. #190 / #200) before getting promoted to maintainer
-* [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), added tests to other extensions (#164 / #272), and commented on multiple issues and PRs
+* [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), added tests to other extensions (#164 / #272), and contributed to multiple issues (e.g. #217 / #298) and PRs (e.g. #253, #307)
 * [Nishant Vashisth](https://github.com/nishantvas) contributed an [extension to disable parameterized tests](https://junit-pioneer.org/docs/disable-if-display-name/) by display name (#163 / #175)
 * [Simon Schrottner](https://github.com/aepfli) contributed to multiple issues and PRs and almost single-handedly revamped the build and QA process (e.g. #192 / #185) before getting promoted to maintainer
 * [Sullis](https://github.com/sullis) improved GitHub Actions with Gradle Wrapper Validation check (#302)

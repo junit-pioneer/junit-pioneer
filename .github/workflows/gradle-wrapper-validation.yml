@@ -1,18 +1,19 @@
-name: "Validate Gradle Wrapper"
+name: Gradle wrapper validation
 
 on:
   push:
     branches: 'master'
     tags-ignore:
       - 'v**'
-      - 'releaseTrigger'
   pull_request:
     branches: '*'
 
 jobs:
   validation:
-    name: "Validation"
     runs-on: ubuntu-latest
+    name: on ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: gradle/wrapper-validation-action@v1
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1

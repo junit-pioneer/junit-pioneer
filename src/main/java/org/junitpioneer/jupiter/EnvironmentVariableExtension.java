@@ -34,7 +34,6 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 
 	@Override
 	protected Set<String> entriesToClear(ExtensionContext context) {
-		reportWarning(context);
 		return PioneerAnnotationUtils
 				.findClosestEnclosingRepeatableAnnotations(context, ClearEnvironmentVariable.class)
 				.map(ClearEnvironmentVariable::key)
@@ -43,13 +42,13 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 
 	@Override
 	protected Map<String, String> entriesToSet(ExtensionContext context) {
-		reportWarning(context);
 		return PioneerAnnotationUtils
 				.findClosestEnclosingRepeatableAnnotations(context, SetEnvironmentVariable.class)
 				.collect(toMap(SetEnvironmentVariable::key, SetEnvironmentVariable::value));
 	}
 
-	private void reportWarning(ExtensionContext context) {
+	@Override
+	protected void reportWarning(ExtensionContext context) {
 		boolean wasReported = REPORTED_WARNING.getAndSet(true);
 		if (!wasReported)
 			context.publishReportEntry(WARNING_KEY, WARNING_VALUE);

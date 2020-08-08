@@ -1,5 +1,5 @@
-:page-title: @DisableIfDisplayName
-:page-description: JUnit Jupiter extensions to selectively disable parameterized tests
+:page-title: Disable Based on DisplayName
+:page-description: Extends JUnit Jupiter with `@DisableIfDisplayName`, which selectively disables parameterized tests
 
 The `@DisableIfDisplayName` annotation can be used to selectively disable parameterized tests based on their display names, which are dynamically registered on runtime.
 The annotation is only supported on test method level for parameterized tests.
