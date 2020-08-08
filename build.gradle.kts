@@ -13,7 +13,7 @@ group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_1_8
+	sourceCompatibility = JavaVersion.VERSION_11
 }
 
 repositories {
