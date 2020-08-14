@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
-import static org.junit.platform.commons.support.ReflectionSupport.findMethod;
 import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
 
 import java.lang.reflect.Method;
@@ -59,18 +58,16 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	private CartesianProductTest.Sets invokeSetsFactory(Method testMethod) {
 		Class<?> declaringClass = testMethod.getDeclaringClass();
 		String name = testMethod.getName();
-		Method factory = findMethod(declaringClass, name)
-				.orElseThrow(() -> new AssertionError(
-					"Method `CartesianProductTest.Sets " + name + "()` not found in " + declaringClass));
+		Method factory = PioneerUtils
+				.findMethodCurrentOrEnclosing(declaringClass, name)
+				.orElseThrow(() -> new AssertionError("Method `CartesianProductTest.Sets " + name + "()` not found in "
+						+ declaringClass + "or any enclosing class"));
 		String method = "Method `" + factory + "`";
 		if (!Modifier.isStatic(factory.getModifiers())) {
 			throw new AssertionError(method + " must be static");
 		}
 		if (!CartesianProductTest.Sets.class.isAssignableFrom(factory.getReturnType())) {
 			throw new AssertionError(method + " must return `CartesianProductTest.Sets`");
-		}
-		if (factory.getParameterCount() != 0) {
-			throw new AssertionError(method + " must not have parameters");
 		}
 		return (CartesianProductTest.Sets) invokeMethod(factory, null);
 	}

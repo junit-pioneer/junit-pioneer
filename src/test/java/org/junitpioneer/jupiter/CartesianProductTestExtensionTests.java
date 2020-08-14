@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
@@ -20,33 +22,36 @@ import org.junit.jupiter.api.TestInfo;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-
 public class CartesianProductTestExtensionTests {
 
-	@CartesianProductTest(value = "0")
-	void empty() {
-	}
+	@Nested
+	class StandardBehaviouralTests {
 
-	@CartesianProductTest(value = { "0", "1", "2" })
-	void singleParameter(String param) {
-		int value = Integer.parseInt(param);
-		Assertions.assertThat(value).isBetween(0, 2);
-	}
+		@CartesianProductTest(value = "0")
+		void empty() {
+		}
 
-	@CartesianProductTest({ "0", "1" })
-	void threeBits(String a, String b, String c) {
-		int value = Integer.parseUnsignedInt(a + b + c, 2);
-		Assertions.assertThat(value).isBetween(0b000, 0b111);
-	}
+		@CartesianProductTest(value = { "0", "1", "2" })
+		void singleParameter(String param) {
+			int value = Integer.parseInt(param);
+			Assertions.assertThat(value).isBetween(0, 2);
+		}
 
-	@CartesianProductTest
-	@DisplayName("S ⨯ T ⨯ U")
-	void nFold(String string, Class<?> type, TimeUnit unit, TestInfo info) {
-		Assertions.assertThat(string).endsWith("a");
-		Assertions.assertThat(type).isInterface();
-		Assertions.assertThat(unit.name()).endsWith("S");
-		Assertions.assertThat(info.getTags()).isEmpty();
+		@CartesianProductTest({ "0", "1" })
+		void threeBits(String a, String b, String c) {
+			int value = Integer.parseUnsignedInt(a + b + c, 2);
+			Assertions.assertThat(value).isBetween(0b000, 0b111);
+		}
+
+		@CartesianProductTest
+		@DisplayName("S ⨯ T ⨯ U")
+		void nFold(String string, Class<?> type, TimeUnit unit, TestInfo info) {
+			Assertions.assertThat(string).endsWith("a");
+			Assertions.assertThat(type).isInterface();
+			Assertions.assertThat(unit.name()).endsWith("S");
+			Assertions.assertThat(info.getTags()).isEmpty();
+		}
+
 	}
 
 	static CartesianProductTest.Sets nFold() {
@@ -58,16 +63,47 @@ public class CartesianProductTestExtensionTests {
 
 	@Nested
 	class BadConfigurationTests {
+
 		@Test
 		@DisplayName("Test fails when there is no factory method")
-		void factory1() {
-			ExecutionResults results = PioneerTestKit.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "noFactory", "int");
+		void throwsForMissingFactoryMethod() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "noFactory", int.class);
 
-			assertThat(results).hasSingleFailedContainer().withExceptionInstanceOf(AssertionError.class).hasMessageContaining("not found");
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(AssertionError.class)
+					.hasMessageContaining("not found");
 		}
+
+		@Test
+		@DisplayName("Test fails when the factory is not static")
+		void throwsForNonStaticFactoryMethod() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "nonStaticFactory", int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(AssertionError.class)
+					.hasMessageContaining("must be static");
+		}
+
+		@Test
+		@DisplayName("Test fails when the factory does not return Sets")
+		void throwsForWrongReturnValueFactoryMethod() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "wrongReturnFactory", int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(AssertionError.class)
+					.hasMessageContaining("must return");
+		}
+
 	}
 
 	static class BadConfigurationTest {
+
 		@CartesianProductTest
 		void noFactory(int i) {
 		}
@@ -77,8 +113,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		CartesianProductTest.Sets nonStaticFactory() {
-			return new CartesianProductTest.Sets()
-					.add(1, 2, 3);
+			return new CartesianProductTest.Sets().add(1, 2, 3);
 		}
 
 		@CartesianProductTest
@@ -89,14 +124,6 @@ public class CartesianProductTestExtensionTests {
 			return 0;
 		}
 
-		@CartesianProductTest
-		void parameterizedFactory(int i, int j) {
-		}
-
-		static CartesianProductTest.Sets parameterizedFactory(int i) {
-			return new CartesianProductTest.Sets()
-					.add(i, 1, 3, 6)
-					.add(i, 2, 4, 8);
-		}
 	}
+
 }
