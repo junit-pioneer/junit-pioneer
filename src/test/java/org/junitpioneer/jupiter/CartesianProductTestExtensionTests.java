@@ -23,7 +23,7 @@ public class CartesianProductTestExtensionTests {
 	void empty() {
 	}
 
-	@CartesianProductTest(value = {"0", "1", "2"})
+	@CartesianProductTest(value = { "0", "1", "2" })
 	void singleParameter(String param) {
 		int value = Integer.parseInt(param);
 		assertTrue(value >= 0 && value < 3);
