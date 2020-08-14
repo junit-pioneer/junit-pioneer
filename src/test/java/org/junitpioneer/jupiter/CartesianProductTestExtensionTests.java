@@ -104,7 +104,8 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("Test fails if the factory does not produce enough parameters")
 		void throwsForTooFewFactoryMethodParameters() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "incompleteFactory", int.class, String.class, TimeUnit.class);
+					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "incompleteFactory", int.class,
+						String.class, TimeUnit.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfFailedTests(3);
 		}
@@ -113,7 +114,8 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("Test fails if the factory produces too much parameters")
 		void throwsForTooManyFactoryMethodParameters() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "bloatedFactory", int.class, String.class);
+					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "bloatedFactory", int.class,
+						String.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -150,8 +152,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		static CartesianProductTest.Sets incompleteFactory() {
-			return new CartesianProductTest.Sets()
-					.add(1, 4, 9);
+			return new CartesianProductTest.Sets().add(1, 4, 9);
 		}
 
 		@CartesianProductTest
@@ -165,6 +166,7 @@ public class CartesianProductTestExtensionTests {
 					.add(TimeUnit.DAYS)
 					.add("Mucho Gusto");
 		}
+
 	}
 
 }

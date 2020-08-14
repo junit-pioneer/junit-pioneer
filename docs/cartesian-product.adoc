@@ -16,7 +16,6 @@ void threeBits(String a, String b, String c) {
 }
 ```
 
-
 The test `threeBits` is executed exactly eight times, because all three input parameters can have the value "0" or "1".
 To demonstrate with a table:
 |===

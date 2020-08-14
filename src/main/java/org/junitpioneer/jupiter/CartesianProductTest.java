@@ -21,12 +21,31 @@ import java.util.List;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+/**
+ * {@code @CartesianProductTest} is a JUnit Jupiter extension that marks
+ * a test to be executed with all possible input combinations.
+ *
+ * <p>Methods annotated with this annotation <b>MUST NOT</b> be annotated with {@code Test},
+ * because it will throw an exception.
+ * </p>
+ *
+ * <p>Methods annotated with this annotation are different from {@code ParameterizedTest}s because
+ * they can not have {@code ArgumentsSource}s - those are completely disregarded. Instead a
+ * String array must be provided (for methods with only String parameters) or a static factory method
+ * with the same name as the test method must exist.
+ * </p>
+ *
+ * @since ???
+ */
 @TestTemplate
 @ExtendWith(CartesianProductTestExtension.class)
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CartesianProductTest {
 
+	/**
+	 * Specifies {@code String} values for all inputs simultaneously.
+	 */
 	String[] value() default {};
 
 	class Sets {
