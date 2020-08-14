@@ -10,8 +10,28 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
 public class CartesianProductTestInvocationContext implements TestTemplateInvocationContext {
+
+	private final List<?> parameters;
+
+	CartesianProductTestInvocationContext(List<?> parameters) {
+		this.parameters = parameters;
+	}
+
+	@Override
+	public String getDisplayName(int invocationIndex) {
+		return invocationIndex + ": " + parameters;
+	}
+
+	@Override
+	public List<Extension> getAdditionalExtensions() {
+		return Collections.singletonList(new CartesianProductResolver(parameters));
+	}
 
 }
