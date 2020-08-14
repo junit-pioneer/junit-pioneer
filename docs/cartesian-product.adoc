@@ -1,0 +1,98 @@
+:page-title: Testing all test parameter combinations (Cartesian product)
+:page-description: Extends JUnit Jupiter with `@CartesianProductTest`, a special `@ParameterizedTest` which tests all combinations of its input
+
+Sometimes you want to test not only for specific inputs but also combinations of those inputs.
+`@CartesianProductTest` combines all test inputs and runs a test for each combination.
+
+== Basic Use
+
+`@CartesianProductTest` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
+It can have a value, or the test class can have a static factory method (that has the same name as the test method) providing the arguments.
+
+```java
+@CartesianProductTest({"0", "1"})
+void threeBits(String a, String b, String c) {
+	// passing test code
+}
+```
+
+
+The test `threeBits` is executed exactly eight times, because all three input parameters can have the value "0" or "1".
+To demonstrate with a table:
+|===
+| # of test | value of `a` | value of `b` | value of `c`
+| 1st test  | 0            | 0            | 0
+| 2nd test  | 0            | 0            | 1
+| 3rd test  | 0            | 1            | 0
+| 4th test  | 0            | 1            | 1
+| 5th test  | 1            | 0            | 0
+| 6th test  | 1            | 0            | 1
+| 7th test  | 1            | 1            | 0
+| 8th test  | 1            | 1            | 1
+|===
+
+Or with the static factory method approach:
+
+```java
+@CartesianProductTest
+void nFold(String string, Class<?> clazz, TimeUnit unit) {
+    // passing test code
+}
+
+static CartesianProductTest.Sets nFold() {
+    return new CartesianProductTest.Sets()
+        .add("Alpha", "Omega")
+        .add(Runnable.class, Cloneable.class, Predicate.class)
+        .add(TimeUnit.DAYS, TimeUnit.HOURS);
+}
+```
+
+The test `nFold` is executed exactly twelve times.
+The first parameter can have any of the two values `"Alpha"` or `"Omega"`.
+The second parameter can have any of the three values `Runnable.class`, `Cloneable.class` or `Predicate.class`.
+The third parameter can have any of the two values `TimeUnit.DAYS` or `TimeUnit.HOURS`.
+`@CartesianProductTest` tests for all input combinations; that's `2 × 3 × 2`, so twelve tests in total.
+
+== Writing a static factory method for the parameters
+
+`@CartesianProductTest` can have a factory method supplying the test parameters.
+There are a couple conditions this method has to fulfill to qualify:
+
+ - must have the same name as the test method
+ - must be `static`
+ - must have **no** parameters
+ - must return `CartesianProductTest.Sets` ^1^
+ - must register values for every parameter exactly once ^2^
+
+1: This is a helper class, specifically for creating sets for `@CartesianProductTest`.
+The way to use it: instantiate it (`new CartesianProductTest.Sets()`), then use the `add()` method to register values for the parameters (see above).
+
+2: If you register too few, too many, or conflicting ^3^ parameters, you will get an `org.junit.jupiter.api.extension.ParameterResolutionException`.
+
+3: For example, if your test method has a `TestInfo` or `TestReporter` (or any other parameter that is automatically injected by JUnit) and you register too much sets in your factory method:
+```java
+@CartesianProductTest
+void confusing(String a, TestInfo info) {
+    // completely valid test
+}
+
+static CartesianProductTest.Sets confusing() {
+    return new CartesianProductTest.Sets()
+        .add("A", "B", "C")
+        .add(1, 2, 3);
+}
+```
+
+== Combining `@CartesianProductTest` with `@Test`
+
+If `@CartesianProductTest` is combined with `@Test` or `TestTemplate`-based mechanisms (like `@RepeatedTest` or `@ParameterizedTest`), the test engine will execute it according to each annotation (i.e. more than once).
+This is most likely unwanted and will probably lead to the following exception/failure message:
+
+> org.junit.jupiter.api.extension.ParameterResolutionException:
+> No ParameterResolver registered for parameter [...]
+
+This is because `@Test` does not know what to do with the parameter(s) of the `@CartesianProductTest`.
+
+== Thread-Safety
+
+I think so?

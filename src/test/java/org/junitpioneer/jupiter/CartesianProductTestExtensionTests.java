@@ -100,6 +100,27 @@ public class CartesianProductTestExtensionTests {
 					.hasMessageContaining("must return");
 		}
 
+		@Test
+		@DisplayName("Test fails if the factory does not produce enough parameters")
+		void throwsForTooFewFactoryMethodParameters() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "incompleteFactory", int.class, String.class, TimeUnit.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfFailedTests(3);
+		}
+
+		@Test
+		@DisplayName("Test fails if the factory produces too much parameters")
+		void throwsForTooManyFactoryMethodParameters() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "bloatedFactory", int.class, String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(AssertionError.class)
+					.hasMessageContaining("must register values for each parameter");
+		}
+
 	}
 
 	static class BadConfigurationTest {
@@ -124,6 +145,26 @@ public class CartesianProductTestExtensionTests {
 			return 0;
 		}
 
+		@CartesianProductTest
+		void incompleteFactory(int number, String string, TimeUnit unit) {
+		}
+
+		static CartesianProductTest.Sets incompleteFactory() {
+			return new CartesianProductTest.Sets()
+					.add(1, 4, 9);
+		}
+
+		@CartesianProductTest
+		void bloatedFactory(int number, String string) {
+		}
+
+		static CartesianProductTest.Sets bloatedFactory() {
+			return new CartesianProductTest.Sets()
+					.add(1, 2, 3)
+					.add("Baba is you", "Fire is hot")
+					.add(TimeUnit.DAYS)
+					.add("Mucho Gusto");
+		}
 	}
 
 }

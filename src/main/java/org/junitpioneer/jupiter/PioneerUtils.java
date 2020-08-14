@@ -70,7 +70,7 @@ class PioneerUtils {
 		Optional<Method> method;
 		do {
 			// null checking done by ReflectionUtils.findMethod
-			method = findMethod(current, methodName);
+			method = findMethod(current, methodName, parameterTypes);
 			current = current.getEnclosingClass();
 		} while (!method.isPresent() && current != null);
 		return method;

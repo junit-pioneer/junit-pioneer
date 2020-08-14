@@ -69,7 +69,11 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		if (!CartesianProductTest.Sets.class.isAssignableFrom(factory.getReturnType())) {
 			throw new AssertionError(method + " must return `CartesianProductTest.Sets`");
 		}
-		return (CartesianProductTest.Sets) invokeMethod(factory, null);
+		CartesianProductTest.Sets sets = (CartesianProductTest.Sets) invokeMethod(factory, null);
+		if (sets.getSets().size() > testMethod.getParameterCount()) {
+			throw new AssertionError(method + " must register values for each parameter exactly once");
+		}
+		return sets;
 	}
 
 	private static List<List<?>> cartesianProduct(List<List<?>> lists) {
