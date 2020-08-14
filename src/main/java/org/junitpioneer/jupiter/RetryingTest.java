@@ -51,6 +51,11 @@ import org.junit.jupiter.api.parallel.Execution;
  *         <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution">parallel test execution</a></li>
  * </ul>
  *
+ * <p>During
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
+ * all repetitions of a {@code @RepeatFailedTest} are executed sequentially to guarantee thread-safety.
+ * </p>
+ *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/repeat-failed-test/" target="_top">the documentation on <code>@RepeatFailedTest</code></a>.
  * </p>
@@ -59,8 +64,8 @@ import org.junit.jupiter.api.parallel.Execution;
  */
 @Target({ METHOD, ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-// the extension is not thread-safe, so it forces execution of all retries
-// onto the same thread
+// the extension is inherently thread-unsafe (has to wait for one execution before starting the next),
+// so it forces execution of all retries onto the same thread
 @Execution(SAME_THREAD)
 @ExtendWith(RetryingTestExtension.class)
 @TestTemplate

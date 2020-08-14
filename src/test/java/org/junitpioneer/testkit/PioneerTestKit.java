@@ -10,6 +10,9 @@
 
 package org.junitpioneer.testkit;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+
 public class PioneerTestKit {
 
 	/**
@@ -38,12 +41,25 @@ public class PioneerTestKit {
 	 *
 	 * @param testClass Name of the test class
 	 * @param testMethodName Name of the test method (of the given class)
-	 * @param methodParameterTypes Full qualified types names of the parameters (e.g. "java.nio.file.Path")
+	 * @param methodParameterTypes Class type(s) of the parameter(s)
 	 * @return The execution results
+	 * @throws IllegalArgumentException when methodParameterTypes is null
+	 * 			This method only checks parameters which are not part of the underlying
+	 * 			Jupiter TestKit. The Jupiter TestKit may throw other exceptions!
 	 */
 	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
-			String methodParameterTypes) {
-		return new ExecutionResults(testClass, testMethodName, methodParameterTypes);
+			Class<?>... methodParameterTypes) {
+
+		// throw IllegalArgumentException for a `null` array instead of NPE
+		// (hence no use of `Objects::requireNonNull`)
+		if (methodParameterTypes == null) {
+			throw new IllegalArgumentException("methodParameterTypes must not be null");
+		}
+
+		// Concatenating all type names, because DiscoverySelectors.selectMethod only takes String as a parameter.
+		String allTypeNames = stream(methodParameterTypes).map(Class::getName).collect(joining(","));
+
+		return new ExecutionResults(testClass, testMethodName, allTypeNames);
 	}
 
 }
