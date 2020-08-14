@@ -19,6 +19,16 @@ import org.junit.jupiter.api.TestInfo;
 
 public class CartesianProductTestExtensionTests {
 
+	@CartesianProductTest(value = "0")
+	void empty() {
+	}
+
+	@CartesianProductTest(value = {"0", "1", "2"})
+	void singleParameter(String param) {
+		int value = Integer.parseInt(param);
+		assertTrue(value >= 0 && value < 3);
+	}
+
 	@CartesianProductTest({ "0", "1" })
 	void threeBits(String a, String b, String c) {
 		int value = Integer.parseUnsignedInt(a + b + c, 2);
