@@ -62,14 +62,15 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		Method factory = findMethod(declaringClass, name)
 				.orElseThrow(() -> new AssertionError(
 					"Method `CartesianProductTest.Sets " + name + "()` not found in " + declaringClass));
+		String method = "Method `" + factory + "`";
 		if (!Modifier.isStatic(factory.getModifiers())) {
-			throw new AssertionError("Method `" + factory + "` must be static");
+			throw new AssertionError(method + " must be static");
 		}
 		if (!CartesianProductTest.Sets.class.isAssignableFrom(factory.getReturnType())) {
-			throw new AssertionError("Method `" + factory + "` must return `CartesianProductTest.Sets`");
+			throw new AssertionError(method + " must return `CartesianProductTest.Sets`");
 		}
 		if (factory.getParameterCount() != 0) {
-			throw new AssertionError("Method `" + factory + "` must not have parameters");
+			throw new AssertionError(method + " must not have parameters");
 		}
 		return (CartesianProductTest.Sets) invokeMethod(factory, null);
 	}
@@ -81,6 +82,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 			return resultLists;
 		}
 		List<?> firstList = lists.get(0);
+		// Note the recursion here
 		List<List<?>> remainingLists = cartesianProduct(lists.subList(1, lists.size()));
 		for (Object item : firstList) {
 			for (List<?> remainingList : remainingLists) {

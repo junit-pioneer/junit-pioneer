@@ -31,14 +31,14 @@ public @interface CartesianProductTest {
 
 	class Sets {
 
-		private final List<List<?>> sets = new ArrayList<>();
+		private final List<List<?>> sets = new ArrayList<>(); //NOSONAR
 
 		public Sets add(Object... entries) {
 			sets.add(new ArrayList<>(Arrays.asList(entries)));
 			return this;
 		}
 
-		List<List<?>> getSets() {
+		List<List<?>> getSets() { //NOSONAR
 			return sets;
 		}
 

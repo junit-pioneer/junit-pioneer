@@ -10,12 +10,17 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.concurrent.TimeUnit;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
+
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 public class CartesianProductTestExtensionTests {
 
@@ -26,22 +31,22 @@ public class CartesianProductTestExtensionTests {
 	@CartesianProductTest(value = { "0", "1", "2" })
 	void singleParameter(String param) {
 		int value = Integer.parseInt(param);
-		assertTrue(value >= 0 && value < 3);
+		Assertions.assertThat(value).isBetween(0, 2);
 	}
 
 	@CartesianProductTest({ "0", "1" })
 	void threeBits(String a, String b, String c) {
 		int value = Integer.parseUnsignedInt(a + b + c, 2);
-		assertTrue((0b000 <= value) && (value <= 0b111));
+		Assertions.assertThat(value).isBetween(0b000, 0b111);
 	}
 
 	@CartesianProductTest
 	@DisplayName("S ⨯ T ⨯ U")
 	void nFold(String string, Class<?> type, TimeUnit unit, TestInfo info) {
-		assertTrue(string.endsWith("a"));
-		assertTrue(type.isInterface());
-		assertTrue(unit.name().endsWith("S"));
-		assertTrue(info.getTags().isEmpty());
+		Assertions.assertThat(string).endsWith("a");
+		Assertions.assertThat(type).isInterface();
+		Assertions.assertThat(unit.name()).endsWith("S");
+		Assertions.assertThat(info.getTags()).isEmpty();
 	}
 
 	static CartesianProductTest.Sets nFold() {
@@ -51,4 +56,47 @@ public class CartesianProductTestExtensionTests {
 				.add(TimeUnit.DAYS, TimeUnit.HOURS);
 	}
 
+	@Nested
+	class BadConfigurationTests {
+		@Test
+		@DisplayName("Test fails when there is no factory method")
+		void factory1() {
+			ExecutionResults results = PioneerTestKit.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "noFactory", "int");
+
+			assertThat(results).hasSingleFailedContainer().withExceptionInstanceOf(AssertionError.class).hasMessageContaining("not found");
+		}
+	}
+
+	static class BadConfigurationTest {
+		@CartesianProductTest
+		void noFactory(int i) {
+		}
+
+		@CartesianProductTest
+		void nonStaticFactory(int i) {
+		}
+
+		CartesianProductTest.Sets nonStaticFactory() {
+			return new CartesianProductTest.Sets()
+					.add(1, 2, 3);
+		}
+
+		@CartesianProductTest
+		void wrongReturnFactory(int i) {
+		}
+
+		static int wrongReturnFactory() {
+			return 0;
+		}
+
+		@CartesianProductTest
+		void parameterizedFactory(int i, int j) {
+		}
+
+		static CartesianProductTest.Sets parameterizedFactory(int i) {
+			return new CartesianProductTest.Sets()
+					.add(i, 1, 3, 6)
+					.add(i, 2, 4, 8);
+		}
+	}
 }
