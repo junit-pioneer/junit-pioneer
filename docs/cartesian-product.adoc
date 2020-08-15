@@ -4,19 +4,28 @@
 Sometimes you want to test not only for specific inputs but also combinations of those inputs.
 `@CartesianProductTest` combines all test inputs and runs a test for each combination.
 
+[#_basic_use]
 == Basic Use
 
 `@CartesianProductTest` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
-It can have a value, or the test class can have a static factory method (that has the same name as the test method) providing the arguments.
+The annotation can have a value (see <<Supplying a value to CartesianProductTest>>), or the test class can have a static factory method (see <<Writing a static factory method for the parameters>>) providing the arguments.
+
+== Supplying a value to CartesianProductTest
+
+If all your test parameters are strings, you can supply all input parameters simultaneously by giving a value to `@CartesianProductTest`.
+This value is the input for all parameters, and the test will try every combination it can have.
 
 ```java
 @CartesianProductTest({"0", "1"})
 void threeBits(String a, String b, String c) {
-	// passing test code
+    int value = Integer.parseUnsignedInt(a + b + c, 2);
+    Assertions.assertThat(value).isBetween(0b000, 0b111);
 }
 ```
 
 The test `threeBits` is executed exactly eight times, because all three input parameters can have the value "0" or "1".
+`@CartesianProductTest` tests for all input combinations; that's `2 × 2 × 2`, so eight tests in total.
+
 To demonstrate with a table:
 |===
 | # of test | value of `a` | value of `b` | value of `c`
@@ -30,8 +39,11 @@ To demonstrate with a table:
 | 8th test  | 1            | 1            | 1
 |===
 
-Or with the static factory method approach:
+== Writing a static factory method for the parameters
 
+`@CartesianProductTest` can have a static factory method supplying the test parameters.
+By default, this method must have the same name as the test method, but you can specify a different name with the `factory()` annotation parameter.
+[#_static-factory-example]
 ```java
 @CartesianProductTest
 void nFold(String string, Class<?> clazz, TimeUnit unit) {
@@ -51,20 +63,33 @@ The first parameter can have any of the two values `"Alpha"` or `"Omega"`.
 The second parameter can have any of the three values `Runnable.class`, `Cloneable.class` or `Predicate.class`.
 The third parameter can have any of the two values `TimeUnit.DAYS` or `TimeUnit.HOURS`.
 `@CartesianProductTest` tests for all input combinations; that's `2 × 3 × 2`, so twelve tests in total.
+To demonstrate with a table:
+|===
+| # of test  | value of `string` | value of `clazz` | value of `unit`
+| 1st test   | "Alpha"           | Runnable.class   | TimeUnit.DAYS
+| 2nd test   | "Alpha"           | Runnable.class   | TimeUnit.HOURS
+| 3rd test   | "Alpha"           | Cloneable.class  | TimeUnit.DAYS
+| 4th test   | "Alpha"           | Cloneable.class  | TimeUnit.HOURS
+| 5th test   | "Alpha"           | Predicate.class  | TimeUnit.DAYS
+| 6th test   | "Alpha"           | Predicate.class  | TimeUnit.HOURS
+| 7th test   | "Omega"           | Runnable.class   | TimeUnit.DAYS
+| 8th test   | "Omega"           | Runnable.class   | TimeUnit.HOURS
+| 9th test   | "Omega"           | Cloneable.class  | TimeUnit.DAYS
+| 10th test  | "Omega"           | Cloneable.class  | TimeUnit.HOURS
+| 11th test  | "Omega"           | Predicate.class  | TimeUnit.DAYS
+| 12th test  | "Omega"           | Predicate.class  | TimeUnit.HOURS
+|===
 
-== Writing a static factory method for the parameters
-
-`@CartesianProductTest` can have a factory method supplying the test parameters.
 There are a couple conditions this method has to fulfill to qualify:
 
- - must have the same name as the test method
- - must be `static`
- - must have **no** parameters
- - must return `CartesianProductTest.Sets` ^1^
- - must register values for every parameter exactly once ^2^
+- must have the same name as the test method or its name must be specified via `factory()`
+- must be `static`
+- must have **no** parameters
+- must return `CartesianProductTest.Sets` ^1^
+- must register values for every parameter exactly once ^2^
 
 1: This is a helper class, specifically for creating sets for `@CartesianProductTest`.
-The way to use it: instantiate it (`new CartesianProductTest.Sets()`), then use the `add()` method to register values for the parameters (see above).
+The way to use it: instantiate it (`new CartesianProductTest.Sets()`), then use the `add()` method to register values for the parameters (see <<_static-factory-example, above>>).
 
 2: If you register too few, too many, or conflicting ^3^ parameters, you will get an `org.junit.jupiter.api.extension.ParameterResolutionException`.
 
@@ -94,4 +119,4 @@ This is because `@Test` does not know what to do with the parameter(s) of the `@
 
 == Thread-Safety
 
-I think so?
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

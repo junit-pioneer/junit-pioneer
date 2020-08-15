@@ -27,11 +27,13 @@ public class CartesianProductTestExtensionTests {
 	@Nested
 	class StandardBehaviouralTests {
 
-		@CartesianProductTest(value = "0")
+		@CartesianProductTest(value = { "0", "1" })
+		@DisplayName("Does nothing if there are no parameters")
 		void empty() {
 		}
 
 		@CartesianProductTest(value = { "0", "1", "2" })
+		@DisplayName("Runs for each parameter once for single parameter")
 		void singleParameter(String param) {
 			int value = Integer.parseInt(param);
 			Assertions.assertThat(value).isBetween(0, 2);
@@ -52,6 +54,13 @@ public class CartesianProductTestExtensionTests {
 			Assertions.assertThat(info.getTags()).isEmpty();
 		}
 
+		@CartesianProductTest(factory = "supplyValues")
+		@DisplayName("Can have an explicit factory method over the implicit one")
+		void explicitFactory(String string, TimeUnit unit) {
+			Assertions.assertThat(string).isIn("War", "Peace");
+			Assertions.assertThat(unit.name()).endsWith("S");
+		}
+
 	}
 
 	static CartesianProductTest.Sets nFold() {
@@ -59,6 +68,10 @@ public class CartesianProductTestExtensionTests {
 				.add("Alpha", "Omega")
 				.add(Runnable.class, Comparable.class, TestInfo.class)
 				.add(TimeUnit.DAYS, TimeUnit.HOURS);
+	}
+
+	static CartesianProductTest.Sets supplyValues() {
+		return new CartesianProductTest.Sets().add("War", "Peace").add(TimeUnit.SECONDS, TimeUnit.DAYS);
 	}
 
 	@Nested

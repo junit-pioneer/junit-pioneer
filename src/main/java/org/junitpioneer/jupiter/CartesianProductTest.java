@@ -48,6 +48,8 @@ public @interface CartesianProductTest {
 	 */
 	String[] value() default {};
 
+	String factory() default "";
+
 	class Sets {
 
 		private final List<List<?>> sets = new ArrayList<>(); //NOSONAR

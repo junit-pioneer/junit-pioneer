@@ -39,12 +39,11 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	}
 
 	private List<List<?>> computeSets(Method testMethod) {
-		String[] value = findAnnotation(testMethod, CartesianProductTest.class)
-				.orElseThrow(() -> new AssertionError("@CartesianProductTest not found"))
-				.value();
+		CartesianProductTest annotation = findAnnotation(testMethod, CartesianProductTest.class)
+				.orElseThrow(() -> new AssertionError("@CartesianProductTest not found"));
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
-		if (value.length > 0) {
-			List<String> strings = Arrays.asList(value);
+		if (annotation.value().length > 0) {
+			List<String> strings = Arrays.asList(annotation.value());
 			List<List<?>> sets = new ArrayList<>();
 			for (int i = 0; i < testMethod.getParameterTypes().length; i++) {
 				sets.add(strings);
@@ -52,16 +51,17 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 			return sets;
 		}
 		// No single entry supplied? Try the sets factory method instead...
-		return invokeSetsFactory(testMethod).getSets();
+		String factoryMethod = annotation.factory().isEmpty() ? testMethod.getName() : annotation.factory();
+
+		return invokeSetsFactory(testMethod, factoryMethod).getSets();
 	}
 
-	private CartesianProductTest.Sets invokeSetsFactory(Method testMethod) {
+	private CartesianProductTest.Sets invokeSetsFactory(Method testMethod, String factoryMethodName) {
 		Class<?> declaringClass = testMethod.getDeclaringClass();
-		String name = testMethod.getName();
 		Method factory = PioneerUtils
-				.findMethodCurrentOrEnclosing(declaringClass, name)
-				.orElseThrow(() -> new AssertionError("Method `CartesianProductTest.Sets " + name + "()` not found in "
-						+ declaringClass + "or any enclosing class"));
+				.findMethodCurrentOrEnclosing(declaringClass, factoryMethodName)
+				.orElseThrow(() -> new AssertionError("Method `CartesianProductTest.Sets " + factoryMethodName
+						+ "()` not found in " + declaringClass + "or any enclosing class"));
 		String method = "Method `" + factory + "`";
 		if (!Modifier.isStatic(factory.getModifiers())) {
 			throw new AssertionError(method + " must be static");
