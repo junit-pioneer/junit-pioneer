@@ -1,4 +1,4 @@
-name: Experimental JUnit 5 build
+name: Experimental build
 
 on:
   push:
@@ -40,8 +40,8 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        gradleVersion: [ 'current', 'rc' ] # we could add here others too, just for the fun of it
-    name: with Gradle Version ${{ matrix.gradleVersion }} on ubuntu-latest
+        gradleVersion: [ 'current' ] # we could add here others too, just for the fun of it
+    name: with Gradle ${{ matrix.gradleVersion }} on ubuntu-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
