@@ -43,6 +43,10 @@ To demonstrate with a table:
 
 `@CartesianProductTest` can have a static factory method supplying the test parameters.
 By default, this method must have the same name as the test method, but you can specify a different name with the `factory()` annotation parameter.
+This method must return `CartesianProductTest.Sets`.
+`CartesianProductTest.Sets` is a helper class, specifically for creating sets for `@CartesianProductTest`.
+The way to use it: instantiate it (`new CartesianProductTest.Sets()`), then use the `add()` method to register values for the parameters (see <<_static-factory-example, the example>>).
+
 [#_static-factory-example]
 ```java
 @CartesianProductTest
@@ -56,6 +60,17 @@ static CartesianProductTest.Sets nFold() {
         .add(Runnable.class, Cloneable.class, Predicate.class)
         .add(TimeUnit.DAYS, TimeUnit.HOURS);
 }
+
+@CartesianProductTest(factory = "provideArguments")
+void aTestMethodThatNeedsArguments(String string, int i) {
+    // passing test code
+}
+
+static CartesianProductTest.Sets provideArguments() {
+    return new CartesianProductTest.Sets()
+        .add("Mercury", "Earth", "Venus")
+        .add(1, 12, 144);
+}
 ```
 
 The test `nFold` is executed exactly twelve times.
@@ -63,6 +78,7 @@ The first parameter can have any of the two values `"Alpha"` or `"Omega"`.
 The second parameter can have any of the three values `Runnable.class`, `Cloneable.class` or `Predicate.class`.
 The third parameter can have any of the two values `TimeUnit.DAYS` or `TimeUnit.HOURS`.
 `@CartesianProductTest` tests for all input combinations; that's `2 × 3 × 2`, so twelve tests in total.
+
 To demonstrate with a table:
 |===
 | # of test  | value of `string` | value of `clazz` | value of `unit`
@@ -80,27 +96,39 @@ To demonstrate with a table:
 | 12th test  | "Omega"           | Predicate.class  | TimeUnit.HOURS
 |===
 
-There are a couple conditions this method has to fulfill to qualify:
+=== Conditions for the static factory method
+
+There are a couple conditions the static factory method has to fulfill to qualify:
 
 - must have the same name as the test method or its name must be specified via `factory()`
 - must be `static`
 - must have **no** parameters
-- must return `CartesianProductTest.Sets` ^1^
-- must register values for every parameter exactly once ^2^
+- must return `CartesianProductTest.Sets`
+- must register values for every parameter exactly once
+- must register values in order
 
-1: This is a helper class, specifically for creating sets for `@CartesianProductTest`.
-The way to use it: instantiate it (`new CartesianProductTest.Sets()`), then use the `add()` method to register values for the parameters (see <<_static-factory-example, above>>).
+=== Returning wrong `Sets` in the static factory method
 
-2: If you register too few, too many, or conflicting ^3^ parameters, you will get an `org.junit.jupiter.api.extension.ParameterResolutionException`.
+If you register too few, too many, or conflicting parameters, you will get an `org.junit.jupiter.api.extension.ParameterResolutionException`.
+For example, if your test method has a `TestInfo` or `TestReporter` (or any other parameter that is automatically injected by JUnit), and you register too many sets in your factory method:
 
-3: For example, if your test method has a `TestInfo` or `TestReporter` (or any other parameter that is automatically injected by JUnit) and you register too much sets in your factory method:
 ```java
-@CartesianProductTest
-void confusing(String a, TestInfo info) {
-    // completely valid test
+@CartesianProductTest(factory = "resolveParameters")
+void tooFewParameters(String string, int i, boolean b) {
+    // fails because the boolean parameter is not resolved
 }
 
-static CartesianProductTest.Sets confusing() {
+@CartesianProductTest(factory = "resolveParameters")
+void tooManyParameters(String string) {
+    // fails because we try to supply a non-existent integer parameter
+}
+
+@CartesianProductTest(factory = "resolveParameters")
+void conflictingParameters(String string, TestInfo info) {
+    // fails because both the factory method and JUnit tries to inject TestInfo
+}
+
+static CartesianProductTest.Sets resolveParameters() {
     return new CartesianProductTest.Sets()
         .add("A", "B", "C")
         .add(1, 2, 3);

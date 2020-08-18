@@ -19,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -71,14 +72,19 @@ public class CartesianProductTestExtensionTests {
 	}
 
 	static CartesianProductTest.Sets supplyValues() {
-		return new CartesianProductTest.Sets().add("War", "Peace").add(TimeUnit.SECONDS, TimeUnit.DAYS);
+		//@formatter:off
+		return new CartesianProductTest.Sets()
+				.add("War", "Peace")
+				.add(TimeUnit.SECONDS, TimeUnit.DAYS);
+		//@formatter:on
 	}
 
 	@Nested
+	@DisplayName("CartesianProduct test fails when")
 	class BadConfigurationTests {
 
 		@Test
-		@DisplayName("Test fails when there is no factory method")
+		@DisplayName("there is no factory method")
 		void throwsForMissingFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "noFactory", int.class);
@@ -90,7 +96,19 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("Test fails when the factory is not static")
+		@DisplayName("there is implicit factory method but explicit factory name was given")
+		void throwsForMissingExplicitFactoryMethod() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "hasImplicitFactory", int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(AssertionError.class)
+					.hasMessageContaining("not found");
+		}
+
+		@Test
+		@DisplayName("the factory is not static")
 		void throwsForNonStaticFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "nonStaticFactory", int.class);
@@ -102,7 +120,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("Test fails when the factory does not return Sets")
+		@DisplayName("the factory does not return Sets")
 		void throwsForWrongReturnValueFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "wrongReturnFactory", int.class);
@@ -114,7 +132,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("Test fails if the factory does not produce enough parameters")
+		@DisplayName("the factory does not produce enough parameters")
 		void throwsForTooFewFactoryMethodParameters() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "incompleteFactory", int.class,
@@ -124,7 +142,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("Test fails if the factory produces too much parameters")
+		@DisplayName("the factory produces too much parameters")
 		void throwsForTooManyFactoryMethodParameters() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "bloatedFactory", int.class,
@@ -132,8 +150,22 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(AssertionError.class)
+					.withExceptionInstanceOf(ParameterResolutionException.class)
 					.hasMessageContaining("must register values for each parameter");
+		}
+
+		@Test
+		@DisplayName("the factory produces parameters in the wrong order")
+		void throwsForFactoryWithWrongParameterOrder() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "wrongOrder", String.class,
+						int.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(6)
+					.hasNumberOfFailedTests(6)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ParameterResolutionException.class);
 		}
 
 	}
@@ -142,6 +174,14 @@ public class CartesianProductTestExtensionTests {
 
 		@CartesianProductTest
 		void noFactory(int i) {
+		}
+
+		@CartesianProductTest(factory = "nonExistentFactory")
+		void hasImplicitFactory(int i) {
+		}
+
+		static CartesianProductTest.Sets hasImplicitFactory() {
+			return new CartesianProductTest.Sets().add(1, 2, 3);
 		}
 
 		@CartesianProductTest
@@ -178,6 +218,15 @@ public class CartesianProductTestExtensionTests {
 					.add("Baba is you", "Fire is hot")
 					.add(TimeUnit.DAYS)
 					.add("Mucho Gusto");
+		}
+
+		@CartesianProductTest(factory = "getParams")
+		void wrongOrder(String string, int i) {
+
+		}
+
+		static CartesianProductTest.Sets getParams() {
+			return new CartesianProductTest.Sets().add(1, 2, 4).add("Message #1", "Message #2");
 		}
 
 	}

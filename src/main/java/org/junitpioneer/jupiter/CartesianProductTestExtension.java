@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 
@@ -71,7 +72,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		}
 		CartesianProductTest.Sets sets = (CartesianProductTest.Sets) invokeMethod(factory, null);
 		if (sets.getSets().size() > testMethod.getParameterCount()) {
-			throw new AssertionError(method + " must register values for each parameter exactly once");
+			throw new ParameterResolutionException(method + " must register values for each parameter exactly once");
 		}
 		return sets;
 	}

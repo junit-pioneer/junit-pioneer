@@ -48,6 +48,9 @@ public @interface CartesianProductTest {
 	 */
 	String[] value() default {};
 
+	/**
+	 * Specifies the name of the method that supplies the {@code Sets} for the test.
+	 */
 	String factory() default "";
 
 	class Sets {
