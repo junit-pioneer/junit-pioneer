@@ -138,7 +138,11 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "incompleteFactory", int.class,
 						String.class, TimeUnit.class);
 
-			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfFailedTests(3);
+			//@formatter:off
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(3)
+					.hasNumberOfFailedTests(3);
+			//@formatter:on
 		}
 
 		@Test
@@ -161,11 +165,11 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "wrongOrder", String.class,
 						int.class);
 
+			//@formatter:off
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(6)
-					.hasNumberOfFailedTests(6)
-					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(ParameterResolutionException.class);
+					.hasNumberOfFailedTests(6);
+			//@formatter:on
 		}
 
 	}
@@ -226,7 +230,11 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		static CartesianProductTest.Sets getParams() {
-			return new CartesianProductTest.Sets().add(1, 2, 4).add("Message #1", "Message #2");
+			//@formatter:off
+			return new CartesianProductTest.Sets()
+					.add(1, 2, 4)
+					.add("Message #1", "Message #2");
+			//@formatter:on
 		}
 
 	}
