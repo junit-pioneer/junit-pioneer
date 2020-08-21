@@ -19,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -48,14 +49,14 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest({ "0", "1" })
-		@DisplayName("creates an n-fold cartesian product from a single value")
+		@DisplayName("creates a 3-fold cartesian product from a single value")
 		void threeBits(String a, String b, String c) {
 			int value = Integer.parseUnsignedInt(a + b + c, 2);
 			Assertions.assertThat(value).isBetween(0b000, 0b111);
 		}
 
 		@CartesianProductTest
-		@DisplayName("creates an n-fold cartesian product from an implicit factory method")
+		@DisplayName("creates a 3-fold cartesian product from an implicit factory method")
 		void nFold(String string, Class<?> type, TimeUnit unit, TestInfo info) {
 			Assertions.assertThat(string).endsWith("a");
 			Assertions.assertThat(type).isInterface();
@@ -64,14 +65,14 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest(factory = "supplyValues")
-		@DisplayName("creates an n-fold cartesian product from an explicit factory method")
+		@DisplayName("creates a 2-fold cartesian product from an explicit factory method")
 		void explicitFactory(String string, TimeUnit unit) {
 			Assertions.assertThat(string).isIn("War", "Peace");
 			Assertions.assertThat(unit.name()).endsWith("S");
 		}
 
 		@Test
-		@DisplayName("creates an n-fold cartesian product when all parameters are supplied via @CartesianValueSource")
+		@DisplayName("creates a 2-fold cartesian product when all parameters are supplied via @CartesianValueSource")
 		void test() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "poeticValues",
@@ -88,7 +89,7 @@ public class CartesianProductTestExtensionTests {
 		void autoInjectedParams() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "injected", String.class,
-						TestInfo.class);
+						TestReporter.class);
 
 			//@formatter:off
 			assertThat(results)
@@ -340,7 +341,7 @@ public class CartesianProductTestExtensionTests {
 		@CartesianValueSource(strings = { "Then took the other, as just as fair,",
 				"And having perhaps the better claim", "Because it was grassy and wanted wear,",
 				"Though as for that the passing there", "Had worn them really about the same," })
-		void injected(String poemLine, TestInfo info) {
+		void injected(String poemLine, TestReporter reporter) {
 		}
 
 		@CartesianProductTest
