@@ -1,51 +1,95 @@
 :page-title: Testing all test parameter combinations (Cartesian product)
 :page-description: Extends JUnit Jupiter with `@CartesianProductTest`, a special `@ParameterizedTest` which tests all combinations of its input
 
-Sometimes you want to test not only for specific inputs but also combinations of those inputs.
-`@CartesianProductTest` combines all test inputs and runs a test for each combination.
+From Wikipedia, the free encyclopedia:
 
-[#_basic_use]
+> In mathematics, specifically set theory, the Cartesian product of two sets A and B, denoted A × B, is the set of all ordered pairs (a, b) where a is in A and b is in B.
+> In terms of set-builder notation, that is `A × B = {(a,b) | a ∈ A and b ∈ B}`
+> +[...]+
+> One can similarly define the Cartesian product of n sets, also known as an n-fold Cartesian product, which can be represented by an n-dimensional array, where each element is an n-tuple.
+
+What does all this mean?
+
+The cartesian product of sets is all the possible combinations where you take a single element from each set.
+If you have two sets, `{1, 2}` and `{3, 4}`, their cartesian product is `{{1, 3}, {1, 4}, {2, 3}, {2, 4}}`.
+
+You can use `@CartesianProductTest` and define test parameter sets to run the same test on the cartesian product.
+This means that `@CartesianProductTest` takes the possible test parameter values and runs the test for every possible combination of them.
+
 == Basic Use
 
 `@CartesianProductTest` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
-The annotation can have a value (see <<Supplying a value to CartesianProductTest>>), or the test class can have a static factory method (see <<Writing a static factory method for the parameters>>) providing the arguments.
+The annotation can have a value (see <<Supplying a value to CartesianProductTest>>), the test method can be annotated with `@CartesianValueSource` (see <<Annotating your test method with @CartesianValueSource>>), or the test class can have a static factory method (see <<Writing a static factory method for the parameters>>) providing the arguments.
 
 == Supplying a value to CartesianProductTest
 
-If all your test parameters are strings, you can supply all input parameters simultaneously by giving a value to `@CartesianProductTest`.
-This value is the input for all parameters, and the test will try every combination it can have.
+If all your test parameters are strings, you can supply all input parameters simultaneously by giving a string array value to `@CartesianProductTest`.
+This value is the input for all parameters, and the test will try every combination of its elements.
 
 ```java
-@CartesianProductTest({"0", "1"})
+@CartesianProductTest({ "0", "1" })
 void threeBits(String a, String b, String c) {
-    int value = Integer.parseUnsignedInt(a + b + c, 2);
-    Assertions.assertThat(value).isBetween(0b000, 0b111);
+    // passing test code
 }
 ```
 
-The test `threeBits` is executed exactly eight times, because all three input parameters can have the value "0" or "1".
+The test `threeBits` is executed exactly eight times, because all three input parameters can have the values "0" or "1".
 `@CartesianProductTest` tests for all input combinations; that's `2 × 2 × 2`, so eight tests in total.
 
 To demonstrate with a table:
 |===
-| # of test | value of `a` | value of `b` | value of `c`
-| 1st test  | 0            | 0            | 0
-| 2nd test  | 0            | 0            | 1
-| 3rd test  | 0            | 1            | 0
-| 4th test  | 0            | 1            | 1
-| 5th test  | 1            | 0            | 0
-| 6th test  | 1            | 0            | 1
-| 7th test  | 1            | 1            | 0
-| 8th test  | 1            | 1            | 1
+| # of test | value of `a`   | value of `b`   | value of `c`
+| 1st test  | "0"            | "0"            | "0"
+| 2nd test  | "0"            | "0"            | "1"
+| 3rd test  | "0"            | "1"            | "0"
+| 4th test  | "0"            | "1"            | "1"
+| 5th test  | "1"            | "0"            | "0"
+| 6th test  | "1"            | "0"            | "1"
+| 7th test  | "1"            | "1"            | "0"
+| 8th test  | "1"            | "1"            | "1"
 |===
+
+== Annotating your test method with @CartesianValueSource
+
+If you don't only supply String values to your test method like in the example above, you can annotate your method with `@CartesianValueSource`.
+This is annotation might look familiar - it mimics JUnits `@ValueSource`.
+It is used to define the possible inputs of a single test parameter.
+You define the parameter values in order (left-to-right or top-to-bottom) and the test will try every combination those values can have.
+
+```java
+@CartesianProductTest
+@CartesianValueSource(ints = { 1, 2, 4 })
+@CartesianValueSource(strings = { "A", "B" })
+void annotated(int number, String character) {
+    // passing test code
+}
+```
+
+The test `annotated` is executed exactly six times.
+The first parameter can have any of the three values `1`, `2` or `4`.
+The second parameter can have any of the two values `A` or `B`.
+`@CartesianProductTest` tests for all input combinations; that's `3 × 2`, so six tests in total.
+
+To demonstrate with a table:
+|===
+| # of test | value of `number` | value of `character`
+| 1st test  | 1                 | "A"
+| 2nd test  | 1                 | "B"
+| 3rd test  | 2                 | "A"
+| 4th test  | 2                 | "B"
+| 5th test  | 4                 | "A"
+| 6th test  | 4                 | "B"
+|===
+
+Please note that `@CartesianValueSource` is not compatible with `@ParameterizedTest`.
 
 == Writing a static factory method for the parameters
 
-`@CartesianProductTest` can have a static factory method supplying the test parameters.
+Finally, if your tests require special inputs that `@CartesianValueSource` is not able to supply, you can define a static factory method to supply your test parameters.
 By default, this method must have the same name as the test method, but you can specify a different name with the `factory()` annotation parameter.
 This method must return `CartesianProductTest.Sets`.
 `CartesianProductTest.Sets` is a helper class, specifically for creating sets for `@CartesianProductTest`.
-The way to use it: instantiate it (`new CartesianProductTest.Sets()`), then use the `add()` method to register values for the parameters (see <<_static-factory-example, the example>>).
+The way to use it: Instantiate it (`new CartesianProductTest.Sets()`), then use the `add()` method to register values for the parameters (see <<_static-factory-example, the example>>).
 
 [#_static-factory-example]
 ```java
@@ -59,17 +103,6 @@ static CartesianProductTest.Sets nFold() {
         .add("Alpha", "Omega")
         .add(Runnable.class, Cloneable.class, Predicate.class)
         .add(TimeUnit.DAYS, TimeUnit.HOURS);
-}
-
-@CartesianProductTest(factory = "provideArguments")
-void aTestMethodThatNeedsArguments(String string, int i) {
-    // passing test code
-}
-
-static CartesianProductTest.Sets provideArguments() {
-    return new CartesianProductTest.Sets()
-        .add("Mercury", "Earth", "Venus")
-        .add(1, 12, 144);
 }
 ```
 
@@ -96,9 +129,30 @@ To demonstrate with a table:
 | 12th test  | "Omega"           | Predicate.class  | TimeUnit.HOURS
 |===
 
+Remember, you can reuse the same argument provider if you explicitly give its name to `@CartesianProductTest`.
+
+```java
+
+@CartesianProductTest(factory = "provideArguments")
+void testNeedingArguments(String string, int i) {
+    // passing test code
+}
+
+@CartesianProductTest(factory = "provideArguments")
+void testNeedingSameArguments(String string, int i) {
+    // different passing test code
+}
+
+static CartesianProductTest.Sets provideArguments() {
+    return new CartesianProductTest.Sets()
+        .add("Mercury", "Earth", "Venus")
+        .add(1, 12, 144);
+}
+```
+
 === Conditions for the static factory method
 
-There are a couple conditions the static factory method has to fulfill to qualify:
+There are multiple conditions the static factory method has to fulfill to qualify:
 
 - must have the same name as the test method or its name must be specified via `factory()`
 - must be `static`
@@ -110,8 +164,9 @@ There are a couple conditions the static factory method has to fulfill to qualif
 === Returning wrong `Sets` in the static factory method
 
 If you register too few, too many, or conflicting parameters, you will get an `org.junit.jupiter.api.extension.ParameterResolutionException`.
-For example, if your test method has a `TestInfo` or `TestReporter` (or any other parameter that is automatically injected by JUnit), and you register too many sets in your factory method:
+Conflicting parameters meaning your test method has a `TestInfo` or `TestReporter` (or any other parameter that is automatically injected by JUnit), and you register too many sets in your factory method.
 
+Examples of badly configured tests/static factory method:
 ```java
 @CartesianProductTest(factory = "resolveParameters")
 void tooFewParameters(String string, int i, boolean b) {
@@ -124,8 +179,15 @@ void tooManyParameters(String string) {
 }
 
 @CartesianProductTest(factory = "resolveParameters")
+void wrongOrderParameters(int i, String string) {
+    // fails because the static factory method declared parameter sets in the wrong order
+}
+
+@CartesianProductTest(factory = "resolveParameters")
 void conflictingParameters(String string, TestInfo info) {
     // fails because both the factory method and JUnit tries to inject TestInfo
+    // OR
+    // fails because the static factory method tries to inject int instead of TestInfo
 }
 
 static CartesianProductTest.Sets resolveParameters() {
