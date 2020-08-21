@@ -20,34 +20,42 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
+/**
+ * Robert Frost: The Road Not Taken is in the public domain
+ */
+@DisplayName("CartesianProductTest")
 public class CartesianProductTestExtensionTests {
 
 	@Nested
+	@DisplayName("when configured correctly")
 	class StandardBehaviouralTests {
 
+		// This behaves the same way as an empty @ParameterizedTest
 		@CartesianProductTest(value = { "0", "1" })
-		@DisplayName("Does nothing if there are no parameters")
+		@DisplayName("does nothing if there are no parameters")
 		void empty() {
 		}
 
 		@CartesianProductTest(value = { "0", "1", "2" })
-		@DisplayName("Runs for each parameter once for single parameter")
+		@DisplayName("runs for each parameter once for single parameter")
 		void singleParameter(String param) {
 			int value = Integer.parseInt(param);
 			Assertions.assertThat(value).isBetween(0, 2);
 		}
 
 		@CartesianProductTest({ "0", "1" })
+		@DisplayName("creates an n-fold cartesian product from a single value")
 		void threeBits(String a, String b, String c) {
 			int value = Integer.parseUnsignedInt(a + b + c, 2);
 			Assertions.assertThat(value).isBetween(0b000, 0b111);
 		}
 
 		@CartesianProductTest
-		@DisplayName("S ⨯ T ⨯ U")
+		@DisplayName("creates an n-fold cartesian product from an implicit factory method")
 		void nFold(String string, Class<?> type, TimeUnit unit, TestInfo info) {
 			Assertions.assertThat(string).endsWith("a");
 			Assertions.assertThat(type).isInterface();
@@ -56,10 +64,37 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest(factory = "supplyValues")
-		@DisplayName("Can have an explicit factory method over the implicit one")
+		@DisplayName("creates an n-fold cartesian product from an explicit factory method")
 		void explicitFactory(String string, TimeUnit unit) {
 			Assertions.assertThat(string).isIn("War", "Peace");
 			Assertions.assertThat(unit.name()).endsWith("S");
+		}
+
+		@Test
+		@DisplayName("creates an n-fold cartesian product when all parameters are supplied via @CartesianValueSource")
+		void test() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "poeticValues",
+						String.class, String.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(6)
+					.hasNumberOfSucceededTests(4)
+					.hasNumberOfFailedTests(2);
+		}
+
+		@Test
+		@DisplayName("works with @CartesianValueSource and auto-injected test parameters")
+		void autoInjectedParams() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "injected", String.class,
+						TestInfo.class);
+
+			//@formatter:off
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(5)
+					.hasNumberOfSucceededTests(5);
+			//@formatter:on
 		}
 
 	}
@@ -80,7 +115,7 @@ public class CartesianProductTestExtensionTests {
 	}
 
 	@Nested
-	@DisplayName("CartesianProduct test fails when")
+	@DisplayName("fails when")
 	class BadConfigurationTests {
 
 		@Test
@@ -96,7 +131,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("there is implicit factory method but explicit factory name was given")
+		@DisplayName("there is an implicit factory method but explicit factory name was given - which does not exists")
 		void throwsForMissingExplicitFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "hasImplicitFactory", int.class);
@@ -108,7 +143,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the factory is not static")
+		@DisplayName("the factory method is not static")
 		void throwsForNonStaticFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "nonStaticFactory", int.class);
@@ -120,7 +155,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the factory does not return Sets")
+		@DisplayName("the factory method does not return Sets")
 		void throwsForWrongReturnValueFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "wrongReturnFactory", int.class);
@@ -132,7 +167,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the factory does not produce enough parameters")
+		@DisplayName("the factory method does not produce enough parameters")
 		void throwsForTooFewFactoryMethodParameters() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "incompleteFactory", int.class,
@@ -146,7 +181,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the factory produces too much parameters")
+		@DisplayName("the factory method produces too much parameters")
 		void throwsForTooManyFactoryMethodParameters() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "bloatedFactory", int.class,
@@ -159,7 +194,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the factory produces parameters in the wrong order")
+		@DisplayName("the factory method produces parameters in the wrong order")
 		void throwsForFactoryWithWrongParameterOrder() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "wrongOrder", String.class,
@@ -172,6 +207,58 @@ public class CartesianProductTestExtensionTests {
 			//@formatter:on
 		}
 
+		@Test
+		@DisplayName("not all parameters have a corresponding @CartesianValueSource")
+		void missingAnnotation() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "missing", int.class,
+						int.class);
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
+					.hasMessageContaining("No ParameterResolver registered");
+		}
+
+		@Test
+		@DisplayName("the @CartesianValueSource has the wrong type")
+		void wrongType() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "wrongType", float.class);
+
+			//@formatter:off
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(2)
+					.hasNumberOfFailedTests(2);
+			//@formatter:on
+		}
+
+		@Test
+		@DisplayName("the @CartesianValueSource defines multiple input values")
+		void badMultiple() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "badMultiple",
+						String.class, int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.hasMessageContaining("Exactly one type of input must be provided");
+		}
+
+		@Test
+		@DisplayName("the @CartesianValueSource annotations are not in order")
+		void wrongOrder() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "wrongOrder",
+						String.class, int.class);
+
+			//@formatter:off
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(10)
+					.hasNumberOfFailedTests(10);
+			//@formatter:off
+		}
 	}
 
 	static class BadConfigurationTest {
@@ -219,9 +306,8 @@ public class CartesianProductTestExtensionTests {
 		static CartesianProductTest.Sets bloatedFactory() {
 			return new CartesianProductTest.Sets()
 					.add(1, 2, 3)
-					.add("Baba is you", "Fire is hot")
-					.add(TimeUnit.DAYS)
-					.add("Mucho Gusto");
+					.add("Ice is cold", "Fire is hot")
+					.add(TimeUnit.DAYS);
 		}
 
 		@CartesianProductTest(factory = "getParams")
@@ -235,6 +321,50 @@ public class CartesianProductTestExtensionTests {
 					.add(1, 2, 4)
 					.add("Message #1", "Message #2");
 			//@formatter:on
+		}
+
+	}
+
+	static class CartesianValueSourceTestCases {
+
+		@CartesianProductTest
+		@CartesianValueSource(strings = { "Two roads diverged in a yellow wood,", "And sorry I could not travel both",
+				"And be one traveler, long I stood" })
+		@CartesianValueSource(strings = { "And looked down one as far as I could",
+				"To where it bent in the undergrowth;" })
+		void poeticValues(String line, String endLine) {
+			Assertions.assertThat(line).startsWith("And");
+		}
+
+		@CartesianProductTest
+		@CartesianValueSource(strings = { "Then took the other, as just as fair,",
+				"And having perhaps the better claim", "Because it was grassy and wanted wear,",
+				"Though as for that the passing there", "Had worn them really about the same," })
+		void injected(String poemLine, TestInfo info) {
+		}
+
+		@CartesianProductTest
+		@CartesianValueSource(ints = { 1 })
+		void missing(int i, int j) {
+		}
+
+		@CartesianProductTest
+		@CartesianValueSource(strings = { "And both that morning equally lay", "In leaves no step had trodden black." })
+		void wrongType(float f) {
+		}
+
+		@CartesianProductTest
+		@CartesianValueSource(strings = { "Oh, I marked the first for another day!",
+				"Yet knowing how way leads on to way", "I doubted if I should ever come back." }, ints = { 1, 3, 5 })
+		void badMultiple(String line, int number) {
+		}
+
+		@CartesianProductTest
+		@CartesianValueSource(ints = { 1, 2 })
+		@CartesianValueSource(strings = { "I shall be telling this with a sigh", "Somewhere ages and ages hence:",
+				"Two roads diverged in a wood, and I,", "I took the one less traveled by,",
+				"And that has made all the difference." })
+		void wrongOrder(String line, int number) {
 		}
 
 	}

@@ -10,7 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.lang.String.format;
 import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
+import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
 import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
 
 import java.lang.reflect.Method;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -35,11 +38,12 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		List<List<?>> sets = computeSets(context.getRequiredTestMethod());
+		List<List<?>> sets = computeSets(context);
 		return cartesianProduct(sets).stream().map(CartesianProductTestInvocationContext::new);
 	}
 
-	private List<List<?>> computeSets(Method testMethod) {
+	private List<List<?>> computeSets(ExtensionContext context) {
+		Method testMethod = context.getRequiredTestMethod();
 		CartesianProductTest annotation = findAnnotation(testMethod, CartesianProductTest.class)
 				.orElseThrow(() -> new AssertionError("@CartesianProductTest not found"));
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
@@ -50,6 +54,18 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 				sets.add(strings);
 			}
 			return sets;
+		}
+		// Try finding the @CartesianValueSource annotation
+		List<CartesianValueSource> valueSources = findRepeatableAnnotations(testMethod, CartesianValueSource.class);
+		if (!valueSources.isEmpty()) {
+			List<List<?>> cartesianSet = new ArrayList<>();
+			for (CartesianValueSource source : valueSources) {
+				CartesianValueArgumentsProvider provider = new CartesianValueArgumentsProvider();
+				provider.accept(source);
+				List<Object> collect = provider.provideArguments().collect(Collectors.toList());
+				cartesianSet.add(collect);
+			}
+			return cartesianSet;
 		}
 		// No single entry supplied? Try the sets factory method instead...
 		String factoryMethod = annotation.factory().isEmpty() ? testMethod.getName() : annotation.factory();
@@ -72,7 +88,9 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		}
 		CartesianProductTest.Sets sets = (CartesianProductTest.Sets) invokeMethod(factory, null);
 		if (sets.getSets().size() > testMethod.getParameterCount()) {
-			throw new ParameterResolutionException(method + " must register values for each parameter exactly once");
+			throw new ParameterResolutionException(format(
+				"%s must register values for each parameter exactly once. Expected [%d] parameter sets, but got [%d]",
+				method, testMethod.getParameterCount(), sets.getSets().size()));
 		}
 		return sets;
 	}
