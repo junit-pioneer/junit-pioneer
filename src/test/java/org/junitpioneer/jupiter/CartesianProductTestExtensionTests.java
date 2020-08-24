@@ -36,19 +36,19 @@ public class CartesianProductTestExtensionTests {
 	class StandardBehaviouralTests {
 
 		// This behaves the same way as an empty @ParameterizedTest
-		@CartesianProductTest(value = { "0", "1" })
+		@CartesianProductTest(value = {"0", "1"})
 		@DisplayName("does nothing if there are no parameters")
 		void empty() {
 		}
 
-		@CartesianProductTest(value = { "0", "1", "2" })
+		@CartesianProductTest(value = {"0", "1", "2"})
 		@DisplayName("runs for each parameter once for single parameter")
 		void singleParameter(String param) {
 			int value = Integer.parseInt(param);
 			Assertions.assertThat(value).isBetween(0, 2);
 		}
 
-		@CartesianProductTest({ "0", "1" })
+		@CartesianProductTest({"0", "1"})
 		@DisplayName("creates a 3-fold cartesian product from a single value")
 		void threeBits(String a, String b, String c) {
 			int value = Integer.parseUnsignedInt(a + b + c, 2);
@@ -76,7 +76,7 @@ public class CartesianProductTestExtensionTests {
 		void test() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "poeticValues",
-						String.class, String.class);
+							String.class, String.class);
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(6)
@@ -89,7 +89,7 @@ public class CartesianProductTestExtensionTests {
 		void autoInjectedParams() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "injected", String.class,
-						TestReporter.class);
+							TestReporter.class);
 
 			//@formatter:off
 			assertThat(results)
@@ -98,6 +98,50 @@ public class CartesianProductTestExtensionTests {
 			//@formatter:on
 		}
 
+		@Nested
+		@DisplayName("removes redundant parameters from input sets")
+		class CartesianProductRedundancyTests {
+
+			@Test
+			@DisplayName("when given a value")
+			void removesExtraFromValue() {
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethodWithParameterTypes(RedundantInputSetTestCases.class, "distinctInputs", String.class,
+								String.class);
+				//@formatter:off
+				assertThat(results)
+						.hasNumberOfDynamicallyRegisteredTests(4)
+						.hasNumberOfSucceededTests(4);
+				//@formatter:on
+			}
+
+			@Test
+			@DisplayName("when test is annotated with @CartesianValueSource")
+			void removesExtraFromAnnotation() {
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethodWithParameterTypes(RedundantInputSetTestCases.class, "distinctInputsAnnotations", int.class,
+								String.class);
+				//@formatter:off
+				assertThat(results)
+						.hasNumberOfDynamicallyRegisteredTests(6)
+						.hasNumberOfSucceededTests(6);
+				//@formatter:on
+			}
+
+			@Test
+			@DisplayName("when test has a static factory method")
+			void removesExtraFromFactory() {
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethodWithParameterTypes(RedundantInputSetTestCases.class, "distinctInputsFactory", TimeUnit.class,
+								String.class);
+				//@formatter:off
+				assertThat(results)
+						.hasNumberOfDynamicallyRegisteredTests(3)
+						.hasNumberOfSucceededTests(3);
+				//@formatter:on
+			}
+
+		}
 	}
 
 	static CartesianProductTest.Sets nFold() {
@@ -370,4 +414,30 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	static class RedundantInputSetTestCases {
+
+		@CartesianProductTest(value = { "1", "1", "2" })
+		@DisplayName("removes duplicates from input sets")
+		void distinctInputs(String a, String b) {
+		}
+
+		@CartesianProductTest
+		@CartesianValueSource(ints = { 1, 1, 4 })
+		@CartesianValueSource(strings = { "A", "B", "C", "C" })
+		void distinctInputsAnnotations(int i, String string) {
+		}
+
+		@CartesianProductTest(factory = "nonDistinctInputs")
+		void distinctInputsFactory(TimeUnit unit, String string) {
+		}
+
+	}
+
+	static CartesianProductTest.Sets nonDistinctInputs() {
+		//@formatter:off
+		return new CartesianProductTest.Sets()
+				.add(TimeUnit.SECONDS, TimeUnit.SECONDS)
+				.add("A", "B", "C");
+		//@formatter:on
+	}
 }

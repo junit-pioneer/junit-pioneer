@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.stream.Collectors.toList;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -49,7 +51,7 @@ public @interface CartesianProductTest {
 		private final List<List<?>> sets = new ArrayList<>(); //NOSONAR
 
 		public Sets add(Object... entries) {
-			sets.add(new ArrayList<>(Arrays.asList(entries)));
+			sets.add(new ArrayList<>(Arrays.stream(entries).distinct().collect(toList())));
 			return this;
 		}
 

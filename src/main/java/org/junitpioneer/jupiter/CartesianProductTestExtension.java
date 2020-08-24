@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
 import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
 import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -48,29 +48,42 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 				.orElseThrow(() -> new AssertionError("@CartesianProductTest not found"));
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
 		if (annotation.value().length > 0) {
-			List<String> strings = Arrays.asList(annotation.value());
-			List<List<?>> sets = new ArrayList<>();
-			for (int i = 0; i < testMethod.getParameterTypes().length; i++) {
-				sets.add(strings);
-			}
-			return sets;
+			return getSetsFromValue(testMethod, annotation);
 		}
 		// Try finding the @CartesianValueSource annotation
 		List<CartesianValueSource> valueSources = findRepeatableAnnotations(testMethod, CartesianValueSource.class);
 		if (!valueSources.isEmpty()) {
-			List<List<?>> cartesianSet = new ArrayList<>();
-			for (CartesianValueSource source : valueSources) {
-				CartesianValueArgumentsProvider provider = new CartesianValueArgumentsProvider();
-				provider.accept(source);
-				List<Object> collect = provider.provideArguments().collect(Collectors.toList());
-				cartesianSet.add(collect);
-			}
-			return cartesianSet;
+			return getSetsFromRepeatableAnnotation(valueSources);
 		}
-		// No single entry supplied? Try the sets factory method instead...
-		String factoryMethod = annotation.factory().isEmpty() ? testMethod.getName() : annotation.factory();
+		// Try the sets static factory method
+		return getSetsFromStaticFactory(testMethod, annotation.factory());
+	}
 
-		return invokeSetsFactory(testMethod, factoryMethod).getSets();
+	private List<List<?>> getSetsFromValue(Method testMethod, CartesianProductTest annotation) {
+		List<List<?>> sets = new ArrayList<>();
+		List<String> strings = Arrays.stream(annotation.value()).distinct().collect(toList());
+		for (int i = 0; i < testMethod.getParameterTypes().length; i++) {
+			sets.add(strings);
+		}
+		return sets;
+	}
+
+	private List<List<?>> getSetsFromRepeatableAnnotation(List<CartesianValueSource> valueSources) {
+		List<List<?>> sets = new ArrayList<>();
+		for (CartesianValueSource source : valueSources) {
+			CartesianValueArgumentsProvider provider = new CartesianValueArgumentsProvider();
+			provider.accept(source);
+			List<Object> collect = provider.provideArguments().distinct().collect(toList());
+			sets.add(collect);
+		}
+		return sets;
+	}
+
+	private List<List<?>> getSetsFromStaticFactory(Method testMethod, String explicitFactoryName) {
+		if (explicitFactoryName.isEmpty())
+			return invokeSetsFactory(testMethod, testMethod.getName()).getSets();
+		else
+			return invokeSetsFactory(testMethod, explicitFactoryName).getSets();
 	}
 
 	private CartesianProductTest.Sets invokeSetsFactory(Method testMethod, String factoryMethodName) {
