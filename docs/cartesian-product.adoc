@@ -11,7 +11,7 @@ From Wikipedia, the free encyclopedia:
 What does all this mean?
 
 The cartesian product of sets is all the possible combinations where you take a single element from each set.
-If you have two sets, `{1, 2}` and `{3, 4}`, their cartesian product is `{{1, 3}, {1, 4}, {2, 3}, {2, 4}}`.
+If you have two sets, `{ 1, 2 }` and `{ 3, 4 }`, their cartesian product is `{ { 1, 3 }, { 1, 4 }, { 2, 3 }, { 2, 4 } }`.
 
 You can use `@CartesianProductTest` and define test parameter sets to run the same test on the cartesian product.
 This means that `@CartesianProductTest` takes the possible test parameter values and runs the test for every possible combination of them.
@@ -20,6 +20,12 @@ This means that `@CartesianProductTest` takes the possible test parameter values
 
 `@CartesianProductTest` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
 The annotation can have a value (see <<Supplying a value to CartesianProductTest>>), the test method can be annotated with `@CartesianValueSource` (see <<Annotating your test method with @CartesianValueSource>>), or the test class can have a static factory method (see <<Writing a static factory method for the parameters>>) providing the arguments.
+
+`@CartesianProductTest` works with sets.
+This means that duplicate elements get removed.
+If your input is `{ 1, 1, 3, 4 }` and `{ 2, 2, 3 }` their cartesian product is `{ { 1, 2 }, { 1, 3 }, { 3, 2 }, { 3, 3 }, { 4, 2 }, { 4, 3 } }`.
+This is because otherwise the test would run with the same parameters multiple times.
+If you need that functionality, you might want to look into https://junit.org/junit5/docs/current/user-guide/#writing-tests-repeated-tests[repeated tests].
 
 == Supplying a value to CartesianProductTest
 
