@@ -32,6 +32,7 @@ val junitMinorVersion : String by project
 dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.$junitMinorVersion")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.$junitMinorVersion")
+	implementation(group = "org.junit.platform", name = "junit-platform-commons", version = "1.$junitMinorVersion")
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.$junitMinorVersion")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.$junitMinorVersion")
