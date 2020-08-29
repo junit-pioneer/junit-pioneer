@@ -86,6 +86,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * @see ParentDirProvider
  * @see Files#createTempDirectory
  */
+// unfortunately, the class can't be public or it would not be usable with `@RegisterExtension`
 public class TempDirectoryExtension implements ParameterResolver {
 
 	/**
@@ -129,6 +130,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 	}
 
 	private static final Namespace NAMESPACE = Namespace.create(TempDirectoryExtension.class);
+	// TODO change the key?
 	private static final String KEY = "temp.dir";
 	private static final String TEMP_DIR_PREFIX = "junit";
 
@@ -197,7 +199,7 @@ public class TempDirectoryExtension implements ParameterResolver {
 	 */
 	public static TempDirectoryExtension createInCustomDirectory(Callable<Path> parentDirProvider) {
 		requireNonNull(parentDirProvider);
-		return createInCustomDirectory((parameterContext, extensionContext) -> parentDirProvider.call());
+		return createInCustomDirectory((__, ___) -> parentDirProvider.call());
 	}
 
 	@Override
@@ -214,6 +216,8 @@ public class TempDirectoryExtension implements ParameterResolver {
 		}
 		return extensionContext
 				.getStore(NAMESPACE) //
+				// TODO: Doesn't this mean a nested test class inherits temp dirs from its surrounding class?
+				// Would that be a bad thing?
 				.getOrComputeIfAbsent(KEY,
 					key -> tempDirProvider.get(parameterContext, extensionContext, TEMP_DIR_PREFIX),
 					CloseablePath.class) //
