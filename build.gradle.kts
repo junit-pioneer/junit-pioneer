@@ -9,6 +9,13 @@ plugins {
 	id("org.sonarqube") version "2.8"
 }
 
+plugins.withType<JavaPlugin>().configureEach {
+	configure<JavaPluginExtension> {
+		modularity.inferModulePath.set(true)
+	}
+}
+
+
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
