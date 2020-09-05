@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.report;
+package org.junitpioneer.jupiter.issue;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -17,25 +17,25 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * A single property of a test object.
+ * Represents a test method in the report.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "property")
-public class Property {
+@XmlRootElement(name = "testCase")
+public class TestCase {
 
 	@XmlAttribute(name = "name", required = true)
 	protected String name;
-	@XmlAttribute(name = "value", required = true)
-	protected String value;
+	@XmlAttribute(name = "status", required = true)
+	protected String status;
 
-	public Property() {
+	public TestCase() {
 		// Needed for marshalling
 	}
 
-	public Property(String name, String value) {
+	public TestCase(String name, String status) {
 		this.name = name;
-		this.value = value;
+		this.status = status;
 	}
 
 	public String getName() {
@@ -46,12 +46,12 @@ public class Property {
 		this.name = value;
 	}
 
-	public String getValue() {
-		return value;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

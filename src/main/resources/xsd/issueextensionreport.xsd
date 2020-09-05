@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="issueReport">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                The root element of the report.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="issues" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="issues">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="issue" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="issue">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Container holding test cases and other containers (e.g. nested classes).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="testCases" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="issueId" type="xs:string" use="required"/>
+            <xs:attribute name="description" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="testCases">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="testCase" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="testCase">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                A specific test case linked to the issue.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="status" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+
+
+
+
+
+</xs:schema>

@@ -8,34 +8,37 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.report;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.junitpioneer.jupiter.issue;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * Wrapper for a list of properties of a test object.
+ * Root element of the IssueExtension report.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "property" })
-@XmlRootElement(name = "properties")
-public class Properties {
+@XmlType(name = "", propOrder = { "issues" })
+@XmlRootElement(name = "issueReport")
+public class IssueReport {
 
-	@XmlElement(required = true)
-	protected List<Property> property;
+	protected Issues issues;
 
-	public Properties() {
-		this.property = new ArrayList<>();
+	public IssueReport() {
+		this.issues = new Issues();
 	}
 
-	public List<Property> getProperty() {
-		return this.property;
+	public IssueReport(Issues issues) {
+		this.issues = issues;
+	}
+
+	public Issues getIssues() {
+		return issues;
+	}
+
+	public void setIssues(Issues issues) {
+		this.issues = issues;
 	}
 
 }

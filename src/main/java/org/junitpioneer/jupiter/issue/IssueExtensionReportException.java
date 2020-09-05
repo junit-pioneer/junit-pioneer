@@ -8,14 +8,14 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.report;
+package org.junitpioneer.jupiter.issue;
 
 /**
  * Exception thrown when the creation of the Pioneer report fails due an exception.
  */
-public class PioneerReportException extends RuntimeException {
+public class IssueExtensionReportException extends RuntimeException {
 
-	public PioneerReportException(String message, Throwable throwable) {
+	public IssueExtensionReportException(String message, Throwable throwable) {
 		super(message, throwable);
 	}
 
