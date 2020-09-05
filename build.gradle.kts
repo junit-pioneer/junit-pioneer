@@ -25,9 +25,14 @@ val junitMinorVersion : String by project
 dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.$junitMinorVersion")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.$junitMinorVersion")
+	implementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.$junitMinorVersion")
+
+	// For Java 8, provided would be enough as jaxb is part of the JRE,
+	// but Java 11 and 14 need this dependency cause of Jigsaw
+	implementation(group = "javax.xml.bind", name ="jaxb-api", version = "2.3.1")
+	implementation(group = "com.sun.xml.bind", name ="jaxb-impl", version = "2.3.3")
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.$junitMinorVersion")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.$junitMinorVersion")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.$junitMinorVersion")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
