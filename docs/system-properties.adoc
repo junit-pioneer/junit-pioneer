@@ -14,7 +14,7 @@ For example, clearing a system property for a test execution can be done as foll
 @ClearSystemProperty(key = "some property")
 void test() {
 	assertThat(System.getProperty("some property")).
-			isNull();
+		isNull();
 }
 ----
 

@@ -170,7 +170,7 @@ class ConsoleReaderTest {
 
 		String[] lines = in.capturedLines();
 
-		// This failing
+		// This is failing
 		// assertEquals(lines, "line1", "line2");
 
 		// This is passing
