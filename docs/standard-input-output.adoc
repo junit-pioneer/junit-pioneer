@@ -168,12 +168,12 @@ class ConsoleReaderTest {
 
 		consoleReader.readLines();
 
-        String[] lines = in.capturedLines();
+		String[] lines = in.capturedLines();
 
-        // This failing
+		// This failing
 		// assertEquals(lines, "line1", "line2");
 
-        // This is passing
+		// This is passing
 		// assertEquals(lines, "line1", "line2", "line3");
 	}
 
