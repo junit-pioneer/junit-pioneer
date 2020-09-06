@@ -44,7 +44,7 @@ void test() {
 	assertThat(System.getProperty("1st property")).
 		isNull();
 	assertThat(System.getProperty("2nd property")).
-        isNull();
+		isNull();
 	assertThat(System.getProperty("3rd property")).
 		isEqualTo("new value");
 }
