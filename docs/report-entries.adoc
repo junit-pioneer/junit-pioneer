@@ -73,9 +73,9 @@ Just like `TestReporter::publishEntry` accepts a single string as value or a key
 ----
 @Test
 @ReportEntry(key = "line1",
-             value = "Once upon a midnight dreary")
+			value = "Once upon a midnight dreary")
 @ReportEntry(key = "line2",
-             value = "While I pondered weak and weary")
+			value = "While I pondered weak and weary")
 void edgarAllanPoe() {
 	// YOUR TEST CODE HERE
 }
@@ -92,8 +92,8 @@ Just so:
 ----
 @Test
 @ReportEntry(key = "line",
-             value = "success entry",
-             when = ReportEntry.PublishCondition.ON_SUCCESS)
+			value = "success entry",
+			when = ReportEntry.PublishCondition.ON_SUCCESS)
 void sufferingFromSuccess() {
 	// YOUR TEST CODE HERE
 }

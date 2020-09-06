@@ -58,10 +58,10 @@ Note that class level configurations are overwritten by method level configurati
 class MySystemPropertyTest {
 	@Test
 	@SetSystemProperty(key = "some property",
-                       value = "new value")
+						value = "new value")
 	void test() {
 		assertThat(System.getProperty("some property")).
-            isEqualTo("new value");
+			isEqualTo("new value");
 	}
 }
 ----
