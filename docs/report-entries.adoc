@@ -1,5 +1,6 @@
 :page-title: Publishing Report Entries
 :page-description: Extends JUnit Jupiter with `@ReportEntry`, which publishes report entries using `TestReporter`.
+:snippetsource: ../src/test/java/org/junitpioneer/jupiter/ReportEntryExtensionTests.java
 
 You can use `@ReportEntry` as a simple way to declaratively add metadata to test methods.
 
@@ -42,13 +43,9 @@ This is what this extension is for!
 
 You can write...
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ReportEntry("Hello World!")
-void reportingTest() {
-	// YOUR TEST CODE HERE
-}
+include::{snippetsource}[tag=report_entry_basic]
 ----
 
 ...and the extension will publish your report entry for you after the test was executed!
@@ -57,26 +54,16 @@ void reportingTest() {
 
 You can declare multiple report entries on the same test (the annotation is repeatable).
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ReportEntry("foo")
-@ReportEntry("bar")
-void reportingTest() {
-	// YOUR TEST CODE HERE
-}
+include::{snippetsource}[tag=report_entry_multiple]
 ----
 
 Just like `TestReporter::publishEntry` accepts a single string as value or a key/value pair, `@ReportEntry` accepts either a single string as value or a key/value pair:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ReportEntry(key = "line1", value = "Once upon a midnight dreary")
-@ReportEntry(key = "line2", value = "While I pondered weak and weary")
-void edgarAllanPoe() {
-	// YOUR TEST CODE HERE
-}
+include::{snippetsource}[tag=report_entry_with_key]
 ----
 
 Again, just like `TestReporter::publishEntry`, if no key is given it defaults to `"value"` (yes, that's not a mixup).
@@ -86,13 +73,9 @@ Again, just like `TestReporter::publishEntry`, if no key is given it defaults to
 You can specify a `PublishCondition` parameter on the `@ReportEntry` annotation for better control when the extension should publish your entry.
 Just so:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ReportEntry(key = "line", value = "success entry", when = ReportEntry.PublishCondition.ON_SUCCESS)
-void sufferingFromSuccess() {
-	// YOUR TEST CODE HERE
-}
+include::{snippetsource}[tag=report_entry_publish_condition]
 ----
 
 The publish condition must be a value of the `ReportEntry.PublishCondition` enum, which has the following values:

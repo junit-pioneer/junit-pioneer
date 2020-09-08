@@ -326,15 +326,19 @@ public class ReportEntryExtensionTests {
 
 	static class ReportEntriesTest {
 
+		//tag::report_entry_basic[]
 		@Test
 		@ReportEntry("Once upon a midnight dreary")
 		void implicitKey() {
 		}
+		//end::report_entry_basic[]
 
+		//tag::report_entry_with_key[]
 		@Test
 		@ReportEntry(key = "Crow2", value = "While I pondered weak and weary")
 		void explicitKey() {
 		}
+		//end::report_entry_with_key[]
 
 		@Test
 		@ReportEntry(key = "", value = "Over many a quaint and curious volume of forgotten lore-")
@@ -346,12 +350,14 @@ public class ReportEntryExtensionTests {
 		void emptyValue() {
 		}
 
+		//tag::report_entry_multiple[]
 		@Test
 		@ReportEntry("suddenly there came a tapping")
 		@ReportEntry("As if some one gently rapping")
 		@ReportEntry("rapping at my chamber door")
 		void repeatedAnnotation() {
 		}
+		//end::report_entry_multiple[]
 
 		@Test
 		@ReportEntry(value = "'Tis some visitor', I muttered", when = ALWAYS)
@@ -376,10 +382,12 @@ public class ReportEntryExtensionTests {
 		void always_disabled() {
 		}
 
+		//tag::report_entry_publish_condition[]
 		@Test
 		@ReportEntry(value = "it was in the bleak December", when = ON_SUCCESS)
 		void onSuccess_success() {
 		}
+		//end::report_entry_publish_condition[]
 
 		@Test
 		@ReportEntry(value = "And each separate dying ember wrought its ghost upon the floor.", when = ON_SUCCESS)
