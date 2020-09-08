@@ -86,7 +86,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * @see ParentDirProvider
  * @see Files#createTempDirectory
  */
-// unfortunately, the class can't be public or it would not be usable with `@RegisterExtension`
+// unfortunately, the class must be public or it would not be usable with `@RegisterExtension`
 public class TempDirectoryExtension implements ParameterResolver {
 
 	/**
@@ -204,16 +204,23 @@ public class TempDirectoryExtension implements ParameterResolver {
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		return parameterContext.isAnnotated(TempDir.class);
+		boolean isAnnotated = parameterContext.isAnnotated(TempDir.class);
+		if (!isAnnotated)
+			return false;
+
+		// we could return `false` if `@TempDir` is present and the parameter's type isn't `Path`,
+		// but if the annotation is present, this extension is in charge and so we throw an exception for a wrong type
+		Class<?> parameterType = parameterContext.getParameter().getType();
+		if (parameterType != Path.class) {
+			throw new ParameterResolutionException(
+					"Can only resolve parameter of type " + Path.class.getName() + " but was: " + parameterType.getName());
+		}
+
+		return true;
 	}
 
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		Class<?> parameterType = parameterContext.getParameter().getType();
-		if (parameterType != Path.class) {
-			throw new ParameterResolutionException(
-				"Can only resolve parameter of type " + Path.class.getName() + " but was: " + parameterType.getName());
-		}
 		return extensionContext
 				.getStore(NAMESPACE) //
 				// TODO: Doesn't this mean a nested test class inherits temp dirs from its surrounding class?

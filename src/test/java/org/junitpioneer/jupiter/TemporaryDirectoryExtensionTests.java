@@ -26,6 +26,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -54,7 +57,7 @@ class TemporaryDirectoryExtensionTests {
 	}
 
 	@Test
-	void tempDirCanStoreFiles(@TempDir Path dir) throws IOException, InterruptedException {
+	void tempDirCanStoreFiles(@TempDir Path dir) throws IOException {
 		List<String> writtenLines = Arrays
 				.asList("worker bees can leave", "even drones can fly away", "the queen is their slave");
 
@@ -139,6 +142,38 @@ class TemporaryDirectoryExtensionTests {
 		@Test
 		void tempDirIsInCustomDir(@TempDir Path dir) {
 			assertThat(dir).hasParent(CUSTOM_DIRECTORY);
+		}
+
+	}
+
+	@Test
+	void tempDirsDiffer(@TempDir Path dir1, @TempDir Path dir2) {
+		assertThat(dir1).isNotEqualTo(dir2);
+	}
+
+	@Nested
+	@ExtendWith(TempDirectoryExtension.class)
+	static class SharedTempDir {
+
+		private final Path dir;
+
+		SharedTempDir(@TempDir Path dir) {
+			this.dir = dir;
+		}
+
+		@BeforeEach
+		void setup(@TempDir Path dir) {
+			assertThat(dir).isEqualTo(this.dir);
+		}
+
+		@Test
+		void test(@TempDir Path dir) {
+			assertThat(dir).isEqualTo(this.dir);
+		}
+
+		@AfterEach
+		void tearDown(@TempDir Path dir) {
+			assertThat(dir).isEqualTo(this.dir);
 		}
 
 	}
