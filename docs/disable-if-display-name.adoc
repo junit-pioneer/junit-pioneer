@@ -12,7 +12,7 @@ As a consequence, instead of disabling the entire set of parameterized tests, ea
 @DisableIfDisplayName(contains = "disable")
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(
-	// Disabled: 1,2,3, 4,5
+	// Disabled: 1,2,3,4,5
 	// Not disabled: 6
 	strings = {
 		"disable who", // 1

@@ -43,14 +43,12 @@ As mentioned before, both annotations are repeatable and they can also be combin
 @ClearEnvironmentVariable(key = "1st variable")
 @ClearEnvironmentVariable(key = "2nd variable")
 @SetEnvironmentVariable(key = "3rd variable",
-						value = "new value")
+		value = "new value")
 void test() {
-	assertThat(System.getenv("1st variable")).
-		isNull();
-	assertThat(System.getenv("2nd variable")).
-		isNull();
-	assertThat(System.getenv("3rd variable")).
-		isEqualTo("new value");
+	assertThat(System.getenv("1st variable")).isNull();
+	assertThat(System.getenv("2nd variable")).isNull();
+	assertThat(System.getenv("3rd variable"))
+		.isEqualTo("new value");
 }
 ----
 
@@ -62,10 +60,10 @@ Note that class level configurations are overwritten by method level configurati
 class MyEnvironmentVariableTest {
 	@Test
 	@SetEnvironmentVariable(key = "some variable",
-							value = "new value")
+			value = "new value")
 	void test() {
-		assertThat(System.getenv("some variable")).
-			isEqualTo("new value");
+		assertThat(System.getenv("some variable"))
+			.isEqualTo("new value");
 	}
 }
 ----

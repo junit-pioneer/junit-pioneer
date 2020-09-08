@@ -13,8 +13,8 @@ For example, clearing a system property for a test execution can be done as foll
 @Test
 @ClearSystemProperty(key = "some property")
 void test() {
-	assertThat(System.getProperty("some property")).
-		isNull();
+	assertThat(System.getProperty("some property"))
+		.isNull();
 }
 ----
 
@@ -24,10 +24,10 @@ And setting a system property for a test execution:
 ----
 @Test
 @SetSystemProperty(key = "some property",
-					value = "new value")
+		value = "new value")
 void test() {
-	assertThat(System.getProperty("some property")).
-		isEqualTo("new value");
+	assertThat(System.getProperty("some property"))
+		.isEqualTo("new value");
 }
 ----
 
@@ -39,14 +39,12 @@ As mentioned before, both annotations are repeatable and they can also be combin
 @ClearSystemProperty(key = "1st property")
 @ClearSystemProperty(key = "2nd property")
 @SetSystemProperty(key = "3rd property",
-					value = "new value")
+		value = "new value")
 void test() {
-	assertThat(System.getProperty("1st property")).
-		isNull();
-	assertThat(System.getProperty("2nd property")).
-		isNull();
-	assertThat(System.getProperty("3rd property")).
-		isEqualTo("new value");
+	assertThat(System.getProperty("1st property")).isNull();
+	assertThat(System.getProperty("2nd property")).isNull();
+	assertThat(System.getProperty("3rd property"))
+		.isEqualTo("new value");
 }
 ----
 
@@ -58,10 +56,10 @@ Note that class level configurations are overwritten by method level configurati
 class MySystemPropertyTest {
 	@Test
 	@SetSystemProperty(key = "some property",
-						value = "new value")
+			value = "new value")
 	void test() {
-		assertThat(System.getProperty("some property")).
-			isEqualTo("new value");
+		assertThat(System.getProperty("some property"))
+			.isEqualTo("new value");
 	}
 }
 ----
