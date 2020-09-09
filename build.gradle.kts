@@ -90,6 +90,23 @@ tasks {
 		options.encoding = "UTF-8"
 	}
 
+	val compileModule by registering(JavaCompile::class) {
+		dependsOn(classes)
+		source = fileTree(file("src/main/module/module-info.java"))
+
+		destinationDir = file("$buildDir/classes/java/module")
+		sourceCompatibility = "9"
+		targetCompatibility = "9"
+		classpath = sourceSets.getByName("main").output.classesDirs
+		options.release.set(9)
+		options.sourcepath = files(file("src/main/java"), file("src/main/module"))
+		options.compilerArgs.addAll(listOf(
+				"-verbose",
+				"--module-version", "${project.version}",
+				"--module-path", configurations.compileClasspath.get().asPath
+		))
+	}
+
 	compileTestJava {
 		options.encoding = "UTF-8"
 	}
@@ -135,6 +152,7 @@ tasks {
 
 	// the manifest needs to declare the future module name
 	jar {
+		dependsOn(compileModule)
 		manifest {
 			attributes(
 					"Automatic-Module-Name" to "org.junitpioneer"
@@ -146,6 +164,9 @@ tasks {
 		from(projectDir) {
 			include("LICENSE.md")
 			into("META-INF")
+		}
+		from("$buildDir/classes/java/module") {
+			include("module-info.class")
 		}
 	}
 }
