@@ -7,7 +7,7 @@ plugins {
 	id("org.shipkit.java") version "2.3.1"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.0"
-	id("org.moditect.gradleplugin") version "1.0.0-rc1"
+	id("org.moditect.gradleplugin") version "1.0.0-rc2"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -93,13 +93,15 @@ sonarqube {
 	}
 }
 
-moditect{
+moditect {
 	addMainModuleInfo {
 		version = project.version
-		overwriteExistingFiles = true
-		jdepsExtraArgs = ['-q']
+		overwriteExistingFiles.set(true)
+		jdepsExtraArgs.set(listOf("-q", "--multi-release", "9"))
 		module {
-			moduleInfoFile { rootProject.file("src/main/module/module-info.java") }
+			moduleInfo {
+				rootProject.file("src/main/module/module-info.java")
+			}
 		}
 	}
 }
