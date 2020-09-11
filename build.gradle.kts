@@ -7,15 +7,8 @@ plugins {
 	id("org.shipkit.java") version "2.3.1"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.0"
-	id("org.moditect.gradleplugin") version "1.0.0-rc2"
+	id("org.moditect.gradleplugin") version "1.0.0-rc3"
 }
-
-plugins.withType<JavaPlugin>().configureEach {
-	configure<JavaPluginExtension> {
-		modularity.inferModulePath.set(true)
-	}
-}
-
 
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
@@ -99,9 +92,7 @@ moditect {
 		overwriteExistingFiles.set(true)
 		jdepsExtraArgs.set(listOf("-q", "--multi-release", "9"))
 		module {
-			moduleInfo {
-				rootProject.file("src/main/module/module-info.java")
-			}
+			moduleInfoFile = rootProject.file("src/main/module/module-info.java")
 		}
 	}
 }
@@ -155,15 +146,6 @@ tasks {
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
 		dependsOn(javadoc, validateYaml)
-	}
-
-	// the manifest needs to declare the future module name
-	jar {
-		manifest {
-			attributes(
-					"Automatic-Module-Name" to "org.junitpioneer.junitpioneer"
-			)
-		}
 	}
 
 	withType<Jar>().configureEach {
