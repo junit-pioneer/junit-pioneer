@@ -90,14 +90,11 @@ moditect {
 	addMainModuleInfo {
 		version = project.version
 		overwriteExistingFiles.set(true)
-		jdepsExtraArgs.set(listOf("-q", "--multi-release", "9"))
 		module {
 			moduleInfoFile = rootProject.file("src/main/module/module-info.java")
 		}
 	}
 }
-
-
 
 tasks {
 
