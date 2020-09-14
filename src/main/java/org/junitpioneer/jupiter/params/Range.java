@@ -51,9 +51,9 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 		boolean fromNotEqualsTo = (from.compareTo(to) != 0);
 
 		if ((isValidDescending()) && (!closed || fromNotEqualsTo)) {
-			String msg = String
+			String message = String
 					.format("Illegal range. There's no way to get from %s to %s with a step of %s.", from, to, step);
-			throw new IllegalArgumentException(msg);
+			throw new IllegalArgumentException(message);
 		}
 	}
 

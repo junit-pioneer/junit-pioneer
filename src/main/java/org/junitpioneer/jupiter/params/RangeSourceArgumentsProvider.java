@@ -57,10 +57,10 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider {
 				.orElseThrow(IllegalStateException::new);
 
 		if (argumentsSources.size() != 1) {
-			String msg = String
+			String message = String
 					.format("Expected exactly one annotation to provide an ArgumentSource, found %d.",
 						argumentsSources.size());
-			throw new IllegalArgumentException(msg);
+			throw new IllegalArgumentException(message);
 		}
 
 		Annotation argumentsSource = argumentsSources.get(0);
