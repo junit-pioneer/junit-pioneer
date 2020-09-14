@@ -44,7 +44,6 @@ jobs:
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
-          wrapper-cache-enabled: false
       - name: Sonar analysis
         if: matrix.java == '11' && matrix.os == 'ubuntu'
         env:
