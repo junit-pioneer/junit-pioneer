@@ -40,6 +40,9 @@ jobs:
         with:
           path: ~/.sonar/cache/
           key: ${{ runner.os }}-sonar
+      - name: Copy module on Java 11
+        if: matrix.java != '8'
+        run: cp src/main/module/module-info-java src/main/java
       - name: Gradle build
         uses: eskatos/gradle-command-action@v1
         with:
