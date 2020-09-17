@@ -43,11 +43,19 @@ jobs:
       - name: Copy module-info on all versions except Java 8
         if: matrix.java != '8'
         run: cp src/main/module/module-info.java src/main/java
-      - name: Gradle build
+      - name: Gradle build on Java 8
         uses: eskatos/gradle-command-action@v1
+        if: matrix.java == '8'
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
           wrapper-cache-enabled: false
+      - name: Gradle build on Java excecpt 8
+        uses: eskatos/gradle-command-action@v1
+        if: matrix.java != '8'
+        with:
+          arguments: --refresh-dependencies --stacktrace --scan clean build -source 9
+          wrapper-cache-enabled: false
+
       - name: Sonar analysis
         if: matrix.java == '11' && matrix.os == 'ubuntu'
         env:
