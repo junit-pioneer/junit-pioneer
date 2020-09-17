@@ -39,7 +39,7 @@ jobs:
       - name: Gradle build on Java excecpt 8
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build -source 9
+          arguments: --source 9 --refresh-dependencies --stacktrace --scan clean build
           wrapper-cache-enabled: false
 
   buildDone:
