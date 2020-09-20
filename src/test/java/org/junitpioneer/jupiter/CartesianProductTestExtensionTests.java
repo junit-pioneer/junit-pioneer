@@ -56,7 +56,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
-		@DisplayName("creates a 3-fold cartesian product from an implicit factory method")
+		@DisplayName("creates a 3-fold cartesian product from an implicit factory method for three parameters")
 		void nFold(String string, Class<?> type, TimeUnit unit, TestInfo info) {
 			Assertions.assertThat(string).endsWith("a");
 			Assertions.assertThat(type).isInterface();
@@ -65,7 +65,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest(factory = "supplyValues")
-		@DisplayName("creates a 2-fold cartesian product from an explicit factory method")
+		@DisplayName("creates a 2-fold cartesian product from an explicit factory method for two parameters")
 		void explicitFactory(String string, TimeUnit unit) {
 			Assertions.assertThat(string).isIn("War", "Peace");
 			Assertions.assertThat(unit.name()).endsWith("S");

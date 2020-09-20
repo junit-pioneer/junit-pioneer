@@ -1,7 +1,7 @@
 :page-title: Testing all test parameter combinations (Cartesian product)
 :page-description: Extends JUnit Jupiter with `@CartesianProductTest`, a special `@ParameterizedTest` which tests all combinations of its input
 
-From Wikipedia, the free encyclopedia:
+From Wikipedia:
 
 > In mathematics, specifically set theory, the Cartesian product of two sets A and B, denoted A × B, is the set of all ordered pairs (a, b) where a is in A and b is in B.
 > In terms of set-builder notation, that is `A × B = {(a,b) | a ∈ A and b ∈ B}`
@@ -10,7 +10,7 @@ From Wikipedia, the free encyclopedia:
 
 What does all this mean?
 
-The cartesian product of sets is all the possible combinations where you take a single element from each set.
+The Cartesian product of sets is all the possible combinations where you take a single element from each set.
 If you have two sets, `{ 1, 2 }` and `{ 3, 4 }`, their cartesian product is `{ { 1, 3 }, { 1, 4 }, { 2, 3 }, { 2, 4 } }`.
 
 Sometimes it's useful to test all possible combinations of parameter sets.
@@ -23,7 +23,23 @@ The extension takes the test data parameter values and runs the test for every p
 `@CartesianProductTest` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
 
 You can supply test parameters to `@CartesianProductTest` in multiple ways.
-The annotation can have a value (see <<Supplying a value to CartesianProductTest>>), the test method can be annotated with `@CartesianValueSource` (see <<Annotating your test method with @CartesianValueSource>>), or the test class can have a static factory method (see <<Writing a static factory method for the parameters>>) providing the arguments.
+
+ - The annotation can have a `String[]` value (see <<Supplying CartesianProductTest with a `String[]`>>)
+ - the test method can be annotated with `@CartesianValueSource` (see <<Annotating your test method with @CartesianValueSource>>)
+ - the test class can have a static factory method providing the arguments (see <<Writing a static factory method for the parameters>>)
+
+Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
+```java
+@CartesianProductTest
+@CartesianValueSource(ints = { 1, 2 })
+@CartesianValueSource(ints = { 3, 4 })
+void myCartesianTestMethod() {
+    // passing test code
+}
+```
+
+`@CartesianProductTest` works with parameters injected by JUnit automatically (e.g.: `TestReporter`).
+https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection::[You can read about auto-injected parameters here.]
 
 Just like the mathematical Cartesian product, `@CartesianProductTest` works with sets.
 Duplicate elements get removed automatically.
@@ -31,7 +47,7 @@ If your input is `{ 1, 1, 3 }` and `{ 2, 2 }` the extension will consider their 
 Otherwise, the test would run with the same parameters multiple times.
 If you need to pass the same parameters multiple times, you might want to look into https://junit.org/junit5/docs/current/user-guide/#writing-tests-repeated-tests[repeated tests].
 
-== Supplying CartesianProductTest with a single set
+== Supplying CartesianProductTest with a `String[]`
 
 If all your test parameters are strings, you can supply all input parameters simultaneously by giving a string array value to `@CartesianProductTest`.
 This value is the input for all parameters.
@@ -77,6 +93,7 @@ void annotated(int number, String character) {
 
 This annotation might look familiar - it mimics JUnits `@ValueSource`, except `@CartesianValueSource` is repeatable.
 It also does NOT work with `@ParameterizedTest`.
+https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-ValueSource::[You can read about `@ValueSource` here.]
 
 The test `annotated` is executed exactly six times.
 The first parameter can have any of the three values `1`, `2` or `4`.
@@ -174,7 +191,7 @@ There are multiple conditions the static factory method has to fulfill to qualif
 === Returning wrong `Sets` in the static factory method
 
 If you register too few, too many, or conflicting parameters, you will get an `org.junit.jupiter.api.extension.ParameterResolutionException`.
-Conflicting parameters meaning your test method has a `TestInfo` or `TestReporter` (or any other parameter that is automatically injected by JUnit), and you register too many sets in your factory method.
+Conflicting parameters meaning your test method has a parameter that should be injected by JUnit (e.g.: `TestReporter`) but you also try to inject it.
 
 Examples of badly configured tests/static factory method:
 ```java
@@ -193,17 +210,21 @@ void wrongOrderParameters(int i, String string) {
     // fails because the static factory method declared parameter sets in the wrong order
 }
 
-@CartesianProductTest(factory = "resolveParameters")
-void conflictingParameters(String string, TestInfo info) {
-    // fails because both the factory method and JUnit tries to inject TestInfo
-    // OR
-    // fails because the static factory method tries to inject int instead of TestInfo
+@CartesianProductTest(factory = "resolveTestReporterParam")
+void conflictingParameters(String string, TestReporter info) {
+    // fails because both the factory method and JUnit tries to inject TestReporter
 }
 
 static CartesianProductTest.Sets resolveParameters() {
     return new CartesianProductTest.Sets()
         .add("A", "B", "C")
         .add(1, 2, 3);
+}
+
+static CartesianProductTest.Sets resolveTestReporterParam() {
+    return new CartesianProductTest.Sets()
+        .add("A", "B", "C")
+        .add(new MyTestReporter()); // in this case MyTestReporter implements TestReporter
 }
 ```
 
