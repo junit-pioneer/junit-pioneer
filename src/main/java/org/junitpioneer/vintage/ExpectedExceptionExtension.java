@@ -35,7 +35,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 
 	static final String EXPECTED_EXCEPTION_WAS_NOT_THROWN = "Expected exception %s was not thrown.";
 
-	private static final Namespace NAMESPACE = Namespace.create("org", "junit-pioneer", "ExpectedException");
+	private static final Namespace NAMESPACE = Namespace.create(ExpectedExceptionExtension.class);
 	private static final String KEY = "ExceptionWasThrown";
 
 	@Override

@@ -34,4 +34,3 @@ jobs:
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build -PjunitMinorVersion=${{ matrix.junit5Minor }}
-          wrapper-cache-enabled: false
