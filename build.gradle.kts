@@ -13,8 +13,15 @@ plugins {
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
+val withModules = findProperty("withModules") ?: 0;
+
 java {
-	sourceCompatibility = JavaVersion.VERSION_1_8
+	if(withModules.equals("1")) {
+		sourceCompatibility = JavaVersion.VERSION_11
+	} else {
+		sourceCompatibility = JavaVersion.VERSION_1_8
+	}
+
 }
 
 repositories {
