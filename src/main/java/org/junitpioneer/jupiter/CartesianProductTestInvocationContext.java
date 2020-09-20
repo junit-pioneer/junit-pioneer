@@ -26,7 +26,9 @@ public class CartesianProductTestInvocationContext implements TestTemplateInvoca
 
 	@Override
 	public String getDisplayName(int invocationIndex) {
-		return invocationIndex + ": " + parameters;
+		return "[" + invocationIndex + "] "
+		// removes the [] characters
+				+ parameters.toString().substring(1, parameters.toString().length() - 1);
 	}
 
 	@Override
