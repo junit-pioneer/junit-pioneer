@@ -10,6 +10,12 @@ plugins {
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
 }
 
+plugins.withType<JavaPlugin>().configureEach {
+	configure<JavaPluginExtension> {
+		modularity.inferModulePath.set(true)
+	}
+}
+
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
