@@ -37,7 +37,7 @@ jobs:
       - name: Gradle build on Java except 8
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: -PwithModules=1 --refresh-dependencies --stacktrace --scan clean build
+          arguments: -PmodularBuild --refresh-dependencies --stacktrace --scan clean build
           wrapper-cache-enabled: false
 
   buildDone:

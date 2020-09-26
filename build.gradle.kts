@@ -19,10 +19,10 @@ plugins.withType<JavaPlugin>().configureEach {
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
-val withModules = findProperty("withModules") ?: 0;
+val modularBuild = findProperty("modularBuild") != null;
 
 java {
-	if(withModules.equals("1")) {
+	if(modularBuild) {
 		sourceCompatibility = JavaVersion.VERSION_11
 	} else {
 		sourceCompatibility = JavaVersion.VERSION_1_8
@@ -113,7 +113,7 @@ tasks {
 
 	sourceSets {
 		main {
-			if (withModules == 1)
+			if (modularBuild)
 				java.srcDir("src/main/module")
 		}
 	}
