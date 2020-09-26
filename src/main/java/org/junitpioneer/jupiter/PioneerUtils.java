@@ -62,14 +62,14 @@ class PioneerUtils {
 	 * never {@code null}
 	 * @return an {@code Optional} containing the method found; never {@code null}
 	 * but potentially empty if no such method could be found
-	 * @see org.junit.platform.commons.util.ReflectionUtils#findMethod(Class, String, Class...)
+	 * @see org.junit.platform.commons.support.ReflectionSupport#findMethod(Class, String, Class...)
 	 */
 	public static Optional<Method> findMethodCurrentOrEnclosing(Class<?> clazz, String methodName,
 			Class<?>... parameterTypes) {
 		Class<?> current = clazz;
 		Optional<Method> method;
 		do {
-			// null checking done by ReflectionUtils.findMethod
+			// null checking done by ReflectionSupport.findMethod
 			method = findMethod(current, methodName, parameterTypes);
 			current = current.getEnclosingClass();
 		} while (!method.isPresent() && current != null);
