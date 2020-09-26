@@ -28,6 +28,8 @@ You can supply test parameters to `@CartesianProductTest` in multiple ways.
  - the test method can be annotated with `@CartesianValueSource` (see <<Annotating your test method with @CartesianValueSource>>)
  - the test class can have a static factory method providing the arguments (see <<Writing a static factory method for the parameters>>)
 
+Specifying more than one kind of parameter source (e.g.: both annotating your test method and having a static factory) does not work and will throw an `ExtensionConfigurationException`.
+
 Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
 ```java
 @CartesianProductTest
