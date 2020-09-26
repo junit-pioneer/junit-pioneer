@@ -6,6 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: on ubuntu-latest
     steps:
       - name: Check out repo

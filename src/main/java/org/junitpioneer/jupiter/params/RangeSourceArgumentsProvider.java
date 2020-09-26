@@ -23,7 +23,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.platform.commons.util.Preconditions;
 
 /**
  * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.
@@ -57,11 +56,13 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider {
 						.collect(Collectors.toList()))
 				.orElseThrow(IllegalStateException::new);
 
-		Preconditions
-				.condition(argumentsSources.size() == 1,
-					() -> String
-							.format("Expected exactly one annotation to provide an ArgumentSource, found %d.",
-								argumentsSources.size()));
+		if (argumentsSources.size() != 1) {
+			String message = String
+					.format("Expected exactly one annotation to provide an ArgumentSource, found %d.",
+						argumentsSources.size());
+			throw new IllegalArgumentException(message);
+		}
+
 		Annotation argumentsSource = argumentsSources.get(0);
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
