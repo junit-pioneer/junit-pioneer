@@ -115,8 +115,8 @@ Entries will always be published after the test finished.
 === Publishing test parameters
 
 You can access `@ParameterizedTest` parameter values and publish them with the `@ReportEntry` annotation.
-Add a number (starting from zero) between curly braces to reference the parameter with that index.
-This is in line with how you reference test parameters https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-display-names[when customizing the Display Name of a `ParameterizedTest`]
+Add a number (starting from zero) between curly braces to reference the argument with that index.
+This works just like arguments in https://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html[Java's `MessageFormat`] and is in line with how you reference test parameters https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-display-names[when customizing the Display Name of a `ParameterizedTest`].
 Inside the report entry, the parameters can be referenced in any order and multiple times.
 For example, if you have a `@ParameterizedTest` like the following:
 
