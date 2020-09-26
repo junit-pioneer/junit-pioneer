@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
@@ -45,7 +46,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	private List<List<?>> computeSets(ExtensionContext context) {
 		Method testMethod = context.getRequiredTestMethod();
 		CartesianProductTest annotation = findAnnotation(testMethod, CartesianProductTest.class)
-				.orElseThrow(() -> new AssertionError("@CartesianProductTest not found"));
+				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianProductTest not found"));
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
 		if (annotation.value().length > 0) {
 			return getSetsFromValue(testMethod, annotation);
@@ -90,14 +91,14 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		Class<?> declaringClass = testMethod.getDeclaringClass();
 		Method factory = PioneerUtils
 				.findMethodCurrentOrEnclosing(declaringClass, factoryMethodName)
-				.orElseThrow(() -> new AssertionError("Method `CartesianProductTest.Sets " + factoryMethodName
-						+ "()` not found in " + declaringClass + "or any enclosing class"));
+				.orElseThrow(() -> new ExtensionConfigurationException("Method `CartesianProductTest.Sets "
+						+ factoryMethodName + "()` not found in " + declaringClass + "or any enclosing class"));
 		String method = "Method `" + factory + "`";
 		if (!Modifier.isStatic(factory.getModifiers())) {
-			throw new AssertionError(method + " must be static");
+			throw new ExtensionConfigurationException(method + " must be static");
 		}
 		if (!CartesianProductTest.Sets.class.isAssignableFrom(factory.getReturnType())) {
-			throw new AssertionError(method + " must return `CartesianProductTest.Sets`");
+			throw new ExtensionConfigurationException(method + " must return `CartesianProductTest.Sets`");
 		}
 		CartesianProductTest.Sets sets = (CartesianProductTest.Sets) invokeMethod(factory, null);
 		if (sets.getSets().size() > testMethod.getParameterCount()) {
