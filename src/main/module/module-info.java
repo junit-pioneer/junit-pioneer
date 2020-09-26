@@ -1,4 +1,4 @@
-module org.junitpioneer.junitpioneer {
+module org.junitpioneer {
 	requires org.junit.jupiter.api;
 	requires org.junit.jupiter.params;
 	requires org.junit.platform.commons;
