@@ -111,6 +111,13 @@ moditect {
 
 tasks {
 
+	sourceSets {
+		main {
+			if (withModules == 1)
+				java.srcDir("src/main/module")
+		}
+	}
+
 	compileJava {
 		options.encoding = "UTF-8"
 	}
