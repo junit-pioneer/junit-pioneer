@@ -47,17 +47,29 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		Method testMethod = context.getRequiredTestMethod();
 		CartesianProductTest annotation = findAnnotation(testMethod, CartesianProductTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianProductTest not found"));
+		List<CartesianValueSource> valueSources = findRepeatableAnnotations(testMethod, CartesianValueSource.class);
+		ensureNoInputConflicts(annotation, valueSources);
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
 		if (annotation.value().length > 0) {
 			return getSetsFromValue(testMethod, annotation);
 		}
 		// Try finding the @CartesianValueSource annotation
-		List<CartesianValueSource> valueSources = findRepeatableAnnotations(testMethod, CartesianValueSource.class);
 		if (!valueSources.isEmpty()) {
 			return getSetsFromRepeatableAnnotation(valueSources);
 		}
 		// Try the sets static factory method
 		return getSetsFromStaticFactory(testMethod, annotation.factory());
+	}
+
+	private static void ensureNoInputConflicts(CartesianProductTest annotation,
+			List<CartesianValueSource> valueSources) {
+		boolean hasValue = annotation.value().length != 0;
+		boolean hasFactory = !annotation.factory().isEmpty();
+		boolean hasValueSources = !valueSources.isEmpty();
+		if (hasValue && hasFactory || hasValue && hasValueSources || hasFactory && hasValueSources) {
+			throw new ExtensionConfigurationException(
+				"CartesianProductTest can only take exactly one type of arguments source.");
+		}
 	}
 
 	private List<List<?>> getSetsFromValue(Method testMethod, CartesianProductTest annotation) {

@@ -211,7 +211,7 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("there is no factory method")
 		void throwsForMissingFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "noFactory", int.class);
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "noFactory", int.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -223,7 +223,8 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("there is an implicit factory method but explicit factory name was given - which does not exists")
 		void throwsForMissingExplicitFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "hasImplicitFactory", int.class);
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "hasImplicitFactory",
+						int.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -235,7 +236,8 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("the factory method is not static")
 		void throwsForNonStaticFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "nonStaticFactory", int.class);
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "nonStaticFactory",
+						int.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -247,7 +249,8 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("the factory method does not return Sets")
 		void throwsForWrongReturnValueFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "wrongReturnFactory", int.class);
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "wrongReturnFactory",
+						int.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -259,8 +262,8 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("the factory method does not produce enough parameters")
 		void throwsForTooFewFactoryMethodParameters() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "incompleteFactory", int.class,
-						String.class, TimeUnit.class);
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "incompleteFactory",
+						int.class, String.class, TimeUnit.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfFailedTests(3);
 
@@ -270,7 +273,7 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("the factory method produces too much parameters")
 		void throwsForTooManyFactoryMethodParameters() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "bloatedFactory", int.class,
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "bloatedFactory", int.class,
 						String.class);
 
 			assertThat(results)
@@ -283,7 +286,7 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("the factory method produces parameters in the wrong order")
 		void throwsForFactoryWithWrongParameterOrder() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "wrongOrder", String.class,
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "wrongOrder", String.class,
 						int.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfFailedTests(6);
@@ -337,6 +340,45 @@ public class CartesianProductTestExtensionTests {
 
 		}
 
+		@Test
+		@DisplayName("has both a value and a factory method specified")
+		void conflict1() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "conflictValueAndFactory",
+						String.class, String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
+		}
+
+		@Test
+		@DisplayName("has both a value and @CartesianValueSource annotations")
+		void conflict2() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "conflictValueAndValueSource",
+						String.class, String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
+		}
+
+		@Test
+		@DisplayName("has both a factory method and @CartesianValueSource annotations")
+		void conflict3() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class,
+						"conflictValueSourceAndFactory", int.class, String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
+		}
+
 	}
 
 	static class BasicConfigurationTestCases {
@@ -377,7 +419,7 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	static class BadConfigurationTest {
+	static class BadConfigurationTestCases {
 
 		@CartesianProductTest
 		void noFactory(int i) {
@@ -431,6 +473,25 @@ public class CartesianProductTestExtensionTests {
 		static CartesianProductTest.Sets getParams() {
 
 			return new CartesianProductTest.Sets().add(1, 2, 4).add("Message #1", "Message #2");
+
+		}
+
+		@CartesianProductTest(value = { "0", "1" }, factory = "getParams")
+		void conflictValueAndFactory(String a, String b) {
+
+		}
+
+		@CartesianProductTest(value = { "0", "1" })
+		@CartesianValueSource(strings = { "0", "1" })
+		@CartesianValueSource(strings = { "0", "1" })
+		void conflictValueAndValueSource(String a, String b) {
+
+		}
+
+		@CartesianProductTest(factory = "getParams")
+		@CartesianValueSource(ints = { 0, 1 })
+		@CartesianValueSource(strings = { "0", "1" })
+		void conflictValueSourceAndFactory(int a, String b) {
 
 		}
 
