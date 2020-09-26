@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -172,7 +173,7 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(AssertionError.class)
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("not found");
 		}
 
@@ -184,7 +185,7 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(AssertionError.class)
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("not found");
 		}
 
@@ -196,7 +197,7 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(AssertionError.class)
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("must be static");
 		}
 
@@ -208,7 +209,7 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(AssertionError.class)
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("must return");
 		}
 
