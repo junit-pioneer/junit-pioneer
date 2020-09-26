@@ -47,8 +47,9 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	}
 
 	private CartesianProductTestNameFormatter createNameFormatter(ExtensionContext context) {
-		// Extension already threw if annotation is not present
-		String pattern = findAnnotation(context.getRequiredTestMethod(), CartesianProductTest.class).get().name();
+		CartesianProductTest annotation = findAnnotation(context.getRequiredTestMethod(), CartesianProductTest.class)
+				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianProductTest not found"));
+		String pattern = annotation.name();
 		if (pattern.isEmpty())
 			throw new ExtensionConfigurationException("CartesianProductTest can not have a non-empty display name");
 		String displayName = context.getDisplayName();

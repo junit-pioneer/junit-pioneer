@@ -15,7 +15,6 @@ import static org.junit.jupiter.params.ParameterizedTest.ARGUMENTS_PLACEHOLDER;
 import static org.junit.jupiter.params.ParameterizedTest.DISPLAY_NAME_PLACEHOLDER;
 import static org.junit.jupiter.params.ParameterizedTest.INDEX_PLACEHOLDER;
 
-import java.text.Format;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -44,9 +43,9 @@ class CartesianProductTestNameFormatter {
 	}
 
 	private String formatSafely(int invocationIndex, Object[] arguments) {
-		String pattern = prepareMessageFormatPattern(invocationIndex, arguments);
-		MessageFormat format = new MessageFormat(pattern);
-		Object[] readableArguments = makeReadable(format, arguments);
+		String messageFormatPattern = prepareMessageFormatPattern(invocationIndex, arguments);
+		MessageFormat format = new MessageFormat(messageFormatPattern);
+		Object[] readableArguments = makeReadable(arguments);
 		return format.format(readableArguments);
 	}
 
@@ -66,13 +65,10 @@ class CartesianProductTestNameFormatter {
 		return result;
 	}
 
-	private Object[] makeReadable(MessageFormat format, Object[] arguments) {
-		Format[] formats = format.getFormatsByArgumentIndex();
-		Object[] result = Arrays.copyOf(arguments, Math.min(arguments.length, formats.length), Object[].class);
+	private Object[] makeReadable(Object[] arguments) {
+		Object[] result = Arrays.copyOf(arguments, arguments.length, Object[].class);
 		for (int i = 0; i < result.length; i++) {
-			if (formats[i] == null) {
-				result[i] = PioneerUtils.nullSafeToString(arguments[i]);
-			}
+			result[i] = PioneerUtils.nullSafeToString(arguments[i]);
 		}
 		return result;
 	}

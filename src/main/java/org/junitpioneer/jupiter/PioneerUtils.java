@@ -100,8 +100,9 @@ class PioneerUtils {
 					return Arrays.toString((float[]) object);
 				case "double":
 					return Arrays.toString((double[]) object);
+				default:
+					return Arrays.deepToString((Object[]) object);
 			}
-			return Arrays.deepToString((Object[]) object);
 		}
 		return object.toString();
 	}
