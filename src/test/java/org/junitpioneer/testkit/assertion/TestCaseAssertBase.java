@@ -63,7 +63,7 @@ class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Event
 	@Override
 	public void withExceptionFulfilling(Predicate<Throwable> predicate) {
 		Throwable thrown = getRequiredThrowable();
-		predicate.test(thrown);
+		assertThat(predicate.test(thrown)).isTrue();
 	}
 
 	@Override
