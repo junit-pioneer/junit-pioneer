@@ -13,7 +13,7 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.sun.tools.javac.util.List;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ public class CartesianProductTestNameFormatterTests {
 		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter("Arguments are {arguments}",
 			"");
 
-		assertThat(formatter.format(0, List.of(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
+		assertThat(formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 				.isEqualTo("Arguments are class java.lang.Boolean, [1, 2, 3], enigma");
 	}
 
@@ -66,7 +66,7 @@ public class CartesianProductTestNameFormatterTests {
 		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter(
 			"Second {1} and before that {0}", "");
 
-		assertThat(formatter.format(0, List.of(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
+		assertThat(formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 				.isEqualTo("Second [1, 2, 3] and before that class java.lang.Boolean");
 	}
 
@@ -76,7 +76,7 @@ public class CartesianProductTestNameFormatterTests {
 		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter(
 			"Second {6} and before that {0}", "");
 
-		assertThat(formatter.format(0, List.of(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
+		assertThat(formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 				.isEqualTo("Second {6} and before that class java.lang.Boolean");
 	}
 
@@ -86,10 +86,11 @@ public class CartesianProductTestNameFormatterTests {
 		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter(
 			"Second {-1} and before that {0}", "");
 
-		assertThatThrownBy(() -> formatter.format(0, List.of(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
-				.isInstanceOf(ExtensionConfigurationException.class)
-				.hasCauseExactlyInstanceOf(IllegalArgumentException.class)
-				.hasMessageContaining("The display name pattern defined for the CartesianProductTest is invalid.");
+		assertThatThrownBy(
+			() -> formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
+					.isInstanceOf(ExtensionConfigurationException.class)
+					.hasCauseExactlyInstanceOf(IllegalArgumentException.class)
+					.hasMessageContaining("The display name pattern defined for the CartesianProductTest is invalid.");
 	}
 
 }
