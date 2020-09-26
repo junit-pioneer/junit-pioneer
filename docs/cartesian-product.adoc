@@ -33,7 +33,7 @@ Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
 @CartesianProductTest
 @CartesianValueSource(ints = { 1, 2 })
 @CartesianValueSource(ints = { 3, 4 })
-void myCartesianTestMethod() {
+void myCartesianTestMethod(int x, int y) {
     // passing test code
 }
 ```
@@ -79,14 +79,14 @@ To demonstrate with a table:
 == Annotating your test method with @CartesianValueSource
 
 If you don't only supply string values to your test method like in the example above, you can annotate your method with `@CartesianValueSource`.
-`@CartesianValueSource` is used to define the possible inputs of a single test parameter.
-You define the parameter values in order (left-to-right/top-to-bottom) and the test will try every combination those values can have.
+`@CartesianValueSource` is used to define the possible inputs of a single test parameter - as annotations are listed top-to-bottom, they provide parameter values left-to-right.
+The test will try every combination those values can have.
 
 ```java
 @CartesianProductTest
 @CartesianValueSource(ints = { 1, 2, 4 })
 @CartesianValueSource(strings = { "A", "B" })
-void annotated(int number, String character) {
+void testIntChars(int number, String character) {
     // passing test code
 }
 ```
@@ -95,9 +95,9 @@ This annotation might look familiar - it mimics JUnits `@ValueSource`, except `@
 It also does NOT work with `@ParameterizedTest`.
 https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-ValueSource::[You can read about `@ValueSource` here.]
 
-The test `annotated` is executed exactly six times.
+The test `testIntChars` is executed exactly six times.
 The first parameter can have any of the three values `1`, `2` or `4`.
-The second parameter can have any of the two values `A` or `B`.
+The second parameter can have any of the two values `"A"` or `"B"`.
 `@CartesianProductTest` tests for all input combinations, that's `3 × 2`, so six tests in total.
 
 To demonstrate with a table:
@@ -114,7 +114,7 @@ To demonstrate with a table:
 == Writing a static factory method for the parameters
 
 If your tests require special inputs that `@CartesianValueSource` is not able to supply, you can define a static factory method to supply your test parameters.
-By default, this method must have the same name as the test method, but you can specify a different name with the `factory()` annotation parameter.
+By default, this method must have the same name as the test method, but you can specify a different name with the `factory` annotation parameter.
 This method must return `CartesianProductTest.Sets`.
 `CartesianProductTest.Sets` is a helper class, specifically for creating sets for `@CartesianProductTest`.
 To create the test data, instantiate a `new CartesianProductTest.Sets()` then use the `add()` method to register the values for the parameters.
@@ -181,7 +181,7 @@ static CartesianProductTest.Sets provideArguments() {
 
 There are multiple conditions the static factory method has to fulfill to qualify:
 
-- must have the same name as the test method (or its name must be specified via `factory()`)
+- must have the same name as the test method (or its name must be specified via the `factory` attribute)
 - must be `static`
 - must have **no** parameters
 - must return `CartesianProductTest.Sets`
@@ -190,8 +190,8 @@ There are multiple conditions the static factory method has to fulfill to qualif
 
 === Returning wrong `Sets` in the static factory method
 
-If you register too few, too many, or conflicting parameters, you will get an `org.junit.jupiter.api.extension.ParameterResolutionException`.
-Conflicting parameters meaning your test method has a parameter that should be injected by JUnit (e.g.: `TestReporter`) but you also try to inject it.
+If you register too few, too many, or conflicting parameters, you will get an https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/ParameterResolutionException.html[`ParameterResolutionException`].
+"Conflicting parameters" means your test method has a parameter that should be injected by JUnit (e.g.: `TestReporter`) but you also try to inject it.
 
 Examples of badly configured tests/static factory method:
 ```java
