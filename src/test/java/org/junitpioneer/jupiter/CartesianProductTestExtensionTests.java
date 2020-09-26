@@ -37,39 +37,70 @@ public class CartesianProductTestExtensionTests {
 	class StandardBehaviouralTests {
 
 		// This behaves the same way as an empty @ParameterizedTest
-		@CartesianProductTest(value = { "0", "1" })
+		@Test
 		@DisplayName("does nothing if there are no parameters")
-		void empty() {
+		void emptyRunsOnce() {
+			ExecutionResults results = PioneerTestKit.executeTestMethod(BasicConfigurationTestCases.class, "empty");
+
+			assertThat(results).hasSingleSucceededTest();
 		}
 
-		@CartesianProductTest(value = { "0", "1", "2" })
+		@Test
 		@DisplayName("runs for each parameter once for single parameter")
-		void singleParameter(String param) {
-			int value = Integer.parseInt(param);
-			Assertions.assertThat(value).isBetween(0, 2);
+		void singleParameterRunsForEach() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class, "singleParameter",
+						String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+			assertThat(results).hasNumberOfReportEntries(3).withValues("0", "1", "2");
 		}
 
-		@CartesianProductTest({ "0", "1" })
+		@Test
 		@DisplayName("creates a 3-fold cartesian product from a single value")
-		void threeBits(String a, String b, String c) {
-			int value = Integer.parseUnsignedInt(a + b + c, 2);
-			Assertions.assertThat(value).isBetween(0b000, 0b111);
+		void threeBitsIntoEightTests() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class, "threeBits", String.class,
+						String.class, String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(8).hasNumberOfSucceededTests(8);
+			assertThat(results)
+					.hasNumberOfReportEntries(8)
+					.withValues("000", "001", "010", "100", "011", "101", "110", "111");
 		}
 
-		@CartesianProductTest
+		@Test
 		@DisplayName("creates a 3-fold cartesian product from an implicit factory method for three parameters")
-		void nFold(String string, Class<?> type, TimeUnit unit, TestInfo info) {
-			Assertions.assertThat(string).endsWith("a");
-			Assertions.assertThat(type).isInterface();
-			Assertions.assertThat(unit.name()).endsWith("S");
-			Assertions.assertThat(info.getTags()).isEmpty();
+		void nFoldIntoManyTests() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class, "nFold", String.class,
+						Class.class, TimeUnit.class, TestInfo.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(12).hasNumberOfSucceededTests(12);
+			assertThat(results)
+					.hasNumberOfReportEntries(12)
+					.withValues("Omega, interface org.junit.jupiter.api.TestInfo, DAYS",
+						"Alpha, interface java.lang.Comparable, HOURS",
+						"Alpha, interface org.junit.jupiter.api.TestInfo, DAYS",
+						"Omega, interface org.junit.jupiter.api.TestInfo, HOURS",
+						"Alpha, interface org.junit.jupiter.api.TestInfo, HOURS",
+						"Alpha, interface java.lang.Runnable, HOURS", "Alpha, interface java.lang.Runnable, DAYS",
+						"Omega, interface java.lang.Runnable, HOURS", "Omega, interface java.lang.Runnable, DAYS",
+						"Alpha, interface java.lang.Comparable, DAYS", "Omega, interface java.lang.Comparable, DAYS",
+						"Omega, interface java.lang.Comparable, HOURS");
 		}
 
-		@CartesianProductTest(factory = "supplyValues")
+		@Test
 		@DisplayName("creates a 2-fold cartesian product from an explicit factory method for two parameters")
-		void explicitFactory(String string, TimeUnit unit) {
-			Assertions.assertThat(string).isIn("War", "Peace");
-			Assertions.assertThat(unit.name()).endsWith("S");
+		void explicitFactorySuppliesValues() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class, "explicitFactory",
+						String.class, TimeUnit.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
+			assertThat(results)
+					.hasNumberOfReportEntries(4)
+					.withValues("War,SECONDS", "War,DAYS", "Peace,SECONDS", "Peace,DAYS");
 		}
 
 		@Test
@@ -82,7 +113,14 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(6)
 					.hasNumberOfSucceededTests(4)
-					.hasNumberOfFailedTests(2);
+					.hasNumberOfFailedTests(2)
+					.hasNumberOfReportEntries(6)
+					.withValues("Two roads diverged in a yellow wood, - And looked down one as far as I could",
+						"Two roads diverged in a yellow wood, - To where it bent in the undergrowth;",
+						"And sorry I could not travel both - And looked down one as far as I could",
+						"And sorry I could not travel both - To where it bent in the undergrowth;",
+						"And be one traveler, long I stood - And looked down one as far as I could",
+						"And be one traveler, long I stood - To where it bent in the undergrowth;");
 		}
 
 		@Test
@@ -92,11 +130,13 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "injected", String.class,
 						TestReporter.class);
 
-			//@formatter:off
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(5)
-					.hasNumberOfSucceededTests(5);
-			//@formatter:on
+					.hasNumberOfSucceededTests(5)
+					.hasNumberOfReportEntries(5)
+					.withValues("Then took the other, as just as fair,", "And having perhaps the better claim",
+						"Because it was grassy and wanted wear,", "Though as for that the passing there",
+						"Had worn them really about the same,");
 		}
 
 		@Nested
@@ -109,11 +149,13 @@ public class CartesianProductTestExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethodWithParameterTypes(RedundantInputSetTestCases.class, "distinctInputs",
 							String.class, String.class);
-				//@formatter:off
+
 				assertThat(results)
 						.hasNumberOfDynamicallyRegisteredTests(4)
-						.hasNumberOfSucceededTests(4);
-				//@formatter:on
+						.hasNumberOfSucceededTests(4)
+						.hasNumberOfReportEntries(4)
+						.withValues("11", "12", "21", "22");
+
 			}
 
 			@Test
@@ -122,11 +164,13 @@ public class CartesianProductTestExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethodWithParameterTypes(RedundantInputSetTestCases.class,
 							"distinctInputsAnnotations", int.class, String.class);
-				//@formatter:off
+
 				assertThat(results)
 						.hasNumberOfDynamicallyRegisteredTests(6)
-						.hasNumberOfSucceededTests(6);
-				//@formatter:on
+						.hasNumberOfSucceededTests(6)
+						.hasNumberOfReportEntries(6)
+						.withValues("1A", "1B", "1C", "4A", "4B", "4C");
+
 			}
 
 			@Test
@@ -135,11 +179,13 @@ public class CartesianProductTestExtensionTests {
 				ExecutionResults results = PioneerTestKit
 						.executeTestMethodWithParameterTypes(RedundantInputSetTestCases.class, "distinctInputsFactory",
 							TimeUnit.class, String.class);
-				//@formatter:off
+
 				assertThat(results)
 						.hasNumberOfDynamicallyRegisteredTests(3)
-						.hasNumberOfSucceededTests(3);
-				//@formatter:on
+						.hasNumberOfSucceededTests(3)
+						.hasNumberOfReportEntries(3)
+						.withValues("A:SECONDS", "B:SECONDS", "C:SECONDS");
+
 			}
 
 		}
@@ -154,11 +200,7 @@ public class CartesianProductTestExtensionTests {
 	}
 
 	static CartesianProductTest.Sets supplyValues() {
-		//@formatter:off
-		return new CartesianProductTest.Sets()
-				.add("War", "Peace")
-				.add(TimeUnit.SECONDS, TimeUnit.DAYS);
-		//@formatter:on
+		return new CartesianProductTest.Sets().add("War", "Peace").add(TimeUnit.SECONDS, TimeUnit.DAYS);
 	}
 
 	@Nested
@@ -220,11 +262,8 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "incompleteFactory", int.class,
 						String.class, TimeUnit.class);
 
-			//@formatter:off
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(3)
-					.hasNumberOfFailedTests(3);
-			//@formatter:on
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfFailedTests(3);
+
 		}
 
 		@Test
@@ -247,11 +286,8 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(BadConfigurationTest.class, "wrongOrder", String.class,
 						int.class);
 
-			//@formatter:off
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(6)
-					.hasNumberOfFailedTests(6);
-			//@formatter:on
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfFailedTests(6);
+
 		}
 
 		@Test
@@ -273,11 +309,8 @@ public class CartesianProductTestExtensionTests {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "wrongType", float.class);
 
-			//@formatter:off
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(2)
-					.hasNumberOfFailedTests(2);
-			//@formatter:on
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfFailedTests(2);
+
 		}
 
 		@Test
@@ -300,12 +333,48 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "wrongOrder",
 						String.class, int.class);
 
-			//@formatter:off
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(10)
-					.hasNumberOfFailedTests(10);
-			//@formatter:off
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(10).hasNumberOfFailedTests(10);
+
 		}
+
+	}
+
+	static class BasicConfigurationTestCases {
+
+		@CartesianProductTest(value = { "0", "1" })
+		void empty() {
+		}
+
+		@CartesianProductTest(value = { "0", "1", "2" })
+		@ReportEntry("{0}")
+		void singleParameter(String param) {
+			int value = Integer.parseInt(param);
+			Assertions.assertThat(value).isBetween(0, 2);
+		}
+
+		@CartesianProductTest({ "0", "1" })
+		@ReportEntry("{0}{1}{2}")
+		void threeBits(String a, String b, String c) {
+			int value = Integer.parseUnsignedInt(a + b + c, 2);
+			Assertions.assertThat(value).isBetween(0b000, 0b111);
+		}
+
+		@CartesianProductTest
+		@ReportEntry("{0}, {1}, {2}")
+		void nFold(String string, Class<?> type, TimeUnit unit, TestInfo info) {
+			Assertions.assertThat(string).endsWith("a");
+			Assertions.assertThat(type).isInterface();
+			Assertions.assertThat(unit.name()).endsWith("S");
+			Assertions.assertThat(info.getTags()).isEmpty();
+		}
+
+		@CartesianProductTest(factory = "supplyValues")
+		@ReportEntry("{0},{1}")
+		void explicitFactory(String string, TimeUnit unit) {
+			Assertions.assertThat(string).isIn("War", "Peace");
+			Assertions.assertThat(unit.name()).endsWith("S");
+		}
+
 	}
 
 	static class BadConfigurationTest {
@@ -351,10 +420,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		static CartesianProductTest.Sets bloatedFactory() {
-			return new CartesianProductTest.Sets()
-					.add(1, 2, 3)
-					.add("Ice is cold", "Fire is hot")
-					.add(TimeUnit.DAYS);
+			return new CartesianProductTest.Sets().add(1, 2, 3).add("Ice is cold", "Fire is hot").add(TimeUnit.DAYS);
 		}
 
 		@CartesianProductTest(factory = "getParams")
@@ -363,11 +429,9 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		static CartesianProductTest.Sets getParams() {
-			//@formatter:off
-			return new CartesianProductTest.Sets()
-					.add(1, 2, 4)
-					.add("Message #1", "Message #2");
-			//@formatter:on
+
+			return new CartesianProductTest.Sets().add(1, 2, 4).add("Message #1", "Message #2");
+
 		}
 
 	}
@@ -379,6 +443,7 @@ public class CartesianProductTestExtensionTests {
 				"And be one traveler, long I stood" })
 		@CartesianValueSource(strings = { "And looked down one as far as I could",
 				"To where it bent in the undergrowth;" })
+		@ReportEntry("{0} - {1}")
 		void poeticValues(String line, String endLine) {
 			Assertions.assertThat(line).startsWith("And");
 		}
@@ -387,6 +452,7 @@ public class CartesianProductTestExtensionTests {
 		@CartesianValueSource(strings = { "Then took the other, as just as fair,",
 				"And having perhaps the better claim", "Because it was grassy and wanted wear,",
 				"Though as for that the passing there", "Had worn them really about the same," })
+		@ReportEntry("{0}")
 		void injected(String poemLine, TestReporter reporter) {
 		}
 
@@ -420,16 +486,19 @@ public class CartesianProductTestExtensionTests {
 
 		@CartesianProductTest(value = { "1", "1", "2" })
 		@DisplayName("removes duplicates from input sets")
+		@ReportEntry("{0}{1}")
 		void distinctInputs(String a, String b) {
 		}
 
 		@CartesianProductTest
 		@CartesianValueSource(ints = { 1, 1, 4 })
 		@CartesianValueSource(strings = { "A", "B", "C", "C" })
+		@ReportEntry("{0}{1}")
 		void distinctInputsAnnotations(int i, String string) {
 		}
 
 		@CartesianProductTest(factory = "nonDistinctInputs")
+		@ReportEntry("{1}:{0}")
 		void distinctInputsFactory(TimeUnit unit, String string) {
 		}
 
@@ -437,10 +506,10 @@ public class CartesianProductTestExtensionTests {
 
 	static CartesianProductTest.Sets nonDistinctInputs() {
 		//@formatter:off
-		return new CartesianProductTest.Sets()
-				.add(TimeUnit.SECONDS, TimeUnit.SECONDS)
-				.add("A", "B", "C");
-		//@formatter:on
+        return new CartesianProductTest.Sets()
+                .add(TimeUnit.SECONDS, TimeUnit.SECONDS)
+                .add("A", "B", "C");
+        //@formatter:on
 	}
 
 }
