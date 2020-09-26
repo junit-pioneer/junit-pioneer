@@ -13,9 +13,6 @@ package org.junitpioneer.jupiter.params;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.junit.platform.commons.PreconditionViolationException;
-import org.junit.platform.commons.util.Preconditions;
-
 /**
  * An iterator for numerical ranges, used as the backing logic for {@link RangeSourceArgumentsProvider}.
  * @param <N> The numerical type used by the range.
@@ -40,20 +37,31 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 
 	/**
 	 * Asserts the range is valid.
-	 * @throws PreconditionViolationException if the range is not valid
+	 * @throws IllegalArgumentException if the range is not valid
 	 */
 	void validate() {
-		Preconditions.condition(!step.equals(getZero()), "Illegal range. The step cannot be zero.");
+		if (step.equals(getZero())) {
+			throw new IllegalArgumentException("Illegal range. The step cannot be zero.");
+		}
 
-		Preconditions
-				.condition(closed || !from.equals(to), "Illegal range. Equal from and to will produce an empty range.");
+		if (!closed && from.equals(to)) {
+			throw new IllegalArgumentException("Illegal range. Equal from and to will produce an empty range.");
+		}
 
-		int cmp = from.compareTo(to);
-		Preconditions
-				.condition((cmp < 0 != sign < 0) || (closed && cmp == 0),
-					() -> String
-							.format("Illegal range. There's no way to get from %s to %s with a step of %s.", from, to,
-								step));
+		boolean fromNotEqualsTo = (from.compareTo(to) != 0);
+
+		if ((isValidDescending()) && (!closed || fromNotEqualsTo)) {
+			String message = String
+					.format("Illegal range. There's no way to get from %s to %s with a step of %s.", from, to, step);
+			throw new IllegalArgumentException(message);
+		}
+	}
+
+	boolean isValidDescending() {
+		boolean fromIsLessThanTo = (from.compareTo(to) < 0);
+		boolean stepIsLessThanZero = (sign < 0);
+
+		return fromIsLessThanTo == stepIsLessThanZero;
 	}
 
 	N getStep() {
