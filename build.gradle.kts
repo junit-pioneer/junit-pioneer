@@ -6,14 +6,28 @@ plugins {
 	id("com.diffplug.gradle.spotless") version "4.0.0"
 	id("org.shipkit.java") version "2.3.1"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "2.8"
+	id("org.sonarqube") version "3.0"
+	id("org.moditect.gradleplugin") version "1.0.0-rc3"
+}
+
+plugins.withType<JavaPlugin>().configureEach {
+	configure<JavaPluginExtension> {
+		modularity.inferModulePath.set(true)
+	}
 }
 
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
+val modularBuild = findProperty("modularBuild") != null;
+
 java {
-	sourceCompatibility = JavaVersion.VERSION_1_8
+	if(modularBuild) {
+		sourceCompatibility = JavaVersion.VERSION_11
+	} else {
+		sourceCompatibility = JavaVersion.VERSION_1_8
+	}
+
 }
 
 repositories {
@@ -25,6 +39,7 @@ val junitMinorVersion : String by project
 dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.$junitMinorVersion")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.$junitMinorVersion")
+	implementation(group = "org.junit.platform", name = "junit-platform-commons", version = "1.$junitMinorVersion")
     implementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.$junitMinorVersion")
     // For Java 8 provided would be enough as its part of the JRE,
     // but Java 11 and 14 need this dependency cause of Jigsaw
@@ -89,7 +104,24 @@ sonarqube {
 	}
 }
 
+moditect {
+	addMainModuleInfo {
+		version = project.version
+		overwriteExistingFiles.set(true)
+		module {
+			moduleInfoFile = rootProject.file("src/main/module/module-info.java")
+		}
+	}
+}
+
 tasks {
+
+	sourceSets {
+		main {
+			if (modularBuild)
+				java.srcDir("src/main/module")
+		}
+	}
 
 	compileJava {
 		options.encoding = "UTF-8"
@@ -138,19 +170,11 @@ tasks {
 		dependsOn(javadoc, validateYaml)
 	}
 
-	// the manifest needs to declare the future module name
-	jar {
-		manifest {
-			attributes(
-					"Automatic-Module-Name" to "org.junitpioneer"
-			)
-		}
-	}
-
 	withType<Jar>().configureEach {
 		from(projectDir) {
 			include("LICENSE.md")
 			into("META-INF")
 		}
 	}
+
 }

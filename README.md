@@ -48,6 +48,9 @@ testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
 
 ## Dependencies
 
+JUnit Pioneer is built against Java 8, but comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
+That means it can be used on all Java versions 8 and higher on class path and module path.
+
 To not add to user's [JAR hell](https://blog.codefx.org/java/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
 Pioneer always depends on the lowest JUnit 5 version that supports its feature set, but that should not keep you from using 5's latest and greatest.
 
@@ -107,7 +110,7 @@ The least we can do is to thank them and list some of their accomplishments here
 * [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
 * [Mark Rösler](https://github.com/Hancho2009) contributed the [environment variable extension](https://junit-pioneer.org/docs/environment-variables/) (#167 / #174 and #241 / #242)
 * [Matthias Bünger](https://github.com/Bukama) opened, vetted, and groomed countless issues and PRs and contributed multiple refactorings (e.g. #165 / #168) and fixes (e.g. #190 / #200) before getting promoted to maintainer
-* [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), added tests to other extensions (#164 / #272), and contributed to multiple issues (e.g. #217 / #298) and PRs (e.g. #253, #307)
+* [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), [the ReportEntryExtension](https://junit-pioneer.org/docs/report-entries/) (#134, #179 / #183, #216, #294), added tests to other extensions (#164 / #272), and contributed to multiple issues (e.g. #217 / #298) and PRs (e.g. #253, #307)
 * [Nishant Vashisth](https://github.com/nishantvas) contributed an [extension to disable parameterized tests](https://junit-pioneer.org/docs/disable-if-display-name/) by display name (#163 / #175)
 * [Simon Schrottner](https://github.com/aepfli) contributed to multiple issues and PRs and almost single-handedly revamped the build and QA process (e.g. #192 / #185) before getting promoted to maintainer
 * [Sullis](https://github.com/sullis) improved GitHub Actions with Gradle Wrapper Validation check (#302)
