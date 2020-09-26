@@ -15,11 +15,7 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.api.TestReporter;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.platform.commons.PreconditionViolationException;
@@ -206,6 +202,19 @@ public class CartesianProductTestExtensionTests {
 	@Nested
 	@DisplayName("fails when")
 	class BadConfigurationTests {
+
+		@Test
+		@DisplayName("the name is overwritten with empty string")
+		void throwsForEmptyName() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "noName", String.class,
+						String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("CartesianProductTest can not have a non-empty display name");
+		}
 
 		@Test
 		@DisplayName("there is no factory method")
@@ -420,6 +429,10 @@ public class CartesianProductTestExtensionTests {
 	}
 
 	static class BadConfigurationTestCases {
+
+		@CartesianProductTest(value = { "1", "2" }, name = "")
+		void noName(String a, String b) {
+		}
 
 		@CartesianProductTest
 		void noFactory(int i) {
