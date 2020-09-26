@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.platform.commons.util.ReflectionUtils.findMethod;
+import static org.junit.platform.commons.support.ReflectionSupport.findMethod;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;

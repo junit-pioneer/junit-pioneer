@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.junit.platform.commons.util.Preconditions;
+import org.junit.platform.commons.PreconditionViolationException;
 
 /**
  * This is basically a copy of ValueSourceArgumentsProvider,
@@ -50,9 +50,9 @@ class CartesianValueArgumentsProvider implements Consumer<CartesianValueSource> 
                 .collect(toList());
         // @formatter:on
 
-		Preconditions
-				.condition(arrays.size() == 1, () -> "Exactly one type of input must be provided in the @"
-						+ CartesianValueSource.class.getSimpleName() + " annotation, but there were " + arrays.size());
+		if (arrays.size() != 1)
+			throw new PreconditionViolationException("Exactly one type of input must be provided in the @"
+					+ CartesianValueSource.class.getSimpleName() + " annotation, but there were " + arrays.size());
 
 		Object originalArray = arrays.get(0);
 		arguments = IntStream
