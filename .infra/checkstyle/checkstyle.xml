@@ -30,5 +30,7 @@
 
 	<module name="JavadocPackage" />
 	<module name="SuppressWarningsFilter" />
-
+	<module name="BeforeExecutionExclusionFileFilter">
+		<property name="fileNamePattern" value="module\-info\.java$"/>
+	</module>
 </module>

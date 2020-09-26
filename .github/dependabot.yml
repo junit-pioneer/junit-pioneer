@@ -1,0 +1,14 @@
+version: 2
+
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: monthly
+  ignore:
+    - dependency-name: "org.junit.*"
+
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: monthly

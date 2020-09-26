@@ -87,6 +87,7 @@ public @interface ReportEntry {
 
 		/**
 		 * Publish report entry after failed test run
+		 * (i.e. the test must actually run; if it fails during setup, the behavior is undefined)
 		 */
 		ON_FAILURE,
 

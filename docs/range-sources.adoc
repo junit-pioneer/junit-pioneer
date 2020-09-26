@@ -44,7 +44,7 @@ This behavior can be controlled by specifying the `closed` argument:
 @ParameterizedTest
 @ByteRangeSource(from = 0, to = 0)
 void illegalRange(byte arg) {
-	// this will fail with a PreconditionViolationException
+	// this will fail with an IllegalArgumentException
 	// since the range will be empty
 }
 
@@ -58,7 +58,7 @@ void legalRrange(long arg) {
 
 == Empty ranges
 
-The range sources check whether the range defined by `from`, `to`, and `step` is empty and throws a `PreconditionViolationException` if it is.
+The range sources check whether the range defined by `from`, `to`, and `step` is empty and throws an `IllegalArgumentException` if it is.
 
 == Thread-Safety
 
