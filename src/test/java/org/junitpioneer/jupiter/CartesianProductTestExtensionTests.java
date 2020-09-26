@@ -350,7 +350,7 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
 		}
 
 		@Test
@@ -363,7 +363,7 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
 		}
 
 		@Test
@@ -376,7 +376,7 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
 		}
 
 	}

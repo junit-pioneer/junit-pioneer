@@ -19,16 +19,16 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 public class CartesianProductTestInvocationContext implements TestTemplateInvocationContext {
 
 	private final List<?> parameters;
+	private final CartesianProductTestNameFormatter formatter;
 
-	CartesianProductTestInvocationContext(List<?> parameters) {
+	CartesianProductTestInvocationContext(List<?> parameters, CartesianProductTestNameFormatter formatter) {
 		this.parameters = parameters;
+		this.formatter = formatter;
 	}
 
 	@Override
 	public String getDisplayName(int invocationIndex) {
-		return "[" + invocationIndex + "] "
-		// removes the [] characters
-				+ parameters.toString().substring(1, parameters.toString().length() - 1);
+		return formatter.format(invocationIndex, parameters.toArray());
 	}
 
 	@Override

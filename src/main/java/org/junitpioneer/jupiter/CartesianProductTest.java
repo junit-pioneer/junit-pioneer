@@ -37,6 +37,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface CartesianProductTest {
 
 	/**
+	 *
+	 */
+	String name() default "[{index}] {arguments}";
+
+	/**
 	 * Specifies {@code String} values for all inputs simultaneously.
 	 */
 	String[] value() default {};

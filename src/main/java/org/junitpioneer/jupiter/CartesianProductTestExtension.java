@@ -40,7 +40,19 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		List<List<?>> sets = computeSets(context);
-		return cartesianProduct(sets).stream().map(CartesianProductTestInvocationContext::new);
+		CartesianProductTestNameFormatter formatter = createNameFormatter(context);
+		return cartesianProduct(sets)
+				.stream()
+				.map(params -> new CartesianProductTestInvocationContext(params, formatter));
+	}
+
+	private CartesianProductTestNameFormatter createNameFormatter(ExtensionContext context) {
+		// Extension already threw if annotation is not present
+		String pattern = findAnnotation(context.getRequiredTestMethod(), CartesianProductTest.class).get().name();
+		if (pattern.isEmpty())
+			throw new ExtensionConfigurationException("CartesianProductTest can not have a non-empty display name");
+		String displayName = context.getDisplayName();
+		return new CartesianProductTestNameFormatter(pattern, displayName);
 	}
 
 	private List<List<?>> computeSets(ExtensionContext context) {
@@ -68,7 +80,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		boolean hasValueSources = !valueSources.isEmpty();
 		if (hasValue && hasFactory || hasValue && hasValueSources || hasFactory && hasValueSources) {
 			throw new ExtensionConfigurationException(
-				"CartesianProductTest can only take exactly one type of arguments source.");
+				"CartesianProductTest can only take exactly one type of arguments source");
 		}
 	}
 

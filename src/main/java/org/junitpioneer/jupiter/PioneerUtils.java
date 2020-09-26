@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static org.junit.platform.commons.support.ReflectionSupport.findMethod;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -74,6 +75,35 @@ class PioneerUtils {
 			current = current.getEnclosingClass();
 		} while (!method.isPresent() && current != null);
 		return method;
+	}
+
+	public static String nullSafeToString(Object object) {
+		if (object == null) {
+			return "null";
+		}
+
+		if (object.getClass().isArray()) {
+			switch (object.getClass().getComponentType().getSimpleName()) {
+				case "boolean":
+					return Arrays.toString((boolean[]) object);
+				case "byte":
+					return Arrays.toString((byte[]) object);
+				case "char":
+					return Arrays.toString((char[]) object);
+				case "int":
+					return Arrays.toString((int[]) object);
+				case "short":
+					return Arrays.toString((short[]) object);
+				case "long":
+					return Arrays.toString((long[]) object);
+				case "float":
+					return Arrays.toString((float[]) object);
+				case "double":
+					return Arrays.toString((double[]) object);
+			}
+			return Arrays.deepToString((Object[]) object);
+		}
+		return object.toString();
 	}
 
 }
