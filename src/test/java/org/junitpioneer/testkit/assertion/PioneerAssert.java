@@ -309,7 +309,7 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	@Override
 	public void assertingExceptions(Predicate<List<Throwable>> predicate) {
 		List<Throwable> thrownExceptions = getAllExceptions(getProperEvents()).collect(toList());
-		Assertions.assertThat(predicate.test(thrownExceptions)).isTrue();
+		Assertions.assertThat(predicate).accepts(thrownExceptions);
 	}
 
 	@Override

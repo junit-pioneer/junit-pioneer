@@ -62,7 +62,7 @@ class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase,
 
 	@Override
 	public void asserting(Predicate<Map.Entry<String, String>> predicate) {
-		this.actual.forEach(entry -> assertThat(predicate.test(entry)).isTrue());
+		this.actual.forEach(entry -> assertThat(predicate).accepts(entry));
 	}
 
 	@Override
