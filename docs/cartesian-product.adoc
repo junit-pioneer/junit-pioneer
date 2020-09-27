@@ -230,6 +230,47 @@ static CartesianProductTest.Sets resolveTestReporterParam() {
 }
 ```
 
+== Customizing Display Names
+
+By default, the display name of a CartesianProductTest invocation contains the invocation index and the String representation of all arguments for that specific invocation.
+You can customize invocation display names via the `name` attribute of the `@CartesianProductTest` annotation.
+For example:
+
+```java
+@CartesianProductTest(value = {"0", "1"}, name = "{index} => first bit: {0} second bit: {1}")
+@DisplayName("Basic bit test")
+void testWithCustomDisplayName(String a, String b) {
+    // passing test code
+}
+```
+
+When executing the above test, you should see output similar to the following:
+```
+Basic bit test
+├─ 1 => first bit: 0 second bit: 0
+├─ 2 => first bit: 0 second bit: 1
+├─ 3 => first bit: 1 second bit: 0
+└─ 4 => first bit: 1 second bit: 1
+```
+
+Please note that name is a MessageFormat pattern.
+A single quote (') needs to be represented as a doubled single quote ('') in order to be displayed.
+
+CartesianProductTest supports the following placeholders in custom display names:
+
+|===
+| Placeholder | Description
+
+| `{displayName}`
+| the display name of the method
+| `{index}`
+| the current invocation index, starting with 1
+| `{arguments}`
+| the complete, comma-separated arguments list
+| `{0}`, `{1}`, ...
+| an individual argument
+|===
+
 == Warning: Do not `@CartesianProductTest` with `@Test`
 
 If `@CartesianProductTest` is combined with `@Test` or `TestTemplate`-based mechanisms (like `@RepeatedTest` or `@ParameterizedTest`), the test engine will execute it according to each annotation (i.e. more than once).
