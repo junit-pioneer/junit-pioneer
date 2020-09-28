@@ -63,14 +63,14 @@ public class ExecutionResults {
 	 * Get all recorded events.
 	 */
 	public Events allEvents() {
-		return executionResults.all();
+		return executionResults.allEvents();
 	}
 
 	/**
 	 * Get recorded dynamically registered events.
 	 */
 	public Events dynamicallyRegisteredEvents() {
-		return executionResults.all().dynamicallyRegistered();
+		return executionResults.allEvents().dynamicallyRegistered();
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class ExecutionResults {
 	 * TestDescriptors} that return {@code true} from {@link org.junit.platform.engine.TestDescriptor#isContainer()}.</p>
 	 */
 	public Events containerEvents() {
-		return executionResults.containers();
+		return executionResults.containerEvents();
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class ExecutionResults {
 	 * TestDescriptors} that return {@code true} from {@link org.junit.platform.engine.TestDescriptor#isTest()}.</p>
 	 */
 	public Events testEvents() {
-		return executionResults.tests();
+		return executionResults.testEvents();
 	}
 
 }
