@@ -15,7 +15,7 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        junit5Minor: [ '5.0', '5.1', '5.2', '6.0', '6.1', '6.2' ]
+        junit5Minor: [ '7.0' ]
     name: with JUnit 5.${{ matrix.junit5Minor }} on ubuntu-latest
     steps:
       - name: Check out repo
