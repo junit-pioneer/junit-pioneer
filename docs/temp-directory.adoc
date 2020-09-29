@@ -26,6 +26,7 @@ The following example uses the Jimfs `FileSystem` and passes a custom `tmp` pare
 [source,java]
 ----
 class MyTests {
+
 	private static FileSystem fileSystem;
 
 	@BeforeAll
@@ -48,6 +49,7 @@ class MyTests {
 		writeFile(file);
 		assertExpectedFileContent(file);
 	}
+
 }
 ----
 

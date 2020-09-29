@@ -91,9 +91,10 @@ Just so:
 [source,java]
 ----
 @Test
-@ReportEntry(key = "line",
-		value = "success entry",
-		when = ReportEntry.PublishCondition.ON_SUCCESS)
+@ReportEntry(
+	key = "line",
+	value = "success entry",
+	when = ReportEntry.PublishCondition.ON_SUCCESS)
 void sufferingFromSuccess() {
 	// YOUR TEST CODE HERE
 }

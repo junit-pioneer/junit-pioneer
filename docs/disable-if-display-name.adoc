@@ -71,7 +71,7 @@ You can even use both, in which case a test is disabled if contains a substring 
 
 [source,java]
 ----
-@DisableIfDisplayName(contains = "000", matches = ".*10?" )
+@DisableIfDisplayName(contains = "000", matches = ".*10?")
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
 void containsAndMatches_containsAndMatches(int number) {
