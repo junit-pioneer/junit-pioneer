@@ -34,15 +34,15 @@ repositories {
 	mavenCentral()
 }
 
-val junitMinorVersion : String by project
+val junitVersion : String by project
 
 dependencies {
-	implementation(platform("org.junit:junit-bom:5.$junitMinorVersion"))
+	implementation(platform("org.junit:junit-bom:$junitVersion"))
+
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-commons")
 
-	testImplementation(platform("org.junit:junit-bom:5.$junitMinorVersion"))
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
