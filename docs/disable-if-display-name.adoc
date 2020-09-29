@@ -12,14 +12,16 @@ As a consequence, instead of disabling the entire set of parameterized tests, ea
 @DisableIfDisplayName(contains = "disable")
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(
-		strings = {
-				"disable who", // ~> disabled
-				"you, disable you", // ~> disabled
-				"why am I disabled", // ~> disabled
-				"what has been disabled must stay disabled", // ~> disabled
-				"fine disable me all you want", // ~> disabled
-				"not those one, though!" // ~> NOT disabled
-		}
+	// Disabled: 1,2,3,4,5
+	// Not disabled: 6
+	strings = {
+		"disable who", // 1
+		"you, disable you", // 2
+		"why am I disabled", // 3
+		"what has been disabled must stay disabled", // 4
+		"fine disable me all you want", // 5
+		"not those one, though!" // 6
+	}
 )
 void testExecutionDisabled(String reason) {
 	if (reason.contains("disable"))
@@ -44,18 +46,21 @@ If substrings are not powerful enough, you can also use regular expressions:
 
 [source,java]
 ----
-// disable invocations whose display name contains "disable " or "disabled "
+// disable invocations whose display name
+// contains "disable " or "disabled "
 @DisableIfDisplayName(matches = ".*disabled?\\s.*")
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(
-		strings = {
-				"disable who", // ~> disabled
-				"you, disable you", // ~> disabled
-				"why am I disabled", // ~> NOT disabled
-				"what has been disabled must stay disabled", // ~> disabled
-				"fine disable me all you want", // ~> disabled
-				"not those one, though!" // ~> NOT disabled
-		}
+	// Disabled: 1,2,4,5
+	// Not disabled: 3,6
+	strings = {
+		"disable who", // 1
+		"you, disable you", // 2
+		"why am I disabled", // 3
+		"what has been disabled must stay disabled", // 4
+		"fine disable me all you want", // 5
+		"not those one, though!" // 6
+	}
 )
 void single(String reason) {
 	// ...
@@ -66,7 +71,7 @@ You can even use both, in which case a test is disabled if contains a substring 
 
 [source,java]
 ----
-@DisableIfDisplayName(contains = "000", matches = ".*10?" )
+@DisableIfDisplayName(contains = "000", matches = ".*10?")
 @ParameterizedTest(name = "See if enabled with {0}")
 @ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
 void containsAndMatches_containsAndMatches(int number) {
