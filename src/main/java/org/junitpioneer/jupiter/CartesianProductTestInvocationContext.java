@@ -16,7 +16,7 @@ import java.util.List;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
-public class CartesianProductTestInvocationContext implements TestTemplateInvocationContext {
+class CartesianProductTestInvocationContext implements TestTemplateInvocationContext {
 
 	private final List<?> parameters;
 	private final CartesianProductTestNameFormatter formatter;
