@@ -1,7 +1,9 @@
-:page-title: Temporary Files and Directories
+:page-title: Temporary Files and Directories (removed in 1.0)
 :page-description: Extends JUnit Jupiter with `@TempDir`, which create and clean up a temporary directory.
 
-NOTE: Since JUnit Jupiter 5.4, there's a https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory[built-in `@TempDir` extension]. If you don't need support for arbitrary file systems, you should consider using that instead of this extension.
+NOTE: Since JUnit Jupiter 5.4, there's a https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory[built-in `@TempDir` extension].
+It doesn't support custom file systems, but other than that it's much better than this version, so *we removed the extension in JUnit Pioneer 1.0*.
+We plan to tackle this problem again in the future - see https://github.com/junit-pioneer/junit-pioneer/issues/348[issue #348].
 
 The `TempDirectory` extension can be used to create and clean up a temporary directory for an individual test or all tests in a test class.
 To use it, simply register the extension and add a parameter of type `java.nio.file.Path` to your test or lifecycle method or constructor.

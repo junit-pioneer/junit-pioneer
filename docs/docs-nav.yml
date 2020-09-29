@@ -18,7 +18,7 @@
         url: /docs/retrying-test/
       - title: "Standard Input and Output"
         url: /docs/standard-input-output/
-      - title: "Temporary Files and Directories"
+      - title: "Temporary Files and Directories (removed in 1.0)"
         url: /docs/temp-directory/
       - title: "Vintage @Test"
         url: /docs/vintage-test/
