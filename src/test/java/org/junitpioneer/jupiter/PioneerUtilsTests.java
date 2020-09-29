@@ -205,7 +205,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between [] for Object[]")
 			void deepToStringForObjectArray() {
-				String[] input = new String[] { "A", "B", "C", "D" };
+				String[] input = { "A", "B", "C", "D" };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[A, B, C, D]");
@@ -214,7 +214,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between appropriate amounts of [] for any depth Object[]")
 			void deepToStringForAnyDepthObjectArray() {
-				String[][][] input = new String[][][] { { { "A", "B" }, { "C" } }, { { "D" }, { "E", "F" } } };
+				String[][][] input = { { { "A", "B" }, { "C" } }, { { "D" }, { "E", "F" } } };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[[[A, B], [C]], [[D], [E, F]]]");
@@ -223,7 +223,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between [] for boolean[]")
 			void testBooleans() {
-				boolean[] input = new boolean[] { true, false, false };
+				boolean[] input = { true, false, false };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[true, false, false]");
@@ -232,7 +232,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between [] for byte[]")
 			void testBytes() {
-				byte[] input = new byte[] { 124, 73, 127 };
+				byte[] input = { 124, 73, 127 };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[124, 73, 127]");
@@ -241,7 +241,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between [] for char[]")
 			void testChars() {
-				char[] input = new char[] { '1', 'b', '$' };
+				char[] input = { '1', 'b', '$' };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[1, b, $]");
@@ -250,7 +250,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between [] for int[]")
 			void testInts() {
-				int[] input = new int[] { 1111111111, 1212, 45 };
+				int[] input = { 1111111111, 1212, 45 };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[1111111111, 1212, 45]");
@@ -259,7 +259,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between [] for short[]")
 			void testShorts() {
-				short[] input = new short[] { 14114, 5656, 42 };
+				short[] input = { 14114, 5656, 42 };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[14114, 5656, 42]");
@@ -268,7 +268,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between [] for long[]")
 			void testLongs() {
-				long[] input = new long[] { 123456789L, 345345L, 42L };
+				long[] input = { 123456789L, 345345L, 42L };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[123456789, 345345, 42]");
@@ -277,7 +277,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between [] for double[]")
 			void testDoubles() {
-				double[] input = new double[] { 12.23, 34.56, 78.9 };
+				double[] input = { 12.23, 34.56, 78.9 };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[12.23, 34.56, 78.9]");
@@ -286,7 +286,7 @@ class PioneerUtilsTests {
 			@Test
 			@DisplayName("returns the elements of the array between [] for float[]")
 			void testFloats() {
-				float[] input = new float[] { 12.23f, 34.56f, 78.9f };
+				float[] input = { 12.23f, 34.56f, 78.9f };
 				String result = PioneerUtils.nullSafeToString(input);
 
 				assertThat(result).isEqualTo("[12.23, 34.56, 78.9]");
