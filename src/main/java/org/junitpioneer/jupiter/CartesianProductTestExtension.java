@@ -137,8 +137,8 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		CartesianProductTest.Sets sets = (CartesianProductTest.Sets) invokeMethod(factory, null);
 		if (sets.getSets().size() > testMethod.getParameterCount()) {
 			throw new ParameterResolutionException(format(
-					"Method `%s` must register values for each parameter exactly once. Expected [%d] parameter sets, but got [%d]",
-					factory, testMethod.getParameterCount(), sets.getSets().size()));
+				"Method `%s` must register values for each parameter exactly once. Expected [%d] parameter sets, but got [%d]",
+				factory, testMethod.getParameterCount(), sets.getSets().size()));
 		}
 		return sets;
 	}
