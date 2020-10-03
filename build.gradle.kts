@@ -34,9 +34,10 @@ repositories {
 	mavenCentral()
 }
 
-val junitMinorVersion : String by project
+val junitVersion : String by project
 
 dependencies {
+	implementation(platform("org.junit:junit-bom:$junitVersion"))
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.$junitMinorVersion")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.$junitMinorVersion")
 	implementation(group = "org.junit.platform", name = "junit-platform-commons", version = "1.$junitMinorVersion")
@@ -46,9 +47,13 @@ dependencies {
     implementation(group = "javax.xml.bind", name ="jaxb-api", version = "2.3.1")
     implementation(group = "com.sun.xml.bind", name ="jaxb-impl", version = "2.3.3")
 
-	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.$junitMinorVersion")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.$junitMinorVersion")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.$junitMinorVersion")
+	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
+	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
+	implementation(group = "org.junit.platform", name = "junit-platform-commons")
+
+	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
+	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher")
+	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
 	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")

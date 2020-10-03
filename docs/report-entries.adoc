@@ -72,8 +72,10 @@ Just like `TestReporter::publishEntry` accepts a single string as value or a key
 [source,java]
 ----
 @Test
-@ReportEntry(key = "line1", value = "Once upon a midnight dreary")
-@ReportEntry(key = "line2", value = "While I pondered weak and weary")
+@ReportEntry(key = "line1",
+		value = "Once upon a midnight dreary")
+@ReportEntry(key = "line2",
+		value = "While I pondered weak and weary")
 void edgarAllanPoe() {
 	// YOUR TEST CODE HERE
 }
@@ -89,7 +91,10 @@ Just so:
 [source,java]
 ----
 @Test
-@ReportEntry(key = "line", value = "success entry", when = ReportEntry.PublishCondition.ON_SUCCESS)
+@ReportEntry(
+	key = "line",
+	value = "success entry",
+	when = ReportEntry.PublishCondition.ON_SUCCESS)
 void sufferingFromSuccess() {
 	// YOUR TEST CODE HERE
 }

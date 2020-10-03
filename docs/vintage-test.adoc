@@ -1,7 +1,7 @@
 :page-title: Vintage @Test
 :page-description: Extends JUnit Jupiter with a drop-in replacement for JUnit 4's @Test annotation, including expected and timeout
 
-The annotation `org.junitpioneer.vintage.@Test` is a drop-in replacement for https://junit.org/junit4/javadoc/4.12/org/junit/Test.html[JUnit 4`s `org.junit.@Test` annotation], but marks the method as a regular JUnit Jupiter test.
+The annotation `org.junitpioneer.vintage.@Test` is a drop-in replacement for https://junit.org/junit4/javadoc/4.12/org/junit/Test.html[JUnit 4's `org.junit.@Test` annotation], but marks the method as a regular JUnit Jupiter test.
 
 You can make use of it when migrating tests from JUnit 4 to Jupiter by doing a fulltext search/replace of `import org.junit.Test` with `import org.junitpioneer.vintage.Test`.
 That means you do not need to run JUnit 5's Vintage engine to execute such tests--Jupiter suffices.

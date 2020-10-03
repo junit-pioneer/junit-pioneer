@@ -15,8 +15,8 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        junit5Minor: [ '5.0', '5.1', '5.2', '6.0', '6.1', '6.2' ]
-    name: with JUnit 5.${{ matrix.junit5Minor }} on ubuntu-latest
+        junit-version: [ '5.5.0', '5.5.1', '5.5.2', '5.6.0', '5.6.1', '5.6.2' ]
+    name: with JUnit ${{ matrix.junit-version }} on ubuntu-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
@@ -33,4 +33,4 @@ jobs:
       - name: Gradle build
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build -PjunitMinorVersion=${{ matrix.junit5Minor }}
+          arguments: --refresh-dependencies --stacktrace --scan clean build -PjunitVersion=${{ matrix.junit-version }}
