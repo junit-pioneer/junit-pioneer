@@ -35,7 +35,6 @@ jobs:
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: -PmodularBuild --refresh-dependencies --stacktrace --scan clean build
-          wrapper-cache-enabled: false
 
   buildDone:
     name: buildOk
