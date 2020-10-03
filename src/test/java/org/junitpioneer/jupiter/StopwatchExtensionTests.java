@@ -71,7 +71,7 @@ public class StopwatchExtensionTests {
 		String methodName = "stopwatchExtensionShouldNotBeExecuted";
 
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(StopwatchExtensionTests.MethodLevelAnnotationTest.class, methodName);
+				.executeTestMethod(StopwatchExtensionTests.NonAnnotationTest.class, methodName);
 		PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
 
 	}
