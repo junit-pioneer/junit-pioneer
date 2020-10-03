@@ -20,7 +20,7 @@
         url: /docs/standard-input-output/
       - title: "Stopwatch"
         url: /docs/stopwatch/
-      - title: "Temporary Files and Directories"
+      - title: "Temporary Files and Directories (removed in 1.0)"
         url: /docs/temp-directory/
       - title: "Vintage @Test"
         url: /docs/vintage-test/
