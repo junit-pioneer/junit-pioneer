@@ -29,6 +29,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>Methods annotated with this annotation should not be annotated with {@code Test}.
  * </p>
+ *
+ * <p>This annotation is somewhat similar to {@code @ParameterizedTest}, as in it also takes
+ * arguments and can run the same test multiple times. With {@code @CartesianProductTest} you
+ * don't specify the test cases, you specify the possible values the input parameters can have.
+ * </p>
+ *
+ * <p>You can specify a custom Display Name for the tests ran by {@code @CartesianProductTest}.
+ * By default it's [{index}] {arguments}.
+ * </p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>@CartesianProductTest</code></a>.
+ * </p>
+ * @see org.junitpioneer.jupiter.CartesianValueSource
  */
 @TestTemplate
 @ExtendWith(CartesianProductTestExtension.class)

@@ -17,6 +17,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * {@code @CartesianValueSource} is an argument source which provides access to
+ * an array of literal values.
+ *
+ *  <p>Supported types include {@link #shorts}, {@link #bytes}, {@link #ints},
+ * {@link #longs}, {@link #floats}, {@link #doubles}, {@link #chars},
+ * {@link #booleans}, {@link #strings}, and {@link #classes}. Note, however,
+ * that only one of the supported types may be specified per
+ * {@code @CartesianValueSource} declaration.
+ *
+ * <p>The supplied literal values will be provided as an argument source to
+ * the corresponding parameter of the annotated {@code @CartesianProductTest} method.
+ *
+ * <p>This annotation is {@link Repeatable}. You should declare one
+ * {@code @CartesianValueSource} per parameter.
+ * </p>
+ *
+ * @see org.junitpioneer.jupiter.CartesianProductTest
+ */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
