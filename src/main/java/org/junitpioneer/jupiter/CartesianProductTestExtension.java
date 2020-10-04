@@ -113,6 +113,11 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	}
 
 	private CartesianProductTest.Sets invokeSetsFactory(Method testMethod, String factoryMethodName) {
+		Method factory = findSetsFactory(testMethod, factoryMethodName);
+		return invokeSetsFactory(testMethod, factory);
+	}
+
+	private Method findSetsFactory(Method testMethod, String factoryMethodName) {
 		Class<?> declaringClass = testMethod.getDeclaringClass();
 		Method factory = PioneerUtils
 				.findMethodCurrentOrEnclosing(declaringClass, factoryMethodName)
@@ -125,13 +130,17 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		if (!CartesianProductTest.Sets.class.isAssignableFrom(factory.getReturnType())) {
 			throw new ExtensionConfigurationException(method + " must return `CartesianProductTest.Sets`");
 		}
+		return factory;
+	}
+
+	private CartesianProductTest.Sets invokeSetsFactory(Method testMethod, Method factory) {
 		CartesianProductTest.Sets sets = (CartesianProductTest.Sets) invokeMethod(factory, null);
 		if (sets.getSets().size() > testMethod.getParameterCount()) {
 			// If sets == parameters but one of the parameters should be auto-injected by JUnit
 			// JUnit will throw a ParameterResolutionException for competing resolvers before we could get to this line
 			throw new ParameterResolutionException(format(
-				"%s must register values for each parameter exactly once. Expected [%d] parameter sets, but got [%d]",
-				method, testMethod.getParameterCount(), sets.getSets().size()));
+				"Method `%s` must register values for each parameter exactly once. Expected [%d] parameter sets, but got [%d]",
+				factory, testMethod.getParameterCount(), sets.getSets().size()));
 		}
 		return sets;
 	}

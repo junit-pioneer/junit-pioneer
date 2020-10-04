@@ -2,6 +2,8 @@
 #       won't be highlighted.
   - title: Features
     children:
+      - title: "Cartesian product of all test parameters"
+        url: /docs/cartesian-product/
       - title: "Clearing or Setting System Properties"
         url: /docs/system-properties/
       - title: "Clearing or Setting Environment Variables"
@@ -20,8 +22,6 @@
         url: /docs/standard-input-output/
       - title: "Temporary Files and Directories"
         url: /docs/temp-directory/
-      - title: "Testing all test parameter combinations (Cartesian product)"
-        url: /docs/cartesian-product/
       - title: "Vintage @Test"
         url: /docs/vintage-test/
 

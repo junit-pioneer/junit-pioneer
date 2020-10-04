@@ -46,7 +46,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("runs for each parameter once for single parameter")
+		@DisplayName("runs for each value once for single parameter")
 		void singleParameterRunsForEach() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class, "singleParameter",
@@ -105,7 +105,7 @@ public class CartesianProductTestExtensionTests {
 
 		@Test
 		@DisplayName("creates a 2-fold cartesian product when all parameters are supplied via @CartesianValueSource")
-		void test() {
+		void cartesianValueSources() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "poeticValues",
 						String.class, String.class);
@@ -233,7 +233,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("there is an implicit factory method but explicit factory name was given - which does not exists")
+		@DisplayName("there is an implicit factory method but explicit factory name was given - which does not exist")
 		void throwsForMissingExplicitFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "hasImplicitFactory",
@@ -259,7 +259,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the factory method does not return Sets")
+		@DisplayName("the factory method does not return `Sets`")
 		void throwsForWrongReturnValueFactoryMethod() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "wrongReturnFactory",
@@ -283,7 +283,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the factory method produces too much parameters")
+		@DisplayName("the factory method produces too many parameters")
 		void throwsForTooManyFactoryMethodParameters() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "bloatedFactory", int.class,
@@ -396,11 +396,11 @@ public class CartesianProductTestExtensionTests {
 
 	static class BasicConfigurationTestCases {
 
-		@CartesianProductTest(value = { "0", "1" })
+		@CartesianProductTest({ "0", "1" })
 		void empty() {
 		}
 
-		@CartesianProductTest(value = { "0", "1", "2" })
+		@CartesianProductTest({ "0", "1", "2" })
 		@ReportEntry("{0}")
 		void singleParameter(String param) {
 			int value = Integer.parseInt(param);

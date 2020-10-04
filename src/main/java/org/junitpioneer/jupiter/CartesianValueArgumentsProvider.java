@@ -32,23 +32,23 @@ class CartesianValueArgumentsProvider implements Consumer<CartesianValueSource> 
 	@Override
 	public void accept(CartesianValueSource source) {
 		// @formatter:off
-        List<Object> arrays =
-                // Declaration of <Object> is necessary due to a bug in Eclipse Photon.
-                Stream.<Object> of(
-                        source.shorts(),
-                        source.bytes(),
-                        source.ints(),
-                        source.longs(),
-                        source.floats(),
-                        source.doubles(),
-                        source.chars(),
-                        source.booleans(),
-                        source.strings(),
-                        source.classes()
-                )
-                .filter(array -> Array.getLength(array) > 0)
-                .collect(toList());
-        // @formatter:on
+		List<Object> arrays =
+				// Declaration of <Object> is necessary due to a bug in Eclipse Photon.
+				Stream.<Object> of(
+						source.shorts(),
+						source.bytes(),
+						source.ints(),
+						source.longs(),
+						source.floats(),
+						source.doubles(),
+						source.chars(),
+						source.booleans(),
+						source.strings(),
+						source.classes()
+				)
+				.filter(array -> Array.getLength(array) > 0)
+				.collect(toList());
+		// @formatter:on
 
 		if (arrays.size() != 1)
 			throw new PreconditionViolationException("Exactly one type of input must be provided in the @"

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-public class CartesianProductResolver implements ParameterResolver {
+class CartesianProductResolver implements ParameterResolver {
 
 	private final List<?> parameters;
 

@@ -1,5 +1,5 @@
-:page-title: Testing all test parameter combinations (Cartesian product)
-:page-description: Extends JUnit Jupiter with `@CartesianProductTest`, a special `@ParameterizedTest` which tests all combinations of its input
+:page-title: Cartesian product of all test parameters
+:page-description: Extends JUnit Jupiter with `@CartesianProductTest`, a variant of parameterized tests that tests all combinations of its input
 
 From Wikipedia:
 
