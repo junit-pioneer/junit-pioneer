@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -21,7 +20,6 @@ import org.junit.platform.commons.support.AnnotationSupport;
  *
  * @see Issue
  */
-@DisplayName("Issue extension")
 class IssueExtension implements BeforeEachCallback {
 
 	static final String KEY = "Issue";

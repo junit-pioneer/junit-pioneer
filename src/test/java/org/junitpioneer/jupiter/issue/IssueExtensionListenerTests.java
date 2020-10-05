@@ -29,9 +29,9 @@ import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 
-@DisplayName("IssueExtensionReportListener ")
+@DisplayName("IssueExtensionListener ")
 @Execution(ExecutionMode.SAME_THREAD)
-public class IssueExtensionReportListenerTests {
+public class IssueExtensionListenerTests {
 
 	private final IssueExtensionListener sut = new IssueExtensionListener();
 	private final TestPlan testPlan = TestPlan.from(Collections.emptyList());
