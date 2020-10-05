@@ -54,9 +54,8 @@ That means it can be used on all Java versions 8 and higher on class path and mo
 To not add to user's [JAR hell](https://blog.codefx.org/java/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
 Pioneer always depends on the lowest JUnit 5 version that supports its feature set, but that should not keep you from using 5's latest and greatest.
 
-Pioneer does not only use JUnit 5's API, but also other artefacts of the ecosystem, e.g. the `junit-platform-commons`.
-To avoid dependency troubles you should use the JUnit 5's BOM (the artefact is called [`junit-bom`](https://mvnrepository.com/artifact/org.junit/junit-bom)) in your project instead defining all of their dependency versions by hand.
-
+Pioneer does not only use JUnit 5's API, but also other artifacts from its ecosystem such as [`junit-platform-commons`](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons).
+To avoid dependency issues, you should add the JUnit 5 BOM ([`junit-bom`](https://mvnrepository.com/artifact/org.junit/junit-bom)) to your project instead of defining all dependency versions manually.
 
 For our own infrastructure, we rely on the following compile and test dependencies:
 
