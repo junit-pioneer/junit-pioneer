@@ -33,7 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>This annotation is somewhat similar to {@code @ParameterizedTest}, as in it also takes
  * arguments and can run the same test multiple times. With {@code @CartesianProductTest} you
  * don't specify the test cases themselves. though. Instead you specify possible values for
- * each test method parameter (see @{@link CartesianValueSource) and the extension runs the
+ * each test method parameter (see @{@link CartesianValueSource}) and the extension runs the
  * method with each possible combination.
  * </p>
  *
