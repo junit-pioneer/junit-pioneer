@@ -352,11 +352,11 @@ This is how JUnit Pioneer handles versioning:
 
 * _patch_: automatically increased by Shipkit on each release
 * _minor_: manually increased for each substantial change/feature
-* _major_: stays at 0 for now
+* _major_: manually increased after team decision 
 
-That means, for now, contributors only have to care about _minor_.
-Since each non-trivial change is developed in a PR, this is the place to discuss whether the minor version should be increased, i.e. whether a change or feature is "substantial".
-If it is, the PR needs to update `version-properties` to the next minor version.
+That means, contributors only have to care about _minor_, but maintainers need to consider increasing _major_.
+Since each non-trivial change is developed in a PR, this is the place to discuss whether the version should be increased, i.e. whether a change or feature is "substantial".
+If it is, the PR needs to update `version-properties` to the next version.
 Note that the feature's Javadoc needs to reference the same version in its `@since` tag.
 
 ### Background
