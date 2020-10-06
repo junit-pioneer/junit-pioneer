@@ -2,6 +2,8 @@
 #       won't be highlighted.
   - title: Features
     children:
+      - title: "Cartesian product of all test parameters"
+        url: /docs/cartesian-product/
       - title: "Clearing or Setting System Properties"
         url: /docs/system-properties/
       - title: "Clearing or Setting Environment Variables"

@@ -3,6 +3,7 @@
  *
  * <p>Check out the following types for details:
  * <ul>
+ *     <li>{@link org.junitpioneer.jupiter.CartesianProductTest}</li>
  *     <li>{@link org.junitpioneer.jupiter.ClearSystemProperty} and {@link org.junitpioneer.jupiter.SetSystemProperty}</li>
  *     <li>{@link org.junitpioneer.jupiter.ClearEnvironmentVariable} and {@link org.junitpioneer.jupiter.SetEnvironmentVariable}</li>
  *     <li>{@link org.junitpioneer.jupiter.DefaultLocale} and {@link org.junitpioneer.jupiter.DefaultTimeZone}</li>
