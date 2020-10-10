@@ -1,9 +1,9 @@
 Proposed commit message:
 
 ```
-${action} (${issues} / ${pull-request})
+${action} (${issues} / ${pull-request}) [max 70 characters]
 
-${body}
+${body} [max 70 characters per line]
 
 ${references}: ${issues}
 PR: ${pull-request}
