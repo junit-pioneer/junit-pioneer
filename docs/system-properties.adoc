@@ -66,6 +66,19 @@ class MySystemPropertyTest {
 }
 ----
 
+Sometimes, you might also need to set a system property to a value that is not a constant expression, which is required for annotation values.
+In this case, you can still leverage the restore mechanism:
+
+[source,java]
+----
+@ParameterizedTest
+@ValueSource(strings = { "foo", "bar" })
+@ClearSystemProperty(key = "some property")
+void test(String value) {
+	System.setProperty("some property", value);
+}
+----
+
 == Thread-Safety
 
 Since system properties are global state, reading and writing them during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution] can lead to unpredictable results and flaky tests.
