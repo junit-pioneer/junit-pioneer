@@ -12,7 +12,7 @@ Documentation (general)
 * [ ] There is implementation information to describe _why_ a non-obvious source code / solution got implemented
 * [ ] Site documentation has its own `.adoc` file in the `docs` folder, e.g. `docs/report-entries.adoc`
 * [ ] Only one sentence per line (especially in `.adoc` files)
-* [ ] Javadoc uses formal style, while sites documentation may use informal style (see #265)
+* [ ] Javadoc uses formal style, while sites documentation may use informal style
 
 Documentation (new extension)
 * [ ] The `docs/docs-nav.yml` navigation has an entry for the new extension
@@ -21,7 +21,7 @@ Documentation (new extension)
 Code
 * [ ] Code adheres to code style, naming conventions etc.
 * [ ] Successful tests cover all changes
-* [ ] There are checks which validate correct / false usage / configuration of a functionality and there are tests to verify those checks (see #164)
+* [ ] There are checks which validate correct / false usage / configuration of a functionality and there are tests to verify those checks
 * [ ] Tests use [AssertJ](https://joel-costigliola.github.io/assertj/) or our own [PioneerAssert](https://github.com/junit-pioneer/junit-pioneer/blob/master/CONTRIBUTING.md#assertions) (which are based on AssertJ)
 
 Contributing
