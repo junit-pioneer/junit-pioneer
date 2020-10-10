@@ -1,3 +1,13 @@
+Proposed commit message:
+
+```
+${action} (${issues} / ${pull-request})
+
+${body}
+
+${references}: ${issues}
+PR: ${pull-request}
+```
 
 ---
 **PR checklist**
