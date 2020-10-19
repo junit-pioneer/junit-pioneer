@@ -69,7 +69,7 @@ public class IssueExtensionListener implements TestExecutionListener {
 			String issueId = entry.getKey();
 			List<String> allTests = entry.getValue();
 
-			allTests.forEach((testID) -> {
+			allTests.forEach(testID -> {
 				String status = testStatusCache.getOrDefault(testID, "UNKNOWN");
 
 				allIssuedTests.add(new IssuedTestCase(testID, issueId, status));
