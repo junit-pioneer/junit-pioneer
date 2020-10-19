@@ -122,13 +122,15 @@ class PioneerAnnotationUtils {
 	}
 
 	/**
-	 * Finds the specified repeatable annotations as meta-annotations on the given element
-	 * (meaning we look for the given annotation on the annotations of the {@code AnnotatedElement}).
+	 * Returns the annotations <em>present</em> on the {@code AnnotatedElement}
+	 * that are annotated with the specified annotation. The meta-annotation can be <em>present</em>,
+	 * <em>indirectly present</em>, <em>meta-present</em>, or <em>enclosing present</em>.
 	 */
-	public static <A extends Annotation> List<? extends Annotation> findRepeatableMetaAnnotations(
+	public static <A extends Annotation> List<? extends Annotation> findAnnotatedAnnotations(
 			AnnotatedElement element, Class<A> annotation) {
 		return Arrays
 				.stream(element.getDeclaredAnnotations())
+				// flatten @Repeatable aggregator annotations
 				.flatMap(PioneerAnnotationUtils::flatten)
 				.filter(a -> findOnElement(a.annotationType(), annotation, true).size() > 0)
 				.collect(Collectors.toList());

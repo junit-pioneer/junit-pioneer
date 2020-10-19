@@ -67,15 +67,15 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		CartesianProductTest annotation = findAnnotation(testMethod, CartesianProductTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianProductTest not found"));
 		List<? extends Annotation> argumentsSources = PioneerAnnotationUtils
-				.findRepeatableMetaAnnotations(testMethod, ArgumentsSource.class);
+				.findAnnotatedAnnotations(testMethod, ArgumentsSource.class);
 		ensureNoInputConflicts(annotation, argumentsSources);
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
 		if (annotation.value().length > 0) {
 			return getSetsFromValue(testMethod, annotation);
 		}
-		// Try getting sets from the @CartesianValueSource annotations
+		// Try getting sets from the @ArgumentsSource annotations
 		if (!argumentsSources.isEmpty()) {
-			return getSetsFromPioneerAnnotations(argumentsSources, context);
+			return getSetsFromArgumentsSources(argumentsSources, context);
 		}
 		// Try the sets static factory method
 		return getSetsFromStaticFactory(testMethod, annotation.factory());
@@ -101,12 +101,13 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		return sets;
 	}
 
-	private List<List<?>> getSetsFromPioneerAnnotations(List<? extends Annotation> argumentsSources,
+	private List<List<?>> getSetsFromArgumentsSources(List<? extends Annotation> argumentsSources,
 			ExtensionContext context) {
 		List<List<?>> sets = new ArrayList<>();
 		for (Annotation source : argumentsSources) {
 			ArgumentsSource providerAnnotation = AnnotationSupport
 					.findAnnotation(source.annotationType(), ArgumentsSource.class)
+					// never happens, we already know these annotations are annotated with @ArgumentsSource
 					.orElseThrow(RuntimeException::new);
 			ArgumentsProvider provider = ReflectionSupport.newInstance(providerAnnotation.value());
 			try {
@@ -121,11 +122,11 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 					sets.add(collect);
 				}
 			}
+			catch (RuntimeException e) {
+				throw e;
+			}
 			catch (Exception e) {
-				if (e instanceof RuntimeException)
-					throw (RuntimeException) e;
-				else
-					throw new ExtensionConfigurationException("Could not provide arguments because of exception", e);
+				throw new ExtensionConfigurationException("Could not provide arguments because of exception", e);
 			}
 		}
 		return sets;
