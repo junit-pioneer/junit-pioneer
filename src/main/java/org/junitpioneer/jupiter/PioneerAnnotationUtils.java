@@ -126,13 +126,13 @@ class PioneerAnnotationUtils {
 	 * that are annotated with the specified annotation. The meta-annotation can be <em>present</em>,
 	 * <em>indirectly present</em>, <em>meta-present</em>, or <em>enclosing present</em>.
 	 */
-	public static <A extends Annotation> List<? extends Annotation> findAnnotatedAnnotations(
-			AnnotatedElement element, Class<A> annotation) {
+	public static <A extends Annotation> List<Annotation> findAnnotatedAnnotations(AnnotatedElement element,
+			Class<A> annotation) {
 		return Arrays
 				.stream(element.getDeclaredAnnotations())
 				// flatten @Repeatable aggregator annotations
 				.flatMap(PioneerAnnotationUtils::flatten)
-				.filter(a -> findOnElement(a.annotationType(), annotation, true).size() > 0)
+				.filter(a -> !(findOnElement(a.annotationType(), annotation, true).isEmpty()))
 				.collect(Collectors.toList());
 	}
 
@@ -150,8 +150,7 @@ class PioneerAnnotationUtils {
 			return Stream.of(annotation);
 		}
 		catch (IllegalAccessException | InvocationTargetException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
+			throw new RuntimeException("Failed to flatten annotation stream", e);
 		}
 	}
 
