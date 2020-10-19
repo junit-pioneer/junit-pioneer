@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.issue;
 
-import java.util.NoSuchElementException;
+import java.util.Iterator;
 import java.util.ServiceLoader;
 
 /**
@@ -27,6 +27,7 @@ public class IssueProcessorProvider {
 
 	/**
 	 * Retrieve an instance of the IssueProcessorProvider.
+	 *
 	 * @return Instance of IssueProcessorProvider
 	 */
 	public static IssueProcessorProvider getInstance() {
@@ -37,14 +38,13 @@ public class IssueProcessorProvider {
 		return provider;
 	}
 
-	public IssueProcessor issueProcessor() {
-		IssueProcessor processor = loader.iterator().next();
-
-		if (processor != null) {
-			return processor;
-		} else {
-			throw new NoSuchElementException("No implementation for IssueProcessor found!");
-		}
+	/**
+	 * Provides all registered service providers.
+	 *
+	 * @return All known {@link IssueProcessor}s
+	 */
+	public Iterator<IssueProcessor> providers() {
+		return loader.iterator();
 	}
 
 }

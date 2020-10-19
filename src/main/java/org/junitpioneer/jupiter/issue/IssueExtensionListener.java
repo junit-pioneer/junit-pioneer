@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.issue;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -74,9 +75,13 @@ public class IssueExtensionListener implements TestExecutionListener {
 			});
 		}
 
-		// Pass results to processor
-		IssueProcessor processor = IssueProcessorProvider.getInstance().issueProcessor();
-		processor.processTestResults(allIssuedTests);
+		// Pass results to all IssueProcessors
+		Iterator<IssueProcessor> processors = IssueProcessorProvider.getInstance().providers();
+
+		while (processors.hasNext()) {
+			processors.next().processTestResults(allIssuedTests);
+		}
+
 	}
 
 }
