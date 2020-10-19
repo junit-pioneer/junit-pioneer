@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter.issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junitpioneer.jupiter.issue.TestPlanHelper.createTestIdentifier;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,9 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.platform.engine.TestExecutionResult;
-import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.reporting.ReportEntry;
-import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 
@@ -47,6 +46,7 @@ public class IssueExtensionListenerTests {
 		ReportEntry successfulTestEntry = ReportEntry.from("Issue", "successfulTest");
 
 		TestIdentifier successfulTest = createTestIdentifier("t1");
+		testPlan.add(successfulTest);
 
 		sut.testPlanExecutionStarted(testPlan);
 
@@ -72,7 +72,8 @@ public class IssueExtensionListenerTests {
 	void unknownTestResult() {
 		ReportEntry unknownResultTestEntry = ReportEntry.from("Issue", "unknownResultTest");
 
-		TestIdentifier unknownResultTest = createTestIdentifier("t1");
+		TestIdentifier unknownResultTest = createTestIdentifier("tu");
+		testPlan.add(unknownResultTest);
 
 		sut.testPlanExecutionStarted(testPlan);
 
@@ -88,73 +89,9 @@ public class IssueExtensionListenerTests {
 
 		IssuedTestCase issuedTestCase = allIssuedTests.get(0);
 
-		assertAll(() -> assertThat(issuedTestCase.getUniqueName()).isEqualTo("[test:t1]"),
+		assertAll(() -> assertThat(issuedTestCase.getUniqueName()).isEqualTo("[test:tu]"),
 			() -> assertThat(issuedTestCase.getIssueId()).isEqualTo("unknownResultTest"),
 			() -> assertThat(issuedTestCase.getResult()).isEqualTo("UNKNOWN"));
-	}
-
-	@SuppressWarnings("deprecation")
-	private TestIdentifier createTestIdentifier(String uniqueId) {
-		TestIdentifier identifier = TestIdentifier
-				.from(new TestDescriptorStub(UniqueId.root("test", uniqueId), uniqueId));
-		testPlan.add(identifier);
-		return identifier;
-	}
-
-	@SuppressWarnings("deprecation")
-	private TestIdentifier createTestIdentifier(String uniqueId, TestIdentifier parent) {
-		TestIdentifier identifier = TestIdentifier
-				.from(new TestDescriptorStub(UniqueId.root("test", uniqueId), uniqueId, parent));
-		testPlan.add(identifier);
-		return identifier;
-	}
-
-	@SuppressWarnings("deprecation")
-	private TestIdentifier createContainerIdentifier(String uniqueId) {
-		TestIdentifier identifier = TestIdentifier
-				.from(new TestDescriptorStub(UniqueId.root("container", uniqueId), uniqueId) {
-
-					@Override
-					public Type getType() {
-						return Type.CONTAINER;
-					}
-
-				});
-		testPlan.add(identifier);
-		return identifier;
-	}
-
-	@SuppressWarnings("deprecation")
-	private TestIdentifier createContainerIdentifier(String uniqueId, TestIdentifier parent) {
-		TestIdentifier identifier = TestIdentifier
-				.from(new TestDescriptorStub(UniqueId.root("container", uniqueId), uniqueId, parent) {
-
-					@Override
-					public Type getType() {
-						return Type.CONTAINER;
-					}
-
-				});
-		testPlan.add(identifier);
-		return identifier;
-	}
-
-	static class TestDescriptorStub extends AbstractTestDescriptor {
-
-		public TestDescriptorStub(UniqueId uniqueId, String displayName) {
-			super(uniqueId, displayName);
-		}
-
-		public TestDescriptorStub(UniqueId uniqueId, String displayName, TestIdentifier parent) {
-			super(uniqueId, displayName);
-			setParent(new TestDescriptorStub(UniqueId.parse(parent.getUniqueId()), parent.getDisplayName()));
-		}
-
-		@Override
-		public Type getType() {
-			return getChildren().isEmpty() ? Type.TEST : Type.CONTAINER;
-		}
-
 	}
 
 }

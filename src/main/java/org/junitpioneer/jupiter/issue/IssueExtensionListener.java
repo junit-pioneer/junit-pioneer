@@ -51,7 +51,6 @@ public class IssueExtensionListener implements TestExecutionListener {
 			// Store that the current test belongs to annotated issue
 			issueTestsCache.putIfAbsent(issueId, new ArrayList<>());
 			issueTestsCache.get(issueId).add(testId);
-
 		}
 	}
 
@@ -65,6 +64,7 @@ public class IssueExtensionListener implements TestExecutionListener {
 
 	@Override
 	public void testPlanExecutionFinished(TestPlan testPlan) {
+		// Retrieve all tests, which are annotated with @Issue, and their result.
 		for (Map.Entry<String, List<String>> entry : issueTestsCache.entrySet()) {
 			String issueId = entry.getKey();
 			List<String> allTests = entry.getValue();
@@ -82,7 +82,6 @@ public class IssueExtensionListener implements TestExecutionListener {
 		while (processors.hasNext()) {
 			processors.next().processTestResults(allIssuedTests);
 		}
-
 	}
 
 }
