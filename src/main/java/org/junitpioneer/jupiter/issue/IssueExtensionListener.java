@@ -31,10 +31,13 @@ public class IssueExtensionListener implements TestExecutionListener {
 	static final String KEY_ISSUE = "Issue";
 
 	// Cache with all tests that belong to an issue <issueId, List<UniqueIdentifier>>
-	ConcurrentHashMap<String, List<String>> issueTestsCache = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, List<String>> issueTestsCache = new ConcurrentHashMap<>();
 
 	// Cache with tests results of test cases <UniqueIdentifier, result>
-	ConcurrentHashMap<String, String> testStatusCache = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, String> testStatusCache = new ConcurrentHashMap<>();
+
+	// Package private by purpose for testing
+	List<IssuedTestCase> allIssuedTests = new ArrayList<>();
 
 	@Override
 	public void reportingEntryPublished(TestIdentifier testIdentifier, ReportEntry entry) {
@@ -62,8 +65,6 @@ public class IssueExtensionListener implements TestExecutionListener {
 
 	@Override
 	public void testPlanExecutionFinished(TestPlan testPlan) {
-		List<IssuedTestCase> allIssuedTests = new ArrayList<>();
-
 		for (Map.Entry<String, List<String>> entry : issueTestsCache.entrySet()) {
 			String issueId = entry.getKey();
 			List<String> allTests = entry.getValue();
