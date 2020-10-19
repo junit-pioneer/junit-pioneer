@@ -22,6 +22,7 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.params.IntRangeSource;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -144,8 +145,8 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("works with @RangeSources")
 		void rangeSources() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(RangeSourceTestCases.class, "basicIntRangeSource", int.class,
-						int.class);
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "basicIntRangeSource",
+						int.class, int.class);
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(8)
@@ -353,8 +354,9 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(PreconditionViolationException.class)
-					.hasMessageContaining("Exactly one type of input must be provided");
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
 		}
 
 		@Test
@@ -370,7 +372,7 @@ public class CartesianProductTestExtensionTests {
 
 		@Test
 		@DisplayName("has both a value and a factory method specified")
-		void conflict1() {
+		void conflictValueVsFactory() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "conflictValueAndFactory",
 						String.class, String.class);
@@ -378,12 +380,12 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
 		}
 
 		@Test
 		@DisplayName("has both a value and @CartesianValueSource annotations")
-		void conflict2() {
+		void conflictValueVsAnnotation() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "conflictValueAndValueSource",
 						String.class, String.class);
@@ -391,12 +393,12 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
 		}
 
 		@Test
 		@DisplayName("has both a factory method and @CartesianValueSource annotations")
-		void conflict3() {
+		void conflictAnnotationVsFactory() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class,
 						"conflictValueSourceAndFactory", int.class, String.class);
@@ -404,7 +406,21 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
+		}
+
+		@Test
+		@DisplayName("annotated with @ValueSource")
+		void valueSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "valueSource", int.class,
+						int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
 		}
 
 	}
@@ -605,13 +621,19 @@ public class CartesianProductTestExtensionTests {
         //@formatter:on
 	}
 
-	static class RangeSourceTestCases {
+	static class ArgumentsSourceTestCases {
 
 		@CartesianProductTest
 		@IntRangeSource(from = 1, to = 4, closed = true)
 		@IntRangeSource(from = 2, to = 4, step = 2, closed = true)
 		@ReportEntry("{0},{1}")
 		void basicIntRangeSource(int i, int j) {
+		}
+
+		@CartesianProductTest
+		@IntRangeSource(from = 0, to = 4)
+		@ValueSource(ints = { 2, 4 })
+		void valueSource(int i, int j) {
 		}
 
 	}
