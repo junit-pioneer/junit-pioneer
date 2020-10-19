@@ -59,4 +59,10 @@ public final class IssuedTestCase {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return "IssuedTestCase{" + "uniqueName='" + uniqueName + '\'' + ", issueId='" + issueId + '\'' + ", result='"
+				+ result + '\'' + '}';
+	}
+
 }
