@@ -10,22 +10,20 @@
 
 package org.junitpioneer.jupiter.issue;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
- * <p>This listener collects the names and results of all tests, which are annotated with the "@Issue" annotation.
- * After all tests are finished the results are provided to the abstract IssueProcessor for further processing.</p>
- *
- * @see <a href="https://junit.org/junit5/docs/current/api/org.junit.platform.launcher/org/junit/platform/launcher/TestPlan.html">JUnit Docs</a>
+ * <p>This listener collects the names and results of all tests, which are annotated with the {@link org.junitpioneer.jupiter.Issue} annotation.
+ * After all tests are finished the results are provided to an {@link IssueProcessor} for further processing.</p>
  */
 public class IssueExtensionListener implements TestExecutionListener {
 
@@ -46,7 +44,7 @@ public class IssueExtensionListener implements TestExecutionListener {
 		if (entryKeyValues.containsKey(KEY_ISSUE)) {
 			String issueId = entryKeyValues.get(KEY_ISSUE);
 
-			// Store that the current test belongs to issue
+			// Store that the current test belongs to annotated issue
 			issueTestsCache.putIfAbsent(issueId, new ArrayList<>());
 			issueTestsCache.get(issueId).add(testId);
 
@@ -76,6 +74,9 @@ public class IssueExtensionListener implements TestExecutionListener {
 			});
 		}
 
-		// TODO Pass to abstract class
+		// Pass results to processor
+		IssueProcessor processor = IssueProcessorProvider.getInstance().issueProcessor();
+		processor.processTestResults(allIssuedTests);
 	}
+
 }
