@@ -144,7 +144,8 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("works with @RangeSources")
 		void rangeSources() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(RangeSourceTestCases.class, "basicIntRangeSource", int.class, int.class);
+					.executeTestMethodWithParameterTypes(RangeSourceTestCases.class, "basicIntRangeSource", int.class,
+						int.class);
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(8)
