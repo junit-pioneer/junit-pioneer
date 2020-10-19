@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -41,10 +42,24 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
-class RangeSourceArgumentsProvider implements ArgumentsProvider {
+class RangeSourceArgumentsProvider implements ArgumentsProvider, Consumer<Annotation> {
+
+	private Annotation argumentsSource;
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+		// since it's a method annotation, the element will always be present
+		if (argumentsSource == null)
+			initArgumentsSource(context);
+		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
+		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
+
+		Range<?> range = (Range<?>) rangeClass.getConstructors()[0].newInstance(argumentsSource);
+		range.validate();
+		return asStream(range).map(Arguments::of);
+	}
+
+	private void initArgumentsSource(ExtensionContext context) {
 		// since it's a method annotation, the element will always be present
 		List<Annotation> argumentsSources = context
 				.getElement()
@@ -63,17 +78,16 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider {
 			throw new IllegalArgumentException(message);
 		}
 
-		Annotation argumentsSource = argumentsSources.get(0);
-		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
-		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
-
-		Range<?> range = (Range) rangeClass.getConstructors()[0].newInstance(argumentsSource);
-		range.validate();
-		return asStream(range).map(Arguments::of);
+		argumentsSource = argumentsSources.get(0);
 	}
 
-	private Stream<?> asStream(Range r) {
+	private Stream<?> asStream(Range<?> r) {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(r, Spliterator.ORDERED), false);
+	}
+
+	@Override
+	public void accept(Annotation argumentsSource) {
+		this.argumentsSource = argumentsSource;
 	}
 
 }

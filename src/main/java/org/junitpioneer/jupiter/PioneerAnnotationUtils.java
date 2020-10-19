@@ -12,9 +12,13 @@ package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -115,6 +119,38 @@ class PioneerAnnotationUtils {
 	public static <A extends Annotation> Stream<A> findAllEnclosingRepeatableAnnotations(ExtensionContext context,
 			Class<A> annotationType) {
 		return findAnnotations(context, annotationType, true, true);
+	}
+
+	/**
+	 * Finds the specified repeatable annotations as meta-annotations on the given element
+	 * (meaning we look for the given annotation on the annotations of the {@code AnnotatedElement}).
+	 */
+	public static <A extends Annotation> List<? extends Annotation> findRepeatableMetaAnnotations(
+			AnnotatedElement element, Class<A> annotation) {
+		return Arrays
+				.stream(element.getDeclaredAnnotations())
+				.flatMap(PioneerAnnotationUtils::flatten)
+				.filter(a -> findOnElement(a.annotationType(), annotation, true).size() > 0)
+				.collect(Collectors.toList());
+	}
+
+	private static Stream<Annotation> flatten(Annotation annotation) {
+		try {
+			Method value = annotation.annotationType().getDeclaredMethod("value");
+			if (value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()) {
+				Annotation[] invoke = (Annotation[]) value.invoke(annotation);
+				return Stream.of(invoke).flatMap(PioneerAnnotationUtils::flatten);
+			} else {
+				return Stream.of(annotation);
+			}
+		}
+		catch (NoSuchMethodException e) {
+			return Stream.of(annotation);
+		}
+		catch (IllegalAccessException | InvocationTargetException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 	static <A extends Annotation> Stream<A> findAnnotations(ExtensionContext context, Class<A> annotationType,

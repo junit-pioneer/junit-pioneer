@@ -23,6 +23,7 @@ import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junitpioneer.jupiter.params.IntRangeSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -588,6 +589,16 @@ public class CartesianProductTestExtensionTests {
                 .add(TimeUnit.SECONDS, TimeUnit.SECONDS)
                 .add("A", "B", "C");
         //@formatter:on
+	}
+
+	static class RangeSourceTestCases {
+
+		@CartesianProductTest
+		@IntRangeSource(from = 1, to = 4, closed = true)
+		@IntRangeSource(from = 2, to = 4, step = 2, closed = true)
+		void basicIntRangeSource(int i, int j) {
+		}
+
 	}
 
 }

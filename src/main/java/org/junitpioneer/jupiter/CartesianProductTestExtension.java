@@ -13,15 +13,16 @@ package org.junitpioneer.jupiter;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
-import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
 import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -29,6 +30,11 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.platform.commons.support.AnnotationSupport;
+import org.junit.platform.commons.support.ReflectionSupport;
 
 class CartesianProductTestExtension implements TestTemplateInvocationContextProvider {
 
@@ -60,22 +66,23 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		Method testMethod = context.getRequiredTestMethod();
 		CartesianProductTest annotation = findAnnotation(testMethod, CartesianProductTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianProductTest not found"));
-		List<CartesianValueSource> valueSources = findRepeatableAnnotations(testMethod, CartesianValueSource.class);
-		ensureNoInputConflicts(annotation, valueSources);
+		List<? extends Annotation> argumentsSources = PioneerAnnotationUtils
+				.findRepeatableMetaAnnotations(testMethod, ArgumentsSource.class);
+		ensureNoInputConflicts(annotation, argumentsSources);
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
 		if (annotation.value().length > 0) {
 			return getSetsFromValue(testMethod, annotation);
 		}
-		// Try finding the @CartesianValueSource annotation
-		if (!valueSources.isEmpty()) {
-			return getSetsFromRepeatableAnnotation(valueSources);
+		// Try getting sets from the @CartesianValueSource annotations
+		if (!argumentsSources.isEmpty()) {
+			return getSetsFromPioneerAnnotations(argumentsSources, context);
 		}
 		// Try the sets static factory method
 		return getSetsFromStaticFactory(testMethod, annotation.factory());
 	}
 
 	private static void ensureNoInputConflicts(CartesianProductTest annotation,
-			List<CartesianValueSource> valueSources) {
+			List<? extends Annotation> valueSources) {
 		boolean hasValue = annotation.value().length != 0;
 		boolean hasFactory = !annotation.factory().isEmpty();
 		boolean hasValueSources = !valueSources.isEmpty();
@@ -94,13 +101,32 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		return sets;
 	}
 
-	private List<List<?>> getSetsFromRepeatableAnnotation(List<CartesianValueSource> valueSources) {
+	private List<List<?>> getSetsFromPioneerAnnotations(List<? extends Annotation> argumentsSources,
+			ExtensionContext context) {
 		List<List<?>> sets = new ArrayList<>();
-		for (CartesianValueSource source : valueSources) {
-			CartesianValueArgumentsProvider provider = new CartesianValueArgumentsProvider();
-			provider.accept(source);
-			List<Object> collect = provider.provideArguments().distinct().collect(toList());
-			sets.add(collect);
+		for (Annotation source : argumentsSources) {
+			ArgumentsSource providerAnnotation = AnnotationSupport
+					.findAnnotation(source.annotationType(), ArgumentsSource.class)
+					.orElseThrow(RuntimeException::new);
+			ArgumentsProvider provider = ReflectionSupport.newInstance(providerAnnotation.value());
+			try {
+				if (Arrays.asList(provider.getClass().getInterfaces()).contains(Consumer.class)) {
+					((Consumer<Annotation>) provider).accept(source);
+					List<Object> collect = provider
+							.provideArguments(context)
+							.map(Arguments::get)
+							.flatMap(Arrays::stream)
+							.distinct()
+							.collect(toList());
+					sets.add(collect);
+				}
+			}
+			catch (Exception e) {
+				if (e instanceof RuntimeException)
+					throw (RuntimeException) e;
+				else
+					throw new ExtensionConfigurationException("Could not provide arguments because of exception", e);
+			}
 		}
 		return sets;
 	}

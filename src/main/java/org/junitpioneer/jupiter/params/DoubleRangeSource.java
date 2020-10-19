@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -36,6 +37,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 @Documented
 @ArgumentsSource(RangeSourceArgumentsProvider.class)
 @RangeClass(DoubleRange.class)
+@Repeatable(DoubleRangeSource.DoubleRangeSources.class)
 public @interface DoubleRangeSource {
 
 	/**
@@ -57,5 +59,14 @@ public @interface DoubleRangeSource {
 	 * Whether the range is closed (inclusive of the {@link #to()}) or not.
 	 */
 	boolean closed() default false;
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface DoubleRangeSources {
+
+		DoubleRangeSource[] value();
+
+	}
 
 }

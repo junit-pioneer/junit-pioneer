@@ -13,19 +13,21 @@ package org.junitpioneer.jupiter;
 import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.platform.commons.PreconditionViolationException;
 
 /**
  * This is basically a copy of ValueSourceArgumentsProvider,
  * except it does NOT support {@code @ParameterizedTest}.
  */
-class CartesianValueArgumentsProvider implements Consumer<CartesianValueSource> {
+class CartesianValueArgumentsProvider implements Consumer<CartesianValueSource>, ArgumentsProvider {
 
 	private Object[] arguments;
 
@@ -33,8 +35,7 @@ class CartesianValueArgumentsProvider implements Consumer<CartesianValueSource> 
 	public void accept(CartesianValueSource source) {
 		// @formatter:off
 		List<Object> arrays =
-				// Declaration of <Object> is necessary due to a bug in Eclipse Photon.
-				Stream.<Object> of(
+				Stream.of(
 						source.shorts(),
 						source.bytes(),
 						source.ints(),
@@ -61,8 +62,9 @@ class CartesianValueArgumentsProvider implements Consumer<CartesianValueSource> 
 				.toArray();
 	}
 
-	public Stream<Object> provideArguments() {
-		return Arrays.stream(arguments);
+	@Override
+	public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+		return Stream.of(Arguments.of(arguments));
 	}
 
 }
