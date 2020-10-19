@@ -150,7 +150,7 @@ class PioneerAnnotationUtils {
 			return Stream.of(annotation);
 		}
 		catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException("Failed to flatten annotation stream", e);
+			throw new RuntimeException("Failed to flatten annotation stream", e); //NOSONAR
 		}
 	}
 

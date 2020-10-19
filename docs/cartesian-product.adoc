@@ -25,7 +25,7 @@ The extension takes the test data parameter values and runs the test for every p
 You can supply test parameters to `@CartesianProductTest` in multiple ways.
 
  - The annotation can have a `String[]` value (see <<Supplying CartesianProductTest with a `String[]`>>)
- - the test method can be annotated with `@CartesianValueSource` (see <<Annotating your test method with @CartesianValueSource>>)
+ - the test method can be annotated with `@CartesianValueSource` or range source annotations (see <<Annotating your test method>>)
  - the test class can have a static factory method providing the arguments (see <<Writing a static factory method for the parameters>>)
 
 Specifying more than one kind of parameter source (e.g.: both annotating your test method and having a static factory) does not work and will throw an `ExtensionConfigurationException`.
@@ -78,7 +78,7 @@ To demonstrate with a table:
 | 8th test  | "1"            | "1"            | "1"
 |===
 
-== Annotating your test method with @CartesianValueSource
+== Annotating your test method
 
 If you don't only supply string values to your test method like in the example above, you can annotate your method with `@CartesianValueSource`.
 `@CartesianValueSource` is used to define the possible inputs of a single test parameter - as annotations are listed top-to-bottom, they provide parameter values left-to-right.

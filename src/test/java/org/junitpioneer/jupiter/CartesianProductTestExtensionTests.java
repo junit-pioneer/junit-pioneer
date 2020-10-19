@@ -140,6 +140,19 @@ public class CartesianProductTestExtensionTests {
 						"Had worn them really about the same,");
 		}
 
+		@Test
+		@DisplayName("works with @RangeSources")
+		void rangeSources() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(RangeSourceTestCases.class, "basicIntRangeSource", int.class, int.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(8)
+					.hasNumberOfSucceededTests(8)
+					.hasNumberOfReportEntries(8)
+					.withValues("1,2", "1,4", "2,2", "2,4", "3,2", "3,4", "4,2", "4,4");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -596,6 +609,7 @@ public class CartesianProductTestExtensionTests {
 		@CartesianProductTest
 		@IntRangeSource(from = 1, to = 4, closed = true)
 		@IntRangeSource(from = 2, to = 4, step = 2, closed = true)
+		@ReportEntry("{0},{1}")
 		void basicIntRangeSource(int i, int j) {
 		}
 
