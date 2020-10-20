@@ -26,11 +26,8 @@ class IssueExtension implements BeforeEachCallback {
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		//noinspection unchecked
-		if (PioneerAnnotationUtils.isAnyAnnotationPresent(context, Issue.class)) {
-			String issueId = readIssueIdFromAnnotation(context);
-			context.publishReportEntry(KEY, issueId);
-		}
+		String issueId = readIssueIdFromAnnotation(context);
+		context.publishReportEntry(KEY, issueId);
 	}
 
 	/**

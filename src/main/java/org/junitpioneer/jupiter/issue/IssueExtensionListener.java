@@ -30,11 +30,11 @@ public class IssueExtensionListener implements TestExecutionListener {
 
 	static final String KEY_ISSUE = "Issue";
 
-	// Cache with all tests that belong to an issue <issueId, List<UniqueIdentifier>>
-	private final ConcurrentHashMap<String, List<String>> issueTestsCache = new ConcurrentHashMap<>();
+	// Storage with all tests that belong to an issue <issueId, List<UniqueIdentifier>>
+	private final ConcurrentHashMap<String, List<String>> issueTestsStorage = new ConcurrentHashMap<>();
 
-	// Cache with tests results of test cases <UniqueIdentifier, result>
-	private final ConcurrentHashMap<String, String> testStatusCache = new ConcurrentHashMap<>();
+	// Storage with tests results of test cases <UniqueIdentifier, result>
+	private final ConcurrentHashMap<String, String> testStatusStorage = new ConcurrentHashMap<>();
 
 	// Package private by purpose for testing
 	List<IssuedTestCase> allIssuedTests = new ArrayList<>();
@@ -49,8 +49,8 @@ public class IssueExtensionListener implements TestExecutionListener {
 			String issueId = entryKeyValues.get(KEY_ISSUE);
 
 			// Store that the current test belongs to annotated issue
-			issueTestsCache.putIfAbsent(issueId, new ArrayList<>());
-			issueTestsCache.get(issueId).add(testId);
+			issueTestsStorage.putIfAbsent(issueId, new ArrayList<>());
+			issueTestsStorage.get(issueId).add(testId);
 		}
 	}
 
@@ -58,19 +58,19 @@ public class IssueExtensionListener implements TestExecutionListener {
 	public void executionFinished(TestIdentifier testIdentifier, TestExecutionResult testExecutionResult) {
 		if (testIdentifier.isTest()) {
 			// Store test result in cache
-			testStatusCache.put(testIdentifier.getUniqueId(), testExecutionResult.getStatus().toString());
+			testStatusStorage.put(testIdentifier.getUniqueId(), testExecutionResult.getStatus().toString());
 		}
 	}
 
 	@Override
 	public void testPlanExecutionFinished(TestPlan testPlan) {
 		// Retrieve all tests, which are annotated with @Issue, and their result.
-		for (Map.Entry<String, List<String>> entry : issueTestsCache.entrySet()) {
+		for (Map.Entry<String, List<String>> entry : issueTestsStorage.entrySet()) {
 			String issueId = entry.getKey();
 			List<String> allTests = entry.getValue();
 
 			allTests.forEach(testID -> {
-				String status = testStatusCache.getOrDefault(testID, "UNKNOWN");
+				String status = testStatusStorage.getOrDefault(testID, "UNKNOWN");
 
 				allIssuedTests.add(new IssuedTestCase(testID, issueId, status));
 			});
