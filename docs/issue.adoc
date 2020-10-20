@@ -55,5 +55,5 @@ public class SimpleProcessor implements IssueProcessor {
 }
 ----
 
-NOTE: The implementing class must be registered to the JAVA ecosystem as a service.
-For further information about registering a service, please see the JAVA https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html[ServiceLoader documentation].
+NOTE: The implementing class must be registered to the Java ecosystem as a service.
+For further information about registering a service, please see the Java https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html[ServiceLoader documentation].
