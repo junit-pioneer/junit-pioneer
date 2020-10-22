@@ -90,6 +90,10 @@ yamlValidator {
 	isSearchRecursive = true
 }
 
+jacoco {
+	toolVersion = "0.8.6"
+}
+
 sonarqube {
 	// If you want to use this logcally a sonarLogin has to be provide, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
