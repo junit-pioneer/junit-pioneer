@@ -158,6 +158,7 @@ tasks {
 		options.encoding = "UTF-8"
 		shouldRunAfter(test)
 	}
+
 	jacocoTestReport {
 		reports {
 			xml.isEnabled = true
