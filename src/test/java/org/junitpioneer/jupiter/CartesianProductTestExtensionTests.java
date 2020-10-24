@@ -22,9 +22,10 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.PreconditionViolationException;
-import org.junitpioneer.jupiter.params.IntRangeSource;
+import org.junitpioneer.jupiter.params.*;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -142,8 +143,8 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("works with @RangeSources")
-		void rangeSources() {
+		@DisplayName("works with @IntRangeSource")
+		void intRangeSource() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "basicIntRangeSource",
 						int.class, int.class);
@@ -153,6 +154,34 @@ public class CartesianProductTestExtensionTests {
 					.hasNumberOfSucceededTests(8)
 					.hasNumberOfReportEntries(8)
 					.withValues("1,2", "1,4", "2,2", "2,4", "3,2", "3,4", "4,2", "4,4");
+		}
+
+		@Test
+		@DisplayName("works with @FloatRangeSource and @ByteRangeSource")
+		void floatByteSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "floatByteSource",
+							float.class, byte.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(8)
+					.hasNumberOfSucceededTests(8)
+					.hasNumberOfReportEntries(8)
+					.withValues("f:1.2,b:1", "f:1.7,b:1", "f:1.2,b:2", "f:1.7,b:2", "f:1.2,b:3", "f:1.7,b:3", "f:1.2,b:4","f:1.7,b:4");
+		}
+
+		@Test
+		@DisplayName("works with @DoubleRangeSource, @LongRangeSource and @ShortRangeSource")
+		void doubleLongShortSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "doubleLongShortSource",
+							double.class, long.class, short.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(8)
+					.hasNumberOfSucceededTests(8)
+					.hasNumberOfReportEntries(8)
+					.withValues("d:1.2,l:1,s:4", "d:1.7,l:1,s:4", "d:1.2,l:2,s:4", "d:1.7,l:2,s:4", "d:1.2,l:1,s:5", "d:1.7,l:1,s:5", "d:1.2,l:2,s:5", "d:1.7,l:2,s:5");
 		}
 
 		@Nested
@@ -423,6 +452,19 @@ public class CartesianProductTestExtensionTests {
 					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
 		}
 
+		@Test
+		@DisplayName("ParameterizedTest does not work with @CartesianValueSource")
+		void parameterizedWithCartesianValues() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "parameterizedTest", int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					// CartesianValueArgumentsProvider does not get initialized because it does not implement AnnotationConsumer
+					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.hasMessageContaining("argument array must not be null");
+		}
+
 	}
 
 	static class BasicConfigurationTestCases {
@@ -634,6 +676,26 @@ public class CartesianProductTestExtensionTests {
 		@IntRangeSource(from = 0, to = 4)
 		@ValueSource(ints = { 2, 4 })
 		void valueSource(int i, int j) {
+		}
+
+		@CartesianProductTest
+		@FloatRangeSource(from = 1.2f, to = 1.7f, step = 0.5f, closed = true)
+		@ByteRangeSource(from = 1, to = 4, closed = true)
+		@ReportEntry("f:{0},b:{1}")
+		void floatByteSource(float f, byte b) {
+		}
+
+		@CartesianProductTest
+		@DoubleRangeSource(from = 1.2, to = 2.2, step = 0.5) // 1.2, 1.7
+		@LongRangeSource(from = 1L, to = 3L) // 1, 2
+		@ShortRangeSource(from = 4, to = 5, closed =true) // 4, 5
+		@ReportEntry("d:{0},l:{1},s:{2}")
+		void doubleLongShortSource(double d, long l, short s) {
+		}
+
+		@ParameterizedTest
+		@CartesianValueSource(ints = {1, 2, 3, 4})
+		void parameterizedTest(int i) {
 		}
 
 	}
