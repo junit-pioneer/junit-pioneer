@@ -160,14 +160,15 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("works with @FloatRangeSource and @ByteRangeSource")
 		void floatByteSource() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "floatByteSource",
-							float.class, byte.class);
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "floatByteSource", float.class,
+						byte.class);
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(8)
 					.hasNumberOfSucceededTests(8)
 					.hasNumberOfReportEntries(8)
-					.withValues("f:1.2,b:1", "f:1.7,b:1", "f:1.2,b:2", "f:1.7,b:2", "f:1.2,b:3", "f:1.7,b:3", "f:1.2,b:4","f:1.7,b:4");
+					.withValues("f:1.2,b:1", "f:1.7,b:1", "f:1.2,b:2", "f:1.7,b:2", "f:1.2,b:3", "f:1.7,b:3",
+						"f:1.2,b:4", "f:1.7,b:4");
 		}
 
 		@Test
@@ -175,13 +176,14 @@ public class CartesianProductTestExtensionTests {
 		void doubleLongShortSource() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "doubleLongShortSource",
-							double.class, long.class, short.class);
+						double.class, long.class, short.class);
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(8)
 					.hasNumberOfSucceededTests(8)
 					.hasNumberOfReportEntries(8)
-					.withValues("d:1.2,l:1,s:4", "d:1.7,l:1,s:4", "d:1.2,l:2,s:4", "d:1.7,l:2,s:4", "d:1.2,l:1,s:5", "d:1.7,l:1,s:5", "d:1.2,l:2,s:5", "d:1.7,l:2,s:5");
+					.withValues("d:1.2,l:1,s:4", "d:1.7,l:1,s:4", "d:1.2,l:2,s:4", "d:1.7,l:2,s:4", "d:1.2,l:1,s:5",
+						"d:1.7,l:1,s:5", "d:1.2,l:2,s:5", "d:1.7,l:2,s:5");
 		}
 
 		@Nested
@@ -456,7 +458,8 @@ public class CartesianProductTestExtensionTests {
 		@DisplayName("ParameterizedTest does not work with @CartesianValueSource")
 		void parameterizedWithCartesianValues() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "parameterizedTest", int.class);
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "parameterizedTest",
+						int.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -688,13 +691,13 @@ public class CartesianProductTestExtensionTests {
 		@CartesianProductTest
 		@DoubleRangeSource(from = 1.2, to = 2.2, step = 0.5) // 1.2, 1.7
 		@LongRangeSource(from = 1L, to = 3L) // 1, 2
-		@ShortRangeSource(from = 4, to = 5, closed =true) // 4, 5
+		@ShortRangeSource(from = 4, to = 5, closed = true) // 4, 5
 		@ReportEntry("d:{0},l:{1},s:{2}")
 		void doubleLongShortSource(double d, long l, short s) {
 		}
 
 		@ParameterizedTest
-		@CartesianValueSource(ints = {1, 2, 3, 4})
+		@CartesianValueSource(ints = { 1, 2, 3, 4 })
 		void parameterizedTest(int i) {
 		}
 
