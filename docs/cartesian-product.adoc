@@ -113,6 +113,38 @@ To demonstrate with a table:
 | 6th test  | 4                 | "B"
 |===
 
+Alternatively, you can annotate your test method with link:range-sources.adoc[range source annotations].
+For _this purpose only_, range sources are repeatable.
+When you annotate your `@CartesianProductTest` with a range source, you specify the inputs to a single test parameter.
+This is not like `@ParameterizedTest` where you have to define all inputs in a single `@ArgumentsSource`.
+
+```java
+@CartesianProductTest
+@ShortRangeSource(from = 1, to = 3, step = 1)
+@LongRangeSource(from = 0L, to = 2L, step = 1, closed = true)
+void testShortAndLong(short s, long l) {
+    // passing test code
+}
+```
+
+The test `testShortAndLong` is executed exactly six times.
+The first parameter can have any of the two values `1`, `2`.
+The second parameter can have any of the three values `0L`, `1L` or `2L`.
+`@CartesianProductTest` tests for all input combinations, that's `2 × 3`, so six tests in total.
+
+To demonstrate with a table:
+|===
+| # of test | value of `s` | value of `l`
+| 1st test  | 1            | 0L
+| 2nd test  | 1            | 1L
+| 3rd test  | 1            | 2L
+| 4th test  | 2            | 0L
+| 5th test  | 2            | 1L
+| 6th test  | 2            | 2L
+|===
+
+For more information, please see the link:range-sources.adoc[separate documentation about range sources].
+
 == Writing a static factory method for the parameters
 
 If your tests require special inputs that `@CartesianValueSource` is not able to supply, you can define a static factory method to supply your test parameters.
