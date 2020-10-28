@@ -113,7 +113,8 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(6)
 					.hasNumberOfSucceededTests(4)
-					.hasNumberOfFailedTests(2)
+					.hasNumberOfFailedTests(2);
+			assertThat(results)
 					.hasNumberOfReportEntries(6)
 					.withValues("Two roads diverged in a yellow wood, - And looked down one as far as I could",
 						"Two roads diverged in a yellow wood, - To where it bent in the undergrowth;",
@@ -132,7 +133,8 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(5)
-					.hasNumberOfSucceededTests(5)
+					.hasNumberOfSucceededTests(5);
+			assertThat(results)
 					.hasNumberOfReportEntries(5)
 					.withValues("Then took the other, as just as fair,", "And having perhaps the better claim",
 						"Because it was grassy and wanted wear,", "Though as for that the passing there",
@@ -152,7 +154,8 @@ public class CartesianProductTestExtensionTests {
 
 				assertThat(results)
 						.hasNumberOfDynamicallyRegisteredTests(4)
-						.hasNumberOfSucceededTests(4)
+						.hasNumberOfSucceededTests(4);
+				assertThat(results)
 						.hasNumberOfReportEntries(4)
 						.withValues("11", "12", "21", "22");
 
@@ -167,7 +170,8 @@ public class CartesianProductTestExtensionTests {
 
 				assertThat(results)
 						.hasNumberOfDynamicallyRegisteredTests(6)
-						.hasNumberOfSucceededTests(6)
+						.hasNumberOfSucceededTests(6);
+				assertThat(results)
 						.hasNumberOfReportEntries(6)
 						.withValues("1A", "1B", "1C", "4A", "4B", "4C");
 
@@ -182,7 +186,8 @@ public class CartesianProductTestExtensionTests {
 
 				assertThat(results)
 						.hasNumberOfDynamicallyRegisteredTests(3)
-						.hasNumberOfSucceededTests(3)
+						.hasNumberOfSucceededTests(3);
+				assertThat(results)
 						.hasNumberOfReportEntries(3)
 						.withValues("A:SECONDS", "B:SECONDS", "C:SECONDS");
 
