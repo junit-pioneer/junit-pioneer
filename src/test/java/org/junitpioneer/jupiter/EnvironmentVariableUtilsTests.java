@@ -19,29 +19,35 @@ import java.security.Policy;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("JUnitPioneer system environment utilities")
+@WritesEnvironmentVariable
 class EnvironmentVariableUtilsTests {
+
+	@AfterEach
+	void removeTestEnvVar() {
+		EnvironmentVariableUtils.clear("TEST");
+	}
 
 	@Test
 	void theEnvironmentIsNotCorruptedAfterSet() {
-		EnvironmentVariableUtils.set("A_VARIABLE", "A value");
+		EnvironmentVariableUtils.set("TEST", "test");
 
 		/* By using this method, the entire environment is read and copied from the field
 		   ProcessEnvironment.theEnvironment. If that field is corrupted by a String having been stored
 		   as key or value, this copy operation will fail with a ClassCastException. */
 		Map<String, String> environmentCopy = new HashMap<>(System.getenv());
-		assertThat(environmentCopy.get("A_VARIABLE")).isEqualTo("A value");
+		assertThat(environmentCopy.get("TEST")).isEqualTo("test");
 	}
 
 	/*
 	 * The documentation mentions that without proper permissions an enabled security manager will not
 	 * give access to the internals we need to change environment variables. These tests confirm that.
 	 */
-	@ClearEnvironmentVariable(key = "TEST")
 	@Nested
 	class With_SecurityManager {
 
@@ -50,7 +56,7 @@ class EnvironmentVariableUtilsTests {
 		void shouldThrowAccessControlExceptionWithDefaultSecurityManager() {
 			//@formatter:off
 			executeWithSecurityManager(
-					() -> assertThatThrownBy(() -> EnvironmentVariableUtils.set("TEST", "TEST"))
+					() -> assertThatThrownBy(() -> EnvironmentVariableUtils.set("TEST", "test"))
 							.isInstanceOf(AccessControlException.class));
 			//@formatter:on
 		}
@@ -59,8 +65,8 @@ class EnvironmentVariableUtilsTests {
 		@SetSystemProperty(key = "java.security.policy", value = "file:src/test/resources/reflect-permission-testing.policy")
 		void shouldModifyEnvironmentVariableIfPermissionIsGiven() {
 			executeWithSecurityManager(() -> {
-				assertThatCode(() -> EnvironmentVariableUtils.set("TEST", "TEST")).doesNotThrowAnyException();
-				assertThat(System.getenv("TEST")).isEqualTo("TEST");
+				assertThatCode(() -> EnvironmentVariableUtils.set("TEST", "test")).doesNotThrowAnyException();
+				assertThat(System.getenv("TEST")).isEqualTo("test");
 			});
 		}
 
@@ -70,7 +76,7 @@ class EnvironmentVariableUtilsTests {
 		 */
 		private void executeWithSecurityManager(Runnable runnable) {
 			Policy.getPolicy().refresh();
-			final SecurityManager original = System.getSecurityManager();
+			SecurityManager original = System.getSecurityManager();
 			System.setSecurityManager(new SecurityManager());
 			try {
 				runnable.run();

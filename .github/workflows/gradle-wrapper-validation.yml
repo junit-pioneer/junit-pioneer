@@ -1,0 +1,20 @@
+name: Gradle wrapper validation
+
+on:
+  push:
+    branches: 'master'
+    tags-ignore:
+      - 'v**'
+  pull_request:
+    branches: '*'
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    name: on ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1

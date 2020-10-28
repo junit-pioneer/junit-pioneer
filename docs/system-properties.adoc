@@ -1,5 +1,5 @@
-:page-title: @ClearSystemProperty and @SetSystemProperty
-:page-description: JUnit Jupiter extensions to clear and set the values of system properties
+:page-title: Clearing or Setting System Properties
+:page-description: Extends JUnit Jupiter with `@ClearSystemProperty`, `@SetSystemProperty`, which clear and set the values of system properties
 
 The `@ClearSystemProperty` and `@SetSystemProperty` annotations can be used to clear, respectively, set the values of system properties for a test execution.
 Both annotations work on the test method and class level, are repeatable as well as combinable.
@@ -13,7 +13,8 @@ For example, clearing a system property for a test execution can be done as foll
 @Test
 @ClearSystemProperty(key = "some property")
 void test() {
-	assertThat(System.getProperty("some property")).isNull();
+	assertThat(System.getProperty("some property"))
+		.isNull();
 }
 ----
 
@@ -22,9 +23,11 @@ And setting a system property for a test execution:
 [source,java]
 ----
 @Test
-@SetSystemProperty(key = "some property", value = "new value")
+@SetSystemProperty(key = "some property",
+		value = "new value")
 void test() {
-	assertThat(System.getProperty("some property")).isEqualTo("new value");
+	assertThat(System.getProperty("some property"))
+		.isEqualTo("new value");
 }
 ----
 
@@ -35,11 +38,13 @@ As mentioned before, both annotations are repeatable and they can also be combin
 @Test
 @ClearSystemProperty(key = "1st property")
 @ClearSystemProperty(key = "2nd property")
-@SetSystemProperty(key = "3rd property", value = "new value")
+@SetSystemProperty(key = "3rd property",
+		value = "new value")
 void test() {
 	assertThat(System.getProperty("1st property")).isNull();
 	assertThat(System.getProperty("2nd property")).isNull();
-	assertThat(System.getProperty("3rd property")).isEqualTo("new value");
+	assertThat(System.getProperty("3rd property"))
+		.isEqualTo("new value");
 }
 ----
 
@@ -49,10 +54,28 @@ Note that class level configurations are overwritten by method level configurati
 ----
 @ClearSystemProperty(key = "some property")
 class MySystemPropertyTest {
+
 	@Test
-	@SetSystemProperty(key = "some property", value = "new value")
+	@SetSystemProperty(key = "some property",
+			value = "new value")
 	void test() {
-		assertThat(System.getProperty("some property")).isEqualTo("new value");
+		assertThat(System.getProperty("some property"))
+			.isEqualTo("new value");
 	}
+
 }
 ----
+
+== Thread-Safety
+
+Since system properties are global state, reading and writing them during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution] can lead to unpredictable results and flaky tests.
+The system property extension is prepared for that and tests annotated with `@ClearSystemProperty` or `@SetSystemProperty` will never execute in parallel (thanks to https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/parallel/ResourceLock.html[resource locks]) to guarantee correct test results.
+
+However, this does not cover all possible cases.
+Tested code that reads or writes system properties _independently_ of the extension can still run in parallel to it and may thus behave erratically when, for example, it unexpectedly reads a property set by the extension in another thread.
+Tests that cover code that reads or writes system properties need to be annotated with the respective annotation:
+
+* `@ReadsSystemProperty`
+* `@WritesSystemProperty`
+
+Tests annotated in this way will never execute in parallel with tests annotated with `@ClearSystemProperty` or `@SetSystemProperty`.

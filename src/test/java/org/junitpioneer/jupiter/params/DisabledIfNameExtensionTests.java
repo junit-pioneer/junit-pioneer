@@ -30,7 +30,7 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void single_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "single", "java.lang.String");
+					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "single", String.class);
 
 			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(1).hasNumberOfSkippedTests(5);
 		}
@@ -38,7 +38,7 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void multiple_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "multiple", "int");
+					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "multiple", int.class);
 
 			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(3).hasNumberOfSkippedTests(2);
 		}
@@ -46,7 +46,7 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void methodNameContainsSubstring_containerNotSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "methodNameContains", "int");
+					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "methodNameContains", int.class);
 
 			assertThat(results).hasNumberOfStartedTests(3);
 		}
@@ -59,7 +59,7 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void single_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "single", "java.lang.String");
+					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "single", String.class);
 
 			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(2).hasNumberOfSkippedTests(4);
 		}
@@ -67,7 +67,7 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void multiple_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "multiple", "int");
+					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "multiple", int.class);
 
 			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSkippedTests(3).hasNumberOfSucceededTests(2);
 		}
@@ -75,7 +75,7 @@ class DisabledIfNameExtensionTests {
 		@Test
 		void methodNameMatchesRegExp_containerNotSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "methodNameMatches", "int");
+					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "methodNameMatches", int.class);
 
 			assertThat(results).hasNumberOfStartedTests(3);
 		}
@@ -89,7 +89,7 @@ class DisabledIfNameExtensionTests {
 		void noContainsNoMatches_configurationException() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "noContainsNoMatches",
-						"java.lang.String");
+						String.class);
 
 			assertThat(results).hasSingleFailedTest();
 		}
@@ -98,7 +98,7 @@ class DisabledIfNameExtensionTests {
 		void containsAndMatches_contains_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_contains",
-						"int");
+						int.class);
 
 			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSkippedTests(2).hasNumberOfSucceededTests(3);
 		}
@@ -107,7 +107,7 @@ class DisabledIfNameExtensionTests {
 		void containsAndMatches_matches_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_matches",
-						"int");
+						int.class);
 
 			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(2).hasNumberOfSkippedTests(3);
 		}
@@ -116,7 +116,7 @@ class DisabledIfNameExtensionTests {
 		void containsAndMatches_containsAndMatches_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class,
-						"containsAndMatches_containsAndMatches", "int");
+						"containsAndMatches_containsAndMatches", int.class);
 
 			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(1).hasNumberOfSkippedTests(4);
 		}

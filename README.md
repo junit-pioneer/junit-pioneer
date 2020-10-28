@@ -48,6 +48,12 @@ testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
 
 ## Dependencies
 
+JUnit Pioneer is built against Java 8, but comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
+That means it can be used on all Java versions 8 and higher on class path and module path.
+
+Pioneer does not only use JUnit 5's API, but also other artifacts from its ecosystem such as [`junit-platform-commons`](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons).
+To avoid dependency issues (e.g. in [junit-pioneer#343](https://github.com/junit-pioneer/junit-pioneer/issues/343)), you should add the JUnit 5 BOM ([`junit-bom`](https://mvnrepository.com/artifact/org.junit/junit-bom)) to your project instead of defining all dependency versions manually.
+
 To not add to user's [JAR hell](https://blog.codefx.org/java/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
 Pioneer always depends on the lowest JUnit 5 version that supports its feature set, but that should not keep you from using 5's latest and greatest.
 
@@ -96,19 +102,22 @@ In lexicographic order, these are:
 JUnit Pioneer, as small as it is, would be much smaller without kind souls contributing their time, energy, and skills.
 Thank you for your efforts! 🙏
 
-The least we can do is to thank them and list their accomplishments here (in lexicographic order).
+The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
 #### 2020
 
 * [Allon Murienik](https://github.com/mureinik) contributed [the range sources](https://junit-pioneer.org/docs/range-sources/) (#44 / #123)
+* [Bradford Hovinen](https://github.com/hovinen) improved the execution of the EnvironmentVariableUtils on different OS (#287 / #288)
 * [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133), further improved it as well as the environment variable extension (#180 / #248), and helped with build infrastructure (e.g. #269)
+* [David Walluck](https://github.com/dwalluck) introduced JUnit 5 BOM (#343 / #346)
 * [Dirk Witzel](https://github.com/NPException) improved the documentation (#149 / #271)
 * [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
 * [Mark Rösler](https://github.com/Hancho2009) contributed the [environment variable extension](https://junit-pioneer.org/docs/environment-variables/) (#167 / #174 and #241 / #242)
 * [Matthias Bünger](https://github.com/Bukama) opened, vetted, and groomed countless issues and PRs and contributed multiple refactorings (e.g. #165 / #168) and fixes (e.g. #190 / #200) before getting promoted to maintainer
-* [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), added tests to other extensions (#164 / #272), and commented on multiple issues and PRs
+* [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), [the ReportEntryExtension](https://junit-pioneer.org/docs/report-entries/) (#134, #179 / #183, #216, #294), added tests to other extensions (#164 / #272), and contributed to multiple issues (e.g. #217 / #298) and PRs (e.g. #253, #307)
 * [Nishant Vashisth](https://github.com/nishantvas) contributed an [extension to disable parameterized tests](https://junit-pioneer.org/docs/disable-if-display-name/) by display name (#163 / #175)
 * [Simon Schrottner](https://github.com/aepfli) contributed to multiple issues and PRs and almost single-handedly revamped the build and QA process (e.g. #192 / #185) before getting promoted to maintainer
+* [Sullis](https://github.com/sullis) improved GitHub Actions with Gradle Wrapper Validation check (#302)
 
 #### 2019
 
