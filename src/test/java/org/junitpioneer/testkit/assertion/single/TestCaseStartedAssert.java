@@ -8,12 +8,13 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.testkit.assertion;
+package org.junitpioneer.testkit.assertion.single;
 
 /**
- * This interface contains methods for asserting a single test or a single container.
+ * This interface contains methods for asserting a single test or container
+ * which was already asserted as "started".
  */
-public interface TestCaseAssert {
+public interface TestCaseStartedAssert {
 
 	/**
 	 * Asserts that the test/container has succeeded.
@@ -27,8 +28,9 @@ public interface TestCaseAssert {
 
 	/**
 	 * Asserts that the test/container has failed.
-	 * @return a {@link FailureAssert} for further assertions.
+	 *
+	 * @return a {@link TestCaseFailureAssert} for further assertions.
 	 */
-	FailureAssert whichFailed();
+	TestCaseFailureAssert whichFailed();
 
 }
