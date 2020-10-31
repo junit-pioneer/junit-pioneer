@@ -10,8 +10,10 @@
 
 package org.junitpioneer.jupiter.params;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Method;
-import java.util.Optional;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -25,14 +27,29 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 	@Override
 	public void interceptTestTemplateMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-        Method testMethod = extensionContext.getRequiredTestMethod();
-        Optional<DisableIfParameter> annotation = AnnotationSupport.findAnnotation(testMethod, DisableIfParameter.class);
-        if (!annotation.isPresent())
-            throw new ExtensionConfigurationException(DisableIfParameterExtension.class.getSimpleName() + " is active but no "
-                + DisableIfParameter.class.getSimpleName() + " was found. This may be a bug.");
-        if (invocationContext.getArguments().stream().anyMatch(arg -> arg.toString().equals(annotation.get().value())))
-            throw new TestAbortedException();
-        invocation.proceed();
+		Method testMethod = extensionContext.getRequiredTestMethod();
+		DisableIfParameter annotation = AnnotationSupport
+				.findAnnotation(testMethod, DisableIfParameter.class)
+				.orElseThrow(() -> new ExtensionConfigurationException(
+					format("%s is active but no %s annotation was found. This may be a bug.",
+						DisableIfParameterExtension.class.getSimpleName(), DisableIfParameter.class.getSimpleName())));
+		if (annotation.contains().length == 0 && annotation.matches().length == 0)
+			throw new ExtensionConfigurationException(
+				format("%s requires that either `contains` or `matches` is specified, but both are empty.",
+					DisableIfParameter.class.getSimpleName()));
+		// Check if any argument contains any element from 'contains'
+		if (invocationContext
+				.getArguments()
+				.stream()
+				.anyMatch(arg -> Arrays.stream(annotation.contains()).anyMatch(arg.toString()::contains)))
+			throw new TestAbortedException("One or more arguments contained a value from the `contains` array.");
+		// Check if any argument matches any element from 'matches'
+		if (invocationContext
+				.getArguments()
+				.stream()
+				.anyMatch(arg -> Arrays.stream(annotation.matches()).anyMatch(arg.toString()::matches)))
+			throw new TestAbortedException("One or more arguments matched a RegEx from the `matches` array.");
+		invocation.proceed();
 	}
 
 }
