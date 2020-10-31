@@ -66,7 +66,8 @@ class DisableIfParameterExtensionTests {
 		@Test
 		@DisplayName("throws an exception if both 'matches' and 'contains' is missing")
 		void missingValues() {
-			ExecutionResults results = PioneerTestKit.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingValues", String.class);
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingValues", String.class);
 
 			assertThat(results).hasNumberOfFailedTests(3);
 		}
@@ -99,9 +100,10 @@ class DisableIfParameterExtensionTests {
 
 		@ParameterizedTest
 		@DisableIfParameter
-		@ValueSource(strings = {"A", "B", "C"})
+		@ValueSource(strings = { "A", "B", "C" })
 		void missingValues(String value) {
 		}
 
 	}
+
 }
