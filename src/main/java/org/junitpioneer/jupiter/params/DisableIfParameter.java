@@ -21,5 +21,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(DisableIfParameterExtension.class)
 public @interface DisableIfParameter {
-    String value();
+
+	String[] contains() default {};
+
+	String[] matches() default {};
+
 }
