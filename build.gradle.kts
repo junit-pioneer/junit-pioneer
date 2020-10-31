@@ -7,28 +7,45 @@ plugins {
 	id("org.shipkit.java") version "2.3.1"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.0"
+	id("org.moditect.gradleplugin") version "1.0.0-rc3"
+}
+
+plugins.withType<JavaPlugin>().configureEach {
+	configure<JavaPluginExtension> {
+		modularity.inferModulePath.set(true)
+	}
 }
 
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
+val modularBuild = findProperty("modularBuild") != null;
+
 java {
-	sourceCompatibility = JavaVersion.VERSION_1_8
+	if(modularBuild) {
+		sourceCompatibility = JavaVersion.VERSION_11
+	} else {
+		sourceCompatibility = JavaVersion.VERSION_1_8
+	}
+
 }
 
 repositories {
 	mavenCentral()
 }
 
-val junitMinorVersion : String by project
+val junitVersion : String by project
 
 dependencies {
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.$junitMinorVersion")
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.$junitMinorVersion")
+	implementation(platform("org.junit:junit-bom:$junitVersion"))
 
-	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.$junitMinorVersion")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.$junitMinorVersion")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.$junitMinorVersion")
+	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
+	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
+	implementation(group = "org.junit.platform", name = "junit-platform-commons")
+
+	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
+	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher")
+	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
 	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
@@ -73,6 +90,10 @@ yamlValidator {
 	isSearchRecursive = true
 }
 
+jacoco {
+	toolVersion = "0.8.6"
+}
+
 sonarqube {
 	// If you want to use this logcally a sonarLogin has to be provide, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
@@ -84,7 +105,24 @@ sonarqube {
 	}
 }
 
+moditect {
+	addMainModuleInfo {
+		version = project.version
+		overwriteExistingFiles.set(true)
+		module {
+			moduleInfoFile = rootProject.file("src/main/module/module-info.java")
+		}
+	}
+}
+
 tasks {
+
+	sourceSets {
+		main {
+			if (modularBuild)
+				java.srcDir("src/main/module")
+		}
+	}
 
 	compileJava {
 		options.encoding = "UTF-8"
@@ -133,19 +171,11 @@ tasks {
 		dependsOn(javadoc, validateYaml)
 	}
 
-	// the manifest needs to declare the future module name
-	jar {
-		manifest {
-			attributes(
-					"Automatic-Module-Name" to "org.junitpioneer"
-			)
-		}
-	}
-
 	withType<Jar>().configureEach {
 		from(projectDir) {
 			include("LICENSE.md")
 			into("META-INF")
 		}
 	}
+
 }

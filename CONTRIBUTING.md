@@ -9,6 +9,7 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 	* [Code Organization](#code-organization)
 	* [Code Style](#code-style)
 	* [Documentation](#documentation)
+	* [Git](#git)
 * [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
 	* [Branching Strategy](#branching-strategy)
 	* [Commits](#commits)
@@ -36,6 +37,7 @@ The guidelines apply to maintainers as well as contributors!
   This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
 * Whatever content you contribute will be provided under the project license(s).
 
+
 ## If you're new to Open Source
 
 First of all, welcome!
@@ -60,6 +62,7 @@ With (some of) the basics covered, let's turn to JUnit Pioneer:
 For information on how to use it, see [GitHub's documentation](https://guides.github.com/features/mastering-markdown/).
 * The [feature documentation](#documentation) is written in AsciiDoctor.
 For information on how to use it, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
+
 
 ## Writing Code
 
@@ -186,6 +189,17 @@ One aspect that's relevant to contributors is the list of contributions at the e
 Do **not** update the `release-notes.md` file!
 This file is generated automatically.
 
+### Git
+
+#### Line Endings
+
+We [mind the end of our lines](http://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/) and have [instructed](.gitattributes) Git to replace all line endings with `LF` (the non-Windows variant) when writing files to the working directory.
+If you're on Windows and prefer `CRLF` line endings, consider setting `core.autocrlf` to `true`:
+
+```bash
+git config --global core.autocrlf true
+```
+
 
 ## Fixing Bugs, Developing Features
 
@@ -295,6 +309,7 @@ Closes: #30
 Closes: #31
 ```
 
+
 ## Updating Dependency on JUnit 5
 
 JUnit Pioneer has an uncharacteristically strong relationship to the JUnit 5 project (often called _upstream_).
@@ -337,11 +352,11 @@ This is how JUnit Pioneer handles versioning:
 
 * _patch_: automatically increased by Shipkit on each release
 * _minor_: manually increased for each substantial change/feature
-* _major_: stays at 0 for now
+* _major_: manually increased after team decision 
 
-That means, for now, contributors only have to care about _minor_.
-Since each non-trivial change is developed in a PR, this is the place to discuss whether the minor version should be increased, i.e. whether a change or feature is "substantial".
-If it is, the PR needs to update `version-properties` to the next minor version.
+That means, contributors only have to care about _minor_, but maintainers need to consider increasing _major_.
+Since each non-trivial change is developed in a PR, this is the place to discuss whether the version should be increased, i.e. whether a change or feature is "substantial".
+If it is, the PR needs to update `version-properties` to the next version.
 Note that the feature's Javadoc needs to reference the same version in its `@since` tag.
 
 ### Background

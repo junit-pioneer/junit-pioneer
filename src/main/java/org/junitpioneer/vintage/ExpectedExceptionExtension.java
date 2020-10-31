@@ -11,7 +11,7 @@
 package org.junitpioneer.vintage;
 
 import static java.lang.String.format;
-import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
+import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
 
 import java.util.Optional;
 

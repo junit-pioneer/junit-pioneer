@@ -27,9 +27,12 @@ And setting a environment variable for a test execution:
 [source,java]
 ----
 @Test
-@SetEnvironmentVariable(key = "some variable", value = "new value")
+@SetEnvironmentVariable(
+	key = "some variable",
+	value = "new value")
 void test() {
-	assertThat(System.getenv("some variable")).isEqualTo("new value");
+	assertThat(System.getenv("some variable")).
+		isEqualTo("new value");
 }
 ----
 
@@ -40,11 +43,14 @@ As mentioned before, both annotations are repeatable and they can also be combin
 @Test
 @ClearEnvironmentVariable(key = "1st variable")
 @ClearEnvironmentVariable(key = "2nd variable")
-@SetEnvironmentVariable(key = "3rd variable", value = "new value")
+@SetEnvironmentVariable(
+	key = "3rd variable",
+	value = "new value")
 void test() {
 	assertThat(System.getenv("1st variable")).isNull();
 	assertThat(System.getenv("2nd variable")).isNull();
-	assertThat(System.getenv("3rd variable")).isEqualTo("new value");
+	assertThat(System.getenv("3rd variable"))
+		.isEqualTo("new value");
 }
 ----
 
@@ -54,11 +60,15 @@ Note that class level configurations are overwritten by method level configurati
 ----
 @ClearEnvironmentVariable(key = "some variable")
 class MyEnvironmentVariableTest {
+
 	@Test
-	@SetEnvironmentVariable(key = "some variable", value = "new value")
+	@SetEnvironmentVariable(key = "some variable",
+			value = "new value")
 	void test() {
-		assertThat(System.getenv("some variable")).isEqualTo("new value");
+		assertThat(System.getenv("some variable"))
+			.isEqualTo("new value");
 	}
+
 }
 ----
 

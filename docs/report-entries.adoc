@@ -72,8 +72,10 @@ Just like `TestReporter::publishEntry` accepts a single string as value or a key
 [source,java]
 ----
 @Test
-@ReportEntry(key = "line1", value = "Once upon a midnight dreary")
-@ReportEntry(key = "line2", value = "While I pondered weak and weary")
+@ReportEntry(key = "line1",
+		value = "Once upon a midnight dreary")
+@ReportEntry(key = "line2",
+		value = "While I pondered weak and weary")
 void edgarAllanPoe() {
 	// YOUR TEST CODE HERE
 }
@@ -89,7 +91,10 @@ Just so:
 [source,java]
 ----
 @Test
-@ReportEntry(key = "line", value = "success entry", when = ReportEntry.PublishCondition.ON_SUCCESS)
+@ReportEntry(
+	key = "line",
+	value = "success entry",
+	when = ReportEntry.PublishCondition.ON_SUCCESS)
 void sufferingFromSuccess() {
 	// YOUR TEST CODE HERE
 }
@@ -111,6 +116,28 @@ ON_ABORTED::
 The extension will publish your report entry if the test was aborted (for example because of an https://junit.org/junit5/docs/current/user-guide/#writing-tests-assumptions[Assumption]).
 
 Entries will always be published after the test finished.
+
+=== Publishing test parameters
+
+You can access `@ParameterizedTest` parameter values and publish them with the `@ReportEntry` annotation.
+Add a number (starting from zero) between curly braces to reference the argument with that index.
+This works just like arguments in https://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html[Java's `MessageFormat`] and is in line with how you reference test parameters https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-display-names[when customizing the Display Name of a `ParameterizedTest`].
+Inside the report entry, the parameters can be referenced in any order and multiple times.
+For example, if you have a `@ParameterizedTest` like the following:
+
+[source, java]
+----
+@ParameterizedTest
+@CsvSource({"Hello, 21", "World, 42"})
+@ReportEntry("{1} - {0} - {1}")
+void test(String line, int number) {
+    // YOUR TEST CODE HERE
+}
+----
+Then the extension will publish `"21 - Hello - 21"` and `"42 - World - 42"`.
+
+Accessing test parameters in the key of the report entry is unsupported.
+
 
 == Thread-Safety
 
