@@ -74,22 +74,16 @@ public @interface CartesianProductTest {
 		private final List<List<?>> sets = new ArrayList<>(); //NOSONAR
 
 		public Sets add(Object... entries) {
-			sets.add(toDistinctList(Arrays.stream(entries)));
-			return this;
+			return addAll(Arrays.stream(entries));
 		}
 
 		public Sets addAll(Collection<?> entries) {
-			sets.add(toDistinctList(entries.stream()));
-			return this;
+			return addAll(entries.stream());
 		}
 
 		public Sets addAll(Stream<?> entries) {
-			sets.add(toDistinctList(entries));
+			sets.add(entries.distinct().collect(toList()));
 			return this;
-		}
-
-		private static List<?> toDistinctList(Stream<?> stream) {
-			return stream.distinct().collect(toList());
 		}
 
 		List<List<?>> getSets() { //NOSONAR
