@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.list;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,17 +27,23 @@ class CartesianProductTestSetsTests {
 	@Test
 	@DisplayName("should add distinct elements")
 	void shouldAddDistinct() {
-		List<Integer> fourFiveSix = list(4, 5, 6);
-		sets.add(1, 2, 3).addAll(fourFiveSix);
-		assertThat(sets.getSets()).containsExactly(list(1, 2, 3), fourFiveSix);
+		List<Integer> list = list(4, 5, 6);
+		Stream<Integer> stream = Stream.of(7, 8, 9);
+
+		sets.add(1, 2, 3).addAll(list).addAll(stream);
+
+		assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9));
 	}
 
 	@Test
 	@DisplayName("should remove non-distinct elements")
 	void shouldRemoveNonDistinct() {
-		List<Integer> fourFiveFour = list(4, 5, 4);
-		sets.add(1, 2, 1).addAll(fourFiveFour);
-		assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5));
+		List<Integer> list = list(4, 5, 4);
+		Stream<Integer> stream = Stream.of(7, 8, 7);
+
+		sets.add(1, 2, 1).addAll(list).addAll(stream);
+
+		assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8));
 	}
 
 }

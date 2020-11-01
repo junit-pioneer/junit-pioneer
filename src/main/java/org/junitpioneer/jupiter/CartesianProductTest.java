@@ -83,6 +83,11 @@ public @interface CartesianProductTest {
 			return this;
 		}
 
+		public Sets addAll(Stream<?> entries) {
+			sets.add(toDistinctList(entries));
+			return this;
+		}
+
 		private static List<?> toDistinctList(Stream<?> stream) {
 			return stream.distinct().collect(toList());
 		}
