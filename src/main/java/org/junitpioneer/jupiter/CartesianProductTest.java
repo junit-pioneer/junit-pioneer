@@ -18,7 +18,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,8 +74,17 @@ public @interface CartesianProductTest {
 		private final List<List<?>> sets = new ArrayList<>(); //NOSONAR
 
 		public Sets add(Object... entries) {
-			sets.add(new ArrayList<>(Arrays.stream(entries).distinct().collect(toList())));
+			sets.add(toDistinctList(Arrays.stream(entries)));
 			return this;
+		}
+
+		public Sets addAll(Collection<?> entries) {
+			sets.add(toDistinctList(entries.stream()));
+			return this;
+		}
+
+		private static List<?> toDistinctList(Stream<?> stream) {
+			return stream.distinct().collect(toList());
 		}
 
 		List<List<?>> getSets() { //NOSONAR
