@@ -10,9 +10,12 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.util.Lists.list;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -381,6 +384,36 @@ public class CartesianProductTestExtensionTests {
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
+		}
+
+	}
+
+	@Nested
+	@DisplayName("sets")
+	class SetsTests {
+
+		CartesianProductTest.Sets sets = new CartesianProductTest.Sets();
+
+		@Test
+		@DisplayName("should add distinct elements")
+		void shouldAddDistinct() {
+			List<Integer> list = list(4, 5, 6);
+			Stream<Integer> stream = Stream.of(7, 8, 9);
+
+			sets.add(1, 2, 3).addAll(list).addAll(stream);
+
+			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9));
+		}
+
+		@Test
+		@DisplayName("should remove non-distinct elements")
+		void shouldRemoveNonDistinct() {
+			List<Integer> list = list(4, 5, 4);
+			Stream<Integer> stream = Stream.of(7, 8, 7);
+
+			sets.add(1, 2, 1).addAll(list).addAll(stream);
+
+			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8));
 		}
 
 	}
