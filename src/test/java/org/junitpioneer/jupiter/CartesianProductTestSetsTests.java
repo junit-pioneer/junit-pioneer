@@ -19,7 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("The sets for CartesianProductTest")
-class CartesianProductTestSetsTest {
+class CartesianProductTestSetsTests {
 
 	CartesianProductTest.Sets sets = new CartesianProductTest.Sets();
 
