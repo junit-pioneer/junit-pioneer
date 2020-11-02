@@ -21,6 +21,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
+/**
+ * Oscar Wilde: Requiescat is in the public domain
+ */
 @DisplayName("DisableIfParameterExtension")
 class DisableIfParameterExtensionTests {
 
@@ -32,9 +35,20 @@ class DisableIfParameterExtensionTests {
 		@DisplayName("disables tests when parameter contains any value from the 'contains' array")
 		void interceptContains() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContains", int.class);
+					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContains",
+						String.class);
 
-			assertThat(results).hasNumberOfSucceededTests(1).hasNumberOfAbortedTests(2);
+			assertThat(results).hasNumberOfSucceededTests(2).hasNumberOfAbortedTests(2);
+		}
+
+		@Test
+		@DisplayName("disables tests when any parameter contains any value from the 'contains' array")
+		void interceptContainsAny() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContainsAny",
+						String.class, String.class);
+
+			assertThat(results).hasNumberOfAbortedTests(2);
 		}
 
 		@Test
@@ -44,15 +58,24 @@ class DisableIfParameterExtensionTests {
 					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptMatches",
 						String.class);
 
-			assertThat(results).hasNumberOfSucceededTests(1).hasNumberOfAbortedTests(2);
+			assertThat(results).hasNumberOfSucceededTests(2).hasNumberOfAbortedTests(2);
+		}
+
+		@Test
+		@DisplayName("disables tests when any parameter matches any regex from the 'matches' array")
+		void interceptMatchesAny() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptMatchesAny",
+						String.class, String.class);
+
+			assertThat(results).hasNumberOfAbortedTests(2);
 		}
 
 		@Test
 		@DisplayName("disables tests if parameter matches regex from 'matches' or contains value from 'contains'")
 		void interceptMatchesAndContains() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptBoth", String.class,
-						String.class);
+					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptBoth", String.class);
 
 			assertThat(results).hasNumberOfSucceededTests(1).hasNumberOfAbortedTests(3);
 		}
@@ -77,21 +100,38 @@ class DisableIfParameterExtensionTests {
 	static class CorrectConfigTestCases {
 
 		@ParameterizedTest
-		@DisableIfParameter(contains = "1")
-		@ValueSource(ints = { 11, 21, 4 })
-		void interceptContains(int number) {
+		@DisableIfParameter(contains = "she")
+		@ValueSource(strings = { "Tread lightly, she is near", "Under the snow,", "Speak gently, she can hear",
+				"The daisies grow." })
+		void interceptContains(String line) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(matches = { "[0-9].*", ".*[0-9]" })
-		@ValueSource(strings = { "Ends with 9", "1 is the starting point", "Middle 5 doesn't count" })
+		@DisableIfParameter(contains = { "bright", "dust" })
+		@CsvSource(delimiter = ';', value = { "All her bright golden hair;Tarnished with rust,",
+				"She that was young and fair;Fallen to dust." })
+		void interceptContainsAny(String line, String line2) {
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter(matches = { ".*knew", ".*grew" })
+		@ValueSource(strings = { "Lily-like, white as snow,", "She hardly knew", "She was a woman, so",
+				"Sweetly she grew" })
 		void interceptMatches(String value) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(contains = { "hello", "bye" }, matches = ".*[0-9].*")
-		@CsvSource(value = { "ohellooo,world", "bl1b,foo", "bar,bar", "bar,byes" })
-		void interceptBoth(String value, String value2) {
+		@DisableIfParameter(matches = ".*hea?rt?.*")
+		@CsvSource(delimiter = ';', value = { "Coffin-board, heavy stone,;Lie on her breast,",
+				"I vex my heart alone;She is at rest." })
+		void interceptMatchesAny(String line, String line2) {
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter(contains = { "sonnet", "life" }, matches = "^.*(.+)\\1.*$")
+		@ValueSource(strings = { "Peace, Peace, she cannot hear", "Lyre or sonnet,", "All my life’s buried here,",
+				"Heap earth upon it." })
+		void interceptBoth(String value) {
 		}
 
 	}
