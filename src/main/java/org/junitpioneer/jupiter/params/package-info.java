@@ -1,11 +1,12 @@
 /**
- * Argument providers for a range of numbers.
- *
+ * Disable ParameterizedTest based on conditions.
  * <p>Check out the following types for details:
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.params.DisableIfDisplayName}</li>
+ *     <li>{@link org.junitpioneer.jupiter.params.DisableIfParameter}</li>
  * </ul>
  *
+ * Argument providers for a range of numbers.
  * <p>Check out the following types for details on providing values for parameterized tests:
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.params.ByteRange}</li>
