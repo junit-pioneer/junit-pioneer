@@ -33,22 +33,28 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 				.orElseThrow(() -> new ExtensionConfigurationException("@DisableIfParameter is missing"));
 		if (annotation.contains().length == 0 && annotation.matches().length == 0)
 			throw new ExtensionConfigurationException(
-				format("%s requires that either `contains` or `matches` is specified, but both are empty.",
+				format("%s requires that either `contains` or `matches` has at least one element, but both are empty.",
 					DisableIfParameter.class.getSimpleName()));
-		// Check if any argument contains any element from 'contains'
-		if (invocationContext
-				.getArguments()
-				.stream()
-				.anyMatch(arg -> Arrays.stream(annotation.contains()).anyMatch(arg.toString()::contains)))
-			throw new TestAbortedException("One or more arguments contained a value from the `contains` array.");
-		// Check if any argument matches any element from 'matches'
+		checkContains(invocationContext, annotation);
+		checkMatches(invocationContext, annotation);
+		invocation.proceed();
+	}
+
+	private void checkMatches(ReflectiveInvocationContext<Method> invocationContext, DisableIfParameter annotation) {
 		if (invocationContext
 				.getArguments()
 				.stream()
 				.anyMatch(arg -> Arrays.stream(annotation.matches()).anyMatch(arg.toString()::matches)))
 			throw new TestAbortedException(
 				"One or more arguments matched a regular expression from the `matches` array.");
-		invocation.proceed();
+	}
+
+	private void checkContains(ReflectiveInvocationContext<Method> invocationContext, DisableIfParameter annotation) {
+		if (invocationContext
+				.getArguments()
+				.stream()
+				.anyMatch(arg -> Arrays.stream(annotation.contains()).anyMatch(arg.toString()::contains)))
+			throw new TestAbortedException("One or more arguments contained a value from the `contains` array.");
 	}
 
 }

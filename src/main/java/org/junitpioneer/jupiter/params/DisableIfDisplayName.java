@@ -53,7 +53,7 @@ public @interface DisableIfDisplayName {
 	String[] contains() default {};
 
 	/**
-	 * Disable test cases whose display name matches the specified regular rxpression
+	 * Disable test cases whose display name matches the specified regular expression
 	 * (according to {@link String#matches(java.lang.String)}).
 	 *
 	 * @return test case display name regular expressions

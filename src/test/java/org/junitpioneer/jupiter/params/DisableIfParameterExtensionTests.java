@@ -128,7 +128,7 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(contains = { "sonnet", "life" }, matches = "^.*(.+)\\1.*$")
+		@DisableIfParameter(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
 		@ValueSource(strings = { "Peace, Peace, she cannot hear", "Lyre or sonnet,", "All my life’s buried here,",
 				"Heap earth upon it." })
 		void interceptBoth(String value) {
