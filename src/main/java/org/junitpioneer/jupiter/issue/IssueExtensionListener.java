@@ -28,7 +28,7 @@ import org.junit.platform.launcher.TestPlan;
  */
 public class IssueExtensionListener implements TestExecutionListener {
 
-	static final String KEY_ISSUE = "Issue";
+	public static final String REPORT_ENTRY_KEY = "Issue";
 
 	// Storage with all tests that belong to an issue <issueId, List<UniqueIdentifier>>
 	private final ConcurrentHashMap<String, List<String>> issueTestsStorage = new ConcurrentHashMap<>();
@@ -45,12 +45,11 @@ public class IssueExtensionListener implements TestExecutionListener {
 
 		// Check if the report entry is an issue id
 		Map<String, String> entryKeyValues = entry.getKeyValuePairs();
-		if (entryKeyValues.containsKey(KEY_ISSUE)) {
-			String issueId = entryKeyValues.get(KEY_ISSUE);
+		if (entryKeyValues.containsKey(REPORT_ENTRY_KEY)) {
+			String issueId = entryKeyValues.get(REPORT_ENTRY_KEY);
 
 			// Store that the current test belongs to annotated issue
-			issueTestsStorage.putIfAbsent(issueId, new ArrayList<>());
-			issueTestsStorage.get(issueId).add(testId);
+			issueTestsStorage.computeIfAbsent(issueId, __ -> new ArrayList<>()).add(testId);
 		}
 	}
 

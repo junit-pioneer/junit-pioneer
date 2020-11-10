@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.junitpioneer.jupiter.issue.IssueExtensionListener;
 
 /**
  * This class implements the functionality for the {@code @Issue} annotation.
@@ -22,12 +23,10 @@ import org.junit.platform.commons.support.AnnotationSupport;
  */
 class IssueExtension implements BeforeEachCallback {
 
-	static final String KEY = "Issue";
-
 	@Override
 	public void beforeEach(ExtensionContext context) {
 		String issueId = readIssueIdFromAnnotation(context);
-		context.publishReportEntry(KEY, issueId);
+		context.publishReportEntry(IssueExtensionListener.REPORT_ENTRY_KEY, issueId);
 	}
 
 	/**
