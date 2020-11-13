@@ -17,9 +17,9 @@ import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -76,10 +76,8 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 		}
 
 		// Pass results to all IssueProcessors
-		Iterator<IssueProcessor> processors = IssueProcessorProvider.getInstance().providers();
-
-		while (processors.hasNext()) {
-			processors.next().processTestResults(allIssuedTests);
+		for (IssueProcessor issueProcessor : ServiceLoader.load(IssueProcessor.class)) {
+			issueProcessor.processTestResults(allIssuedTests);
 		}
 	}
 
