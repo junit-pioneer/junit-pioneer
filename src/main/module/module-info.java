@@ -9,5 +9,5 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.params;
 
 	provides org.junit.platform.launcher.TestExecutionListener
-			with org.junitpioneer.jupiter.issue.IssueExtensionListener;
+			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
 }
