@@ -8,20 +8,19 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.issue;
+package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.IssuedTestCase;
 
-public final class IssuedTestCaseTests {
+public final class IssueTestCaseTests {
 
 	@Test
 	void testToString() {
-		String expected = "IssuedTestCase{uniqueName='myName', issueId='REQ-123', result='SUCCESSFUL'}";
+		String expected = "IssueTestCase{uniqueName='myName', result='SUCCESSFUL'}";
 
-		IssuedTestCase sut = new IssuedTestCase("myName", "REQ-123", "SUCCESSFUL");
+		IssueTestCase sut = new IssueTestCase("myName", "SUCCESSFUL");
 
 		String result = sut.toString();
 

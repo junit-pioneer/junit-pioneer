@@ -18,10 +18,10 @@ import java.util.List;
 public interface IssueProcessor {
 
 	/**
-	 * Processes results of `@Issue` annotated test cases, called {@link IssuedTestCase}.
+	 * Processes results of `@Issue` annotated test cases grouped by the issueId, called {@link TestedIssue}.
 	 *
-	 * @param allResults List of tests with their unique name, issueId and execution results.
+	 * @param allTestedIssues List of issues, each with a list of test cases annotated with their issueId
 	 */
-	void processTestResults(List<IssuedTestCase> allResults);
+	void processTestResults(List<TestedIssue> allTestedIssues);
 
 }

@@ -10,36 +10,38 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents the execution result of test method, which is annotated with {@link org.junitpioneer.jupiter.Issue}.
  *
  * In future java this could be a record.
  */
-public final class IssuedTestCase {
+public final class TestedIssue {
 
-	private final String uniqueName;
 	private final String issueId;
-	private final String result;
+	private final List<IssueTestCase> allTests;
 
 	/**
 	 * Constructor with all attributes.
 	 *
-	 * @param uniqueName Unique name of the test method
 	 * @param issueId Value of the {@link org.junitpioneer.jupiter.Issue} annotation
-	 * @param result Result of the execution
+	 * @param allTests List of all tests, annotated with the issueId
 	 */
-	public IssuedTestCase(String uniqueName, String issueId, String result) {
-		this.uniqueName = uniqueName;
+	public TestedIssue(String issueId, List<IssueTestCase> allTests) {
 		this.issueId = issueId;
-		this.result = result;
+		this.allTests = allTests;
 	}
 
 	/**
-	 * Returns the unique name of the test method.
-	 * @return Unique name of the test method
+	 * Constructor with all attributes.
+	 *
+	 * @param issueId Value of the {@link org.junitpioneer.jupiter.Issue} annotation
 	 */
-	public String getUniqueName() {
-		return uniqueName;
+	public TestedIssue(String issueId) {
+		this.issueId = issueId;
+		this.allTests = new ArrayList<>();
 	}
 
 	/**
@@ -51,18 +53,12 @@ public final class IssuedTestCase {
 	}
 
 	/**
-	 * Returns the result of the test methods execution.
+	 * Retrieves a list with all test cases related to this issue.
 	 *
-	 * @return Result of the test methods execution.
+	 * @return List of all test cases related to this issue
 	 */
-	public String getResult() {
-		return result;
-	}
-
-	@Override
-	public String toString() {
-		return "IssuedTestCase{" + "uniqueName='" + uniqueName + '\'' + ", issueId='" + issueId + '\'' + ", result='"
-				+ result + '\'' + '}';
+	public List<IssueTestCase> getAllTests() {
+		return allTests;
 	}
 
 }

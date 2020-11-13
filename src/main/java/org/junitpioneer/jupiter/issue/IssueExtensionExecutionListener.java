@@ -22,7 +22,8 @@ import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 import org.junitpioneer.jupiter.IssueProcessor;
-import org.junitpioneer.jupiter.IssuedTestCase;
+import org.junitpioneer.jupiter.IssueTestCase;
+import org.junitpioneer.jupiter.TestedIssue;
 
 /**
  * <p>This listener collects the names and results of all tests, which are annotated with the {@link org.junitpioneer.jupiter.Issue} annotation.
@@ -39,7 +40,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 	private final ConcurrentHashMap<String, String> testStatusStorage = new ConcurrentHashMap<>();
 
 	// Package private by purpose for testing
-	List<IssuedTestCase> allIssuedTests = new ArrayList<>();
+	ConcurrentHashMap<String, TestedIssue> allTestedIssues = new ConcurrentHashMap<>();
 
 	@Override
 	public void reportingEntryPublished(TestIdentifier testIdentifier, ReportEntry entry) {
@@ -73,13 +74,21 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 			allTests.forEach(testID -> {
 				String status = testStatusStorage.getOrDefault(testID, "UNKNOWN");
 
-				allIssuedTests.add(new IssuedTestCase(testID, issueId, status));
+				IssueTestCase testCase = new IssueTestCase(testID, status);
+
+				if (allTestedIssues.containsKey(issueId)) {
+					allTestedIssues.get(issueId).getAllTests().add(testCase);
+				} else {
+					TestedIssue testedIssue = new TestedIssue(issueId);
+					testedIssue.getAllTests().add(testCase);
+					allTestedIssues.put(issueId, testedIssue);
+				}
 			});
 		}
 
 		// Pass results to all IssueProcessors
 		for (IssueProcessor issueProcessor : ServiceLoader.load(IssueProcessor.class)) {
-			issueProcessor.processTestResults(allIssuedTests);
+			issueProcessor.processTestResults(new ArrayList<>(allTestedIssues.values()));
 		}
 	}
 
