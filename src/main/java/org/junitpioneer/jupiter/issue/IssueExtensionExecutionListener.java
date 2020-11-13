@@ -10,23 +10,23 @@
 
 package org.junitpioneer.jupiter.issue;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * <p>This listener collects the names and results of all tests, which are annotated with the {@link org.junitpioneer.jupiter.Issue} annotation.
  * After all tests are finished the results are provided to an {@link IssueProcessor} for further processing.</p>
  */
-public class IssueExtensionListener implements TestExecutionListener {
+public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 	public static final String REPORT_ENTRY_KEY = "Issue";
 
