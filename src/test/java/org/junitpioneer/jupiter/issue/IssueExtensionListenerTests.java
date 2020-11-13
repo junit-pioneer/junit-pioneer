@@ -10,6 +10,13 @@
 
 package org.junitpioneer.jupiter.issue;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junitpioneer.jupiter.issue.TestPlanHelper.createTestIdentifier;
+
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -17,13 +24,7 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junitpioneer.jupiter.issue.TestPlanHelper.createTestIdentifier;
+import org.junitpioneer.jupiter.IssuedTestCase;
 
 @Execution(ExecutionMode.SAME_THREAD)
 public class IssueExtensionListenerTests {

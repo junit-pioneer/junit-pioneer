@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.issue;
+package org.junitpioneer.jupiter;
 
 import java.util.List;
 

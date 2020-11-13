@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter.issue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.IssuedTestCase;
 
 public final class IssuedTestCaseTests {
 

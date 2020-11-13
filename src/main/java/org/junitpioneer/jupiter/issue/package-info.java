@@ -1,5 +1,5 @@
 /**
- * This package holds classes used by the issue extension as well as the TestExecutionListener.
+ * This package publish the {@link org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener}.
  */
 
 package org.junitpioneer.jupiter.issue;

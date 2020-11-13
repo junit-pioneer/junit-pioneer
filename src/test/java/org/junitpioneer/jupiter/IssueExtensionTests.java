@@ -10,13 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 @DisplayName("IssueTest extension ")
 public class IssueExtensionTests {
@@ -72,6 +72,7 @@ public class IssueExtensionTests {
 			void shouldRetrieveFromClass() {
 
 			}
+
 		}
 
 	}
