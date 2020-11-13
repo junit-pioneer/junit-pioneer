@@ -19,7 +19,7 @@ Then there is an API interface to further process the results, so users can plug
 
 === Annotating a test
 
-To show that a test relates to an issue just add the annotation and provide a value, e.g. a JIRA issue id, like in the following example:
+To show that a test relates to an issue just add the annotation and provide a value, e.g. a Jira issue id, like in the following example:
 
 [source,java]
 ----
@@ -30,11 +30,12 @@ void test() {
 }
 ----
 
-The `@Issue` annotation can be used on the method level only.
-This is done on purpose, so that the test class can contain tests which cover the professional requirements but also tests which only exist to ensure technical functionality / implementation details.
+The `@Issue` annotation can be used on the class and method level.
 
-The `@Issue` annotation can only be used once per method.
-This is done on purpose too, because a test case should only cover exactly one aspect of a method.
+WARNING: If you place it on class level, make sure to not mix tests which belong to the issue and those which don't!
+
+The `@Issue` annotation can only be used once per class or method.
+This is done on purpose, because a test case should only cover exactly one aspect of a method.
 
 === `IssueProcessor` API
 

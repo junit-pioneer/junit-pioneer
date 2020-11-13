@@ -10,12 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 @DisplayName("IssueTest extension ")
 public class IssueExtensionTests {
@@ -32,12 +33,22 @@ public class IssueExtensionTests {
 
 	@DisplayName("publishes the annotations value with key 'Issue'")
 	@Test
-	void publishAnnotationsValueWithKeyIssue() {
+	void publishAnnotationsValueWithKeyIssueFromMethodAnnotation() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(IssueExtensionTests.IssueDummyTestClass.class, "testIsAnnotated");
 		assertThat(results).hasNumberOfSucceededTests(1);
 
 		assertThat(results).hasSingleReportEntry().withKeyAndValue("Issue", "Req 11");
+	}
+
+	@DisplayName("publishes the class annotation with value 'Req-Class'")
+	@Test
+	void publishAnnotationsFromClass() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestClass(IssueExtensionTests.IssueDummyTestClass.NestedDummyTestClass.class);
+		assertThat(results).hasNumberOfSucceededTests(1);
+
+		assertThat(results).hasSingleReportEntry().withKeyAndValue("Issue", "Req-Class");
 	}
 
 	static class IssueDummyTestClass {
@@ -51,6 +62,16 @@ public class IssueExtensionTests {
 		@Test
 		void testIsAnnotated() {
 
+		}
+
+		@Issue("Req-Class")
+		@Nested
+		class NestedDummyTestClass {
+
+			@Test
+			void shouldRetrieveFromClass() {
+
+			}
 		}
 
 	}
