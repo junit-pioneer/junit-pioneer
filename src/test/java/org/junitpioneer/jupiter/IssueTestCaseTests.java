@@ -13,14 +13,14 @@ package org.junitpioneer.jupiter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.junit.platform.engine.TestExecutionResult.Status;
 
 public final class IssueTestCaseTests {
 
 	@Test
 	void testToString() {
 		String expected = "IssueTestCase{uniqueName='myName', result='SUCCESSFUL'}";
-
-		IssueTestCase sut = new IssueTestCase("myName", "SUCCESSFUL");
+		IssueTestCase sut = new IssueTestCase("myName", Status.SUCCESSFUL);
 
 		String result = sut.toString();
 

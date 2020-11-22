@@ -10,45 +10,36 @@
 
 package org.junitpioneer.jupiter;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Represents the execution result of test method, which is annotated with {@link org.junitpioneer.jupiter.Issue}.
  *
- * In future java this could be a record.
+ * Once Pioneer baselines against Java 17, this will be a record.
  */
-public final class TestedIssue {
+public final class IssueTestSuite {
 
 	private final String issueId;
-	private final List<IssueTestCase> allTests;
+	private final List<IssueTestCase> tests;
 
 	/**
 	 * Constructor with all attributes.
 	 *
 	 * @param issueId Value of the {@link org.junitpioneer.jupiter.Issue} annotation
-	 * @param allTests List of all tests, annotated with the issueId
+	 * @param tests List of all tests, annotated with the issueId
 	 */
-	public TestedIssue(String issueId, List<IssueTestCase> allTests) {
+	public IssueTestSuite(String issueId, List<IssueTestCase> tests) {
 		this.issueId = issueId;
-		this.allTests = allTests;
-	}
-
-	/**
-	 * Constructor with all attributes.
-	 *
-	 * @param issueId Value of the {@link org.junitpioneer.jupiter.Issue} annotation
-	 */
-	public TestedIssue(String issueId) {
-		this.issueId = issueId;
-		this.allTests = new ArrayList<>();
+		this.tests = Collections.unmodifiableList(tests);
 	}
 
 	/**
 	 * Returns the value of the {@link org.junitpioneer.jupiter.Issue} annotation.
+	 *
 	 * @return IssueId the test belongs to
 	 */
-	public String getIssueId() {
+	public String issueId() {
 		return issueId;
 	}
 
@@ -57,8 +48,8 @@ public final class TestedIssue {
 	 *
 	 * @return List of all test cases related to this issue
 	 */
-	public List<IssueTestCase> getAllTests() {
-		return allTests;
+	public List<IssueTestCase> tests() {
+		return tests;
 	}
 
 }

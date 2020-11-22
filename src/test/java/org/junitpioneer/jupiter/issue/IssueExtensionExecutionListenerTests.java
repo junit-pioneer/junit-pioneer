@@ -16,93 +16,83 @@ import static org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener.REP
 import static org.junitpioneer.jupiter.issue.TestPlanHelper.createTestIdentifier;
 
 import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.engine.TestExecutionResult.Status;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 import org.junitpioneer.jupiter.IssueTestCase;
-import org.junitpioneer.jupiter.TestedIssue;
+import org.junitpioneer.jupiter.IssueTestSuite;
 
 @Execution(ExecutionMode.SAME_THREAD)
 public class IssueExtensionExecutionListenerTests {
 
-	private final IssueExtensionExecutionListener sut = new IssueExtensionExecutionListener();
+	private final IssueExtensionExecutionListener executionListener = new IssueExtensionExecutionListener(true);
 	private final TestPlan testPlan = TestPlan.from(Collections.emptyList());
 
 	@Test
 	void noIssueTestCasesCreated() {
-		sut.testPlanExecutionStarted(testPlan);
-		sut.testPlanExecutionFinished(testPlan);
+		executionListener.testPlanExecutionStarted(testPlan);
+		executionListener.testPlanExecutionFinished(testPlan);
 
-		ConcurrentHashMap<String, TestedIssue> allIssuedTests = sut.allTestedIssues;
-		assertThat(allIssuedTests).isEmpty();
+		List<IssueTestSuite> allTests = executionListener.createIssueTestSuites();
+		assertThat(allTests).isEmpty();
 	}
 
 	@Test
 	void issueTestCasesCreated() {
-
 		ReportEntry successfulTestEntry = ReportEntry.from(REPORT_ENTRY_KEY, "successfulTest");
-
 		TestIdentifier successfulTest = createTestIdentifier("t1");
 		testPlan.add(successfulTest);
 
-		sut.testPlanExecutionStarted(testPlan);
-
-		sut.executionStarted(successfulTest);
-		sut.executionFinished(successfulTest, TestExecutionResult.successful());
-		sut.reportingEntryPublished(successfulTest, successfulTestEntry);
-
-		sut.testPlanExecutionFinished(testPlan);
+		executionListener.testPlanExecutionStarted(testPlan);
+		executionListener.executionStarted(successfulTest);
+		executionListener.executionFinished(successfulTest, TestExecutionResult.successful());
+		executionListener.reportingEntryPublished(successfulTest, successfulTestEntry);
+		executionListener.testPlanExecutionFinished(testPlan);
 
 		// Verify result
-		ConcurrentHashMap<String, TestedIssue> allIssuedTests = sut.allTestedIssues;
+		List<IssueTestSuite> allTests = executionListener.createIssueTestSuites();
+		assertThat(allTests.size()).isEqualTo(1);
 
-		assertThat(allIssuedTests.size()).isEqualTo(1);
+		IssueTestSuite issueTestSuite = allTests.get(0);
+		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("successfulTest"),
+			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(1));
 
-		TestedIssue testedIssue = allIssuedTests.get("successfulTest");
-
-		assertAll(() -> assertThat(testedIssue.getIssueId()).isEqualTo("successfulTest"),
-			() -> assertThat(testedIssue.getAllTests().size()).isEqualTo(1));
-
-		IssueTestCase testCase = testedIssue.getAllTests().get(0);
-
-		assertAll(() -> assertThat(testCase.getUniqueName()).isEqualTo("[test:t1]"),
-			() -> assertThat(testCase.getResult()).isEqualTo("SUCCESSFUL"));
+		IssueTestCase testCase = issueTestSuite.tests().get(0);
+		assertAll(() -> assertThat(testCase.testId()).isEqualTo("[test:t1]"),
+			() -> assertThat(testCase.result()).isEqualTo(Status.SUCCESSFUL));
 	}
 
 	@Test
 	void unknownTestResult() {
-		ReportEntry unknownResultTestEntry = ReportEntry.from(REPORT_ENTRY_KEY, "unknownResultTest");
+		ReportEntry unknownResultTestEntry = ReportEntry.from(REPORT_ENTRY_KEY, "abortedTest");
+		TestIdentifier abortedTest = createTestIdentifier("tu");
+		testPlan.add(abortedTest);
 
-		TestIdentifier unknownResultTest = createTestIdentifier("tu");
-		testPlan.add(unknownResultTest);
-
-		sut.testPlanExecutionStarted(testPlan);
-
-		sut.executionStarted(unknownResultTest);
-		sut.reportingEntryPublished(unknownResultTest, unknownResultTestEntry);
-
-		sut.testPlanExecutionFinished(testPlan);
+		executionListener.testPlanExecutionStarted(testPlan);
+		executionListener.executionStarted(abortedTest);
+		executionListener.executionFinished(abortedTest, TestExecutionResult.aborted(new RuntimeException()));
+		executionListener.reportingEntryPublished(abortedTest, unknownResultTestEntry);
+		executionListener.testPlanExecutionFinished(testPlan);
 
 		// Verify result
-		ConcurrentHashMap<String, TestedIssue> allIssuedTests = sut.allTestedIssues;
+		List<IssueTestSuite> allTests = executionListener.createIssueTestSuites();
+		assertThat(allTests.size()).isEqualTo(1);
 
-		assertThat(allIssuedTests.size()).isEqualTo(1);
+		IssueTestSuite issueTestSuite = allTests.get(0);
+		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("abortedTest"),
+			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(1));
 
-		TestedIssue testedIssue = allIssuedTests.get("unknownResultTest");
+		IssueTestCase testCase = issueTestSuite.tests().get(0);
 
-		assertAll(() -> assertThat(testedIssue.getIssueId()).isEqualTo("unknownResultTest"),
-			() -> assertThat(testedIssue.getAllTests().size()).isEqualTo(1));
-
-		IssueTestCase testCase = testedIssue.getAllTests().get(0);
-
-		assertAll(() -> assertThat(testCase.getUniqueName()).isEqualTo("[test:tu]"),
-			() -> assertThat(testCase.getResult()).isEqualTo("UNKNOWN"));
+		assertAll(() -> assertThat(testCase.testId()).isEqualTo("[test:tu]"),
+			() -> assertThat(testCase.result()).isEqualTo(Status.ABORTED));
 	}
 
 }

@@ -10,33 +10,39 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.Objects.requireNonNull;
+
+import org.junit.platform.engine.TestExecutionResult.Status;
+
 /**
  * Represents the execution result of test method, which is annotated with {@link Issue}.
  *
- * In future java this could be a record.
+ * Once Pioneer baselines against Java 17, this will be a record.
  */
 public final class IssueTestCase {
 
-	private final String uniqueName;
-	private final String result;
+	private static final String NO_RESULT_EXCEPTION_MESSAGE = "The test case result should never be null (Nicolai thinks). If you see this exception, he was wrong - please open an issue at https://github.com/junit-pioneer/junit-pioneer/issues/new/choose .";
+
+	private final String testId;
+	private final Status result;
 
 	/**
 	 * Constructor with all attributes.
 	 *
-	 * @param uniqueName Unique name of the test method
+	 * @param testId Unique name of the test method
 	 * @param result Result of the execution
 	 */
-	public IssueTestCase(String uniqueName, String result) {
-		this.uniqueName = uniqueName;
-		this.result = result;
+	public IssueTestCase(String testId, Status result) {
+		this.testId = requireNonNull(testId);
+		this.result = requireNonNull(result, NO_RESULT_EXCEPTION_MESSAGE);
 	}
 
 	/**
 	 * Returns the unique name of the test method.
 	 * @return Unique name of the test method
 	 */
-	public String getUniqueName() {
-		return uniqueName;
+	public String testId() {
+		return testId;
 	}
 
 	/**
@@ -44,13 +50,13 @@ public final class IssueTestCase {
 	 *
 	 * @return Result of the test methods execution.
 	 */
-	public String getResult() {
+	public Status result() {
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return "IssueTestCase{" + "uniqueName='" + uniqueName + '\'' + ", result='" + result + '\'' + '}';
+		return "IssueTestCase{" + "uniqueName='" + testId + '\'' + ", result='" + result + '\'' + '}';
 	}
 
 }

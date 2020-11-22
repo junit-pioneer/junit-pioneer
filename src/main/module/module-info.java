@@ -10,4 +10,5 @@ module org.junitpioneer {
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
+	uses org.junitpioneer.jupiter.IssueProcessor;
 }
