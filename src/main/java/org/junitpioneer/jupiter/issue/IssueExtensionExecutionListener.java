@@ -51,12 +51,6 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 		this.testCases = new ConcurrentHashMap<>();
 	}
 
-	// needed for tests to circumvent deactivation
-	IssueExtensionExecutionListener(boolean active) {
-		this.active = active;
-		this.testCases = new ConcurrentHashMap<>();
-	}
-
 	@Override
 	public void reportingEntryPublished(TestIdentifier testIdentifier, ReportEntry entry) {
 		if (!active)

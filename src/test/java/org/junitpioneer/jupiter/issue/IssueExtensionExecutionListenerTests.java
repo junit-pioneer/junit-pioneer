@@ -32,7 +32,7 @@ import org.junitpioneer.jupiter.IssueTestSuite;
 @Execution(ExecutionMode.SAME_THREAD)
 public class IssueExtensionExecutionListenerTests {
 
-	private final IssueExtensionExecutionListener executionListener = new IssueExtensionExecutionListener(true);
+	private final IssueExtensionExecutionListener executionListener = new IssueExtensionExecutionListener();
 	private final TestPlan testPlan = TestPlan.from(Collections.emptyList());
 
 	@Test
