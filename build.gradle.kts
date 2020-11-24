@@ -42,9 +42,9 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-commons")
+	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")

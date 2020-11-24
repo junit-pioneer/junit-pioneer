@@ -1,0 +1,65 @@
+:page-title: Issue Information
+:page-description: Extends JUnit Jupiter with `@Issue` to publish issue information.
+
+== Introduction
+
+The main reason developers write tests is to ensure the functionality of a requirement or to avoid technical problems.
+The `@Issue` annotation allows marking tests with a `String`, referencing a related issue (like a requirement, or a bugfix) of an issue-tracker (like Jira or Redmine).
+
+It's a JUnit Jupiter extension for showing that tests exist to cover a specific issue.
+
+== Usage
+
+The extension is divided into two parts:
+First there is an annotation to mark that a test belongs to a specific issue.
+
+The second part of the extension deals with publishing these results.
+The specified issue ID will always be published as a report entry - where this information will be visible, depends on the tool used to execute the tests.
+Then there is an API interface to further process the results, so users can plug in their own behavior, e.g. generating a report, sending mails, or marking the CI-build as failed.
+
+=== Annotating a test
+
+To show that a test relates to an issue just add the annotation and provide a value, e.g. a Jira issue id, like in the following example:
+
+[source,java]
+----
+@Issue("REQ-123")
+@Test
+void test() {
+	// One of the tests for the issue with the id "REQ-123"
+}
+----
+
+The `@Issue` annotation can be used on the class and method level.
+
+WARNING: If you place it on class level, make sure to not mix tests which belong to the issue and those which don't!
+
+The `@Issue` annotation can only be used once per class or method.
+This is done on purpose, because a test case should only cover exactly one aspect of a method.
+
+=== `IssueProcessor` API
+
+Pioneer tracks the results of tests which are annotated with the `@Issue` annotation, using an https://junit.org/junit5/docs/current/user-guide/#launcher-api-listeners-custom[ExecutionListener].
+After all tests are executed, their unique names, results, and the annotated value (called `issueID`) are provided through the `IssueProcessor` API.
+
+To use the information published this way, [a service implementation](https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html) of the `IssueProcessor` interface must be provided by the user.
+
+The following snippet shows a simple implementation of the interface that just prints out the received values:
+
+[source,java]
+----
+public class SimpleProcessor implements IssueProcessor {
+
+	@Override
+	public void processTestResults(
+			List<IssuedTestCase> allResults) {
+		for(IssuedTestCase test : allResults) {
+			System.out.println(test);
+		}
+	}
+
+}
+----
+
+NOTE: The implementing class must be registered to the Java ecosystem as a service.
+For further information about registering a service, please see the Java https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html[`ServiceLoader` documentation].
