@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,6 +76,10 @@ public @interface CartesianProductTest {
 
 		public Sets add(Object... entries) {
 			return addAll(Arrays.stream(entries));
+		}
+
+		public Sets addAll(Iterable<?> entries) {
+			return addAll(StreamSupport.stream(entries.spliterator(), false));
 		}
 
 		public Sets addAll(Collection<?> entries) {

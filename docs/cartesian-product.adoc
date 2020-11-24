@@ -125,7 +125,7 @@ If your tests require special inputs that `@CartesianValueSource` is not able to
 By default, this method must have the same name as the test method, but you can specify a different name with the `factory` annotation parameter.
 This method must return `CartesianProductTest.Sets`.
 `CartesianProductTest.Sets` is a helper class, specifically for creating sets for `@CartesianProductTest`.
-To create the test data, instantiate a `new CartesianProductTest.Sets()` then use the `add()` or `addAll()` methods to register the values for the parameters.
+To create the test data, instantiate a `new CartesianProductTest.Sets()` then use the methods `add()` (with varargs arguments) or `addAll()` (with `Iterable` or `Stream` argument) to register the values for the parameters.
 
 [source,java]
 ----
@@ -136,8 +136,8 @@ void nFold(String string, Class<?> clazz, TimeUnit unit) {
 
 static CartesianProductTest.Sets nFold() {
 	return new CartesianProductTest.Sets()
-		// with a `List<String> letters` (or any kind of
-		// `Collection` or a `Stream`, you can use `addAll`:
+		// e.g. with a `List<String> letters`,
+		// you can use `addAll`:
 		// .addAll(letters)
 		.add("Alpha", "Omega")
 		.add(Runnable.class, Cloneable.class, Predicate.class)
