@@ -10,10 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -38,8 +35,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+@Repeatable(DisableIfParameter.DisableIfParameters.class)
 @ExtendWith(DisableIfParameterExtension.class)
 public @interface DisableIfParameter {
+
+	String name() default "";
+
+	int index() default -1;
 
 	/**
 	 * Disable test cases whose parameter (converted to String with {@link Object#toString()})
@@ -49,8 +51,16 @@ public @interface DisableIfParameter {
 
 	/**
 	 * Disable test cases whose parameter (converted to String with {@link Object#toString()})
-	 * matches any of the specified regular expressions (according to {@link String#contains(CharSequence)}).
+	 * matches any of the specified regular expressions (according to {@link String#matches(String)}).
 	 */
 	String[] matches() default {};
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface DisableIfParameters {
+
+		DisableIfParameter[] value();
+
+	}
 
 }

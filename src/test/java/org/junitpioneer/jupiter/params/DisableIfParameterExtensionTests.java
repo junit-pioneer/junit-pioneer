@@ -87,12 +87,28 @@ class DisableIfParameterExtensionTests {
 	class MisconfigurationTests {
 
 		@Test
-		@DisplayName("throws an exception if both 'matches' and 'contains' is missing")
+		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfParameter")
 		void missingValues() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingValues", String.class);
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingInputs", String.class);
 
-			assertThat(results).hasNumberOfFailedTests(3);
+			assertThat(results)
+					.hasNumberOfFailedTests(3)
+					.withExceptions()
+					.allMatch(("DisableIfParameter requires that either `contains` or `matches` "
+							+ "has at least one element, but both are empty.")::equals);
+		}
+
+		@Test
+		@DisplayName("throws an exception if it can not find the parameter based on the given name for DisableIfParameter")
+		void missingParameter() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "badlyNamedParam", String.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(3)
+					.withExceptions()
+					.allMatch(s -> s.startsWith("Could not find parameter"));
 		}
 
 	}
@@ -100,35 +116,35 @@ class DisableIfParameterExtensionTests {
 	static class CorrectConfigTestCases {
 
 		@ParameterizedTest
-		@DisableIfParameter(contains = "she")
+		@DisableIfParameter(name = "line", contains = "she")
 		@ValueSource(strings = { "Tread lightly, she is near", "Under the snow,", "Speak gently, she can hear",
 				"The daisies grow." })
 		void interceptContains(String line) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(contains = { "bright", "dust" })
+		@DisableIfParameter(name = "line", contains = { "bright", "dust" })
 		@CsvSource(delimiter = ';', value = { "All her bright golden hair;Tarnished with rust,",
 				"She that was young and fair;Fallen to dust." })
 		void interceptContainsAny(String line, String line2) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(matches = { ".*knew", ".*grew" })
+		@DisableIfParameter(name = "value", matches = { ".*knew", ".*grew" })
 		@ValueSource(strings = { "Lily-like, white as snow,", "She hardly knew", "She was a woman, so",
 				"Sweetly she grew" })
 		void interceptMatches(String value) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(matches = ".*hea?rt?.*")
+		@DisableIfParameter(name = "line", matches = ".*hea?rt?.*")
 		@CsvSource(delimiter = ';', value = { "Coffin-board, heavy stone,;Lie on her breast,",
 				"I vex my heart alone;She is at rest." })
 		void interceptMatchesAny(String line, String line2) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
+		@DisableIfParameter(name = "value", contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
 		@ValueSource(strings = { "Peace, Peace, she cannot hear", "Lyre or sonnet,", "All my life’s buried here,",
 				"Heap earth upon it." })
 		void interceptBoth(String value) {
@@ -139,9 +155,15 @@ class DisableIfParameterExtensionTests {
 	static class BadConfigTestCases {
 
 		@ParameterizedTest
-		@DisableIfParameter
+		@DisableIfParameter(name = "value")
 		@ValueSource(strings = { "A", "B", "C" })
-		void missingValues(String value) {
+		void missingInputs(String value) {
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter(name = "missing", contains = { "A" })
+		@ValueSource(strings = { "A", "B", "C" })
+		void badlyNamedParam(String value) {
 		}
 
 	}
