@@ -14,6 +14,9 @@ import java.util.List;
 
 /**
  * This interfaces offers a method to process the results of `@Issue` annotated test cases.
+ *
+ * @since 1.1
+ * @see Issue
  */
 public interface IssueProcessor {
 

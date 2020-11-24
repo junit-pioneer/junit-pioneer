@@ -31,6 +31,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>{@code @Issue} can only be used once per method.
  * This is done on purpose because a test case should only cover exactly
  * one aspect of a method.</p>
+ *
+ * @since 1.1
+ * @see IssueProcessor
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
