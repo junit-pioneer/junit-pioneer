@@ -21,8 +21,8 @@ import org.junitpioneer.testkit.PioneerTestKit;
 @DisplayName("IssueTest extension ")
 public class IssueExtensionTests {
 
-	@DisplayName("publishes nothing, if method is not annotated")
 	@Test
+	@DisplayName("publishes nothing, if method is not annotated")
 	void publishNothingIfMethodIsNotAnnotated() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(IssueExtensionTests.IssueDummyTestClass.class, "testNoAnnotation");
@@ -31,8 +31,8 @@ public class IssueExtensionTests {
 		assertThat(results).hasNumberOfReportEntries(0);
 	}
 
-	@DisplayName("publishes the annotations value with key 'Issue'")
 	@Test
+	@DisplayName("publishes the annotations value with key 'Issue'")
 	void publishAnnotationsValueWithKeyIssueFromMethodAnnotation() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(IssueExtensionTests.IssueDummyTestClass.class, "testIsAnnotated");
@@ -41,8 +41,8 @@ public class IssueExtensionTests {
 		assertThat(results).hasSingleReportEntry().withKeyAndValue("Issue", "Req 11");
 	}
 
-	@DisplayName("publishes the class annotation with value 'Req-Class'")
 	@Test
+	@DisplayName("publishes the class annotation with value 'Req-Class'")
 	void publishAnnotationsFromClass() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestClass(IssueExtensionTests.IssueDummyTestClass.NestedDummyTestClass.class);
@@ -58,14 +58,14 @@ public class IssueExtensionTests {
 
 		}
 
-		@Issue("Req 11")
 		@Test
+		@Issue("Req 11")
 		void testIsAnnotated() {
 
 		}
 
-		@Issue("Req-Class")
 		@Nested
+		@Issue("Req-Class")
 		class NestedDummyTestClass {
 
 			@Test

@@ -14,6 +14,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.junit.platform.engine.TestExecutionResult.Status;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +62,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 		if (messages.containsKey(REPORT_ENTRY_KEY)) {
 			String issueId = messages.get(REPORT_ENTRY_KEY);
-			testCases.computeIfAbsent(testId, IssueTestCaseBuilder::new).setIssueId(issueId);
+			testCases.put(testId, new IssueTestCaseBuilder(testId).setIssueId(issueId));
 		}
 	}
 
@@ -72,8 +73,12 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 		if (testIdentifier.isTest()) {
 			String testId = testIdentifier.getUniqueId();
-			Status status = testExecutionResult.getStatus();
-			testCases.computeIfAbsent(testId, IssueTestCaseBuilder::new).setResult(status);
+			// this implicitly assumes that report entries are published before test execution finishes,
+			// which (a) makes sense and (b) allows us to only gather information on @Issue annotated tests
+			if (testCases.containsKey(testId)) {
+				Status result = testExecutionResult.getStatus();
+				testCases.get(testId).setResult(result);
+			}
 		}
 	}
 
@@ -92,7 +97,11 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 		//@formatter:off
 		List<IssueTestSuite> suites = testCases
 				.values().stream()
-				.collect(toMap(IssueTestCaseBuilder::getIssueId, Arrays::asList))
+				.collect(toMap(IssueTestCaseBuilder::getIssueId, builder -> new ArrayList<>(Arrays.asList(builder)),
+						(builders1, builders2) -> {
+							builders1.addAll(builders2);
+							return builders1;
+						}))
 				.entrySet().stream()
 				.map(issueIdWithTestCases -> new IssueTestSuite(
 						issueIdWithTestCases.getKey(),

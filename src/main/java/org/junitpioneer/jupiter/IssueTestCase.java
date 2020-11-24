@@ -12,6 +12,8 @@ package org.junitpioneer.jupiter;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Objects;
+
 import org.junit.platform.engine.TestExecutionResult.Status;
 
 /**
@@ -52,6 +54,21 @@ public final class IssueTestCase {
 	 */
 	public Status result() {
 		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof IssueTestCase))
+			return false;
+		IssueTestCase that = (IssueTestCase) o;
+		return testId.equals(that.testId) && result == that.result;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(testId);
 	}
 
 	@Override

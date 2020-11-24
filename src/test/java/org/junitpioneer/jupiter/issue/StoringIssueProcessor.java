@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter.issue;
 
+import static java.util.stream.Collectors.joining;
+
 import java.util.List;
 
 import org.junitpioneer.jupiter.IssueProcessor;
@@ -18,15 +20,24 @@ import org.junitpioneer.jupiter.IssueTestSuite;
 /**
  * Simple example service implementation for test usage of {@link IssueProcessor}.
  */
-public class ExampleIssueProcessor implements IssueProcessor {
+public class StoringIssueProcessor implements IssueProcessor {
+
+	private List<IssueTestSuite> issueTestSuites;
 
 	@Override
 	public void processTestResults(List<IssueTestSuite> issueTestSuites) {
+		this.issueTestSuites = issueTestSuites;
 
-		for (IssueTestSuite testSuite : issueTestSuites) {
-			System.out.println(testSuite.issueId());
-		}
+		String suitesString = issueTestSuites
+				.stream()
+				.map(suite -> suite.issueId() + "\n"
+						+ suite.tests().stream().map(Object::toString).collect(joining("\n\t", "\t", "\n")))
+				.collect(joining(""));
+		System.out.println(suitesString);
+	}
 
+	public List<IssueTestSuite> issueTestSuites() {
+		return issueTestSuites;
 	}
 
 }

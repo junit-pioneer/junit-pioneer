@@ -32,6 +32,8 @@ import org.junitpioneer.jupiter.IssueTestSuite;
 @Execution(ExecutionMode.SAME_THREAD)
 public class IssueExtensionExecutionListenerTests {
 
+	// when debugging, be aware that the service loader also created instances of the listener;
+	// we can't use it here, because the running Jupiter instance uses it to gather test information
 	private final IssueExtensionExecutionListener executionListener = new IssueExtensionExecutionListener();
 	private final TestPlan testPlan = TestPlan.from(Collections.emptyList());
 
@@ -46,14 +48,14 @@ public class IssueExtensionExecutionListenerTests {
 
 	@Test
 	void issueTestCasesCreated() {
-		ReportEntry successfulTestEntry = ReportEntry.from(REPORT_ENTRY_KEY, "successfulTest");
-		TestIdentifier successfulTest = createTestIdentifier("t1");
+		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
+		TestIdentifier successfulTest = createTestIdentifier("successful-test");
 		testPlan.add(successfulTest);
 
 		executionListener.testPlanExecutionStarted(testPlan);
+		executionListener.reportingEntryPublished(successfulTest, issueEntry);
 		executionListener.executionStarted(successfulTest);
 		executionListener.executionFinished(successfulTest, TestExecutionResult.successful());
-		executionListener.reportingEntryPublished(successfulTest, successfulTestEntry);
 		executionListener.testPlanExecutionFinished(testPlan);
 
 		// Verify result
@@ -61,24 +63,23 @@ public class IssueExtensionExecutionListenerTests {
 		assertThat(allTests.size()).isEqualTo(1);
 
 		IssueTestSuite issueTestSuite = allTests.get(0);
-		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("successfulTest"),
+		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("#123"),
 			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(1));
 
-		IssueTestCase testCase = issueTestSuite.tests().get(0);
-		assertAll(() -> assertThat(testCase.testId()).isEqualTo("[test:t1]"),
-			() -> assertThat(testCase.result()).isEqualTo(Status.SUCCESSFUL));
+		assertThat(issueTestSuite.tests())
+				.containsExactly(new IssueTestCase("[test:successful-test]", Status.SUCCESSFUL));
 	}
 
 	@Test
-	void unknownTestResult() {
-		ReportEntry unknownResultTestEntry = ReportEntry.from(REPORT_ENTRY_KEY, "abortedTest");
-		TestIdentifier abortedTest = createTestIdentifier("tu");
+	void abortedIssueTestCaseCreated() {
+		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
+		TestIdentifier abortedTest = createTestIdentifier("aborted-test");
 		testPlan.add(abortedTest);
 
 		executionListener.testPlanExecutionStarted(testPlan);
+		executionListener.reportingEntryPublished(abortedTest, issueEntry);
 		executionListener.executionStarted(abortedTest);
 		executionListener.executionFinished(abortedTest, TestExecutionResult.aborted(new RuntimeException()));
-		executionListener.reportingEntryPublished(abortedTest, unknownResultTestEntry);
 		executionListener.testPlanExecutionFinished(testPlan);
 
 		// Verify result
@@ -86,13 +87,42 @@ public class IssueExtensionExecutionListenerTests {
 		assertThat(allTests.size()).isEqualTo(1);
 
 		IssueTestSuite issueTestSuite = allTests.get(0);
-		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("abortedTest"),
+		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("#123"),
 			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(1));
 
 		IssueTestCase testCase = issueTestSuite.tests().get(0);
 
-		assertAll(() -> assertThat(testCase.testId()).isEqualTo("[test:tu]"),
-			() -> assertThat(testCase.result()).isEqualTo(Status.ABORTED));
+		assertThat(issueTestSuite.tests()).containsExactly(new IssueTestCase("[test:aborted-test]", Status.ABORTED));
+	}
+
+	@Test
+	void multipleIssueTestCasesCreated() {
+		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
+		TestIdentifier successfulTest = createTestIdentifier("successful-test");
+		testPlan.add(successfulTest);
+		TestIdentifier abortedTest = createTestIdentifier("aborted-test");
+		testPlan.add(abortedTest);
+
+		executionListener.testPlanExecutionStarted(testPlan);
+		executionListener.reportingEntryPublished(successfulTest, issueEntry);
+		executionListener.executionStarted(successfulTest);
+		executionListener.executionFinished(successfulTest, TestExecutionResult.successful());
+		executionListener.reportingEntryPublished(abortedTest, issueEntry);
+		executionListener.executionStarted(abortedTest);
+		executionListener.executionFinished(abortedTest, TestExecutionResult.aborted(new RuntimeException()));
+		executionListener.testPlanExecutionFinished(testPlan);
+
+		// Verify result
+		List<IssueTestSuite> allTests = executionListener.createIssueTestSuites();
+		assertThat(allTests.size()).isEqualTo(1);
+
+		IssueTestSuite issueTestSuite = allTests.get(0);
+		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("#123"),
+			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(2));
+
+		assertThat(issueTestSuite.tests())
+				.containsExactlyInAnyOrder(new IssueTestCase("[test:successful-test]", Status.SUCCESSFUL),
+					new IssueTestCase("[test:aborted-test]", Status.ABORTED));
 	}
 
 }

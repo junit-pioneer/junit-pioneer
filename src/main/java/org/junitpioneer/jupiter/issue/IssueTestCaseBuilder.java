@@ -32,8 +32,9 @@ class IssueTestCaseBuilder {
 		return issueId;
 	}
 
-	public void setIssueId(String issueId) {
+	public IssueTestCaseBuilder setIssueId(String issueId) {
 		this.issueId = issueId;
+		return this;
 	}
 
 	public IssueTestCase build() {

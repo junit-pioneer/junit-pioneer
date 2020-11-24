@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents the execution result of test method, which is annotated with {@link org.junitpioneer.jupiter.Issue}.
@@ -50,6 +51,26 @@ public final class IssueTestSuite {
 	 */
 	public List<IssueTestCase> tests() {
 		return tests;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof IssueTestSuite))
+			return false;
+		IssueTestSuite that = (IssueTestSuite) o;
+		return issueId.equals(that.issueId) && tests.equals(that.tests);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(issueId);
+	}
+
+	@Override
+	public String toString() {
+		return "IssueTestSuite{" + "issueId='" + issueId + '\'' + ", tests=" + tests + '}';
 	}
 
 }
