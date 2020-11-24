@@ -108,7 +108,7 @@ The least we can do is to thank them and list some of their accomplishments here
 
 * [Allon Murienik](https://github.com/mureinik) contributed [the range sources](https://junit-pioneer.org/docs/range-sources/) (#44 / #123)
 * [Bradford Hovinen](https://github.com/hovinen) improved the execution of the EnvironmentVariableUtils on different OS (#287 / #288)
-* [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133), further improved it as well as the environment variable extension (#180 / #248), and helped with build infrastructure (e.g. #269)
+* [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133) and further improved it, also worked on the environment variable extension (#180 / #248), the Cartesian product extension (#358 / #372), and helped with build infrastructure (e.g. #269)
 * [David Walluck](https://github.com/dwalluck) introduced JUnit 5 BOM (#343 / #346)
 * [Dirk Witzel](https://github.com/NPException) improved the documentation (#149 / #271)
 * [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
