@@ -84,6 +84,10 @@ In lexicographic order, these are:
 	<dt>Matthias Bünger aka <a href="https://github.com/Bukama">Bukama</a></dt>
 	<dd>(Always tries to become a better) Java developer, loves testing and reads <a href="https://twitter.com/bukamabish">tweets</a>.
 		Became a maintainer in April 2020 after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
+	<dt>Mihály Verhás aka <a href="https://github.com/Michael1993">Michael1993</a></dt>
+	<dd>Not so witty, not so pretty, not really mean, not really cool bean.
+		A Hungarian Java developer who spends more time on Twitch than recommended by his doctors and used creative and diligent contributions to fool everyone into believing he is a decent enough guy to get promoted to maintainer (in November 2020).
+		</dd>
 	<dt>Nicolai Parlog aka <a href="https://github.com/nipafx">nipafx</a></dt>
 	<dd>Java enthusiast with a passion for learning and sharing.
 		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://nipafx.dev">nipafx.dev</a>.
