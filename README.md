@@ -83,10 +83,10 @@ In lexicographic order, these are:
 <dl>
 	<dt>Matthias Bünger aka <a href="https://github.com/Bukama">Bukama</a></dt>
 	<dd>(Always tries to become a better) Java developer, loves testing and reads <a href="https://twitter.com/bukamabish">tweets</a>.
-		Became a maintainer in April 2020, after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
-	<dt>Nicolai Parlog aka <a href="https://github.com/nicolaiparlog">nicolaiparlog</a></dt>
+		Became a maintainer in April 2020 after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
+	<dt>Nicolai Parlog aka <a href="https://github.com/nipafx">nipafx</a></dt>
 	<dd>Java enthusiast with a passion for learning and sharing.
-		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://codefx.org">codefx.org</a>.
+		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://nipafx.dev">nipafx.dev</a>.
 		That aside, he's best known for his head decor.
 		He co-founded the project in November 2016 and has maintained it ever since (although often very negligently).</dd>
 	<dt>Simon Schrottner aka <a href="https://github.com/aepfli">aepfli</a></dt>
