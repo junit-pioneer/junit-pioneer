@@ -38,7 +38,7 @@ Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
 @CartesianValueSource(ints = { 1, 2 })
 @CartesianValueSource(ints = { 3, 4 })
 void myCartesianTestMethod(int x, int y) {
-    // passing test code
+	// passing test code
 }
 ----
 
@@ -61,7 +61,7 @@ The test will try every combination of its elements.
 ----
 @CartesianProductTest({ "0", "1" })
 void threeBits(String a, String b, String c) {
-    // passing test code
+	// passing test code
 }
 ----
 
@@ -94,7 +94,7 @@ The test will try every combination those values can have.
 @CartesianValueSource(ints = { 1, 2, 4 })
 @CartesianValueSource(strings = { "A", "B" })
 void testIntChars(int number, String character) {
-    // passing test code
+	// passing test code
 }
 ----
 
@@ -131,14 +131,14 @@ To create the test data, instantiate a `new CartesianProductTest.Sets()` then us
 ----
 @CartesianProductTest
 void nFold(String string, Class<?> clazz, TimeUnit unit) {
-    // passing test code
+	// passing test code
 }
 
 static CartesianProductTest.Sets nFold() {
-    return new CartesianProductTest.Sets()
-        .add("Alpha", "Omega")
-        .add(Runnable.class, Cloneable.class, Predicate.class)
-        .add(TimeUnit.DAYS, TimeUnit.HOURS);
+	return new CartesianProductTest.Sets()
+		.add("Alpha", "Omega")
+		.add(Runnable.class, Cloneable.class, Predicate.class)
+		.add(TimeUnit.DAYS, TimeUnit.HOURS);
 }
 ----
 
@@ -172,18 +172,18 @@ Remember, you can reuse the same argument provider method, by explicitly passing
 ----
 @CartesianProductTest(factory = "provideArguments")
 void testNeedingArguments(String string, int i) {
-    // passing test code
+	// passing test code
 }
 
 @CartesianProductTest(factory = "provideArguments")
 void testNeedingSameArguments(String string, int i) {
-    // different passing test code
+	// different passing test code
 }
 
 static CartesianProductTest.Sets provideArguments() {
-    return new CartesianProductTest.Sets()
-        .add("Mercury", "Earth", "Venus")
-        .add(1, 12, 144);
+	return new CartesianProductTest.Sets()
+		.add("Mercury", "Earth", "Venus")
+		.add(1, 12, 144);
 }
 ----
 
@@ -209,34 +209,34 @@ Examples of badly configured tests/static factory method:
 ----
 @CartesianProductTest(factory = "resolveParameters")
 void tooFewParameters(String string, int i, boolean b) {
-    // fails because the boolean parameter is not resolved
+	// fails because the boolean parameter is not resolved
 }
 
 @CartesianProductTest(factory = "resolveParameters")
 void tooManyParameters(String string) {
-    // fails because we try to supply a non-existent integer parameter
+	// fails because we try to supply a non-existent integer parameter
 }
 
 @CartesianProductTest(factory = "resolveParameters")
 void wrongOrderParameters(int i, String string) {
-    // fails because the static factory method declared parameter sets in the wrong order
+	// fails because the static factory method declared parameter sets in the wrong order
 }
 
 @CartesianProductTest(factory = "resolveTestReporterParam")
 void conflictingParameters(String string, TestReporter info) {
-    // fails because both the factory method and JUnit tries to inject TestReporter
+	// fails because both the factory method and JUnit tries to inject TestReporter
 }
 
 static CartesianProductTest.Sets resolveParameters() {
-    return new CartesianProductTest.Sets()
-        .add("A", "B", "C")
-        .add(1, 2, 3);
+	return new CartesianProductTest.Sets()
+		.add("A", "B", "C")
+		.add(1, 2, 3);
 }
 
 static CartesianProductTest.Sets resolveTestReporterParam() {
-    return new CartesianProductTest.Sets()
-        .add("A", "B", "C")
-        .add(new MyTestReporter()); // in this case MyTestReporter implements TestReporter
+	return new CartesianProductTest.Sets()
+		.add("A", "B", "C")
+		.add(new MyTestReporter()); // in this case MyTestReporter implements TestReporter
 }
 ----
 
@@ -251,7 +251,7 @@ For example:
 @CartesianProductTest(value = {"0", "1"}, name = "{index} => first bit: {0} second bit: {1}")
 @DisplayName("Basic bit test")
 void testWithCustomDisplayName(String a, String b) {
-    // passing test code
+	// passing test code
 }
 ----
 
