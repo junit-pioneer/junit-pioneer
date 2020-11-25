@@ -42,9 +42,9 @@ This is done on purpose, because a test case should only cover exactly one aspec
 Pioneer tracks the results of tests which are annotated with the `@Issue` annotation, using an https://junit.org/junit5/docs/current/user-guide/#launcher-api-listeners-custom[ExecutionListener].
 After all tests are executed, their unique names, results, and the annotated value (called `issueID`) are provided through the `IssueProcessor` API.
 
-To use the information published this way, [a service implementation](https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html) of the `IssueProcessor` interface must be provided by the user.
+To use the information published this way, https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html[a service implementation] of the `IssueProcessor` interface must be provided by the user.
 
-The following snippet shows a simple implementation of the interface that just prints out the received values:
+The following snippet shows a simple implementation of the interface that just prints out the `issueID` of received values:
 
 [source,java]
 ----
@@ -52,9 +52,9 @@ public class SimpleProcessor implements IssueProcessor {
 
 	@Override
 	public void processTestResults(
-			List<IssuedTestCase> allResults) {
-		for(IssuedTestCase test : allResults) {
-			System.out.println(test);
+			List<IssueTestSuite> allResults) {
+		for(IssueTestSuite testSuite : allResults) {
+			System.out.println(testSuite.issueId());
 		}
 	}
 
