@@ -45,6 +45,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>@CartesianProductTest</code></a>.
  * </p>
  * @see org.junitpioneer.jupiter.CartesianValueSource
+ *
+ * @since 1.0.0
  */
 @TestTemplate
 @ExtendWith(CartesianProductTestExtension.class)

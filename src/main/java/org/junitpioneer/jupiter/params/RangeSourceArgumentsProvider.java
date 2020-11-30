@@ -11,11 +11,9 @@
 package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.Consumer;
+import java.lang.annotation.Repeatable;
+import java.lang.reflect.AnnotatedElement;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -24,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
 
 /**
  * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.
@@ -42,7 +41,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
-class RangeSourceArgumentsProvider implements ArgumentsProvider, Consumer<Annotation> {
+class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation> {
 
 	private Annotation argumentsSource;
 
@@ -61,15 +60,15 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, Consumer<Annota
 
 	private void initArgumentsSource(ExtensionContext context) {
 		// since it's a method annotation, the element will always be present
-		List<Annotation> argumentsSources = context
-				.getElement()
-				.map(method -> Arrays
-						.stream(method.getAnnotations())
-						.filter(annotations -> Arrays
-								.stream(annotations.annotationType().getAnnotationsByType(ArgumentsSource.class))
-								.anyMatch(annotation -> getClass().equals(annotation.value())))
-						.collect(Collectors.toList()))
-				.orElseThrow(IllegalStateException::new);
+		AnnotatedElement element = context.getElement().orElseThrow(IllegalStateException::new);
+
+		verifyNoContainerAnnotationIsPresent(element);
+		List<Annotation> argumentsSources = Stream
+				.of(element.getAnnotations())
+				.filter(annotations -> Arrays
+						.stream(annotations.annotationType().getAnnotationsByType(ArgumentsSource.class))
+						.anyMatch(annotation -> getClass().equals(annotation.value())))
+				.collect(Collectors.toList());
 
 		if (argumentsSources.size() != 1) {
 			String message = String
@@ -79,6 +78,26 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, Consumer<Annota
 		}
 
 		argumentsSource = argumentsSources.get(0);
+	}
+
+	private void verifyNoContainerAnnotationIsPresent(AnnotatedElement element) {
+		if (Stream.of(element.getAnnotations()).anyMatch(this::isContainerAnnotation))
+			throw new IllegalArgumentException(
+				"Range source annotation should not be repeated for @ParameterizedTest.");
+	}
+
+	private boolean isContainerAnnotation(Annotation annotation) {
+		// See https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6.3
+		return Stream
+				.of(annotation.annotationType().getMethods())
+				.anyMatch(method -> method.getName().equals("value") && method.getReturnType().isArray()
+						&& method.getReturnType().getComponentType().isAnnotation()
+						&& declaresContainer(method.getReturnType().getComponentType(), annotation));
+	}
+
+	private static boolean declaresContainer(Class<?> componentType, Annotation annotation) {
+		Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
+		return repeatable != null && repeatable.value().equals(annotation.annotationType());
 	}
 
 	private Stream<?> asStream(Range<?> r) {

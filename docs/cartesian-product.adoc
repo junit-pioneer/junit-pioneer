@@ -24,21 +24,23 @@ The extension takes the test data parameter values and runs the test for every p
 
 You can supply test parameters to `@CartesianProductTest` in multiple ways.
 
- - The annotation can have a `String[]` value (see <<Supplying CartesianProductTest with a `String[]`>>)
+ - the annotation can have a `String[]` value (see <<Supplying CartesianProductTest with a `String[]`>>)
  - the test method can be annotated with `@CartesianValueSource` or range source annotations (see <<Annotating your test method>>)
  - the test class can have a static factory method providing the arguments (see <<Writing a static factory method for the parameters>>)
 
 Specifying more than one kind of parameter source (e.g.: both annotating your test method and having a static factory) does not work and will throw an `ExtensionConfigurationException`.
 
 Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
-```java
+
+[source,java]
+----
 @CartesianProductTest
 @CartesianValueSource(ints = { 1, 2 })
 @CartesianValueSource(ints = { 3, 4 })
 void myCartesianTestMethod(int x, int y) {
-    // passing test code
+	// passing test code
 }
-```
+----
 
 `@CartesianProductTest` works with parameters injected by JUnit automatically (e.g.: `TestReporter`).
 https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection::[You can read about auto-injected parameters here.]
@@ -55,12 +57,13 @@ If all your test parameters are strings, you can supply all input parameters sim
 This value is the input for all parameters.
 The test will try every combination of its elements.
 
-```java
+[source,java]
+----
 @CartesianProductTest({ "0", "1" })
 void threeBits(String a, String b, String c) {
-    // passing test code
+	// passing test code
 }
-```
+----
 
 The test `threeBits` is executed exactly eight times, because all three input parameters can have the values "0" or "1".
 `@CartesianProductTest` tests for all input combinations, that's `2 × 2 × 2`, so eight tests in total.
@@ -84,14 +87,15 @@ If you don't only supply string values to your test method like in the example a
 `@CartesianValueSource` is used to define the possible inputs of a single test parameter - as annotations are listed top-to-bottom, they provide parameter values left-to-right.
 The test will try every combination those values can have.
 
-```java
+[source,java]
+----
 @CartesianProductTest
 @CartesianValueSource(ints = { 1, 2, 4 })
 @CartesianValueSource(strings = { "A", "B" })
 void testIntChars(int number, String character) {
-    // passing test code
+	// passing test code
 }
-```
+----
 
 This annotation might look familiar - it mimics JUnits `@ValueSource`, except `@CartesianValueSource` is repeatable.
 It also does NOT work with `@ParameterizedTest`.
@@ -116,16 +120,17 @@ To demonstrate with a table:
 Alternatively, you can annotate your test method with link:range-sources.adoc[range source annotations].
 For _this purpose only_, range sources are repeatable.
 When you annotate your `@CartesianProductTest` with a range source, you specify the inputs to a single test parameter.
-This is not like `@ParameterizedTest` where you have to define all inputs in a single `@ArgumentsSource`.
+This is _not_ like `@ParameterizedTest` where you have to define all inputs in a single `@ArgumentsSource`.
 
-```java
+[source,java]
+----
 @CartesianProductTest
 @ShortRangeSource(from = 1, to = 3, step = 1)
 @LongRangeSource(from = 0L, to = 2L, step = 1, closed = true)
 void testShortAndLong(short s, long l) {
-    // passing test code
+	// passing test code
 }
-```
+----
 
 The test `testShortAndLong` is executed exactly six times.
 The first parameter can have any of the two values `1`, `2`.
@@ -153,19 +158,20 @@ This method must return `CartesianProductTest.Sets`.
 `CartesianProductTest.Sets` is a helper class, specifically for creating sets for `@CartesianProductTest`.
 To create the test data, instantiate a `new CartesianProductTest.Sets()` then use the `add()` method to register the values for the parameters.
 
-```java
+[source,java]
+----
 @CartesianProductTest
 void nFold(String string, Class<?> clazz, TimeUnit unit) {
-    // passing test code
+	// passing test code
 }
 
 static CartesianProductTest.Sets nFold() {
-    return new CartesianProductTest.Sets()
-        .add("Alpha", "Omega")
-        .add(Runnable.class, Cloneable.class, Predicate.class)
-        .add(TimeUnit.DAYS, TimeUnit.HOURS);
+	return new CartesianProductTest.Sets()
+		.add("Alpha", "Omega")
+		.add(Runnable.class, Cloneable.class, Predicate.class)
+		.add(TimeUnit.DAYS, TimeUnit.HOURS);
 }
-```
+----
 
 The test `nFold` is executed exactly twelve times.
 The first parameter can have any of the two values `"Alpha"` or `"Omega"`.
@@ -192,24 +198,24 @@ To demonstrate with a table:
 
 Remember, you can reuse the same argument provider method, by explicitly passing its name to `@CartesianProductTest`'s `factory` attribute.
 
-```java
-
+[source,java]
+----
 @CartesianProductTest(factory = "provideArguments")
 void testNeedingArguments(String string, int i) {
-    // passing test code
+	// passing test code
 }
 
 @CartesianProductTest(factory = "provideArguments")
 void testNeedingSameArguments(String string, int i) {
-    // different passing test code
+	// different passing test code
 }
 
 static CartesianProductTest.Sets provideArguments() {
-    return new CartesianProductTest.Sets()
-        .add("Mercury", "Earth", "Venus")
-        .add(1, 12, 144);
+	return new CartesianProductTest.Sets()
+		.add("Mercury", "Earth", "Venus")
+		.add(1, 12, 144);
 }
-```
+----
 
 === Conditions for the static factory method
 
@@ -228,39 +234,41 @@ If you register too few, too many, or conflicting parameters, you will get an ht
 "Conflicting parameters" means your test method has a parameter that should be injected by JUnit (e.g.: `TestReporter`) but you also try to inject it.
 
 Examples of badly configured tests/static factory method:
-```java
+
+[source,java]
+----
 @CartesianProductTest(factory = "resolveParameters")
 void tooFewParameters(String string, int i, boolean b) {
-    // fails because the boolean parameter is not resolved
+	// fails because the boolean parameter is not resolved
 }
 
 @CartesianProductTest(factory = "resolveParameters")
 void tooManyParameters(String string) {
-    // fails because we try to supply a non-existent integer parameter
+	// fails because we try to supply a non-existent integer parameter
 }
 
 @CartesianProductTest(factory = "resolveParameters")
 void wrongOrderParameters(int i, String string) {
-    // fails because the static factory method declared parameter sets in the wrong order
+	// fails because the static factory method declared parameter sets in the wrong order
 }
 
 @CartesianProductTest(factory = "resolveTestReporterParam")
 void conflictingParameters(String string, TestReporter info) {
-    // fails because both the factory method and JUnit tries to inject TestReporter
+	// fails because both the factory method and JUnit tries to inject TestReporter
 }
 
 static CartesianProductTest.Sets resolveParameters() {
-    return new CartesianProductTest.Sets()
-        .add("A", "B", "C")
-        .add(1, 2, 3);
+	return new CartesianProductTest.Sets()
+		.add("A", "B", "C")
+		.add(1, 2, 3);
 }
 
 static CartesianProductTest.Sets resolveTestReporterParam() {
-    return new CartesianProductTest.Sets()
-        .add("A", "B", "C")
-        .add(new MyTestReporter()); // in this case MyTestReporter implements TestReporter
+	return new CartesianProductTest.Sets()
+		.add("A", "B", "C")
+		.add(new MyTestReporter()); // in this case MyTestReporter implements TestReporter
 }
-```
+----
 
 == Customizing Display Names
 
@@ -268,22 +276,25 @@ By default, the display name of a CartesianProductTest invocation contains the i
 You can customize invocation display names via the `name` attribute of the `@CartesianProductTest` annotation.
 For example:
 
-```java
+[source,java]
+----
 @CartesianProductTest(value = {"0", "1"}, name = "{index} => first bit: {0} second bit: {1}")
 @DisplayName("Basic bit test")
 void testWithCustomDisplayName(String a, String b) {
-    // passing test code
+	// passing test code
 }
-```
+----
 
 When executing the above test, you should see output similar to the following:
-```
+
+[source]
+----
 Basic bit test
 ├─ 1 => first bit: 0 second bit: 0
 ├─ 2 => first bit: 0 second bit: 1
 ├─ 3 => first bit: 1 second bit: 0
 └─ 4 => first bit: 1 second bit: 1
-```
+----
 
 Please note that name is a MessageFormat pattern.
 A single quote (') needs to be represented as a doubled single quote ('') in order to be displayed.

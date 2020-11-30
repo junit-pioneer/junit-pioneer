@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -139,7 +140,8 @@ class PioneerAnnotationUtils {
 	private static Stream<Annotation> flatten(Annotation annotation) {
 		try {
 			Method value = annotation.annotationType().getDeclaredMethod("value");
-			if (value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()) {
+			if (value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
+					&& declaresContainer(value.getReturnType().getComponentType(), annotation)) {
 				Annotation[] invoke = (Annotation[]) value.invoke(annotation);
 				return Stream.of(invoke).flatMap(PioneerAnnotationUtils::flatten);
 			} else {
@@ -152,6 +154,11 @@ class PioneerAnnotationUtils {
 		catch (IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException("Failed to flatten annotation stream.", e); //NOSONAR
 		}
+	}
+
+	private static boolean declaresContainer(Class<?> componentType, Annotation annotation) {
+		Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
+		return repeatable != null && repeatable.value().equals(annotation.annotationType());
 	}
 
 	static <A extends Annotation> Stream<A> findAnnotations(ExtensionContext context, Class<A> annotationType,

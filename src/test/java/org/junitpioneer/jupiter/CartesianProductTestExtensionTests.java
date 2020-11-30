@@ -29,6 +29,7 @@ import org.junitpioneer.jupiter.params.ByteRangeSource;
 import org.junitpioneer.jupiter.params.DoubleRangeSource;
 import org.junitpioneer.jupiter.params.FloatRangeSource;
 import org.junitpioneer.jupiter.params.IntRangeSource;
+import org.junitpioneer.jupiter.params.IntRangeSource.IntRangeSources;
 import org.junitpioneer.jupiter.params.LongRangeSource;
 import org.junitpioneer.jupiter.params.ShortRangeSource;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -159,6 +160,34 @@ public class CartesianProductTestExtensionTests {
 					.hasNumberOfSucceededTests(8)
 					.hasNumberOfReportEntries(8)
 					.withValues("1,2", "1,4", "2,2", "2,4", "3,2", "3,4", "4,2", "4,4");
+		}
+
+		@Test
+		@DisplayName("works with @IntRangeSource if it is in a container annotation")
+		void intRangeSourceInContainer() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "containerIntSource",
+						int.class, int.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(6)
+					.hasNumberOfSucceededTests(6)
+					.hasNumberOfReportEntries(6)
+					.withValues("12", "13", "22", "23", "32", "33");
+		}
+
+		@Test
+		@DisplayName("works with range source and @CartesianValueSource combined")
+		void cartesianValueSourceWithRangeSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "cartesianValueSource",
+						int.class, int.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(8)
+					.hasNumberOfSucceededTests(8)
+					.hasNumberOfReportEntries(8)
+					.withValues("0,2", "0,4", "1,2", "1,4", "2,2", "2,4", "3,2", "3,4");
 		}
 
 		@Test
@@ -684,6 +713,20 @@ public class CartesianProductTestExtensionTests {
 		@IntRangeSource(from = 0, to = 4)
 		@ValueSource(ints = { 2, 4 })
 		void valueSource(int i, int j) {
+		}
+
+		@CartesianProductTest
+		@IntRangeSources({ @IntRangeSource(from = 1, to = 3, closed = true),
+				@IntRangeSource(from = 2, to = 3, closed = true) })
+		@ReportEntry("{0}{1}")
+		void containerIntSource(int i, int j) {
+		}
+
+		@CartesianProductTest
+		@IntRangeSource(from = 0, to = 4)
+		@CartesianValueSource(ints = { 2, 4 })
+		@ReportEntry("{0},{1}")
+		void cartesianValueSource(int i, int j) {
 		}
 
 		@CartesianProductTest

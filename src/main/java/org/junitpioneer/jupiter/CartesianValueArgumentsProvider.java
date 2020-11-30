@@ -14,7 +14,6 @@ import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.Array;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -27,7 +26,7 @@ import org.junit.platform.commons.PreconditionViolationException;
  * This is basically a copy of ValueSourceArgumentsProvider,
  * except it does NOT support {@code @ParameterizedTest}.
  */
-class CartesianValueArgumentsProvider implements Consumer<CartesianValueSource>, ArgumentsProvider {
+class CartesianValueArgumentsProvider implements CartesianAnnotationConsumer<CartesianValueSource>, ArgumentsProvider {
 
 	private Object[] arguments;
 
@@ -35,7 +34,8 @@ class CartesianValueArgumentsProvider implements Consumer<CartesianValueSource>,
 	public void accept(CartesianValueSource source) {
 		// @formatter:off
 		List<Object> arrays =
-				Stream.of(
+				// Declaration of <Object> is necessary due to a bug in Eclipse Photon.
+				Stream.<Object>of(
 						source.shorts(),
 						source.bytes(),
 						source.ints(),

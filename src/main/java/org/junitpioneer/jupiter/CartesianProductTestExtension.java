@@ -71,13 +71,11 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 				.findAnnotatedAnnotations(testMethod, ArgumentsSource.class);
 		ensureNoInputConflicts(annotation, argumentsSources);
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
-		if (annotation.value().length > 0) {
+		if (annotation.value().length > 0)
 			return getSetsFromValue(testMethod, annotation);
-		}
 		// Try getting sets from the @ArgumentsSource annotations
-		if (!argumentsSources.isEmpty()) {
+		if (!argumentsSources.isEmpty())
 			return getSetsFromArgumentsSources(argumentsSources, context);
-		}
 		// Try the sets static factory method
 		return getSetsFromStaticFactory(testMethod, annotation.factory());
 	}
@@ -87,27 +85,24 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		boolean hasValue = annotation.value().length != 0;
 		boolean hasFactory = !annotation.factory().isEmpty();
 		boolean hasValueSources = !valueSources.isEmpty();
-		if (hasValue && hasFactory || hasValue && hasValueSources || hasFactory && hasValueSources) {
+		if (hasValue && hasFactory || hasValue && hasValueSources || hasFactory && hasValueSources)
 			throw new ExtensionConfigurationException(
 				"CartesianProductTest can only take exactly one type of arguments source.");
-		}
 	}
 
 	private List<List<?>> getSetsFromValue(Method testMethod, CartesianProductTest annotation) {
 		List<List<?>> sets = new ArrayList<>();
 		List<String> strings = Arrays.stream(annotation.value()).distinct().collect(toList());
-		for (int i = 0; i < testMethod.getParameterTypes().length; i++) {
+		for (int i = 0; i < testMethod.getParameterTypes().length; i++)
 			sets.add(strings);
-		}
 		return sets;
 	}
 
 	private List<List<?>> getSetsFromArgumentsSources(List<? extends Annotation> argumentsSources,
 			ExtensionContext context) {
 		List<List<?>> sets = new ArrayList<>();
-		for (Annotation source : argumentsSources) {
+		for (Annotation source : argumentsSources)
 			sets.add(getSetFromAnnotation(context, source));
-		}
 		return sets;
 	}
 
@@ -116,8 +111,8 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 			ArgumentsProvider provider = initializeArgumentsProvider(source);
 			return provideArguments(context, source, provider);
 		}
-		catch (Exception e) {
-			throw new ExtensionConfigurationException("Could not provide arguments because of exception.", e);
+		catch (Exception ex) {
+			throw new ExtensionConfigurationException("Could not provide arguments because of exception.", ex);
 		}
 	}
 
@@ -132,7 +127,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 
 	private List<Object> provideArguments(ExtensionContext context, Annotation source, ArgumentsProvider provider)
 			throws Exception {
-		if (Arrays.asList(provider.getClass().getInterfaces()).contains(Consumer.class)) {
+		if (provider instanceof CartesianAnnotationConsumer) {
 			((Consumer<Annotation>) provider).accept(source);
 			return provider
 					.provideArguments(context)
@@ -165,12 +160,10 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 				.orElseThrow(() -> new ExtensionConfigurationException("Method `CartesianProductTest.Sets "
 						+ factoryMethodName + "()` not found in " + declaringClass + "or any enclosing class."));
 		String method = "Method `" + factory + "`";
-		if (!Modifier.isStatic(factory.getModifiers())) {
+		if (!Modifier.isStatic(factory.getModifiers()))
 			throw new ExtensionConfigurationException(method + " must be static.");
-		}
-		if (!CartesianProductTest.Sets.class.isAssignableFrom(factory.getReturnType())) {
+		if (!CartesianProductTest.Sets.class.isAssignableFrom(factory.getReturnType()))
 			throw new ExtensionConfigurationException(method + " must return `CartesianProductTest.Sets`.");
-		}
 		return factory;
 	}
 
