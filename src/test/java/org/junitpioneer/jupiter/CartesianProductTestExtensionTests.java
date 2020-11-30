@@ -158,9 +158,7 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "basicIntRangeSource",
 						int.class, int.class);
 
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(8)
-					.hasNumberOfSucceededTests(8);
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(8).hasNumberOfSucceededTests(8);
 			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("1,2", "1,4", "2,2", "2,4", "3,2", "3,4", "4,2", "4,4");
@@ -173,12 +171,8 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "containerIntSource",
 						int.class, int.class);
 
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(6)
-					.hasNumberOfSucceededTests(6);
-					assertThat(results)
-					.hasNumberOfReportEntries(6)
-					.withValues("12", "13", "22", "23", "32", "33");
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
+			assertThat(results).hasNumberOfReportEntries(6).withValues("12", "13", "22", "23", "32", "33");
 		}
 
 		@Test
@@ -188,9 +182,7 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "cartesianValueSource",
 						int.class, int.class);
 
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(8)
-					.hasNumberOfSucceededTests(8);
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(8).hasNumberOfSucceededTests(8);
 			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("0,2", "0,4", "1,2", "1,4", "2,2", "2,4", "3,2", "3,4");
@@ -203,9 +195,7 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "floatByteSource", float.class,
 						byte.class);
 
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(8)
-					.hasNumberOfSucceededTests(8);
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(8).hasNumberOfSucceededTests(8);
 			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("f:1.2,b:1", "f:1.7,b:1", "f:1.2,b:2", "f:1.7,b:2", "f:1.2,b:3", "f:1.7,b:3",
@@ -219,9 +209,7 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "doubleLongShortSource",
 						double.class, long.class, short.class);
 
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(8)
-					.hasNumberOfSucceededTests(8);
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(8).hasNumberOfSucceededTests(8);
 			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("d:1.2,l:1,s:4", "d:1.7,l:1,s:4", "d:1.2,l:2,s:4", "d:1.7,l:2,s:4", "d:1.2,l:1,s:5",
@@ -514,10 +502,11 @@ public class CartesianProductTestExtensionTests {
 		void shouldAddDistinct() {
 			List<Integer> list = list(4, 5, 6);
 			Stream<Integer> stream = Stream.of(7, 8, 9);
+			Iterable<Integer> iterable = list(10, 11, 12);
 
-			sets.add(1, 2, 3).addAll(list).addAll(stream);
+			sets.add(1, 2, 3).addAll(list).addAll(stream).addAll(iterable);
 
-			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9));
+			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9), list(10, 11, 12));
 		}
 
 		@Test
@@ -525,10 +514,11 @@ public class CartesianProductTestExtensionTests {
 		void shouldRemoveNonDistinct() {
 			List<Integer> list = list(4, 5, 4);
 			Stream<Integer> stream = Stream.of(7, 8, 7);
+			Iterable<Integer> iterable = list(10, 11, 10);
 
-			sets.add(1, 2, 1).addAll(list).addAll(stream);
+			sets.add(1, 2, 1).addAll(list).addAll(stream).addAll(iterable);
 
-			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8));
+			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8), list(10, 11));
 		}
 
 	}
