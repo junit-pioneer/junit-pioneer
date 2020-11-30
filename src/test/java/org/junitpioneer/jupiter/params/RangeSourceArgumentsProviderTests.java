@@ -182,7 +182,8 @@ class RangeSourceArgumentsProviderTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(IllegalArgumentException.class)
-					.hasMessageContainingAll("Range source annotation should not be repeated for @ParameterizedTest.");
+					.hasMessageContainingAll("Range source annotation should not be repeated for @ParameterizedTest.",
+						"@ParameterizedTest should have exactly one argument source.");
 		}
 
 		@Test

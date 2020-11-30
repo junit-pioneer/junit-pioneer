@@ -134,6 +134,9 @@ void testShortAndLong(short s, long l) {
 }
 ----
 
+Just like with `@CartesianValueSource` annotations get assigned to parameters in order.
+The first annotation from the top gets assigned to the first parameter, the second annotation to the second parameter and so on.
+
 The test `testShortAndLong` is executed exactly six times.
 The first parameter can have any of the two values `1`, `2`.
 The second parameter can have any of the three values `0L`, `1L` or `2L`.
@@ -151,6 +154,17 @@ To demonstrate with a table:
 |===
 
 For more information, please see the link:range-sources.adoc[separate documentation about range sources].
+You can combine range sources with `@CartesianValueSource`, it works as you'd expect:
+
+[source, java]
+----
+@CartesianProductTest
+@ShortRangeSource(from = 1, to = 3)
+@CartesianValueSource(strings = { "text one", "text two" })
+void mixAndMatchTest(short number, String text) {
+	// passing test code
+}
+----
 
 == Writing a static factory method for the parameters
 

@@ -86,7 +86,7 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnota
 	private void verifyNoContainerAnnotationIsPresent(AnnotatedElement element) {
 		if (Stream.of(element.getAnnotations()).anyMatch(this::isContainerAnnotation))
 			throw new IllegalArgumentException(
-				"Range source annotation should not be repeated for @ParameterizedTest.");
+				"Range source annotation should not be repeated for @ParameterizedTest. @ParameterizedTest should have exactly one argument source.");
 	}
 
 	private boolean isContainerAnnotation(Annotation annotation) {
