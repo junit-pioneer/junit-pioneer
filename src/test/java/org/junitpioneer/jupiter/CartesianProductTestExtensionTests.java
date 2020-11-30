@@ -160,7 +160,8 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(8)
-					.hasNumberOfSucceededTests(8)
+					.hasNumberOfSucceededTests(8);
+			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("1,2", "1,4", "2,2", "2,4", "3,2", "3,4", "4,2", "4,4");
 		}
@@ -174,7 +175,8 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(6)
-					.hasNumberOfSucceededTests(6)
+					.hasNumberOfSucceededTests(6);
+					assertThat(results)
 					.hasNumberOfReportEntries(6)
 					.withValues("12", "13", "22", "23", "32", "33");
 		}
@@ -188,7 +190,8 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(8)
-					.hasNumberOfSucceededTests(8)
+					.hasNumberOfSucceededTests(8);
+			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("0,2", "0,4", "1,2", "1,4", "2,2", "2,4", "3,2", "3,4");
 		}
@@ -202,7 +205,8 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(8)
-					.hasNumberOfSucceededTests(8)
+					.hasNumberOfSucceededTests(8);
+			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("f:1.2,b:1", "f:1.7,b:1", "f:1.2,b:2", "f:1.7,b:2", "f:1.2,b:3", "f:1.7,b:3",
 						"f:1.2,b:4", "f:1.7,b:4");
@@ -217,7 +221,8 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(8)
-					.hasNumberOfSucceededTests(8)
+					.hasNumberOfSucceededTests(8);
+			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("d:1.2,l:1,s:4", "d:1.7,l:1,s:4", "d:1.2,l:2,s:4", "d:1.7,l:2,s:4", "d:1.2,l:1,s:5",
 						"d:1.7,l:1,s:5", "d:1.2,l:2,s:5", "d:1.7,l:2,s:5");

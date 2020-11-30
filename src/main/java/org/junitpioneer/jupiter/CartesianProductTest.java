@@ -49,7 +49,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * </p>
  * @see org.junitpioneer.jupiter.CartesianValueSource
  *
- * @since 1.0.0
+ * @since 1.0
  */
 @TestTemplate
 @ExtendWith(CartesianProductTestExtension.class)

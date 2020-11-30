@@ -37,6 +37,8 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * </p>
  *
  * @see org.junitpioneer.jupiter.CartesianProductTest
+ *
+ * @since 1.0
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
