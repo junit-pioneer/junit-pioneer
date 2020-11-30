@@ -83,10 +83,14 @@ In lexicographic order, these are:
 <dl>
 	<dt>Matthias Bünger aka <a href="https://github.com/Bukama">Bukama</a></dt>
 	<dd>(Always tries to become a better) Java developer, loves testing and reads <a href="https://twitter.com/bukamabish">tweets</a>.
-		Became a maintainer in April 2020, after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
-	<dt>Nicolai Parlog aka <a href="https://github.com/nicolaiparlog">nicolaiparlog</a></dt>
+		Became a maintainer in April 2020 after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
+	<dt>Mihály Verhás aka <a href="https://github.com/Michael1993">Michael1993</a></dt>
+	<dd>Not so witty, not so pretty, not really mean, not really cool bean.
+		A Hungarian Java developer who spends more time on Twitch than recommended by his doctors and used creative and diligent contributions to fool everyone into believing he is a decent enough guy to get promoted to maintainer (in November 2020).
+		</dd>
+	<dt>Nicolai Parlog aka <a href="https://github.com/nipafx">nipafx</a></dt>
 	<dd>Java enthusiast with a passion for learning and sharing.
-		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://codefx.org">codefx.org</a>.
+		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://nipafx.dev">nipafx.dev</a>.
 		That aside, he's best known for his head decor.
 		He co-founded the project in November 2016 and has maintained it ever since (although often very negligently).</dd>
 	<dt>Simon Schrottner aka <a href="https://github.com/aepfli">aepfli</a></dt>
@@ -108,13 +112,13 @@ The least we can do is to thank them and list some of their accomplishments here
 
 * [Allon Murienik](https://github.com/mureinik) contributed [the range sources](https://junit-pioneer.org/docs/range-sources/) (#44 / #123)
 * [Bradford Hovinen](https://github.com/hovinen) improved the execution of the EnvironmentVariableUtils on different OS (#287 / #288)
-* [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133), further improved it as well as the environment variable extension (#180 / #248), and helped with build infrastructure (e.g. #269)
+* [Daniel Kraus](https://github.com/beatngu13) contributed [the system property extension](https://junit-pioneer.org/docs/system-properties/) (#129 / #133) and further improved it, also worked on the environment variable extension (#180 / #248), the Cartesian product extension (#358 / #372), and helped with build infrastructure (e.g. #269)
 * [David Walluck](https://github.com/dwalluck) introduced JUnit 5 BOM (#343 / #346)
 * [Dirk Witzel](https://github.com/NPException) improved the documentation (#149 / #271)
 * [Ignat Simonenko](https://github.com/simonenkoi) fixed a noteworthy bug in the default locale extension (#146 / #161)
 * [Mark Rösler](https://github.com/Hancho2009) contributed the [environment variable extension](https://junit-pioneer.org/docs/environment-variables/) (#167 / #174 and #241 / #242)
 * [Matthias Bünger](https://github.com/Bukama) opened, vetted, and groomed countless issues and PRs and contributed multiple refactorings (e.g. #165 / #168) and fixes (e.g. #190 / #200) before getting promoted to maintainer
-* [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), [the ReportEntryExtension](https://junit-pioneer.org/docs/report-entries/) (#134, #179 / #183, #216, #294), added tests to other extensions (#164 / #272), and contributed to multiple issues (e.g. #217 / #298) and PRs (e.g. #253, #307)
+* [Mihály Verhás](https://github.com/Michael1993) contributed [the StdIO extension](https://junit-pioneer.org/docs/standard-input-output/) (#34 / #227), [the ReportEntryExtension](https://junit-pioneer.org/docs/report-entries/) (#134, #179 / #183, #216, #294), added tests to other extensions (#164 / #272), the Pioneer assertions and contributed to multiple issues (e.g. #217 / #298) and PRs (e.g. #253, #307)
 * [Nishant Vashisth](https://github.com/nishantvas) contributed an [extension to disable parameterized tests](https://junit-pioneer.org/docs/disable-if-display-name/) by display name (#163 / #175)
 * [Simon Schrottner](https://github.com/aepfli) contributed to multiple issues and PRs and almost single-handedly revamped the build and QA process (e.g. #192 / #185) before getting promoted to maintainer
 * [Sullis](https://github.com/sullis) improved GitHub Actions with Gradle Wrapper Validation check (#302)

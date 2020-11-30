@@ -10,9 +10,12 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.util.Lists.list;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -122,7 +125,8 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasNumberOfDynamicallyRegisteredTests(6)
 					.hasNumberOfSucceededTests(4)
-					.hasNumberOfFailedTests(2)
+					.hasNumberOfFailedTests(2);
+			assertThat(results)
 					.hasNumberOfReportEntries(6)
 					.withValues("Two roads diverged in a yellow wood, - And looked down one as far as I could",
 						"Two roads diverged in a yellow wood, - To where it bent in the undergrowth;",
@@ -139,9 +143,8 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "injected", String.class,
 						TestReporter.class);
 
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(5).hasNumberOfSucceededTests(5);
 			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(5)
-					.hasNumberOfSucceededTests(5)
 					.hasNumberOfReportEntries(5)
 					.withValues("Then took the other, as just as fair,", "And having perhaps the better claim",
 						"Because it was grassy and wanted wear,", "Though as for that the passing there",
@@ -231,11 +234,8 @@ public class CartesianProductTestExtensionTests {
 						.executeTestMethodWithParameterTypes(RedundantInputSetTestCases.class, "distinctInputs",
 							String.class, String.class);
 
-				assertThat(results)
-						.hasNumberOfDynamicallyRegisteredTests(4)
-						.hasNumberOfSucceededTests(4)
-						.hasNumberOfReportEntries(4)
-						.withValues("11", "12", "21", "22");
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
+				assertThat(results).hasNumberOfReportEntries(4).withValues("11", "12", "21", "22");
 
 			}
 
@@ -246,11 +246,8 @@ public class CartesianProductTestExtensionTests {
 						.executeTestMethodWithParameterTypes(RedundantInputSetTestCases.class,
 							"distinctInputsAnnotations", int.class, String.class);
 
-				assertThat(results)
-						.hasNumberOfDynamicallyRegisteredTests(6)
-						.hasNumberOfSucceededTests(6)
-						.hasNumberOfReportEntries(6)
-						.withValues("1A", "1B", "1C", "4A", "4B", "4C");
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
+				assertThat(results).hasNumberOfReportEntries(6).withValues("1A", "1B", "1C", "4A", "4B", "4C");
 
 			}
 
@@ -261,11 +258,8 @@ public class CartesianProductTestExtensionTests {
 						.executeTestMethodWithParameterTypes(RedundantInputSetTestCases.class, "distinctInputsFactory",
 							TimeUnit.class, String.class);
 
-				assertThat(results)
-						.hasNumberOfDynamicallyRegisteredTests(3)
-						.hasNumberOfSucceededTests(3)
-						.hasNumberOfReportEntries(3)
-						.withValues("A:SECONDS", "B:SECONDS", "C:SECONDS");
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+				assertThat(results).hasNumberOfReportEntries(3).withValues("A:SECONDS", "B:SECONDS", "C:SECONDS");
 
 			}
 
@@ -500,6 +494,36 @@ public class CartesianProductTestExtensionTests {
 					// CartesianValueArgumentsProvider does not get initialized because it does not implement AnnotationConsumer
 					.withExceptionInstanceOf(PreconditionViolationException.class)
 					.hasMessageContaining("argument array must not be null");
+		}
+
+	}
+
+	@Nested
+	@DisplayName("sets")
+	class SetsTests {
+
+		CartesianProductTest.Sets sets = new CartesianProductTest.Sets();
+
+		@Test
+		@DisplayName("should add distinct elements")
+		void shouldAddDistinct() {
+			List<Integer> list = list(4, 5, 6);
+			Stream<Integer> stream = Stream.of(7, 8, 9);
+
+			sets.add(1, 2, 3).addAll(list).addAll(stream);
+
+			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9));
+		}
+
+		@Test
+		@DisplayName("should remove non-distinct elements")
+		void shouldRemoveNonDistinct() {
+			List<Integer> list = list(4, 5, 4);
+			Stream<Integer> stream = Stream.of(7, 8, 7);
+
+			sets.add(1, 2, 1).addAll(list).addAll(stream);
+
+			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8));
 		}
 
 	}
