@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -37,7 +36,7 @@ import org.junitpioneer.jupiter.IssueTestSuite;
  */
 public class IssueExtensionExecutionListener implements TestExecutionListener {
 
-	public static final String REPORT_ENTRY_KEY = "Issue";
+	public static final String REPORT_ENTRY_KEY = IssueExtensionExecutionListener.class.toString();
 
 	/**
 	 * This listener will be active as soon as Pioneer is on the class/module path, regardless of whether {@code @Issue} is actually used.
@@ -48,7 +47,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 	private final ConcurrentMap<String, IssueTestCaseBuilder> testCases;
 
 	public IssueExtensionExecutionListener() {
-		this.active = ServiceLoader.load(IssueProcessor.class).iterator().hasNext();
+		this.active = IssueProcessorFactory.hasNext();
 		this.testCases = new ConcurrentHashMap<>();
 	}
 
@@ -88,7 +87,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 			return;
 
 		List<IssueTestSuite> issueTestSuites = createIssueTestSuites();
-		for (IssueProcessor issueProcessor : ServiceLoader.load(IssueProcessor.class)) {
+		for (IssueProcessor issueProcessor : IssueProcessorFactory.getIssueProcessors()) {
 			issueProcessor.processTestResults(issueTestSuites);
 		}
 	}
