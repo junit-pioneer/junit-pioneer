@@ -70,7 +70,7 @@ public class IssueExtensionIntegrationTests {
 		}
 
 		@Test
-		@Disabled
+		@Disabled("skipped")
 		@Issue("When you awaken in the morning's hush, I am the swift uplifting rush")
 		void skippedTest() {
 		}

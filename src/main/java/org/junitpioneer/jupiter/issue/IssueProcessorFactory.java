@@ -19,6 +19,9 @@ class IssueProcessorFactory {
 
 	private static final ServiceLoader<IssueProcessor> processors = ServiceLoader.load(IssueProcessor.class);
 
+	private IssueProcessorFactory() {
+	}
+
 	static boolean hasNext() {
 		return processors.iterator().hasNext();
 	}
