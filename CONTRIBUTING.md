@@ -259,9 +259,9 @@ To make the single commit expressive, its message must be detailed and [good]((h
 Furthermore, it must follow this structure:
 
 ```
-${action} (${issues} / ${pull-request})
+${action} (${issues} / ${pull-request}) [max 70 characters]
 
-${body}
+${body} [max 70 characters per line]
 
 ${references}: ${issues}
 PR: ${pull-request}
