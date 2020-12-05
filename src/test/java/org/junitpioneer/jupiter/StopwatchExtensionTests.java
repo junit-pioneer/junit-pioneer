@@ -10,16 +10,10 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.reporting.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 import org.junitpioneer.testkit.assertion.PioneerAssert;
@@ -76,41 +70,12 @@ public class StopwatchExtensionTests {
 
 	}
 
-	private void assertStringStartWithUnitAndContainsName(ExecutionResults results, String name) {
-
-		Map<String, String> reportEntry = firstReportEntry(results);
-
-		assertThat(reportEntry).hasSize(1);
-
-		String result = reportEntry.get("stopwatch");
-		assertThat(result).isNotNull();
-
-		String startsWith = String.format("Execution of '%s()' took [", name);
-
-		assertThat(result).startsWith(startsWith);
-		assertThat(result).endsWith("] ms.");
-	}
-
-	/**
-	 * Retrieves the first published ReportEntry.
-	 * The possibility to retrieve the ReportEntries of a test execution was removed during
-	 * the improvement of the PioneerAssertions.
-	 *
-	 * @param results Results of the test execution
-	 * @return The first ReportEntry
-	 */
-	private Map<String, String> firstReportEntry(ExecutionResults results) {
-		List<Map<String, String>> reportEntries = results
-				.allEvents()
-				.reportingEntryPublished()
-				.stream()
-				.map(event -> event.getPayload(org.junit.platform.engine.reporting.ReportEntry.class))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.map(ReportEntry::getKeyValuePairs)
-				.collect(toList());
-
-		return reportEntries.get(0);
+	private void assertStringStartWithUnitAndContainsName(ExecutionResults results, String methodName) {
+		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1).andThen(entry -> {
+			assertThat(entry.getKey()).isEqualTo("stopwatch");
+			assertThat(entry.getValue())
+					.matches(String.format("Execution of '%s\\(\\)' took \\[[0-9]*\\] ms.", methodName));
+		});
 	}
 
 	/**
@@ -151,7 +116,7 @@ public class StopwatchExtensionTests {
 	}
 
 	/**
-	 * Inner test class for testing a not annotated method / classs annotation.
+	 * Inner test class for testing a not annotated method / class annotation.
 	 */
 	static class NonAnnotationTest {
 

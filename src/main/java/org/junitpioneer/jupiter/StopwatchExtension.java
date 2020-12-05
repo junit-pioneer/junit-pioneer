@@ -10,8 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.System.currentTimeMillis;
-
 import java.time.Clock;
 
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
@@ -26,6 +24,7 @@ class StopwatchExtension implements BeforeTestExecutionCallback, AfterTestExecut
 
 	private final Clock clock = Clock.systemUTC();
 	private static final Namespace NAMESPACE = Namespace.create(StopwatchExtension.class);
+	static final String STORE_KEY = "StopwatchExtension";
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) {
@@ -62,10 +61,10 @@ class StopwatchExtension implements BeforeTestExecutionCallback, AfterTestExecut
 	 */
 	void calculateAndReportElapsedTime(ExtensionContext context) {
 		long launchTime = loadLaunchTime(context);
-		long elapsedTime = currentTimeMillis() - launchTime;
+		long elapsedTime = clock.instant().toEpochMilli() - launchTime;
 
 		String message = String.format("Execution of '%s' took [%d] ms.", context.getDisplayName(), elapsedTime);
-		context.publishReportEntry("stopwatch", message);
+		context.publishReportEntry(STORE_KEY, message);
 	}
 
 }

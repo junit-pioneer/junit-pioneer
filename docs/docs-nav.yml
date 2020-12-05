@@ -22,7 +22,7 @@
         url: /docs/retrying-test/
       - title: "Standard Input and Output"
         url: /docs/standard-input-output/
-      - title: "Stopwatch"
+      - title: "Measuring time with a Stopwatch"
         url: /docs/stopwatch/
       - title: "Temporary Files and Directories (removed in 1.0)"
         url: /docs/temp-directory/
