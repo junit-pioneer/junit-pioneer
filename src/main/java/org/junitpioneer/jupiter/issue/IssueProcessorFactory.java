@@ -14,7 +14,13 @@ import java.util.ServiceLoader;
 
 import org.junitpioneer.jupiter.IssueProcessor;
 
-// Ensures we get the same instance of StoringIssueProcessor in the integration tests
+/**
+ * A utility class, responsible for loading in {@link IssueProcessor} implementations.
+ * Ensures we get the same instance of {@code StoringIssueProcessor} in the integration tests.
+ *
+ * @see IssueExtensionExecutionListener
+ * @see org.junitpioneer.jupiter.Issue
+ */
 class IssueProcessorFactory {
 
 	private static final ServiceLoader<IssueProcessor> processors = ServiceLoader.load(IssueProcessor.class);

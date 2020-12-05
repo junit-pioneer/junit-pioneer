@@ -36,7 +36,7 @@ import org.junitpioneer.jupiter.IssueTestSuite;
  */
 public class IssueExtensionExecutionListener implements TestExecutionListener {
 
-	public static final String REPORT_ENTRY_KEY = IssueExtensionExecutionListener.class.toString();
+	public static final String REPORT_ENTRY_KEY = "IssueExtensionExecutionListener";
 
 	/**
 	 * This listener will be active as soon as Pioneer is on the class/module path, regardless of whether {@code @Issue} is actually used.
