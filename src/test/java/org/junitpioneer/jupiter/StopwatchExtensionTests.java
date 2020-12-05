@@ -72,7 +72,7 @@ public class StopwatchExtensionTests {
 
 	private void assertStringStartWithUnitAndContainsName(ExecutionResults results, String methodName) {
 		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1).andThen(entry -> {
-			assertThat(entry.getKey()).isEqualTo("stopwatch");
+			assertThat(entry.getKey()).isEqualTo(StopwatchExtension.STORE_KEY);
 			assertThat(entry.getValue())
 					.matches(String.format("Execution of '%s\\(\\)' took \\[[0-9]*\\] ms.", methodName));
 		});
