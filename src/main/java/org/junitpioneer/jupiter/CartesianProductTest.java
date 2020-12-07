@@ -59,13 +59,15 @@ public @interface CartesianProductTest {
 
 	/**
 	 * This is a copy of {@link org.junit.jupiter.params.ParameterizedTest#name()}.
-	 * This is in no way a guarantee that what works with <code>ParameterizedTest#name()</name>
+	 * This is in no way a guarantee that what works with <code>ParameterizedTest#name()</code>
 	 * will work with this.
 	 *
 	 * <p>The display name to be used for individual invocations of the
 	 * parameterized test; never blank or consisting solely of whitespace.
+	 * </p>
 	 *
 	 * <p>Defaults to {@link org.junit.jupiter.params.ParameterizedTest#DEFAULT_DISPLAY_NAME}.
+	 * </p>
 	 *
 	 * <h4>Supported placeholders</h4>
 	 * <ul>
@@ -77,6 +79,7 @@ public @interface CartesianProductTest {
 	 *
 	 * <p>For the latter, you may use {@link java.text.MessageFormat} patterns
 	 * to customize formatting.
+	 * </p>
 	 *
 	 * @see java.text.MessageFormat
 	 */
