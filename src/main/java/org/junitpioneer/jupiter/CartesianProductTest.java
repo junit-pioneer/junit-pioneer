@@ -69,13 +69,12 @@ public @interface CartesianProductTest {
 	 * <p>Defaults to {@link org.junit.jupiter.params.ParameterizedTest#DEFAULT_DISPLAY_NAME}.
 	 * </p>
 	 *
-	 * <h4>Supported placeholders</h4>
-	 * <ul>
-	 * <li>{@link org.junit.jupiter.params.ParameterizedTest#DISPLAY_NAME_PLACEHOLDER}</li>
-	 * <li>{@link org.junit.jupiter.params.ParameterizedTest#INDEX_PLACEHOLDER}</li>
-	 * <li>{@link org.junit.jupiter.params.ParameterizedTest#ARGUMENTS_PLACEHOLDER}</li>
-	 * <li><code>{0}</code>, <code>{1}</code>, etc.: an individual argument (0-based)</li>
-	 * </ul>
+	 * Supported placeholders:
+	 *
+	 * - {@link org.junit.jupiter.params.ParameterizedTest#DISPLAY_NAME_PLACEHOLDER}
+	 * - {@link org.junit.jupiter.params.ParameterizedTest#INDEX_PLACEHOLDER}
+	 * - {@link org.junit.jupiter.params.ParameterizedTest#ARGUMENTS_PLACEHOLDER}
+	 * - <code>{0}</code>, <code>{1}</code>, etc.: an individual argument (0-based)
 	 *
 	 * <p>For the latter, you may use {@link java.text.MessageFormat} patterns
 	 * to customize formatting.
