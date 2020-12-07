@@ -134,7 +134,7 @@ void testShortAndLong(short s, long l) {
 }
 ----
 
-Just like with `@CartesianValueSource` annotations get assigned to parameters in order.
+Just like with `@CartesianValueSource`, annotations get assigned to parameters in order.
 The first annotation from the top gets assigned to the first parameter, the second annotation to the second parameter and so on.
 
 The test `testShortAndLong` is executed exactly six times.
@@ -185,7 +185,8 @@ static CartesianProductTest.Sets nFold() {
 	return new CartesianProductTest.Sets()
 		// e.g. with a `List<String> letters`,
 		// you can use `addAll`:
-		// .addAll(letters).add("Alpha", "Omega")
+		// .addAll(letters)
+		.add("Alpha", "Omega")
 		.add(Runnable.class, Cloneable.class, Predicate.class)
 		.add(TimeUnit.DAYS, TimeUnit.HOURS);
 }
