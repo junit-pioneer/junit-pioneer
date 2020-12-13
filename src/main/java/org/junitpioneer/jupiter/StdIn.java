@@ -41,7 +41,7 @@ public class StdIn extends InputStream {
 	}
 
 	@Override
-	public int read(byte[] b, int off, int len) throws IOException {
+	public int read(byte[] b, int off, int len) throws IOException { // NOSONAR - this is fine for a simple testing extension
 		return super.read(b, off, len);
 	}
 

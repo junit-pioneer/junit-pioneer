@@ -26,13 +26,12 @@ import org.junitpioneer.jupiter.PioneerException;
  */
 class PioneerAnnotationUtils {
 
-	private static final Class<?> PIONEER_ANNOTATION_UTILS;
 	private static final Method FIND_CLOSEST_ENCLOSING_ANNOTATION;
 
 	static {
 		try {
-			PIONEER_ANNOTATION_UTILS = Class.forName("org.junitpioneer.jupiter.PioneerAnnotationUtils");
-			FIND_CLOSEST_ENCLOSING_ANNOTATION = PIONEER_ANNOTATION_UTILS
+			FIND_CLOSEST_ENCLOSING_ANNOTATION = Class
+					.forName("org.junitpioneer.jupiter.PioneerAnnotationUtils")
 					.getMethod("findClosestEnclosingAnnotation", ExtensionContext.class, Class.class);
 			FIND_CLOSEST_ENCLOSING_ANNOTATION.setAccessible(true); // NOSONAR this is necessary to reach the method
 		}

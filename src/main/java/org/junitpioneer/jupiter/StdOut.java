@@ -10,9 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 
 /**
  * <p>For details and examples, see
@@ -31,8 +31,8 @@ public class StdOut extends OutputStream {
 	}
 
 	@Override
-	public void write(byte[] b, int off, int len) throws IOException {
-		super.write(b, off, len);
+	public final void write(byte[] b, int off, int len) {
+		writer.write(new String(b, Charset.defaultCharset()), off, len);
 	}
 
 	/**
