@@ -26,8 +26,8 @@ import java.io.Writer;
  */
 public class StdIn extends InputStream {
 
-	private final Reader reader;
-	private final Writer writer = new StringWriter();
+	private final StringReader reader;
+	private final StringWriter writer = new StringWriter();
 
 	public StdIn(String[] values) {
 		reader = new StringReader(String.join(StdIoExtension.SEPARATOR, values));
@@ -40,6 +40,11 @@ public class StdIn extends InputStream {
 			writer.write(reading);
 		}
 		return reading;
+	}
+
+	@Override
+	public int read(byte[] b, int off, int len) throws IOException {
+		return super.read(b, off, len);
 	}
 
 	/**

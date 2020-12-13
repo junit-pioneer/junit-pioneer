@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 
 /**
  * <p>For details and examples, see
@@ -24,11 +25,16 @@ import java.io.Writer;
  */
 public class StdOut extends OutputStream {
 
-	private final Writer writer = new StringWriter();
+	private final StringWriter writer = new StringWriter();
 
 	@Override
-	public void write(int i) throws IOException {
+	public void write(int i) {
 		writer.write(i);
+	}
+
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		super.write(b, off, len);
 	}
 
 	/**
