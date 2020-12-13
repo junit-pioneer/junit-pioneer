@@ -94,4 +94,5 @@ public class DisableIfNameExtension implements ExecutionCondition {
 	private static String reason(String displayName, String outcome) {
 		return format("Display name '%s' %s", displayName, outcome);
 	}
+
 }

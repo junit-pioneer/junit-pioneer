@@ -12,10 +12,8 @@ package org.junitpioneer.jupiter;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * <p>For details and examples, see

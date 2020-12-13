@@ -13,8 +13,6 @@ package org.junitpioneer.jupiter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
 
 /**
  * <p>For details and examples, see
