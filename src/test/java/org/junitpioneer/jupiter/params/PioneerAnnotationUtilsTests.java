@@ -15,25 +15,41 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junitpioneer.jupiter.PioneerException;
 
 @DisplayName("Reflexive copy of PioneerAnnotationUtils")
+@ResourceLock(value = "org.junitpioneer.jupiter.params.PioneerAnnotationUtils")
 public class PioneerAnnotationUtilsTests {
+
+	private static Method METHOD;
+
+	@BeforeAll
+	static void setup() throws ReflectiveOperationException {
+		Field fieldMethod = PioneerAnnotationUtils.class.getDeclaredField("FIND_CLOSEST_ENCLOSING_ANNOTATION");
+		fieldMethod.setAccessible(true);
+		METHOD = (Method) fieldMethod.get(null);
+		fieldMethod.setAccessible(false);
+	}
 
 	@Test
 	@DisplayName("throws PioneerException if method invocation fails.")
-	void test() throws NoSuchFieldException, IllegalAccessException {
-		Field fieldMethod = PioneerAnnotationUtils.class.getDeclaredField("FIND_CLOSEST_ENCLOSING_ANNOTATION");
-		fieldMethod.setAccessible(true);
-		Method method = (Method) fieldMethod.get(null);
-		method.setAccessible(false);
+	void test() {
+		METHOD.setAccessible(false);
 
 		assertThatThrownBy(() -> PioneerAnnotationUtils.findClosestEnclosingAnnotation(null, null))
 				.isInstanceOf(PioneerException.class)
 				.hasMessageContaining("Internal Pioneer error.")
 				.hasCauseExactlyInstanceOf(IllegalAccessException.class);
+	}
+
+	@AfterAll
+	static void teardown() {
+		METHOD.setAccessible(true);
 	}
 
 }
