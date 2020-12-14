@@ -19,10 +19,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
+import org.junit.platform.engine.TestExecutionResult.Status;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junitpioneer.jupiter.Issue;
+import org.junitpioneer.jupiter.IssueTestCase;
 import org.junitpioneer.jupiter.IssueTestSuite;
 import org.opentest4j.TestAbortedException;
 
@@ -47,36 +49,56 @@ public class IssueExtensionIntegrationTests {
 
 		List<IssueTestSuite> issueTestSuites = issueProcessor.issueTestSuites();
 
-		assertThat(issueTestSuites).isNotEmpty();
+		assertThat(issueTestSuites).hasSize(3);
+		assertThat(issueTestSuites)
+				.extracting(IssueTestSuite::issueId)
+				.containsExactlyInAnyOrder("Poem #1", "Poem #2", "Poem #3");
+		assertThat(issueTestSuites)
+				.allSatisfy(issueTestSuite -> assertThat(issueTestSuite.tests())
+						.allSatisfy(IssueExtensionIntegrationTests::assertStatus));
+	}
+
+	private static void assertStatus(IssueTestCase testCase) {
+		if (testCase.testId().contains("successful") || testCase.testId().contains("publishing"))
+			assertThat(testCase.result()).isEqualTo(Status.SUCCESSFUL);
+		if (testCase.testId().contains("aborted"))
+			assertThat(testCase.result()).isEqualTo(Status.ABORTED);
+		if (testCase.testId().contains("failing"))
+			assertThat(testCase.result()).isEqualTo(Status.FAILED);
 	}
 
 	static class IssueIntegrationCases {
 
 		@Test
-		@Issue("Do not stand at my grave and weep. I am not there. I do not sleep.")
+		@Issue("Poem #1")
+		@DisplayName("Do not stand at my grave and weep. I am not there. I do not sleep.")
 		void successfulTest() {
 		}
 
 		@Test
-		@Issue("I am a thousand winds that blow. I am the diamond glints on snow.")
+		@Issue("Poem #1")
+		@DisplayName("I am a thousand winds that blow. I am the diamond glints on snow.")
 		void failingTest() {
 			fail("supposed to fail");
 		}
 
 		@Test
-		@Issue("I am the sunlight on ripened grain. I am the gentle autumn rain.")
+		@Issue("Poem #2")
+		@DisplayName("I am the sunlight on ripened grain. I am the gentle autumn rain.")
 		void abortedTest() {
 			throw new TestAbortedException();
 		}
 
 		@Test
+		@Issue("Poem #2")
 		@Disabled("skipped")
-		@Issue("When you awaken in the morning's hush, I am the swift uplifting rush")
+		@DisplayName("When you awaken in the morning's hush, I am the swift uplifting rush")
 		void skippedTest() {
 		}
 
 		@Test
-		@Issue("Of quiet birds in circled flight. I am the soft stars that shine at night.")
+		@Issue("Poem #3")
+		@DisplayName("Of quiet birds in circled flight. I am the soft stars that shine at night.")
 		void publishingTest(TestReporter reporter) {
 			reporter.publishEntry("Issue", "reporting test");
 		}
