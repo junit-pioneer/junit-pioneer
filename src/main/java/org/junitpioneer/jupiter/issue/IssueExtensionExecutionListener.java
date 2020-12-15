@@ -47,7 +47,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 	private final ConcurrentMap<String, IssueTestCaseBuilder> testCases;
 
 	public IssueExtensionExecutionListener() {
-		this.active = IssueProcessorFactory.hasNext();
+		this.active = IssueProcessorRegistry.hasNext();
 		this.testCases = new ConcurrentHashMap<>();
 	}
 
@@ -87,7 +87,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 			return;
 
 		List<IssueTestSuite> issueTestSuites = createIssueTestSuites();
-		for (IssueProcessor issueProcessor : IssueProcessorFactory.getIssueProcessors()) {
+		for (IssueProcessor issueProcessor : IssueProcessorRegistry.getIssueProcessors()) {
 			issueProcessor.processTestResults(issueTestSuites);
 		}
 	}

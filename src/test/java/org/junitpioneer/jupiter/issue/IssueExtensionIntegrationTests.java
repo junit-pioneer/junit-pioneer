@@ -33,7 +33,7 @@ import org.opentest4j.TestAbortedException;
  */
 public class IssueExtensionIntegrationTests {
 
-	private final StoringIssueProcessor issueProcessor = (StoringIssueProcessor) IssueProcessorFactory
+	private final StoringIssueProcessor issueProcessor = (StoringIssueProcessor) IssueProcessorRegistry
 			.getIssueProcessors()
 			.iterator()
 			.next();

@@ -21,11 +21,11 @@ import org.junitpioneer.jupiter.IssueProcessor;
  * @see IssueExtensionExecutionListener
  * @see org.junitpioneer.jupiter.Issue
  */
-class IssueProcessorFactory {
+class IssueProcessorRegistry {
 
 	private static final ServiceLoader<IssueProcessor> processors = ServiceLoader.load(IssueProcessor.class);
 
-	private IssueProcessorFactory() {
+	private IssueProcessorRegistry() {
 	}
 
 	static boolean hasNext() {
