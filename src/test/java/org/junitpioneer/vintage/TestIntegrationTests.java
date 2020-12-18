@@ -115,7 +115,6 @@ class TestIntegrationTests {
 
 		@Test
 		void test_successfulTest() {
-			assertThat(true).isTrue();
 		}
 
 		@Test
@@ -127,7 +126,6 @@ class TestIntegrationTests {
 
 		@Test(expected = IllegalArgumentException.class)
 		void testWithExpectedException_successfulTest() {
-			assertThat(true).isTrue();
 		}
 
 		@Test(expected = IllegalArgumentException.class)
@@ -153,7 +151,6 @@ class TestIntegrationTests {
 
 		@Test(timeout = 10_000)
 		void testWithTimeout_belowTimeout() {
-			assertThat(true).isTrue();
 		}
 
 		@Test(timeout = 1)

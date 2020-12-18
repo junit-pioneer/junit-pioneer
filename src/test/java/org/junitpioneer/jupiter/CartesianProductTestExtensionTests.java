@@ -399,10 +399,11 @@ public class CartesianProductTestExtensionTests {
 		void shouldAddDistinct() {
 			List<Integer> list = list(4, 5, 6);
 			Stream<Integer> stream = Stream.of(7, 8, 9);
+			Iterable<Integer> iterable = list(10, 11, 12);
 
-			sets.add(1, 2, 3).addAll(list).addAll(stream);
+			sets.add(1, 2, 3).addAll(list).addAll(stream).addAll(iterable);
 
-			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9));
+			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9), list(10, 11, 12));
 		}
 
 		@Test
