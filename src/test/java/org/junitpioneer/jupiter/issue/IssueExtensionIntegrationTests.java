@@ -33,11 +33,6 @@ import org.opentest4j.TestAbortedException;
  */
 public class IssueExtensionIntegrationTests {
 
-	private final StoringIssueProcessor issueProcessor = (StoringIssueProcessor) IssueProcessorRegistry
-			.getIssueProcessors()
-			.iterator()
-			.next();
-
 	@Test
 	void testIssueCases() {
 		LauncherFactory
@@ -47,7 +42,7 @@ public class IssueExtensionIntegrationTests {
 						.selectors(DiscoverySelectors.selectClass(IssueIntegrationCases.class))
 						.build());
 
-		List<IssueTestSuite> issueTestSuites = issueProcessor.issueTestSuites();
+		List<IssueTestSuite> issueTestSuites = StoringIssueProcessor.ISSUE_TEST_SUITES;
 
 		assertThat(issueTestSuites).hasSize(3);
 		assertThat(issueTestSuites)

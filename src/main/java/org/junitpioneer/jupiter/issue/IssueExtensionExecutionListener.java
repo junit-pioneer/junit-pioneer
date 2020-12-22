@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -47,7 +48,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 	private final ConcurrentMap<String, IssueTestCaseBuilder> testCases;
 
 	public IssueExtensionExecutionListener() {
-		this.active = IssueProcessorRegistry.hasNext();
+		this.active = ServiceLoader.load(IssueProcessor.class).iterator().hasNext();
 		this.testCases = new ConcurrentHashMap<>();
 	}
 
@@ -87,7 +88,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 			return;
 
 		List<IssueTestSuite> issueTestSuites = createIssueTestSuites();
-		for (IssueProcessor issueProcessor : IssueProcessorRegistry.getIssueProcessors()) {
+		for (IssueProcessor issueProcessor : ServiceLoader.load(IssueProcessor.class)) {
 			issueProcessor.processTestResults(issueTestSuites);
 		}
 	}
