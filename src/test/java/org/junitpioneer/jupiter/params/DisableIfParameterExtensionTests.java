@@ -15,6 +15,7 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -87,6 +88,25 @@ class DisableIfParameterExtensionTests {
 	class MisconfigurationTests {
 
 		@Test
+		@DisplayName("does not intercept non-parameterized tests")
+		void simpleTest() {
+			ExecutionResults results = PioneerTestKit.executeTestMethod(BadConfigTestCases.class, "simpleTest");
+
+			assertThat(results).hasSingleSucceededTest();
+		}
+
+		@Test
+		@DisplayName("throws an exception if method has no parameters")
+		void noParameters() {
+			ExecutionResults results = PioneerTestKit.executeTestMethod(BadConfigTestCases.class, "noParameters");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContainingAll("Can't disable based on arguments", "had no parameters");
+		}
+
+		@Test
 		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfParameter")
 		void missingValues() {
 			ExecutionResults results = PioneerTestKit
@@ -153,6 +173,17 @@ class DisableIfParameterExtensionTests {
 	}
 
 	static class BadConfigTestCases {
+
+		@Test
+		@DisableIfAnyParameter(contains = "A")
+		void simpleTest() {
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter(index = 0, contains = "aaa")
+		@ValueSource(strings = { "aaa" })
+		void noParameters() {
+		}
 
 		@ParameterizedTest
 		@DisableIfParameter(name = "value")
