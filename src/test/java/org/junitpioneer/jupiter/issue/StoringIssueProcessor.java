@@ -23,7 +23,7 @@ import org.junitpioneer.jupiter.IssueTestSuite;
  */
 public class StoringIssueProcessor implements IssueProcessor {
 
-	// collected test suites are static to make the accessible for tests
+	// collected test suites are static to make them accessible for tests
 	static final List<IssueTestSuite> ISSUE_TEST_SUITES = new ArrayList<>();
 
 	@Override
