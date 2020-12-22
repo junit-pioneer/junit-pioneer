@@ -124,8 +124,8 @@ class PioneerAnnotationUtils {
 
 	/**
 	 * Returns the annotations <em>present</em> on the {@code AnnotatedElement}
-	 * that are annotated with the specified annotation. The meta-annotation can be <em>present</em>,
-	 * <em>indirectly present</em>, <em>meta-present</em>, or <em>enclosing present</em>.
+	 * that are themselves annotated with the specified annotation. The meta-annotation can be <em>present</em>,
+	 * <em>indirectly present</em>, or <em>meta-present</em>.
 	 */
 	public static <A extends Annotation> List<Annotation> findAnnotatedAnnotations(AnnotatedElement element,
 			Class<A> annotation) {
@@ -139,9 +139,8 @@ class PioneerAnnotationUtils {
 
 	private static Stream<Annotation> flatten(Annotation annotation) {
 		try {
-			Method value = annotation.annotationType().getDeclaredMethod("value");
-			if (value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
-					&& declaresContainer(value.getReturnType().getComponentType(), annotation)) {
+			if (isContainerAnnotation(annotation)) {
+				Method value = annotation.annotationType().getDeclaredMethod("value");
 				Annotation[] invoke = (Annotation[]) value.invoke(annotation);
 				return Stream.of(invoke).flatMap(PioneerAnnotationUtils::flatten);
 			} else {
@@ -156,9 +155,15 @@ class PioneerAnnotationUtils {
 		}
 	}
 
-	private static boolean declaresContainer(Class<?> componentType, Annotation annotation) {
-		Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
-		return repeatable != null && repeatable.value().equals(annotation.annotationType());
+	private static boolean isContainerAnnotation(Annotation annotation) throws NoSuchMethodException {
+		Method value = annotation.annotationType().getDeclaredMethod("value");
+		return value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
+				&& isContainerAnnotationOf(annotation, value.getReturnType().getComponentType());
+	}
+
+	private static boolean isContainerAnnotationOf(Annotation potentialContainer, Class<?> potentialRepeatable) {
+		Repeatable repeatable = potentialRepeatable.getAnnotation(Repeatable.class);
+		return repeatable != null && repeatable.value().equals(potentialContainer.annotationType());
 	}
 
 	static <A extends Annotation> Stream<A> findAnnotations(ExtensionContext context, Class<A> annotationType,

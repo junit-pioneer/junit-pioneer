@@ -58,10 +58,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface CartesianProductTest {
 
 	/**
-	 * This is a copy of {@link org.junit.jupiter.params.ParameterizedTest#name()}.
-	 * This is in no way a guarantee that what works with <code>ParameterizedTest#name()</code>
-	 * will work with this.
-	 *
 	 * <p>The display name to be used for individual invocations of the
 	 * parameterized test; never blank or consisting solely of whitespace.
 	 * </p>
@@ -81,6 +77,7 @@ public @interface CartesianProductTest {
 	 * </p>
 	 *
 	 * @see java.text.MessageFormat
+	 * @see org.junit.jupiter.params.ParameterizedTest#name()
 	 */
 	String name() default "[{index}] {arguments}";
 

@@ -63,7 +63,7 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnota
 
 	private void initArgumentsSource(ExtensionContext context) {
 		// since it's a method annotation, the element will always be present
-		AnnotatedElement element = context.getElement().orElseThrow(IllegalStateException::new);
+		AnnotatedElement element = context.getRequiredTestMethod();
 
 		verifyNoContainerAnnotationIsPresent(element);
 		List<Annotation> argumentsSources = Stream

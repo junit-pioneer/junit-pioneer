@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -125,10 +124,11 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		return ReflectionSupport.newInstance(providerAnnotation.value());
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<Object> provideArguments(ExtensionContext context, Annotation source, ArgumentsProvider provider)
 			throws Exception {
 		if (provider instanceof CartesianAnnotationConsumer) {
-			((Consumer<Annotation>) provider).accept(source);
+			((CartesianAnnotationConsumer<Annotation>) provider).accept(source);
 			return provider
 					.provideArguments(context)
 					.map(Arguments::get)

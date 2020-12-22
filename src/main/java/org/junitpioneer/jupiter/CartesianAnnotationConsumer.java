@@ -14,9 +14,10 @@ import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
 
 /**
- * If you are implementing an {@link org.junit.jupiter.params.provider.ArgumentsProvider}
- * for {@link CartesianProductTest}, it has to implement this annotation to 'consume'
- * the annotation on your test. For more information, see the documentation.
+ * If you are implementing an {@link org.junit.jupiter.params.provider.ArgumentsProvider ArgumentsProvider}
+ * for {@link CartesianProductTest}, it has to implement this annotation to 'consume' the annotation on
+ * your test. For more information, see
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
  *
  * @param <A> the annotation holding necessary data for providing the arguments
  * @see org.junit.jupiter.params.provider.ArgumentsProvider
