@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter.issue;
 
 import static java.util.stream.Collectors.joining;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junitpioneer.jupiter.IssueProcessor;
@@ -22,11 +23,13 @@ import org.junitpioneer.jupiter.IssueTestSuite;
  */
 public class StoringIssueProcessor implements IssueProcessor {
 
-	private List<IssueTestSuite> issueTestSuites;
+	// collected test suites are static to make them accessible for tests
+	static final List<IssueTestSuite> ISSUE_TEST_SUITES = new ArrayList<>();
 
 	@Override
 	public void processTestResults(List<IssueTestSuite> issueTestSuites) {
-		this.issueTestSuites = issueTestSuites;
+		ISSUE_TEST_SUITES.clear();
+		ISSUE_TEST_SUITES.addAll(issueTestSuites);
 
 		String suitesString = issueTestSuites
 				.stream()
@@ -34,10 +37,6 @@ public class StoringIssueProcessor implements IssueProcessor {
 						+ suite.tests().stream().map(Object::toString).collect(joining("\n\t", "\t", "\n")))
 				.collect(joining(""));
 		System.out.println(suitesString);
-	}
-
-	public List<IssueTestSuite> issueTestSuites() {
-		return issueTestSuites;
 	}
 
 }
