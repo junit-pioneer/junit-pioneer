@@ -58,8 +58,15 @@ class PioneerAnnotationUtilsTests {
 				try {
 					if (line.equals("package org.junitpioneer.jupiter;"))
 						copyWriter.write("package org.junitpioneer.jupiter.params;");
-					else
+					else {
+						if (line.startsWith("/**")) {
+							copyWriter
+									.write(
+										"/* GENERATED IN UNIT TEST, DO NOT EDIT! EDIT COPY IN org.junitpioneer.jupiter! */");
+							copyWriter.newLine();
+						}
 						copyWriter.write(line);
+					}
 					copyWriter.newLine();
 				}
 				catch (IOException ex) {

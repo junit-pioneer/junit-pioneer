@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+/* GENERATED IN UNIT TEST, DO NOT EDIT! EDIT COPY IN org.junitpioneer.jupiter! */
 /**
  * Pioneer-internal utility class to handle annotations.
  *
