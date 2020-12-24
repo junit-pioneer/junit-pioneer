@@ -57,11 +57,7 @@ public class DisableIfNameExtension implements ExecutionCondition {
 			return checkResults(substringResults, regExpResults);
 		if (checkSubstrings)
 			return substringResults;
-		if (checkRegExps)
-			return regExpResults;
-
-		// can't happen, all four combinations are covered
-		return null;
+		return regExpResults;
 	}
 
 	private ConditionEvaluationResult checkResults(ConditionEvaluationResult substringResults,
@@ -78,8 +74,8 @@ public class DisableIfNameExtension implements ExecutionCondition {
 				.filter(displayName::matches)
 				.collect(Collectors.joining("', '"));
 		return matches.isEmpty()
-				? enabled("Display name '" + displayName + " doesn't match any regular expression.")
-				: disabled("Display name '" + displayName + "' matches '" + matches + "'.");
+				? enabled(reason(displayName, "doesn't match any regular expression."))
+				: disabled(reason(displayName, format("matches '%s'.",matches)));
 		//@formatter:on
 	}
 
@@ -90,9 +86,13 @@ public class DisableIfNameExtension implements ExecutionCondition {
 				.filter(displayName::contains)
 				.collect(Collectors.joining("', '"));
 		return matches.isEmpty()
-				? enabled("Display name '" + displayName + " doesn't contain any substring.")
-				: disabled("Display name '" + displayName + "' contains '" + matches + "'.");
+				? enabled(reason(displayName, "doesn't contain any substring."))
+				: disabled(reason(displayName, format("contains '%s'.", matches)));
 		//@formatter:on
+	}
+
+	private static String reason(String displayName, String outcome) {
+		return format("Display name '%s' %s", displayName, outcome);
 	}
 
 }

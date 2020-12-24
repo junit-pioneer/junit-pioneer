@@ -17,11 +17,13 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
+@ResourceLock(value = "org.junitpioneer.jupiter.params.PioneerAnnotationUtils")
 class DisabledIfNameExtensionTests {
 
 	@Nested

@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener.REPORT_ENTRY_KEY;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +39,7 @@ public class IssueExtensionTests {
 				.executeTestMethod(IssueExtensionTests.IssueDummyTestClass.class, "testIsAnnotated");
 		assertThat(results).hasNumberOfSucceededTests(1);
 
-		assertThat(results).hasSingleReportEntry().withKeyAndValue("Issue", "Req 11");
+		assertThat(results).hasSingleReportEntry().withKeyAndValue(REPORT_ENTRY_KEY, "Req 11");
 	}
 
 	@Test
@@ -48,7 +49,7 @@ public class IssueExtensionTests {
 				.executeTestClass(IssueExtensionTests.IssueDummyTestClass.NestedDummyTestClass.class);
 		assertThat(results).hasNumberOfSucceededTests(1);
 
-		assertThat(results).hasSingleReportEntry().withKeyAndValue("Issue", "Req-Class");
+		assertThat(results).hasSingleReportEntry().withKeyAndValue(REPORT_ENTRY_KEY, "Req-Class");
 	}
 
 	static class IssueDummyTestClass {

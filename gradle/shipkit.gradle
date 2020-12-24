@@ -11,7 +11,7 @@ shipkit {
 	ciManagement.url = 'https://github.com/junit-pioneer/junit-pioneer/actions'
 
 	// Needed for uploading to Maven Central
-	team.developers = ['nicolaiparlog:Nicolai Parlog', 'smoyer64:Steve Moyer', 'Bukama:Matthias Bünger', 'aepfli:Simon Schrottner']
+	team.developers = ['nicolaiparlog:Nicolai Parlog', 'smoyer64:Steve Moyer', 'Bukama:Matthias Bünger', 'aepfli:Simon Schrottner', 'Michael1993:Mihály Verhás']
 	team.ignoredContributors = ['shipkit-org']
 }
 
