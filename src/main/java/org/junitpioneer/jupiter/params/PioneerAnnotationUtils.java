@@ -11,7 +11,9 @@
 package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -31,14 +33,22 @@ import org.junitpioneer.jupiter.PioneerException;
  */
 class PioneerAnnotationUtils {
 
+	private static final Class<?> PIONEER_ANNOTATION_UTILS;
 	private static final Method FIND_CLOSEST_ENCLOSING_ANNOTATION;
+	private static final Method FIND_ANNOTATED_ANNOTATION;
+	private static final Method IS_CONTAINER_ANNOTATION;
 
 	static {
 		try {
-			FIND_CLOSEST_ENCLOSING_ANNOTATION = Class
-					.forName("org.junitpioneer.jupiter.PioneerAnnotationUtils")
+			PIONEER_ANNOTATION_UTILS = Class.forName("org.junitpioneer.jupiter.PioneerAnnotationUtils");
+			FIND_CLOSEST_ENCLOSING_ANNOTATION = PIONEER_ANNOTATION_UTILS
 					.getMethod("findClosestEnclosingAnnotation", ExtensionContext.class, Class.class);
 			FIND_CLOSEST_ENCLOSING_ANNOTATION.setAccessible(true); // NOSONAR this is necessary to reach the method
+			FIND_ANNOTATED_ANNOTATION = PIONEER_ANNOTATION_UTILS
+					.getMethod("findAnnotatedAnnotations", AnnotatedElement.class, Class.class);
+			FIND_ANNOTATED_ANNOTATION.setAccessible(true); // NOSONAR this is necessary to reach the method
+			IS_CONTAINER_ANNOTATION = PIONEER_ANNOTATION_UTILS.getMethod("isContainerAnnotation", Annotation.class);
+			IS_CONTAINER_ANNOTATION.setAccessible(true); // NOSONAR this is necessary to reach the method
 		}
 		catch (ReflectiveOperationException ex) {
 			throw new PioneerException("Pioneer could not initialize itself.", ex);
@@ -54,6 +64,26 @@ class PioneerAnnotationUtils {
 			Class<A> annotationType) {
 		try {
 			return (Optional<A>) FIND_CLOSEST_ENCLOSING_ANNOTATION.invoke(null, context, annotationType);
+		}
+		catch (ReflectiveOperationException ex) {
+			throw new PioneerException("Internal Pioneer error.", ex);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <A extends Annotation> List<Annotation> findAnnotatedAnnotations(AnnotatedElement element,
+			Class<A> annotation) {
+		try {
+			return (List<Annotation>) FIND_ANNOTATED_ANNOTATION.invoke(null, element, annotation);
+		}
+		catch (ReflectiveOperationException ex) {
+			throw new PioneerException("Internal Pioneer error.", ex);
+		}
+	}
+
+	public static boolean isContainerAnnotation(Annotation annotation) {
+		try {
+			return (boolean) IS_CONTAINER_ANNOTATION.invoke(null, annotation);
 		}
 		catch (ReflectiveOperationException ex) {
 			throw new PioneerException("Internal Pioneer error.", ex);

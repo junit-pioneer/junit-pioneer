@@ -155,10 +155,15 @@ class PioneerAnnotationUtils {
 		}
 	}
 
-	public static boolean isContainerAnnotation(Annotation annotation) throws NoSuchMethodException {
-		Method value = annotation.annotationType().getDeclaredMethod("value");
-		return value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
-				&& isContainerAnnotationOf(annotation, value.getReturnType().getComponentType());
+	public static boolean isContainerAnnotation(Annotation annotation) {
+		// See https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6.3
+		try {
+			Method value = annotation.annotationType().getDeclaredMethod("value");
+			return value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
+					&& isContainerAnnotationOf(annotation, value.getReturnType().getComponentType());
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
 	}
 
 	private static boolean isContainerAnnotationOf(Annotation potentialContainer, Class<?> potentialRepeatable) {

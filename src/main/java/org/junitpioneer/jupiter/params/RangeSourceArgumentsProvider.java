@@ -66,12 +66,7 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnota
 		AnnotatedElement element = context.getRequiredTestMethod();
 
 		verifyNoContainerAnnotationIsPresent(element);
-		List<Annotation> argumentsSources = Stream
-				.of(element.getAnnotations())
-				.filter(annotations -> Arrays
-						.stream(annotations.annotationType().getAnnotationsByType(ArgumentsSource.class))
-						.anyMatch(annotation -> getClass().equals(annotation.value())))
-				.collect(Collectors.toList());
+		List<Annotation> argumentsSources = PioneerAnnotationUtils.findAnnotatedAnnotations(element, ArgumentsSource.class);
 
 		if (argumentsSources.size() != 1) {
 			String message = String
@@ -84,23 +79,9 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnota
 	}
 
 	private void verifyNoContainerAnnotationIsPresent(AnnotatedElement element) {
-		if (Stream.of(element.getAnnotations()).anyMatch(this::isContainerAnnotation))
+		if (Stream.of(element.getAnnotations()).anyMatch(PioneerAnnotationUtils::isContainerAnnotation))
 			throw new IllegalArgumentException(
 				"Range source annotation should not be repeated for @ParameterizedTest. @ParameterizedTest should have exactly one argument source.");
-	}
-
-	private boolean isContainerAnnotation(Annotation annotation) {
-		// See https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6.3
-		return Stream
-				.of(annotation.annotationType().getMethods())
-				.anyMatch(method -> method.getName().equals("value") && method.getReturnType().isArray()
-						&& method.getReturnType().getComponentType().isAnnotation()
-						&& declaresContainer(method.getReturnType().getComponentType(), annotation));
-	}
-
-	private static boolean declaresContainer(Class<?> componentType, Annotation annotation) {
-		Repeatable repeatable = componentType.getAnnotation(Repeatable.class);
-		return repeatable != null && repeatable.value().equals(annotation.annotationType());
 	}
 
 	private Stream<?> asStream(Range<?> r) {
