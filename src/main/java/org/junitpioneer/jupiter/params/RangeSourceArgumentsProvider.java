@@ -50,7 +50,7 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnota
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-		// since it's a method annotation, the element will always be present
+		// argumentSource is present if fed through the CartesianAnnotationConsumer interface
 		if (argumentsSource == null)
 			initArgumentsSource(context);
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();

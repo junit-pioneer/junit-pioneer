@@ -137,7 +137,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 					.collect(toList());
 		} else {
 			throw new PreconditionViolationException(
-				format("%s does not implement the Consumer<T> interface.", provider.getClass()));
+				format("%s does not implement the CartesianAnnotationConsumer<T> interface.", provider.getClass()));
 		}
 	}
 

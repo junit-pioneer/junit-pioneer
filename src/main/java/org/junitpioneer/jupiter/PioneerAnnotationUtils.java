@@ -155,7 +155,7 @@ class PioneerAnnotationUtils {
 		}
 	}
 
-	private static boolean isContainerAnnotation(Annotation annotation) throws NoSuchMethodException {
+	public static boolean isContainerAnnotation(Annotation annotation) throws NoSuchMethodException {
 		Method value = annotation.annotationType().getDeclaredMethod("value");
 		return value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
 				&& isContainerAnnotationOf(annotation, value.getReturnType().getComponentType());

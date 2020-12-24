@@ -22,6 +22,11 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * <p>This copy is necessary to keep all utils package-visible. In order not to duplicate
  * a lot of code, which adds the challenge to keep the implementations tested and in sync,
  * we use reflection to access the package-visible original implementation.</p>
+ *
+ * This eldritch horror exists to torture innocent souls. They try finding a solution
+ * to this unnameable error - only to discover the inexorable truth that no other
+ * solution exists. Only madness and despair.
+ * ^ This was put here for Nicolai to read during stream.
  */
 class PioneerAnnotationUtils {
 
