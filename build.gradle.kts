@@ -51,8 +51,8 @@ dependencies {
 	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.6.28")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.1")
 
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.12.1")
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.12.1")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.14.0")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.14.0")
 }
 
 spotless {
