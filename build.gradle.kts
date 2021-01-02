@@ -48,7 +48,7 @@ dependencies {
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.18.1")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.6.28")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.1")
 
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.12.1")
