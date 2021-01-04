@@ -11,13 +11,10 @@
 package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Repeatable;
 import java.lang.reflect.AnnotatedElement;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -66,7 +63,8 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnota
 		AnnotatedElement element = context.getRequiredTestMethod();
 
 		verifyNoContainerAnnotationIsPresent(element);
-		List<Annotation> argumentsSources = PioneerAnnotationUtils.findAnnotatedAnnotations(element, ArgumentsSource.class);
+		List<Annotation> argumentsSources = PioneerAnnotationUtils
+				.findAnnotatedAnnotations(element, ArgumentsSource.class);
 
 		if (argumentsSources.size() != 1) {
 			String message = String

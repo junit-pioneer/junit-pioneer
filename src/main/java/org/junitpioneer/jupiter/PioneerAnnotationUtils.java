@@ -161,7 +161,8 @@ class PioneerAnnotationUtils {
 			Method value = annotation.annotationType().getDeclaredMethod("value");
 			return value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
 					&& isContainerAnnotationOf(annotation, value.getReturnType().getComponentType());
-		} catch (NoSuchMethodException e) {
+		}
+		catch (NoSuchMethodException e) {
 			return false;
 		}
 	}
