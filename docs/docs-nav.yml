@@ -1,6 +1,6 @@
 # NOTE: The URLs need a trailing slash or the selected nav element
 #       won't be highlighted.
-  - title: Features
+  - title: JUnit Pioneer Extensions
     children:
       - title: "Cartesian product of all test parameters"
         url: /docs/cartesian-product/
