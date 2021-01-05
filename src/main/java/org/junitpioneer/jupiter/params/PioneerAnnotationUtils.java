@@ -59,6 +59,10 @@ class PioneerAnnotationUtils {
 		// private constructor to prevent instantiation of utility class
 	}
 
+	private static PioneerException internalError(ReflectiveOperationException ex) {
+		return new PioneerException("Internal Pioneer error.", ex);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <A extends Annotation> Optional<A> findClosestEnclosingAnnotation(ExtensionContext context,
 			Class<A> annotationType) {
@@ -66,7 +70,7 @@ class PioneerAnnotationUtils {
 			return (Optional<A>) FIND_CLOSEST_ENCLOSING_ANNOTATION.invoke(null, context, annotationType);
 		}
 		catch (ReflectiveOperationException ex) {
-			throw new PioneerException("Internal Pioneer error.", ex);
+			throw internalError(ex);
 		}
 	}
 
@@ -77,7 +81,7 @@ class PioneerAnnotationUtils {
 			return (List<Annotation>) FIND_ANNOTATED_ANNOTATION.invoke(null, element, annotation);
 		}
 		catch (ReflectiveOperationException ex) {
-			throw new PioneerException("Internal Pioneer error.", ex);
+			throw internalError(ex);
 		}
 	}
 
@@ -86,7 +90,7 @@ class PioneerAnnotationUtils {
 			return (boolean) IS_CONTAINER_ANNOTATION.invoke(null, annotation);
 		}
 		catch (ReflectiveOperationException ex) {
-			throw new PioneerException("Internal Pioneer error.", ex);
+			throw internalError(ex);
 		}
 	}
 
