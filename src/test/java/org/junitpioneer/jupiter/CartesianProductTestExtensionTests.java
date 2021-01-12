@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.list;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -66,6 +66,17 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
 			assertThat(results).hasNumberOfReportEntries(3).withValues("0", "1", "2");
+		}
+
+		@Test
+		@DisplayName("works correctly with abstract parameters")
+		void abstractParameter() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class, "abstractParam",
+						Number.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results).hasNumberOfReportEntries(2).withValues("1", "2");
 		}
 
 		@Test
@@ -254,6 +265,15 @@ public class CartesianProductTestExtensionTests {
 				assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
 				assertThat(results).hasNumberOfReportEntries(3).withValues("A:SECONDS", "B:SECONDS", "C:SECONDS");
 
+			}
+
+			@Test
+			@DisplayName("when test class has a constructor with auto-injected values")
+			void testClassWithConstructor() {
+				ExecutionResults results = PioneerTestKit.executeTestClass(TestClassWithConstructor.class);
+
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
+				assertThat(results).hasNumberOfReportEntries(4).withValues("13", "14", "23", "24");
 			}
 
 		}
@@ -506,7 +526,7 @@ public class CartesianProductTestExtensionTests {
 
 			sets.add(1, 2, 3).addAll(list).addAll(stream).addAll(iterable);
 
-			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9), list(10, 11, 12));
+			assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9), list(10, 11, 12));
 		}
 
 		@Test
@@ -518,7 +538,7 @@ public class CartesianProductTestExtensionTests {
 
 			sets.add(1, 2, 1).addAll(list).addAll(stream).addAll(iterable);
 
-			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8), list(10, 11));
+			assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8), list(10, 11));
 		}
 
 	}
@@ -533,30 +553,37 @@ public class CartesianProductTestExtensionTests {
 		@ReportEntry("{0}")
 		void singleParameter(String param) {
 			int value = Integer.parseInt(param);
-			Assertions.assertThat(value).isBetween(0, 2);
+			assertThat(value).isBetween(0, 2);
+		}
+
+		@CartesianProductTest
+		@CartesianValueSource(ints = { 1, 2 })
+		@ReportEntry("{0}")
+		void abstractParam(Number number) {
+			assertThat(number).isIn(1, 2);
 		}
 
 		@CartesianProductTest({ "0", "1" })
 		@ReportEntry("{0}{1}{2}")
 		void threeBits(String a, String b, String c) {
 			int value = Integer.parseUnsignedInt(a + b + c, 2);
-			Assertions.assertThat(value).isBetween(0b000, 0b111);
+			assertThat(value).isBetween(0b000, 0b111);
 		}
 
 		@CartesianProductTest
 		@ReportEntry("{0}, {1}, {2}")
 		void nFold(String string, Class<?> type, TimeUnit unit, TestInfo info) {
-			Assertions.assertThat(string).endsWith("a");
-			Assertions.assertThat(type).isInterface();
-			Assertions.assertThat(unit.name()).endsWith("S");
-			Assertions.assertThat(info.getTags()).isEmpty();
+			assertThat(string).endsWith("a");
+			assertThat(type).isInterface();
+			assertThat(unit.name()).endsWith("S");
+			assertThat(info.getTags()).isEmpty();
 		}
 
 		@CartesianProductTest(factory = "supplyValues")
 		@ReportEntry("{0},{1}")
 		void explicitFactory(String string, TimeUnit unit) {
-			Assertions.assertThat(string).isIn("War", "Peace");
-			Assertions.assertThat(unit.name()).endsWith("S");
+			assertThat(string).isIn("War", "Peace");
+			assertThat(unit.name()).endsWith("S");
 		}
 
 	}
@@ -652,7 +679,7 @@ public class CartesianProductTestExtensionTests {
 				"To where it bent in the undergrowth;" })
 		@ReportEntry("{0} - {1}")
 		void poeticValues(String line, String endLine) {
-			Assertions.assertThat(line).startsWith("And");
+			assertThat(line).startsWith("And");
 		}
 
 		@CartesianProductTest
@@ -766,6 +793,24 @@ public class CartesianProductTestExtensionTests {
 		@ParameterizedTest
 		@CartesianValueSource(ints = { 1, 2, 3, 4 })
 		void parameterizedTest(int i) {
+		}
+
+	}
+
+	static class TestClassWithConstructor {
+
+		private final TestInfo testInfo;
+
+		TestClassWithConstructor(TestInfo info) {
+			this.testInfo = info;
+		}
+
+		@CartesianProductTest
+		@ReportEntry("{0}{1}")
+		@CartesianValueSource(ints = { 1, 2 })
+		@CartesianValueSource(ints = { 3, 4 })
+		void shouldHaveTestInfo(int i, int j) {
+			assertThat(testInfo).isNotNull();
 		}
 
 	}
