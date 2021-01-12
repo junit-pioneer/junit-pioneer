@@ -40,9 +40,8 @@ class CartesianProductResolver implements ParameterResolver {
 		Object parameter = parameters.get(parameterContext.getIndex());
 		// need to go from primitives to wrapper class or `isAssignableFrom` returns false for primitive parameters
 		Class<?> parameterClass = wrap(parameterContext.getParameter().getType());
-		boolean parameterWithCorrectType = parameterClass.isAssignableFrom(parameter.getClass());
-
-		return parameterWithCorrectType;
+		// parameter with correct type
+		return parameterClass.isAssignableFrom(parameter.getClass());
 	}
 
 	@Override
