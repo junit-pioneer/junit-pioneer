@@ -53,7 +53,11 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 		if (wasReported)
 			return;
 
-		// log report entry and to System.out - check docs for reasons
+		// Log as report entry and to System.out - check docs for reasons, but why System.out?
+		// Because report entries lack tool support and are easily lost and System.err is
+		// too invasive (particularly since, with good configuration, the module system won't
+		// print a warning and hence it's only Pioneer polluting System.err - not good).
+		// System.out seemed like a good compromise.
 		context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
 		System.out.println(WARNING_KEY + ": " + WARNING_VALUE);
 	}

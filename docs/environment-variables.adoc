@@ -9,7 +9,7 @@ Other environment variables that are changed during the test, are *not* restored
 WARNING: Java considers environment variables to be immutable, so this extension uses reflection to change them.
 This requires that the `SecurityManager` allows modifications and can potentially break on different operating systems and Java versions.
 Be aware that this is a fragile solution and consider finding a better one for your specific situation.
-If you're running on Java 9 or later, you may have to add `--add-opens=java.base/java.util=ALL-UNNAMED` to your test execution to prevent warnings or even errors.
+For more details, see <<Warnings for Reflective Access>>.
 
 For example, clearing a environment variable for a test execution can be done as follows:
 
@@ -71,6 +71,36 @@ class MyEnvironmentVariableTest {
 
 }
 ----
+
+== Warnings for Reflective Access
+
+As explained above, this extension uses reflective access to change the otherwise immutable environment variables.
+On Java 9 to 16, this leads to a warning like the following:
+
+[source]
+----
+[ERROR] WARNING: An illegal reflective access operation has occurred
+[ERROR] WARNING: Illegal reflective access by org.junitpioneer.jupiter.EnvironmentVariableUtils [...] to field [...]
+[ERROR] WARNING: Please consider reporting this to the maintainers of org.junitpioneer.jupiter.EnvironmentVariableUtils
+[ERROR] WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+[ERROR] WARNING: All illegal access operations will be denied in a future release
+----
+
+On Java 17 and later, you get this error instead:
+
+[source]
+----
+java.lang.reflect.InaccessibleObjectException: Unable to make field [...] accessible:
+module java.base does not "opens java.lang" to unnamed module [...]
+----
+
+The best way to prevent these warnings/errors, is to change the code under test, so this extension is no longer needed.
+The next best thing is to allow access to that specific package with `--add-opens=java.base/java.util=ALL-UNNAMED` (if you place JUnit Pioneer on the class path) or ``--add-opens=java.base/java.util=org.junitpioneer` (if you place it on the module path).
+
+These command line options need to be added to the JVM that executes the tests:
+
+* https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html[Gradle]
+* http://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#argLine[Maven basics] and https://nipafx.dev/maven-on-java-9/[advanced]
 
 == Thread-Safety
 
