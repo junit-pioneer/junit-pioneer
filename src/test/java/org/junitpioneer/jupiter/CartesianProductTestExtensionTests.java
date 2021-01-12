@@ -25,7 +25,16 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junitpioneer.jupiter.params.ByteRangeSource;
+import org.junitpioneer.jupiter.params.DoubleRangeSource;
+import org.junitpioneer.jupiter.params.FloatRangeSource;
+import org.junitpioneer.jupiter.params.IntRangeSource;
+import org.junitpioneer.jupiter.params.IntRangeSource.IntRangeSources;
+import org.junitpioneer.jupiter.params.LongRangeSource;
+import org.junitpioneer.jupiter.params.ShortRangeSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -140,6 +149,71 @@ public class CartesianProductTestExtensionTests {
 					.withValues("Then took the other, as just as fair,", "And having perhaps the better claim",
 						"Because it was grassy and wanted wear,", "Though as for that the passing there",
 						"Had worn them really about the same,");
+		}
+
+		@Test
+		@DisplayName("works with @IntRangeSource")
+		void intRangeSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "basicIntRangeSource",
+						int.class, int.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(8).hasNumberOfSucceededTests(8);
+			assertThat(results)
+					.hasNumberOfReportEntries(8)
+					.withValues("1,2", "1,4", "2,2", "2,4", "3,2", "3,4", "4,2", "4,4");
+		}
+
+		@Test
+		@DisplayName("works with @IntRangeSource if it is in a container annotation")
+		void intRangeSourceInContainer() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "containerIntSource",
+						int.class, int.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
+			assertThat(results).hasNumberOfReportEntries(6).withValues("12", "13", "22", "23", "32", "33");
+		}
+
+		@Test
+		@DisplayName("works with range source and @CartesianValueSource combined")
+		void cartesianValueSourceWithRangeSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "cartesianValueSource",
+						int.class, int.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(8).hasNumberOfSucceededTests(8);
+			assertThat(results)
+					.hasNumberOfReportEntries(8)
+					.withValues("0,2", "0,4", "1,2", "1,4", "2,2", "2,4", "3,2", "3,4");
+		}
+
+		@Test
+		@DisplayName("works with @FloatRangeSource and @ByteRangeSource")
+		void floatByteSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "floatByteSource", float.class,
+						byte.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(8).hasNumberOfSucceededTests(8);
+			assertThat(results)
+					.hasNumberOfReportEntries(8)
+					.withValues("f:1.2,b:1", "f:1.7,b:1", "f:1.2,b:2", "f:1.7,b:2", "f:1.2,b:3", "f:1.7,b:3",
+						"f:1.2,b:4", "f:1.7,b:4");
+		}
+
+		@Test
+		@DisplayName("works with @DoubleRangeSource, @LongRangeSource and @ShortRangeSource")
+		void doubleLongShortSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "doubleLongShortSource",
+						double.class, long.class, short.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(8).hasNumberOfSucceededTests(8);
+			assertThat(results)
+					.hasNumberOfReportEntries(8)
+					.withValues("d:1.2,l:1,s:4", "d:1.7,l:1,s:4", "d:1.2,l:2,s:4", "d:1.7,l:2,s:4", "d:1.2,l:1,s:5",
+						"d:1.7,l:1,s:5", "d:1.2,l:2,s:5", "d:1.7,l:2,s:5");
 		}
 
 		@Nested
@@ -332,8 +406,9 @@ public class CartesianProductTestExtensionTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(PreconditionViolationException.class)
-					.hasMessageContaining("Exactly one type of input must be provided");
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
 		}
 
 		@Test
@@ -349,7 +424,7 @@ public class CartesianProductTestExtensionTests {
 
 		@Test
 		@DisplayName("has both a value and a factory method specified")
-		void conflict1() {
+		void conflictValueVsFactory() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "conflictValueAndFactory",
 						String.class, String.class);
@@ -357,12 +432,12 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
 		}
 
 		@Test
 		@DisplayName("has both a value and @CartesianValueSource annotations")
-		void conflict2() {
+		void conflictValueVsAnnotation() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "conflictValueAndValueSource",
 						String.class, String.class);
@@ -370,12 +445,12 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
 		}
 
 		@Test
 		@DisplayName("has both a factory method and @CartesianValueSource annotations")
-		void conflict3() {
+		void conflictAnnotationVsFactory() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class,
 						"conflictValueSourceAndFactory", int.class, String.class);
@@ -383,7 +458,35 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessage("CartesianProductTest can only take exactly one type of arguments source");
+					.hasMessage("CartesianProductTest can only take exactly one type of arguments source.");
+		}
+
+		@Test
+		@DisplayName("annotated with @ValueSource")
+		void valueSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "valueSource", int.class,
+						int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+		}
+
+		@Test
+		@DisplayName("ParameterizedTest does not work with @CartesianValueSource")
+		void parameterizedWithCartesianValues() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "parameterizedTest",
+						int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					// CartesianValueArgumentsProvider does not get initialized because it does not implement AnnotationConsumer
+					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.hasMessageContaining("argument array must not be null");
 		}
 
 	}
@@ -411,10 +514,11 @@ public class CartesianProductTestExtensionTests {
 		void shouldRemoveNonDistinct() {
 			List<Integer> list = list(4, 5, 4);
 			Stream<Integer> stream = Stream.of(7, 8, 7);
+			Iterable<Integer> iterable = list(10, 11, 10);
 
-			sets.add(1, 2, 1).addAll(list).addAll(stream);
+			sets.add(1, 2, 1).addAll(list).addAll(stream).addAll(iterable);
 
-			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8));
+			Assertions.assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8), list(10, 11));
 		}
 
 	}
@@ -613,6 +717,57 @@ public class CartesianProductTestExtensionTests {
                 .add(TimeUnit.SECONDS, TimeUnit.SECONDS)
                 .add("A", "B", "C");
         //@formatter:on
+	}
+
+	static class ArgumentsSourceTestCases {
+
+		@CartesianProductTest
+		@IntRangeSource(from = 1, to = 4, closed = true)
+		@IntRangeSource(from = 2, to = 4, step = 2, closed = true)
+		@ReportEntry("{0},{1}")
+		void basicIntRangeSource(int i, int j) {
+		}
+
+		@CartesianProductTest
+		@IntRangeSource(from = 0, to = 4)
+		@ValueSource(ints = { 2, 4 })
+		void valueSource(int i, int j) {
+		}
+
+		@CartesianProductTest
+		@IntRangeSources({ @IntRangeSource(from = 1, to = 3, closed = true),
+				@IntRangeSource(from = 2, to = 3, closed = true) })
+		@ReportEntry("{0}{1}")
+		void containerIntSource(int i, int j) {
+		}
+
+		@CartesianProductTest
+		@IntRangeSource(from = 0, to = 4)
+		@CartesianValueSource(ints = { 2, 4 })
+		@ReportEntry("{0},{1}")
+		void cartesianValueSource(int i, int j) {
+		}
+
+		@CartesianProductTest
+		@FloatRangeSource(from = 1.2f, to = 1.7f, step = 0.5f, closed = true)
+		@ByteRangeSource(from = 1, to = 4, closed = true)
+		@ReportEntry("f:{0},b:{1}")
+		void floatByteSource(float f, byte b) {
+		}
+
+		@CartesianProductTest
+		@DoubleRangeSource(from = 1.2, to = 2.2, step = 0.5) // 1.2, 1.7
+		@LongRangeSource(from = 1L, to = 3L) // 1, 2
+		@ShortRangeSource(from = 4, to = 5, closed = true) // 4, 5
+		@ReportEntry("d:{0},l:{1},s:{2}")
+		void doubleLongShortSource(double d, long l, short s) {
+		}
+
+		@ParameterizedTest
+		@CartesianValueSource(ints = { 1, 2, 3, 4 })
+		void parameterizedTest(int i) {
+		}
+
 	}
 
 }

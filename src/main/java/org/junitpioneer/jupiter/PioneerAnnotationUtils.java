@@ -11,10 +11,15 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -115,6 +120,53 @@ class PioneerAnnotationUtils {
 	public static <A extends Annotation> Stream<A> findAllEnclosingRepeatableAnnotations(ExtensionContext context,
 			Class<A> annotationType) {
 		return findAnnotations(context, annotationType, true, true);
+	}
+
+	/**
+	 * Returns the annotations <em>present</em> on the {@code AnnotatedElement}
+	 * that are themselves annotated with the specified annotation. The meta-annotation can be <em>present</em>,
+	 * <em>indirectly present</em>, or <em>meta-present</em>.
+	 */
+	public static <A extends Annotation> List<Annotation> findAnnotatedAnnotations(AnnotatedElement element,
+			Class<A> annotation) {
+		return Arrays
+				.stream(element.getDeclaredAnnotations())
+				// flatten @Repeatable aggregator annotations
+				.flatMap(PioneerAnnotationUtils::flatten)
+				.filter(a -> !(findOnElement(a.annotationType(), annotation, true).isEmpty()))
+				.collect(Collectors.toList());
+	}
+
+	private static Stream<Annotation> flatten(Annotation annotation) {
+		try {
+			if (isContainerAnnotation(annotation)) {
+				Method value = annotation.annotationType().getDeclaredMethod("value");
+				Annotation[] invoke = (Annotation[]) value.invoke(annotation);
+				return Stream.of(invoke).flatMap(PioneerAnnotationUtils::flatten);
+			} else {
+				return Stream.of(annotation);
+			}
+		}
+		catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			throw new RuntimeException("Failed to flatten annotation stream.", e); //NOSONAR
+		}
+	}
+
+	public static boolean isContainerAnnotation(Annotation annotation) {
+		// See https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6.3
+		try {
+			Method value = annotation.annotationType().getDeclaredMethod("value");
+			return value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
+					&& isContainerAnnotationOf(annotation, value.getReturnType().getComponentType());
+		}
+		catch (NoSuchMethodException e) {
+			return false;
+		}
+	}
+
+	private static boolean isContainerAnnotationOf(Annotation potentialContainer, Class<?> potentialRepeatable) {
+		Repeatable repeatable = potentialRepeatable.getAnnotation(Repeatable.class);
+		return repeatable != null && repeatable.value().equals(potentialContainer.annotationType());
 	}
 
 	static <A extends Annotation> Stream<A> findAnnotations(ExtensionContext context, Class<A> annotationType,

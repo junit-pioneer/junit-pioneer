@@ -176,6 +176,17 @@ class RangeSourceArgumentsProviderTests {
 		}
 
 		@Test
+		void twoOfSameAnnotations() {
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "twoOfSameAnnotations");
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(IllegalArgumentException.class)
+					.hasMessageContainingAll("Range source annotation should not be repeated for @ParameterizedTest.",
+						"@ParameterizedTest should have exactly one argument source.");
+		}
+
+		@Test
 		void zeroStep() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "zeroStep");
 
@@ -213,6 +224,13 @@ class RangeSourceArgumentsProviderTests {
 		@LongRangeSource(from = 1L, to = 2L)
 		@ParameterizedTest
 		void twoAnnotations() {
+		}
+
+		@IntRangeSource(from = 1, to = 2)
+		@IntRangeSource(from = 2, to = 5)
+		@LongRangeSource(from = 1L, to = 5L)
+		@ParameterizedTest
+		void twoOfSameAnnotations() {
 		}
 
 		@IntRangeSource(from = 1, to = 2, step = 0)
