@@ -28,9 +28,16 @@ class CartesianProductResolver implements ParameterResolver {
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		return parameterContext.getIndex() < parameters.size() && parameters
-				.stream()
-				.anyMatch(param -> wrap(parameterContext.getParameter().getType()).isAssignableFrom(param.getClass()));
+		boolean parameterInRange = parameterContext.getIndex() < parameters.size();
+		if (!parameterInRange)
+			return false;
+
+		Object parameter = parameters.get(parameterContext.getIndex());
+		// need to go from primitives to wrapper class or `isAssignableFrom` returns false for primitive parameters
+		Class<?> parameterClass = wrap(parameterContext.getParameter().getType());
+		boolean parameterWithCorrectType = parameterClass.isAssignableFrom(parameter.getClass());
+
+		return parameterWithCorrectType;
 	}
 
 	@Override
