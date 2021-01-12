@@ -24,8 +24,8 @@ The extension takes the test data parameter values and runs the test for every p
 
 You can supply test parameters to `@CartesianProductTest` in multiple ways.
 
- - The annotation can have a `String[]` value (see <<Supplying CartesianProductTest with a `String[]`>>)
- - the test method can be annotated with `@CartesianValueSource` (see <<Annotating your test method with @CartesianValueSource>>)
+ - the annotation can have a `String[]` value (see <<Supplying CartesianProductTest with a `String[]`>>)
+ - the test method can be annotated with `@CartesianValueSource` or range source annotations (see <<Annotating your test method>>)
  - the test class can have a static factory method providing the arguments (see <<Writing a static factory method for the parameters>>)
 
 Specifying more than one kind of parameter source (e.g.: both annotating your test method and having a static factory) does not work and will throw an `ExtensionConfigurationException`.
@@ -82,7 +82,7 @@ To demonstrate with a table:
 | 8th test  | "1"            | "1"            | "1"
 |===
 
-== Annotating your test method with @CartesianValueSource
+== Annotating your test method
 
 If you don't only supply string values to your test method like in the example above, you can annotate your method with `@CartesianValueSource`.
 `@CartesianValueSource` is used to define the possible inputs of a single test parameter - as annotations are listed top-to-bottom, they provide parameter values left-to-right.
@@ -118,6 +118,53 @@ To demonstrate with a table:
 | 5th test  | 4                 | "A"
 | 6th test  | 4                 | "B"
 |===
+
+Alternatively, you can annotate your test method with link:range-sources.adoc[range source annotations].
+For _this purpose only_, range sources are repeatable.
+When you annotate your `@CartesianProductTest` with a range source, you specify the inputs to a single test parameter.
+This is _not_ like `@ParameterizedTest` where you have to define all inputs in a single `@ArgumentsSource`.
+
+[source,java]
+----
+@CartesianProductTest
+@ShortRangeSource(from = 1, to = 3, step = 1)
+@LongRangeSource(from = 0L, to = 2L, step = 1, closed = true)
+void testShortAndLong(short s, long l) {
+	// passing test code
+}
+----
+
+Just like with `@CartesianValueSource`, annotations get assigned to parameters in order.
+The first annotation from the top gets assigned to the first parameter, the second annotation to the second parameter and so on.
+
+The test `testShortAndLong` is executed exactly six times.
+The first parameter can have any of the two values `1`, `2`.
+The second parameter can have any of the three values `0L`, `1L` or `2L`.
+`@CartesianProductTest` tests for all input combinations, that's `2 × 3`, so six tests in total.
+
+To demonstrate with a table:
+|===
+| # of test | value of `s` | value of `l`
+| 1st test  | 1            | 0L
+| 2nd test  | 1            | 1L
+| 3rd test  | 1            | 2L
+| 4th test  | 2            | 0L
+| 5th test  | 2            | 1L
+| 6th test  | 2            | 2L
+|===
+
+For more information, please see the link:range-sources.adoc[separate documentation about range sources].
+You can combine range sources with `@CartesianValueSource`, it works as you'd expect:
+
+[source, java]
+----
+@CartesianProductTest
+@ShortRangeSource(from = 1, to = 3)
+@CartesianValueSource(strings = { "text one", "text two" })
+void mixAndMatchTest(short number, String text) {
+	// passing test code
+}
+----
 
 == Writing a static factory method for the parameters
 
@@ -240,6 +287,94 @@ static CartesianProductTest.Sets resolveTestReporterParam() {
 	return new CartesianProductTest.Sets()
 		.add("A", "B", "C")
 		.add(new MyTestReporter()); // in this case MyTestReporter implements TestReporter
+}
+----
+
+== Writing your own `@ArgumentsSource` for `@CartesianProductTest`
+
+You might find that the available `@ArgumentsSource` annotations do not fit your need.
+In that case, you can write a custom https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsSource.html[`@ArgumentsSource`] and a corresponding https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsProvider.html[`ArgumentsProvider`] for `@CartesianProductTest`.
+
+Let's demonstrate with an example.
+
+For the sake of the example, let's imagine that `@CartesianValueSource` does not exist.
+We would like to have an `@ArgumentsSource`, where we can specify integers.
+Let's create an annotation for it.
+
+[source,java]
+----
+import java.lang.annotation.*;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Repeatable(CartesianIntSources.class)
+@ArgumentsSource(IntArgumentsProvider.class)
+public @interface CartesianIntSource {
+
+	int[] numbers();
+
+	@interface CartesianIntSources {
+		CartesianIntSource[] value();
+	}
+}
+----
+
+The annotation has to have `RUNTIME` retention, so JUnit (and Pioneer) can discover it on your test via reflection.
+It does not have to be repeatable, necessarily, but it is strongly recommended, since you can only specify the input of a single test parameter in a single annotation.
+It has to be annotated with `@ArgumentsSource`, so Pioneer knows which ArgumentsProvider it should invoke.
+
+Next, we need to have a class that takes these values and passes them to our test.
+
+[source,java]
+----
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+
+class IntArgumentsProvider implements ArgumentsProvider, CartesianAnnotationConsumer<CartesianIntSource> {
+
+	private CartesianIntSource source;
+
+	@Override
+	void accept(CartesianIntSource source) {
+		this.source = source;
+	}
+
+	@Override
+	public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+		return Arrays.stream(source.value()).map(Arguments::of);
+	}
+
+}
+----
+
+The class has to implement both interfaces (`ArgumentsProvider` and `CartesianAnnotationConsumer<? extends Annotation>`).
+Note that an implementation of `ArgumentsProvider` must be declared as either a top-level class or as a static nested class.
+The `IntArgumentsProvider` class first 'consumes' the annotation via the `accept` method, then provides the arguments to JUnit via the `provideArguments` method.
+The order of these operations is guaranteed, so `accept` is always first and `provideArguments` is always second.
+
+In our case, we don't have to process the values we pass in the annotation, so we just return the values as is, but you could do additional processing, for example:
+
+[source,java]
+----
+// no annotations to make example shorter
+@interface PeopleSource {
+
+	String[] names();
+
+	int ages();
+
+}
+
+// no class definition to make example shorter
+@Override
+public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+	return IntStream.range(0, source.names().length)
+		.mapToObj(i -> new Person(source.names()[i], source.ages()[i]))
+		.map(Arguments::of);
 }
 ----
 

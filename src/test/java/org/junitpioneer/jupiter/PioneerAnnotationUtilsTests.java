@@ -10,14 +10,21 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -335,6 +342,21 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleFailedTest()
 							.withException()
 							.hasMessageContainingAll("repeated", "annotation", "root class");
+				}
+
+				@Test
+				void discoversAllAnnotationsAnnotatedWithAnAnnotation() throws NoSuchMethodException {
+					Method annotatedMethod = AnnotatedAnnotationTestCases.class.getMethod("annotatedMethod");
+
+					List<Annotation> annotatedAnnotations = PioneerAnnotationUtils
+							.findAnnotatedAnnotations(annotatedMethod, ExtendWith.class);
+
+					assertThat(annotatedAnnotations)
+							.hasSize(5)
+							.isInstanceOf(java.util.ArrayList.class)
+							.extracting(Annotation::annotationType)
+							.allSatisfy(annotation -> assertThat(annotation)
+									.isIn(ParameterizedTest.class, ReportEntry.class, RepeatableFail.class));
 				}
 
 			}

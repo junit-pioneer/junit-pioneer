@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junitpioneer.jupiter.params.IntRangeSource;
 
 class PioneerAnnotationUtilsTestCases {
 
@@ -205,6 +207,27 @@ class RepeatableFailExtension implements BeforeTestExecutionCallback {
 				.collect(joining(","));
 		if (!message.isEmpty())
 			throw new AssertionError(message);
+	}
+
+}
+
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@interface NotAContainer {
+
+	RepeatableFail[] value();
+
+}
+
+class AnnotatedAnnotationTestCases {
+
+	@ParameterizedTest
+	@ReportEntry("value")
+	@RepeatableFails({ @RepeatableFail, @RepeatableFail })
+	@RepeatableFail
+	@NotAContainer({ @RepeatableFail })
+	@IntRangeSource(from = 1, to = 2)
+	public void annotatedMethod() {
 	}
 
 }

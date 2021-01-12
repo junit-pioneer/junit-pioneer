@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -27,15 +28,29 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * <a href="https://junit-pioneer.org/docs/range-sources/" target="_top">the documentation on <code>Range Sources</code></a>
  * </p>
  *
+ * <p>This annotation is {@link Repeatable}, to make it usable with {@link org.junitpioneer.jupiter.CartesianProductTest}.
+ * If used with {@link org.junit.jupiter.params.ParameterizedTest}, it can only be used once (because {@code ParameterizedTest}
+ * can only take a single {@link ArgumentsSource}). Using it more than once will throw an {@link IllegalArgumentException}.
+ * If used with {@link org.junitpioneer.jupiter.CartesianProductTest}, it can be repeated to provide arguments to
+ * more than one parameter.
+ * </p>
+ *
+ * <p>
+ * For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>Cartesian product tests</code></a>
+ * </p>
+ *
  * @since 0.5
  * @see ArgumentsSource
  * @see org.junit.jupiter.params.ParameterizedTest
+ * @see org.junitpioneer.jupiter.CartesianProductTest
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ArgumentsSource(RangeSourceArgumentsProvider.class)
 @RangeClass(DoubleRange.class)
+@Repeatable(DoubleRangeSource.DoubleRangeSources.class)
 public @interface DoubleRangeSource {
 
 	/**
@@ -57,5 +72,14 @@ public @interface DoubleRangeSource {
 	 * Whether the range is closed (inclusive of the {@link #to()}) or not.
 	 */
 	boolean closed() default false;
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface DoubleRangeSources {
+
+		DoubleRangeSource[] value();
+
+	}
 
 }

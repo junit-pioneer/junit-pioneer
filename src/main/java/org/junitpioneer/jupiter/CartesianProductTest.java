@@ -48,6 +48,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>@CartesianProductTest</code></a>.
  * </p>
  * @see org.junitpioneer.jupiter.CartesianValueSource
+ *
+ * @since 1.0
  */
 @TestTemplate
 @ExtendWith(CartesianProductTestExtension.class)
@@ -56,7 +58,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface CartesianProductTest {
 
 	/**
+	 * <p>The display name to be used for individual invocations of the
+	 * parameterized test; never blank or consisting solely of whitespace.
+	 * </p>
 	 *
+	 * <p>Defaults to {@link org.junit.jupiter.params.ParameterizedTest#DEFAULT_DISPLAY_NAME}.
+	 * </p>
+	 *
+	 * Supported placeholders:
+	 *
+	 * - {@link org.junit.jupiter.params.ParameterizedTest#DISPLAY_NAME_PLACEHOLDER}
+	 * - {@link org.junit.jupiter.params.ParameterizedTest#INDEX_PLACEHOLDER}
+	 * - {@link org.junit.jupiter.params.ParameterizedTest#ARGUMENTS_PLACEHOLDER}
+	 * - <code>{0}</code>, <code>{1}</code>, etc.: an individual argument (0-based)
+	 *
+	 * <p>For the latter, you may use {@link java.text.MessageFormat} patterns
+	 * to customize formatting.
+	 * </p>
+	 *
+	 * @see java.text.MessageFormat
+	 * @see org.junit.jupiter.params.ParameterizedTest#name()
 	 */
 	String name() default "[{index}] {arguments}";
 
@@ -70,22 +91,61 @@ public @interface CartesianProductTest {
 	 */
 	String factory() default "";
 
+	/**
+	 * Class for defining sets to a {@code CartesianProductTest} execution.
+	 *
+	 * @since 1.0
+	 */
 	class Sets {
 
 		private final List<List<?>> sets = new ArrayList<>(); //NOSONAR
 
+		/**
+		 * Creates a single set of distinct objects (according to
+		 * {@link Object#equals(Object)}) for a CartesianProductTest
+		 * from the passed objects.
+		 *
+		 * @param entries the objects we want to include in a single set
+		 * @return the {@code Sets} object, for fluent set definitions
+		 */
 		public Sets add(Object... entries) {
 			return addAll(Arrays.stream(entries));
 		}
 
+		/**
+		 * Creates a single set of distinct objects (according to
+		 * {@link Object#equals(Object)}) for a CartesianProductTest
+		 * from the elements of the passed {@link Iterable}.
+		 *
+		 * @param entries the objects we want to include in a single set
+		 * @return the {@code Sets} object, for fluent set definitions
+		 */
 		public Sets addAll(Iterable<?> entries) {
 			return addAll(StreamSupport.stream(entries.spliterator(), false));
 		}
 
+		/**
+		 * Creates a single set of distinct objects (according to
+		 * {@link Object#equals(Object)}) for a CartesianProductTest
+		 * from the elements of the passed {@link java.util.Collection}.
+		 *
+		 * The passed argument does not have to be an instance of {@link java.util.Set}.
+		 *
+		 * @param entries the objects we want to include in a single set
+		 * @return the {@code Sets} object, for fluent set definitions
+		 */
 		public Sets addAll(Collection<?> entries) {
 			return addAll(entries.stream());
 		}
 
+		/**
+		 * Creates a single set of distinct objects (according to
+		 * {@link Object#equals(Object)}) for a CartesianProductTest
+		 * from the elements of the passed {@link java.util.stream.Stream}.
+		 *
+		 * @param entries the objects we want to include in a single set
+		 * @return the {@code Sets} object, for fluent set definitions
+		 */
 		public Sets addAll(Stream<?> entries) {
 			sets.add(entries.distinct().collect(toList()));
 			return this;
