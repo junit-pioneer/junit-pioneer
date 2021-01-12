@@ -59,7 +59,7 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 		// print a warning and hence it's only Pioneer polluting System.err - not good).
 		// System.out seemed like a good compromise.
 		context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
-		System.out.println(WARNING_KEY + ": " + WARNING_VALUE);
+		System.out.println(WARNING_KEY + ": " + WARNING_VALUE); //NOSONAR
 	}
 
 	@Override
