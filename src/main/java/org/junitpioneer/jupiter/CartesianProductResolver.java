@@ -28,6 +28,11 @@ class CartesianProductResolver implements ParameterResolver {
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+		// the extension only supports injecting parameters into methods (not constructors, for example)
+		boolean isTestMethod = extensionContext.getTestMethod().isPresent();
+		if (!isTestMethod)
+			return false;
+
 		boolean parameterInRange = parameterContext.getIndex() < parameters.size();
 		if (!parameterInRange)
 			return false;
