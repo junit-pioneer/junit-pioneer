@@ -30,7 +30,7 @@ class CartesianProductResolver implements ParameterResolver {
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		return parameterContext.getIndex() < parameters.size() && parameters
 				.stream()
-				.anyMatch(param -> wrap(parameterContext.getParameter().getType()).equals(param.getClass()));
+				.anyMatch(param -> wrap(parameterContext.getParameter().getType()).isAssignableFrom(param.getClass()));
 	}
 
 	@Override
