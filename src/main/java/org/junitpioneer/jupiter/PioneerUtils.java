@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static org.junit.platform.commons.support.ReflectionSupport.findMethod;
 
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -105,6 +106,18 @@ class PioneerUtils {
 			}
 		}
 		return object.toString();
+	}
+
+	/**
+	 * Replaces all primitive types with the appropriate wrapper types.
+	 * Returns the passed argument if it's not a primitive according to {@link Class#isPrimitive()}.
+	 *
+	 * @return the wrapped class of the primitive type, or the passed class
+	 * @see MethodType#wrap()
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> wrap(Class<T> clazz) {
+		return (Class<T>) MethodType.methodType(clazz).wrap().returnType();
 	}
 
 }

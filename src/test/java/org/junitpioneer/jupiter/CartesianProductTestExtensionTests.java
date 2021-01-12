@@ -182,6 +182,15 @@ public class CartesianProductTestExtensionTests {
 
 			}
 
+			@Test
+			@DisplayName("when test class has a constructor with auto-injected values")
+			void testClassWithConstructor() {
+				ExecutionResults results = PioneerTestKit.executeTestClass(TestClassWithConstructor.class);
+
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
+				assertThat(results).hasNumberOfReportEntries(4).withValues("13", "14", "23", "24");
+			}
+
 		}
 
 	}
@@ -613,6 +622,24 @@ public class CartesianProductTestExtensionTests {
                 .add(TimeUnit.SECONDS, TimeUnit.SECONDS)
                 .add("A", "B", "C");
         //@formatter:on
+	}
+
+	static class TestClassWithConstructor {
+
+		private final TestInfo testInfo;
+
+		TestClassWithConstructor(TestInfo info) {
+			this.testInfo = info;
+		}
+
+		@CartesianProductTest
+		@ReportEntry("{0}{1}")
+		@CartesianValueSource(ints = { 1, 2 })
+		@CartesianValueSource(ints = { 3, 4 })
+		void shouldHaveTestInfo(int i, int j) {
+			Assertions.assertThat(testInfo).isNotNull();
+		}
+
 	}
 
 }

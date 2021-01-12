@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junitpioneer.jupiter.PioneerUtils.wrap;
+
 import java.util.List;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -26,7 +28,9 @@ class CartesianProductResolver implements ParameterResolver {
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		return parameterContext.getIndex() < parameters.size();
+		return parameterContext.getIndex() < parameters.size() && parameters
+				.stream()
+				.anyMatch(param -> wrap(parameterContext.getParameter().getType()).equals(param.getClass()));
 	}
 
 	@Override
