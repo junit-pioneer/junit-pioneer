@@ -30,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.jupiter.api.extension.TestWatcher;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 class ReportEntryExtension implements TestWatcher, BeforeEachCallback, InvocationInterceptor {
 

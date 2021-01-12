@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -50,7 +51,7 @@ class PioneerAnnotationUtilsTests {
 		class SimpleAnnotations {
 
 			@Nested
-			@ResourceLock(value = "org.junitpioneer.jupiter.FailExtension", mode = READ_WRITE)
+			@ResourceLock(value = "org.junitpioneer.internal.FailExtension", mode = READ_WRITE)
 			@DisplayName("and not stackable")
 			class StopOnFirst {
 
@@ -104,7 +105,7 @@ class PioneerAnnotationUtilsTests {
 			}
 
 			@Nested
-			@ResourceLock(value = "org.junitpioneer.jupiter.FailExtension", mode = READ_WRITE)
+			@ResourceLock(value = "org.junitpioneer.internal.FailExtension", mode = READ_WRITE)
 			@DisplayName("but stackable")
 			class Stackable {
 
@@ -176,7 +177,7 @@ class PioneerAnnotationUtilsTests {
 		class RepeatableAnnotations {
 
 			@Nested
-			@ResourceLock(value = "org.junitpioneer.jupiter.RepeatableFailExtension", mode = READ_WRITE)
+			@ResourceLock(value = "org.junitpioneer.internal.RepeatableFailExtension", mode = READ_WRITE)
 			@DisplayName("but not stackable")
 			class StopOnFirst {
 
@@ -255,7 +256,7 @@ class PioneerAnnotationUtilsTests {
 			}
 
 			@Nested
-			@ResourceLock(value = "org.junitpioneer.jupiter.RepeatableFailExtension", mode = READ_WRITE)
+			@ResourceLock(value = "org.junitpioneer.internal.RepeatableFailExtension", mode = READ_WRITE)
 			@DisplayName("and stackable")
 			class Stackable {
 

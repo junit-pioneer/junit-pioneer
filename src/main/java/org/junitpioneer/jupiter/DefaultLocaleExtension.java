@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 

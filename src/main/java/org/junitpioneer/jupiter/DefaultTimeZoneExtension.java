@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 class DefaultTimeZoneExtension implements BeforeEachCallback, AfterEachCallback {
 

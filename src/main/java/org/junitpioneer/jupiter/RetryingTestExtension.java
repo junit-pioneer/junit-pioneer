@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.opentest4j.TestAbortedException;
 
 public class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
