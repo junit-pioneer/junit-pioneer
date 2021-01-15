@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.PioneerUtils;
 
 class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, String> {
 

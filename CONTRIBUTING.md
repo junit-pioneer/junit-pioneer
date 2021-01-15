@@ -73,6 +73,18 @@ Everything related to branches, commits, and more is described [further below](#
 
 Where to put types and how to name them.
 
+#### Package Structure
+
+Classes usually belong into one of these packages:
+
+* `org.junitpioneer.internal` - code intended to be shared across various extensions
+* `org.junitpioneer.jupiter` - extensions to JUnit Jupiter
+	* `....issue` - implementation details of issue extension
+	* `....params` - extensions for Jupiter's `@ParameterizedTest`
+* `org.junitpioneer.vintage` - extensions to older JUnit versions
+
+If none of them is a good fit, we'll find one together.
+
 #### Annotations
 
 Many extensions will come with their own annotations.

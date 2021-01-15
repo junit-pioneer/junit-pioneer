@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.internal;
 
 import static java.util.stream.Collectors.joining;
 
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.jupiter.params.IntRangeSource;
 
 class PioneerAnnotationUtilsTestCases {

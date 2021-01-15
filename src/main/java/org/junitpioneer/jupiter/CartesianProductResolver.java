@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junitpioneer.jupiter.PioneerUtils.wrap;
+import static org.junitpioneer.internal.PioneerUtils.wrap;
 
 import java.util.List;
 

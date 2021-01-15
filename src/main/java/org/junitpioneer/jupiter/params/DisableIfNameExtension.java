@@ -13,7 +13,6 @@ package org.junitpioneer.jupiter.params;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
-import static org.junitpioneer.jupiter.params.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,6 +21,7 @@ import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 public class DisableIfNameExtension implements ExecutionCondition {
 
@@ -34,7 +34,8 @@ public class DisableIfNameExtension implements ExecutionCondition {
 		 */
 		if (!context.getUniqueId().contains("test-template-invocation"))
 			return enabled("Never disable parameterized test method itself");
-		return findClosestEnclosingAnnotation(context, DisableIfDisplayName.class)
+		return PioneerAnnotationUtils
+				.findClosestEnclosingAnnotation(context, DisableIfDisplayName.class)
 				.map(annotation -> disable(context, annotation))
 				.orElseGet(() -> enabled("No instructions to disable"));
 	}

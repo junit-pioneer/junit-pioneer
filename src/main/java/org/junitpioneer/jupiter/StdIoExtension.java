@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static java.lang.String.format;
-import static org.junitpioneer.jupiter.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
+import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 import java.io.InputStream;
 import java.io.PrintStream;

@@ -35,6 +35,8 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.PioneerUtils;
 
 class CartesianProductTestExtension implements TestTemplateInvocationContextProvider {
 

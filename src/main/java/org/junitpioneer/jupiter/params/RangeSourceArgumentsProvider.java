@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
 
 /**
