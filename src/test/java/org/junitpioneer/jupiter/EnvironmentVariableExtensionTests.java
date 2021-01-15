@@ -260,7 +260,7 @@ class EnvironmentVariableExtensionTests {
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithoutExtension");
 
 			assertThat(results).hasNoReportEntries();
-			assertThat((out.capturedLines())).containsExactly("");
+			assertThat(out.capturedLines()).containsExactly("");
 		}
 
 		@Test
@@ -269,7 +269,7 @@ class EnvironmentVariableExtensionTests {
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithExtension");
 
 			assertThat(results).hasSingleReportEntry().withKeyAndValue(WARNING_KEY, WARNING_VALUE);
-			assertThat((out.capturedLines())).containsExactly(WARNING_KEY + ": " + WARNING_VALUE);
+			assertThat(out.capturedLines()).containsExactly(WARNING_KEY + ": " + WARNING_VALUE);
 		}
 
 		@Test
