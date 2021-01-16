@@ -52,8 +52,16 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 	@Override
 	protected void reportWarning(ExtensionContext context) {
 		boolean wasReported = REPORTED_WARNING.getAndSet(true);
-		if (!wasReported)
-			context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
+		if (wasReported)
+			return;
+
+		// Log as report entry and to System.out - check docs for reasons, but why System.out?
+		// Because report entries lack tool support and are easily lost and System.err is
+		// too invasive (particularly since, with good configuration, the module system won't
+		// print a warning and hence it's only Pioneer polluting System.err - not good).
+		// System.out seemed like a good compromise.
+		context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
+		System.out.println(WARNING_KEY + ": " + WARNING_VALUE); //NOSONAR
 	}
 
 	@Override
