@@ -130,7 +130,7 @@ To demonstrate with a table:
 @CartesianProductTest
 @CartesianEnumSource(ChronoUnit.class)
 void testWithEnumSource(TemporalUnit unit) {
-    assertNotNull(unit);
+    // passing test code
 }
 ----
 
@@ -149,7 +149,7 @@ Changing the method parameter type to `ChronoUnit` allows you to omit the explic
 @CartesianProductTest
 @CartesianEnumSource
 void testWithCartesianEnumSourceWithAutoDetection(ChronoUnit unit) {
-    assertNotNull(unit);
+    assertThat(unit).isNotNull();
 }
 ----
 
@@ -161,7 +161,7 @@ If omitted, all constants will be used.
 @CartesianProductTest
 @CartesianEnumSource(names = { "DAYS", "HOURS" })
 void testWithCartesianEnumSourceInclude(ChronoUnit unit) {
-    assertTrue(EnumSet.of(ChronoUnit.DAYS, ChronoUnit.HOURS).contains(unit));
+    assertThat(EnumSet.of(ChronoUnit.DAYS, ChronoUnit.HOURS)).contains(unit);
 }
 ----
 
@@ -173,7 +173,7 @@ For example, you can exclude names from the enum constant pool or specify regula
 @CartesianProductTest
 @CartesianEnumSource(mode = EXCLUDE, names = { "ERAS", "FOREVER" })
 void testWithCartesianEnumSourceExclude(ChronoUnit unit) {
-    assertFalse(EnumSet.of(ChronoUnit.ERAS, ChronoUnit.FOREVER).contains(unit));
+    assertThat(EnumSet.of(ChronoUnit.ERAS, ChronoUnit.FOREVER)).doesNotContain(unit);
 }
 ----
 
@@ -182,7 +182,7 @@ void testWithCartesianEnumSourceExclude(ChronoUnit unit) {
 @CartesianProductTest
 @CartesianEnumSource(mode = MATCH_ALL, names = "^.*DAYS$")
 void testWithCartesianEnumSourceRegex(ChronoUnit unit) {
-    assertTrue(unit.name().endsWith("DAYS"));
+    assertThat(unit.name()).endsWith("DAYS");
 }
 ----
 
