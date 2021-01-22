@@ -204,17 +204,6 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("works with @CartesianEnumSource and auto-detected test parameter tyoe")
-		void cartesianEnumSourceAutoDetection() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "autoDetection",
-						TestEnum.class);
-
-			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
-			assertThat(results).hasNumberOfReportEntries(3).withValues("ONE", "TWO", "THREE");
-		}
-
-		@Test
 		@DisplayName("works with @CartesianValueSource and auto-injected test parameters")
 		void valueSourceAutoInjectedParams() {
 			ExecutionResults results = PioneerTestKit
@@ -929,12 +918,6 @@ public class CartesianProductTestExtensionTests {
 		@CartesianEnumSource(TestEnum.class)
 		@ReportEntry("{0}")
 		void injected(TestEnum e, TestReporter reporter) {
-		}
-
-		@CartesianProductTest
-		@CartesianEnumSource(TestEnum.class)
-		@ReportEntry("{0}")
-		void autoDetection(TestEnum e) {
 		}
 
 		@CartesianProductTest
