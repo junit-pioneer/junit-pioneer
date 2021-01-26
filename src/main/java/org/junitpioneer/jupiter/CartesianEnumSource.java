@@ -45,7 +45,7 @@ import org.junit.platform.commons.PreconditionViolationException;
  *
  * @see CartesianProductTest
  *
- * @since 1.2.1
+ * @since 1.3.0
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
