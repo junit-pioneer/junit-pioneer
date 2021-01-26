@@ -23,7 +23,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.platform.commons.PreconditionViolationException;
 
 /**
- * This is basically a copy of ValueSourceArgumentsProvider,
+ * This is basically a copy of Jupiter's {@code ValueSourceArgumentsProvider},
  * except it does NOT support {@code @ParameterizedTest}.
  */
 class CartesianValueArgumentsProvider implements CartesianAnnotationConsumer<CartesianValueSource>, ArgumentsProvider {

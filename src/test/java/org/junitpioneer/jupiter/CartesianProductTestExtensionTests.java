@@ -148,8 +148,64 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
+		@DisplayName("creates a 2-fold cartesian product when all parameters are supplied via @CartesianEnumSource")
+		void cartesianEnumSources() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "allValues",
+						TestEnum.class, AnotherTestEnum.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(9)
+					.hasNumberOfSucceededTests(3)
+					.hasNumberOfFailedTests(6);
+			assertThat(results)
+					.hasNumberOfReportEntries(9)
+					.withValues("ONE - ALPHA", "ONE - BETA", "ONE - GAMMA", "TWO - ALPHA", "TWO - BETA", "TWO - GAMMA",
+						"THREE - ALPHA", "THREE - BETA", "THREE - GAMMA");
+		}
+
+		@Test
+		@DisplayName("creates a 2-fold cartesian product when all parameters are supplied via @CartesianEnumSource with INCLUDE and EXCLUDE modes")
+		void cartesianEnumSourcesWithIncludeAndExcludeModes() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "someValues",
+						TestEnum.class, AnotherTestEnum.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(2)
+					.hasNumberOfSucceededTests(1)
+					.hasNumberOfFailedTests(1);
+			assertThat(results).hasNumberOfReportEntries(2).withValues("ONE - ALPHA", "TWO - ALPHA");
+		}
+
+		@Test
+		@DisplayName("creates a 2-fold cartesian product when all parameters are supplied via @CartesianEnumSource with MATCH_ANY and MATCH_ALL modes")
+		void cartesianEnumSourcesWithMatchAnyAndMatchAllModes() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "patternValues",
+						TestEnum.class, AnotherTestEnum.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(2)
+					.hasNumberOfSucceededTests(1)
+					.hasNumberOfFailedTests(1);
+			assertThat(results).hasNumberOfReportEntries(2).withValues("ONE - ALPHA", "TWO - ALPHA");
+		}
+
+		@Test
+		@DisplayName("works with @CartesianEnumSource and auto-injected test parameters")
+		void cartesianEnumSourceAutoInjectedParams() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "injected", TestEnum.class,
+						TestReporter.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+			assertThat(results).hasNumberOfReportEntries(3).withValues("ONE", "TWO", "THREE");
+		}
+
+		@Test
 		@DisplayName("works with @CartesianValueSource and auto-injected test parameters")
-		void autoInjectedParams() {
+		void valueSourceAutoInjectedParams() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "injected", String.class,
 						TestReporter.class);
@@ -197,6 +253,34 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("0,2", "0,4", "1,2", "1,4", "2,2", "2,4", "3,2", "3,4");
+		}
+
+		@Test
+		@DisplayName("works with range source and @CartesianEnumSource combined")
+		void cartesianEnumSourceWithRangeSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "cartesianEnumSource",
+						int.class, TestEnum.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(12).hasNumberOfSucceededTests(12);
+			assertThat(results)
+					.hasNumberOfReportEntries(12)
+					.withValues("0,ONE", "0,TWO", "0,THREE", "1,ONE", "1,TWO", "1,THREE", "2,ONE", "2,TWO", "2,THREE",
+						"3,ONE", "3,TWO", "3,THREE");
+		}
+
+		@Test
+		@DisplayName("works with @CartesianValueSource and @CartesianEnumSource combined")
+		void cartesianValueSourceWithCartesianEnumSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class,
+						"cartesianValueSourceWithCartesianEnumSource", int.class, TestEnum.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(12).hasNumberOfSucceededTests(12);
+			assertThat(results)
+					.hasNumberOfReportEntries(12)
+					.withValues("0,ONE", "0,TWO", "0,THREE", "1,ONE", "1,TWO", "1,THREE", "2,ONE", "2,TWO", "2,THREE",
+						"3,ONE", "3,TWO", "3,THREE");
 		}
 
 		@Test
@@ -367,7 +451,6 @@ public class CartesianProductTestExtensionTests {
 						int.class, String.class, TimeUnit.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfFailedTests(3);
-
 		}
 
 		@Test
@@ -391,7 +474,6 @@ public class CartesianProductTestExtensionTests {
 						int.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfFailedTests(6);
-
 		}
 
 		@Test
@@ -414,7 +496,6 @@ public class CartesianProductTestExtensionTests {
 					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "wrongType", float.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfFailedTests(2);
-
 		}
 
 		@Test
@@ -439,7 +520,95 @@ public class CartesianProductTestExtensionTests {
 						String.class, int.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(10).hasNumberOfFailedTests(10);
+		}
 
+		@Test
+		@DisplayName("not all parameters have a corresponding @CartesianEnumSource")
+		void missingAnnotationCartesianEnumSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "missing", TestEnum.class,
+						AnotherTestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
+					.hasMessageContaining("No ParameterResolver registered");
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource has the wrong type")
+		void wrongTypeCartesianEnumSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "wrongType",
+						AnotherTestEnum.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfFailedTests(2);
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource annotations are not in order")
+		void wrongOrderCartesianEnumSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "wrongOrder",
+						AnotherTestEnum.class, TestEnum.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(9).hasNumberOfFailedTests(9);
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource annotations contain non existing names")
+		void nonExistingNamesCartesianEnumSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "nonExistingNames",
+						TestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource annotations contain duplicate names")
+		void duplicateNamesCartesianEnumSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "duplicateNames",
+						TestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource annotations contain invalid pattern with MATCH_ANY mode")
+		void wrongAnyPatternCartesianEnumSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "wrongAnyPattern",
+						TestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource annotations contain invalid pattern with MATCH_ALL mode")
+		void wrongAllPatternCartesianEnumSource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "wrongAllPattern",
+						TestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
 		}
 
 		@Test
@@ -716,6 +885,79 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	static class CartesianEnumSourceTestCases {
+
+		@CartesianProductTest
+		@CartesianEnumSource(TestEnum.class)
+		@CartesianEnumSource(AnotherTestEnum.class)
+		@ReportEntry("{0} - {1}")
+		void allValues(TestEnum e1, AnotherTestEnum e2) {
+			assertThat(e1).isEqualTo(TestEnum.ONE);
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" }, mode = CartesianEnumSource.Mode.INCLUDE)
+		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "BETA",
+				"GAMMA" }, mode = CartesianEnumSource.Mode.EXCLUDE)
+		@ReportEntry("{0} - {1}")
+		void someValues(TestEnum e1, AnotherTestEnum e2) {
+			assertThat(e1).isEqualTo(TestEnum.ONE);
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(value = TestEnum.class, names = { "O.*",
+				"TW.*" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
+		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "AL.*",
+				".*PHA" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
+		@ReportEntry("{0} - {1}")
+		void patternValues(TestEnum e1, AnotherTestEnum e2) {
+			assertThat(e1).isEqualTo(TestEnum.ONE);
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(TestEnum.class)
+		@ReportEntry("{0}")
+		void injected(TestEnum e, TestReporter reporter) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(value = TestEnum.class, names = "ONE")
+		void missing(TestEnum e1, AnotherTestEnum e2) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" })
+		void wrongType(AnotherTestEnum e) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(TestEnum.class)
+		@CartesianEnumSource(AnotherTestEnum.class)
+		void wrongOrder(AnotherTestEnum e1, TestEnum e2) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "FOUR", "FIVE" })
+		void nonExistingNames(TestEnum e1) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "ONE" })
+		void duplicateNames(TestEnum e1) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
+		void wrongAnyPattern(TestEnum e1) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
+		void wrongAllPattern(TestEnum e1) {
+		}
+
+	}
+
 	static class RedundantInputSetTestCases {
 
 		@CartesianProductTest(value = { "1", "1", "2" })
@@ -795,6 +1037,20 @@ public class CartesianProductTestExtensionTests {
 		void parameterizedTest(int i) {
 		}
 
+		@CartesianProductTest
+		@IntRangeSource(from = 0, to = 4)
+		@CartesianEnumSource(TestEnum.class)
+		@ReportEntry("{0},{1}")
+		void cartesianEnumSource(int i, TestEnum e) {
+		}
+
+		@CartesianProductTest
+		@CartesianValueSource(ints = { 0, 1, 2, 3 })
+		@CartesianEnumSource(TestEnum.class)
+		@ReportEntry("{0},{1}")
+		void cartesianValueSourceWithCartesianEnumSource(int i, TestEnum e) {
+		}
+
 	}
 
 	static class TestClassWithConstructor {
@@ -813,6 +1069,14 @@ public class CartesianProductTestExtensionTests {
 			assertThat(testInfo).isNotNull();
 		}
 
+	}
+
+	private enum TestEnum {
+		ONE, TWO, THREE
+	}
+
+	private enum AnotherTestEnum {
+		ALPHA, BETA, GAMMA
 	}
 
 }

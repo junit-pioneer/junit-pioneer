@@ -108,6 +108,10 @@ Thank you for your efforts! 🙏
 
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
+#### 2021
+
+* [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409)
+
 #### 2020
 
 * [Allon Murienik](https://github.com/mureinik) contributed [the range sources](https://junit-pioneer.org/docs/range-sources/) (#44 / #123)

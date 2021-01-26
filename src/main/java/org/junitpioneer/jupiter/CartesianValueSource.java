@@ -23,7 +23,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * {@code @CartesianValueSource} is an argument source which provides access to
  * an array of literal values.
  *
- *  <p>Supported types include {@link #shorts}, {@link #bytes}, {@link #ints},
+ * <p>Supported types include {@link #shorts}, {@link #bytes}, {@link #ints},
  * {@link #longs}, {@link #floats}, {@link #doubles}, {@link #chars},
  * {@link #booleans}, {@link #strings}, and {@link #classes}. Note, however,
  * that only one of the supported types may be specified per
@@ -36,7 +36,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * {@code @CartesianValueSource} per parameter.
  * </p>
  *
- * @see org.junitpioneer.jupiter.CartesianProductTest
+ * @see CartesianProductTest
  *
  * @since 1.0
  */
