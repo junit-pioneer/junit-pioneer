@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.internal;
 
 import static org.junit.platform.commons.support.ReflectionSupport.findMethod;
 
@@ -23,10 +23,11 @@ import java.util.stream.Collectors;
 
 /**
  * Pioneer-internal utility class.
+ * DO NOT USE THIS CLASS - IT MAY CHANGE SIGNIFICANTLY IN ANY MINOR UPDATE.
  *
  * @see PioneerAnnotationUtils
  */
-class PioneerUtils {
+public class PioneerUtils {
 
 	private PioneerUtils() {
 		// private constructor to prevent instantiation of utility class

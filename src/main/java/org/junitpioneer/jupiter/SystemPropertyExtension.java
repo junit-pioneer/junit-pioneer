@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.PioneerUtils;
 
 class SystemPropertyExtension extends AbstractEntryBasedExtension<String, String> {
 

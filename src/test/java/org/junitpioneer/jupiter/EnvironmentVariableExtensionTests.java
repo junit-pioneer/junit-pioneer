@@ -255,17 +255,21 @@ class EnvironmentVariableExtensionTests {
 		}
 
 		@Test
-		void shouldNotReportWarningIfExtensionNotUsed() {
+		@StdIo
+		void shouldNotReportWarningIfExtensionNotUsed(StdOut out) {
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithoutExtension");
 
 			assertThat(results).hasNoReportEntries();
+			assertThat(out.capturedLines()).containsExactly("");
 		}
 
 		@Test
-		void shouldReportWarningIfExtensionUsed() {
+		@StdIo
+		void shouldReportWarningIfExtensionUsed(StdOut out) {
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithExtension");
 
 			assertThat(results).hasSingleReportEntry().withKeyAndValue(WARNING_KEY, WARNING_VALUE);
+			assertThat(out.capturedLines()).containsExactly(WARNING_KEY + ": " + WARNING_VALUE);
 		}
 
 		@Test

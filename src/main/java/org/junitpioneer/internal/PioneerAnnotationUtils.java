@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
@@ -27,6 +27,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
  * Pioneer-internal utility class to handle annotations.
+ * DO NOT USE THIS CLASS - IT MAY CHANGE SIGNIFICANTLY IN ANY MINOR UPDATE.
  *
  * It uses the following terminology to describe annotations that are not
  * immediately present on an element:
@@ -42,7 +43,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
  * <em>meta-present</em> it can present on an annotation that is present on another annotation
  * that is present on the element.
  */
-class PioneerAnnotationUtils {
+public class PioneerAnnotationUtils {
 
 	private PioneerAnnotationUtils() {
 		// private constructor to prevent instantiation of utility class

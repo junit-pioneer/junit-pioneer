@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junitpioneer.internal.PioneerUtils;
 
 class CartesianProductTestNameFormatter {
 

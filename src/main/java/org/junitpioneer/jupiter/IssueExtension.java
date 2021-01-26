@@ -14,6 +14,7 @@ import static org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener.REP
 
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 /**
  * This class implements the functionality for the {@code @Issue} annotation.
