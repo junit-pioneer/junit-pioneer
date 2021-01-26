@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static java.util.Arrays.stream;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
 
 import java.lang.annotation.Documented;
@@ -133,11 +134,11 @@ public @interface CartesianEnumSource {
 		}
 
 		void validate(CartesianEnumSource enumSource, Set<String> names) {
-			validator.accept(Objects.requireNonNull(enumSource), Objects.requireNonNull(names));
+			validator.accept(requireNonNull(enumSource), requireNonNull(names));
 		}
 
 		boolean select(Enum<?> constant, Set<String> names) {
-			return selector.test(Objects.requireNonNull(constant.name()), Objects.requireNonNull(names));
+			return selector.test(requireNonNull(constant.name()), requireNonNull(names));
 		}
 
 		private static void validateNames(CartesianEnumSource enumSource, Set<String> names) {
