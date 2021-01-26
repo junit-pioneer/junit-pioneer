@@ -23,7 +23,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.platform.commons.PreconditionViolationException;
 
 /**
- * This is basically a copy of EnumArgumentsProvider,
+ * This is basically a copy of Jupiter's {@code EnumArgumentsProvider},
  * except it does NOT support {@code @ParameterizedTest}.
  */
 class CartesianEnumArgumentsProvider implements CartesianAnnotationConsumer<CartesianEnumSource>, ArgumentsProvider {
