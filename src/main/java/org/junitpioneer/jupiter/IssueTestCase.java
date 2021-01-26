@@ -72,7 +72,7 @@ public final class IssueTestCase {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(testId);
+		return Objects.hash(testId, result);
 	}
 
 	@Override

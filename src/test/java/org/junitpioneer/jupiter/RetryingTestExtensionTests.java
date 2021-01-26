@@ -26,7 +26,7 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
-class RetryingTestTests {
+class RetryingTestExtensionTests {
 
 	@Test
 	void invalidConfigurationWithTest() {

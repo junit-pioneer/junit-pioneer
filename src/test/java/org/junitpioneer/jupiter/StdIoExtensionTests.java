@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.TestReporter;
 import org.junitpioneer.testkit.ExecutionResults;
 
 /**
@@ -101,6 +102,14 @@ public class StdIoExtensionTests {
 			assertThat(app.lines)
 					.containsExactlyInAnyOrder("But when from highmost pitch, with weary car,",
 						"Like feeble age, he reeleth from the day,");
+		}
+
+		@Test
+		@StdIo("")
+		@DisplayName("does not catch unrelated parameters")
+		void catchesNothing(StdIn in, TestReporter reporter) {
+			// if the extension supports `TestReporter`, Jupiter will throw:
+			// ParameterResolutionException: Discovered multiple competing ParameterResolvers
 		}
 
 	}

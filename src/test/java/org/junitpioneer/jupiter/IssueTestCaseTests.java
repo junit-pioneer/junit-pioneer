@@ -12,6 +12,8 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 import org.junit.jupiter.api.Test;
 import org.junit.platform.engine.TestExecutionResult.Status;
 
@@ -25,6 +27,11 @@ public final class IssueTestCaseTests {
 		String result = sut.toString();
 
 		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test
+	public void equalsContract() {
+		EqualsVerifier.forClass(IssueTestCase.class).withNonnullFields("testId", "result").verify();
 	}
 
 }
