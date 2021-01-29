@@ -311,6 +311,30 @@ public class CartesianProductTestExtensionTests {
 						"d:1.7,l:1,s:5", "d:1.2,l:2,s:5", "d:1.7,l:2,s:5");
 		}
 
+		@Test
+		@DisplayName("works with fully-qualified factory")
+		void fullyQualifiedFactory() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class,
+						"testWithFullyQualifiedFactory", int.class, String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
+
+			assertThat(results).hasNumberOfReportEntries(6).withValues("A-1", "A-2", "A-3", "B-1", "B-2", "B-3");
+		}
+
+		@Test
+		@DisplayName("works with fully-qualified factory in nested class")
+		void fullyQualifiedNestedFactory() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class,
+						"testWithFullyQualifiedNestedFactory", String.class, String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
+
+			assertThat(results).hasNumberOfReportEntries(4).withValues("A-B", "A-A", "B-A", "B-B");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -678,6 +702,18 @@ public class CartesianProductTestExtensionTests {
 					.hasMessageContaining("argument array must not be null");
 		}
 
+		@Test
+		@DisplayName("Factory with fully qualified name can't be found - missing class")
+		void missingClass() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "missingClass", int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContainingAll("Class", "not found, referenced in method");
+		}
+
 	}
 
 	@Nested
@@ -755,6 +791,16 @@ public class CartesianProductTestExtensionTests {
 			assertThat(unit.name()).endsWith("S");
 		}
 
+		@CartesianProductTest(factory = "org.junitpioneer.jupiter.CartesianProductTestFactoryTests#explicitFactory")
+		@ReportEntry("{1}-{0}")
+		void testWithFullyQualifiedFactory(int i, String s) {
+		}
+
+		@CartesianProductTest(factory = "org.junitpioneer.jupiter.CartesianProductTestFactoryTests$NestedClass#explicitFactory")
+		@ReportEntry("{1}-{0}")
+		void testWithFullyQualifiedNestedFactory(String i, String s) {
+		}
+
 	}
 
 	static class BadConfigurationTestCases {
@@ -809,7 +855,6 @@ public class CartesianProductTestExtensionTests {
 
 		@CartesianProductTest(factory = "getParams")
 		void wrongOrder(String string, int i) {
-
 		}
 
 		static CartesianProductTest.Sets getParams() {
@@ -820,21 +865,22 @@ public class CartesianProductTestExtensionTests {
 
 		@CartesianProductTest(value = { "0", "1" }, factory = "getParams")
 		void conflictValueAndFactory(String a, String b) {
-
 		}
 
 		@CartesianProductTest(value = { "0", "1" })
 		@CartesianValueSource(strings = { "0", "1" })
 		@CartesianValueSource(strings = { "0", "1" })
 		void conflictValueAndValueSource(String a, String b) {
-
 		}
 
 		@CartesianProductTest(factory = "getParams")
 		@CartesianValueSource(ints = { 0, 1 })
 		@CartesianValueSource(strings = { "0", "1" })
 		void conflictValueSourceAndFactory(int a, String b) {
+		}
 
+		@CartesianProductTest(factory = "org.bad.class#noFactory")
+		void missingClass(int i) {
 		}
 
 	}
