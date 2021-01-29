@@ -17,8 +17,11 @@ public class CartesianProductTestFactoryTests {
 	}
 
 	public static class NestedClass {
+
 		public static CartesianProductTest.Sets explicitFactory() {
 			return new CartesianProductTest.Sets().add("A", "B").add("A", "B");
 		}
+
 	}
+
 }
