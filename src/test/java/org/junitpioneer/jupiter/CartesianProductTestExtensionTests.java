@@ -335,6 +335,19 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results).hasNumberOfReportEntries(4).withValues("A-B", "A-A", "B-A", "B-B");
 		}
 
+		@Test
+		@DisplayName("disregards any parameters passed in the factory name")
+		void explicitFactoryDisregardsParameters() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class,
+						"explicitFactoryWithParentheses", String.class, TimeUnit.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
+			assertThat(results)
+					.hasNumberOfReportEntries(4)
+					.withValues("War,SECONDS", "War,DAYS", "Peace,SECONDS", "Peace,DAYS");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -789,6 +802,11 @@ public class CartesianProductTestExtensionTests {
 		void explicitFactory(String string, TimeUnit unit) {
 			assertThat(string).isIn("War", "Peace");
 			assertThat(unit.name()).endsWith("S");
+		}
+
+		@CartesianProductTest(factory = "supplyValues()")
+		@ReportEntry("{0},{1}")
+		void explicitFactoryWithParentheses(String string, TimeUnit unit) {
 		}
 
 		@CartesianProductTest(factory = "org.junitpioneer.jupiter.CartesianProductTestExtensionTests#explicitFactory")
