@@ -172,18 +172,18 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 
 	private String getFactoryMethodName(String factoryMethodName) {
 		if (factoryMethodName.contains("("))
-			factoryMethodName = factoryMethodName.substring(0, factoryMethodName.indexOf("("));
+			factoryMethodName = factoryMethodName.substring(0, factoryMethodName.indexOf('('));
 		if (factoryMethodName.contains("#"))
-			return factoryMethodName.substring(factoryMethodName.indexOf("#") + 1);
+			return factoryMethodName.substring(factoryMethodName.indexOf('#') + 1);
 		return factoryMethodName;
 	}
 
 	private Class<?> getExplicitOrImplicitClass(Method testMethod, String factoryMethodName) {
 		if (factoryMethodName.contains("#")) {
-			String className = factoryMethodName.substring(0, factoryMethodName.indexOf("#"));
+			String className = factoryMethodName.substring(0, factoryMethodName.indexOf('#'));
 			return ReflectionSupport
 					.tryToLoadClass(className)
-					.getOrThrow((ex) -> new ExtensionConfigurationException(
+					.getOrThrow(ex -> new ExtensionConfigurationException(
 						format("Class %s not found, referenced in method %s", className, testMethod.getName()), ex));
 
 		}

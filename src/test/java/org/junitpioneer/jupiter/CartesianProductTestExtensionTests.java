@@ -791,14 +791,26 @@ public class CartesianProductTestExtensionTests {
 			assertThat(unit.name()).endsWith("S");
 		}
 
-		@CartesianProductTest(factory = "org.junitpioneer.jupiter.CartesianProductTestFactoryTests#explicitFactory")
+		@CartesianProductTest(factory = "org.junitpioneer.jupiter.CartesianProductTestExtensionTests#explicitFactory")
 		@ReportEntry("{1}-{0}")
 		void testWithFullyQualifiedFactory(int i, String s) {
 		}
 
-		@CartesianProductTest(factory = "org.junitpioneer.jupiter.CartesianProductTestFactoryTests$NestedClass#explicitFactory")
+		@CartesianProductTest(factory = "org.junitpioneer.jupiter.CartesianProductTestExtensionTests$NestedClass#explicitFactory")
 		@ReportEntry("{1}-{0}")
 		void testWithFullyQualifiedNestedFactory(String i, String s) {
+		}
+
+	}
+
+	public static CartesianProductTest.Sets explicitFactory() {
+		return new CartesianProductTest.Sets().add(1, 2, 3).add("A", "B");
+	}
+
+	public static class NestedClass {
+
+		public static CartesianProductTest.Sets explicitFactory() {
+			return new CartesianProductTest.Sets().add("A", "B").add("A", "B");
 		}
 
 	}
