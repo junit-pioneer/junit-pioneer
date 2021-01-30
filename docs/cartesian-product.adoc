@@ -275,6 +275,7 @@ void mixAndMatchTest(short number, String text) {
 
 If your tests require special inputs that `@CartesianValueSource` is not able to supply, you can define a static factory method to supply your test parameters.
 By default, this method must have the same name as the test method, but you can specify a different name with the `factory` annotation parameter.
+Just like with JUnit's `@MethodSource`, you can specify the factory method with its fully-qualified name (including the class), e.g. `com.example.Class#factory`.
 This method must return `CartesianProductTest.Sets`.
 `CartesianProductTest.Sets` is a helper class, specifically for creating sets for `@CartesianProductTest`.
 To create the test data, instantiate a `new CartesianProductTest.Sets()` then use the methods `add()` (with varargs arguments) or `addAll()` (with `Iterable` or `Stream` argument) to register the values for the parameters.
