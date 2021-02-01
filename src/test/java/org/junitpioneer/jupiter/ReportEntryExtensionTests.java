@@ -17,13 +17,17 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -388,6 +392,19 @@ public class ReportEntryExtensionTests {
 						"2 - 2: Then this ebony bird beguiling my sad fancy into smiling,");
 		}
 
+		@Test
+		@DisplayName("can publish null arguments")
+		void parameterized_with_nulls() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_with_nulls",
+						String.class, String.class);
+
+			assertThat(results).hasSingleSucceededTest();
+			assertThat(results)
+					.hasNumberOfReportEntries(1)
+					.withValues("null,By the grave and stern decorum of the countenance it wore,");
+		}
+
 	}
 
 	static class ReportEntriesTest {
@@ -570,6 +587,16 @@ public class ReportEntryExtensionTests {
 				"Then this ebony bird beguiling my sad fancy into smiling,; 2" }, delimiter = ';')
 		@ReportEntry("{1} - {1}: {0}")
 		void parameterized_multiple(String line, int number) {
+		}
+
+		@ParameterizedTest
+		@MethodSource("withNulls")
+		@ReportEntry("{1},{0}")
+		void parameterized_with_nulls(String line, String value) {
+		}
+
+		private static Stream<Arguments> withNulls() {
+			return Stream.of(Arguments.of("By the grave and stern decorum of the countenance it wore,", null));
 		}
 
 	}
