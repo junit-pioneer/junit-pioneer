@@ -311,6 +311,17 @@ public class CartesianProductTestExtensionTests {
 						"d:1.7,l:1,s:5", "d:1.2,l:2,s:5", "d:1.7,l:2,s:5");
 		}
 
+		@Test
+		@DisplayName("works with `null` values on non-primitive parameters")
+		void nullWithNonPrimitive() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class, "withNulls", TimeUnit.class,
+						int.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results).hasNumberOfReportEntries(2).withValues("null,1", "null,2");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -678,6 +689,19 @@ public class CartesianProductTestExtensionTests {
 					.hasMessageContaining("argument array must not be null");
 		}
 
+		@Test
+		@DisplayName("primitive parameter is supplied with `null`")
+		void primitiveNull() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "withNulls", int.class,
+						int.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(2)
+					.withExceptionInstancesOf(ParameterResolutionException.class)
+					.allMatch(exceptionMessage -> exceptionMessage.contains("No ParameterResolver registered"));
+		}
+
 	}
 
 	@Nested
@@ -755,6 +779,15 @@ public class CartesianProductTestExtensionTests {
 			assertThat(unit.name()).endsWith("S");
 		}
 
+		@CartesianProductTest(factory = "withNulls")
+		@ReportEntry("{0},{1}")
+		void withNulls(TimeUnit unit, int i) {
+		}
+
+	}
+
+	static CartesianProductTest.Sets withNulls() {
+		return new CartesianProductTest.Sets().add(new Object[] { null }).add(1, 2);
 	}
 
 	static class BadConfigurationTestCases {
@@ -835,6 +868,10 @@ public class CartesianProductTestExtensionTests {
 		@CartesianValueSource(strings = { "0", "1" })
 		void conflictValueSourceAndFactory(int a, String b) {
 
+		}
+
+		@CartesianProductTest(factory = "withNulls")
+		void withNulls(int i, int j) {
 		}
 
 	}
