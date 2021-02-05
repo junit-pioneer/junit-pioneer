@@ -4,7 +4,7 @@ plugins {
 	checkstyle
 	`maven-publish`
 	id("com.diffplug.spotless") version "5.8.2"
-	id("org.shipkit.java") version "2.3.1"
+	id("org.shipkit.java") version "2.3.5"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.1.1"
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
