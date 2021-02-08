@@ -6,7 +6,7 @@ plugins {
 	id("com.diffplug.spotless") version "5.8.2"
 	id("org.shipkit.java") version "2.3.1"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "3.0"
+	id("org.sonarqube") version "3.1.1"
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
 }
 
@@ -48,7 +48,7 @@ dependencies {
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.18.1")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.6.28")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.7.7")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.1")
 	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.5.2")
 

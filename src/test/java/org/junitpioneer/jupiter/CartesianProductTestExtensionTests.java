@@ -312,6 +312,17 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
+		@DisplayName("works with `null` values on non-primitive parameters")
+		void nullWithNonPrimitive() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BasicConfigurationTestCases.class, "withNulls", TimeUnit.class,
+						int.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results).hasNumberOfReportEntries(2).withValues("null,1", "null,2");
+		}
+
+		@Test
 		@DisplayName("works with fully-qualified factory")
 		void fullyQualifiedFactory() {
 			ExecutionResults results = PioneerTestKit
@@ -716,6 +727,19 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
+		@DisplayName("primitive parameter is supplied with `null`")
+		void primitiveNull() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "withNulls", int.class,
+						int.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(2)
+					.withExceptionInstancesOf(ParameterResolutionException.class)
+					.allMatch(exceptionMessage -> exceptionMessage.contains("No ParameterResolver registered"));
+		}
+
+		@Test
 		@DisplayName("Factory with fully qualified name can't be found - missing class")
 		void missingClass() {
 			ExecutionResults results = PioneerTestKit
@@ -804,6 +828,11 @@ public class CartesianProductTestExtensionTests {
 			assertThat(unit.name()).endsWith("S");
 		}
 
+		@CartesianProductTest(factory = "withNulls")
+		@ReportEntry("{0},{1}")
+		void withNulls(TimeUnit unit, int i) {
+		}
+
 		@CartesianProductTest(factory = "supplyValues()")
 		@ReportEntry("{0},{1}")
 		void explicitFactoryWithParentheses(String string, TimeUnit unit) {
@@ -831,6 +860,10 @@ public class CartesianProductTestExtensionTests {
 			return new CartesianProductTest.Sets().add("A", "B").add("A", "B");
 		}
 
+	}
+
+	static CartesianProductTest.Sets withNulls() {
+		return new CartesianProductTest.Sets().add(new Object[] { null }).add(1, 2);
 	}
 
 	static class BadConfigurationTestCases {
@@ -911,6 +944,10 @@ public class CartesianProductTestExtensionTests {
 
 		@CartesianProductTest(factory = "org.bad.class#noFactory")
 		void missingClass(int i) {
+		}
+
+		@CartesianProductTest(factory = "withNulls")
+		void withNulls(int i, int j) {
 		}
 
 	}
