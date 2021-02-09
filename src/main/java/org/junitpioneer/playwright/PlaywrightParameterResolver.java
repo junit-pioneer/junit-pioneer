@@ -11,6 +11,8 @@
 package org.junitpioneer.playwright;
 
 import static org.junitpioneer.internal.PioneerAnnotationUtils.isAnyAnnotationPresent;
+import static org.junitpioneer.playwright.PlaywrightUtils.PLAYWRIGHT_NAMESPACE;
+import static org.junitpioneer.playwright.PlaywrightUtils.closeResourceLater;
 
 import com.microsoft.playwright.Playwright;
 
@@ -31,9 +33,16 @@ public class PlaywrightParameterResolver implements ParameterResolver {
 	@Override
 	public Playwright resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
-		Playwright playwright = Playwright.create();
-		PlaywrightUtils.putIntoStore(extensionContext, playwright::close);
-		return playwright;
+		// @formatter:off
+		return extensionContext
+			.getStore(PLAYWRIGHT_NAMESPACE)
+			.getOrComputeIfAbsent("playwright", __ -> {
+					Playwright playwright = Playwright.create();
+					closeResourceLater(extensionContext, playwright::close);
+					return playwright;
+				},
+				Playwright.class);
+		// @formatter:on
 	}
 
 }

@@ -11,6 +11,8 @@
 package org.junitpioneer.playwright;
 
 import static org.junitpioneer.internal.PioneerAnnotationUtils.isAnyAnnotationPresent;
+import static org.junitpioneer.playwright.PlaywrightUtils.PLAYWRIGHT_NAMESPACE;
+import static org.junitpioneer.playwright.PlaywrightUtils.closeResourceLater;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
@@ -32,10 +34,17 @@ public class BrowserContextParameterResolver implements ParameterResolver {
 	@Override
 	public BrowserContext resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
-		Browser browser = new BrowserParameterResolver().resolveParameter(parameterContext, extensionContext);
-		BrowserContext browserContext = browser.newContext();
-		PlaywrightUtils.putIntoStore(extensionContext, browserContext::close);
-		return browserContext;
+		// @formatter:off
+		return extensionContext
+			.getStore(PLAYWRIGHT_NAMESPACE)
+			.getOrComputeIfAbsent("browserContext", __ -> {
+					Browser browser = new BrowserParameterResolver().resolveParameter(parameterContext, extensionContext);
+					BrowserContext browserContext = browser.newContext();
+					closeResourceLater(extensionContext, browserContext::close);
+					return browserContext;
+				},
+				BrowserContext.class);
+		// @formatter:on
 	}
 
 }

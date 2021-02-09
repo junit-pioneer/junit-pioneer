@@ -24,7 +24,7 @@ class PlaywrightUtils {
 
 	static final Namespace PLAYWRIGHT_NAMESPACE = Namespace.create(PlaywrightTests.class);
 
-	static void putIntoStore(ExtensionContext context, CloseableResource resource) {
+	static void closeResourceLater(ExtensionContext context, CloseableResource resource) {
 		context
 				.getStore(PLAYWRIGHT_NAMESPACE)
 				.getOrComputeIfAbsent("closeableStack", __ -> new CloseableArrayDeque(), CloseableArrayDeque.class)
