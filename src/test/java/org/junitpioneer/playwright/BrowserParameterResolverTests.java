@@ -24,4 +24,6 @@ public class BrowserParameterResolverTests {
 		assertThat(browser).isNotNull();
 	}
 
+	// TODO: find a way to test browser specific configuration
+
 }

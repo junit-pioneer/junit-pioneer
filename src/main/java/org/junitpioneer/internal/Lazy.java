@@ -13,7 +13,8 @@ package org.junitpioneer.internal;
 import java.util.function.Supplier;
 
 /**
- * Incomplete and thread-unsafe implementation of the lazy monad.
+ * Pioneer-internal, incomplete and thread-unsafe implementation of the lazy monad.
+ * DO NOT USE THIS CLASS - IT MAY CHANGE SIGNIFICANTLY IN ANY MINOR UPDATE.
  */
 public class Lazy<ELEMENT> {
 

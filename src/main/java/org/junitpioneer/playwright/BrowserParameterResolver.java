@@ -51,7 +51,7 @@ public class BrowserParameterResolver implements ParameterResolver {
 				"browser",
 				__ -> {
 					BrowserType browserType = BrowserTypeParameterResolver.createBrowserType(extensionContext, configuration);
-					Browser browser = browserType.launch(createLaunchOptions(extensionContext));
+					Browser browser = browserType.launch(createLaunchOptions(configuration.get()));
 					closeResourceLater(extensionContext, browser::close);
 					return browser;
 				},
@@ -59,8 +59,15 @@ public class BrowserParameterResolver implements ParameterResolver {
 		// @formatter:on
 	}
 
-	private static LaunchOptions createLaunchOptions(ExtensionContext extensionContext) {
-		return new LaunchOptions();
+	private static LaunchOptions createLaunchOptions(Optional<PlaywrightTest> configuration) {
+		return configuration
+			.map(config -> {
+				LaunchOptions options = new LaunchOptions();
+				options.withHeadless(config.headless());
+				options.withTimeout(config.timeout());
+				return options;
+			})
+			.orElseGet(LaunchOptions::new);
 	}
 
 }

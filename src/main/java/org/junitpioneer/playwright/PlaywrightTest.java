@@ -16,6 +16,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.microsoft.playwright.Playwright;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -29,7 +30,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Test
 public @interface PlaywrightTest {
 
+	// BROWSER TYPE
+
+	/**
+	 * Configures a {@link Playwright#chromium() Chromium},
+	 * {@link Playwright#firefox() Firefox}, or {@link Playwright#webkit() Webkit}
+	 * {@link com.microsoft.playwright.BrowserType BrowserType}.
+	 */
 	BrowserName browserType() default BrowserName.FIREFOX;
+
+	// BROWSER
+
+	/**
+	 * Configures {@link com.microsoft.playwright.BrowserType.LaunchOptions#headless headless mode}.
+	 */
+	boolean headless() default true;
+
+	/**
+	 * Configures {@link com.microsoft.playwright.BrowserType.LaunchOptions#timeout timeout}.
+	 */
+	double timeout() default 30_000d;
 
 	enum BrowserName {
 		CHROMIUM, FIREFOX, WEBKIT
