@@ -16,15 +16,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtendWith(PlaywrightParameterResolver.class)
 @ExtendWith(BrowserTypeParameterResolver.class)
 @ExtendWith(BrowserParameterResolver.class)
 @ExtendWith(BrowserContextParameterResolver.class)
-public @interface PlaywrightTests {
+@Test
+public @interface PlaywrightTest {
+
+	BrowserName browserType() default BrowserName.FIREFOX;
+
+	enum BrowserName {
+		CHROMIUM, FIREFOX, WEBKIT
+	}
 
 }

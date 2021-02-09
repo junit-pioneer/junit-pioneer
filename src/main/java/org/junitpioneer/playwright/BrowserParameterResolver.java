@@ -15,7 +15,7 @@ import static org.junitpioneer.playwright.PlaywrightUtils.closeResourceLater;
 import static org.junitpioneer.playwright.PlaywrightUtils.isPlaywrightExtensionActive;
 
 import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.BrowserType;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -40,13 +40,18 @@ public class BrowserParameterResolver implements ParameterResolver {
 			.getOrComputeIfAbsent(
 				"browser",
 				__ -> {
-					Playwright playwright = new PlaywrightParameterResolver().resolveParameter(parameterContext, extensionContext);
-					Browser browser = playwright.firefox().launch();
+					BrowserType browserType = new BrowserTypeParameterResolver()
+						.resolveParameter(parameterContext, extensionContext);
+					Browser browser = browserType.launch(createLaunchOptions(extensionContext));
 					closeResourceLater(extensionContext, browser::close);
 					return browser;
 				},
 				Browser.class);
 		// @formatter:on
+	}
+
+	private BrowserType.LaunchOptions createLaunchOptions(ExtensionContext extensionContext) {
+		return new BrowserType.LaunchOptions();
 	}
 
 }
