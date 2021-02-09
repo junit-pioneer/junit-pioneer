@@ -60,14 +60,12 @@ public class BrowserParameterResolver implements ParameterResolver {
 	}
 
 	private static LaunchOptions createLaunchOptions(Optional<PlaywrightTest> configuration) {
-		return configuration
-			.map(config -> {
-				LaunchOptions options = new LaunchOptions();
-				options.withHeadless(config.headless());
-				options.withTimeout(config.timeout());
-				return options;
-			})
-			.orElseGet(LaunchOptions::new);
+		return configuration.map(config -> {
+			LaunchOptions options = new LaunchOptions();
+			options.withHeadless(config.headless());
+			options.withTimeout(config.timeout());
+			return options;
+		}).orElseGet(LaunchOptions::new);
 	}
 
 }
