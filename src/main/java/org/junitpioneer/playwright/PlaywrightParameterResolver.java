@@ -33,6 +33,10 @@ public class PlaywrightParameterResolver implements ParameterResolver {
 	@Override
 	public Playwright resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
+		return createPlaywright(extensionContext);
+	}
+
+	static Playwright createPlaywright(ExtensionContext extensionContext) {
 		// @formatter:off
 		return extensionContext
 			.getStore(PLAYWRIGHT_NAMESPACE)

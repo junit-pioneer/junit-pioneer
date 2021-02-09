@@ -14,13 +14,18 @@ import static org.junitpioneer.playwright.PlaywrightUtils.PLAYWRIGHT_NAMESPACE;
 import static org.junitpioneer.playwright.PlaywrightUtils.closeResourceLater;
 import static org.junitpioneer.playwright.PlaywrightUtils.isPlaywrightExtensionActive;
 
+import java.util.Optional;
+
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.BrowserType.LaunchOptions;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.platform.commons.util.AnnotationUtils;
+import org.junitpioneer.internal.Lazy;
 
 public class BrowserParameterResolver implements ParameterResolver {
 
@@ -34,14 +39,18 @@ public class BrowserParameterResolver implements ParameterResolver {
 	@Override
 	public Browser resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
+		return createBrowser(extensionContext,
+			Lazy.from(() -> AnnotationUtils.findAnnotation(extensionContext.getElement(), PlaywrightTest.class)));
+	}
+
+	static Browser createBrowser(ExtensionContext extensionContext, Lazy<Optional<PlaywrightTest>> configuration) {
 		// @formatter:off
 		return extensionContext
 			.getStore(PLAYWRIGHT_NAMESPACE)
 			.getOrComputeIfAbsent(
 				"browser",
 				__ -> {
-					BrowserType browserType = new BrowserTypeParameterResolver()
-						.resolveParameter(parameterContext, extensionContext);
+					BrowserType browserType = BrowserTypeParameterResolver.createBrowserType(extensionContext, configuration);
 					Browser browser = browserType.launch(createLaunchOptions(extensionContext));
 					closeResourceLater(extensionContext, browser::close);
 					return browser;
@@ -50,8 +59,8 @@ public class BrowserParameterResolver implements ParameterResolver {
 		// @formatter:on
 	}
 
-	private BrowserType.LaunchOptions createLaunchOptions(ExtensionContext extensionContext) {
-		return new BrowserType.LaunchOptions();
+	private static LaunchOptions createLaunchOptions(ExtensionContext extensionContext) {
+		return new LaunchOptions();
 	}
 
 }

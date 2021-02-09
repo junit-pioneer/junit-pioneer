@@ -13,6 +13,8 @@ package org.junitpioneer.playwright;
 import static org.junitpioneer.playwright.PlaywrightUtils.PLAYWRIGHT_NAMESPACE;
 import static org.junitpioneer.playwright.PlaywrightUtils.isPlaywrightExtensionActive;
 
+import java.util.Optional;
+
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Playwright;
 
@@ -21,6 +23,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.util.AnnotationUtils;
+import org.junitpioneer.internal.Lazy;
 import org.junitpioneer.playwright.PlaywrightTest.BrowserName;
 
 public class BrowserTypeParameterResolver implements ParameterResolver {
@@ -35,25 +38,31 @@ public class BrowserTypeParameterResolver implements ParameterResolver {
 	@Override
 	public BrowserType resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
+		return createBrowserType(extensionContext,
+			Lazy.from(() -> AnnotationUtils.findAnnotation(extensionContext.getElement(), PlaywrightTest.class)));
+	}
+
+	static BrowserType createBrowserType(ExtensionContext extensionContext,
+			Lazy<Optional<PlaywrightTest>> configuration) {
 		// @formatter:off
 		return extensionContext
 			.getStore(PLAYWRIGHT_NAMESPACE)
 			.getOrComputeIfAbsent(
 				"browserType",
-				__ -> createBrowserType(parameterContext, extensionContext),
+				__ -> createBrowserType(extensionContext, configuration.get()),
 				BrowserType.class);
 		// @formatter:on
 	}
 
-	private BrowserType createBrowserType(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		Playwright playwright = new PlaywrightParameterResolver().resolveParameter(parameterContext, extensionContext);
-		return AnnotationUtils
-				.findAnnotation(extensionContext.getElement(), PlaywrightTest.class)
-				.map(configuration -> createBrowserType(playwright, configuration.browserType()))
+	private static BrowserType createBrowserType(ExtensionContext extensionContext,
+			Optional<PlaywrightTest> configuration) {
+		Playwright playwright = PlaywrightParameterResolver.createPlaywright(extensionContext);
+		return configuration
+				.map(config -> createBrowserType(playwright, config.browserType()))
 				.orElseGet(playwright::firefox);
 	}
 
-	private BrowserType createBrowserType(Playwright playwright, BrowserName type) {
+	private static BrowserType createBrowserType(Playwright playwright, BrowserName type) {
 		switch (type) {
 			case CHROMIUM:
 				return playwright.chromium();
