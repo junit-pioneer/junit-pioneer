@@ -10,9 +10,9 @@
 
 package org.junitpioneer.playwright;
 
-import static org.junitpioneer.internal.PioneerAnnotationUtils.isAnyAnnotationPresent;
 import static org.junitpioneer.playwright.PlaywrightUtils.PLAYWRIGHT_NAMESPACE;
 import static org.junitpioneer.playwright.PlaywrightUtils.closeResourceLater;
+import static org.junitpioneer.playwright.PlaywrightUtils.isPlaywrightExtensionActive;
 
 import com.microsoft.playwright.Playwright;
 
@@ -26,7 +26,7 @@ public class PlaywrightParameterResolver implements ParameterResolver {
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
-		return isAnyAnnotationPresent(extensionContext, PlaywrightTests.class)
+		return isPlaywrightExtensionActive(extensionContext)
 				&& parameterContext.getParameter().getType() == Playwright.class;
 	}
 
@@ -36,7 +36,9 @@ public class PlaywrightParameterResolver implements ParameterResolver {
 		// @formatter:off
 		return extensionContext
 			.getStore(PLAYWRIGHT_NAMESPACE)
-			.getOrComputeIfAbsent("playwright", __ -> {
+			.getOrComputeIfAbsent(
+				"playwright",
+				__ -> {
 					Playwright playwright = Playwright.create();
 					closeResourceLater(extensionContext, playwright::close);
 					return playwright;

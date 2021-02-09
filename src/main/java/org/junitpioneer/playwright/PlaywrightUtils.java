@@ -11,6 +11,7 @@
 package org.junitpioneer.playwright;
 
 import static java.util.stream.Collectors.toList;
+import static org.junitpioneer.internal.PioneerAnnotationUtils.isAnyAnnotationPresent;
 
 import java.util.ArrayDeque;
 import java.util.List;
@@ -23,6 +24,10 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store.CloseableResource;
 class PlaywrightUtils {
 
 	static final Namespace PLAYWRIGHT_NAMESPACE = Namespace.create(PlaywrightTests.class);
+
+	static boolean isPlaywrightExtensionActive(ExtensionContext extensionContext) {
+		return isAnyAnnotationPresent(extensionContext, PlaywrightTest.class, PlaywrightTests.class);
+	}
 
 	static void closeResourceLater(ExtensionContext context, CloseableResource resource) {
 		context
