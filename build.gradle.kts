@@ -44,6 +44,9 @@ dependencies {
 	implementation(group = "org.junit.platform", name = "junit-platform-commons")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
 
+	compileOnly(group = "com.microsoft.playwright", name = "playwright", version = "0.180.0")
+	testImplementation(group = "com.microsoft.playwright", name = "playwright", version = "0.180.0")
+
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
