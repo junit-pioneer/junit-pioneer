@@ -57,6 +57,27 @@ The test `aborted` is aborted before (or during) its first execution.
 The first execution is marked as aborted/skipped, containing the underlying cause.
 The test suite as a whole is also marked as aborted/skipped.
 
+[source,java]
+----
+@RetryingTest(maxAttempts = 4, minSuccess = 2)
+void requiresTwoSuccesses() {
+	// test code that must complete successfully twice
+}
+----
+
+The test `requiresTwoSuccesses` must run at least two times without raising
+an exception. However, it will not run more than four times.
+
+[source,java]
+----
+@RetryingTest(minSuccess = 2)
+void runsTwice() {
+	// test code that must complete successfully twice
+}
+----
+
+The test `runsTwice` must run at least two times without raising an exception.
+
 == Combining `@RetryingTest` with `@Test` et al
 
 If `@RetryingTest` is combined with `@Test` or `TestTemplate`-based mechanisms (like `@RepeatedTest` or `@ParameterizedTest`), the test engine will execute it according to each annotation (i.e. more than once).

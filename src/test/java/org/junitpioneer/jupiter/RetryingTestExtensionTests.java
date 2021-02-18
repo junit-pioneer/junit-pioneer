@@ -81,9 +81,75 @@ class RetryingTestExtensionTests {
 		assertThat(results).hasSingleAbortedTest();
 	}
 
+	@Test
+	void executesTwice_succeeds() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "executesTwice");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(2)
+				.hasNumberOfAbortedTests(0)
+				.hasNumberOfFailedTests(0)
+				.hasNumberOfSucceededTests(2);
+	}
+
+	@Test
+	void executesTwiceWithTwoFails_succeeds() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "executesTwiceWithTwoFails");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(4)
+				.hasNumberOfAbortedTests(2)
+				.hasNumberOfFailedTests(0)
+				.hasNumberOfSucceededTests(2);
+	}
+
+	@Test
+	void executesOnceWithThreeFails_fails() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "executesOnceWithThreeFails");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(4)
+				.hasNumberOfAbortedTests(2)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(1);
+	}
+
+	@Test
+	void failsThreeTimes_fails() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsThreeTimes");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(3)
+				.hasNumberOfAbortedTests(2)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+	}
+
+	@Test
+	void executesTwiceDefaultMax_succeeds() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "executesTwiceDefaultMax");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(2)
+				.hasNumberOfAbortedTests(0)
+				.hasNumberOfFailedTests(0)
+				.hasNumberOfSucceededTests(2);
+	}
+
+	@Test
+	void failsOnceDefaultMax_fails() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsOnceDefaultMax");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(1)
+				.hasNumberOfAbortedTests(0)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+	}
+
 	// TEST CASES -------------------------------------------------------------------
 
-	// The test `failsOnlyOnFirstInvocation` needs state to make sure it fails after the first execution.
+	// Some tests require state to keep track of the number of test executions.
 	// Storing that state in a static field keeps it around from one test suite execution to the next
 	// if they are run in the same JVM (as IntelliJ does), which breaks the test.
 	// One fix would be a @BeforeAll setup that resets the counter to zero, but for no apparent reason,
@@ -92,7 +158,7 @@ class RetryingTestExtensionTests {
 	@TestInstance(PER_CLASS)
 	static class RetryingTestTestCase {
 
-		private int FAILS_ONLY_ON_FIRST_INVOCATION;
+		private int EXECUTION_COUNT;
 
 		@Test
 		@RetryingTest(3)
@@ -110,8 +176,8 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void failsOnlyOnFirstInvocation() {
-			FAILS_ONLY_ON_FIRST_INVOCATION++;
-			if (FAILS_ONLY_ON_FIRST_INVOCATION == 1) {
+			EXECUTION_COUNT++;
+			if (EXECUTION_COUNT == 1) {
 				throw new IllegalArgumentException();
 			}
 		}
@@ -126,6 +192,39 @@ class RetryingTestExtensionTests {
 			Assumptions.assumeFalse(true);
 		}
 
+		@RetryingTest(maxAttempts = 4, minSuccess = 2)
+		void executesTwice() {
+		}
+
+		@RetryingTest(maxAttempts = 4, minSuccess = 2)
+		void executesTwiceWithTwoFails() {
+			EXECUTION_COUNT++;
+			if (EXECUTION_COUNT == 2 || EXECUTION_COUNT == 3) {
+				throw new IllegalArgumentException();
+			}
+		}
+
+		@RetryingTest(maxAttempts = 4, minSuccess = 2)
+		void executesOnceWithThreeFails() {
+			EXECUTION_COUNT++;
+			if (EXECUTION_COUNT != 2) {
+				throw new IllegalArgumentException();
+			}
+		}
+
+		@RetryingTest(maxAttempts = 4, minSuccess = 2)
+		void failsThreeTimes() {
+			throw new IllegalArgumentException();
+		}
+
+		@RetryingTest(minSuccess = 2)
+		void executesTwiceDefaultMax() {
+		}
+
+		@RetryingTest(minSuccess = 2)
+		void failsOnceDefaultMax() {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Target({ METHOD, ANNOTATION_TYPE })

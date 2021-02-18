@@ -68,12 +68,14 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 	private static class FailedTestRetrier implements Iterator<RetryingTestInvocationContext> {
 
 		private final int maxRetries;
+		private final int minSuccess;
 
 		private int retriesSoFar;
 		private int exceptionsSoFar;
 
-		private FailedTestRetrier(int maxRetries) {
+		private FailedTestRetrier(int maxRetries, int minSuccess) {
 			this.maxRetries = maxRetries;
+			this.minSuccess = minSuccess;
 			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
 		}
@@ -82,7 +84,34 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			RetryingTest retryingTest = AnnotationSupport
 					.findAnnotation(test, RetryingTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."));
-			return new FailedTestRetrier(retryingTest.value());
+
+			int maxAttempts = retryingTest.maxAttempts();
+			String maxAttemptsField = "maxAttempts";
+			int minSuccess = retryingTest.minSuccess();
+
+			if (retryingTest.value() != 0) {
+				if (retryingTest.maxAttempts() != 0) {
+					throw new IllegalStateException("@RetryTest requires that one of `value` or `maxAttempts` be set, but not both.");
+				}
+
+				maxAttempts = retryingTest.value();
+				maxAttemptsField = "value";
+			}
+
+			if (maxAttempts == 0) {
+				// maxAttempts defaults to minSuccess
+				maxAttempts = minSuccess;
+			}
+
+			if (minSuccess < 1) {
+				throw new IllegalStateException("@RetryTest requires that `minSuccess` be greater than or equal to 1.");
+			} else if (maxAttempts < minSuccess) {
+				throw new IllegalStateException(String.format(
+						"@RetryTest requires that `%s` be greater than or equal to %s.",
+						maxAttemptsField, minSuccess == 1 ? "1" : "`minSuccess`"));
+			}
+
+			return new FailedTestRetrier(maxAttempts, minSuccess);
 		}
 
 		void failed(Throwable exception) {
@@ -92,15 +121,18 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 
 			exceptionsSoFar++;
 
-			boolean allRetriesFailed = exceptionsSoFar == maxRetries;
-			if (allRetriesFailed)
+			int successfulExecutionCount = retriesSoFar - exceptionsSoFar;
+			int remainingExecutionCount = maxRetries - retriesSoFar;
+			int requiredSuccessCount = minSuccess - successfulExecutionCount;
+
+			if (remainingExecutionCount < requiredSuccessCount)
 				throw new AssertionError(
-					format("Test execution #%d (of up to %d) failed ~> test fails - see cause for details",
-						exceptionsSoFar, maxRetries),
+					format("Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
+							retriesSoFar, maxRetries, minSuccess),
 					exception);
 			else
 				throw new TestAbortedException(
-					format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRetries),
+					format("Test execution #%d (of up to %d) failed ~> will retry...", retriesSoFar, maxRetries),
 					exception);
 		}
 
@@ -110,10 +142,11 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			if (retriesSoFar == 0)
 				return true;
 
-			// if we caught an exception in each execution, each execution failed, including the previous one
-			boolean previousFailed = retriesSoFar == exceptionsSoFar;
-			boolean maxRetriesReached = retriesSoFar == maxRetries;
-			return previousFailed && !maxRetriesReached;
+			int successfulExecutionCount = retriesSoFar - exceptionsSoFar;
+			int remainingExecutionCount = maxRetries - retriesSoFar;
+			int requiredSuccessCount = minSuccess - successfulExecutionCount;
+
+			return requiredSuccessCount > 0 && remainingExecutionCount >= requiredSuccessCount;
 		}
 
 		@Override
