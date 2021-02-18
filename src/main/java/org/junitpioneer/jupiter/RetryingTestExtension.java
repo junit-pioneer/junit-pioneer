@@ -121,11 +121,7 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 
 			exceptionsSoFar++;
 
-			int successfulExecutionCount = retriesSoFar - exceptionsSoFar;
-			int remainingExecutionCount = maxRetries - retriesSoFar;
-			int requiredSuccessCount = minSuccess - successfulExecutionCount;
-
-			if (remainingExecutionCount < requiredSuccessCount)
+			if (!hasNext())
 				throw new AssertionError(
 					format("Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
 							retriesSoFar, maxRetries, minSuccess),
