@@ -3,7 +3,7 @@ plugins {
 	jacoco
 	checkstyle
 	`maven-publish`
-	id("com.diffplug.spotless") version "5.8.2"
+	id("com.diffplug.spotless") version "5.9.0"
 	id("org.shipkit.java") version "2.3.1"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.1.1"
