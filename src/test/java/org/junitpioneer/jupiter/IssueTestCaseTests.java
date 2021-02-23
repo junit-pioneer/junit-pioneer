@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.engine.TestExecutionResult.Status;
 
@@ -30,6 +31,7 @@ public final class IssueTestCaseTests {
 	}
 
 	@Test
+	@Disabled("Don't use EqualsVerifier for a while - see #324")
 	public void equalsContract() {
 		EqualsVerifier.forClass(IssueTestCase.class).withNonnullFields("testId", "result").verify();
 	}

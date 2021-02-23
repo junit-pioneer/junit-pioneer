@@ -13,11 +13,13 @@ package org.junitpioneer.jupiter;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class IssueTestSuiteTests {
 
 	@Test
+	@Disabled("Don't use EqualsVerifier for a while - see #324")
 	public void equalsContract() {
 		EqualsVerifier
 				.forClass(IssueTestSuite.class)
