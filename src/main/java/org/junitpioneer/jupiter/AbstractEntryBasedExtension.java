@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ExtensionContext.Store;
 
 /**
  * An abstract base class for entry-based extensions, where entries (key-value
@@ -35,7 +36,6 @@ import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 abstract class AbstractEntryBasedExtension<K, V>
 		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
-	private static final Namespace NAMESPACE = Namespace.create(AbstractEntryBasedExtension.class);
 	private static final String BACKUP = "Backup";
 
 	/**
@@ -124,7 +124,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 
 	private void storeOriginalEntries(ExtensionContext context, Collection<K> entriesToClear,
 			Collection<K> entriesToSet) {
-		context.getStore(NAMESPACE).put(BACKUP, new EntriesBackup(entriesToClear, entriesToSet));
+		getStore(context).put(BACKUP, new EntriesBackup(entriesToClear, entriesToSet));
 	}
 
 	private void clearEntries(Collection<K> entriesToClear) {
@@ -147,7 +147,11 @@ abstract class AbstractEntryBasedExtension<K, V>
 	}
 
 	private void restoreOriginalEntries(ExtensionContext context) {
-		context.getStore(NAMESPACE).get(BACKUP, EntriesBackup.class).restoreBackup();
+		getStore(context).get(BACKUP, EntriesBackup.class).restoreBackup();
+	}
+
+	private Store getStore(ExtensionContext context) {
+		return context.getStore(Namespace.create(getClass()));
 	}
 
 	private class EntriesBackup {
