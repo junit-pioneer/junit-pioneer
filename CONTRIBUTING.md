@@ -357,8 +357,8 @@ This also triggers a website build - [see its `README.md`](https://github.com/ju
 
 ### Versioning
 
-Shipkit manages versions by reading from and writing to [`version-properties`](version.properties):
-On each build, it releases the version specified by the `version` field and then increases its patch level for the next release.
+Shipkit manages versions by reading from [`version-properties`](version.properties):
+The variable `version` defines a _major_ and _minor_ version and leaves _patch_ undetermined (e.g. `1.3.*`), so Shipkit can pick the next version.
 
 This is how JUnit Pioneer handles versioning:
 
