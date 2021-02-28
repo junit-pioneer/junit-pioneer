@@ -109,6 +109,8 @@ Thank you for your efforts! 🙏
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
 #### 2021
+
+* [Daniel Kraus](https://github.com/beatngu13) fixed a bug in `AbstractEntryBasedExtension` (#432)
 * [Slawomir Jaranowski](https://github.com/slawekjaranowski) Migrate to new Shipkit plugins (#410 / #419)
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409)
 
