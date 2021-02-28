@@ -65,8 +65,8 @@ void requiresTwoSuccesses() {
 }
 ----
 
-The test `requiresTwoSuccesses` must run at least two times without raising
-an exception. However, it will not run more than four times.
+The test `requiresTwoSuccesses` must run at least two times without raising an exception.
+However, it will not run more than four times.
 
 [source,java]
 ----

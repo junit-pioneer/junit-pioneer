@@ -91,7 +91,8 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 
 			if (retryingTest.value() != 0) {
 				if (retryingTest.maxAttempts() != 0) {
-					throw new IllegalStateException("@RetryTest requires that one of `value` or `maxAttempts` be set, but not both.");
+					throw new IllegalStateException(
+						"@RetryTest requires that one of `value` or `maxAttempts` be set, but not both.");
 				}
 
 				maxAttempts = retryingTest.value();
@@ -106,9 +107,8 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			if (minSuccess < 1) {
 				throw new IllegalStateException("@RetryTest requires that `minSuccess` be greater than or equal to 1.");
 			} else if (maxAttempts < minSuccess) {
-				throw new IllegalStateException(String.format(
-						"@RetryTest requires that `%s` be greater than or equal to %s.",
-						maxAttemptsField, minSuccess == 1 ? "1" : "`minSuccess`"));
+				throw new IllegalStateException(format("@RetryTest requires that `%s` be greater than or equal to %s.",
+					maxAttemptsField, minSuccess == 1 ? "1" : "`minSuccess`"));
 			}
 
 			return new FailedTestRetrier(maxAttempts, minSuccess);
@@ -122,10 +122,9 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			exceptionsSoFar++;
 
 			if (!hasNext())
-				throw new AssertionError(
-					format("Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
-							retriesSoFar, maxRetries, minSuccess),
-					exception);
+				throw new AssertionError(format(
+					"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
+					retriesSoFar, maxRetries, minSuccess), exception);
 			else
 				throw new TestAbortedException(
 					format("Test execution #%d (of up to %d) failed ~> will retry...", retriesSoFar, maxRetries),

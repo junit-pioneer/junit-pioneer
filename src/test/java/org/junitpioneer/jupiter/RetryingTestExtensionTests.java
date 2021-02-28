@@ -94,7 +94,8 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void executesTwiceWithTwoFails_succeeds() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "executesTwiceWithTwoFails");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "executesTwiceWithTwoFails");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(4)
@@ -105,7 +106,8 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void executesOnceWithThreeFails_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "executesOnceWithThreeFails");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "executesOnceWithThreeFails");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(4)
@@ -127,7 +129,8 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void executesTwiceDefaultMax_succeeds() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "executesTwiceDefaultMax");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "executesTwiceDefaultMax");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(2)
@@ -225,6 +228,7 @@ class RetryingTestExtensionTests {
 		void failsOnceDefaultMax() {
 			throw new IllegalArgumentException();
 		}
+
 	}
 
 	@Target({ METHOD, ANNOTATION_TYPE })
