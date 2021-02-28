@@ -156,17 +156,38 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	}
 
 	private Method findSetsFactory(Method testMethod, String factoryMethodName) {
-		Class<?> declaringClass = testMethod.getDeclaringClass();
+		String factoryName = getFactoryMethodName(factoryMethodName);
+		Class<?> declaringClass = getExplicitOrImplicitClass(testMethod, factoryMethodName);
 		Method factory = PioneerUtils
-				.findMethodCurrentOrEnclosing(declaringClass, factoryMethodName)
+				.findMethodCurrentOrEnclosing(declaringClass, factoryName)
 				.orElseThrow(() -> new ExtensionConfigurationException("Method `CartesianProductTest.Sets "
-						+ factoryMethodName + "()` not found in " + declaringClass + "or any enclosing class."));
+						+ factoryName + "()` not found in " + declaringClass + " or any enclosing class."));
 		String method = "Method `" + factory + "`";
 		if (!Modifier.isStatic(factory.getModifiers()))
 			throw new ExtensionConfigurationException(method + " must be static.");
 		if (!CartesianProductTest.Sets.class.isAssignableFrom(factory.getReturnType()))
 			throw new ExtensionConfigurationException(method + " must return `CartesianProductTest.Sets`.");
 		return factory;
+	}
+
+	private String getFactoryMethodName(String factoryMethodName) {
+		if (factoryMethodName.contains("("))
+			factoryMethodName = factoryMethodName.substring(0, factoryMethodName.indexOf('('));
+		if (factoryMethodName.contains("#"))
+			return factoryMethodName.substring(factoryMethodName.indexOf('#') + 1);
+		return factoryMethodName;
+	}
+
+	private Class<?> getExplicitOrImplicitClass(Method testMethod, String factoryMethodName) {
+		if (factoryMethodName.contains("#")) {
+			String className = factoryMethodName.substring(0, factoryMethodName.indexOf('#'));
+			return ReflectionSupport
+					.tryToLoadClass(className)
+					.getOrThrow(ex -> new ExtensionConfigurationException(
+						format("Class %s not found, referenced in method %s", className, testMethod.getName()), ex));
+
+		}
+		return testMethod.getDeclaringClass();
 	}
 
 	private CartesianProductTest.Sets invokeSetsFactory(Method testMethod, Method factory) {
