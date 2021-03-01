@@ -127,29 +127,6 @@ class RetryingTestExtensionTests {
 				.hasNumberOfSucceededTests(0);
 	}
 
-	@Test
-	void executesTwiceDefaultMax_succeeds() {
-		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "executesTwiceDefaultMax");
-
-		assertThat(results)
-				.hasNumberOfDynamicallyRegisteredTests(2)
-				.hasNumberOfAbortedTests(0)
-				.hasNumberOfFailedTests(0)
-				.hasNumberOfSucceededTests(2);
-	}
-
-	@Test
-	void failsOnceDefaultMax_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsOnceDefaultMax");
-
-		assertThat(results)
-				.hasNumberOfDynamicallyRegisteredTests(1)
-				.hasNumberOfAbortedTests(0)
-				.hasNumberOfFailedTests(1)
-				.hasNumberOfSucceededTests(0);
-	}
-
 	// TEST CASES -------------------------------------------------------------------
 
 	// Some tests require state to keep track of the number of test executions.
@@ -217,15 +194,6 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(maxAttempts = 4, minSuccess = 2)
 		void failsThreeTimes() {
-			throw new IllegalArgumentException();
-		}
-
-		@RetryingTest(minSuccess = 2)
-		void executesTwiceDefaultMax() {
-		}
-
-		@RetryingTest(minSuccess = 2)
-		void failsOnceDefaultMax() {
 			throw new IllegalArgumentException();
 		}
 
