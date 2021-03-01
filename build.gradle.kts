@@ -9,7 +9,7 @@ plugins {
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
 	id("org.shipkit.shipkit-auto-version") version "1.1.1"
 	id("org.shipkit.shipkit-changelog") version "1.1.4"
-	id("org.shipkit.shipkit-github-release") version "1.1.1"
+	id("org.shipkit.shipkit-github-release") version "1.1.10"
 	id("com.jfrog.bintray") version "1.8.5"
 }
 
