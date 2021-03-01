@@ -82,7 +82,7 @@ public @interface RetryingTest {
 	 * Specifies how often the test is executed at most.
 	 *
 	 * Either this or {@link #value()} are required.
- 	 * The value must be greater than {@link #minSuccess()}.
+	 * The value must be greater than {@link #minSuccess()}.
 	 */
 	int maxAttempts() default 0;
 
