@@ -127,6 +127,37 @@ class RetryingTestExtensionTests {
 				.hasNumberOfSucceededTests(0);
 	}
 
+	@Test
+	void missingMaxAttempts_fails() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "missingMaxAttempts");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
+	void maxAttemptsAndValueSet_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsAndValueSet");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
+	void maxAttemptsEqualsMinSuccess_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsEqualsMinSuccess");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
+	void minSuccessLessThanOne_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "minSuccessLessThanOne");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
 	// TEST CASES -------------------------------------------------------------------
 
 	// Some tests require state to keep track of the number of test executions.
@@ -195,6 +226,26 @@ class RetryingTestExtensionTests {
 		@RetryingTest(maxAttempts = 4, minSuccess = 2)
 		void failsThreeTimes() {
 			throw new IllegalArgumentException();
+		}
+
+		@RetryingTest
+		void missingMaxAttempts() {
+			// Do nothing
+		}
+
+		@RetryingTest(value = 1, maxAttempts = 1)
+		void maxAttemptsAndValueSet() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 1, minSuccess = 1)
+		void maxAttemptsEqualsMinSuccess() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 2, minSuccess = 0)
+		void minSuccessLessThanOne() {
+			// Do nothing
 		}
 
 	}
