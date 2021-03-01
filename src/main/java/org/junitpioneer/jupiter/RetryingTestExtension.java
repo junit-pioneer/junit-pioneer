@@ -100,8 +100,7 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			}
 
 			if (maxAttempts == 0) {
-				// maxAttempts defaults to minSuccess
-				maxAttempts = minSuccess;
+				throw new IllegalStateException("@RetryTest requires that one of `value` or `maxAttempts` be set.");
 			}
 
 			if (minSuccess < 1) {
@@ -121,14 +120,14 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 
 			exceptionsSoFar++;
 
-			if (!hasNext())
-				throw new AssertionError(format(
-					"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
-					retriesSoFar, maxRetries, minSuccess), exception);
-			else
+			if (hasNext())
 				throw new TestAbortedException(
-					format("Test execution #%d (of up to %d) failed ~> will retry...", retriesSoFar, maxRetries),
-					exception);
+						format("Test execution #%d (of up to %d) failed ~> will retry...", retriesSoFar, maxRetries),
+						exception);
+			else
+				throw new AssertionError(format(
+						"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
+						retriesSoFar, maxRetries, minSuccess), exception);
 		}
 
 		@Override
