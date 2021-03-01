@@ -111,6 +111,7 @@ The least we can do is to thank them and list some of their accomplishments here
 #### 2021
 
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409)
+* [Cory Thomas](https://github.com/dump247) contributed [the minSuccess attribute in RetryingTest]()
 
 #### 2020
 
