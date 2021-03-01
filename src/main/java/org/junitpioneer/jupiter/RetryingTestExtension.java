@@ -86,7 +86,6 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 					.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."));
 
 			int maxAttempts = retryingTest.maxAttempts();
-			String maxAttemptsField = "maxAttempts";
 			int minSuccess = retryingTest.minSuccess();
 
 			if (retryingTest.value() != 0) {
@@ -96,7 +95,6 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 				}
 
 				maxAttempts = retryingTest.value();
-				maxAttemptsField = "value";
 			}
 
 			if (maxAttempts == 0) {
@@ -110,8 +108,8 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 						? " Using @RepeatedTest is recommended as a replacement."
 						: "";
 
-				throw new IllegalStateException(format("@RetryTest requires that `%s` be greater than %s.%s",
-					maxAttemptsField, minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
+				throw new IllegalStateException(format("@RetryTest requires that `maxAttempts` be greater than %s.%s",
+					minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
 
 			return new FailedTestRetrier(maxAttempts, minSuccess);
