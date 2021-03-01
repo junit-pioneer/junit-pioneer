@@ -126,12 +126,12 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 
 			if (hasNext())
 				throw new TestAbortedException(
-						format("Test execution #%d (of up to %d) failed ~> will retry...", retriesSoFar, maxRetries),
-						exception);
+					format("Test execution #%d (of up to %d) failed ~> will retry...", retriesSoFar, maxRetries),
+					exception);
 			else
 				throw new AssertionError(format(
-						"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
-						retriesSoFar, maxRetries, minSuccess), exception);
+					"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
+					retriesSoFar, maxRetries, minSuccess), exception);
 		}
 
 		@Override
