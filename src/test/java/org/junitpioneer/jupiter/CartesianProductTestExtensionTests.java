@@ -204,14 +204,31 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("works with @CartesianEnumSource without specifying the Enum type")
-		void cartesianEnumSourceWithSingleImplicitType() {
+		@DisplayName("works with @CartesianEnumSource with single omitted Enum type")
+		void cartesianEnumSourceWithSingleOmittedType() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "singleImplicitType",
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "singleOmittedType",
 						TestEnum.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
 			assertThat(results).hasNumberOfReportEntries(3).withValues("ONE", "TWO", "THREE");
+		}
+
+		@Test
+		@DisplayName("works with @CartesianEnumSource with multiple omitted Enum types")
+		void cartesianEnumSourceWithMultipleOmittedTypes() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "multipleOmittedTypes",
+						TestEnum.class, AnotherTestEnum.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(9)
+					.hasNumberOfSucceededTests(3)
+					.hasNumberOfFailedTests(6);
+			assertThat(results)
+					.hasNumberOfReportEntries(9)
+					.withValues("ONE - ALPHA", "ONE - BETA", "ONE - GAMMA", "TWO - ALPHA", "TWO - BETA", "TWO - GAMMA",
+						"THREE - ALPHA", "THREE - BETA", "THREE - GAMMA");
 		}
 
 		@Test
@@ -292,6 +309,27 @@ public class CartesianProductTestExtensionTests {
 					.hasNumberOfReportEntries(12)
 					.withValues("0,ONE", "0,TWO", "0,THREE", "1,ONE", "1,TWO", "1,THREE", "2,ONE", "2,TWO", "2,THREE",
 						"3,ONE", "3,TWO", "3,THREE");
+		}
+
+		@Test
+		@DisplayName("works with mixed argument sources and @CartesianEnumSource having omitted types")
+		void mixedArgumentSourcesWithCartesianEnumSourceHavingOmittedTypes() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class,
+						"mixedArgumentSourcesWithCartesianEnumSourceHavingOmittedTypes", int.class, TestEnum.class,
+						AnotherTestEnum.class, long.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(36).hasNumberOfSucceededTests(6);
+			assertThat(results)
+					.hasNumberOfReportEntries(36)
+					.withValues("0,ONE,ALPHA,2", "0,ONE,ALPHA,3", "0,ONE,BETA,2", "0,ONE,BETA,3", "0,ONE,GAMMA,2",
+						"0,ONE,GAMMA,3", "0,TWO,ALPHA,2", "0,TWO,ALPHA,3", "0,TWO,BETA,2", "0,TWO,BETA,3",
+						"0,TWO,GAMMA,2", "0,TWO,GAMMA,3", "0,THREE,ALPHA,2", "0,THREE,ALPHA,3", "0,THREE,BETA,2",
+						"0,THREE,BETA,3", "0,THREE,GAMMA,2", "0,THREE,GAMMA,3", "1,ONE,ALPHA,2", "1,ONE,ALPHA,3",
+						"1,ONE,BETA,2", "1,ONE,BETA,3", "1,ONE,GAMMA,2", "1,ONE,GAMMA,3", "1,TWO,ALPHA,2",
+						"1,TWO,ALPHA,3", "1,TWO,BETA,2", "1,TWO,BETA,3", "1,TWO,GAMMA,2", "1,TWO,GAMMA,3",
+						"1,THREE,ALPHA,2", "1,THREE,ALPHA,3", "1,THREE,BETA,2", "1,THREE,BETA,3", "1,THREE,GAMMA,2",
+						"1,THREE,GAMMA,3");
 		}
 
 		@Test
@@ -592,6 +630,38 @@ public class CartesianProductTestExtensionTests {
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ParameterResolutionException.class)
 					.hasMessageContaining("No ParameterResolver registered");
+		}
+
+		@Test
+		@DisplayName("there is no parameter with @CartesianEnumSource and omitted type")
+		void missingParameterWithCartesianEnumSourceOmittedType() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class,
+						"missingParameterWithOmittedType");
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.getCause()
+					.isInstanceOf(PreconditionViolationException.class)
+					.hasMessageContaining("Test method must declare at least one parameter");
+		}
+
+		@Test
+		@DisplayName("there is no Enum parameter with @CartesianEnumSource and omitted type")
+		void nonEnumParameterWithCartesianEnumSourceOmittedType() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class,
+						"nonEnumParameterWithOmittedType", int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.getCause()
+					.isInstanceOf(PreconditionViolationException.class)
+					.hasMessageContaining("Parameter of type %s must reference an Enum type", int.class);
 		}
 
 		@Test
@@ -1047,12 +1117,30 @@ public class CartesianProductTestExtensionTests {
 		@CartesianProductTest
 		@CartesianEnumSource
 		@ReportEntry("{0}")
-		void singleImplicitType(TestEnum e) {
+		void singleOmittedType(TestEnum e) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource
+		@CartesianEnumSource
+		@ReportEntry("{0} - {1}")
+		void multipleOmittedTypes(TestEnum e1, AnotherTestEnum e2) {
+			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
 		@CartesianEnumSource(value = TestEnum.class, names = "ONE")
 		void missing(TestEnum e1, AnotherTestEnum e2) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource
+		void missingParameterWithOmittedType() {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource
+		void nonEnumParameterWithOmittedType(int i) {
 		}
 
 		@CartesianProductTest
@@ -1179,6 +1267,18 @@ public class CartesianProductTestExtensionTests {
 		@CartesianEnumSource(TestEnum.class)
 		@ReportEntry("{0},{1}")
 		void cartesianValueSourceWithCartesianEnumSource(int i, TestEnum e) {
+		}
+
+		@CartesianProductTest
+		@IntRangeSource(from = 0, to = 2)
+		@CartesianEnumSource
+		@CartesianEnumSource
+		@CartesianValueSource(longs = { 2, 3 })
+		@ReportEntry("{0},{1},{2},{3}")
+		void mixedArgumentSourcesWithCartesianEnumSourceHavingOmittedTypes(int i, TestEnum e1, AnotherTestEnum e2,
+				long l) {
+			assertThat(i).isEqualTo(1);
+			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 	}

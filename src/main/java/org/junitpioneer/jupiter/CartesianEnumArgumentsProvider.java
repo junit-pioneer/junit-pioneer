@@ -13,15 +13,20 @@ package org.junitpioneer.jupiter;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 /**
  * This is basically a copy of Jupiter's {@code EnumArgumentsProvider},
@@ -69,14 +74,28 @@ class CartesianEnumArgumentsProvider implements CartesianAnnotationConsumer<Cart
 				throw new PreconditionViolationException(
 					"Test method must declare at least one parameter: " + method.toGenericString());
 
-			if (!Enum.class.isAssignableFrom(parameterTypes[0]))
-				throw new PreconditionViolationException(
-					"First parameter must reference an Enum type (alternatively, use the annotation's 'value' attribute to specify the type explicitly): "
-							+ method.toGenericString());
+			Class<?> parameterType = parameterTypes[determineParameterTypeIndex(method)];
 
-			enumClass = parameterTypes[0];
+			if (!Enum.class.isAssignableFrom(parameterType))
+				throw new PreconditionViolationException(String
+						.format(
+							"Parameter of type %s must reference an Enum type (alternatively, use the annotation's 'value' attribute to specify the type explicitly): %s",
+							parameterType, method.toGenericString()));
+
+			enumClass = parameterType;
 		}
 		return enumClass;
+	}
+
+	private int determineParameterTypeIndex(Method method) {
+		List<Annotation> argumentSources = PioneerAnnotationUtils
+				.findAnnotatedAnnotations(method, ArgumentsSource.class);
+
+		return IntStream
+				.range(0, argumentSources.size())
+				.filter(i -> enumSource == argumentSources.get(i))
+				.findFirst()
+				.orElseThrow(() -> new PreconditionViolationException("TBD")); // FIXME
 	}
 
 }
