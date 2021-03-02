@@ -92,8 +92,8 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			if (maxAttempts == 0)
 				throw new IllegalStateException("@RetryingTest requires that one of `value` or `maxAttempts` be set.");
 			if (retryingTest.value() != 0 && retryingTest.maxAttempts() != 0)
-					throw new IllegalStateException(
-						"@RetryingTest requires that one of `value` or `maxAttempts` be set, but not both.");
+				throw new IllegalStateException(
+					"@RetryingTest requires that one of `value` or `maxAttempts` be set, but not both.");
 
 			if (minSuccess < 1)
 				throw new IllegalStateException(
