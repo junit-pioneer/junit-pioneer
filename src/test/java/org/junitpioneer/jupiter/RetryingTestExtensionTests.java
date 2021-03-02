@@ -135,6 +135,20 @@ class RetryingTestExtensionTests {
 	}
 
 	@Test
+	void valueLessThanOne_fails() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "valueLessThanOne");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
+	void maxAttemptsLessThanOne_fails() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsLessThanOne");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
 	void maxAttemptsAndValueSet_fails() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsAndValueSet");
@@ -146,6 +160,14 @@ class RetryingTestExtensionTests {
 	void maxAttemptsEqualsMinSuccess_fails() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsEqualsMinSuccess");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
+	void maxAttemptsLessThanMinSuccess_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsLessThanMinSuccess");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -233,6 +255,16 @@ class RetryingTestExtensionTests {
 			// Do nothing
 		}
 
+		@RetryingTest(value = 0)
+		void valueLessThanOne() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 0)
+		void maxAttemptsThanOne() {
+			// Do nothing
+		}
+
 		@RetryingTest(value = 1, maxAttempts = 1)
 		void maxAttemptsAndValueSet() {
 			// Do nothing
@@ -240,6 +272,11 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(maxAttempts = 1, minSuccess = 1)
 		void maxAttemptsEqualsMinSuccess() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = -1, minSuccess = 1)
+		void maxAttemptsLessThanMinSuccess() {
 			// Do nothing
 		}
 
