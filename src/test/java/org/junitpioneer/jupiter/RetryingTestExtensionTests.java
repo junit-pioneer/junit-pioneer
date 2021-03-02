@@ -262,7 +262,7 @@ class RetryingTestExtensionTests {
 		}
 
 		@RetryingTest(maxAttempts = 0)
-		void maxAttemptsThanOne() {
+		void maxAttemptsLessThanOne() {
 			// Do nothing
 		}
 
