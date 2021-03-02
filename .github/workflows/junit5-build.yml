@@ -2,7 +2,7 @@ name: Experimental JUnit 5 build
 
 on:
   push:
-    branches: 'master'
+    branches: 'main'
     tags-ignore:
       - 'v**'
   pull_request:
