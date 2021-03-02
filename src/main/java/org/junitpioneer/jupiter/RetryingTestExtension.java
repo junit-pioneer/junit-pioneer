@@ -86,30 +86,22 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 					.findAnnotation(test, RetryingTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."));
 
-			int maxAttempts = retryingTest.maxAttempts();
+			int maxAttempts = retryingTest.maxAttempts() != 0 ? retryingTest.maxAttempts() : retryingTest.value();
 			int minSuccess = retryingTest.minSuccess();
 
-			if (retryingTest.value() != 0) {
-				if (retryingTest.maxAttempts() != 0) {
+			if (maxAttempts == 0)
+				throw new IllegalStateException("@RetryingTest requires that one of `value` or `maxAttempts` be set.");
+			if (retryingTest.value() != 0 && retryingTest.maxAttempts() != 0)
 					throw new IllegalStateException(
 						"@RetryingTest requires that one of `value` or `maxAttempts` be set, but not both.");
-				}
 
-				maxAttempts = retryingTest.value();
-			}
-
-			if (maxAttempts == 0) {
-				throw new IllegalStateException("@RetryingTest requires that one of `value` or `maxAttempts` be set.");
-			}
-
-			if (minSuccess < 1) {
+			if (minSuccess < 1)
 				throw new IllegalStateException(
 					"@RetryingTest requires that `minSuccess` be greater than or equal to 1.");
-			} else if (maxAttempts <= minSuccess) {
+			else if (maxAttempts <= minSuccess) {
 				String additionalMessage = maxAttempts == minSuccess
 						? " Using @RepeatedTest is recommended as a replacement."
 						: "";
-
 				throw new IllegalStateException(
 					format("@RetryingTest requires that `maxAttempts` be greater than %s.%s",
 						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
@@ -145,7 +137,7 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			int remainingExecutionCount = maxRetries - retriesSoFar;
 			int requiredSuccessCount = minSuccess - successfulExecutionCount;
 
-			return requiredSuccessCount > 0 && remainingExecutionCount >= requiredSuccessCount;
+			return remainingExecutionCount >= requiredSuccessCount && requiredSuccessCount > 0;
 		}
 
 		@Override
