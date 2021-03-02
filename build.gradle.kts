@@ -3,13 +3,13 @@ plugins {
 	jacoco
 	checkstyle
 	`maven-publish`
-	id("com.diffplug.spotless") version "5.9.0"
+	id("com.diffplug.spotless") version "5.10.2"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.1.1"
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
 	id("org.shipkit.shipkit-auto-version") version "1.1.1"
-	id("org.shipkit.shipkit-changelog") version "1.1.4"
-	id("org.shipkit.shipkit-github-release") version "1.1.1"
+	id("org.shipkit.shipkit-changelog") version "1.1.10"
+	id("org.shipkit.shipkit-github-release") version "1.1.10"
 	id("com.jfrog.bintray") version "1.8.5"
 }
 
@@ -56,10 +56,10 @@ dependencies {
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
-	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.18.1")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.7.7")
+	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.19.0")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.8.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.5.2")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.5.5")
 
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.14.0")
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.14.0")
