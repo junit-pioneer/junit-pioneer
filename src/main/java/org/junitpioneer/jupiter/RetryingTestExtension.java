@@ -91,24 +91,24 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			if (retryingTest.value() != 0) {
 				if (retryingTest.maxAttempts() != 0) {
 					throw new IllegalStateException(
-						"@RetryTest requires that one of `value` or `maxAttempts` be set, but not both.");
+						"@RetryingTest requires that one of `value` or `maxAttempts` be set, but not both.");
 				}
 
 				maxAttempts = retryingTest.value();
 			}
 
 			if (maxAttempts == 0) {
-				throw new IllegalStateException("@RetryTest requires that one of `value` or `maxAttempts` be set.");
+				throw new IllegalStateException("@RetryingTest requires that one of `value` or `maxAttempts` be set.");
 			}
 
 			if (minSuccess < 1) {
-				throw new IllegalStateException("@RetryTest requires that `minSuccess` be greater than or equal to 1.");
+				throw new IllegalStateException("@RetryingTest requires that `minSuccess` be greater than or equal to 1.");
 			} else if (maxAttempts <= minSuccess) {
 				String additionalMessage = maxAttempts == minSuccess
 						? " Using @RepeatedTest is recommended as a replacement."
 						: "";
 
-				throw new IllegalStateException(format("@RetryTest requires that `maxAttempts` be greater than %s.%s",
+				throw new IllegalStateException(format("@RetryingTest requires that `maxAttempts` be greater than %s.%s",
 					minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
 
