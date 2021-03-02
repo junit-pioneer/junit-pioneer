@@ -11,6 +11,7 @@ plugins {
 	id("org.shipkit.shipkit-changelog") version "1.1.10"
 	id("org.shipkit.shipkit-github-release") version "1.1.10"
 	id("com.jfrog.bintray") version "1.8.5"
+	id("com.github.ben-manes.versions") version "0.36.0"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
