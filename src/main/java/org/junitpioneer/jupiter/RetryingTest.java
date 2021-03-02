@@ -73,7 +73,27 @@ public @interface RetryingTest {
 
 	/**
 	 * Specifies how often the test is executed at most.
+	 *
+	 * Alias for {@link #maxAttempts()}.
 	 */
-	int value();
+	int value() default 0;
+
+	/**
+	 * Specifies how often the test is executed at most.
+	 *
+	 * Either this or {@link #value()} are required.
+	 * The value must be greater than {@link #minSuccess()}.
+	 */
+	int maxAttempts() default 0;
+
+	/**
+	 * Specifies the minimum number of successful executions of the test.
+	 *
+	 * The test will be executed at least this number of times. If the test does not complete
+	 * successfully the given number of times, the test will fail.
+	 *
+	 * Value must be greater than or equal to 1.
+	 */
+	int minSuccess() default 1;
 
 }

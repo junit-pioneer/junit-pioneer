@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
 public class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
@@ -68,12 +69,14 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 	private static class FailedTestRetrier implements Iterator<RetryingTestInvocationContext> {
 
 		private final int maxRetries;
+		private final int minSuccess;
 
 		private int retriesSoFar;
 		private int exceptionsSoFar;
 
-		private FailedTestRetrier(int maxRetries) {
+		private FailedTestRetrier(int maxRetries, int minSuccess) {
 			this.maxRetries = maxRetries;
+			this.minSuccess = minSuccess;
 			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
 		}
@@ -82,7 +85,29 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			RetryingTest retryingTest = AnnotationSupport
 					.findAnnotation(test, RetryingTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."));
-			return new FailedTestRetrier(retryingTest.value());
+
+			int maxAttempts = retryingTest.maxAttempts() != 0 ? retryingTest.maxAttempts() : retryingTest.value();
+			int minSuccess = retryingTest.minSuccess();
+
+			if (maxAttempts == 0)
+				throw new IllegalStateException("@RetryingTest requires that one of `value` or `maxAttempts` be set.");
+			if (retryingTest.value() != 0 && retryingTest.maxAttempts() != 0)
+				throw new IllegalStateException(
+					"@RetryingTest requires that one of `value` or `maxAttempts` be set, but not both.");
+
+			if (minSuccess < 1)
+				throw new IllegalStateException(
+					"@RetryingTest requires that `minSuccess` be greater than or equal to 1.");
+			else if (maxAttempts <= minSuccess) {
+				String additionalMessage = maxAttempts == minSuccess
+						? " Using @RepeatedTest is recommended as a replacement."
+						: "";
+				throw new IllegalStateException(
+					format("@RetryingTest requires that `maxAttempts` be greater than %s.%s",
+						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
+			}
+
+			return new FailedTestRetrier(maxAttempts, minSuccess);
 		}
 
 		void failed(Throwable exception) {
@@ -92,16 +117,14 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 
 			exceptionsSoFar++;
 
-			boolean allRetriesFailed = exceptionsSoFar == maxRetries;
-			if (allRetriesFailed)
-				throw new AssertionError(
-					format("Test execution #%d (of up to %d) failed ~> test fails - see cause for details",
-						exceptionsSoFar, maxRetries),
+			if (hasNext())
+				throw new TestAbortedException(
+					format("Test execution #%d (of up to %d) failed ~> will retry...", retriesSoFar, maxRetries),
 					exception);
 			else
-				throw new TestAbortedException(
-					format("Test execution #%d (of up to %d) failed ~> will retry...", exceptionsSoFar, maxRetries),
-					exception);
+				throw new AssertionFailedError(format(
+					"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
+					retriesSoFar, maxRetries, minSuccess), exception);
 		}
 
 		@Override
@@ -110,10 +133,11 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			if (retriesSoFar == 0)
 				return true;
 
-			// if we caught an exception in each execution, each execution failed, including the previous one
-			boolean previousFailed = retriesSoFar == exceptionsSoFar;
-			boolean maxRetriesReached = retriesSoFar == maxRetries;
-			return previousFailed && !maxRetriesReached;
+			int successfulExecutionCount = retriesSoFar - exceptionsSoFar;
+			int remainingExecutionCount = maxRetries - retriesSoFar;
+			int requiredSuccessCount = minSuccess - successfulExecutionCount;
+
+			return remainingExecutionCount >= requiredSuccessCount && requiredSuccessCount > 0;
 		}
 
 		@Override
