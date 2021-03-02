@@ -103,14 +103,16 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			}
 
 			if (minSuccess < 1) {
-				throw new IllegalStateException("@RetryingTest requires that `minSuccess` be greater than or equal to 1.");
+				throw new IllegalStateException(
+					"@RetryingTest requires that `minSuccess` be greater than or equal to 1.");
 			} else if (maxAttempts <= minSuccess) {
 				String additionalMessage = maxAttempts == minSuccess
 						? " Using @RepeatedTest is recommended as a replacement."
 						: "";
 
-				throw new IllegalStateException(format("@RetryingTest requires that `maxAttempts` be greater than %s.%s",
-					minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
+				throw new IllegalStateException(
+					format("@RetryingTest requires that `maxAttempts` be greater than %s.%s",
+						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
 
 			return new FailedTestRetrier(maxAttempts, minSuccess);

@@ -143,7 +143,8 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void maxAttemptsLessThanOne_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsLessThanOne");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsLessThanOne");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
