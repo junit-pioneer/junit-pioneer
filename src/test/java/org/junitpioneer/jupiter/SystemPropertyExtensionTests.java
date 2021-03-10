@@ -256,4 +256,27 @@ class SystemPropertyExtensionTests {
 
 	}
 
+	@Nested
+	@DisplayName("used with inheritance")
+	class InheritanceTests extends InheritanceBaseTest {
+
+		@Test
+		@DisplayName("should inherit clear and set annotations")
+		void shouldInheritClearAndSetProperty() {
+			assertThat(System.getProperty("set prop A")).isNull();
+			assertThat(System.getProperty("set prop B")).isNull();
+			assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
+			assertThat(System.getProperty("clear prop E")).isEqualTo("new E");
+		}
+
+	}
+
+	@ClearSystemProperty(key = "set prop A")
+	@ClearSystemProperty(key = "set prop B")
+	@SetSystemProperty(key = "clear prop D", value = "new D")
+	@SetSystemProperty(key = "clear prop E", value = "new E")
+	static class InheritanceBaseTest {
+
+	}
+
 }
