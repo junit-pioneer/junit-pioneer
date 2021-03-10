@@ -322,4 +322,27 @@ class EnvironmentVariableExtensionTests {
 
 	}
 
+	@Nested
+	@DisplayName("used with inheritance")
+	class InheritanceTests extends InheritanceBaseTest {
+
+		@Test
+		@DisplayName("should inherit clear and set annotations")
+		void shouldInheritClearAndSetProperty() {
+			assertThat(systemEnvironmentVariable("set prop A")).isNull();
+			assertThat(systemEnvironmentVariable("set prop B")).isNull();
+			assertThat(systemEnvironmentVariable("clear prop D")).isEqualTo("new D");
+			assertThat(systemEnvironmentVariable("clear prop E")).isEqualTo("new E");
+		}
+
+	}
+
+	@ClearEnvironmentVariable(key = "set prop A")
+	@ClearEnvironmentVariable(key = "set prop B")
+	@SetEnvironmentVariable(key = "clear prop D", value = "new D")
+	@SetEnvironmentVariable(key = "clear prop E", value = "new E")
+	static class InheritanceBaseTest {
+
+	}
+
 }
