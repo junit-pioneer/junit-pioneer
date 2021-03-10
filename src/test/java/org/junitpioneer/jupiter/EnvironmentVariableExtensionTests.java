@@ -210,7 +210,7 @@ class EnvironmentVariableExtensionTests {
 		@Test
 		@DisplayName("should fail when clear and set same environment variable")
 		void shouldFailWhenClearAndSetSameEnvironmentVariable() {
-			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 				"shouldFailWhenClearAndSetSameEnvironmentVariable");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
@@ -222,7 +222,7 @@ class EnvironmentVariableExtensionTests {
 				+ "deduplicates identical annotations like the ones required for this test: "
 				+ "https://github.com/junit-team/junit5/issues/2131")
 		void shouldFailWhenClearSameEnvironmentVariableTwice() {
-			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 				"shouldFailWhenClearSameEnvironmentVariableTwice");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
@@ -231,7 +231,7 @@ class EnvironmentVariableExtensionTests {
 		@Test
 		@DisplayName("should fail when set same environment variable twice")
 		void shouldFailWhenSetSameEnvironmentVariableTwice() {
-			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 				"shouldFailWhenSetSameEnvironmentVariableTwice");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
@@ -299,7 +299,7 @@ class EnvironmentVariableExtensionTests {
 
 	}
 
-	static class MethodLevelInitializationFailureTestCase {
+	static class MethodLevelInitializationFailureTestCases {
 
 		@Test
 		@DisplayName("clearing and setting the same variable")

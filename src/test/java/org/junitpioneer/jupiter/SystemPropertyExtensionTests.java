@@ -203,7 +203,7 @@ class SystemPropertyExtensionTests {
 		@DisplayName("should fail when clear and set same system property")
 		void shouldFailWhenClearAndSetSameSystemProperty() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+					.executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 						"shouldFailWhenClearAndSetSameSystemProperty");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
@@ -216,7 +216,7 @@ class SystemPropertyExtensionTests {
 				+ "https://github.com/junit-team/junit5/issues/2131")
 		void shouldFailWhenClearSameSystemPropertyTwice() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+					.executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 						"shouldFailWhenClearSameSystemPropertyTwice");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
@@ -226,14 +226,14 @@ class SystemPropertyExtensionTests {
 		@DisplayName("should fail when set same system property twice")
 		void shouldFailWhenSetSameSystemPropertyTwice() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+					.executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 						"shouldFailWhenSetSameSystemPropertyTwice");
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
 	}
 
-	static class MethodLevelInitializationFailureTestCase {
+	static class MethodLevelInitializationFailureTestCases {
 
 		@Test
 		@DisplayName("clearing and setting the same property")
