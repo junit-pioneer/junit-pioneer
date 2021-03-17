@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -52,6 +53,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
+@Inherited
 @Repeatable(ClearEnvironmentVariable.ClearEnvironmentVariables.class)
 @WritesEnvironmentVariable
 @ExtendWith(EnvironmentVariableExtension.class)
@@ -67,6 +69,7 @@ public @interface ClearEnvironmentVariable {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Inherited
 	@WritesEnvironmentVariable
 	@ExtendWith(EnvironmentVariableExtension.class)
 	@interface ClearEnvironmentVariables {
