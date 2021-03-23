@@ -116,20 +116,20 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 
 	private static void verifyNonEmptyInputs(DisableIfParameter annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
-			throwInvalidInputs(DisableIfParameter.class);
+			throw invalidInputs(DisableIfParameter.class);
 	}
 
 	private static void verifyNonEmptyInputs(DisableIfAnyParameter annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
-			throwInvalidInputs(DisableIfAnyParameter.class);
+			throw invalidInputs(DisableIfAnyParameter.class);
 	}
 
 	private static void verifyNonEmptyInputs(DisableIfAllParameters annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
-			throwInvalidInputs(DisableIfAllParameters.class);
+			throw invalidInputs(DisableIfAllParameters.class);
 	}
 
-	private static void throwInvalidInputs(Class<?> annotationClass) {
+	private static RuntimeException invalidInputs(Class<?> annotationClass) {
 		throw new ExtensionConfigurationException(
 			format("%s requires that either `contains` or `matches` is set.", annotationClass.getSimpleName()));
 	}
