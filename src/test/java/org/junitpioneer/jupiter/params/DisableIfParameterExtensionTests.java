@@ -121,6 +121,31 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@Test
+		@DisplayName("throws an exception if DisableIfParameter index is too large")
+		void overindex() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "overindexed", String.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(2)
+					.withExceptionInstancesOf(ExtensionConfigurationException.class)
+					.allMatch(s -> s.startsWith("Annotation has invalid index"));
+		}
+
+		@Test
+		@DisplayName("throws an exception if both index and name is set on DisableIfParameter")
+		void multipleTargets() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "multipleTargets", String.class);
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining(
+						"Using both name and index parameter targeting in a single @DisableIfParameter is not permitted.");
+		}
+
+		@Test
 		@DisplayName("throws an exception if method has no parameters")
 		void noParameters() {
 			ExecutionResults results = PioneerTestKit.executeTestMethod(BadConfigTestCases.class, "noParameters");
@@ -303,6 +328,18 @@ class DisableIfParameterExtensionTests {
 		@Test
 		@DisableIfAnyParameter(contains = "A")
 		void simpleTest() {
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter(index = 3, contains = "overindexed")
+		@ValueSource(strings = { "a", "b" })
+		void overindexed(String s) {
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter(index = 0, name = "s", contains = "value")
+		@ValueSource(strings = { "value" })
+		void multipleTargets(String s) {
 		}
 
 		@ParameterizedTest
