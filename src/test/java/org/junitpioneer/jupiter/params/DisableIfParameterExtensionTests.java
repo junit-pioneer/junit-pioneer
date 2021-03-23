@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -18,11 +18,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -39,13 +37,23 @@ class DisableIfParameterExtensionTests {
 	class CorrectConfigurationTests {
 
 		@Test
-		@DisplayName("disables tests when parameter contains any value from the 'contains' array")
-		void interceptContains() {
+		@DisplayName("disables tests when parameter targeted by explicit index contains any value from the 'contains' array")
+		void interceptContainsExplicitIndex() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContains",
-						String.class);
+					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContainsExplicitIndex",
+						String.class, String.class);
 
-			assertThat(results).hasNumberOfSucceededTests(2).hasNumberOfAbortedTests(2);
+			assertThat(results).hasNumberOfAbortedTests(1).hasNumberOfSucceededTests(7).hasNumberOfFailedTests(2);
+		}
+
+		@Test
+		@DisplayName("disables tests when parameter targeted by implicit index contains any value from the 'contains' array")
+		void interceptContainsImplicitIndex() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContainsImplicitIndex",
+						String.class, String.class);
+
+			assertThat(results).hasNumberOfAbortedTests(2).hasNumberOfSucceededTests(6).hasNumberOfFailedTests(2);
 		}
 
 		@Test
@@ -55,17 +63,27 @@ class DisableIfParameterExtensionTests {
 					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContainsAny",
 						String.class, String.class);
 
-			assertThat(results).hasNumberOfAbortedTests(2);
+			assertThat(results).hasNumberOfAbortedTests(4).hasNumberOfSucceededTests(6);
+		}
+
+		@Test
+		@DisplayName("disables tests when all parameters contains any value from the 'contains' array")
+		void interceptContainsAll() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContainsAll",
+						String.class, String.class);
+
+			assertThat(results).hasNumberOfAbortedTests(1).hasNumberOfSucceededTests(9);
 		}
 
 		@Test
 		@DisplayName("disables tests when parameter matches any regex from the 'matches' array")
 		void interceptMatches() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptMatches",
+					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptMatches", String.class,
 						String.class);
 
-			assertThat(results).hasNumberOfSucceededTests(2).hasNumberOfAbortedTests(2);
+			assertThat(results).hasNumberOfAbortedTests(5).hasNumberOfSucceededTests(2).hasNumberOfFailedTests(3);
 		}
 
 		@Test
@@ -75,16 +93,17 @@ class DisableIfParameterExtensionTests {
 					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptMatchesAny",
 						String.class, String.class);
 
-			assertThat(results).hasNumberOfAbortedTests(2);
+			assertThat(results).hasNumberOfAbortedTests(3).hasNumberOfSucceededTests(7);
 		}
 
 		@Test
-		@DisplayName("disables tests if parameter matches regex from 'matches' or contains value from 'contains'")
-		void interceptMatchesAndContains() {
+		@DisplayName("disables tests when all parameters match any regex from the 'matches' array")
+		void interceptMatchesAll() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptBoth", String.class);
+					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptMatchesAll",
+						String.class, String.class);
 
-			assertThat(results).hasNumberOfSucceededTests(1).hasNumberOfAbortedTests(3);
+			assertThat(results).hasNumberOfAbortedTests(1).hasNumberOfSucceededTests(2).hasNumberOfFailedTests(7);
 		}
 
 	}
@@ -125,6 +144,30 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@Test
+		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfAnyParameter")
+		void missingValuesAny() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingInputsAny", String.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(3)
+					.withExceptionInstancesOf(ExtensionConfigurationException.class)
+					.allMatch(("DisableIfAnyParameter requires that either `contains` or `matches` is set.")::equals);
+		}
+
+		@Test
+		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfAllParameters")
+		void missingValuesAll() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingInputsAll", String.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(3)
+					.withExceptionInstancesOf(ExtensionConfigurationException.class)
+					.allMatch(("DisableIfAllParameters requires that either `contains` or `matches` is set.")::equals);
+		}
+
+		@Test
 		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfParameter")
 		void bothValuesSet() {
 			ExecutionResults results = PioneerTestKit
@@ -134,6 +177,30 @@ class DisableIfParameterExtensionTests {
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
 					.allMatch(("DisableIfParameter requires that either `contains` or `matches` is set.")::equals);
+		}
+
+		@Test
+		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfAnyParameter")
+		void bothValuesSetAny() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "setBothParamsAny", String.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(3)
+					.withExceptionInstancesOf(ExtensionConfigurationException.class)
+					.allMatch(("DisableIfAnyParameter requires that either `contains` or `matches` is set.")::equals);
+		}
+
+		@Test
+		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfAllParameters")
+		void bothValuesSetAll() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "setBothParamsAll", String.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(3)
+					.withExceptionInstancesOf(ExtensionConfigurationException.class)
+					.allMatch(("DisableIfAllParameters requires that either `contains` or `matches` is set.")::equals);
 		}
 
 		@Test
@@ -155,7 +222,7 @@ class DisableIfParameterExtensionTests {
 		@ParameterizedTest
 		@DisableIfParameter(contains = "She")
 		@MethodSource("requiescat")
-		void interceptContainsImplicitIndex(String line, String line2, TestReporter reporter) {
+		void interceptContainsImplicitIndex(String line, String line2) {
 			// implicit index - disable if first parameter contains "She"
 			assertThat(line2).doesNotContain("She");
 		}
@@ -284,6 +351,18 @@ class DisableIfParameterExtensionTests {
 		@DisableIfParameter(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
 		@ValueSource(strings = { "A", "B", "C" })
 		void setBothParams(String value) {
+		}
+
+		@ParameterizedTest
+		@DisableIfAnyParameter(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
+		@ValueSource(strings = { "A", "B", "C" })
+		void setBothParamsAny(String value) {
+		}
+
+		@ParameterizedTest
+		@DisableIfAllParameters(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
+		@ValueSource(strings = { "A", "B", "C" })
+		void setBothParamsAll(String value) {
 		}
 
 	}
