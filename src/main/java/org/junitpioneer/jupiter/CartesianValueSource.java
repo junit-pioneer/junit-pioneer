@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -17,11 +17,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
 /**
  * {@code @CartesianValueSource} is an argument source which provides access to
  * an array of literal values.
  *
- *  <p>Supported types include {@link #shorts}, {@link #bytes}, {@link #ints},
+ * <p>Supported types include {@link #shorts}, {@link #bytes}, {@link #ints},
  * {@link #longs}, {@link #floats}, {@link #doubles}, {@link #chars},
  * {@link #booleans}, {@link #strings}, and {@link #classes}. Note, however,
  * that only one of the supported types may be specified per
@@ -34,12 +36,15 @@ import java.lang.annotation.Target;
  * {@code @CartesianValueSource} per parameter.
  * </p>
  *
- * @see org.junitpioneer.jupiter.CartesianProductTest
+ * @see CartesianProductTest
+ *
+ * @since 1.0
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Repeatable(CartesianValueSource.CartesianValueSources.class)
+@ArgumentsSource(CartesianValueArgumentsProvider.class)
 public @interface CartesianValueSource {
 
 	/**

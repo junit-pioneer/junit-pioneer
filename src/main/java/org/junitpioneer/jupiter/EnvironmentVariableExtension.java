@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.PioneerUtils;
 
 class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, String> {
 
@@ -50,8 +52,16 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 	@Override
 	protected void reportWarning(ExtensionContext context) {
 		boolean wasReported = REPORTED_WARNING.getAndSet(true);
-		if (!wasReported)
-			context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
+		if (wasReported)
+			return;
+
+		// Log as report entry and to System.out - check docs for reasons, but why System.out?
+		// Because report entries lack tool support and are easily lost and System.err is
+		// too invasive (particularly since, with good configuration, the module system won't
+		// print a warning and hence it's only Pioneer polluting System.err - not good).
+		// System.out seemed like a good compromise.
+		context.publishReportEntry(WARNING_KEY, WARNING_VALUE);
+		System.out.println(WARNING_KEY + ": " + WARNING_VALUE); //NOSONAR
 	}
 
 	@Override

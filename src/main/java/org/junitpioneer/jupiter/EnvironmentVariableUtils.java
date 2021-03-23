@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -38,30 +37,12 @@ class EnvironmentVariableUtils {
 	}
 
 	/**
-	 * Set the values of an environment variables.
-	 *
-	 * @param entries with name and new value of the environment variables
-	 */
-	public static void set(Map<String, String> entries) {
-		modifyEnvironmentVariables(map -> map.putAll(entries));
-	}
-
-	/**
 	 * Clear an environment variable.
 	 *
 	 * @param name of the environment variable
 	 */
 	public static void clear(String name) {
 		modifyEnvironmentVariables(map -> map.remove(name));
-	}
-
-	/**
-	 * Clears environment variables.
-	 *
-	 * @param names of the environment variables.
-	 */
-	public static void clear(Collection<String> names) {
-		modifyEnvironmentVariables(map -> names.forEach(map::remove));
 	}
 
 	private static void modifyEnvironmentVariables(Consumer<Map<String, String>> consumer) {

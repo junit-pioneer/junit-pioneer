@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -30,6 +30,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.jupiter.api.extension.TestWatcher;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.PioneerUtils;
 
 class ReportEntryExtension implements TestWatcher, BeforeEachCallback, InvocationInterceptor {
 
@@ -126,7 +128,7 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 		String parsed = value;
 		List<?> list = context.getStore(NAMESPACE).get(KEY, List.class);
 		for (int i = 0; i < list.size(); i++) {
-			parsed = parsed.replaceAll("\\{" + i + "}", list.get(i).toString());
+			parsed = parsed.replaceAll("\\{" + i + "}", PioneerUtils.nullSafeToString(list.get(i)));
 		}
 
 		return parsed;

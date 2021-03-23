@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.TestReporter;
 import org.junitpioneer.testkit.ExecutionResults;
 
 /**
@@ -101,6 +102,14 @@ public class StdIoExtensionTests {
 			assertThat(app.lines)
 					.containsExactlyInAnyOrder("But when from highmost pitch, with weary car,",
 						"Like feeble age, he reeleth from the day,");
+		}
+
+		@Test
+		@StdIo("")
+		@DisplayName("does not catch unrelated parameters")
+		void catchesNothing(StdIn in, TestReporter reporter) {
+			// if the extension supports `TestReporter`, Jupiter will throw:
+			// ParameterResolutionException: Discovered multiple competing ParameterResolvers
 		}
 
 	}

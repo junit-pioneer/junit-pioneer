@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.internal;
 
 import static java.util.stream.Collectors.joining;
 
@@ -24,6 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junitpioneer.jupiter.ReportEntry;
+import org.junitpioneer.jupiter.params.IntRangeSource;
 
 class PioneerAnnotationUtilsTestCases {
 
@@ -205,6 +208,27 @@ class RepeatableFailExtension implements BeforeTestExecutionCallback {
 				.collect(joining(","));
 		if (!message.isEmpty())
 			throw new AssertionError(message);
+	}
+
+}
+
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@interface NotAContainer {
+
+	RepeatableFail[] value();
+
+}
+
+class AnnotatedAnnotationTestCases {
+
+	@ParameterizedTest
+	@ReportEntry("value")
+	@RepeatableFails({ @RepeatableFail, @RepeatableFail })
+	@RepeatableFail
+	@NotAContainer({ @RepeatableFail })
+	@IntRangeSource(from = 1, to = 2)
+	public void annotatedMethod() {
 	}
 
 }

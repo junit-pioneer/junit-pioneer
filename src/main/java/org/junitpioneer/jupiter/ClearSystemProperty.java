@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,6 +45,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
+@Inherited
 @Repeatable(ClearSystemProperty.ClearSystemProperties.class)
 @WritesSystemProperty
 @ExtendWith(SystemPropertyExtension.class)
@@ -59,6 +61,7 @@ public @interface ClearSystemProperty {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Inherited
 	@WritesSystemProperty
 	@ExtendWith(SystemPropertyExtension.class)
 	@interface ClearSystemProperties {

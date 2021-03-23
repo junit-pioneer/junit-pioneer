@@ -5,6 +5,26 @@ Some tests, e.g. those depending on external systems, may fail through no fault 
 Such tests make a suite fragile and it makes sense to try and avoid them, but if that's infeasible, it may help to retry a number of times before eventually assuming actual failure.
 `RetryingTest` provides that functionality.
 
+== Attributes
+
+=== maxAttempts (alias: value) [required]
+
+The `maxAttempts` attribute specifies the maximum number of times to execute the test function.
+If the test function throws an exception, the test will be executed again, up to this limit.
+
+The `value` attribute is an alias for `maxAttempts`.
+The attribute can be set either with `@RetryingTest(N)` or `@RetryingTest(maxAttempts=N)`.
+
+This attribute is required and must be a value greater than `minSuccess`.
+Only one of `maxAttempts` or `value` can be set, but not both.
+
+=== minSuccess [optional]
+
+The `minSuccess` attribute specifies the number of times the test function must complete successfully (i.e. without throwing an exception).
+The test function will be executed, up to `maxAttempts`, until it completes successfully this number of times.
+
+The default for `minSuccess` is 1. The value must be greater than or equal to 1.
+
 == Basic Use
 
 `@RetryingTest(n)` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
@@ -56,6 +76,17 @@ If a test is aborted (e.g.: because of a failed Assumption) `@RetryingTest` won'
 The test `aborted` is aborted before (or during) its first execution.
 The first execution is marked as aborted/skipped, containing the underlying cause.
 The test suite as a whole is also marked as aborted/skipped.
+
+[source,java]
+----
+@RetryingTest(maxAttempts = 4, minSuccess = 2)
+void requiresTwoSuccesses() {
+	// test code that must complete successfully twice
+}
+----
+
+The test `requiresTwoSuccesses` must run at least two times without raising an exception.
+However, it will not run more than four times.
 
 == Combining `@RetryingTest` with `@Test` et al
 

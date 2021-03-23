@@ -73,6 +73,18 @@ Everything related to branches, commits, and more is described [further below](#
 
 Where to put types and how to name them.
 
+#### Package Structure
+
+Classes usually belong into one of these packages:
+
+* `org.junitpioneer.internal` - code intended to be shared across various extensions
+* `org.junitpioneer.jupiter` - extensions to JUnit Jupiter
+	* `....issue` - implementation details of issue extension
+	* `....params` - extensions for Jupiter's `@ParameterizedTest`
+* `org.junitpioneer.vintage` - extensions to older JUnit versions
+
+If none of them is a good fit, we'll find one together.
+
 #### Annotations
 
 Many extensions will come with their own annotations.
@@ -208,7 +220,7 @@ See [the section _Updating Dependency on JUnit 5_](#updating-dependency-on-junit
 
 ### Branching Strategy
 
-By default, development happens in branches, which are merged via pull requests (PRs from `master` will be closed).
+By default, development happens in branches, which are merged via pull requests (PRs from `main` will be closed).
 Special cases, like fixing problems with the CI pipeline, are of course exempt from this guideline.
 
 Please make sure to give branches a meaningful name!
@@ -240,7 +252,7 @@ Please mention all issues in the request's body, possibly using [closing keyword
 
 The [pull requests template](.github/PULL_REQUEST_TEMPLATE.md) contains a footer that must not be edited or removed.
 
-To enforce the [branching strategy](#branching-strategy) pull requests from `master` will be closed.
+To enforce the [branching strategy](#branching-strategy) pull requests from `main` will be closed.
 
 ### Merging
 
@@ -250,7 +262,7 @@ Likewise, PRs opened by a maintainer should be reviewed and agreed to by at leas
 Going further, we should avoid merging PRs that one maintainer outright disagrees with and instead work towards a solution that is acceptable to everybody.
 Note all the _should_-s - exceptions can be made if justifiable (e.g. maintainers don't react or there is reason to hurry).
 
-A pull request is accepted by squashing the commits and fast-forwarding master, making each bug fix or feature appear atomically on master.
+A pull request is accepted by squashing the commits and fast-forwarding `main`, making each bug fix or feature appear atomically on `main`.
 This can be achieved with GitHub's [_squash and merge_](https://help.github.com/articles/about-pull-request-merges/#squash-and-merge-your-pull-request-commits) feature.
 
 ### Commit Message
@@ -259,9 +271,9 @@ To make the single commit expressive, its message must be detailed and [good]((h
 Furthermore, it must follow this structure:
 
 ```
-${action} (${issues} / ${pull-request})
+${action} (${issues} / ${pull-request}) [max 70 characters]
 
-${body}
+${body} [max 70 characters per line]
 
 ${references}: ${issues}
 PR: ${pull-request}
@@ -332,11 +344,11 @@ Follow these steps when updating JUnit 5:
 
 ## Publishing
 
-JUnit Pioneer uses [Shipkit](http://shipkit.org/) and [GitHub Actions](https://github.com/features/actions/) to automate the release process, but unlike Shipkit's default we don't release on every commit to `master`.
+JUnit Pioneer uses [Shipkit](http://shipkit.org/) and [GitHub Actions](https://github.com/features/actions/) to automate the release process, but unlike Shipkit's default we don't release on every commit to `main`.
 Instead, releases must be triggered manually:
 
 1. make sure that the file [`version-properties`](version.properties) defines the correct version (see next section)
-2. trigger the [`Release` GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3ARelease) manually for the master branch.
+2. trigger the [`Release` GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3ARelease) manually for the `main` branch.
 
 GitHub Actions will then tell Shipkit to do its thing.
 
@@ -345,8 +357,8 @@ This also triggers a website build - [see its `README.md`](https://github.com/ju
 
 ### Versioning
 
-Shipkit manages versions by reading from and writing to [`version-properties`](version.properties):
-On each build, it releases the version specified by the `version` field and then increases its patch level for the next release.
+Shipkit manages versions by reading from [`version-properties`](version.properties):
+The variable `version` defines a _major_ and _minor_ version and leaves _patch_ undetermined (e.g. `1.3.*`), so Shipkit can pick the next version.
 
 This is how JUnit Pioneer handles versioning:
 
@@ -361,7 +373,7 @@ Note that the feature's Javadoc needs to reference the same version in its `@sin
 
 ### Background
 
-Like [Mockito](http://mockito.org/), JUnit Pioneer used Shipkit for a continuous delivery model, where every change on the `master` branch (for example when merging a pull request) triggered a release build that published a new version if the following criteria were met:
+Like [Mockito](http://mockito.org/), JUnit Pioneer used Shipkit for a continuous delivery model, where every change on the `main` branch (for example when merging a pull request) triggered a release build that published a new version if the following criteria were met:
 
 - the commit message doesn't contain `[ci skip-release]`
 - all checks (e.g. tests) are successful

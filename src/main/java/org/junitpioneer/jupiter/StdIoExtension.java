@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static java.lang.String.format;
-import static org.junitpioneer.jupiter.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
+import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 import java.io.InputStream;
 import java.io.PrintStream;

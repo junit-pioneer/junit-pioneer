@@ -3,11 +3,14 @@ plugins {
 	jacoco
 	checkstyle
 	`maven-publish`
-	id("com.diffplug.gradle.spotless") version "4.0.0"
-	id("org.shipkit.java") version "2.3.1"
+	id("com.diffplug.spotless") version "5.10.2"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "3.0"
+	id("org.sonarqube") version "3.1.1"
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
+	id("org.shipkit.shipkit-auto-version") version "1.1.1"
+	id("org.shipkit.shipkit-changelog") version "1.1.10"
+	id("org.shipkit.shipkit-github-release") version "1.1.10"
+	id("com.jfrog.bintray") version "1.8.5"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -19,6 +22,11 @@ plugins.withType<JavaPlugin>().configureEach {
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
+// used in pom and bintray
+val issueTracker = "https://github.com/junit-pioneer/junit-pioneer/issues"
+val scm = "https://github.com/junit-pioneer/junit-pioneer.git"
+val website = "https://junit-pioneer.org/"
+
 val modularBuild = findProperty("modularBuild") != null;
 
 java {
@@ -27,7 +35,8 @@ java {
 	} else {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 	}
-
+	withJavadocJar()
+	withSourcesJar()
 }
 
 repositories {
@@ -42,17 +51,18 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-commons")
+	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
-	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
-	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.1")
+	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.19.0")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.8.0")
+	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.5.5")
 
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.12.1")
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.12.1")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.14.0")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.14.0")
 }
 
 spotless {
@@ -111,6 +121,87 @@ moditect {
 		overwriteExistingFiles.set(true)
 		module {
 			moduleInfoFile = rootProject.file("src/main/module/module-info.java")
+		}
+	}
+}
+
+publishing {
+	publications {
+		create<MavenPublication>("maven") {
+			from(components["java"])
+
+			// additional pom content
+			pom {
+				name.set(project.name)
+				description.set(project.description)
+				url.set(website)
+
+				licenses {
+					license {
+						name.set("Eclipse Public License v2.0")
+						url.set("https://www.eclipse.org/legal/epl-v20.html")
+					}
+				}
+
+				scm {
+					url.set(scm)
+				}
+
+				issueManagement {
+					system.set("GitHub Issues")
+					url.set(issueTracker)
+				}
+
+				ciManagement {
+					system.set("GitHub Actions")
+					url.set("https://github.com/junit-pioneer/junit-pioneer/actions")
+				}
+
+				developers {
+					mapOf(
+						"nicolaiparlog" to "Nicolai Parlog",
+						"smoyer64" to "Steve Moyer",
+						"Bukama" to "Matthias Bünger",
+						"aepfli" to "Simon Schrottner",
+						"Michael1993" to "Mihály Verhás"
+					).forEach {
+						developer {
+							id.set(it.key)
+							name.set(it.value)
+							url.set("https://github.com/" + it.key)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+bintray {
+	setPublications("maven")
+	dryRun = project.hasProperty("bintrayDryRun")
+	user = System.getenv("BINTRAY_USER_NAME")
+	key = System.getenv("BINTRAY_API_KEY")
+	publish = true
+
+	pkg.apply {
+		userOrg = "junit-pioneer" // https://bintray.com/junit-pioneer
+		repo = "junit-pioneer"	// https://bintray.com/junit-pioneer/junit-pioneer
+		name = "junit-pioneer"	// https://bintray.com/junit-pioneer/junit-pioneer/junit-pioneer
+		description = project.description
+		githubRepo = "https://github.com/junit-pioneer/junit-pioneer"
+		issueTrackerUrl = issueTracker
+		vcsUrl = scm
+		websiteUrl = website
+		setLicenses("EPL-2.0")
+		setLabels("testing", "junit", "extensions")
+
+		version.apply {
+			mavenCentralSync.apply {
+				sync = true
+				user = System.getenv("NEXUS_TOKEN_USERNAME")
+				password = System.getenv("NEXUS_TOKEN_PASSWORD")
+			}
 		}
 	}
 }
@@ -178,4 +269,18 @@ tasks {
 		}
 	}
 
+	generateChangelog {
+		previousRevision = ext.get("shipkit-auto-version.previous-tag").toString()
+		githubToken = System.getenv("GITHUB_TOKEN")
+		repository = "junit-pioneer/junit-pioneer"
+	}
+
+	githubRelease {
+		dependsOn(generateChangelog)
+		val generateChangelogTask = generateChangelog.get()
+		repository = generateChangelogTask.repository
+		changelog = generateChangelogTask.outputFile
+		githubToken = generateChangelogTask.githubToken
+		newTagRevision = System.getenv("GITHUB_SHA")
+	}
 }

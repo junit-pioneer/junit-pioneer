@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
       - name: Wait on builds
         uses: lewagon/wait-on-check-action@v0.1-beta.2
         with:
@@ -25,17 +27,13 @@ jobs:
       - name: Perform release
         uses: eskatos/gradle-command-action@v1
         env:
-          # shipkit does not support GitHub Actions for now, hence that we simulate to be Travis CI
-          TRAVIS_BRANCH: master
-          TRAVIS_COMMIT_MESSAGE: <no commit message, not needed, we do not care about them, if we trigger or not>
-          TRAVIS_PULL_REQUEST: false
-          GH_WRITE_TOKEN: ${{ secrets.GH_WRITE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BINTRAY_USER_NAME: ${{ secrets.BINTRAY_USER_NAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
           NEXUS_TOKEN_USERNAME: ${{ secrets.NEXUS_TOKEN_USERNAME }}
           NEXUS_TOKEN_PASSWORD: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
         with:
-          arguments: ciPerformRelease
+          arguments: bintrayUpload githubRelease
       - name: Trigger website build
         uses: peter-evans/repository-dispatch@v1
         with:

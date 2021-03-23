@@ -1,6 +1,6 @@
 # NOTE: The URLs need a trailing slash or the selected nav element
 #       won't be highlighted.
-  - title: Features
+  - title: JUnit Pioneer Extensions
     children:
       - title: "Cartesian product of all test parameters"
         url: /docs/cartesian-product/
@@ -12,6 +12,8 @@
         url: /docs/default-locale-timezone/
       - title: "Disable Parameterized Tests"
         url: /docs/disable-parameterized-tests/
+      - title: "Issue information"
+        url: /docs/issue/
       - title: "Publishing Report Entries"
         url: /docs/report-entries/
       - title: "Range Sources"
@@ -20,6 +22,8 @@
         url: /docs/retrying-test/
       - title: "Standard Input and Output"
         url: /docs/standard-input-output/
+      - title: "Measuring time with a Stopwatch"
+        url: /docs/stopwatch/
       - title: "Temporary Files and Directories (removed in 1.0)"
         url: /docs/temp-directory/
       - title: "Vintage @Test"

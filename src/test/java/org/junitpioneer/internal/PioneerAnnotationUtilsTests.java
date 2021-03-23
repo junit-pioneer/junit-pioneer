@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -8,16 +8,24 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -43,7 +51,7 @@ class PioneerAnnotationUtilsTests {
 		class SimpleAnnotations {
 
 			@Nested
-			@ResourceLock(value = "org.junitpioneer.jupiter.FailExtension", mode = READ_WRITE)
+			@ResourceLock(value = "org.junitpioneer.internal.FailExtension", mode = READ_WRITE)
 			@DisplayName("and not stackable")
 			class StopOnFirst {
 
@@ -97,7 +105,7 @@ class PioneerAnnotationUtilsTests {
 			}
 
 			@Nested
-			@ResourceLock(value = "org.junitpioneer.jupiter.FailExtension", mode = READ_WRITE)
+			@ResourceLock(value = "org.junitpioneer.internal.FailExtension", mode = READ_WRITE)
 			@DisplayName("but stackable")
 			class Stackable {
 
@@ -169,7 +177,7 @@ class PioneerAnnotationUtilsTests {
 		class RepeatableAnnotations {
 
 			@Nested
-			@ResourceLock(value = "org.junitpioneer.jupiter.RepeatableFailExtension", mode = READ_WRITE)
+			@ResourceLock(value = "org.junitpioneer.internal.RepeatableFailExtension", mode = READ_WRITE)
 			@DisplayName("but not stackable")
 			class StopOnFirst {
 
@@ -248,7 +256,7 @@ class PioneerAnnotationUtilsTests {
 			}
 
 			@Nested
-			@ResourceLock(value = "org.junitpioneer.jupiter.RepeatableFailExtension", mode = READ_WRITE)
+			@ResourceLock(value = "org.junitpioneer.internal.RepeatableFailExtension", mode = READ_WRITE)
 			@DisplayName("and stackable")
 			class Stackable {
 
@@ -335,6 +343,21 @@ class PioneerAnnotationUtilsTests {
 							.hasSingleFailedTest()
 							.withException()
 							.hasMessageContainingAll("repeated", "annotation", "root class");
+				}
+
+				@Test
+				void discoversAllAnnotationsAnnotatedWithAnAnnotation() throws NoSuchMethodException {
+					Method annotatedMethod = AnnotatedAnnotationTestCases.class.getMethod("annotatedMethod");
+
+					List<Annotation> annotatedAnnotations = PioneerAnnotationUtils
+							.findAnnotatedAnnotations(annotatedMethod, ExtendWith.class);
+
+					assertThat(annotatedAnnotations)
+							.hasSize(5)
+							.isInstanceOf(java.util.ArrayList.class)
+							.extracting(Annotation::annotationType)
+							.allSatisfy(annotation -> assertThat(annotation)
+									.isIn(ParameterizedTest.class, ReportEntry.class, RepeatableFail.class));
 				}
 
 			}
