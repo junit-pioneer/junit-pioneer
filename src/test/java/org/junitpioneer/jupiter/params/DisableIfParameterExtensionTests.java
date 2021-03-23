@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -240,6 +241,19 @@ class DisableIfParameterExtensionTests {
 					.allMatch(s -> s.contains("Could not resolve parameter"));
 		}
 
+		@Test
+		@DisplayName("does not work without required annotation(s)")
+		void forcedExtension() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "forced", String.class);
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining(
+						"Required at least one of the following: @DisableIfParameter, @DisableIfAllParameter, @DisableIfAnyParameter but found none.");
+		}
+
 	}
 
 	static class CorrectConfigTestCases {
@@ -400,6 +414,12 @@ class DisableIfParameterExtensionTests {
 		@DisableIfAllParameters(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
 		@ValueSource(strings = { "A", "B", "C" })
 		void setBothParamsAll(String value) {
+		}
+
+		@ParameterizedTest
+		@ExtendWith(DisableIfParameterExtension.class)
+		@ValueSource(strings = { "a" })
+		void forced(String s) {
 		}
 
 	}
