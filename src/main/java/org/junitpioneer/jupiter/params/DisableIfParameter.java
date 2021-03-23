@@ -26,10 +26,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * With {@code DisableIfParameter}, it is possible to selectively disable tests out of the plethora
  * of dynamically registered parameterized tests.</p>
  *
- * <p>If neither {@link DisableIfParameter#contains() contains} nor
- * {@link DisableIfParameter#matches() matches} is configured, the extension will throw an exception.
- * It is possible to configure both, in which case the test gets disabled if at least one substring
- * was found <em>or</em> at least one regular expression matched.</p>
+ * <p>The extension requires that exactly one of {@link DisableIfParameter#contains() contains} or
+ * {@link DisableIfParameter#matches() matches} is configured.</p>
+ *
+ * <p>This annotation is for disabling a test based on a single parameter which can be designated with an
+ * implicit index, an explicit index or by name (if parameter name information is present). For more
+ * information how the extension resolves the annotations, check the documentation.</p>
  *
  * @see DisableIfParameterExtension
  */
@@ -39,8 +41,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(DisableIfParameterExtension.class)
 public @interface DisableIfParameter {
 
+	/**
+	 * The name of the parameter the extension checks.
+	 * If parameter naming information is not present at runtime, setting this will throw
+	 * {@link org.junit.jupiter.api.extension.ParameterResolutionException}.
+	 */
 	String name() default "";
 
+	/**
+	 * The index of the parameter the extension checks, starting from 0.
+	 * Negative values are ignored. Setting this to a number higher than the parameter count
+	 * of the test method will result in {@link org.junit.jupiter.api.extension.ExtensionConfigurationException}.
+	 */
 	int index() default -1;
 
 	/**

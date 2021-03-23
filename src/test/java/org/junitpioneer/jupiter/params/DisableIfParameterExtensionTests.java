@@ -10,14 +10,20 @@
 
 package org.junitpioneer.jupiter.params;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -114,9 +120,20 @@ class DisableIfParameterExtensionTests {
 
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
-					.withExceptions()
-					.allMatch(("DisableIfParameter requires that either `contains` or `matches` "
-							+ "has at least one element, but both are empty.")::equals);
+					.withExceptionInstancesOf(ExtensionConfigurationException.class)
+					.allMatch(("DisableIfParameter requires that either `contains` or `matches` is set.")::equals);
+		}
+
+		@Test
+		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfParameter")
+		void bothValuesSet() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "setBothParams", String.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(3)
+					.withExceptionInstancesOf(ExtensionConfigurationException.class)
+					.allMatch(("DisableIfParameter requires that either `contains` or `matches` is set.")::equals);
 		}
 
 		@Test
@@ -128,7 +145,7 @@ class DisableIfParameterExtensionTests {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptions()
-					.allMatch(s -> s.startsWith("Could not find parameter"));
+					.allMatch(s -> s.contains("Could not resolve parameter"));
 		}
 
 	}
@@ -136,38 +153,80 @@ class DisableIfParameterExtensionTests {
 	static class CorrectConfigTestCases {
 
 		@ParameterizedTest
-		@DisableIfParameter(name = "line", contains = "she")
-		@ValueSource(strings = { "Tread lightly, she is near", "Under the snow,", "Speak gently, she can hear",
-				"The daisies grow." })
-		void interceptContains(String line) {
+		@DisableIfParameter(contains = "She")
+		@MethodSource("requiescat")
+		void interceptContainsImplicitIndex(String line, String line2, TestReporter reporter) {
+			// implicit index - disable if first parameter contains "She"
+			assertThat(line2).doesNotContain("She");
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(name = "line", contains = { "bright", "dust" })
-		@CsvSource(delimiter = ';', value = { "All her bright golden hair;Tarnished with rust,",
-				"She that was young and fair;Fallen to dust." })
+		@DisableIfParameter(index = 1, contains = "her")
+		@MethodSource("requiescat")
+		void interceptContainsExplicitIndex(String line, String line2) {
+			// explicit index - disable if second parameter contains "her"
+			assertThat(line).doesNotContain("her");
+		}
+
+		@ParameterizedTest
+		@DisableIfAnyParameter(contains = { "She" })
+		@MethodSource("requiescat")
 		void interceptContainsAny(String line, String line2) {
+			assertThat(line).doesNotContain("She");
+			assertThat(line2).doesNotContain("She");
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(name = "value", matches = { ".*knew", ".*grew" })
-		@ValueSource(strings = { "Lily-like, white as snow,", "She hardly knew", "She was a woman, so",
-				"Sweetly she grew" })
-		void interceptMatches(String value) {
+		@DisableIfAllParameters(contains = { "She", "she" })
+		@MethodSource("requiescat")
+		void interceptContainsAll(String line, String line2) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(name = "line", matches = ".*hea?rt?.*")
-		@CsvSource(delimiter = ';', value = { "Coffin-board, heavy stone,;Lie on her breast,",
-				"I vex my heart alone;She is at rest." })
+		@DisableIfParameter(matches = { ".*[tr].?" })
+		@MethodSource("requiescat")
+		void interceptMatches(String line, String line2) {
+			assertThat(line).doesNotMatch(".*[tr].?");
+			assertThat(line2).doesNotMatch(".*[tr].?");
+		}
+
+		@ParameterizedTest
+		@DisableIfAnyParameter(matches = ".*here?.*")
+		@MethodSource("requiescat")
 		void interceptMatchesAny(String line, String line2) {
+			assertThat(line).doesNotContainPattern("here?");
+			assertThat(line2).doesNotContainPattern("here?");
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(name = "value", contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
-		@ValueSource(strings = { "Peace, Peace, she cannot hear", "Lyre or sonnet,", "All my life’s buried here,",
-				"Heap earth upon it." })
-		void interceptBoth(String value) {
+		@DisableIfAllParameters(matches = ".*[Ss]he.*")
+		@MethodSource("requiescat")
+		void interceptMatchesAll(String line, String line2) {
+			assertThat(line).doesNotContainPattern(".*[Ss]he.*");
+			assertThat(line2).doesNotContainPattern(".*[Ss]he.*");
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter(index = 1, contains = "she")
+		@DisableIfParameter(index = 0, contains = "her")
+		@MethodSource("requiescat")
+		void indexedIntercept(String line, String line2) {
+			assertThat(line).doesNotContain("her");
+			assertThat(line2).doesNotContain("she");
+		}
+
+		static Stream<Arguments> requiescat() {
+			return Stream
+					.of(Arguments.of("Tread lightly, she is near", "Under the snow,"),
+						Arguments.of("Speak gently, she can hear", "The daisies grow."),
+						Arguments.of("All her bright golden hair", "Tarnished with rust,"),
+						Arguments.of("She that was young and fair", "Fallen to dust."),
+						Arguments.of("Lily-like, white as snow,", "She hardly knew"),
+						Arguments.of("She was a woman, so", "Sweetly she grew."),
+						Arguments.of("Coffin-board, heavy stone,", "Lie on her breast,"),
+						Arguments.of("I vex my heart alone,", "She is at rest."),
+						Arguments.of("Peace, peace, she cannot hear", "Lyre or sonnet,"),
+						Arguments.of("All my life's buried here,", "Heap earth upon it."));
 		}
 
 	}
@@ -186,15 +245,45 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(name = "value")
+		@DisableIfAnyParameter(contains = "a")
+		@ValueSource(strings = { "aaa" })
+		void noParametersAny() {
+		}
+
+		@ParameterizedTest
+		@DisableIfAllParameters(contains = "a")
+		@ValueSource(strings = { "aaa" })
+		void noParametersAll() {
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter
 		@ValueSource(strings = { "A", "B", "C" })
 		void missingInputs(String value) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(name = "missing", contains = { "A" })
+		@DisableIfAnyParameter
+		@ValueSource(strings = { "A", "B", "C" })
+		void missingInputsAny(String value) {
+		}
+
+		@ParameterizedTest
+		@DisableIfAllParameters
+		@ValueSource(strings = { "A", "B", "C" })
+		void missingInputsAll(String value) {
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter(name = "param", contains = { "A" })
 		@ValueSource(strings = { "A", "B", "C" })
 		void badlyNamedParam(String value) {
+		}
+
+		@ParameterizedTest
+		@DisableIfParameter(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
+		@ValueSource(strings = { "A", "B", "C" })
+		void setBothParams(String value) {
 		}
 
 	}

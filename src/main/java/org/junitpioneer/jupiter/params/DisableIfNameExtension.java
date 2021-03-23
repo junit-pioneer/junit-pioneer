@@ -39,36 +39,22 @@ public class DisableIfNameExtension implements ExecutionCondition {
 				.orElseGet(() -> enabled("No instructions to disable"));
 	}
 
-	private ConditionEvaluationResult disable(ExtensionContext context, DisableIfDisplayName disableInstruction) {
-		String[] substrings = disableInstruction.contains();
-		String[] regExps = disableInstruction.matches();
+	private ConditionEvaluationResult disable(ExtensionContext context, DisableIfDisplayName annotation) {
+		String[] substrings = annotation.contains();
+		String[] regExps = annotation.matches();
 		boolean checkSubstrings = substrings.length > 0;
 		boolean checkRegExps = regExps.length > 0;
 
-		if (!checkSubstrings && !checkRegExps)
-			throw new ExtensionConfigurationException(
-				"@DisableIfDisplayName requires that either `contains` or `matches` is specified, but both are empty.");
+		if (checkRegExps == checkSubstrings)
+			throw new ExtensionConfigurationException(format("%s %s.",
+				"@DisableIfDisplayName requires that either `contains` or `matches` is specified, but both are",
+				(checkSubstrings ? "present" : "empty")));
 
 		String displayName = context.getDisplayName();
-		ConditionEvaluationResult substringResults = disableIfContains(displayName, substrings);
-		ConditionEvaluationResult regExpResults = disableIfMatches(displayName, regExps);
 
-		if (checkSubstrings && checkRegExps)
-			return checkResults(substringResults, regExpResults);
 		if (checkSubstrings)
-			return substringResults;
-		if (checkRegExps)
-			return regExpResults;
-
-		// can't happen, all four combinations are covered
-		return null;
-	}
-
-	private ConditionEvaluationResult checkResults(ConditionEvaluationResult substringResults,
-			ConditionEvaluationResult regExpResults) {
-		boolean disabled = substringResults.isDisabled() || regExpResults.isDisabled();
-		String reason = format("%s %s", substringResults.getReason(), regExpResults.getReason());
-		return disabled ? disabled(reason) : enabled(reason);
+			return disableIfContains(displayName, substrings);
+		return disableIfMatches(displayName, regExps);
 	}
 
 	private ConditionEvaluationResult disableIfMatches(String displayName, String[] regExps) {

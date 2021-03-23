@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
@@ -53,26 +54,27 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 		for (int i = 0; i < annotations.size(); i++) {
 			DisableIfParameter parameter = annotations.get(i);
 			verifyNonEmptyInputs(parameter);
-			Object argument = findArgument(extensionContext, testMethod, arguments, parameter, i);
+			Object argument = findArgument(testMethod, arguments, parameter, i);
 			ArgumentChecker.check(argument).matches(parameter.matches());
 			ArgumentChecker.check(argument).contains(parameter.contains());
 		}
 		invocation.proceed();
 	}
 
-	private Object findArgument(ExtensionContext context, Method testMethod, List<Object> arguments,
-			DisableIfParameter annotation, int index) {
+	private Object findArgument(Method testMethod, List<Object> arguments, DisableIfParameter annotation, int index) {
+		if (!annotation.name().isEmpty() && annotation.index() > -1)
+			throw new ExtensionConfigurationException(
+				"Using both name and index parameter targeting in a single @DisableIfParameter is not permitted.");
+
 		if (!annotation.name().isEmpty()) {
 			// get argument by name only works if information is present
 			if (testMethod.getParameters()[0].isNamePresent())
 				return findArgumentByName(testMethod, arguments, annotation.name());
 			else
-				context
-						.publishReportEntry(
-							format("%s: Could not resolve parameter by name (%s). Trying to resolve by index...",
-								testMethod.getName(), annotation.name()));
+				throw new ParameterResolutionException(
+					format("%s: Could not resolve parameter by name (%s).", testMethod.getName(), annotation.name()));
 		}
-		// get argument by index (if present)
+		// get argument by explicit index (if present)
 		if (annotation.index() > -1)
 			return findArgumentByIndex(arguments, annotation.index());
 		// get argument by annotation index (implicit)
@@ -80,15 +82,15 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 	}
 
 	private Object findArgumentByName(Method testMethod, List<Object> arguments, String name) {
-		return arguments.get(findParameterIndex(testMethod, name));
+		return arguments.get(findParameterIndexFromName(testMethod, name));
 	}
 
-	private int findParameterIndex(Method testMethod, String name) {
+	private int findParameterIndexFromName(Method testMethod, String name) {
 		Parameter[] parameters = testMethod.getParameters();
 		for (int i = 0; i < parameters.length; i++)
 			if (parameters[i].getName().equals(name))
 				return i;
-		throw new ExtensionConfigurationException(
+		throw new ParameterResolutionException(
 			format("Could not find parameter named %s in test %s", name, testMethod));
 	}
 
@@ -98,7 +100,7 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 	}
 
 	private void verifyValidIndex(List<Object> arguments, int index) {
-		if (index < 0 || index > arguments.size())
+		if (index > arguments.size())
 			throw new ExtensionConfigurationException(
 				format("Annotation has invalid index [%s], should be less than %s", index, arguments.size()));
 	}
@@ -113,24 +115,23 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 	}
 
 	private static void verifyNonEmptyInputs(DisableIfParameter annotation) {
-		if (annotation.contains().length == 0 && annotation.matches().length == 0)
+		if (annotation.contains().length > 0 == annotation.matches().length > 0)
 			throwInvalidInputs(DisableIfParameter.class);
 	}
 
 	private static void verifyNonEmptyInputs(DisableIfAnyParameter annotation) {
-		if (annotation.contains().length == 0 && annotation.matches().length == 0)
+		if (annotation.contains().length > 0 == annotation.matches().length > 0)
 			throwInvalidInputs(DisableIfAnyParameter.class);
 	}
 
 	private static void verifyNonEmptyInputs(DisableIfAllParameters annotation) {
-		if (annotation.contains().length == 0 && annotation.matches().length == 0)
+		if (annotation.contains().length > 0 == annotation.matches().length > 0)
 			throwInvalidInputs(DisableIfAllParameters.class);
 	}
 
 	private static void throwInvalidInputs(Class<?> annotationClass) {
 		throw new ExtensionConfigurationException(
-			format("%s requires that either `contains` or `matches` has at least one element, but both are empty.",
-				annotationClass.getSimpleName()));
+			format("%s requires that either `contains` or `matches` is set.", annotationClass.getSimpleName()));
 	}
 
 	private static class ArgumentChecker {
