@@ -130,7 +130,7 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 	}
 
 	private static RuntimeException invalidInputs(Class<?> annotationClass) {
-		throw new ExtensionConfigurationException(
+		return new ExtensionConfigurationException(
 			format("%s requires that either `contains` or `matches` is set.", annotationClass.getSimpleName()));
 	}
 
