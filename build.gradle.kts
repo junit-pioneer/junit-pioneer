@@ -57,7 +57,7 @@ dependencies {
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.19.0")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.8.0")
+	testImplementation(group = "org.mockito", name = "mockito-inline", version = "3.8.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
 	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.5.5")
 
