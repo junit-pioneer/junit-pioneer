@@ -124,7 +124,7 @@ How to write the code itself.
 
 #### Assertions
 
-All tests shall use [AssertJ](https://joel-costigliola.github.io/assertj/)'s assertions and not the ones build into Jupiter:
+All tests shall use [AssertJ](https://assertj.github.io/doc/)'s assertions and not the ones built into Jupiter:
 
 * more easily discoverable API
 * more detailed assertion failures
