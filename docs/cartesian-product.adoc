@@ -137,7 +137,7 @@ Like `@CartesianValueSource`, `@CartesianEnumSource` is an annotation that might
 It also does NOT work with `@ParameterizedTest`.
 
 The annotation’s `value` attribute is optional.
-When omitted, the declared type of the first method parameter is used.
+When omitted, the declared type of the parameter of the `@CartesianProductTest` method, which has the same relative index of the annotation, is used.
 The test will fail if it does not reference an enum type.
 Thus, the `value` attribute is required in the above example because the method parameter is declared as `TemporalUnit`, i.e. the interface implemented by `ChronoUnit`, which isn’t an enum type.
 Changing the method parameter type to `ChronoUnit` allows you to omit the explicit enum type from the annotation as follows.
@@ -148,6 +148,24 @@ Changing the method parameter type to `ChronoUnit` allows you to omit the explic
 @CartesianEnumSource
 void testWithCartesianEnumSourceWithAutoDetection(ChronoUnit unit) {
     assertThat(unit).isNotNull();
+}
+----
+
+As the above example has only one annotation, the type of the first parameter is used.
+The automatic detection of the enum type also works in case of several `@CartesianEnumSource` annotations, even when mixed with other annotation supported by `@CartesianProductTest`.
+
+[source,java]
+----
+@CartesianProductTest
+@IntRangeSource(from = 0, to = 2)
+@CartesianEnumSource
+@CartesianEnumSource
+@CartesianValueSource(longs = { 2, 3 })
+void testWithCartesianEnumSourceMixedWithOtherAnnotations(int i, TestEnum e1, AnotherTestEnum e2, long l) {
+    assertThat(i).isNotNull();
+    assertThat(e1).isNotNull();
+    assertThat(e2).isNotNull();
+    assertThat(l).isNotNull();
 }
 ----
 
