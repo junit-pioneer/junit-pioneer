@@ -56,6 +56,10 @@ public @interface CartesianEnumSource {
 	/**
 	 * The enum type that serves as the source of the enum constants.
 	 *
+	 * <p>If this attribute is not set explicitly, the declared type of the
+	 * parameter of the {@code @CartesianProductTest} method, which has the
+	 * same relative index of the annotation, is used.
+	 *
 	 * @see #names
 	 * @see #mode
 	 */
