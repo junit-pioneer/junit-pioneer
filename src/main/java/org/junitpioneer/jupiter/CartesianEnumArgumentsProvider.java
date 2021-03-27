@@ -29,7 +29,7 @@ import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 /**
- * This is basically a copy of Jupiter's {@code EnumArgumentsProvider},
+ * This is basically an enhanced copy of Jupiter's {@code EnumArgumentsProvider},
  * except it does NOT support {@code @ParameterizedTest}.
  */
 class CartesianEnumArgumentsProvider implements CartesianAnnotationConsumer<CartesianEnumSource>, ArgumentsProvider {
@@ -95,7 +95,7 @@ class CartesianEnumArgumentsProvider implements CartesianAnnotationConsumer<Cart
 				.range(0, argumentSources.size())
 				.filter(i -> enumSource == argumentSources.get(i))
 				.findFirst()
-				.orElseThrow(() -> new PreconditionViolationException("TBD")); // FIXME
+				.orElseThrow(() -> new PreconditionViolationException("CartesianEnumSource annotation not found"));
 	}
 
 }
