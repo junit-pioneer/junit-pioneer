@@ -60,6 +60,18 @@ public @interface CartesianEnumSource {
 	 * parameter of the {@code @CartesianProductTest} method, which has the
 	 * same relative index of the annotation, is used.
 	 *
+	 * <p>For example, in case of the following test:
+	 * <pre><code class='java'>
+	 * &#64;CartesianProductTest
+	 * &#64;CartesianEnumSource
+	 * &#64;CartesianEnumSource
+	 * void multipleOmittedTypes(FirstEnum e1, SecondEnum e2) {
+	 * 	...
+	 * }
+	 * </code></pre>
+	 * the first {@code @CartesianEnumSource} annotation will provide all the values of {@code FirstEnum},
+	 * while the second annotation will provide all the values of {@code SecondEnum}.
+	 *
 	 * @see #names
 	 * @see #mode
 	 */
