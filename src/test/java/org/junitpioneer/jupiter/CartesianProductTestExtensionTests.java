@@ -662,6 +662,19 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
+		@DisplayName("not all parameters have a corresponding @CartesianEnumSource with omitted types")
+		void missingAnnotationCartesianEnumSourceWithOmittedTypes() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "missingWithOmittedType",
+						TestEnum.class, AnotherTestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
+					.hasMessageContaining("No ParameterResolver registered");
+		}
+
+		@Test
 		@DisplayName("there is no parameter with @CartesianEnumSource and omitted type")
 		void missingParameterWithCartesianEnumSourceOmittedType() {
 			ExecutionResults results = PioneerTestKit
@@ -714,7 +727,7 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the @CartesianEnumSource annotations contain non existing names")
+		@DisplayName("the @CartesianEnumSource annotation contains non existing names")
 		void nonExistingNamesCartesianEnumSource() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "nonExistingNames",
@@ -728,7 +741,21 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the @CartesianEnumSource annotations contain duplicate names")
+		@DisplayName("the @CartesianEnumSource annotation with omitted type contains non existing names")
+		void nonExistingNamesCartesianEnumSourceWithOmittedType() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class,
+						"nonExistingNamesWithOmittedType", TestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource annotation contains duplicate names")
 		void duplicateNamesCartesianEnumSource() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "duplicateNames",
@@ -742,7 +769,21 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the @CartesianEnumSource annotations contain invalid pattern with MATCH_ANY mode")
+		@DisplayName("the @CartesianEnumSource annotation with omitted type contains duplicate names")
+		void duplicateNamesCartesianEnumSourceWithOmittedType() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class,
+						"duplicateNamesWithOmittedType", TestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource annotation contains invalid pattern with MATCH_ANY mode")
 		void wrongAnyPatternCartesianEnumSource() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "wrongAnyPattern",
@@ -756,11 +797,39 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("the @CartesianEnumSource annotations contain invalid pattern with MATCH_ALL mode")
+		@DisplayName("the @CartesianEnumSource annotation with omitted type contains invalid pattern with MATCH_ANY mode")
+		void wrongAnyPatternCartesianEnumSourceWIthOmittedType() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class,
+						"wrongAnyPatternWithOmittedType", TestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource annotation contains invalid pattern with MATCH_ALL mode")
 		void wrongAllPatternCartesianEnumSource() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class, "wrongAllPattern",
 						TestEnum.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not provide arguments")
+					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+		}
+
+		@Test
+		@DisplayName("the @CartesianEnumSource annotation with omitted type contains invalid pattern with MATCH_ALL mode")
+		void wrongAllPatternCartesianEnumSourceWithOmittedType() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class,
+						"wrongAllPatternWithOmittedType", TestEnum.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -1176,6 +1245,11 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
+		@CartesianEnumSource(names = "ONE")
+		void missingWithOmittedType(TestEnum e1, AnotherTestEnum e2) {
+		}
+
+		@CartesianProductTest
 		@CartesianEnumSource
 		void missingParameterWithOmittedType() {
 		}
@@ -1202,8 +1276,18 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
+		@CartesianEnumSource(names = { "ONE", "FOUR", "FIVE" })
+		void nonExistingNamesWithOmittedType(TestEnum e1) {
+		}
+
+		@CartesianProductTest
 		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "ONE" })
 		void duplicateNames(TestEnum e1) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(names = { "ONE", "ONE" })
+		void duplicateNamesWithOmittedType(TestEnum e1) {
 		}
 
 		@CartesianProductTest
@@ -1212,8 +1296,18 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
+		@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ANY)
+		void wrongAnyPatternWithOmittedType(TestEnum e1) {
+		}
+
+		@CartesianProductTest
 		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = Mode.MATCH_ALL)
 		void wrongAllPattern(TestEnum e1) {
+		}
+
+		@CartesianProductTest
+		@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ALL)
+		void wrongAllPatternWithOmittedType(TestEnum e1) {
 		}
 
 	}
