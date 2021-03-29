@@ -14,7 +14,6 @@ package org.junitpioneer.jupiter;
  * Dummy enum class used as default value for optional attributes of
  * annotations.
  *
- * @since 1.4.0
  * @see CartesianEnumSource#value()
  */
 public enum NullEnum {
