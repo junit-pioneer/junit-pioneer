@@ -322,7 +322,9 @@ Closes: #31
 ```
 
 
-## Updating Dependency on JUnit 5
+## Dependencies
+
+### JUnit 5
 
 JUnit Pioneer has an uncharacteristically strong relationship to the JUnit 5 project (often called _upstream_).
 It not only depends on it, it also uses its internal APIs, copies source code that is not released in any artifact, mimics code style, unit testing, build and CI setup, and more.
@@ -340,6 +342,15 @@ Follow these steps when updating JUnit 5:
 * the commit message...
 	* ... should be structured and worded as defined above
 	* ... should reference the upstream issue and pull request (if any)
+
+### Others
+
+Pioneer does not take on run-time dependencies outside of JUnit 5.
+Of course test dependencies like AssertJ and build dependencies on Gradle plugins are fair game.
+To keep them updated, run `gradle dependencyUpdates`, which lists all dependencies for which a newer version exists.
+Updates still need to be done manually.
+
+To keep the commit history clean, these should be done in bulk every few weeks.
 
 
 ## Publishing
