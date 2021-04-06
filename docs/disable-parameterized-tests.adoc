@@ -76,7 +76,7 @@ void single(String reason) {
 }
 ----
 
-Using both `matches` and `contains` in a single annotation is no longer permitted as of {VERSION_OR_DATE_PLACHOLDER}.
+Using both `matches` and `contains` in a single annotation is no longer permitted.
 
 == DisableIfParameter
 
@@ -91,6 +91,7 @@ The annotations are only supported on test method level for parameterized tests.
 Unlike the `@Disabled` API provided in JUnit Jupiter, which disables the test on first encounter of the annotation, the extension evaluates each execution of a parameterized test.
 As a consequence, instead of disabling the entire set of parameterized tests, each test is possibly disabled individually.
 All three annotations require that you specify one of two parameters, `contains` *or* `matches`.
+Both properties are case-sensitive.
 `@DisableIfAnyParameter` will disable test executions if *any* argument either contains or matches any of the given strings.
 `@DisableIfAllParameters` will disable test executions if *all* arguments either contain or match any of the given strings.
 `@DisableIfParameter` will disable test executions if a *specified* argument either contains or matches any of the given strings.
@@ -178,7 +179,7 @@ The test gets executed two times because we explicitly targeted the second param
 
 ==== Targeting by `index`
 
-You can target your parameters with their index, starting from 0.
+You can target your parameters with their index, starting from 0 (zero).
 
 [source, java]
 ----
