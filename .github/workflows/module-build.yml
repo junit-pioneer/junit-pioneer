@@ -2,7 +2,7 @@ name: Module build on Java 11+
 
 on:
   push:
-    branches: 'master'
+    branches: 'main'
     tags-ignore:
       - 'v**'
   pull_request:

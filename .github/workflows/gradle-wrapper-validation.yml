@@ -2,7 +2,7 @@ name: Gradle wrapper validation
 
 on:
   push:
-    branches: 'master'
+    branches: 'main'
     tags-ignore:
       - 'v**'
   pull_request:

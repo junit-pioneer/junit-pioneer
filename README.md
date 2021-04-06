@@ -3,7 +3,7 @@
 <img src="docs/project-logo.jpg" align="right" width="150px"/>
 
 [![Latest Junit Pioneer on Maven Central](https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat)](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer)
-[![JUnit Pioneer build status](https://github.com/junit-pioneer/junit-pioneer/workflows/JUnit%20Pioneer/badge.svg)](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3A%22JUnit+Pioneer%22+branch%3Amaster)
+[![JUnit Pioneer build status](https://github.com/junit-pioneer/junit-pioneer/workflows/JUnit%20Pioneer/badge.svg)](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3A%22JUnit+Pioneer%22+branch%3Amain)
 
 A melting pot for all kinds of extensions to
 [JUnit 5](https://github.com/junit-team/junit5), particular to its Jupiter API.
@@ -110,9 +110,10 @@ The least we can do is to thank them and list some of their accomplishments here
 
 #### 2021
 
-* [Daniel Kraus](https://github.com/beatngu13) fixed a bug in `AbstractEntryBasedExtension` (#432)
+* [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433 and #448 / #449)
 * [Slawomir Jaranowski](https://github.com/slawekjaranowski) Migrate to new Shipkit plugins (#410 / #419)
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409)
+* [Cory Thomas](https://github.com/dump247) contributed the minSuccess attribute in RetryingTest (#408 / #430)
 
 #### 2020
 
