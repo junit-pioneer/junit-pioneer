@@ -32,7 +32,7 @@ Code
 * [ ] Code adheres to code style, naming conventions etc.
 * [ ] Successful tests cover all changes
 * [ ] There are checks which validate correct / false usage / configuration of a functionality and there are tests to verify those checks
-* [ ] Tests use [AssertJ](https://joel-costigliola.github.io/assertj/) or our own [PioneerAssert](https://github.com/junit-pioneer/junit-pioneer/blob/main/CONTRIBUTING.md#assertions) (which are based on AssertJ)
+* [ ] Tests use [AssertJ](https://assertj.github.io/doc/) or our own [PioneerAssert](https://github.com/junit-pioneer/junit-pioneer/blob/main/CONTRIBUTING.md#assertions) (which are based on AssertJ)
 
 Contributing
 * [ ] A prepared commit message exists
