@@ -76,7 +76,6 @@ spotless {
 
 		trimTrailingWhitespace()
 		endWithNewline()
-		removeUnusedImports()
 	}
 
 	format("groovy") {
