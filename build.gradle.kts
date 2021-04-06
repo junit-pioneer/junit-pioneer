@@ -3,14 +3,15 @@ plugins {
 	jacoco
 	checkstyle
 	`maven-publish`
-	id("com.diffplug.spotless") version "5.10.2"
+	id("com.diffplug.spotless") version "5.11.1"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.1.1"
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
-	id("org.shipkit.shipkit-auto-version") version "1.1.1"
-	id("org.shipkit.shipkit-changelog") version "1.1.10"
-	id("org.shipkit.shipkit-github-release") version "1.1.10"
+	id("org.shipkit.shipkit-auto-version") version "1.1.5"
+	id("org.shipkit.shipkit-changelog") version "1.1.13"
+	id("org.shipkit.shipkit-github-release") version "1.1.13"
 	id("com.jfrog.bintray") version "1.8.5"
+	id("com.github.ben-manes.versions") version "0.38.0"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -61,8 +62,8 @@ dependencies {
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
 	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.5.5")
 
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.14.0")
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.14.0")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.14.1")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.14.1")
 }
 
 spotless {
