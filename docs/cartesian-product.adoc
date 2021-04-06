@@ -136,10 +136,10 @@ void testWithCartesianEnumSource(TemporalUnit unit) {
 Like `@CartesianValueSource`, `@CartesianEnumSource` is an annotation that might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-EnumSource::[JUnit's `@EnumSource`], except `@CartesianEnumSource` is repeatable.
 It also does NOT work with `@ParameterizedTest`.
 
-The annotation’s `value` attribute is optional.
+The annotation's `value` attribute is optional.
 When omitted, the declared type of the parameter of the `@CartesianProductTest` method, which has the same relative index of the annotation, is used.
 The test will fail if it does not reference an enum type.
-Thus, the `value` attribute is required in the above example because the method parameter is declared as `TemporalUnit`, i.e. the interface implemented by `ChronoUnit`, which isn’t an enum type.
+Thus, the `value` attribute is required in the above example because the method parameter is declared as `TemporalUnit`, i.e. the interface implemented by `ChronoUnit`, which isn't an enum type.
 Changing the method parameter type to `ChronoUnit` allows you to omit the explicit enum type from the annotation as follows.
 
 [source,java]
@@ -152,7 +152,7 @@ void testWithCartesianEnumSourceWithAutoDetection(ChronoUnit unit) {
 ----
 
 As the above example has only one annotation, the type of the first parameter is used.
-The automatic detection of the enum type also works in case of several `@CartesianEnumSource` annotations, even when mixed with other annotation supported by `@CartesianProductTest`.
+The automatic detection of the enum type also works in cases with several `@CartesianEnumSource` annotations, even when mixed with other annotation supported by `@CartesianProductTest`.
 
 [source,java]
 ----
