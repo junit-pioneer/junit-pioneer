@@ -127,14 +127,47 @@ To demonstrate with a table:
 [source,java]
 ----
 @CartesianProductTest
-@CartesianEnumSource(TimeUnit.class)
-void testWithCartesianEnumSource(TimeUnit timeUnit) {
-    assertThat(timeUnit).isNotNull();
+@CartesianEnumSource(ChronoUnit.class)
+void testWithCartesianEnumSource(TemporalUnit unit) {
+    assertThat(unit).isNotNull();
 }
 ----
 
 Like `@CartesianValueSource`, `@CartesianEnumSource` is an annotation that might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-EnumSource::[JUnit's `@EnumSource`], except `@CartesianEnumSource` is repeatable.
 It also does NOT work with `@ParameterizedTest`.
+
+The annotation's `value` attribute is optional.
+When omitted, the declared type of the parameter of the `@CartesianProductTest` method, which has the same relative index of the annotation, is used.
+The test will fail if it does not reference an enum type.
+Thus, the `value` attribute is required in the above example because the method parameter is declared as `TemporalUnit`, i.e. the interface implemented by `ChronoUnit`, which isn't an enum type.
+Changing the method parameter type to `ChronoUnit` allows you to omit the explicit enum type from the annotation as follows.
+
+[source,java]
+----
+@CartesianProductTest
+@CartesianEnumSource
+void testWithCartesianEnumSourceWithAutoDetection(ChronoUnit unit) {
+    assertThat(unit).isNotNull();
+}
+----
+
+As the above example has only one annotation, the type of the first parameter is used.
+The automatic detection of the enum type also works in cases with several `@CartesianEnumSource` annotations, even when mixed with other annotation supported by `@CartesianProductTest`.
+
+[source,java]
+----
+@CartesianProductTest
+@IntRangeSource(from = 0, to = 2)
+@CartesianEnumSource
+@CartesianEnumSource
+@CartesianValueSource(longs = { 2, 3 })
+void testWithCartesianEnumSourceMixedWithOtherAnnotations(int i, TestEnum e1, AnotherTestEnum e2, long l) {
+    assertThat(i).isNotNull();
+    assertThat(e1).isNotNull();
+    assertThat(e2).isNotNull();
+    assertThat(l).isNotNull();
+}
+----
 
 The annotation provides an optional `names` attribute that lets you specify which constants shall be used, like in the following example.
 If omitted, all constants will be used.
@@ -142,9 +175,9 @@ If omitted, all constants will be used.
 [source,java]
 ----
 @CartesianProductTest
-@CartesianEnumSource(value = TimeUnit.class, names = { "DAYS", "HOURS" })
-void testWithCartesianEnumSourceInclude(TimeUnit timeUnit) {
-    assertThat(EnumSet.of(TimeUnit.DAYS, TimeUnit.HOURS)).contains(timeUnit);
+@CartesianEnumSource(names = { "DAYS", "HOURS" })
+void testWithCartesianEnumSourceInclude(ChronoUnit unit) {
+    assertThat(EnumSet.of(ChronoUnit.DAYS, ChronoUnit.HOURS)).contains(unit);
 }
 ----
 
@@ -154,18 +187,18 @@ For example, you can exclude names from the enum constant pool or specify regula
 [source,java]
 ----
 @CartesianProductTest
-@CartesianEnumSource(value = TimeUnit.class, mode = EXCLUDE, names = { "DAYS", "HOURS" })
-void testWithCartesianEnumSourceExclude(TimeUnit timeUnit) {
-    assertThat(EnumSet.of(TimeUnit.DAYS, TimeUnit.HOURS)).doesNotContain(timeUnit);
+@CartesianEnumSource(mode = EXCLUDE, names = { "ERAS", "FOREVER" })
+void testWithCartesianEnumSourceExclude(ChronoUnit unit) {
+    assertThat(EnumSet.of(ChronoUnit.ERAS, ChronoUnit.FOREVER)).doesNotContain(unit);
 }
 ----
 
 [source,java]
 ----
 @CartesianProductTest
-@CartesianEnumSource(value = TimeUnit.class, mode = MATCH_ALL, names = "^(M|N).+SECONDS$")
-void testWithCartesianEnumSourceRegex(TimeUnit timeUnit) {
-    assertThat(timeUnit.name()).endsWith("SECONDS");
+@CartesianEnumSource(mode = MATCH_ALL, names = "^.*DAYS$")
+void testWithCartesianEnumSourceRegex(ChronoUnit unit) {
+    assertThat(unit.name()).endsWith("DAYS");
 }
 ----
 

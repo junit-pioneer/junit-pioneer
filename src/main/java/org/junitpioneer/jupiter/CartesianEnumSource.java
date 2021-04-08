@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toSet;
 
@@ -21,13 +20,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
 
 /**
  * {@code @CartesianEnumSource} is an argument source for constants of a
@@ -50,17 +49,33 @@ import org.junit.platform.commons.PreconditionViolationException;
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Repeatable(CartesianEnumSource.CartesianEnumSources.class)
+@Repeatable(CartesianEnumSources.class)
 @ArgumentsSource(CartesianEnumArgumentsProvider.class)
 public @interface CartesianEnumSource {
 
 	/**
 	 * The enum type that serves as the source of the enum constants.
 	 *
+	 * <p>If this attribute is not set explicitly, the declared type of the
+	 * parameter of the {@code @CartesianProductTest} method, which has the
+	 * same relative index of the annotation, is used.
+	 *
+	 * <p>For example, in case of the following test:
+	 * <pre><code class='java'>
+	 * &#64;CartesianProductTest
+	 * &#64;CartesianEnumSource
+	 * &#64;CartesianEnumSource
+	 * void multipleOmittedTypes(FirstEnum e1, SecondEnum e2) {
+	 * 	...
+	 * }
+	 * </code></pre>
+	 * the first {@code @CartesianEnumSource} annotation will provide all the values of {@code FirstEnum},
+	 * while the second annotation will provide all the values of {@code SecondEnum}.
+	 *
 	 * @see #names
 	 * @see #mode
 	 */
-	Class<? extends Enum<?>> value();
+	Class<? extends Enum<?>> value() default NullEnum.class;
 
 	/**
 	 * The names of enum constants to provide, or regular expressions to select
@@ -79,15 +94,15 @@ public @interface CartesianEnumSource {
 	/**
 	 * The enum constant selection mode.
 	 *
-	 * <p>Defaults to {@link CartesianEnumSource.Mode#INCLUDE INCLUDE}.
+	 * <p>Defaults to {@link Mode#INCLUDE INCLUDE}.
 	 *
-	 * @see CartesianEnumSource.Mode#INCLUDE
-	 * @see CartesianEnumSource.Mode#EXCLUDE
-	 * @see CartesianEnumSource.Mode#MATCH_ALL
-	 * @see CartesianEnumSource.Mode#MATCH_ANY
+	 * @see Mode#INCLUDE
+	 * @see Mode#EXCLUDE
+	 * @see Mode#MATCH_ALL
+	 * @see Mode#MATCH_ANY
 	 * @see #names
 	 */
-	CartesianEnumSource.Mode mode() default CartesianEnumSource.Mode.INCLUDE;
+	Mode mode() default Mode.INCLUDE;
 
 	/**
 	 * Enumeration of modes for selecting enum constants by name.
@@ -98,13 +113,13 @@ public @interface CartesianEnumSource {
 		 * Select only those enum constants whose names are supplied via the
 		 * {@link CartesianEnumSource#names} attribute.
 		 */
-		INCLUDE(CartesianEnumSource.Mode::validateNames, (name, names) -> names.contains(name)),
+		INCLUDE(Mode::validateNames, (name, names) -> names.contains(name)),
 
 		/**
 		 * Select all declared enum constants except those supplied via the
 		 * {@link CartesianEnumSource#names} attribute.
 		 */
-		EXCLUDE(CartesianEnumSource.Mode::validateNames, (name, names) -> !names.contains(name)),
+		EXCLUDE(Mode::validateNames, (name, names) -> !names.contains(name)),
 
 		/**
 		 * Select only those enum constants whose names match all patterns supplied
@@ -112,8 +127,7 @@ public @interface CartesianEnumSource {
 		 *
 		 * @see java.util.stream.Stream#allMatch(java.util.function.Predicate)
 		 */
-		MATCH_ALL(CartesianEnumSource.Mode::validatePatterns,
-				(name, patterns) -> patterns.stream().allMatch(name::matches)),
+		MATCH_ALL(Mode::validatePatterns, (name, patterns) -> patterns.stream().allMatch(name::matches)),
 
 		/**
 		 * Select only those enum constants whose names match any pattern supplied
@@ -121,34 +135,35 @@ public @interface CartesianEnumSource {
 		 *
 		 * @see java.util.stream.Stream#anyMatch(java.util.function.Predicate)
 		 */
-		MATCH_ANY(CartesianEnumSource.Mode::validatePatterns,
-				(name, patterns) -> patterns.stream().anyMatch(name::matches));
+		MATCH_ANY(Mode::validatePatterns, (name, patterns) -> patterns.stream().anyMatch(name::matches));
 
-		private final BiConsumer<CartesianEnumSource, Set<String>> validator;
+		private final Validator validator;
 		private final BiPredicate<String, Set<String>> selector;
 
-		Mode(BiConsumer<CartesianEnumSource, Set<String>> validator, BiPredicate<String, Set<String>> selector) {
+		Mode(Validator validator, BiPredicate<String, Set<String>> selector) {
 			this.validator = validator;
 			this.selector = selector;
 		}
 
-		void validate(CartesianEnumSource enumSource, Set<String> names) {
-			validator.accept(requireNonNull(enumSource), requireNonNull(names));
+		void validate(CartesianEnumSource enumSource, Set<? extends Enum<?>> constants, Set<String> names) {
+			validator.validate(requireNonNull(enumSource), constants, requireNonNull(names));
 		}
 
 		boolean select(Enum<?> constant, Set<String> names) {
 			return selector.test(requireNonNull(constant.name()), requireNonNull(names));
 		}
 
-		private static void validateNames(CartesianEnumSource enumSource, Set<String> names) {
-			Set<String> allNames = stream(enumSource.value().getEnumConstants()).map(Enum::name).collect(toSet());
+		private static void validateNames(CartesianEnumSource enumSource, Set<? extends Enum<?>> constants,
+				Set<String> names) {
+			Set<String> allNames = constants.stream().map(Enum::name).collect(toSet());
 			if (!allNames.containsAll(names)) {
 				throw new PreconditionViolationException(
 					"Invalid enum constant name(s) in " + enumSource + ". Valid names include: " + allNames);
 			}
 		}
 
-		private static void validatePatterns(CartesianEnumSource enumSource, Set<String> names) {
+		private static void validatePatterns(CartesianEnumSource enumSource, Set<? extends Enum<?>> constants,
+				Set<String> names) {
 			try {
 				names.forEach(Pattern::compile);
 			}
@@ -156,6 +171,12 @@ public @interface CartesianEnumSource {
 				throw new PreconditionViolationException(
 					"Pattern compilation failed for a regular expression supplied in " + enumSource, e);
 			}
+		}
+
+		private interface Validator {
+
+			void validate(CartesianEnumSource enumSource, Set<? extends Enum<?>> constants, Set<String> names);
+
 		}
 
 	}
