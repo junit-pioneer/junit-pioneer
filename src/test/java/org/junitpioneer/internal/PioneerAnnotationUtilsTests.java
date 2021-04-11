@@ -39,11 +39,11 @@ public class PioneerAnnotationUtilsTests {
 		@Test
 		@DisplayName("does not find annotations if they are not present")
 		void doesNotFindNotPresent() throws NoSuchMethodException {
-			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
-				AnnotationCheck.class.getMethod("notAnnotated"));
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCluster.class,
+				AnnotationCluster.class.getMethod("notAnnotated"));
 
 			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
+					.isAnyAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
 
 			assertThat(result).isFalse();
 		}

@@ -11,6 +11,7 @@
 package org.junitpioneer.internal;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
@@ -221,6 +222,9 @@ public class PioneerAnnotationUtils {
 				.stream(element.getInterfaces())
 				.flatMap(clazz -> findOnClass(clazz, annotationType, false).stream())
 				.collect(Collectors.toList());
+		if (!annotationType.isAnnotationPresent(Inherited.class)) {
+			return onElement.stream().filter(a -> !onInterfaces.contains(a)).collect(Collectors.toList());
+		}
 		List<A> onSuperclass = findOnClass(element.getSuperclass(), annotationType, false);
 		return Stream
 				.of(onElement, onInterfaces, onSuperclass)

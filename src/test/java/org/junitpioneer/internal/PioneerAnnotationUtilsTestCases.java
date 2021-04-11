@@ -55,12 +55,13 @@ public class PioneerAnnotationUtilsTestCases {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ElementType.TYPE, ElementType.METHOD})
+	@Target({ ElementType.TYPE, ElementType.METHOD })
 	public @interface NotInheritedAnnotation {
 	}
 
 	@NonRepeatableTestAnnotation("This annotation is indirectly present (inherited) on any method of an implementing class.")
 	@RepeatableTestAnnotation("This annotation is indirectly present (inherited) on any method of an implementing class.")
+	@NotInheritedAnnotation
 	public interface Base {
 	}
 
