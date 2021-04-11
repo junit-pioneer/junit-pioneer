@@ -10,73 +10,119 @@
 
 package org.junitpioneer.internal;
 
-import static java.util.stream.Collectors.joining;
-
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junitpioneer.jupiter.ReportEntry;
-import org.junitpioneer.jupiter.params.IntRangeSource;
+public class PioneerAnnotationUtilsTestCases {
 
-class PioneerAnnotationUtilsTestCases {
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+	@Inherited
+	public @interface NonRepeatableTestAnnotation {
 
-	/*
-	 *  ========
-	 *  = NOTE =
-	 *  ========
-	 *
-	 * When adding tests to `FailTestCases` or `RepeatableFailTestCases` consider adding
-	 * equivalent ones to the other class as well.
-	 */
+		String value() default "";
 
-	@Fail("root class")
-	static class FailTestCases {
+	}
 
-		@Test
-		@Fail("method")
-		void methodIsAnnotated() {
-		}
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+	@Inherited
+	@Repeatable(PioneerAnnotationUtilsTestCases.RepeatableTestAnnotation.Container.class)
+	public @interface RepeatableTestAnnotation {
 
-		@Nested
-		class RootClassTestCases {
+		String value() default "";
 
-			@Test
-			void rootClassIsAnnotated() {
-			}
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+		@Inherited
+		@interface Container {
+
+			RepeatableTestAnnotation[] value();
 
 		}
 
-		@Fail("nested class")
-		@Nested
-		class NestedTestCases {
+	}
 
-			@Test
-			void classIsAnnotated() {
-			}
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE, ElementType.METHOD })
+	@NonRepeatableTestAnnotation("This annotation is meta present on anything annotated with @MetaAnnotatedTestAnnotation")
+	@RepeatableTestAnnotation("This annotation is meta present on anything annotated with @MetaAnnotatedTestAnnotation")
+	public @interface MetaAnnotatedTestAnnotation {
+	}
 
-			@Nested
-			class TwiceNestedTestCases {
+	@NonRepeatableTestAnnotation("This annotation is indirectly present (inherited) on any method of an implementing class.")
+	@RepeatableTestAnnotation("This annotation is indirectly present (inherited) on any method of an implementing class.")
+	public interface Base {
+	}
 
-				@Test
-				void outerClassIsAnnotated() {
-				}
+	public static class Child implements Base {
 
-				@Nested
-				class ThriceNestedTestCases {
+		public void notAnnotated() {
+		}
 
-					@Test
-					void outerClassIsAnnotated() {
-					}
+	}
+
+	@NonRepeatableTestAnnotation("This annotation is enclosing present on any method of this class.")
+	@RepeatableTestAnnotation("This annotation is enclosing present on any method of this class.")
+	public static class Enclosing {
+
+		public void notAnnotated() {
+		}
+
+	}
+
+	public static class AnnotationCheck {
+
+		public void notAnnotated() {
+		}
+
+		@NonRepeatableTestAnnotation("This annotation is directly present on the 'basic' method")
+		@RepeatableTestAnnotation("This annotation is directly present on the 'basic' method")
+		public void direct() {
+		}
+
+		@MetaAnnotatedTestAnnotation
+		public void meta() {
+		}
+
+	}
+
+	@NonRepeatableTestAnnotation("This annotation is enclosing present")
+	@RepeatableTestAnnotation("This annotation is enclosing present")
+	@RepeatableTestAnnotation("This annotation is also enclosing present")
+	public static class AnnotationCluster implements Base {
+
+		public void notAnnotated() {
+		}
+
+		@NonRepeatableTestAnnotation("This annotation is directly present")
+		@RepeatableTestAnnotation("This annotation is directly present")
+		@RepeatableTestAnnotation("This annotation is also directly present")
+		public void direct() {
+		}
+
+		@MetaAnnotatedTestAnnotation
+		public void meta() {
+
+		}
+
+		@NonRepeatableTestAnnotation("Nested 1")
+		@RepeatableTestAnnotation("Repeatable nested 1")
+		@RepeatableTestAnnotation("Repeatable nested 2")
+		public static class NestedClass {
+
+			@NonRepeatableTestAnnotation("Nested 2")
+			@RepeatableTestAnnotation("Repeatable nested 3")
+			@RepeatableTestAnnotation("Repeatable nested 4")
+			public static class NestedNestedClass {
+
+				@NonRepeatableTestAnnotation("Nested 3")
+				@RepeatableTestAnnotation("Repeatable nested 5")
+				public void annotated() {
 
 				}
 
@@ -86,149 +132,20 @@ class PioneerAnnotationUtilsTestCases {
 
 	}
 
-	@RepeatableFail("root class")
-	static class RepeatableFailTestCases {
+	@RepeatableTestAnnotation("Inherited 1")
+	@RepeatableTestAnnotation("Inherited 2")
+	@NonRepeatableTestAnnotation("Inherited 3")
+	@MetaAnnotatedTestAnnotation
+	public static class AnnotatedAnnotations {
 
-		@Test
-		@RepeatableFail("method")
-		void methodIsAnnotated() {
-		}
-
-		@Test
-		@RepeatableFail("repeated")
-		@RepeatableFail("annotation")
-		void methodIsRepeatablyAnnotated() {
-		}
-
-		@Nested
-		class RootClassTestCases {
-
-			@Test
-			void rootClassIsAnnotated() {
-			}
+		@RepeatableTestAnnotation("Inherited 4")
+		@RepeatableTestAnnotation("Inherited 5")
+		@NonRepeatableTestAnnotation("Inherited 6")
+		@MetaAnnotatedTestAnnotation
+		public void annotated() {
 
 		}
 
-		@RepeatableFail("nested class")
-		@Nested
-		class NestedTestCases {
-
-			@Test
-			void classIsAnnotated() {
-			}
-
-			@Nested
-			class TwiceNestedTestCases {
-
-				@Test
-				void outerClassIsAnnotated() {
-				}
-
-				@Nested
-				class ThriceNestedTestCases {
-
-					@Test
-					void outerClassIsAnnotated() {
-					}
-
-				}
-
-			}
-
-		}
-
-		@Nested
-		@RepeatableFail("repeated")
-		@RepeatableFail("annotation")
-		class NestedRepeatableTestCases {
-
-			@Test
-			void outerClassIsRepeatablyAnnotatedAnnotated() {
-			}
-
-		}
-
-	}
-
-}
-
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(FailExtension.class)
-@interface Fail {
-
-	String value() default "";
-
-}
-
-class FailExtension implements BeforeTestExecutionCallback {
-
-	static final AtomicBoolean FIND_ENCLOSING = new AtomicBoolean(true);
-
-	@Override
-	public void beforeTestExecution(ExtensionContext context) throws Exception {
-		String message = PioneerAnnotationUtils
-				.findAnnotations(context, Fail.class, false, FIND_ENCLOSING.get())
-				.map(Fail::value)
-				.collect(joining(","));
-		if (!message.isEmpty())
-			throw new AssertionError(message);
-	}
-
-}
-
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-@Repeatable(RepeatableFails.class)
-@ExtendWith(RepeatableFailExtension.class)
-@interface RepeatableFail {
-
-	String value() default "";
-
-}
-
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(RepeatableFailExtension.class)
-@interface RepeatableFails {
-
-	RepeatableFail[] value();
-
-}
-
-class RepeatableFailExtension implements BeforeTestExecutionCallback {
-
-	static final AtomicBoolean FIND_ENCLOSING = new AtomicBoolean(true);
-
-	@Override
-	public void beforeTestExecution(ExtensionContext context) throws Exception {
-		String message = PioneerAnnotationUtils
-				.findAnnotations(context, RepeatableFail.class, true, FIND_ENCLOSING.get())
-				.map(RepeatableFail::value)
-				.collect(joining(","));
-		if (!message.isEmpty())
-			throw new AssertionError(message);
-	}
-
-}
-
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD })
-@Retention(RetentionPolicy.RUNTIME)
-@interface NotAContainer {
-
-	RepeatableFail[] value();
-
-}
-
-class AnnotatedAnnotationTestCases {
-
-	@ParameterizedTest
-	@ReportEntry("value")
-	@RepeatableFails({ @RepeatableFail, @RepeatableFail })
-	@RepeatableFail
-	@NotAContainer({ @RepeatableFail })
-	@IntRangeSource(from = 1, to = 2)
-	public void annotatedMethod() {
 	}
 
 }

@@ -16,6 +16,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -80,25 +81,14 @@ public class PioneerAnnotationUtils {
 	}
 
 	/**
-	 * Returns the specified annotation if it is either <em>present</em>, <em>indirectly present</em>,
-	 * <em>meta-present</em>, or <em>enclosing-present</em> on the test element (method or class) belonging
+	 * Returns the specified annotation if it is either <em>present</em>, <em>meta-present</em>,
+	 * <em>enclosing-present</em>, or <em>indirectly present</em> on the test element (method or class) belonging
 	 * to the specified {@code context}. If the annotations are present on more than one enclosing type,
 	 * the closest ones are returned.
 	 */
 	public static <A extends Annotation> Optional<A> findClosestEnclosingAnnotation(ExtensionContext context,
 			Class<A> annotationType) {
 		return findAnnotations(context, annotationType, false, false).findFirst();
-	}
-
-	/**
-	 * Returns the specified annotations if they are either <em>present</em>, <em>indirectly present</em>,
-	 * <em>meta-present</em>, or <em>enclosing-present</em> on the test element (method or class) belonging
-	 * to the specified {@code context}. If the annotations are present on more than one enclosing type,
-	 * all instances are returned.
-	 */
-	public static <A extends Annotation> Stream<A> findAllEnclosingAnnotations(ExtensionContext context,
-			Class<A> annotationType) {
-		return findAnnotations(context, annotationType, false, true);
 	}
 
 	/**
@@ -110,6 +100,17 @@ public class PioneerAnnotationUtils {
 	public static <A extends Annotation> Stream<A> findClosestEnclosingRepeatableAnnotations(ExtensionContext context,
 			Class<A> annotationType) {
 		return findAnnotations(context, annotationType, true, false);
+	}
+
+	/**
+	 * Returns the specified annotations if they are either <em>present</em>, <em>indirectly present</em>,
+	 * <em>meta-present</em>, or <em>enclosing-present</em> on the test element (method or class) belonging
+	 * to the specified {@code context}. If the annotations are present on more than one enclosing type,
+	 * all instances are returned.
+	 */
+	public static <A extends Annotation> Stream<A> findAllEnclosingAnnotations(ExtensionContext context,
+			Class<A> annotationType) {
+		return findAnnotations(context, annotationType, false, true);
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class PioneerAnnotationUtils {
 				.stream(element.getDeclaredAnnotations())
 				// flatten @Repeatable aggregator annotations
 				.flatMap(PioneerAnnotationUtils::flatten)
-				.filter(a -> !(findOnElement(a.annotationType(), annotation, true).isEmpty()))
+				.filter(a -> a.annotationType().isAnnotationPresent(annotation))
 				.collect(Collectors.toList());
 	}
 
@@ -184,7 +185,7 @@ public class PioneerAnnotationUtils {
 		 */
 		List<A> onMethod = context
 				.getTestMethod()
-				.map(method -> findOnElement(method, annotationType, findRepeated))
+				.map(method -> findOnMethod(method, annotationType, findRepeated))
 				.orElse(Collections.emptyList());
 		if (!findAllEnclosing && !onMethod.isEmpty())
 			return onMethod.stream();
@@ -193,7 +194,7 @@ public class PioneerAnnotationUtils {
 		return Stream.concat(onMethod.stream(), onClass);
 	}
 
-	private static <A extends Annotation> List<A> findOnElement(AnnotatedElement element, Class<A> annotationType,
+	private static <A extends Annotation> List<A> findOnMethod(Method element, Class<A> annotationType,
 			boolean findRepeated) {
 		if (findRepeated)
 			return AnnotationSupport.findRepeatableAnnotations(element, annotationType);
@@ -204,18 +205,41 @@ public class PioneerAnnotationUtils {
 					.orElse(Collections.emptyList());
 	}
 
+	private static <A extends Annotation> List<A> findOnClass(Class<?> element, Class<A> annotationType,
+			boolean findRepeated) {
+		if (element == null)
+			return Collections.emptyList();
+		if (findRepeated)
+			return AnnotationSupport.findRepeatableAnnotations(element, annotationType);
+
+		List<A> onElement = AnnotationSupport
+				.findAnnotation(element, annotationType)
+				.map(Collections::singletonList)
+				.orElse(Collections.emptyList());
+		List<A> onInterfaces = Arrays
+				.stream(element.getInterfaces())
+				.flatMap(clazz -> findOnClass(clazz, annotationType, false).stream())
+				.collect(Collectors.toList());
+		List<A> onSuperclass = findOnClass(element.getSuperclass(), annotationType, false);
+		return Stream
+				.of(onElement, onInterfaces, onSuperclass)
+				.flatMap(Collection::stream)
+				.collect(Collectors.toList());
+	}
+
 	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
 			boolean findRepeated, boolean findAllEnclosing) {
 		if (!type.isPresent())
 			return Stream.empty();
 
-		List<A> onThisClass = findOnElement(type.get(), annotationType, findRepeated);
+		List<A> onThisClass = Arrays.asList(type.get().getAnnotationsByType(annotationType));
 		if (!findAllEnclosing && !onThisClass.isEmpty())
 			return onThisClass.stream();
 
+		List<A> onClass = findOnClass(type.get(), annotationType, findRepeated);
 		Stream<A> onParentClass = findOnOuterClasses(type.map(Class::getEnclosingClass), annotationType, findRepeated,
 			findAllEnclosing);
-		return Stream.concat(onThisClass.stream(), onParentClass);
+		return Stream.concat(onClass.stream(), onParentClass);
 	}
 
 }
