@@ -131,11 +131,12 @@ public class PioneerAnnotationUtils {
 	 */
 	public static <A extends Annotation> List<Annotation> findAnnotatedAnnotations(AnnotatedElement element,
 			Class<A> annotation) {
+		boolean isRepeated = annotation.isAnnotationPresent(Repeatable.class);
 		return Arrays
 				.stream(element.getDeclaredAnnotations())
 				// flatten @Repeatable aggregator annotations
 				.flatMap(PioneerAnnotationUtils::flatten)
-				.filter(a -> a.annotationType().isAnnotationPresent(annotation))
+				.filter(a -> !(findOnClass(a.annotationType(), annotation, isRepeated).isEmpty()))
 				.collect(Collectors.toList());
 	}
 

@@ -54,6 +54,11 @@ public class PioneerAnnotationUtilsTestCases {
 	public @interface MetaAnnotatedTestAnnotation {
 	}
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ElementType.TYPE, ElementType.METHOD})
+	public @interface NotInheritedAnnotation {
+	}
+
 	@NonRepeatableTestAnnotation("This annotation is indirectly present (inherited) on any method of an implementing class.")
 	@RepeatableTestAnnotation("This annotation is indirectly present (inherited) on any method of an implementing class.")
 	public interface Base {
@@ -135,13 +140,13 @@ public class PioneerAnnotationUtilsTestCases {
 	@RepeatableTestAnnotation("Inherited 1")
 	@RepeatableTestAnnotation("Inherited 2")
 	@NonRepeatableTestAnnotation("Inherited 3")
-	@MetaAnnotatedTestAnnotation
+	@NotInheritedAnnotation
 	public static class AnnotatedAnnotations {
 
 		@RepeatableTestAnnotation("Inherited 4")
 		@RepeatableTestAnnotation("Inherited 5")
 		@NonRepeatableTestAnnotation("Inherited 6")
-		@MetaAnnotatedTestAnnotation
+		@NotInheritedAnnotation
 		public void annotated() {
 
 		}
