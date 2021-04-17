@@ -22,8 +22,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(DisableIfParameterExtension.class)
 public @interface DisableIfAnyParameter {
 
+	/**
+	 * Disable test cases if any parameter (converted to String with {@link Object#toString()})
+	 * contains any of the the specified strings (according to {@link String#contains(CharSequence)}).
+	 */
 	String[] contains() default {};
 
+	/**
+	 * Disable test cases if any parameter (converted to String with {@link Object#toString()})
+	 * matches any of the specified regular expressions (according to {@link String#matches(String)}).
+	 */
 	String[] matches() default {};
 
 }
