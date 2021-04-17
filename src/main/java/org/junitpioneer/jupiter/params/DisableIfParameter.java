@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @DisableIfParameter} is a JUnit Jupiter extension that can
+ * {@code @DisableIfParameter} is part of a JUnit Jupiter extension that can
  * be used to selectively disable a {@link org.junit.jupiter.params.ParameterizedTest}
  * based on their parameter values as defined by {@link Object#toString()}.
  *
