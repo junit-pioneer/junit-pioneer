@@ -137,7 +137,7 @@ public class PioneerAnnotationUtils {
 				.stream(element.getDeclaredAnnotations())
 				// flatten @Repeatable aggregator annotations
 				.flatMap(PioneerAnnotationUtils::flatten)
-				.filter(a -> !(findOnClass(a.annotationType(), annotation, isRepeated).isEmpty()))
+				.filter(a -> !(findOnClass(a.annotationType(), annotation, isRepeated, false).isEmpty()))
 				.collect(Collectors.toList());
 	}
 
@@ -208,8 +208,8 @@ public class PioneerAnnotationUtils {
 	}
 
 	private static <A extends Annotation> List<A> findOnClass(Class<?> element, Class<A> annotationType,
-			boolean findRepeated) {
-		if (element == null)
+			boolean findRepeated, boolean findAllEnclosing) {
+		if (element == null || element == Object.class)
 			return Collections.emptyList();
 		if (findRepeated)
 			return AnnotationSupport.findRepeatableAnnotations(element, annotationType);
@@ -220,15 +220,23 @@ public class PioneerAnnotationUtils {
 				.orElse(Collections.emptyList());
 		List<A> onInterfaces = Arrays
 				.stream(element.getInterfaces())
-				.flatMap(clazz -> findOnClass(clazz, annotationType, false).stream())
+				.flatMap(clazz -> findOnClass(clazz, annotationType, false, findAllEnclosing).stream())
 				.collect(Collectors.toList());
 		if (!annotationType.isAnnotationPresent(Inherited.class)) {
-			return onElement.stream().filter(a -> !onInterfaces.contains(a)).collect(Collectors.toList());
+			if (!findAllEnclosing)
+				return onElement;
+			else
+				return Stream
+						.of(onElement, onInterfaces)
+						.flatMap(Collection::stream)
+						.distinct()
+						.collect(Collectors.toList());
 		}
-		List<A> onSuperclass = findOnClass(element.getSuperclass(), annotationType, false);
+		List<A> onSuperclass = findOnClass(element.getSuperclass(), annotationType, false, findAllEnclosing);
 		return Stream
 				.of(onElement, onInterfaces, onSuperclass)
 				.flatMap(Collection::stream)
+				.distinct()
 				.collect(Collectors.toList());
 	}
 
@@ -241,7 +249,7 @@ public class PioneerAnnotationUtils {
 		if (!findAllEnclosing && !onThisClass.isEmpty())
 			return onThisClass.stream();
 
-		List<A> onClass = findOnClass(type.get(), annotationType, findRepeated);
+		List<A> onClass = findOnClass(type.get(), annotationType, findRepeated, findAllEnclosing);
 		Stream<A> onParentClass = findOnOuterClasses(type.map(Class::getEnclosingClass), annotationType, findRepeated,
 			findAllEnclosing);
 		return Stream.concat(onClass.stream(), onParentClass);

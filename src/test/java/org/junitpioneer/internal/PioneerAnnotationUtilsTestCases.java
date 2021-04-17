@@ -52,11 +52,34 @@ public class PioneerAnnotationUtilsTestCases {
 	@NonRepeatableTestAnnotation("This annotation is meta present on anything annotated with @MetaAnnotatedTestAnnotation")
 	@RepeatableTestAnnotation("This annotation is meta present on anything annotated with @MetaAnnotatedTestAnnotation")
 	public @interface MetaAnnotatedTestAnnotation {
+
+		String value() default "";
+
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE, ElementType.METHOD })
 	public @interface NotInheritedAnnotation {
+
+		String value() default "";
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE, ElementType.METHOD })
+	@Repeatable(NotInheritedRepeatableAnnotation.NotInheritedRepeatableAnnotations.class)
+	public @interface NotInheritedRepeatableAnnotation {
+
+		String value() default "";
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ ElementType.TYPE, ElementType.METHOD })
+		@interface NotInheritedRepeatableAnnotations {
+
+			NotInheritedRepeatableAnnotation[] value();
+
+		}
+
 	}
 
 	@NonRepeatableTestAnnotation("This annotation is indirectly present (inherited) on any method of an implementing class.")
@@ -141,6 +164,7 @@ public class PioneerAnnotationUtilsTestCases {
 	@RepeatableTestAnnotation("Inherited 1")
 	@RepeatableTestAnnotation("Inherited 2")
 	@NonRepeatableTestAnnotation("Inherited 3")
+	@MetaAnnotatedTestAnnotation("Annotated with repeatable 1")
 	@NotInheritedAnnotation
 	public static class AnnotatedAnnotations {
 
@@ -148,7 +172,40 @@ public class PioneerAnnotationUtilsTestCases {
 		@RepeatableTestAnnotation("Inherited 5")
 		@NonRepeatableTestAnnotation("Inherited 6")
 		@NotInheritedAnnotation
+		@MetaAnnotatedTestAnnotation("Annotated with repeatable 2")
 		public void annotated() {
+
+		}
+
+	}
+
+	@NotInheritedRepeatableAnnotation("Not inherited repeatable 1")
+	@NotInheritedRepeatableAnnotation("Not inherited repeatable 2")
+	@NotInheritedAnnotation("Not inherited 1")
+	public interface TestInterface1 {
+	}
+
+	@NotInheritedRepeatableAnnotation("Not inherited repeatable 3")
+	@NotInheritedAnnotation("Not inherited 2")
+	public interface TestInterface2 {
+	}
+
+	@NotInheritedAnnotation
+	@NotInheritedRepeatableAnnotation("Not inherited class 1")
+	@NotInheritedRepeatableAnnotation("Not inherited class 2")
+	public static class TestSuperclass {
+	}
+
+	public static class Implementer implements TestInterface1, TestInterface2 {
+
+		public void notAnnotated() {
+		}
+
+	}
+
+	public static class Extender extends TestSuperclass {
+
+		public void notAnnotated() {
 
 		}
 
