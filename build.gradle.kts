@@ -12,6 +12,7 @@ plugins {
 	id("org.shipkit.shipkit-github-release") version "1.1.13"
 	id("com.jfrog.bintray") version "1.8.5"
 	id("com.github.ben-manes.versions") version "0.38.0"
+	id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -174,6 +175,12 @@ publishing {
 				}
 			}
 		}
+	}
+}
+
+nexusPublishing {
+	repositories {
+		sonatype()
 	}
 }
 

@@ -27,13 +27,10 @@ jobs:
       - name: Perform release
         uses: eskatos/gradle-command-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BINTRAY_USER_NAME: ${{ secrets.BINTRAY_USER_NAME }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          NEXUS_TOKEN_USERNAME: ${{ secrets.NEXUS_TOKEN_USERNAME }}
-          NEXUS_TOKEN_PASSWORD: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
         with:
-          arguments: bintrayUpload githubRelease
+          arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository
       - name: Trigger website build
         uses: peter-evans/repository-dispatch@v1
         with:
