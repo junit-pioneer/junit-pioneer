@@ -197,7 +197,7 @@ Again, the test gets executed two times, because we targeted the second paramete
 
 ==== Targeting by implicit index
 
-You can opt to not specify `index` or `name` and use annotation order to specify what parameter to target.
+You can opt to not specify `index` or `name` and use annotation order instead, to specify what parameter to target.
 In this case the first `@DisableIfParameter` targets the first parameter, the second annotation the second parameter, etc.
 This is mainly for convenience when you have a test method with a single parameter.
 Using this method to target parameters when your test has multiple parameters is discouraged.
