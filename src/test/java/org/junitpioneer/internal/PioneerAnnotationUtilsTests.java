@@ -277,7 +277,7 @@ public class PioneerAnnotationUtilsTests {
 		@DisplayName("finds not inherited annotations on interfaces implemented by enclosing class")
 		void notInheritedOnInterface() throws NoSuchMethodException {
 			TestExtensionContext testContext = new TestExtensionContext(Implementer.class,
-					Implementer.class.getMethod("notAnnotated"));
+				Implementer.class.getMethod("notAnnotated"));
 
 			Optional<NotInheritedAnnotation> result = PioneerAnnotationUtils
 					.findClosestEnclosingAnnotation(testContext, NotInheritedAnnotation.class);
@@ -289,7 +289,7 @@ public class PioneerAnnotationUtilsTests {
 		@DisplayName("does not find not inherited annotations on superclass of enclosing class")
 		void notInheritedOnSuperclass() throws NoSuchMethodException {
 			TestExtensionContext testContext = new TestExtensionContext(Extender.class,
-					Extender.class.getMethod("notAnnotated"));
+				Extender.class.getMethod("notAnnotated"));
 
 			Optional<NotInheritedAnnotation> result = PioneerAnnotationUtils
 					.findClosestEnclosingAnnotation(testContext, NotInheritedAnnotation.class);
@@ -367,7 +367,7 @@ public class PioneerAnnotationUtilsTests {
 		@DisplayName("finds not inherited annotations on interfaces implemented by enclosing class")
 		void notInheritedOnInterface() throws NoSuchMethodException {
 			TestExtensionContext testContext = new TestExtensionContext(Implementer.class,
-					Implementer.class.getMethod("notAnnotated"));
+				Implementer.class.getMethod("notAnnotated"));
 
 			Stream<NotInheritedRepeatableAnnotation> result = PioneerAnnotationUtils
 					.findClosestEnclosingRepeatableAnnotations(testContext, NotInheritedRepeatableAnnotation.class);
@@ -376,14 +376,14 @@ public class PioneerAnnotationUtilsTests {
 					.hasSize(3)
 					.map(NotInheritedRepeatableAnnotation::value)
 					.containsExactlyInAnyOrder("Not inherited repeatable 1", "Not inherited repeatable 2",
-							"Not inherited repeatable 3");
+						"Not inherited repeatable 3");
 		}
 
 		@Test
 		@DisplayName("does not find not inherited annotations on superclass of enclosing class")
 		void notInheritedOnSuperclass() throws NoSuchMethodException {
 			TestExtensionContext testContext = new TestExtensionContext(Extender.class,
-					Extender.class.getMethod("notAnnotated"));
+				Extender.class.getMethod("notAnnotated"));
 
 			Stream<NotInheritedRepeatableAnnotation> result = PioneerAnnotationUtils
 					.findClosestEnclosingRepeatableAnnotations(testContext, NotInheritedRepeatableAnnotation.class);
