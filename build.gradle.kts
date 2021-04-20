@@ -3,6 +3,7 @@ plugins {
 	jacoco
 	checkstyle
 	`maven-publish`
+	signing
 	id("com.diffplug.spotless") version "5.11.1"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.1.1"
@@ -160,7 +161,7 @@ publishing {
 
 				developers {
 					mapOf(
-						"nicolaiparlog" to "Nicolai Parlog",
+						"nipafx" to "Nicolai Parlog",
 						"smoyer64" to "Steve Moyer",
 						"Bukama" to "Matthias Bünger",
 						"aepfli" to "Simon Schrottner",
@@ -176,6 +177,13 @@ publishing {
 			}
 		}
 	}
+}
+
+signing {
+	val signingKey: String? by project
+	val signingPassword: String? by project
+	useInMemoryPgpKeys(signingKey, signingPassword)
+	sign(publishing.publications.findByName("maven"))
 }
 
 nexusPublishing {
