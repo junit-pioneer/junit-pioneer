@@ -34,7 +34,7 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.NEXUS_TOKEN_USERNAME }}
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
         with:
-          arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository
+          arguments: publishToSonatype closeSonatypeStagingRepository # closeAndReleaseSonatypeStagingRepository githubRelease
       - name: Trigger website build
         uses: peter-evans/repository-dispatch@v1
         with:
