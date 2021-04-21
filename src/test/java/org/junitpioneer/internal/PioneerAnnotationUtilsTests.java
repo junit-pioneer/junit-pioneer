@@ -11,357 +11,554 @@
 package org.junitpioneer.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.parallel.ResourceAccessMode.READ_WRITE;
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.parallel.ResourceLock;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junitpioneer.jupiter.ReportEntry;
-import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.PioneerTestKit;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.AnnotationCheck;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.AnnotationCluster;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.Child;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.Enclosing;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.Extender;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.Implementer;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.MetaAnnotatedTestAnnotation;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.NonRepeatableTestAnnotation;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.NotInheritedAnnotation;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.NotInheritedRepeatableAnnotation;
+import org.junitpioneer.internal.PioneerAnnotationUtilsTestCases.RepeatableTestAnnotation;
 
-@DisplayName("JUnitPioneer annotation utilities")
-class PioneerAnnotationUtilsTests {
+@DisplayName("Pioneer Annotation utilities")
+public class PioneerAnnotationUtilsTests {
 
 	@Nested
-	@DisplayName("for annotations")
-	class AnnotationUtilsTests {
+	@DisplayName("checking if any non-repeated annotation is present")
+	class AnyAnnotationPresentTests {
 
-		/*
-		 * Cases covered here:
-		 *  - directly present
-		 *  - present on enclosing class
-		 *
-		 * Cases covered by Jupiter's `AnnotationSupport::findRepeatableAnnotations`:
-		 *  - indirectly present (i.e. inherited from super class)
-		 *  - meta present (i.e. on another annotation)
-		 */
+		@Test
+		@DisplayName("finds not inherited annotations on interfaces implemented by enclosing class")
+		void notInheritedOnInterface() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCluster.class,
+				AnnotationCluster.class.getMethod("notAnnotated"));
 
-		@Nested
-		@DisplayName("that are not repeatable")
-		class SimpleAnnotations {
+			boolean result = PioneerAnnotationUtils
+					.isAnyAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
 
-			@Nested
-			@ResourceLock(value = "org.junitpioneer.internal.FailExtension", mode = READ_WRITE)
-			@DisplayName("and not stackable")
-			class StopOnFirst {
-
-				@BeforeEach
-				void enableStopOnFirst() {
-					FailExtension.FIND_ENCLOSING.set(false);
-				}
-
-				@Test
-				void discoversMethodAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.class,
-								"methodIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("method");
-				}
-
-				@Test
-				void discoversRootClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.RootClassTestCases.class,
-								"rootClassIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("root class");
-				}
-
-				@Test
-				void discoversClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.class,
-								"classIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("nested class");
-				}
-
-				@Test
-				void discoversOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.class,
-								"outerClassIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("nested class");
-				}
-
-				@Test
-				void discoversOuterOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
-								"outerClassIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("nested class");
-				}
-
-			}
-
-			@Nested
-			@ResourceLock(value = "org.junitpioneer.internal.FailExtension", mode = READ_WRITE)
-			@DisplayName("but stackable")
-			class Stackable {
-
-				@BeforeEach
-				void enableStopOnFirst() {
-					FailExtension.FIND_ENCLOSING.set(true);
-				}
-
-				@Test
-				void discoversMethodAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.class,
-								"methodIsAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("method", "root class");
-				}
-
-				@Test
-				void discoversRootClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.RootClassTestCases.class,
-								"rootClassIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContaining("root class");
-				}
-
-				@Test
-				void discoversClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.class,
-								"classIsAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("nested class", "root class");
-				}
-
-				@Test
-				void discoversOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.class,
-								"outerClassIsAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("nested class", "root class");
-				}
-
-				@Test
-				void discoversOuterOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.FailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
-								"outerClassIsAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("nested class", "root class");
-				}
-
-			}
-
+			assertThat(result).isTrue();
 		}
 
-		@Nested
-		@DisplayName("that are repeatable")
-		class RepeatableAnnotations {
+		@Test
+		@DisplayName("does not find not inherited annotations on superclass of enclosing class")
+		void notInheritedOnSuperclass() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Extender.class,
+				Extender.class.getMethod("notAnnotated"));
 
-			@Nested
-			@ResourceLock(value = "org.junitpioneer.internal.RepeatableFailExtension", mode = READ_WRITE)
-			@DisplayName("but not stackable")
-			class StopOnFirst {
+			boolean result = PioneerAnnotationUtils
+					.isAnyAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
 
-				@BeforeEach
-				void enableStopOnFirst() {
-					RepeatableFailExtension.FIND_ENCLOSING.set(false);
-				}
+			assertThat(result).isFalse();
+		}
 
-				@Test
-				void discoversMethodAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
-								"methodIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("method");
-				}
+		@Test
+		@DisplayName("finds directly present annotations")
+		void directlyPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
+				AnnotationCheck.class.getMethod("direct"));
 
-				@Test
-				void discoversRootClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.RootClassTestCases.class,
-								"rootClassIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("root class");
-				}
+			boolean result = PioneerAnnotationUtils
+					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
-				@Test
-				void discoversRepeatedMethodAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
-								"methodIsRepeatablyAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("repeated", "annotation");
-				}
+			assertThat(result).isTrue();
+		}
 
-				@Test
-				void discoversClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.class,
-								"classIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("nested class");
-				}
+		@Test
+		@DisplayName("finds indirectly present annotations")
+		void indirectlyPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Child.class,
+				Child.class.getMethod("notAnnotated"));
 
-				@Test
-				void discoversOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.class,
-								"outerClassIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("nested class");
-				}
+			boolean result = PioneerAnnotationUtils
+					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
-				@Test
-				void discoversOuterOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
-								"outerClassIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("nested class");
-				}
+			assertThat(result).isTrue();
+		}
 
-				@Test
-				void discoversRepeatedOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedRepeatableTestCases.class,
-								"outerClassIsRepeatablyAnnotatedAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("repeated", "annotation");
-				}
+		@Test
+		@DisplayName("finds meta-present annotations")
+		void metaPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
+				AnnotationCheck.class.getMethod("meta"));
 
-			}
+			boolean result = PioneerAnnotationUtils
+					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
-			@Nested
-			@ResourceLock(value = "org.junitpioneer.internal.RepeatableFailExtension", mode = READ_WRITE)
-			@DisplayName("and stackable")
-			class Stackable {
+			assertThat(result).isTrue();
+		}
 
-				@BeforeEach
-				void enableStopOnFirst() {
-					RepeatableFailExtension.FIND_ENCLOSING.set(true);
-				}
+		@Test
+		@DisplayName("finds enclosing present annotations")
+		void enclosingPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Enclosing.class,
+				Enclosing.class.getMethod("notAnnotated"));
 
-				@Test
-				void discoversMethodAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
-								"methodIsAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("method", "root class");
-				}
+			boolean result = PioneerAnnotationUtils
+					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
-				@Test
-				void discoversRootClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.RootClassTestCases.class,
-								"rootClassIsAnnotated");
-					assertThat(results).hasSingleFailedTest().withException().hasMessageContainingAll("root class");
-				}
+			assertThat(result).isTrue();
+		}
 
-				@Test
-				void discoversRepeatedMethodAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.class,
-								"methodIsRepeatablyAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("repeated", "annotation", "root class");
-				}
+	}
 
-				@Test
-				void discoversClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.class,
-								"classIsAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("nested class", "root class");
-				}
+	@Nested
+	@DisplayName("checking if any repeated annotation is present")
+	class AnyRepeatedAnnotationPresentTests {
 
-				@Test
-				void discoversOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.class,
-								"outerClassIsAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("nested class", "root class");
-				}
+		@Test
+		@DisplayName("finds not inherited annotations on interfaces implemented by enclosing class")
+		void notInheritedOnInterfaces() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Implementer.class,
+				Implementer.class.getMethod("notAnnotated"));
 
-				@Test
-				void discoversOuterOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedTestCases.TwiceNestedTestCases.ThriceNestedTestCases.class,
-								"outerClassIsAnnotated");
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("nested class", "root class");
-				}
+			boolean result = PioneerAnnotationUtils
+					.isAnyRepeatableAnnotationPresent(testContext, NotInheritedRepeatableAnnotation.class);
 
-				@Test
-				void discoversRepeatedOuterClassAnnotation() {
-					ExecutionResults results = PioneerTestKit
-							.executeTestMethod(
-								PioneerAnnotationUtilsTestCases.RepeatableFailTestCases.NestedRepeatableTestCases.class,
-								"outerClassIsRepeatablyAnnotatedAnnotated");
+			assertThat(result).isTrue();
+		}
 
-					assertThat(results)
-							.hasSingleFailedTest()
-							.withException()
-							.hasMessageContainingAll("repeated", "annotation", "root class");
-				}
+		@Test
+		@DisplayName("does not find not inherited annotations on superclass of enclosing class")
+		void notInheritedOnSuperclass() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Extender.class,
+				Extender.class.getMethod("notAnnotated"));
 
-				@Test
-				void discoversAllAnnotationsAnnotatedWithAnAnnotation() throws NoSuchMethodException {
-					Method annotatedMethod = AnnotatedAnnotationTestCases.class.getMethod("annotatedMethod");
+			boolean result = PioneerAnnotationUtils
+					.isAnyRepeatableAnnotationPresent(testContext, NotInheritedRepeatableAnnotation.class);
 
-					List<Annotation> annotatedAnnotations = PioneerAnnotationUtils
-							.findAnnotatedAnnotations(annotatedMethod, ExtendWith.class);
+			assertThat(result).isFalse();
+		}
 
-					assertThat(annotatedAnnotations)
-							.hasSize(5)
-							.isInstanceOf(java.util.ArrayList.class)
-							.extracting(Annotation::annotationType)
-							.allSatisfy(annotation -> assertThat(annotation)
-									.isIn(ParameterizedTest.class, ReportEntry.class, RepeatableFail.class));
-				}
+		@Test
+		@DisplayName("does not find annotations if they are not present")
+		void doesNotFindNotPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
+				AnnotationCheck.class.getMethod("notAnnotated"));
 
-			}
+			boolean result = PioneerAnnotationUtils
+					.isAnyRepeatableAnnotationPresent(testContext, RepeatableTestAnnotation.class);
 
+			assertThat(result).isFalse();
+		}
+
+		@Test
+		@DisplayName("finds directly present annotations")
+		void directlyPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
+				AnnotationCheck.class.getMethod("direct"));
+
+			boolean result = PioneerAnnotationUtils
+					.isAnyRepeatableAnnotationPresent(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).isTrue();
+		}
+
+		@Test
+		@DisplayName("finds indirectly present annotations")
+		void indirectlyPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Child.class,
+				Child.class.getMethod("notAnnotated"));
+
+			boolean result = PioneerAnnotationUtils
+					.isAnyRepeatableAnnotationPresent(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).isTrue();
+		}
+
+		@Test
+		@DisplayName("finds meta-present annotations")
+		void metaPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
+				AnnotationCheck.class.getMethod("meta"));
+
+			boolean result = PioneerAnnotationUtils
+					.isAnyRepeatableAnnotationPresent(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).isTrue();
+		}
+
+		@Test
+		@DisplayName("finds enclosing present annotations")
+		void enclosingPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Enclosing.class,
+				Enclosing.class.getMethod("notAnnotated"));
+
+			boolean result = PioneerAnnotationUtils
+					.isAnyRepeatableAnnotationPresent(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).isTrue();
+		}
+
+	}
+
+	@Nested
+	@DisplayName("finding closest non-repeatable enclosing annotation")
+	class ClosestAnnotation {
+
+		@Test
+		@DisplayName("does not find not present annotations")
+		void notPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
+				AnnotationCheck.class.getMethod("notAnnotated"));
+
+			Optional<NonRepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingAnnotation(testContext, NonRepeatableTestAnnotation.class);
+
+			assertThat(result).isNotPresent();
+		}
+
+		@Test
+		@DisplayName("finds directly present even if all other types are present")
+		void directlyPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCluster.class,
+				AnnotationCluster.class.getMethod("direct"));
+
+			Optional<NonRepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingAnnotation(testContext, NonRepeatableTestAnnotation.class);
+
+			assertThat(result).isPresent();
+			assertThat(result.get().value()).contains("directly present");
+		}
+
+		@Test
+		@DisplayName("finds meta-present if no directly present annotation was found")
+		void metaPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCluster.class,
+				AnnotationCluster.class.getMethod("meta"));
+
+			Optional<NonRepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingAnnotation(testContext, NonRepeatableTestAnnotation.class);
+
+			assertThat(result).isPresent();
+			assertThat(result.get().value()).contains("meta present");
+		}
+
+		@Test
+		@DisplayName("finds enclosing present if no directly present or meta annotation was found")
+		void enclosingPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCluster.class,
+				AnnotationCluster.class.getMethod("notAnnotated"));
+
+			Optional<NonRepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingAnnotation(testContext, NonRepeatableTestAnnotation.class);
+
+			assertThat(result).isPresent();
+			assertThat(result.get().value()).contains("enclosing present");
+		}
+
+		@Test
+		@DisplayName("finds indirectly present if no directly present, meta present or enclosing present annotation was found")
+		void indirectlyPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Child.class,
+				Child.class.getMethod("notAnnotated"));
+
+			Optional<NonRepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingAnnotation(testContext, NonRepeatableTestAnnotation.class);
+
+			assertThat(result).isPresent();
+			assertThat(result.get().value()).contains("indirectly present");
+		}
+
+		@Test
+		@DisplayName("finds not inherited annotations on interfaces implemented by enclosing class")
+		void notInheritedOnInterface() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Implementer.class,
+				Implementer.class.getMethod("notAnnotated"));
+
+			Optional<NotInheritedAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingAnnotation(testContext, NotInheritedAnnotation.class);
+
+			assertThat(result).isPresent().map(NotInheritedAnnotation::value).hasValue("Not inherited 1");
+		}
+
+		@Test
+		@DisplayName("does not find not inherited annotations on superclass of enclosing class")
+		void notInheritedOnSuperclass() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Extender.class,
+				Extender.class.getMethod("notAnnotated"));
+
+			Optional<NotInheritedAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingAnnotation(testContext, NotInheritedAnnotation.class);
+
+			assertThat(result).isNotPresent();
+		}
+
+	}
+
+	@Nested
+	@DisplayName("finding closest repeatable enclosing annotation")
+	class ClosestRepeatableAnnotation {
+
+		@Test
+		@DisplayName("does not find not present annotations")
+		void notPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
+				AnnotationCheck.class.getMethod("notAnnotated"));
+
+			Stream<RepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).isEmpty();
+		}
+
+		@Test
+		@DisplayName("finds directly present even if all other types are present")
+		void directlyPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCluster.class,
+				AnnotationCluster.class.getMethod("direct"));
+
+			Stream<RepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).hasSize(2).allMatch(annotation -> annotation.value().contains("directly present"));
+		}
+
+		@Test
+		@DisplayName("finds meta-present if no directly present annotation was found")
+		void metaPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCluster.class,
+				AnnotationCluster.class.getMethod("meta"));
+
+			Stream<RepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).hasSize(1).allMatch(annotation -> annotation.value().contains("meta present"));
+		}
+
+		@Test
+		@DisplayName("finds enclosing present if no directly present or meta annotation was found")
+		void enclosingPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCluster.class,
+				AnnotationCluster.class.getMethod("notAnnotated"));
+
+			Stream<RepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).hasSize(2).allMatch(annotation -> annotation.value().contains("enclosing present"));
+		}
+
+		@Test
+		@DisplayName("finds indirectly present if no directly present, meta present or enclosing present annotation was found")
+		void indirectlyPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Child.class,
+				Child.class.getMethod("notAnnotated"));
+
+			Stream<RepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).hasSize(1).allMatch(annotation -> annotation.value().contains("indirectly present"));
+		}
+
+		@Test
+		@DisplayName("finds not inherited annotations on interfaces implemented by enclosing class")
+		void notInheritedOnInterface() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Implementer.class,
+				Implementer.class.getMethod("notAnnotated"));
+
+			Stream<NotInheritedRepeatableAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(testContext, NotInheritedRepeatableAnnotation.class);
+
+			assertThat(result)
+					.hasSize(3)
+					.map(NotInheritedRepeatableAnnotation::value)
+					.containsExactlyInAnyOrder("Not inherited repeatable 1", "Not inherited repeatable 2",
+						"Not inherited repeatable 3");
+		}
+
+		@Test
+		@DisplayName("does not find not inherited annotations on superclass of enclosing class")
+		void notInheritedOnSuperclass() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Extender.class,
+				Extender.class.getMethod("notAnnotated"));
+
+			Stream<NotInheritedRepeatableAnnotation> result = PioneerAnnotationUtils
+					.findClosestEnclosingRepeatableAnnotations(testContext, NotInheritedRepeatableAnnotation.class);
+
+			assertThat(result).isEmpty();
+		}
+
+	}
+
+	@Nested
+	@DisplayName("getting all non-repeatable annotations")
+	class FindingAllAnnotations {
+
+		@Test
+		@DisplayName("finds not inherited annotations on interface of enclosing class")
+		void notInheritedOnInterface() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Implementer.class,
+				Implementer.class.getMethod("notAnnotated"));
+
+			Stream<NotInheritedAnnotation> result = PioneerAnnotationUtils
+					.findAllEnclosingAnnotations(testContext, NotInheritedAnnotation.class);
+
+			assertThat(result)
+					.hasSize(2)
+					.map(NotInheritedAnnotation::value)
+					.containsExactlyInAnyOrder("Not inherited 1", "Not inherited 2");
+		}
+
+		@Test
+		@DisplayName("does not find not inherited annotations on superclass of enclosing class")
+		void notInheritedOnSuperclass() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(Extender.class,
+				Extender.class.getMethod("notAnnotated"));
+
+			Stream<NotInheritedAnnotation> result = PioneerAnnotationUtils
+					.findAllEnclosingAnnotations(testContext, NotInheritedAnnotation.class);
+
+			assertThat(result).isEmpty();
+		}
+
+		@Test
+		@DisplayName("does not find not present annotations")
+		void notPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
+				AnnotationCheck.class.getMethod("notAnnotated"));
+
+			Stream<NonRepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findAllEnclosingAnnotations(testContext, NonRepeatableTestAnnotation.class);
+
+			assertThat(result).isEmpty();
+		}
+
+		@Test
+		@DisplayName("finds all enclosing annotations")
+		void allEnclosing() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(
+				AnnotationCluster.NestedClass.NestedNestedClass.class,
+				AnnotationCluster.NestedClass.NestedNestedClass.class.getMethod("annotated"));
+
+			Stream<NonRepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findAllEnclosingAnnotations(testContext, NonRepeatableTestAnnotation.class);
+
+			assertThat(result)
+					.hasSize(5)
+					.extracting(NonRepeatableTestAnnotation::value)
+					.containsExactlyInAnyOrder(
+						"This annotation is indirectly present (inherited) on any method of an implementing class.",
+						"This annotation is enclosing present", "Nested 1", "Nested 2", "Nested 3");
+		}
+
+	}
+
+	@Nested
+	@DisplayName("getting all repeatable annotations")
+	class FindingAllRepeatableAnnotations {
+
+		@Test
+		@DisplayName("does not find not present annotations")
+		void notPresent() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
+				AnnotationCheck.class.getMethod("notAnnotated"));
+
+			Stream<RepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findAllEnclosingRepeatableAnnotations(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result).isEmpty();
+		}
+
+		@Test
+		@DisplayName("finds all enclosing annotations")
+		void allEnclosing() throws NoSuchMethodException {
+			TestExtensionContext testContext = new TestExtensionContext(
+				AnnotationCluster.NestedClass.NestedNestedClass.class,
+				AnnotationCluster.NestedClass.NestedNestedClass.class.getMethod("annotated"));
+
+			Stream<RepeatableTestAnnotation> result = PioneerAnnotationUtils
+					.findAllEnclosingRepeatableAnnotations(testContext, RepeatableTestAnnotation.class);
+
+			assertThat(result)
+					.hasSize(8)
+					.extracting(RepeatableTestAnnotation::value)
+					.containsExactlyInAnyOrder(
+						"This annotation is indirectly present (inherited) on any method of an implementing class.",
+						"This annotation is enclosing present", "This annotation is also enclosing present",
+						"Repeatable nested 1", "Repeatable nested 2", "Repeatable nested 3", "Repeatable nested 4",
+						"Repeatable nested 5");
+		}
+
+	}
+
+	@Nested
+	@DisplayName("getting annotated annotations")
+	class AnnotatedAnnotations {
+
+		@Test
+		@DisplayName("finds annotated annotations on a method")
+		void onMethods() throws NoSuchMethodException {
+			Method method = PioneerAnnotationUtilsTestCases.AnnotatedAnnotations.class.getMethod("annotated");
+
+			List<Annotation> result = PioneerAnnotationUtils.findAnnotatedAnnotations(method, Inherited.class);
+
+			assertThat(result)
+					.hasSize(4)
+					.allSatisfy(annotation -> assertThat(annotation)
+							.isInstanceOfAny(RepeatableTestAnnotation.class, NonRepeatableTestAnnotation.class,
+								MetaAnnotatedTestAnnotation.class))
+					.extractingResultOf("value")
+					.containsExactlyInAnyOrder("Inherited 4", "Inherited 5", "Inherited 6",
+						"Annotated with repeatable 2");
+		}
+
+		@Test
+		@DisplayName("finds annotated annotations on a class")
+		void onClassNotRepeated() {
+			List<Annotation> result = PioneerAnnotationUtils
+					.findAnnotatedAnnotations(PioneerAnnotationUtilsTestCases.AnnotatedAnnotations.class,
+						Inherited.class);
+
+			assertThat(result)
+					.hasSize(4)
+					.allSatisfy(annotation -> assertThat(annotation)
+							.isInstanceOfAny(RepeatableTestAnnotation.class, NonRepeatableTestAnnotation.class,
+								MetaAnnotatedTestAnnotation.class))
+					.extractingResultOf("value")
+					.containsExactlyInAnyOrder("Inherited 1", "Inherited 2", "Inherited 3",
+						"Annotated with repeatable 1");
+		}
+
+		@Test
+		@DisplayName("finds annotated annotations on a method if annotation is repeatable")
+		void onMethodRepeated() throws NoSuchMethodException {
+			Method method = PioneerAnnotationUtilsTestCases.AnnotatedAnnotations.class.getMethod("annotated");
+
+			List<Annotation> result = PioneerAnnotationUtils
+					.findAnnotatedAnnotations(method, RepeatableTestAnnotation.class);
+
+			assertThat(result)
+					.hasSize(1)
+					.allSatisfy(annotation -> assertThat(annotation).isInstanceOf(MetaAnnotatedTestAnnotation.class))
+					.extractingResultOf("value")
+					.containsExactlyInAnyOrder("Annotated with repeatable 2");
+		}
+
+		@Test
+		@DisplayName("finds annotated annotations on a class if annotation is repeatable")
+		void onClassRepeated() {
+			List<Annotation> result = PioneerAnnotationUtils
+					.findAnnotatedAnnotations(PioneerAnnotationUtilsTestCases.AnnotatedAnnotations.class,
+						RepeatableTestAnnotation.class);
+
+			assertThat(result)
+					.hasSize(1)
+					.allSatisfy(annotation -> assertThat(annotation).isInstanceOf(MetaAnnotatedTestAnnotation.class))
+					.extractingResultOf("value")
+					.containsExactlyInAnyOrder("Annotated with repeatable 1");
 		}
 
 	}
