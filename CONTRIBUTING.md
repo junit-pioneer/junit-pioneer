@@ -4,7 +4,10 @@ The following guidelines were chosen very deliberately to make sure the project 
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
-* [If you're new to Open Source](#if-youre-new-to-open-source)
+* [If you're new...](#if-youre-new)
+	* [...to Open Source](#to-open-source)
+	* [...to JUnit Jupiter Extensions](#to-junit-jupiter-extensions)
+	* [...to JUnit Pioneer](#to-junit-pioneer)
 * [Writing Code](#writing-code)
 	* [Code Organization](#code-organization)
 	* [Code Style](#code-style)
@@ -16,10 +19,13 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 	* [Pull Requests](#pull-requests)
 	* [Merging](#merging)
 	* [Commit Message](#commit-message)
-* [Updating Dependency on JUnit 5](#updating-dependency-on-junit-5)
+* [Dependencies](#dependencies)
+	* [JUnit 5](#junit-5)
+	* [Others](#others)
 * [Releases](#releases)
 	* [Publishing](#publishing)
 	* [Versioning](#versioning)
+	* [Background](#background)
 * [Pioneer Maintainers](#pioneer-maintainers)
 	* [What We Do](#what-we-do)
 	* [When We Do It](#when-we-do-it)
@@ -39,10 +45,12 @@ The guidelines apply to maintainers as well as contributors!
 * Whatever content you contribute will be provided under the project license(s).
 
 
-## If you're new to Open Source
+## If you're new...
 
 First of all, welcome!
 We really appreciate that you consider contributing to JUnit Pioneer.
+
+### ...to Open Source
 
 We know that this can be quite daunting at first:
 Everybody uses a vocabulary and techniques that appear quite cryptic to those not steeped in them.
@@ -63,6 +71,18 @@ With (some of) the basics covered, let's turn to JUnit Pioneer:
 For information on how to use it, see [GitHub's documentation](https://guides.github.com/features/mastering-markdown/).
 * The [feature documentation](#documentation) is written in AsciiDoctor.
 For information on how to use it, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
+
+### ...to JUnit Jupiter Extensions
+
+There are a couple of good guides to get you started on this:
+
+* first of all, the [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/#extensions)
+* then there's [Nicolai's article on the topic](https://nipafx.dev/junit-5-extension-model/)
+
+### ...to JUnit Pioneer
+
+If you want to get to know the project, we invite you to watch [our joint presentation on JUnit Pioneer](https://www.youtube.com/watch?v=6OBWn3_a0JQ) (~1 hour).
+It's good. 😃
 
 
 ## Writing Code
@@ -212,7 +232,7 @@ git config --global core.autocrlf true
 ## Fixing Bugs, Developing Features
 
 This section governs how features or bug fixes are developed.
-See [the section _Updating Dependency on JUnit 5_](#updating-dependency-on-junit-5) for how to adapt to upstream changes.
+See [the section _Updating Dependency on JUnit 5_](#junit-5) for how to adapt to upstream changes.
 
 ### Branching Strategy
 
