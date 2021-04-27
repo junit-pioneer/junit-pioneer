@@ -27,13 +27,14 @@ jobs:
       - name: Perform release
         uses: eskatos/gradle-command-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BINTRAY_USER_NAME: ${{ secrets.BINTRAY_USER_NAME }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          NEXUS_TOKEN_USERNAME: ${{ secrets.NEXUS_TOKEN_USERNAME }}
-          NEXUS_TOKEN_PASSWORD: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
+          # used by `io.github.gradle-nexus.publish-plugin` to sign artifacts
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.JUNIT_PIONEER_PGP_SECRET_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.JUNIT_PIONEER_PGP_PASSWORD }}
+          # used by `io.github.gradle-nexus.publish-plugin` to publish to Maven Central
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.NEXUS_TOKEN_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
         with:
-          arguments: bintrayUpload githubRelease
+          arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository githubRelease
       - name: Trigger website build
         uses: peter-evans/repository-dispatch@v1
         with:

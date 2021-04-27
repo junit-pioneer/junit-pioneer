@@ -3,6 +3,7 @@ plugins {
 	jacoco
 	checkstyle
 	`maven-publish`
+	signing
 	id("com.diffplug.spotless") version "5.11.1"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.1.1"
@@ -10,8 +11,8 @@ plugins {
 	id("org.shipkit.shipkit-auto-version") version "1.1.5"
 	id("org.shipkit.shipkit-changelog") version "1.1.13"
 	id("org.shipkit.shipkit-github-release") version "1.1.13"
-	id("com.jfrog.bintray") version "1.8.5"
 	id("com.github.ben-manes.versions") version "0.38.0"
+	id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -22,11 +23,6 @@ plugins.withType<JavaPlugin>().configureEach {
 
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
-
-// used in pom and bintray
-val issueTracker = "https://github.com/junit-pioneer/junit-pioneer/issues"
-val scm = "https://github.com/junit-pioneer/junit-pioneer.git"
-val website = "https://junit-pioneer.org/"
 
 val modularBuild = findProperty("modularBuild") != null;
 
@@ -134,7 +130,7 @@ publishing {
 			pom {
 				name.set(project.name)
 				description.set(project.description)
-				url.set(website)
+				url.set("https://junit-pioneer.org/")
 
 				licenses {
 					license {
@@ -144,12 +140,12 @@ publishing {
 				}
 
 				scm {
-					url.set(scm)
+					url.set("https://github.com/junit-pioneer/junit-pioneer.git")
 				}
 
 				issueManagement {
 					system.set("GitHub Issues")
-					url.set(issueTracker)
+					url.set("https://github.com/junit-pioneer/junit-pioneer/issues")
 				}
 
 				ciManagement {
@@ -159,7 +155,7 @@ publishing {
 
 				developers {
 					mapOf(
-						"nicolaiparlog" to "Nicolai Parlog",
+						"nipafx" to "Nicolai Parlog",
 						"smoyer64" to "Steve Moyer",
 						"Bukama" to "Matthias Bünger",
 						"aepfli" to "Simon Schrottner",
@@ -177,32 +173,16 @@ publishing {
 	}
 }
 
-bintray {
-	setPublications("maven")
-	dryRun = project.hasProperty("bintrayDryRun")
-	user = System.getenv("BINTRAY_USER_NAME")
-	key = System.getenv("BINTRAY_API_KEY")
-	publish = true
+signing {
+	val signingKey: String? by project
+	val signingPassword: String? by project
+	useInMemoryPgpKeys(signingKey, signingPassword)
+	sign(publishing.publications.findByName("maven"))
+}
 
-	pkg.apply {
-		userOrg = "junit-pioneer" // https://bintray.com/junit-pioneer
-		repo = "junit-pioneer"	// https://bintray.com/junit-pioneer/junit-pioneer
-		name = "junit-pioneer"	// https://bintray.com/junit-pioneer/junit-pioneer/junit-pioneer
-		description = project.description
-		githubRepo = "https://github.com/junit-pioneer/junit-pioneer"
-		issueTrackerUrl = issueTracker
-		vcsUrl = scm
-		websiteUrl = website
-		setLicenses("EPL-2.0")
-		setLabels("testing", "junit", "extensions")
-
-		version.apply {
-			mavenCentralSync.apply {
-				sync = true
-				user = System.getenv("NEXUS_TOKEN_USERNAME")
-				password = System.getenv("NEXUS_TOKEN_PASSWORD")
-			}
-		}
+nexusPublishing {
+	repositories {
+		sonatype()
 	}
 }
 
