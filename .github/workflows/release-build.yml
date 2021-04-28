@@ -2,6 +2,10 @@ name: Release build
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version string, e.g. 1.4.0'
+        required: true
 
 jobs:
   deploy:
@@ -33,6 +37,8 @@ jobs:
           # used by `io.github.gradle-nexus.publish-plugin` to publish to Maven Central
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.NEXUS_TOKEN_USERNAME }}
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
+          # defines released version according to GitHub Action input
+          ORG_GRADLE_PROJECT_version: ${{ github.event.inputs.version }}
         with:
           arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository githubRelease
       - name: Trigger website build

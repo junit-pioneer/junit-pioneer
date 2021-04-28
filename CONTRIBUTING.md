@@ -17,7 +17,8 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 	* [Merging](#merging)
 	* [Commit Message](#commit-message)
 * [Updating Dependency on JUnit 5](#updating-dependency-on-junit-5)
-* [Publishing](#publishing)
+* [Releases](#releases)
+	* [Publishing](#publishing)
 	* [Versioning](#versioning)
 * [Pioneer Maintainers](#pioneer-maintainers)
 	* [What We Do](#what-we-do)
@@ -353,34 +354,46 @@ Updates still need to be done manually.
 To keep the commit history clean, these should be done in bulk every few weeks.
 
 
-## Publishing
+## Releases
 
 JUnit Pioneer uses [Shipkit](http://shipkit.org/) and [GitHub Actions](https://github.com/features/actions/) to automate the release process, but unlike Shipkit's default we don't release on every commit to `main`.
-Instead, releases must be triggered manually:
+Instead, we take into account...
 
-1. make sure that the file [`version-properties`](version.properties) defines the correct version (see next section)
-2. trigger the [`Release` GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3ARelease) manually for the `main` branch.
+* whether a change demands a release (which is a low bar; basically anything that changes behavior does)
+* whether more changes are going to arrive soon (often the case when we work on stream and merge a few PRs within a couple of hours)
 
-GitHub Actions will then tell Shipkit to do its thing.
+The decision to publish a release and which version to pick can be made by any two maintainers.
+Before publishing, they must check whether any `@since` tags were added since the last release and whether they reference the correct (i.e. upcoming) version.
+(Ideally this happened when the PRs were merged, but this can be easily overlooked.)
 
-Every new version is published to the `junit-pioneer/maven` Bintray repository as well as to Maven Central and JCenter.
+### Publishing
+
+Releases must be triggered manually with the [_Release_ GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3ARelease):
+
+* select `main` branch
+* specify the version (see next section)
+
+GitHub Actions will then tell Gradle/Shipkit to do their thing.
+
+Every new version is published to Maven Central and a release is created on GitHub.
 This also triggers a website build - [see its `README.md`](https://github.com/junit-pioneer/junit-pioneer.github.io) for more information.
 
 ### Versioning
 
-Shipkit manages versions by reading from [`version-properties`](version.properties):
-The variable `version` defines a _major_ and _minor_ version and leaves _patch_ undetermined (e.g. `1.3.*`), so Shipkit can pick the next version.
+JUnit Pioneer uses semantic versioning, i.e. _major.minor.patch_ as follows:
 
-This is how JUnit Pioneer handles versioning:
+* _major_: increases after team decision
+* _minor_: resets to 0 when _major_ changes and increases for each substantial change or non-trivial feature
+* _patch_: resets to 0 when _minor_ changes and increases otherwise
 
-* _patch_: automatically increased by Shipkit on each release
-* _minor_: manually increased for each substantial change/feature
-* _major_: manually increased after team decision 
+The Javadoc `@since` tag can guide whether a change is non-trivial.
+If such a tag was added, _minor_ must increased - if not, it's up for debate (which is best held in a high-fidelity tool like Discord or Twitch chat).
 
-That means, contributors only have to care about _minor_, but maintainers need to consider increasing _major_.
-Since each non-trivial change is developed in a PR, this is the place to discuss whether the version should be increased, i.e. whether a change or feature is "substantial".
-If it is, the PR needs to update `version-properties` to the next version.
-Note that the feature's Javadoc needs to reference the same version in its `@since` tag.
+For contributors that means that when they add members that require such a tag, they should generally put the next _minor_ version next to it.
+
+**A note on Shipkit**:
+Shipkit _can_ detect the version to be released on its own, but it increases the patch versions by number of commits since recent release (hence 1.3.0 ~> 1.3.8), which is not what we want.
+Also note that Shipkit still reads from [`version-properties`](version.properties) but as far as we can tell, that information doesn't apply to us, so we don't update it.
 
 ### Background
 
