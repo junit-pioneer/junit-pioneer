@@ -22,7 +22,7 @@ To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its i
 
 ## Getting on Board
 
-JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases) and [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.junit-pioneer%22%20a%3A%22junit-pioneer%22). Coordinates:
+JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases), [JCenter](https://jcenter.bintray.com/org/junit-pioneer/junit-pioneer/), and [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.junit-pioneer%22%20a%3A%22junit-pioneer%22). Coordinates:
 
 * group ID: `org.junit-pioneer`
 * artifact ID: `junit-pioneer`
