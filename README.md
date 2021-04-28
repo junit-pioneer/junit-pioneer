@@ -22,7 +22,7 @@ To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its i
 
 ## Getting on Board
 
-JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases), [JCenter](https://jcenter.bintray.com/org/junit-pioneer/junit-pioneer/), and [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.junit-pioneer%22%20a%3A%22junit-pioneer%22). Coordinates:
+JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases) and [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.junit-pioneer%22%20a%3A%22junit-pioneer%22). Coordinates:
 
 * group ID: `org.junit-pioneer`
 * artifact ID: `junit-pioneer`
@@ -54,7 +54,7 @@ That means it can be used on all Java versions 8 and higher on class path and mo
 Pioneer does not only use JUnit 5's API, but also other artifacts from its ecosystem such as [`junit-platform-commons`](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons).
 To avoid dependency issues (e.g. in [junit-pioneer#343](https://github.com/junit-pioneer/junit-pioneer/issues/343)), you should add the JUnit 5 BOM ([`junit-bom`](https://mvnrepository.com/artifact/org.junit/junit-bom)) to your project instead of defining all dependency versions manually.
 
-To not add to user's [JAR hell](https://blog.codefx.org/java/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
+To not add to user's [JAR hell](https://nipafx.dev/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
 Pioneer always depends on the lowest JUnit 5 version that supports its feature set, but that should not keep you from using 5's latest and greatest.
 
 For our own infrastructure, we rely on the following compile and test dependencies:

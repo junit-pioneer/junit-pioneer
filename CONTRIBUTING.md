@@ -118,7 +118,7 @@ How to write the code itself.
 
 #### `Optional`
 
-[There shall be no `null` - use `Optional` instead](https://blog.codefx.org/techniques/intention-revealing-code-java-8-optional/):
+[There shall be no `null` - use `Optional` instead](https://nipafx.dev/intention-revealing-code-java-8-optional/):
 
 * design code to avoid optionality wherever feasibly possible
 * in all remaining cases, prefer `Optional` over `null`
@@ -196,11 +196,6 @@ One aspect that's relevant to contributors is the list of contributions at the e
 * `$CONTRIBUTIONS` is a list of one or two contributions (possibly with an appended "and more" if there are more)
 	* for new features, link to the feature documentation on [junit-pioneer.org](https://junit-pioneer.org)
 	* include issue and pull request IDs in the form `(#123 / #125)`
-
-#### Release Notes
-
-Do **not** update the `release-notes.md` file!
-This file is generated automatically.
 
 ### Git
 
