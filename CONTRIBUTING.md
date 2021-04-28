@@ -196,11 +196,6 @@ One aspect that's relevant to contributors is the list of contributions at the e
 	* for new features, link to the feature documentation on [junit-pioneer.org](https://junit-pioneer.org)
 	* include issue and pull request IDs in the form `(#123 / #125)`
 
-#### Release Notes
-
-Do **not** update the `release-notes.md` file!
-This file is generated automatically.
-
 ### Git
 
 #### Line Endings
