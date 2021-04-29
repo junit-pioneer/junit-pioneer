@@ -3,7 +3,7 @@
 <img src="docs/project-logo.jpg" align="right" width="150px"/>
 
 [![Latest Junit Pioneer on Maven Central](https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat)](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer)
-[![JUnit Pioneer build status](https://github.com/junit-pioneer/junit-pioneer/workflows/JUnit%20Pioneer/badge.svg)](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3A%22JUnit+Pioneer%22+branch%3Amain)
+[![JUnit Pioneer build status](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/main-build.yml/badge.svg?branch=main)](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/main-build.yml?branch=main)
 
 A melting pot for all kinds of extensions to
 [JUnit 5](https://github.com/junit-team/junit5), particular to its Jupiter API.
