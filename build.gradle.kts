@@ -8,7 +8,6 @@ plugins {
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.1.1"
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
-	id("org.shipkit.shipkit-auto-version") version "1.1.5"
 	id("org.shipkit.shipkit-changelog") version "1.1.13"
 	id("org.shipkit.shipkit-github-release") version "1.1.13"
 	id("com.github.ben-manes.versions") version "0.38.0"
@@ -250,7 +249,9 @@ tasks {
 	}
 
 	generateChangelog {
-		previousRevision = ext.get("shipkit-auto-version.previous-tag").toString()
+		val gitFetchRecentTag = Runtime.getRuntime().exec("git describe --tags --abbrev=0")
+		val recentTag = gitFetchRecentTag.inputStream.bufferedReader().readText().trim()
+		previousRevision = recentTag
 		githubToken = System.getenv("GITHUB_TOKEN")
 		repository = "junit-pioneer/junit-pioneer"
 	}
