@@ -409,8 +409,9 @@ If such a tag was added, _minor_ must increased - if not, it's up for debate (wh
 For contributors that means that when they add members that require such a tag, they should generally put the next _minor_ version next to it.
 
 **A note on Shipkit**:
-Shipkit _can_ detect the version to be released on its own, but it increases the patch versions by number of commits since recent release (hence 1.3.0 ~> 1.3.8), which is not what we want.
-Also note that Shipkit still reads from [`version-properties`](version.properties) but as far as we can tell, that information doesn't apply to us, so we don't update it.
+[Shipkit's _auto-version_ plugin](https://github.com/shipkit/shipkit-auto-version) _can_ detect the version to be released on its own, but it increases the patch versions by number of commits since recent release (hence 1.3.0 ~> 1.3.8), which is not what we want.
+We hence don't use it.
+The other feature it provides is detecting the recent version (needed by [the _changelog_ plugin](https://github.com/shipkit/shipkit-changelog)), which we do by running `git describe --tags --abbrev=0`.
 
 ### Background
 
