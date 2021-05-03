@@ -84,6 +84,8 @@ There are a couple of good guides to get you started on this:
 If you want to get to know the project, we invite you to watch [our joint presentation on JUnit Pioneer](https://www.youtube.com/watch?v=6OBWn3_a0JQ) (~1 hour).
 It's good. 😃
 
+To get started, check [these good first issues](https://github.com/junit-pioneer/junit-pioneer/contribute).
+
 
 ## Writing Code
 
@@ -383,7 +385,7 @@ Before publishing, they must check whether any `@since` tags were added since th
 
 ### Publishing
 
-Releases must be triggered manually with the [_Release_ GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3ARelease):
+Releases must be triggered manually with the [_Release build_ GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/release-build.yml):
 
 * select `main` branch
 * specify the version (see next section)
