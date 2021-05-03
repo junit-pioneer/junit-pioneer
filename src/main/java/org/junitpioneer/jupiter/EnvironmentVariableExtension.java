@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 
@@ -36,16 +37,18 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 
 	@Override
 	protected Set<String> entriesToClear(ExtensionContext context) {
-		return PioneerAnnotationUtils
-				.findClosestEnclosingRepeatableAnnotations(context, ClearEnvironmentVariable.class)
+		return AnnotationSupport
+				.findRepeatableAnnotations(context.getElement(), ClearEnvironmentVariable.class)
+				.stream()
 				.map(ClearEnvironmentVariable::key)
 				.collect(PioneerUtils.distinctToSet());
 	}
 
 	@Override
 	protected Map<String, String> entriesToSet(ExtensionContext context) {
-		return PioneerAnnotationUtils
-				.findClosestEnclosingRepeatableAnnotations(context, SetEnvironmentVariable.class)
+		return AnnotationSupport
+				.findRepeatableAnnotations(context.getElement(), SetEnvironmentVariable.class)
+				.stream()
 				.collect(toMap(SetEnvironmentVariable::key, SetEnvironmentVariable::value));
 	}
 

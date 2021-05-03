@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 
@@ -29,16 +30,18 @@ class SystemPropertyExtension extends AbstractEntryBasedExtension<String, String
 
 	@Override
 	protected Set<String> entriesToClear(ExtensionContext context) {
-		return PioneerAnnotationUtils
-				.findClosestEnclosingRepeatableAnnotations(context, ClearSystemProperty.class)
+		return AnnotationSupport
+				.findRepeatableAnnotations(context.getElement(), ClearSystemProperty.class)
+				.stream()
 				.map(ClearSystemProperty::key)
 				.collect(PioneerUtils.distinctToSet());
 	}
 
 	@Override
 	protected Map<String, String> entriesToSet(ExtensionContext context) {
-		return PioneerAnnotationUtils
-				.findClosestEnclosingRepeatableAnnotations(context, SetSystemProperty.class)
+		return AnnotationSupport
+				.findRepeatableAnnotations(context.getElement(), SetSystemProperty.class)
+				.stream()
 				.collect(toMap(SetSystemProperty::key, SetSystemProperty::value));
 	}
 

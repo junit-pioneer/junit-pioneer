@@ -158,6 +158,19 @@ class EnvironmentVariableExtensionTests {
 			assertThat(systemEnvironmentVariable("clear envvar F")).isNull();
 		}
 
+		@Test
+		@DisplayName("method level should not clash (in terms of duplicate entries) with class level")
+		@SetEnvironmentVariable(key = "set envvar A", value = "new A")
+		void methodLevelShouldNotClashWithClassLevel() {
+			assertThat(systemEnvironmentVariable("set envvar A")).isEqualTo("new A");
+			assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("old B");
+			assertThat(systemEnvironmentVariable("set envvar C")).isEqualTo("old C");
+			assertThat(systemEnvironmentVariable("clear envvar D")).isEqualTo("new D");
+
+			assertThat(systemEnvironmentVariable("clear envvar E")).isNull();
+			assertThat(systemEnvironmentVariable("clear envvar F")).isNull();
+		}
+
 	}
 
 	@DisplayName("with nested classes")
