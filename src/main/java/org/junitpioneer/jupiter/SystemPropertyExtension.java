@@ -31,6 +31,10 @@ class SystemPropertyExtension extends AbstractEntryBasedExtension<String, String
 	@Override
 	protected Set<String> entriesToClear(ExtensionContext context) {
 		return AnnotationSupport
+				// This extension implements `BeforeAllCallback` and `BeforeEachCallback` and so if an outer class
+				// (i.e. a class that the test class is @Nested within) uses this extension, this method will be
+				// called on those extension points and discover the properties to set/clear. That means we don't need
+				// to search for enclosing annotations here.
 				.findRepeatableAnnotations(context.getElement(), ClearSystemProperty.class)
 				.stream()
 				.map(ClearSystemProperty::key)
@@ -40,6 +44,10 @@ class SystemPropertyExtension extends AbstractEntryBasedExtension<String, String
 	@Override
 	protected Map<String, String> entriesToSet(ExtensionContext context) {
 		return AnnotationSupport
+				// This extension implements `BeforeAllCallback` and `BeforeEachCallback` and so if an outer class
+				// (i.e. a class that the test class is @Nested within) uses this extension, this method will be
+				// called on those extension points and discover the properties to set/clear. That means we don't need
+				// to search for enclosing annotations here.
 				.findRepeatableAnnotations(context.getElement(), SetSystemProperty.class)
 				.stream()
 				.collect(toMap(SetSystemProperty::key, SetSystemProperty::value));
