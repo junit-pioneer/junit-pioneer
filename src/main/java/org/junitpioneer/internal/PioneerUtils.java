@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Pioneer-internal utility class.
@@ -119,6 +120,15 @@ public class PioneerUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> Class<T> wrap(Class<T> clazz) {
 		return (Class<T>) MethodType.methodType(clazz).wrap().returnType();
+	}
+
+	@SafeVarargs
+	public static <T> Optional<? extends T> firstPresent(Optional<? extends T>... optionals) {
+		return Stream
+				.of(optionals)
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.findFirst();
 	}
 
 }
