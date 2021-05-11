@@ -191,7 +191,7 @@ class EnvironmentVariableExtensionTests {
 			@Order(1)
 			@ReadsEnvironmentVariable
 			@DisplayName("environment variables should be set from enclosed class when they are not provided in nested")
-			public void shouldSetEnvironmentVariableFromEnclosedClass() {
+			void shouldSetEnvironmentVariableFromEnclosedClass() {
 				assertThat(systemEnvironmentVariable("set envvar A")).isNull();
 				assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("new B");
 			}
@@ -200,7 +200,7 @@ class EnvironmentVariableExtensionTests {
 			@Order(2)
 			@ReadsEnvironmentVariable
 			@DisplayName("environment variables should be set from enclosed class after restore")
-			public void shouldSetEnvironmentVariableFromEnclosedClassAfterRestore() {
+			void shouldSetEnvironmentVariableFromEnclosedClassAfterRestore() {
 				assertThat(systemEnvironmentVariable("set envvar A")).isNull();
 				assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("new B");
 			}
@@ -215,14 +215,14 @@ class EnvironmentVariableExtensionTests {
 			@Test
 			@ReadsEnvironmentVariable
 			@DisplayName("environment variable should be set from nested class when it is provided")
-			public void shouldSetEnvironmentVariableFromNestedClass() {
+			void shouldSetEnvironmentVariableFromNestedClass() {
 				assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("newer B");
 			}
 
 			@Test
 			@SetEnvironmentVariable(key = "set envvar B", value = "newest B")
 			@DisplayName("environment variable should be set from method when it is provided")
-			public void shouldSetEnvironmentVariableFromMethodOfNestedClass() {
+			void shouldSetEnvironmentVariableFromMethodOfNestedClass() {
 				assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("newest B");
 			}
 

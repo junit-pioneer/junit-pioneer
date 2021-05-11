@@ -183,7 +183,7 @@ class SystemPropertyExtensionTests {
 			@Order(1)
 			@ReadsSystemProperty
 			@DisplayName("system properties should be set from enclosed class when they are not provided in nested")
-			public void shouldSetSystemPropertyFromEnclosedClass() {
+			void shouldSetSystemPropertyFromEnclosedClass() {
 				assertThat(System.getProperty("set prop A")).isNull();
 				assertThat(System.getProperty("set prop B")).isEqualTo("new B");
 			}
@@ -192,7 +192,7 @@ class SystemPropertyExtensionTests {
 			@Order(2)
 			@ReadsSystemProperty
 			@DisplayName("system properties should be set from enclosed class after restore")
-			public void shouldSetSystemPropertyFromEnclosedClassAfterRestore() {
+			void shouldSetSystemPropertyFromEnclosedClassAfterRestore() {
 				assertThat(System.getProperty("set prop A")).isNull();
 				assertThat(System.getProperty("set prop B")).isEqualTo("new B");
 			}
@@ -207,14 +207,14 @@ class SystemPropertyExtensionTests {
 			@Test
 			@ReadsSystemProperty
 			@DisplayName("system property should be set from nested class when it is provided")
-			public void shouldSetSystemPropertyFromNestedClass() {
+			void shouldSetSystemPropertyFromNestedClass() {
 				assertThat(System.getProperty("set prop B")).isEqualTo("newer B");
 			}
 
 			@Test
 			@SetSystemProperty(key = "set prop B", value = "newest B")
 			@DisplayName("system property should be set from method when it is provided")
-			public void shouldSetSystemPropertyFromMethodOfNestedClass() {
+			void shouldSetSystemPropertyFromMethodOfNestedClass() {
 				assertThat(System.getProperty("set prop B")).isEqualTo("newest B");
 			}
 
