@@ -22,8 +22,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
@@ -180,13 +183,24 @@ class EnvironmentVariableExtensionTests {
 	class NestedEnvironmentVariableTests {
 
 		@Nested
+		@TestMethodOrder(OrderAnnotation.class)
 		@DisplayName("without EnvironmentVariable annotations")
 		class NestedClass {
 
 			@Test
+			@Order(1)
 			@ReadsEnvironmentVariable
 			@DisplayName("environment variables should be set from enclosed class when they are not provided in nested")
 			public void shouldSetEnvironmentVariableFromEnclosedClass() {
+				assertThat(systemEnvironmentVariable("set envvar A")).isNull();
+				assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("new B");
+			}
+
+			@Test
+			@Order(2)
+			@ReadsEnvironmentVariable
+			@DisplayName("environment variables should be set from enclosed class after restore")
+			public void shouldSetEnvironmentVariableFromEnclosedClassAfterRestore() {
 				assertThat(systemEnvironmentVariable("set envvar A")).isNull();
 				assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("new B");
 			}
