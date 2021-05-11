@@ -159,6 +159,10 @@ abstract class AbstractEntryBasedExtension<K, V>
 		private final Set<K> entriesToClear = new HashSet<>();
 		private final Map<K, V> entriesToSet = new HashMap<>();
 
+		public EntriesBackup() {
+			// empty backup
+		}
+
 		public EntriesBackup(Collection<K> entriesToClear, Collection<K> entriesToSet) {
 			Stream.concat(entriesToClear.stream(), entriesToSet.stream()).forEach(entry -> {
 				V backup = AbstractEntryBasedExtension.this.getEntry(entry);
