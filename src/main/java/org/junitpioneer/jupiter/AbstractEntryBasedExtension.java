@@ -36,8 +36,6 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
 abstract class AbstractEntryBasedExtension<K, V>
 		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
-	private static final String BACKUP = "Backup";
-
 	/**
 	 * @param context The current extension context.
 	 * @return <code>true</code> if one or more of the extension's annotations are present.
@@ -124,7 +122,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 
 	private void storeOriginalEntries(ExtensionContext context, Collection<K> entriesToClear,
 			Collection<K> entriesToSet) {
-		getStore(context).put(BACKUP, new EntriesBackup(entriesToClear, entriesToSet));
+		getStore(context).put(getStoreKey(context), new EntriesBackup(entriesToClear, entriesToSet));
 	}
 
 	private void clearEntries(Collection<K> entriesToClear) {
@@ -147,11 +145,15 @@ abstract class AbstractEntryBasedExtension<K, V>
 	}
 
 	private void restoreOriginalEntries(ExtensionContext context) {
-		getStore(context).get(BACKUP, EntriesBackup.class).restoreBackup();
+		getStore(context).getOrDefault(getStoreKey(context), EntriesBackup.class, new EntriesBackup()).restoreBackup();
 	}
 
 	private Store getStore(ExtensionContext context) {
 		return context.getStore(Namespace.create(getClass()));
+	}
+
+	private Object getStoreKey(ExtensionContext context) {
+		return context.getDisplayName();
 	}
 
 	private class EntriesBackup {
