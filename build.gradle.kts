@@ -174,7 +174,7 @@ publishing {
 
 signing {
 	setRequired({
-		project.version != "unspecified"
+		project.version != "unspecified" && gradle.taskGraph.hasTask("publishToSonatype")
 	})
 	val signingKey: String? by project
 	val signingPassword: String? by project
