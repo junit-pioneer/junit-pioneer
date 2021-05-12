@@ -38,6 +38,7 @@ class AbstractEntryBasedExtensionTest {
 	}
 
 	@Test
+	@Issue("432")
 	@DisplayName("should not mix backups of different extensions on clear environment variable and clear system property")
 	void shouldNotMixBackupsOfDifferentExtensionsOnClearEnvironmentVariableAndClearSystemProperty() {
 		PioneerTestKit.executeTestMethod(MixBackupsTestCases.class, "clearEnvironmentVariableAndClearSystemProperty");
@@ -47,6 +48,7 @@ class AbstractEntryBasedExtensionTest {
 	}
 
 	@Test
+	@Issue("432")
 	@DisplayName("should not mix backups of different extensions on set environment variable and set system property")
 	void shouldNotMixBackupsOfDifferentExtensionsOnSetEnvironmentVariableAndSetSystemProperty() {
 		PioneerTestKit.executeTestMethod(MixBackupsTestCases.class, "setEnvironmentVariableAndSetSystemProperty");
@@ -56,6 +58,7 @@ class AbstractEntryBasedExtensionTest {
 	}
 
 	@Test
+	@Issue("432")
 	@DisplayName("should not mix backups of different extensions on clear environment variable and set system property")
 	void shouldNotMixBackupsOfDifferentExtensionsOnClearEnvironmentVariableAndSetSystemProperty() {
 		PioneerTestKit.executeTestMethod(MixBackupsTestCases.class, "clearEnvironmentVariableAndSetSystemProperty");
@@ -65,6 +68,7 @@ class AbstractEntryBasedExtensionTest {
 	}
 
 	@Test
+	@Issue("432")
 	@DisplayName("should not mix backups of different extensions on set environment variable and clear system property")
 	void shouldNotMixBackupsOfDifferentExtensionsOnSetEnvironmentVariableAndClearSystemProperty() {
 		PioneerTestKit.executeTestMethod(MixBackupsTestCases.class, "setEnvironmentVariableAndClearSystemProperty");

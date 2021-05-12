@@ -154,6 +154,7 @@ class SystemPropertyExtensionTests {
 		}
 
 		@Test
+		@Issue("473")
 		@DisplayName("method level should not clash (in terms of duplicate entries) with class level")
 		@SetSystemProperty(key = "set prop A", value = "new A")
 		void methodLevelShouldNotClashWithClassLevel() {
@@ -189,6 +190,7 @@ class SystemPropertyExtensionTests {
 			}
 
 			@Test
+			@Issue("480")
 			@Order(2)
 			@ReadsSystemProperty
 			@DisplayName("system properties should be set from enclosed class after restore")
@@ -288,6 +290,7 @@ class SystemPropertyExtensionTests {
 	class InheritanceTests extends InheritanceBaseTest {
 
 		@Test
+		@Issue("448")
 		@DisplayName("should inherit clear and set annotations")
 		void shouldInheritClearAndSetProperty() {
 			assertThat(System.getProperty("set prop A")).isNull();

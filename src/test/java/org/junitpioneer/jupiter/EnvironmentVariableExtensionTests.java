@@ -162,6 +162,7 @@ class EnvironmentVariableExtensionTests {
 		}
 
 		@Test
+		@Issue("473")
 		@DisplayName("method level should not clash (in terms of duplicate entries) with class level")
 		@SetEnvironmentVariable(key = "set envvar A", value = "new A")
 		void methodLevelShouldNotClashWithClassLevel() {
@@ -197,6 +198,7 @@ class EnvironmentVariableExtensionTests {
 			}
 
 			@Test
+			@Issue("480")
 			@Order(2)
 			@ReadsEnvironmentVariable
 			@DisplayName("environment variables should be set from enclosed class after restore")
@@ -354,6 +356,7 @@ class EnvironmentVariableExtensionTests {
 	class InheritanceTests extends InheritanceBaseTest {
 
 		@Test
+		@Issue("448")
 		@DisplayName("should inherit clear and set annotations")
 		void shouldInheritClearAndSetProperty() {
 			assertThat(systemEnvironmentVariable("set envvar A")).isNull();
