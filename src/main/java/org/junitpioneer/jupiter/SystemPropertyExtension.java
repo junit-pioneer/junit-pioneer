@@ -17,16 +17,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
-import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 
 class SystemPropertyExtension extends AbstractEntryBasedExtension<String, String> {
-
-	@Override
-	protected boolean isAnnotationPresent(ExtensionContext context) {
-		return PioneerAnnotationUtils
-				.isAnyRepeatableAnnotationPresent(context, ClearSystemProperty.class, SetSystemProperty.class);
-	}
 
 	@Override
 	protected Set<String> entriesToClear(ExtensionContext context) {

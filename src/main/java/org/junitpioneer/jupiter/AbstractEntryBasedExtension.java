@@ -38,12 +38,6 @@ abstract class AbstractEntryBasedExtension<K, V>
 
 	/**
 	 * @param context The current extension context.
-	 * @return <code>true</code> if one or more of the extension's annotations are present.
-	 */
-	protected abstract boolean isAnnotationPresent(ExtensionContext context);
-
-	/**
-	 * @param context The current extension context.
 	 * @return The entry keys to be cleared.
 	 */
 	protected abstract Set<K> entriesToClear(ExtensionContext context);
@@ -135,8 +129,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		if (isAnnotationPresent(context))
-			restoreOriginalEntries(context);
+		restoreOriginalEntries(context);
 	}
 
 	@Override
