@@ -10,11 +10,16 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -25,6 +30,8 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
+import org.junit.platform.commons.support.AnnotationSupport;
+import org.junitpioneer.internal.PioneerUtils;
 
 /**
  * An abstract base class for entry-based extensions, where entries (key-value
@@ -32,21 +39,26 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
  *
  * @param <K> The entry's key type.
  * @param <V> The entry's value type.
+ * @param <C> The clear annotation type.
+ * @param <S> The set annotation type.
  */
-abstract class AbstractEntryBasedExtension<K, V>
+abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation>
 		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
 	/**
-	 * @param context The current extension context.
-	 * @return The entry keys to be cleared.
+	 * @return Mapper function to get the key from a clear annotation.
 	 */
-	protected abstract Set<K> entriesToClear(ExtensionContext context);
+	protected abstract Function<C, K> clearKeyMapper();
 
 	/**
-	 * @param context The current extension context.
-	 * @return The entry keys and values to be set.
+	 * @return Mapper function to get the key from a set annotation.
 	 */
-	protected abstract Map<K, V> entriesToSet(ExtensionContext context);
+	protected abstract Function<S, K> setKeyMapper();
+
+	/**
+	 * @return Mapper function to get the value from a set annotation.
+	 */
+	protected abstract Function<S, V> setValueMapper();
 
 	/**
 	 * Removes the entry indicated by the specified key.
@@ -85,8 +97,8 @@ abstract class AbstractEntryBasedExtension<K, V>
 		Map<K, V> entriesToSet;
 
 		try {
-			entriesToClear = entriesToClear(context);
-			entriesToSet = entriesToSet(context);
+			entriesToClear = findClearAnnotations(context).map(clearKeyMapper()).collect(PioneerUtils.distinctToSet());
+			entriesToSet = findSetAnnotations(context).collect(toMap(setKeyMapper(), setValueMapper()));
 			preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
 		}
 		catch (IllegalStateException ex) {
@@ -100,6 +112,39 @@ abstract class AbstractEntryBasedExtension<K, V>
 		storeOriginalEntries(context, entriesToClear, entriesToSet.keySet());
 		clearEntries(entriesToClear);
 		setEntries(entriesToSet);
+	}
+
+	private Stream<C> findClearAnnotations(ExtensionContext context) {
+		return findAnnotations(context, getClearAnnotationType());
+	}
+
+	private Stream<S> findSetAnnotations(ExtensionContext context) {
+		return findAnnotations(context, getSetAnnotationType());
+	}
+
+	private <A extends Annotation> Stream<A> findAnnotations(ExtensionContext context, Class<A> clazz) {
+		/*
+		 * Implementation notes:
+		 *
+		 * This extension implements `BeforeAllCallback` and `BeforeEachCallback` and so if an outer class (i.e. a
+		 * class that the test class is @Nested within) uses this extension, this method will be called on those
+		 * extension points and discover the variables to set/clear. That means we don't need to search for
+		 * enclosing annotations here.
+		 */
+		return AnnotationSupport.findRepeatableAnnotations(context.getElement(), clazz).stream();
+	}
+
+	private Class<C> getClearAnnotationType() {
+		return getActualTypeArgumentAt(2);
+	}
+
+	private Class<S> getSetAnnotationType() {
+		return getActualTypeArgumentAt(3);
+	}
+
+	private <T> Class<T> getActualTypeArgumentAt(int index) {
+		ParameterizedType abstractEntryBasedExtensionType = (ParameterizedType) getClass().getGenericSuperclass();
+		return (Class<T>) abstractEntryBasedExtensionType.getActualTypeArguments()[index];
 	}
 
 	private void preventClearAndSetSameEntries(Collection<K> entriesToClear, Collection<K> entriesToSet) {

@@ -10,17 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.toMap;
-
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.commons.support.AnnotationSupport;
-import org.junitpioneer.internal.PioneerUtils;
 
-class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, String> {
+class EnvironmentVariableExtension
+		extends AbstractEntryBasedExtension<String, String, ClearEnvironmentVariable, SetEnvironmentVariable> {
 
 	// package visible to make accessible for tests
 	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
@@ -28,28 +24,18 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 	static final String WARNING_VALUE = "This extension uses reflection to mutate JDK-internal state, which is fragile. Check the Javadoc or documentation for more details.";
 
 	@Override
-	protected Set<String> entriesToClear(ExtensionContext context) {
-		return AnnotationSupport
-				// This extension implements `BeforeAllCallback` and `BeforeEachCallback` and so if an outer class
-				// (i.e. a class that the test class is @Nested within) uses this extension, this method will be
-				// called on those extension points and discover the variables to set/clear. That means we don't need
-				// to search for enclosing annotations here.
-				.findRepeatableAnnotations(context.getElement(), ClearEnvironmentVariable.class)
-				.stream()
-				.map(ClearEnvironmentVariable::key)
-				.collect(PioneerUtils.distinctToSet());
+	protected Function<ClearEnvironmentVariable, String> clearKeyMapper() {
+		return ClearEnvironmentVariable::key;
 	}
 
 	@Override
-	protected Map<String, String> entriesToSet(ExtensionContext context) {
-		return AnnotationSupport
-				// This extension implements `BeforeAllCallback` and `BeforeEachCallback` and so if an outer class
-				// (i.e. a class that the test class is @Nested within) uses this extension, this method will be
-				// called on those extension points and discover the variables to set/clear. That means we don't need
-				// to search for enclosing annotations here.
-				.findRepeatableAnnotations(context.getElement(), SetEnvironmentVariable.class)
-				.stream()
-				.collect(toMap(SetEnvironmentVariable::key, SetEnvironmentVariable::value));
+	protected Function<SetEnvironmentVariable, String> setKeyMapper() {
+		return SetEnvironmentVariable::key;
+	}
+
+	@Override
+	protected Function<SetEnvironmentVariable, String> setValueMapper() {
+		return SetEnvironmentVariable::value;
 	}
 
 	@Override
