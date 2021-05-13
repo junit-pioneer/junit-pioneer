@@ -72,17 +72,6 @@ spotless {
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
-
-	format("groovy") {
-		target("**/*.groovy")
-		indentWithTabs()
-		trimTrailingWhitespace()
-		endWithNewline()
-		licenseHeaderFile(headerFile, "package ")
-
-		replaceRegex("class-level Javadoc indentation fix", """^\*""", " *")
-		replaceRegex("nested Javadoc indentation fix", "\t\\*", "\t *")
-	}
 }
 
 checkstyle {
