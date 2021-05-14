@@ -97,8 +97,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		Map<K, V> entriesToSet;
 
 		try {
-			entriesToClear = findClearAnnotations(context).map(clearKeyMapper()).collect(PioneerUtils.distinctToSet());
-			entriesToSet = findSetAnnotations(context).collect(toMap(setKeyMapper(), setValueMapper()));
+			entriesToClear = findEntriesToClear(context);
+			entriesToSet = findEntriesToSet(context);
 			preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
 		}
 		catch (IllegalStateException ex) {
@@ -114,12 +114,14 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		setEntries(entriesToSet);
 	}
 
-	private Stream<C> findClearAnnotations(ExtensionContext context) {
-		return findAnnotations(context, getClearAnnotationType());
+	private Set<K> findEntriesToClear(ExtensionContext context) {
+		return findAnnotations(context, getClearAnnotationType())
+				.map(clearKeyMapper())
+				.collect(PioneerUtils.distinctToSet());
 	}
 
-	private Stream<S> findSetAnnotations(ExtensionContext context) {
-		return findAnnotations(context, getSetAnnotationType());
+	private Map<K, V> findEntriesToSet(ExtensionContext context) {
+		return findAnnotations(context, getSetAnnotationType()).collect(toMap(setKeyMapper(), setValueMapper()));
 	}
 
 	private <A extends Annotation> Stream<A> findAnnotations(ExtensionContext context, Class<A> clazz) {
