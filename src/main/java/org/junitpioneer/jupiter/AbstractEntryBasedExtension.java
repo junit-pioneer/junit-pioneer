@@ -146,7 +146,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 	}
 
 	private Object getStoreKey(ExtensionContext context) {
-		return context.getDisplayName();
+		return context.getUniqueId();
 	}
 
 	private class EntriesBackup {
