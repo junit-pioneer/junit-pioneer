@@ -37,8 +37,8 @@ import org.junitpioneer.internal.PioneerUtils;
  * An abstract base class for entry-based extensions, where entries (key-value
  * pairs) can be cleared or set.
  *
- * @param <K> The entry's key type.
- * @param <V> The entry's value type.
+ * @param <K> The entry key type.
+ * @param <V> The entry value type.
  * @param <C> The clear annotation type.
  * @param <S> The set annotation type.
  */
