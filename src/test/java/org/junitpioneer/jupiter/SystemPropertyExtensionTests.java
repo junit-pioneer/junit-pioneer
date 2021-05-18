@@ -150,6 +150,19 @@ class SystemPropertyExtensionTests {
 			assertThat(System.getProperty("clear prop F")).isNull();
 		}
 
+		@Test
+		@DisplayName("method level should not clash (in terms of duplicate entries) with class level")
+		@SetSystemProperty(key = "set prop A", value = "new A")
+		void methodLevelShouldNotClashWithClassLevel() {
+			assertThat(System.getProperty("set prop A")).isEqualTo("new A");
+			assertThat(System.getProperty("set prop B")).isEqualTo("old B");
+			assertThat(System.getProperty("set prop C")).isEqualTo("old C");
+			assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
+
+			assertThat(System.getProperty("clear prop E")).isNull();
+			assertThat(System.getProperty("clear prop F")).isNull();
+		}
+
 	}
 
 	@DisplayName("with nested classes")

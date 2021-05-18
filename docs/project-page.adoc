@@ -1,13 +1,13 @@
 ---
-excerpt: 'JUnit 5 extension pack, pushing the frontiers on Jupiter.<br/> <small>Released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases), [JCenter](https://jcenter.bintray.com/org/junit-pioneer/junit-pioneer/), and [Maven Central](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer) under<br /><span class="coordinates">`org.junit-pioneer : junit-pioneer : @xp:version`</span></small><br/><br/> {::nomarkdown}<iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=watch&count=true&size=large&v=2" frameborder="0" scrolling="0" width="145px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=star&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=fork&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe>{:/nomarkdown}'
+excerpt: 'JUnit 5 extension pack, pushing the frontiers on Jupiter.<br/> <small>Released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases) and [Maven Central](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer) under<br /><span class="coordinates">`org.junit-pioneer : junit-pioneer : @xp:version`</span></small><br/><br/> {::nomarkdown}<iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=watch&count=true&size=large&v=2" frameborder="0" scrolling="0" width="145px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=star&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=fork&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe>{:/nomarkdown}'
 ---
 :page-layout: single
 :page-permalink: /junit-pioneer/
 :page-header: { overlay_image: {site-images}/pioneer-full.jpg, title_alignment: left }
 :page-title: JUnit Pioneer
 
-JUnit Pioneer is an https://blog.codefx.org/design/architecture/junit-5-extension-model/[extension pack] for https://junit.org/junit5/[JUnit 5] or, https://blog.codefx.org/design/architecture/junit-5-architecture/[to be more precise], for the Jupiter engine.
-It's still pretty young, but it already has https://junit-pioneer.org/docs/[a few features] and is continuously released with more.
+JUnit Pioneer is an https://nipafx.dev/junit-5-extension-model/[extension pack] for https://junit.org/junit5/[JUnit 5] or, https://nipafx.dev/junit-5-architecture-jupiter/[to be more precise], for the Jupiter engine.
+It offers https://junit-pioneer.org/docs/[a wide variety of extensions] and is continuously released with more.
 
 
 == Quick start
