@@ -19,11 +19,12 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @DisableIfParameter} is part of a JUnit Jupiter extension that can
- * be used to selectively disable a {@link org.junit.jupiter.params.ParameterizedTest}
- * based on their parameter values as defined by {@link Object#toString()}.
+ * {@code @DisableIfParameter} is a JUnit Jupiter extension that selectively
+ * disables a {@link org.junit.jupiter.params.ParameterizedTest} execution
+ * if the specified parameter's value (as defined by {@link Object#toString()})
+ * satisfies the specified condition.
  *
- * <p>The extension utilizes Jupiter's {@link org.junit.jupiter.api.extension.InvocationInterceptor}.
+ * <p>The extension uses Jupiter's {@link org.junit.jupiter.api.extension.InvocationInterceptor}.
  * It's important to note that since it's marked as {@link org.apiguardian.api.API.Status#EXPERIMENTAL}
  * it might be removed without prior notice.
  * Unlike {@link org.junit.jupiter.api.Disabled} annotations, this extension doesn't disable the whole test method.
@@ -35,7 +36,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>This annotation is for disabling a test based on a single parameter which can be designated with an
  * implicit index, an explicit index or by name (if parameter name information is present). For more
- * information how the extension resolves the annotations, check the documentation.</p>
+ * information how the extension resolves the annotations, check
+ * <a href="https://junit-pioneer.org/docs/disable-parameterized-tests/" target="_top">the documentation.</a></p>
  *
  * @see DisableIfParameterExtension
  */

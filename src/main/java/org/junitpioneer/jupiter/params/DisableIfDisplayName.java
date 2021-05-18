@@ -23,7 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 /**
  * {@code @DisableIfDisplayName} is a JUnit Jupiter extension that can be used to
- * selectively disable {@link ParameterizedTest} based on their
+ * selectively disable a {@link ParameterizedTest} execution based on their
  * {@link ExtensionContext#getDisplayName() display name}.
  *
  * <p>The extension is an {@link ExecutionCondition} that validates dynamically registered tests.

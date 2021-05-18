@@ -7,12 +7,12 @@ These are as follows:
 - DisableIfDisplayName
 - DisableIfParameter
 
-== DisableIfDisplayName
 
+== DisableIfDisplayName
 
 The `@DisableIfDisplayName` annotation can be used to selectively disable parameterized tests based on their display names, which are dynamically registered on runtime.
 The annotation is only supported on test method level for parameterized tests.
-Unlike the `@Disabled` API provided in JUnit Jupiter, which disables the test on first encounter of the annotation , `@DisableIfDisplayName` is validated before each parameterized test execution.
+Unlike the `@Disabled` API provided in JUnit Jupiter, which disables the test on first encounter of the annotation, `@DisableIfDisplayName` is validated before each parameterized test execution.
 As a consequence, instead of disabling the entire set of parameterized tests, each test (name) can be evaluated and possibly disabled individually.
 
 [source,java]
@@ -76,7 +76,9 @@ void single(String reason) {
 }
 ----
 
-Using both `matches` and `contains` in a single annotation is no longer permitted.
+NOTE: Since JUnit Pioneer 1.5.0, using both `matches` and `contains` in a single annotation is no longer permitted.
+The reason is that it's not clear from reading the annotation whether it's *and* or *or* semantics, i.e. whether the display name needs to both match the regex *and* contain the substring to be disabled or whether fulfilling one criterion suffices.
+
 
 == DisableIfParameter
 
@@ -90,13 +92,21 @@ The extension comes with three annotations, covering different use-cases:
 The annotations are only supported on test method level for parameterized tests.
 Unlike the `@Disabled` API provided in JUnit Jupiter, which disables the test on first encounter of the annotation, the extension evaluates each execution of a parameterized test.
 As a consequence, instead of disabling the entire set of parameterized tests, each test is possibly disabled individually.
-All three annotations require that you specify one of two parameters, `contains` *or* `matches`.
+
+All three annotations require that you specify one of two parameters, *either* `contains` *or* `matches`.
 Both properties are case-sensitive.
 `@DisableIfAnyParameter` will disable test executions if *any* argument either contains or matches any of the given strings.
 `@DisableIfAllParameters` will disable test executions if *all* arguments either contain or match any of the given strings.
 `@DisableIfParameter` will disable test executions if a *specified* argument either contains or matches any of the given strings.
 
-=== Using `contains`
+=== `@DisableIfAllParameters` and `@DisableIfAnyParameters`
+
+These two extensions work very similarly.
+Their only difference is whether *at least one* or *all* arguments need to fulfill the criteria before the test gets disabled.
+
+Both annotations accept `contains` or `matches` attributes, where using both attributes in a single annotation is not permitted.
+
+==== Using `contains`
 
 [source,java]
 ----
@@ -109,6 +119,7 @@ Both properties are case-sensitive.
 		"The clock may stop, its hands fall still,;And time be over then for me!"
 }, delimiter = ';')
 void disableAllContains(String line, String line2) {
+	// ...
 }
 ----
 
@@ -126,6 +137,7 @@ Using the same test with a different annotation would look like this:
 		"The clock may stop, its hands fall still,;And time be over then for me!"
 }, delimiter = ';')
 void disableAnyContains(String line, String line2) {
+	// ...
 }
 ----
 
@@ -145,10 +157,36 @@ You can specify more than one substring at a time:
 		"The clock may stop, its hands fall still,;And time be over then for me!"
 }, delimiter = ';')
 void disableAnyContains(String line, String line2) {
+    // [...]
 }
 ----
 
 The extension disables the second, third and fourth executions because an argument contains either "Then" or "then".
+
+==== Using `matches`
+
+If substrings are not powerful enough, you can also use regular expressions, with the `matches` value.
+
+[source,java]
+----
+@DisableIfAllParameters(matches = ".*\\s[a-z]{3}\\s.*")
+@ParameterizedTest
+@CsvSource(value = {
+		"If the swift moment I entreat:;Tarry a while! You are so fair!",
+		"Then forge the shackles to my feet,;Then I will gladly perish there!",
+		"Then let them toll the passing-bell,;Then of your servitude be free,",
+		"The clock may stop, its hands fall still,;And time be over then for me!"
+}, delimiter = ';')
+void interceptMatchesAny(String line, String line2) {
+	// [...]
+}
+----
+
+The extension disables the first and fourth executions because in each case both arguments contain a three-letter word surrounded by a whitespace.
+
+The `matches` attribute works analogous for `@DisableIfAnyParameter`.
+
+=== `@DisableIfParameter`
 
 `@DisableIfParameter` requires you to target a specific parameter.
 You can do this in three ways:
@@ -172,10 +210,11 @@ If naming information is included during compilation, you can target parameters 
 		"Then forge the shackles to my feet,;Then I will gladly perish there!"
 })
 void targetName(String line, String line2) {
+	// [...]
 }
 ----
 
-The test gets executed two times because we explicitly targeted the second parameter, which never contains the word "swift".
+The test gets executed two times because we explicitly targeted `line2`, which never contains the word "swift".
 
 ==== Targeting by `index`
 
@@ -190,6 +229,7 @@ You can target your parameters with their index, starting from 0 (zero).
 		"Then forge the shackles to my feet,;Then I will gladly perish there!"
 })
 void targetIndex(String line, String line2) {
+	// [...]
 }
 ----
 
@@ -199,8 +239,6 @@ Again, the test gets executed two times, because we targeted the second paramete
 
 You can opt to not specify `index` or `name` and use annotation order instead, to specify what parameter to target.
 In this case the first `@DisableIfParameter` targets the first parameter, the second annotation the second parameter, etc.
-This is mainly for convenience when you have a test method with a single parameter.
-Using this method to target parameters when your test has multiple parameters is discouraged.
 
 [source, java]
 ----
@@ -218,9 +256,15 @@ void targetByOrder(String line, String line2) {
 The test gets executed once.
 The second execution is disabled because the second argument contains "gladly".
 
-=== Using `matches`
+This feature is mainly for convenience when you have a test method with a single parameter.
+Using this method to target parameters when your test has multiple parameters is discouraged:
 
-If substrings are not powerful enough, you can also use regular expressions, with the `matches` value.
+* when you have fewer `@DisableIfParameter` annotations than parameters, one needs to know how the annotation works to see which parameters are targeted
+* when removing one of several `@DisableIfParameter` annotations, all annotations after the removed one now target a different parameter
+
+==== Using `matches`
+
+As with the other two annotations, you can also use regular expressions with the `matches` value in `@DisableIfParameter`.
 
 [source,java]
 ----
@@ -247,5 +291,3 @@ Just like with `contains`, if any parameter value matches any expression from `m
 NOTE: While the documentation uses `String` values for demonstration purposes, you can use it to disable tests with other parameter types.
 However, the arguments will be converted to `String` with `Object#toString()` before evaluation.
 Make sure that your parameter types have a meaningful `toString` method.
-
-Using both `matches` and `contains` in a single annotation is not permitted.
