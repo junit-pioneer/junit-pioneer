@@ -27,7 +27,7 @@ import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
 
-class DisableIfParameterExtension implements InvocationInterceptor {
+class DisableIfArgumentExtension implements InvocationInterceptor {
 
 	@Override
 	public void interceptTestTemplateMethod(Invocation<Void> invocation,
@@ -41,14 +41,14 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 
 		// @formatter:off
 		AnnotationSupport
-				.findAnnotation(testMethod, DisableIfAllParameters.class)
+				.findAnnotation(testMethod, DisableIfAllArguments.class)
 				.ifPresent(allParams -> {
 					verifyNonEmptyInputs(allParams);
 					ArgumentChecker.checkAll(arguments).matches(allParams.matches());
 					ArgumentChecker.checkAll(arguments).contains(allParams.contains());
 				});
 		AnnotationSupport
-				.findAnnotation(testMethod, DisableIfAnyParameter.class)
+				.findAnnotation(testMethod, DisableIfAnyArgument.class)
 				.ifPresent(anyParam -> {
 					verifyNonEmptyInputs(anyParam);
 					ArgumentChecker.checkAny(arguments).matches(anyParam.matches());
@@ -56,10 +56,10 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 				});
 		// @formatter:on
 
-		List<DisableIfParameter> annotations = AnnotationSupport
-				.findRepeatableAnnotations(testMethod, DisableIfParameter.class);
+		List<DisableIfArgument> annotations = AnnotationSupport
+				.findRepeatableAnnotations(testMethod, DisableIfArgument.class);
 		for (int i = 0; i < annotations.size(); i++) {
-			DisableIfParameter parameter = annotations.get(i);
+			DisableIfArgument parameter = annotations.get(i);
 			verifyNonEmptyInputs(parameter);
 			Object argument = findArgument(testMethod, arguments, parameter, i);
 			ArgumentChecker.check(argument).matches(parameter.matches());
@@ -70,29 +70,29 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 	}
 
 	private static void checkRequiredAnnotations(Method testMethod) {
-		if (!AnnotationSupport.findAnnotation(testMethod, DisableIfAnyParameter.class).isPresent()
-				&& !AnnotationSupport.findAnnotation(testMethod, DisableIfAllParameters.class).isPresent()
-				&& AnnotationSupport.findRepeatableAnnotations(testMethod, DisableIfParameter.class).isEmpty()) {
+		if (!AnnotationSupport.findAnnotation(testMethod, DisableIfAnyArgument.class).isPresent()
+				&& !AnnotationSupport.findAnnotation(testMethod, DisableIfAllArguments.class).isPresent()
+				&& AnnotationSupport.findRepeatableAnnotations(testMethod, DisableIfArgument.class).isEmpty()) {
 			throw new ExtensionConfigurationException(
-				"Required at least one of the following: @DisableIfParameter, @DisableIfAllParameter, @DisableIfAnyParameter but found none.");
+				"Required at least one of the following: @DisableIfArgument, @DisableIfAllArguments, @DisableIfAnyArgument but found none.");
 		}
 	}
 
-	private static DisableIfAllParameters verifyNonEmptyInputs(DisableIfAllParameters annotation) {
+	private static DisableIfAllArguments verifyNonEmptyInputs(DisableIfAllArguments annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
-			throw invalidInputs(DisableIfAllParameters.class);
+			throw invalidInputs(DisableIfAllArguments.class);
 		return annotation;
 	}
 
-	private static DisableIfAnyParameter verifyNonEmptyInputs(DisableIfAnyParameter annotation) {
+	private static DisableIfAnyArgument verifyNonEmptyInputs(DisableIfAnyArgument annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
-			throw invalidInputs(DisableIfAnyParameter.class);
+			throw invalidInputs(DisableIfAnyArgument.class);
 		return annotation;
 	}
 
-	private static DisableIfParameter verifyNonEmptyInputs(DisableIfParameter annotation) {
+	private static DisableIfArgument verifyNonEmptyInputs(DisableIfArgument annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
-			throw invalidInputs(DisableIfParameter.class);
+			throw invalidInputs(DisableIfArgument.class);
 		return annotation;
 	}
 
@@ -101,10 +101,10 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 			format("%s requires that either `contains` or `matches` is set.", annotationClass.getSimpleName()));
 	}
 
-	private Object findArgument(Method testMethod, List<Object> arguments, DisableIfParameter annotation, int index) {
+	private Object findArgument(Method testMethod, List<Object> arguments, DisableIfArgument annotation, int index) {
 		if (!annotation.name().isEmpty() && annotation.index() > -1)
 			throw new ExtensionConfigurationException(
-				"Using both name and index parameter targeting in a single @DisableIfParameter is not permitted.");
+				"Using both name and index parameter targeting in a single @DisableIfArgument is not permitted.");
 
 		if (!annotation.name().isEmpty()) {
 			// get argument by name only works if information is present

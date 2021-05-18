@@ -19,33 +19,32 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @DisableIfParameter} is a JUnit Jupiter extension that selectively
- * disables a {@link org.junit.jupiter.params.ParameterizedTest} execution
- * if the specified parameter's value (as defined by {@link Object#toString()})
- * satisfies the specified condition.
+ * {@code @DisableIfArgument} is a JUnit Jupiter extension that selectively disables a
+ * {@link org.junit.jupiter.params.ParameterizedTest} execution if the specified
+ * argument (as defined by {@link Object#toString()}) satisfies the specified condition.
  *
  * <p>The extension uses Jupiter's {@link org.junit.jupiter.api.extension.InvocationInterceptor}.
  * It's important to note that since it's marked as {@link org.apiguardian.api.API.Status#EXPERIMENTAL}
  * it might be removed without prior notice.
  * Unlike {@link org.junit.jupiter.api.Disabled} annotations, this extension doesn't disable the whole test method.
- * With {@code DisableIfParameter}, it is possible to selectively disable tests out of the plethora
+ * With {@code DisableIfArgument}, it is possible to selectively disable tests out of the plethora
  * of dynamically registered parameterized tests.</p>
  *
- * <p>The extension requires that exactly one of {@link DisableIfParameter#contains() contains} or
- * {@link DisableIfParameter#matches() matches} is configured.</p>
+ * <p>The extension requires that exactly one of {@link DisableIfArgument#contains() contains} or
+ * {@link DisableIfArgument#matches() matches} is configured.</p>
  *
- * <p>This annotation is for disabling a test based on a single parameter which can be designated with an
+ * <p>This annotation is for disabling a test based on a single argument which can be designated with an
  * implicit index, an explicit index or by name (if parameter name information is present). For more
  * information how the extension resolves the annotations, check
  * <a href="https://junit-pioneer.org/docs/disable-parameterized-tests/" target="_top">the documentation.</a></p>
  *
- * @see DisableIfParameterExtension
+ * @see DisableIfArgumentExtension
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(DisableIfParameter.DisableIfParameters.class)
-@ExtendWith(DisableIfParameterExtension.class)
-public @interface DisableIfParameter {
+@Repeatable(DisableIfArgument.DisableIfArguments.class)
+@ExtendWith(DisableIfArgumentExtension.class)
+public @interface DisableIfArgument {
 
 	/**
 	 * The name of the parameter the extension checks.
@@ -62,22 +61,22 @@ public @interface DisableIfParameter {
 	int index() default -1;
 
 	/**
-	 * Disable test cases whose parameter (converted to String with {@link Object#toString()})
+	 * Disable test cases whose argument (converted to String with {@link Object#toString()})
 	 * contains any of the the specified strings (according to {@link String#contains(CharSequence)}).
 	 */
 	String[] contains() default {};
 
 	/**
-	 * Disable test cases whose parameter (converted to String with {@link Object#toString()})
+	 * Disable test cases whose argument (converted to String with {@link Object#toString()})
 	 * matches any of the specified regular expressions (according to {@link String#matches(String)}).
 	 */
 	String[] matches() default {};
 
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
-	@interface DisableIfParameters {
+	@interface DisableIfArguments {
 
-		DisableIfParameter[] value();
+		DisableIfArgument[] value();
 
 	}
 

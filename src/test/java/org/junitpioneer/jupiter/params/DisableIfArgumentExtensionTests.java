@@ -30,8 +30,8 @@ import org.junitpioneer.testkit.PioneerTestKit;
 /**
  * Oscar Wilde: Requiescat is in the public domain
  */
-@DisplayName("DisableIfParameterExtension")
-class DisableIfParameterExtensionTests {
+@DisplayName("DisableIfArgumentExtension")
+class DisableIfArgumentExtensionTests {
 
 	@Nested
 	@DisplayName("when configured correctly")
@@ -122,7 +122,7 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@Test
-		@DisplayName("throws an exception if DisableIfParameter index is too large")
+		@DisplayName("throws an exception if DisableIfArgument index is too large")
 		void overindex() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "overindexed", String.class);
@@ -134,7 +134,7 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@Test
-		@DisplayName("throws an exception if both index and name is set on DisableIfParameter")
+		@DisplayName("throws an exception if both index and name is set on DisableIfArgument")
 		void multipleTargets() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "multipleTargets", String.class);
@@ -143,7 +143,7 @@ class DisableIfParameterExtensionTests {
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining(
-						"Using both name and index parameter targeting in a single @DisableIfParameter is not permitted.");
+						"Using both name and index parameter targeting in a single @DisableIfArgument is not permitted.");
 		}
 
 		@Test
@@ -158,7 +158,7 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@Test
-		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfParameter")
+		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfArgument")
 		void missingValues() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingInputs", String.class);
@@ -166,11 +166,11 @@ class DisableIfParameterExtensionTests {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
-					.allMatch(("DisableIfParameter requires that either `contains` or `matches` is set.")::equals);
+					.allMatch(("DisableIfArgument requires that either `contains` or `matches` is set.")::equals);
 		}
 
 		@Test
-		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfAnyParameter")
+		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfAnyArgument")
 		void missingValuesAny() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingInputsAny", String.class);
@@ -178,11 +178,11 @@ class DisableIfParameterExtensionTests {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
-					.allMatch(("DisableIfAnyParameter requires that either `contains` or `matches` is set.")::equals);
+					.allMatch(("DisableIfAnyArgument requires that either `contains` or `matches` is set.")::equals);
 		}
 
 		@Test
-		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfAllParameters")
+		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfAllArguments")
 		void missingValuesAll() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingInputsAll", String.class);
@@ -190,11 +190,11 @@ class DisableIfParameterExtensionTests {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
-					.allMatch(("DisableIfAllParameters requires that either `contains` or `matches` is set.")::equals);
+					.allMatch(("DisableIfAllArguments requires that either `contains` or `matches` is set.")::equals);
 		}
 
 		@Test
-		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfParameter")
+		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfArgument")
 		void bothValuesSet() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "setBothParams", String.class);
@@ -202,11 +202,11 @@ class DisableIfParameterExtensionTests {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
-					.allMatch(("DisableIfParameter requires that either `contains` or `matches` is set.")::equals);
+					.allMatch(("DisableIfArgument requires that either `contains` or `matches` is set.")::equals);
 		}
 
 		@Test
-		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfAnyParameter")
+		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfAnyArgument")
 		void bothValuesSetAny() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "setBothParamsAny", String.class);
@@ -214,11 +214,11 @@ class DisableIfParameterExtensionTests {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
-					.allMatch(("DisableIfAnyParameter requires that either `contains` or `matches` is set.")::equals);
+					.allMatch(("DisableIfAnyArgument requires that either `contains` or `matches` is set.")::equals);
 		}
 
 		@Test
-		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfAllParameters")
+		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfAllArguments")
 		void bothValuesSetAll() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "setBothParamsAll", String.class);
@@ -226,11 +226,11 @@ class DisableIfParameterExtensionTests {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
-					.allMatch(("DisableIfAllParameters requires that either `contains` or `matches` is set.")::equals);
+					.allMatch(("DisableIfAllArguments requires that either `contains` or `matches` is set.")::equals);
 		}
 
 		@Test
-		@DisplayName("throws an exception if it can not find the parameter based on the given name for DisableIfParameter")
+		@DisplayName("throws an exception if it can not find the parameter based on the given name for DisableIfArgument")
 		void missingParameter() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "badlyNamedParam", String.class);
@@ -251,7 +251,7 @@ class DisableIfParameterExtensionTests {
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining(
-						"Required at least one of the following: @DisableIfParameter, @DisableIfAllParameter, @DisableIfAnyParameter but found none.");
+						"Required at least one of the following: @DisableIfArgument, @DisableIfAllArguments, @DisableIfAnyArgument but found none.");
 		}
 
 	}
@@ -259,7 +259,7 @@ class DisableIfParameterExtensionTests {
 	static class CorrectConfigTestCases {
 
 		@ParameterizedTest
-		@DisableIfParameter(contains = "She")
+		@DisableIfArgument(contains = "She")
 		@MethodSource("requiescat")
 		void interceptContainsImplicitIndex(String line, String line2) {
 			// implicit index - disable if first parameter contains "She"
@@ -267,7 +267,7 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(index = 1, contains = "her")
+		@DisableIfArgument(index = 1, contains = "her")
 		@MethodSource("requiescat")
 		void interceptContainsExplicitIndex(String line, String line2) {
 			// explicit index - disable if second parameter contains "her"
@@ -275,7 +275,7 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@ParameterizedTest
-		@DisableIfAnyParameter(contains = { "She" })
+		@DisableIfAnyArgument(contains = { "She" })
 		@MethodSource("requiescat")
 		void interceptContainsAny(String line, String line2) {
 			assertThat(line).doesNotContain("She");
@@ -283,13 +283,13 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@ParameterizedTest
-		@DisableIfAllParameters(contains = { "She", "she" })
+		@DisableIfAllArguments(contains = { "She", "she" })
 		@MethodSource("requiescat")
 		void interceptContainsAll(String line, String line2) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(matches = { ".*[tr].?" })
+		@DisableIfArgument(matches = { ".*[tr].?" })
 		@MethodSource("requiescat")
 		void interceptMatches(String line, String line2) {
 			assertThat(line).doesNotMatch(".*[tr].?");
@@ -297,7 +297,7 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@ParameterizedTest
-		@DisableIfAnyParameter(matches = ".*here?.*")
+		@DisableIfAnyArgument(matches = ".*here?.*")
 		@MethodSource("requiescat")
 		void interceptMatchesAny(String line, String line2) {
 			assertThat(line).doesNotContainPattern("here?");
@@ -305,7 +305,7 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@ParameterizedTest
-		@DisableIfAllParameters(matches = ".*[Ss]he.*")
+		@DisableIfAllArguments(matches = ".*[Ss]he.*")
 		@MethodSource("requiescat")
 		void interceptMatchesAll(String line, String line2) {
 			assertThat(line).doesNotContainPattern(".*[Ss]he.*");
@@ -313,8 +313,8 @@ class DisableIfParameterExtensionTests {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(index = 1, contains = "she")
-		@DisableIfParameter(index = 0, contains = "her")
+		@DisableIfArgument(index = 1, contains = "she")
+		@DisableIfArgument(index = 0, contains = "her")
 		@MethodSource("requiescat")
 		void indexedIntercept(String line, String line2) {
 			assertThat(line).doesNotContain("her");
@@ -340,84 +340,84 @@ class DisableIfParameterExtensionTests {
 	static class BadConfigTestCases {
 
 		@Test
-		@DisableIfAnyParameter(contains = "A")
+		@DisableIfAnyArgument(contains = "A")
 		void simpleTest() {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(index = 3, contains = "overindexed")
+		@DisableIfArgument(index = 3, contains = "overindexed")
 		@ValueSource(strings = { "a", "b" })
 		void overindexed(String s) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(index = 0, name = "s", contains = "value")
+		@DisableIfArgument(index = 0, name = "s", contains = "value")
 		@ValueSource(strings = { "value" })
 		void multipleTargets(String s) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(index = 0, contains = "aaa")
+		@DisableIfArgument(index = 0, contains = "aaa")
 		@ValueSource(strings = { "aaa" })
 		void noParameters() {
 		}
 
 		@ParameterizedTest
-		@DisableIfAnyParameter(contains = "a")
+		@DisableIfAnyArgument(contains = "a")
 		@ValueSource(strings = { "aaa" })
 		void noParametersAny() {
 		}
 
 		@ParameterizedTest
-		@DisableIfAllParameters(contains = "a")
+		@DisableIfAllArguments(contains = "a")
 		@ValueSource(strings = { "aaa" })
 		void noParametersAll() {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter
+		@DisableIfArgument
 		@ValueSource(strings = { "A", "B", "C" })
 		void missingInputs(String value) {
 		}
 
 		@ParameterizedTest
-		@DisableIfAnyParameter
+		@DisableIfAnyArgument
 		@ValueSource(strings = { "A", "B", "C" })
 		void missingInputsAny(String value) {
 		}
 
 		@ParameterizedTest
-		@DisableIfAllParameters
+		@DisableIfAllArguments
 		@ValueSource(strings = { "A", "B", "C" })
 		void missingInputsAll(String value) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(name = "param", contains = { "A" })
+		@DisableIfArgument(name = "param", contains = { "A" })
 		@ValueSource(strings = { "A", "B", "C" })
 		void badlyNamedParam(String value) {
 		}
 
 		@ParameterizedTest
-		@DisableIfParameter(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
+		@DisableIfArgument(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
 		@ValueSource(strings = { "A", "B", "C" })
 		void setBothParams(String value) {
 		}
 
 		@ParameterizedTest
-		@DisableIfAnyParameter(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
+		@DisableIfAnyArgument(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
 		@ValueSource(strings = { "A", "B", "C" })
 		void setBothParamsAny(String value) {
 		}
 
 		@ParameterizedTest
-		@DisableIfAllParameters(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
+		@DisableIfAllArguments(contains = { "sonnet", "life" }, matches = "^.*(Peace, )\\1.*$")
 		@ValueSource(strings = { "A", "B", "C" })
 		void setBothParamsAll(String value) {
 		}
 
 		@ParameterizedTest
-		@ExtendWith(DisableIfParameterExtension.class)
+		@ExtendWith(DisableIfArgumentExtension.class)
 		@ValueSource(strings = { "a" })
 		void forced(String s) {
 		}

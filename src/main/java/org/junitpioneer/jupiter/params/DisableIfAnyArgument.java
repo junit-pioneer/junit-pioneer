@@ -18,40 +18,39 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @DisableIfAllParameters} is a JUnit Jupiter extension that selectively
- * disables a {@link org.junit.jupiter.params.ParameterizedTest} execution
- * if all parameters' values (as defined by {@link Object#toString()})
- * satisfy the specified condition.
+ * {@code @DisableIfAnyArgument} is a JUnit Jupiter extension that selectively disables
+ * a {@link org.junit.jupiter.params.ParameterizedTest} execution if at least one
+ * argument (as defined by {@link Object#toString()}) satisfies the specified condition.
  *
  * <p>The extension uses Jupiter's {@link org.junit.jupiter.api.extension.InvocationInterceptor}.
  * It's important to note that since it's marked as {@link org.apiguardian.api.API.Status#EXPERIMENTAL}
  * it might be removed without prior notice.
  * Unlike {@link org.junit.jupiter.api.Disabled} annotations, this extension doesn't disable the whole test method.
- * With {@code DisableIfAllParameters}, it is possible to selectively disable tests out of the plethora
+ * With {@code DisableIfAnyArgument}, it is possible to selectively disable tests out of the plethora
  * of dynamically registered parameterized tests.</p>
  *
- * <p>The extension requires that exactly one of {@link DisableIfAllParameters#contains() contains} or
- * {@link DisableIfAllParameters#matches() matches} is configured.</p>
+ * <p>The extension requires that exactly one of {@link DisableIfAnyArgument#contains() contains} or
+ * {@link DisableIfAnyArgument#matches() matches} is configured.</p>
  *
  * <p>For more information how the extension resolves the annotations, check
  * <a href="https://junit-pioneer.org/docs/disable-parameterized-tests/" target="_top">the documentation.</a></p>
  *
- * @see DisableIfParameterExtension
+ * @see DisableIfArgumentExtension
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(DisableIfParameterExtension.class)
-public @interface DisableIfAllParameters {
+@ExtendWith(DisableIfArgumentExtension.class)
+public @interface DisableIfAnyArgument {
 
 	/**
-	 * Disable test cases if all parameters (converted to String with {@link Object#toString()})
-	 * contain any of the the specified strings (according to {@link String#contains(CharSequence)}).
+	 * Disable test cases if any argument (converted to String with {@link Object#toString()})
+	 * contains any of the the specified strings (according to {@link String#contains(CharSequence)}).
 	 */
 	String[] contains() default {};
 
 	/**
-	 * Disable test cases if all parameters (converted to String with {@link Object#toString()})
-	 * match any of the specified regular expressions (according to {@link String#matches(String)}).
+	 * Disable test cases if any argument (converted to String with {@link Object#toString()})
+	 * matches any of the specified regular expressions (according to {@link String#matches(String)}).
 	 */
 	String[] matches() default {};
 
