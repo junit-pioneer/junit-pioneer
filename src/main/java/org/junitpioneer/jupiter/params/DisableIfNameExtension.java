@@ -55,19 +55,8 @@ public class DisableIfNameExtension implements ExecutionCondition {
 
 		if (checkSubstrings)
 			return disableIfContains(displayName, substrings);
-		return disableIfMatches(displayName, regExps);
-	}
-
-	private ConditionEvaluationResult disableIfMatches(String displayName, String[] regExps) {
-		//@formatter:off
-		String matches = Stream
-				.of(regExps)
-				.filter(displayName::matches)
-				.collect(Collectors.joining("', '"));
-		return matches.isEmpty()
-				? enabled(reason(displayName, "doesn't match any regular expression."))
-				: disabled(reason(displayName, format("matches '%s'.",matches)));
-		//@formatter:on
+		else
+			return disableIfMatches(displayName, regExps);
 	}
 
 	private ConditionEvaluationResult disableIfContains(String displayName, String[] substrings) {
@@ -79,6 +68,18 @@ public class DisableIfNameExtension implements ExecutionCondition {
 		return matches.isEmpty()
 				? enabled(reason(displayName, "doesn't contain any substring."))
 				: disabled(reason(displayName, format("contains '%s'.", matches)));
+		//@formatter:on
+	}
+
+	private ConditionEvaluationResult disableIfMatches(String displayName, String[] regExps) {
+		//@formatter:off
+		String matches = Stream
+				.of(regExps)
+				.filter(displayName::matches)
+				.collect(Collectors.joining("', '"));
+		return matches.isEmpty()
+				? enabled(reason(displayName, "doesn't match any regular expression."))
+				: disabled(reason(displayName, format("matches '%s'.",matches)));
 		//@formatter:on
 	}
 

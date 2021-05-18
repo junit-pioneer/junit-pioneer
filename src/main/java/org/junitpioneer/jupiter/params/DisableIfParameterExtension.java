@@ -39,16 +39,23 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 				format("Can't disable based on arguments, because method %s had no parameters.", testMethod.getName()));
 		checkRequiredAnnotations(testMethod);
 
-		AnnotationSupport.findAnnotation(testMethod, DisableIfAllParameters.class).ifPresent(allParams -> {
-			verifyNonEmptyInputs(allParams);
-			ArgumentChecker.checkAll(arguments).matches(allParams.matches());
-			ArgumentChecker.checkAll(arguments).contains(allParams.contains());
-		});
-		AnnotationSupport.findAnnotation(testMethod, DisableIfAnyParameter.class).ifPresent(anyParam -> {
-			verifyNonEmptyInputs(anyParam);
-			ArgumentChecker.checkAny(arguments).matches(anyParam.matches());
-			ArgumentChecker.checkAny(arguments).contains(anyParam.contains());
-		});
+		// @formatter:off
+		AnnotationSupport
+				.findAnnotation(testMethod, DisableIfAllParameters.class)
+				.ifPresent(allParams -> {
+					verifyNonEmptyInputs(allParams);
+					ArgumentChecker.checkAll(arguments).matches(allParams.matches());
+					ArgumentChecker.checkAll(arguments).contains(allParams.contains());
+				});
+		AnnotationSupport
+				.findAnnotation(testMethod, DisableIfAnyParameter.class)
+				.ifPresent(anyParam -> {
+					verifyNonEmptyInputs(anyParam);
+					ArgumentChecker.checkAny(arguments).matches(anyParam.matches());
+					ArgumentChecker.checkAny(arguments).contains(anyParam.contains());
+				});
+		// @formatter:on
+
 		List<DisableIfParameter> annotations = AnnotationSupport
 				.findRepeatableAnnotations(testMethod, DisableIfParameter.class);
 		for (int i = 0; i < annotations.size(); i++) {
@@ -58,7 +65,40 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 			ArgumentChecker.check(argument).matches(parameter.matches());
 			ArgumentChecker.check(argument).contains(parameter.contains());
 		}
+
 		invocation.proceed();
+	}
+
+	private static void checkRequiredAnnotations(Method testMethod) {
+		if (!AnnotationSupport.findAnnotation(testMethod, DisableIfAnyParameter.class).isPresent()
+				&& !AnnotationSupport.findAnnotation(testMethod, DisableIfAllParameters.class).isPresent()
+				&& AnnotationSupport.findRepeatableAnnotations(testMethod, DisableIfParameter.class).isEmpty()) {
+			throw new ExtensionConfigurationException(
+				"Required at least one of the following: @DisableIfParameter, @DisableIfAllParameter, @DisableIfAnyParameter but found none.");
+		}
+	}
+
+	private static DisableIfAllParameters verifyNonEmptyInputs(DisableIfAllParameters annotation) {
+		if (annotation.contains().length > 0 == annotation.matches().length > 0)
+			throw invalidInputs(DisableIfAllParameters.class);
+		return annotation;
+	}
+
+	private static DisableIfAnyParameter verifyNonEmptyInputs(DisableIfAnyParameter annotation) {
+		if (annotation.contains().length > 0 == annotation.matches().length > 0)
+			throw invalidInputs(DisableIfAnyParameter.class);
+		return annotation;
+	}
+
+	private static DisableIfParameter verifyNonEmptyInputs(DisableIfParameter annotation) {
+		if (annotation.contains().length > 0 == annotation.matches().length > 0)
+			throw invalidInputs(DisableIfParameter.class);
+		return annotation;
+	}
+
+	private static RuntimeException invalidInputs(Class<?> annotationClass) {
+		return new ExtensionConfigurationException(
+			format("%s requires that either `contains` or `matches` is set.", annotationClass.getSimpleName()));
 	}
 
 	private Object findArgument(Method testMethod, List<Object> arguments, DisableIfParameter annotation, int index) {
@@ -103,35 +143,6 @@ class DisableIfParameterExtension implements InvocationInterceptor {
 		if (index > arguments.size())
 			throw new ExtensionConfigurationException(
 				format("Annotation has invalid index [%s], should be less than %s", index, arguments.size()));
-	}
-
-	private static void checkRequiredAnnotations(Method testMethod) {
-		if (!AnnotationSupport.findAnnotation(testMethod, DisableIfAnyParameter.class).isPresent()
-				&& !AnnotationSupport.findAnnotation(testMethod, DisableIfAllParameters.class).isPresent()
-				&& AnnotationSupport.findRepeatableAnnotations(testMethod, DisableIfParameter.class).isEmpty()) {
-			throw new ExtensionConfigurationException(
-				"Required at least one of the following: @DisableIfParameter, @DisableIfAllParameter, @DisableIfAnyParameter but found none.");
-		}
-	}
-
-	private static void verifyNonEmptyInputs(DisableIfParameter annotation) {
-		if (annotation.contains().length > 0 == annotation.matches().length > 0)
-			throw invalidInputs(DisableIfParameter.class);
-	}
-
-	private static void verifyNonEmptyInputs(DisableIfAnyParameter annotation) {
-		if (annotation.contains().length > 0 == annotation.matches().length > 0)
-			throw invalidInputs(DisableIfAnyParameter.class);
-	}
-
-	private static void verifyNonEmptyInputs(DisableIfAllParameters annotation) {
-		if (annotation.contains().length > 0 == annotation.matches().length > 0)
-			throw invalidInputs(DisableIfAllParameters.class);
-	}
-
-	private static RuntimeException invalidInputs(Class<?> annotationClass) {
-		return new ExtensionConfigurationException(
-			format("%s requires that either `contains` or `matches` is set.", annotationClass.getSimpleName()));
 	}
 
 	private static class ArgumentChecker {
