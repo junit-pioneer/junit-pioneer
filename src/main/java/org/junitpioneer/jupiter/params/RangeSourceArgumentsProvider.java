@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -20,10 +21,9 @@ import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
-import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
+import org.junitpioneer.jupiter.CartesianArgumentsProvider;
 
 /**
  * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.
@@ -42,7 +42,7 @@ import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
-class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation> {
+class RangeSourceArgumentsProvider implements CartesianArgumentsProvider {
 
 	private Annotation argumentsSource;
 
@@ -50,7 +50,8 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnota
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
 		// argumentSource is present if fed through the CartesianAnnotationConsumer interface
 		if (argumentsSource == null)
-			initArgumentsSource(context);
+			// since it's a method annotation, the element will always be present
+			initArgumentsSource(context.getRequiredTestMethod());
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
 
@@ -59,11 +60,7 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnota
 		return asStream(range).map(Arguments::of);
 	}
 
-	private void initArgumentsSource(ExtensionContext context) {
-		// since it's a method annotation, the element will always be present
-		AnnotatedElement element = context.getRequiredTestMethod();
-
-		verifyNoContainerAnnotationIsPresent(element);
+	private void initArgumentsSource(AnnotatedElement element) {
 		List<Annotation> argumentsSources = PioneerAnnotationUtils
 				.findAnnotatedAnnotations(element, ArgumentsSource.class);
 
@@ -77,19 +74,13 @@ class RangeSourceArgumentsProvider implements ArgumentsProvider, CartesianAnnota
 		argumentsSource = argumentsSources.get(0);
 	}
 
-	private void verifyNoContainerAnnotationIsPresent(AnnotatedElement element) {
-		if (Stream.of(element.getAnnotations()).anyMatch(PioneerAnnotationUtils::isContainerAnnotation))
-			throw new IllegalArgumentException(
-				"Range source annotation should not be repeated for @ParameterizedTest. @ParameterizedTest should have exactly one argument source.");
-	}
-
 	private Stream<?> asStream(Range<?> r) {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(r, Spliterator.ORDERED), false);
 	}
 
 	@Override
-	public void accept(Annotation argumentsSource) {
-		this.argumentsSource = argumentsSource;
+	public void accept(Parameter parameter) {
+		initArgumentsSource(parameter);
 	}
 
 }

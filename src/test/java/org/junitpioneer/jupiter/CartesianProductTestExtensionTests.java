@@ -26,14 +26,12 @@ import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.CartesianEnumSource.Mode;
 import org.junitpioneer.jupiter.params.ByteRangeSource;
 import org.junitpioneer.jupiter.params.DoubleRangeSource;
 import org.junitpioneer.jupiter.params.FloatRangeSource;
 import org.junitpioneer.jupiter.params.IntRangeSource;
-import org.junitpioneer.jupiter.params.IntRangeSource.IntRangeSources;
 import org.junitpioneer.jupiter.params.LongRangeSource;
 import org.junitpioneer.jupiter.params.ShortRangeSource;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -286,17 +284,6 @@ public class CartesianProductTestExtensionTests {
 			assertThat(results)
 					.hasNumberOfReportEntries(8)
 					.withValues("1,2", "1,4", "2,2", "2,4", "3,2", "3,4", "4,2", "4,4");
-		}
-
-		@Test
-		@DisplayName("works with @IntRangeSource if it is in a container annotation")
-		void intRangeSourceInContainer() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "containerIntSource",
-						int.class, int.class);
-
-			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
-			assertThat(results).hasNumberOfReportEntries(6).withValues("12", "13", "22", "23", "32", "33");
 		}
 
 		@Test
@@ -675,22 +662,6 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("there is no parameter with @CartesianEnumSource and omitted type")
-		void missingParameterWithCartesianEnumSourceOmittedType() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class,
-						"missingParameterWithOmittedType");
-
-			assertThat(results)
-					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageContaining("Could not provide arguments")
-					.getCause()
-					.isInstanceOf(PreconditionViolationException.class)
-					.hasMessageContaining("Test method must declare at least one parameter");
-		}
-
-		@Test
 		@DisplayName("there is no Enum parameter with @CartesianEnumSource and omitted type")
 		void nonEnumParameterWithCartesianEnumSourceOmittedType() {
 			ExecutionResults results = PioneerTestKit
@@ -878,20 +849,6 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("annotated with @ValueSource")
-		void valueSource() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ArgumentsSourceTestCases.class, "valueSource", int.class,
-						int.class);
-
-			assertThat(results)
-					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageContaining("Could not provide arguments")
-					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
-		}
-
-		@Test
 		@DisplayName("ParameterizedTest does not work with @CartesianValueSource")
 		void parameterizedWithCartesianValues() {
 			ExecutionResults results = PioneerTestKit
@@ -902,7 +859,8 @@ public class CartesianProductTestExtensionTests {
 					.hasSingleFailedContainer()
 					// CartesianValueArgumentsProvider does not get initialized because it does not implement AnnotationConsumer
 					.withExceptionInstanceOf(PreconditionViolationException.class)
-					.hasMessageContaining("argument array must not be null");
+					.hasMessageContaining(
+						"You must configure at least one set of arguments for this @ParameterizedTest");
 		}
 
 		@Test
@@ -978,9 +936,8 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
-		@CartesianValueSource(ints = { 1, 2 })
 		@ReportEntry("{0}")
-		void abstractParam(Number number) {
+		void abstractParam(@CartesianValueSource(ints = { 1, 2 }) Number number) {
 			assertThat(number).isIn(1, 2);
 		}
 
@@ -1110,15 +1067,13 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest(value = { "0", "1" })
-		@CartesianValueSource(strings = { "0", "1" })
-		@CartesianValueSource(strings = { "0", "1" })
-		void conflictValueAndValueSource(String a, String b) {
+		void conflictValueAndValueSource(@CartesianValueSource(strings = { "0", "1" }) String a,
+				@CartesianValueSource(strings = { "0", "1" }) String b) {
 		}
 
 		@CartesianProductTest(factory = "getParams")
-		@CartesianValueSource(ints = { 0, 1 })
-		@CartesianValueSource(strings = { "0", "1" })
-		void conflictValueSourceAndFactory(int a, String b) {
+		void conflictValueSourceAndFactory(@CartesianValueSource(ints = { 0, 1 }) int a,
+				@CartesianValueSource(strings = { "0", "1" }) String b) {
 		}
 
 		@CartesianProductTest(factory = "org.bad.class#noFactory")
@@ -1134,45 +1089,43 @@ public class CartesianProductTestExtensionTests {
 	static class CartesianValueSourceTestCases {
 
 		@CartesianProductTest
-		@CartesianValueSource(strings = { "Two roads diverged in a yellow wood,", "And sorry I could not travel both",
-				"And be one traveler, long I stood" })
-		@CartesianValueSource(strings = { "And looked down one as far as I could",
-				"To where it bent in the undergrowth;" })
 		@ReportEntry("{0} - {1}")
-		void poeticValues(String line, String endLine) {
+		void poeticValues(
+				@CartesianValueSource(strings = { "Two roads diverged in a yellow wood,",
+						"And sorry I could not travel both", "And be one traveler, long I stood" }) String line,
+				@CartesianValueSource(strings = { "And looked down one as far as I could",
+						"To where it bent in the undergrowth;" }) String endLine) {
 			assertThat(line).startsWith("And");
 		}
 
 		@CartesianProductTest
-		@CartesianValueSource(strings = { "Then took the other, as just as fair,",
-				"And having perhaps the better claim", "Because it was grassy and wanted wear,",
-				"Though as for that the passing there", "Had worn them really about the same," })
 		@ReportEntry("{0}")
-		void injected(String poemLine, TestReporter reporter) {
+		void injected(@CartesianValueSource(strings = { "Then took the other, as just as fair,",
+				"And having perhaps the better claim", "Because it was grassy and wanted wear,",
+				"Though as for that the passing there", "Had worn them really about the same," }) String poemLine,
+				TestReporter reporter) {
 		}
 
 		@CartesianProductTest
-		@CartesianValueSource(ints = { 1 })
-		void missing(int i, int j) {
+		void missing(@CartesianValueSource(ints = { 1 }) int i, int j) {
 		}
 
 		@CartesianProductTest
-		@CartesianValueSource(strings = { "And both that morning equally lay", "In leaves no step had trodden black." })
-		void wrongType(float f) {
+		void wrongType(@CartesianValueSource(strings = { "And both that morning equally lay",
+				"In leaves no step had trodden black." }) float f) {
 		}
 
 		@CartesianProductTest
-		@CartesianValueSource(strings = { "Oh, I marked the first for another day!",
-				"Yet knowing how way leads on to way", "I doubted if I should ever come back." }, ints = { 1, 3, 5 })
-		void badMultiple(String line, int number) {
+		void badMultiple(@CartesianValueSource(strings = { "Oh, I marked the first for another day!",
+				"Yet knowing how way leads on to way",
+				"I doubted if I should ever come back." }, ints = { 1, 3, 5 }) String line, int number) {
 		}
 
 		@CartesianProductTest
-		@CartesianValueSource(ints = { 1, 2 })
-		@CartesianValueSource(strings = { "I shall be telling this with a sigh", "Somewhere ages and ages hence:",
-				"Two roads diverged in a wood, and I,", "I took the one less traveled by,",
-				"And that has made all the difference." })
-		void wrongOrder(String line, int number) {
+		void wrongOrder(@CartesianValueSource(ints = { 1, 2 }) String line,
+				@CartesianValueSource(strings = { "I shall be telling this with a sigh",
+						"Somewhere ages and ages hence:", "Two roads diverged in a wood, and I,",
+						"I took the one less traveled by,", "And that has made all the difference." }) int number) {
 		}
 
 	}
@@ -1180,134 +1133,119 @@ public class CartesianProductTestExtensionTests {
 	static class CartesianEnumSourceTestCases {
 
 		@CartesianProductTest
-		@CartesianEnumSource(TestEnum.class)
-		@CartesianEnumSource(AnotherTestEnum.class)
 		@ReportEntry("{0} - {1}")
-		void allValues(TestEnum e1, AnotherTestEnum e2) {
+		void allValues(@CartesianEnumSource(TestEnum.class) TestEnum e1,
+				@CartesianEnumSource(AnotherTestEnum.class) AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource
 		@ReportEntry("{0}")
-		void allValuesWithSingleOmittedType(TestEnum e) {
+		void allValuesWithSingleOmittedType(@CartesianEnumSource TestEnum e) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource
-		@CartesianEnumSource
 		@ReportEntry("{0} - {1}")
-		void allValuesWithMultipleOmittedTypes(TestEnum e1, AnotherTestEnum e2) {
+		void allValuesWithMultipleOmittedTypes(@CartesianEnumSource TestEnum e1,
+				@CartesianEnumSource AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" }, mode = Mode.INCLUDE)
-		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "BETA", "GAMMA" }, mode = Mode.EXCLUDE)
 		@ReportEntry("{0} - {1}")
-		void someValues(TestEnum e1, AnotherTestEnum e2) {
+		void someValues(
+				@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" }, mode = Mode.INCLUDE) TestEnum e1,
+				@CartesianEnumSource(value = AnotherTestEnum.class, names = { "BETA",
+						"GAMMA" }, mode = Mode.EXCLUDE) AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "ONE", "TWO" }, mode = Mode.INCLUDE)
-		@CartesianEnumSource(names = { "BETA", "GAMMA" }, mode = Mode.EXCLUDE)
 		@ReportEntry("{0} - {1}")
-		void someValuesWithOmittedTypes(TestEnum e1, AnotherTestEnum e2) {
+		void someValuesWithOmittedTypes(@CartesianEnumSource(names = { "ONE", "TWO" }, mode = Mode.INCLUDE) TestEnum e1,
+				@CartesianEnumSource(names = { "BETA", "GAMMA" }, mode = Mode.EXCLUDE) AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "O.*", "TW.*" }, mode = Mode.MATCH_ANY)
-		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "AL.*", ".*PHA" }, mode = Mode.MATCH_ALL)
 		@ReportEntry("{0} - {1}")
-		void patternValues(TestEnum e1, AnotherTestEnum e2) {
+		void patternValues(
+				@CartesianEnumSource(value = TestEnum.class, names = { "O.*",
+						"TW.*" }, mode = Mode.MATCH_ANY) TestEnum e1,
+				@CartesianEnumSource(value = AnotherTestEnum.class, names = { "AL.*",
+						".*PHA" }, mode = Mode.MATCH_ALL) AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "O.*", "TW.*" }, mode = Mode.MATCH_ANY)
-		@CartesianEnumSource(names = { "AL.*", ".*PHA" }, mode = Mode.MATCH_ALL)
 		@ReportEntry("{0} - {1}")
-		void patternValuesWithOmittedTypes(TestEnum e1, AnotherTestEnum e2) {
+		void patternValuesWithOmittedTypes(
+				@CartesianEnumSource(names = { "O.*", "TW.*" }, mode = Mode.MATCH_ANY) TestEnum e1,
+				@CartesianEnumSource(names = { "AL.*", ".*PHA" }, mode = Mode.MATCH_ALL) AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(TestEnum.class)
 		@ReportEntry("{0}")
-		void injected(TestEnum e, TestReporter reporter) {
+		void injected(@CartesianEnumSource(TestEnum.class) TestEnum e, TestReporter reporter) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = "ONE")
-		void missing(TestEnum e1, AnotherTestEnum e2) {
+		void missing(@CartesianEnumSource(value = TestEnum.class, names = "ONE") TestEnum e1, AnotherTestEnum e2) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = "ONE")
-		void missingWithOmittedType(TestEnum e1, AnotherTestEnum e2) {
+		void missingWithOmittedType(@CartesianEnumSource(names = "ONE") TestEnum e1, AnotherTestEnum e2) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource
-		void missingParameterWithOmittedType() {
+		void nonEnumParameterWithOmittedType(@CartesianEnumSource int i) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource
-		void nonEnumParameterWithOmittedType(int i) {
+		void wrongType(@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" }) AnotherTestEnum e) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" })
-		void wrongType(AnotherTestEnum e) {
+		void wrongOrder(@CartesianEnumSource(TestEnum.class) AnotherTestEnum e1,
+				@CartesianEnumSource(AnotherTestEnum.class) TestEnum e2) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(TestEnum.class)
-		@CartesianEnumSource(AnotherTestEnum.class)
-		void wrongOrder(AnotherTestEnum e1, TestEnum e2) {
+		void nonExistingNames(
+				@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "FOUR", "FIVE" }) TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "FOUR", "FIVE" })
-		void nonExistingNames(TestEnum e1) {
+		void nonExistingNamesWithOmittedType(@CartesianEnumSource(names = { "ONE", "FOUR", "FIVE" }) TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "ONE", "FOUR", "FIVE" })
-		void nonExistingNamesWithOmittedType(TestEnum e1) {
+		void duplicateNames(@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "ONE" }) TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "ONE" })
-		void duplicateNames(TestEnum e1) {
+		void duplicateNamesWithOmittedType(@CartesianEnumSource(names = { "ONE", "ONE" }) TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "ONE", "ONE" })
-		void duplicateNamesWithOmittedType(TestEnum e1) {
+		void wrongAnyPattern(@CartesianEnumSource(value = TestEnum.class, names = { "T.*",
+				"[" }, mode = Mode.MATCH_ANY) TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = Mode.MATCH_ANY)
-		void wrongAnyPattern(TestEnum e1) {
+		void wrongAnyPatternWithOmittedType(
+				@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ANY) TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ANY)
-		void wrongAnyPatternWithOmittedType(TestEnum e1) {
+		void wrongAllPattern(@CartesianEnumSource(value = TestEnum.class, names = { "T.*",
+				"[" }, mode = Mode.MATCH_ALL) TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = Mode.MATCH_ALL)
-		void wrongAllPattern(TestEnum e1) {
-		}
-
-		@CartesianProductTest
-		@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ALL)
-		void wrongAllPatternWithOmittedType(TestEnum e1) {
+		void wrongAllPatternWithOmittedType(
+				@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ALL) TestEnum e1) {
 		}
 
 	}
@@ -1321,10 +1259,9 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
-		@CartesianValueSource(ints = { 1, 1, 4 })
-		@CartesianValueSource(strings = { "A", "B", "C", "C" })
 		@ReportEntry("{0}{1}")
-		void distinctInputsAnnotations(int i, String string) {
+		void distinctInputsAnnotations(@CartesianValueSource(ints = { 1, 1, 4 }) int i,
+				@CartesianValueSource(strings = { "A", "B", "C", "C" }) String string) {
 		}
 
 		@CartesianProductTest(factory = "nonDistinctInputs")
@@ -1345,74 +1282,51 @@ public class CartesianProductTestExtensionTests {
 	static class ArgumentsSourceTestCases {
 
 		@CartesianProductTest
-		@IntRangeSource(from = 1, to = 4, closed = true)
-		@IntRangeSource(from = 2, to = 4, step = 2, closed = true)
 		@ReportEntry("{0},{1}")
-		void basicIntRangeSource(int i, int j) {
+		void basicIntRangeSource(@IntRangeSource(from = 1, to = 4, closed = true) int i,
+				@IntRangeSource(from = 2, to = 4, step = 2, closed = true) int j) {
 		}
 
 		@CartesianProductTest
-		@IntRangeSource(from = 0, to = 4)
-		@ValueSource(ints = { 2, 4 })
-		void valueSource(int i, int j) {
-		}
-
-		@CartesianProductTest
-		@IntRangeSources({ @IntRangeSource(from = 1, to = 3, closed = true),
-				@IntRangeSource(from = 2, to = 3, closed = true) })
-		@ReportEntry("{0}{1}")
-		void containerIntSource(int i, int j) {
-		}
-
-		@CartesianProductTest
-		@IntRangeSource(from = 0, to = 4)
-		@CartesianValueSource(ints = { 2, 4 })
 		@ReportEntry("{0},{1}")
-		void cartesianValueSource(int i, int j) {
+		void cartesianValueSource(@IntRangeSource(from = 0, to = 4) int i,
+				@CartesianValueSource(ints = { 2, 4 }) int j) {
 		}
 
 		@CartesianProductTest
-		@FloatRangeSource(from = 1.2f, to = 1.7f, step = 0.5f, closed = true)
-		@ByteRangeSource(from = 1, to = 4, closed = true)
 		@ReportEntry("f:{0},b:{1}")
-		void floatByteSource(float f, byte b) {
+		void floatByteSource(@FloatRangeSource(from = 1.2f, to = 1.7f, step = 0.5f, closed = true) float f,
+				@ByteRangeSource(from = 1, to = 4, closed = true) byte b) {
 		}
 
 		@CartesianProductTest
-		@DoubleRangeSource(from = 1.2, to = 2.2, step = 0.5) // 1.2, 1.7
-		@LongRangeSource(from = 1L, to = 3L) // 1, 2
-		@ShortRangeSource(from = 4, to = 5, closed = true) // 4, 5
 		@ReportEntry("d:{0},l:{1},s:{2}")
-		void doubleLongShortSource(double d, long l, short s) {
+		void doubleLongShortSource(@DoubleRangeSource(from = 1.2, to = 2.2, step = 0.5) double d,
+				@LongRangeSource(from = 1L, to = 3L) long l,
+				@ShortRangeSource(from = 4, to = 5, closed = true) short s) {
 		}
 
 		@ParameterizedTest
-		@CartesianValueSource(ints = { 1, 2, 3, 4 })
-		void parameterizedTest(int i) {
+		void parameterizedTest(@CartesianValueSource(ints = { 1, 2, 3, 4 }) int i) {
 		}
 
 		@CartesianProductTest
-		@IntRangeSource(from = 0, to = 4)
-		@CartesianEnumSource(TestEnum.class)
 		@ReportEntry("{0},{1}")
-		void cartesianEnumSource(int i, TestEnum e) {
+		void cartesianEnumSource(@IntRangeSource(from = 0, to = 4) int i,
+				@CartesianEnumSource(TestEnum.class) TestEnum e) {
 		}
 
 		@CartesianProductTest
-		@CartesianValueSource(ints = { 0, 1, 2, 3 })
-		@CartesianEnumSource(TestEnum.class)
 		@ReportEntry("{0},{1}")
-		void cartesianValueSourceWithCartesianEnumSource(int i, TestEnum e) {
+		void cartesianValueSourceWithCartesianEnumSource(@CartesianValueSource(ints = { 0, 1, 2, 3 }) int i,
+				@CartesianEnumSource(TestEnum.class) TestEnum e) {
 		}
 
 		@CartesianProductTest
-		@IntRangeSource(from = 0, to = 2)
-		@CartesianEnumSource
-		@CartesianEnumSource
-		@CartesianValueSource(longs = { 2, 3 })
 		@ReportEntry("{0},{1},{2},{3}")
-		void mixedArgumentSourcesWithCartesianEnumSourceHavingOmittedTypes(int i, TestEnum e1, AnotherTestEnum e2,
-				long l) {
+		void mixedArgumentSourcesWithCartesianEnumSourceHavingOmittedTypes(@IntRangeSource(from = 0, to = 2) int i,
+				@CartesianEnumSource TestEnum e1, @CartesianEnumSource AnotherTestEnum e2,
+				@CartesianValueSource(longs = { 2, 3 }) long l) {
 			assertThat(i).isEqualTo(1);
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
@@ -1429,9 +1343,8 @@ public class CartesianProductTestExtensionTests {
 
 		@CartesianProductTest
 		@ReportEntry("{0}{1}")
-		@CartesianValueSource(ints = { 1, 2 })
-		@CartesianValueSource(ints = { 3, 4 })
-		void shouldHaveTestInfo(int i, int j) {
+		void shouldHaveTestInfo(@CartesianValueSource(ints = { 1, 2 }) int i,
+				@CartesianValueSource(ints = { 3, 4 }) int j) {
 			assertThat(testInfo).isNotNull();
 		}
 

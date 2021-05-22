@@ -26,7 +26,6 @@ import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
-import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
 
 /**
  * {@code @CartesianEnumSource} is an argument source for constants of a
@@ -38,18 +37,13 @@ import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
  * <p>The set of enum constants can be restricted via the {@link #names} and
  * {@link #mode} attributes.
  *
- * <p>This annotation is {@link Repeatable}. You should declare one
- * {@code @CartesianEnumSource} per parameter.
- * </p>
- *
  * @see CartesianProductTest
  *
  * @since 1.3.0
  */
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Repeatable(CartesianEnumSources.class)
 @ArgumentsSource(CartesianEnumArgumentsProvider.class)
 public @interface CartesianEnumSource {
 
@@ -178,15 +172,6 @@ public @interface CartesianEnumSource {
 			void validate(CartesianEnumSource enumSource, Set<? extends Enum<?>> constants, Set<String> names);
 
 		}
-
-	}
-
-	@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@interface CartesianEnumSources {
-
-		CartesianEnumSource[] value();
 
 	}
 

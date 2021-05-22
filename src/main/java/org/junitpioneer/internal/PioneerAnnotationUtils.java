@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
@@ -253,6 +254,15 @@ public class PioneerAnnotationUtils {
 		Stream<A> onParentClass = findOnOuterClasses(type.map(Class::getEnclosingClass), annotationType, findRepeated,
 			findAllEnclosing);
 		return Stream.concat(onClass.stream(), onParentClass);
+	}
+
+	public static List<? extends Annotation> findParameterArgumentsSources(Method testMethod) {
+		return Arrays
+				.stream(testMethod.getParameters())
+				.map(parameter -> PioneerAnnotationUtils.findAnnotatedAnnotations(parameter, ArgumentsSource.class))
+				.filter(list -> !list.isEmpty())
+				.map(annotations -> annotations.get(0))
+				.collect(Collectors.toList());
 	}
 
 }

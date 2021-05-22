@@ -13,26 +13,29 @@ package org.junitpioneer.jupiter;
 import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
- * This is basically a copy of Jupiter's {@code ValueSourceArgumentsProvider},
- * except it does NOT support {@code @ParameterizedTest}.
+ * This is a slightly modified copy of Jupiter's {@code ValueSourceArgumentsProvider},
+ * except it does NOT support {@code @ParameterizedTest} and consumes a {@code Parameter}
+ * instead of an annotation.
  */
-class CartesianValueArgumentsProvider implements CartesianAnnotationConsumer<CartesianValueSource>, ArgumentsProvider {
+class CartesianValueArgumentsProvider implements CartesianArgumentsProvider {
 
 	private Object[] arguments;
 
 	@Override
-	public void accept(CartesianValueSource source) {
+	public void accept(Parameter parameter) {
 		// @formatter:off
+		CartesianValueSource source = AnnotationSupport.findAnnotation(parameter, CartesianValueSource.class).orElseThrow(() -> new PreconditionViolationException("Parameter has to be annotated with " + CartesianValueSource.class.getName()));
 		List<Object> arrays =
 				// Declaration of <Object> is necessary due to a bug in Eclipse Photon.
 				Stream.<Object>of(

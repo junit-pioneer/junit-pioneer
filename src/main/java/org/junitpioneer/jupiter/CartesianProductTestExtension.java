@@ -18,6 +18,7 @@ import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,8 +69,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		Method testMethod = context.getRequiredTestMethod();
 		CartesianProductTest annotation = findAnnotation(testMethod, CartesianProductTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianProductTest not found."));
-		List<? extends Annotation> argumentsSources = PioneerAnnotationUtils
-				.findAnnotatedAnnotations(testMethod, ArgumentsSource.class);
+		List<? extends Annotation> argumentsSources = PioneerAnnotationUtils.findParameterArgumentsSources(testMethod);
 		ensureNoInputConflicts(annotation, argumentsSources);
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
 		if (annotation.value().length > 0)
@@ -102,15 +102,19 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	private List<List<?>> getSetsFromArgumentsSources(List<? extends Annotation> argumentsSources,
 			ExtensionContext context) {
 		List<List<?>> sets = new ArrayList<>();
-		for (Annotation source : argumentsSources)
-			sets.add(getSetFromAnnotation(context, source));
+		List<Parameter> parameters = Arrays.asList(context.getRequiredTestMethod().getParameters());
+		/*if (parameters.size() != argumentsSources.size())
+			throw new PreconditionViolationException("Argument sources and parameters do not match up.");*/
+		for (int i = 0; i < Math.min(parameters.size(), argumentsSources.size()); i++) {
+			sets.add(getSetFromAnnotation(context, argumentsSources.get(i), parameters.get(i)));
+		}
 		return sets;
 	}
 
-	private List<Object> getSetFromAnnotation(ExtensionContext context, Annotation source) {
+	private List<Object> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
 		try {
 			ArgumentsProvider provider = initializeArgumentsProvider(source);
-			return provideArguments(context, source, provider);
+			return provideArguments(context, parameter, provider);
 		}
 		catch (Exception ex) {
 			throw new ExtensionConfigurationException("Could not provide arguments because of exception.", ex);
@@ -126,11 +130,10 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		return ReflectionSupport.newInstance(providerAnnotation.value());
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<Object> provideArguments(ExtensionContext context, Annotation source, ArgumentsProvider provider)
+	private List<Object> provideArguments(ExtensionContext context, Parameter source, ArgumentsProvider provider)
 			throws Exception {
-		if (provider instanceof CartesianAnnotationConsumer) {
-			((CartesianAnnotationConsumer<Annotation>) provider).accept(source);
+		if (provider instanceof CartesianArgumentsProvider) {
+			((CartesianArgumentsProvider) provider).accept(source);
 			return provider
 					.provideArguments(context)
 					.map(Arguments::get)
