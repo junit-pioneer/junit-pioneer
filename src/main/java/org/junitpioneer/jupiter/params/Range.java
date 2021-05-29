@@ -25,12 +25,14 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 	private boolean closed;
 	private N current;
 	private int sign;
+	private N zero;
 
-	Range(N from, N to, N step, boolean closed) {
+	Range(N from, N to, N step, boolean closed, N zero) {
 		this.from = from;
 		this.to = to;
 		this.step = step;
 		this.closed = closed;
+		this.zero = zero;
 		current = null;
 		sign = step.compareTo(getZero());
 	}
@@ -87,7 +89,9 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 	/**
 	 * The value of the no-op "zero", illegal step in terms of N
 	 */
-	abstract N getZero();
+	private N getZero() {
+		return zero;
+	}
 
 	@Override
 	public boolean hasNext() {
