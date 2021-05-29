@@ -13,17 +13,12 @@ package org.junitpioneer.jupiter.params;
 class DoubleRange extends Range<Double> {
 
 	public DoubleRange(DoubleRangeSource source) {
-		super(source.from(), source.to(), source.step(), source.closed());
+		super(source.from(), source.to(), source.step(), source.closed(), 0.0D);
 	}
 
 	@Override
 	public Double nextValue() {
 		return getCurrent() + getStep();
-	}
-
-	@Override
-	Double getZero() {
-		return 0.0D;
 	}
 
 }

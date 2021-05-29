@@ -13,17 +13,12 @@ package org.junitpioneer.jupiter.params;
 class FloatRange extends Range<Float> {
 
 	public FloatRange(FloatRangeSource source) {
-		super(source.from(), source.to(), source.step(), source.closed());
+		super(source.from(), source.to(), source.step(), source.closed(), 0.0F);
 	}
 
 	@Override
 	public Float nextValue() {
 		return getCurrent() + getStep();
-	}
-
-	@Override
-	Float getZero() {
-		return 0.0F;
 	}
 
 }
