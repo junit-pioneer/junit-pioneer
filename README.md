@@ -111,7 +111,7 @@ The least we can do is to thank them and list some of their accomplishments here
 #### 2021
 
 * [Cory Thomas](https://github.com/dump247) contributed the `minSuccess` attribute in [retrying tests](https://junit-pioneer.org/docs/retrying-test/) (#408 / #430)
-* [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more) and improved the build process (#482 / #483)
+* [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more) before revamping its annotation handling (#460 / #485) and improved the build process (#482 / #483)
 * [Slawomir Jaranowski](https://github.com/slawekjaranowski) Migrate to new Shipkit plugins (#410 / #419)
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409 and #414 / #453)
 
