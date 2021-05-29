@@ -17,8 +17,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -151,6 +154,7 @@ class SystemPropertyExtensionTests {
 		}
 
 		@Test
+		@Issue("473")
 		@DisplayName("method level should not clash (in terms of duplicate entries) with class level")
 		@SetSystemProperty(key = "set prop A", value = "new A")
 		void methodLevelShouldNotClashWithClassLevel() {
@@ -172,13 +176,25 @@ class SystemPropertyExtensionTests {
 	class NestedSystemPropertyTests {
 
 		@Nested
+		@TestMethodOrder(OrderAnnotation.class)
 		@DisplayName("without SystemProperty annotations")
 		class NestedClass {
 
 			@Test
+			@Order(1)
 			@ReadsSystemProperty
 			@DisplayName("system properties should be set from enclosed class when they are not provided in nested")
-			public void shouldSetSystemPropertyFromEnclosedClass() {
+			void shouldSetSystemPropertyFromEnclosedClass() {
+				assertThat(System.getProperty("set prop A")).isNull();
+				assertThat(System.getProperty("set prop B")).isEqualTo("new B");
+			}
+
+			@Test
+			@Issue("480")
+			@Order(2)
+			@ReadsSystemProperty
+			@DisplayName("system properties should be set from enclosed class after restore")
+			void shouldSetSystemPropertyFromEnclosedClassAfterRestore() {
 				assertThat(System.getProperty("set prop A")).isNull();
 				assertThat(System.getProperty("set prop B")).isEqualTo("new B");
 			}
@@ -193,14 +209,14 @@ class SystemPropertyExtensionTests {
 			@Test
 			@ReadsSystemProperty
 			@DisplayName("system property should be set from nested class when it is provided")
-			public void shouldSetSystemPropertyFromNestedClass() {
+			void shouldSetSystemPropertyFromNestedClass() {
 				assertThat(System.getProperty("set prop B")).isEqualTo("newer B");
 			}
 
 			@Test
 			@SetSystemProperty(key = "set prop B", value = "newest B")
 			@DisplayName("system property should be set from method when it is provided")
-			public void shouldSetSystemPropertyFromMethodOfNestedClass() {
+			void shouldSetSystemPropertyFromMethodOfNestedClass() {
 				assertThat(System.getProperty("set prop B")).isEqualTo("newest B");
 			}
 
@@ -274,6 +290,7 @@ class SystemPropertyExtensionTests {
 	class InheritanceTests extends InheritanceBaseTest {
 
 		@Test
+		@Issue("448")
 		@DisplayName("should inherit clear and set annotations")
 		void shouldInheritClearAndSetProperty() {
 			assertThat(System.getProperty("set prop A")).isNull();

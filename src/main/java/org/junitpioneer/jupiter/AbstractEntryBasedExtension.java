@@ -36,14 +36,6 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
 abstract class AbstractEntryBasedExtension<K, V>
 		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
-	private static final String BACKUP = "Backup";
-
-	/**
-	 * @param context The current extension context.
-	 * @return <code>true</code> if one or more of the extension's annotations are present.
-	 */
-	protected abstract boolean isAnnotationPresent(ExtensionContext context);
-
 	/**
 	 * @param context The current extension context.
 	 * @return The entry keys to be cleared.
@@ -124,7 +116,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 
 	private void storeOriginalEntries(ExtensionContext context, Collection<K> entriesToClear,
 			Collection<K> entriesToSet) {
-		getStore(context).put(BACKUP, new EntriesBackup(entriesToClear, entriesToSet));
+		getStore(context).put(getStoreKey(context), new EntriesBackup(entriesToClear, entriesToSet));
 	}
 
 	private void clearEntries(Collection<K> entriesToClear) {
@@ -137,8 +129,7 @@ abstract class AbstractEntryBasedExtension<K, V>
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		if (isAnnotationPresent(context))
-			restoreOriginalEntries(context);
+		restoreOriginalEntries(context);
 	}
 
 	@Override
@@ -147,17 +138,25 @@ abstract class AbstractEntryBasedExtension<K, V>
 	}
 
 	private void restoreOriginalEntries(ExtensionContext context) {
-		getStore(context).get(BACKUP, EntriesBackup.class).restoreBackup();
+		getStore(context).getOrDefault(getStoreKey(context), EntriesBackup.class, new EntriesBackup()).restoreBackup();
 	}
 
 	private Store getStore(ExtensionContext context) {
 		return context.getStore(Namespace.create(getClass()));
 	}
 
+	private Object getStoreKey(ExtensionContext context) {
+		return context.getUniqueId();
+	}
+
 	private class EntriesBackup {
 
 		private final Set<K> entriesToClear = new HashSet<>();
 		private final Map<K, V> entriesToSet = new HashMap<>();
+
+		public EntriesBackup() {
+			// empty backup
+		}
 
 		public EntriesBackup(Collection<K> entriesToClear, Collection<K> entriesToSet) {
 			Stream.concat(entriesToClear.stream(), entriesToSet.stream()).forEach(entry -> {
