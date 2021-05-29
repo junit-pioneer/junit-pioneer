@@ -13,17 +13,12 @@ package org.junitpioneer.jupiter.params;
 class ShortRange extends Range<Short> {
 
 	public ShortRange(ShortRangeSource source) {
-		super(source.from(), source.to(), source.step(), source.closed());
+		super(source.from(), source.to(), source.step(), source.closed(), (short) 0);
 	}
 
 	@Override
 	public Short nextValue() {
 		return (short) (getCurrent() + getStep());
-	}
-
-	@Override
-	Short getZero() {
-		return 0;
 	}
 
 }

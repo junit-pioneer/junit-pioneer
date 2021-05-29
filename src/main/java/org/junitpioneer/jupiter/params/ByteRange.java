@@ -13,17 +13,12 @@ package org.junitpioneer.jupiter.params;
 class ByteRange extends Range<Byte> {
 
 	public ByteRange(ByteRangeSource source) {
-		super(source.from(), source.to(), source.step(), source.closed());
+		super(source.from(), source.to(), source.step(), source.closed(), (byte) 0);
 	}
 
 	@Override
 	public Byte nextValue() {
 		return (byte) (getCurrent() + getStep());
-	}
-
-	@Override
-	Byte getZero() {
-		return 0;
 	}
 
 }
