@@ -36,6 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <a href="https://junit-pioneer.org/docs/disable-parameterized-tests/" target="_top">the documentation.</a></p>
  *
  * @see DisableIfArgumentExtension
+ * @since 1.5.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
