@@ -72,17 +72,6 @@ spotless {
 		trimTrailingWhitespace()
 		endWithNewline()
 	}
-
-	format("groovy") {
-		target("**/*.groovy")
-		indentWithTabs()
-		trimTrailingWhitespace()
-		endWithNewline()
-		licenseHeaderFile(headerFile, "package ")
-
-		replaceRegex("class-level Javadoc indentation fix", """^\*""", " *")
-		replaceRegex("nested Javadoc indentation fix", "\t\\*", "\t *")
-	}
 }
 
 checkstyle {
@@ -173,6 +162,9 @@ publishing {
 }
 
 signing {
+	setRequired({
+		project.version != "unspecified" && gradle.taskGraph.hasTask("publishToSonatype")
+	})
 	val signingKey: String? by project
 	val signingPassword: String? by project
 	useInMemoryPgpKeys(signingKey, signingPassword)
