@@ -10,8 +10,8 @@
         url: /docs/environment-variables/
       - title: "Default Locale and TimeZone"
         url: /docs/default-locale-timezone/
-      - title: "Disable Based on DisplayName"
-        url: /docs/disable-if-display-name/
+      - title: "Disable Parameterized Tests"
+        url: /docs/disable-parameterized-tests/
       - title: "Issue information"
         url: /docs/issue/
       - title: "Publishing Report Entries"

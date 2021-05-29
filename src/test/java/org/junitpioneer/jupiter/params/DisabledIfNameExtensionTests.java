@@ -15,6 +15,7 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceLock;
@@ -24,12 +25,15 @@ import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 @ResourceLock(value = "org.junitpioneer.jupiter.params.PioneerAnnotationUtils")
+@DisplayName("DisableIfNameExtension")
 class DisabledIfNameExtensionTests {
 
 	@Nested
+	@DisplayName("when matching substrings")
 	class SubstringTests {
 
 		@Test
+		@DisplayName("disables a single test correctly")
 		void single_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "single", String.class);
@@ -38,6 +42,7 @@ class DisabledIfNameExtensionTests {
 		}
 
 		@Test
+		@DisplayName("disables multiple tests correctly")
 		void multiple_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "multiple", int.class);
@@ -46,6 +51,7 @@ class DisabledIfNameExtensionTests {
 		}
 
 		@Test
+		@DisplayName("does not skip the entire container based on test method name, only display name")
 		void methodNameContainsSubstring_containerNotSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(SubstringTestCases.class, "methodNameContains", int.class);
@@ -56,9 +62,11 @@ class DisabledIfNameExtensionTests {
 	}
 
 	@Nested
+	@DisplayName("when matching regular expressions")
 	class RegExpTests {
 
 		@Test
+		@DisplayName("disables a single test correctly")
 		void single_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "single", String.class);
@@ -67,6 +75,7 @@ class DisabledIfNameExtensionTests {
 		}
 
 		@Test
+		@DisplayName("disables multiple tests correctly")
 		void multiple_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "multiple", int.class);
@@ -75,6 +84,7 @@ class DisabledIfNameExtensionTests {
 		}
 
 		@Test
+		@DisplayName("does not skip the entire container based on test method name, only display name")
 		void methodNameMatchesRegExp_containerNotSkipped() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(RegExpTestCases.class, "methodNameMatches", int.class);
@@ -85,9 +95,11 @@ class DisabledIfNameExtensionTests {
 	}
 
 	@Nested
+	@DisplayName("when configured incorrectly")
 	class MisconfigurationTests {
 
 		@Test
+		@DisplayName("throws an exception if no matches/contains is specified")
 		void noContainsNoMatches_configurationException() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "noContainsNoMatches",
@@ -97,30 +109,15 @@ class DisabledIfNameExtensionTests {
 		}
 
 		@Test
+		@DisplayName("throws an exception if both matches and contains are specified")
 		void containsAndMatches_contains_correctTestsSkipped() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_contains",
-						int.class);
+					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches", int.class);
 
-			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSkippedTests(2).hasNumberOfSucceededTests(3);
-		}
-
-		@Test
-		void containsAndMatches_matches_correctTestsSkipped() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class, "containsAndMatches_matches",
-						int.class);
-
-			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(2).hasNumberOfSkippedTests(3);
-		}
-
-		@Test
-		void containsAndMatches_containsAndMatches_correctTestsSkipped() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ConfigurationTestCases.class,
-						"containsAndMatches_containsAndMatches", int.class);
-
-			assertThat(results).hasNumberOfFailedTests(0).hasNumberOfSucceededTests(1).hasNumberOfSkippedTests(4);
+			assertThat(results)
+					.hasNumberOfFailedTests(5)
+					.withExceptions()
+					.allMatch(s -> s.contains("but both are present."));
 		}
 
 	}
@@ -219,24 +216,8 @@ class DisabledIfNameExtensionTests {
 		@DisableIfDisplayName(contains = { "1", "2" }, matches = "\\w*")
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(ints = { 1, 2, 3, 4, 5 })
-		void containsAndMatches_contains(int number) {
+		void containsAndMatches(int number) {
 			if (number == 1 || number == 2)
-				fail("Test should've been disabled for " + number);
-		}
-
-		@DisableIfDisplayName(contains = "  ", matches = { ".*10[^0]*", ".*10{3,4}[^0]*" })
-		@ParameterizedTest(name = "See if enabled with {0}")
-		@ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
-		void containsAndMatches_matches(int number) {
-			if (number == 10 || number == 1_000 || number == 10_000)
-				fail("Test should've been disabled for " + number);
-		}
-
-		@DisableIfDisplayName(contains = "000", matches = ".*10?")
-		@ParameterizedTest(name = "See if enabled with {0}")
-		@ValueSource(ints = { 1, 10, 100, 1_000, 10_000 })
-		void containsAndMatches_containsAndMatches(int number) {
-			if (number != 100)
 				fail("Test should've been disabled for " + number);
 		}
 
