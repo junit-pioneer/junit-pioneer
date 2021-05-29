@@ -45,43 +45,6 @@ import org.junitpioneer.internal.PioneerUtils;
 abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation>
 		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
-	/**
-	 * @return Mapper function to get the key from a clear annotation.
-	 */
-	protected abstract Function<C, K> clearKeyMapper();
-
-	/**
-	 * @return Mapper function to get the key from a set annotation.
-	 */
-	protected abstract Function<S, K> setKeyMapper();
-
-	/**
-	 * @return Mapper function to get the value from a set annotation.
-	 */
-	protected abstract Function<S, V> setValueMapper();
-
-	/**
-	 * Removes the entry indicated by the specified key.
-	 */
-	protected abstract void clearEntry(K key);
-
-	/**
-	 * Gets the entry indicated by the specified key.
-	 */
-	protected abstract V getEntry(K key);
-
-	/**
-	 * Sets the entry indicated by the specified key.
-	 */
-	protected abstract void setEntry(K key, V value);
-
-	/**
-	 * Reports a warning about potentially unsafe practices.
-	 */
-	protected void reportWarning(ExtensionContext context) {
-		// nothing reported by default
-	}
-
 	@Override
 	public void beforeAll(ExtensionContext context) {
 		clearAndSetEntries(context);
@@ -220,6 +183,43 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 			entriesToSet.forEach(AbstractEntryBasedExtension.this::setEntry);
 		}
 
+	}
+
+	/**
+	 * @return Mapper function to get the key from a clear annotation.
+	 */
+	protected abstract Function<C, K> clearKeyMapper();
+
+	/**
+	 * @return Mapper function to get the key from a set annotation.
+	 */
+	protected abstract Function<S, K> setKeyMapper();
+
+	/**
+	 * @return Mapper function to get the value from a set annotation.
+	 */
+	protected abstract Function<S, V> setValueMapper();
+
+	/**
+	 * Removes the entry indicated by the specified key.
+	 */
+	protected abstract void clearEntry(K key);
+
+	/**
+	 * Gets the entry indicated by the specified key.
+	 */
+	protected abstract V getEntry(K key);
+
+	/**
+	 * Sets the entry indicated by the specified key.
+	 */
+	protected abstract void setEntry(K key, V value);
+
+	/**
+	 * Reports a warning about potentially unsafe practices.
+	 */
+	protected void reportWarning(ExtensionContext context) {
+		// nothing reported by default
 	}
 
 }
