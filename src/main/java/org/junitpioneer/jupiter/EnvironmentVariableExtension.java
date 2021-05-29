@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;
-import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 
 class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, String> {
@@ -27,13 +26,6 @@ class EnvironmentVariableExtension extends AbstractEntryBasedExtension<String, S
 	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
 	static final String WARNING_KEY = EnvironmentVariableExtension.class.getSimpleName();
 	static final String WARNING_VALUE = "This extension uses reflection to mutate JDK-internal state, which is fragile. Check the Javadoc or documentation for more details.";
-
-	@Override
-	protected boolean isAnnotationPresent(ExtensionContext context) {
-		return PioneerAnnotationUtils
-				.isAnyRepeatableAnnotationPresent(context, ClearEnvironmentVariable.class,
-					SetEnvironmentVariable.class);
-	}
 
 	@Override
 	protected Set<String> entriesToClear(ExtensionContext context) {

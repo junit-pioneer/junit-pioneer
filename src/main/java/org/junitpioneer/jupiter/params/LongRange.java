@@ -13,17 +13,12 @@ package org.junitpioneer.jupiter.params;
 class LongRange extends Range<Long> {
 
 	public LongRange(LongRangeSource source) {
-		super(source.from(), source.to(), source.step(), source.closed());
+		super(source.from(), source.to(), source.step(), source.closed(), 0L);
 	}
 
 	@Override
 	public Long nextValue() {
 		return getCurrent() + getStep();
-	}
-
-	@Override
-	Long getZero() {
-		return 0L;
 	}
 
 }
