@@ -11,8 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
-import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.util.Locale;
@@ -26,6 +24,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.TestKitTest;
 
 @DisplayName("DefaultLocale extension")
 class DefaultLocaleTests {
@@ -95,12 +94,10 @@ class DefaultLocaleTests {
 			assertThat(Locale.getDefault()).isEqualTo(TEST_DEFAULT_LOCALE);
 		}
 
-		@Test
+		@TestKitTest(testClass = ClassLevelTestCase.class)
 		@WritesDefaultLocale
 		@DisplayName("should execute tests with configured Locale")
-		void shouldExecuteTestsWithConfiguredLocale() {
-			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
-
+		void shouldExecuteTestsWithConfiguredLocale(ExecutionResults results) {
 			assertThat(results).hasNumberOfSucceededTests(2);
 		}
 
@@ -177,56 +174,41 @@ class DefaultLocaleTests {
 		@DisplayName("on the method level")
 		class MethodLevel {
 
-			@Test
+			@TestKitTest(testClass = MethodLevelInitializationFailureTestCase.class, method = "shouldFailMissingConfiguration")
 			@DisplayName("should fail when nothing is configured")
-			void shouldFailWhenNothingIsConfigured() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailMissingConfiguration");
-
+			void shouldFailWhenNothingIsConfigured(ExecutionResults results) {
 				assertThat(results)
 						.hasSingleFailedTest()
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
 			}
 
-			@Test
+			@TestKitTest(testClass = MethodLevelInitializationFailureTestCase.class, method = "shouldFailMissingCountry")
 			@DisplayName("should fail when variant is set but country is not")
-			void shouldFailWhenVariantIsSetButCountryIsNot() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailMissingCountry");
-
+			void shouldFailWhenVariantIsSetButCountryIsNot(ExecutionResults results) {
 				assertThat(results)
 						.hasSingleFailedTest()
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
 			}
 
-			@Test
+			@TestKitTest(testClass = MethodLevelInitializationFailureTestCase.class, method = "shouldFailLanguageTagAndLanguage")
 			@DisplayName("should fail when languageTag and language is set")
-			void shouldFailWhenLanguageTagAndLanguageIsSet() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailLanguageTagAndLanguage");
-
+			void shouldFailWhenLanguageTagAndLanguageIsSet(ExecutionResults results) {
 				assertThat(results)
 						.hasSingleFailedTest()
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
 			}
 
-			@Test
+			@TestKitTest(testClass = MethodLevelInitializationFailureTestCase.class, method = "shouldFailLanguageTagAndCountry")
 			@DisplayName("should fail when languageTag and country is set")
-			void shouldFailWhenLanguageTagAndCountryIsSet() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailLanguageTagAndCountry");
-
+			void shouldFailWhenLanguageTagAndCountryIsSet(ExecutionResults results) {
 				assertThat(results)
 						.hasSingleFailedTest()
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
 			}
 
-			@Test
+			@TestKitTest(testClass = MethodLevelInitializationFailureTestCase.class, method = "shouldFailLanguageTagAndVariant")
 			@DisplayName("should fail when languageTag and variant is set")
-			void shouldFailWhenLanguageTagAndVariantIsSet() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
-					"shouldFailLanguageTagAndVariant");
-
+			void shouldFailWhenLanguageTagAndVariantIsSet(ExecutionResults results) {
 				assertThat(results)
 						.hasSingleFailedTest()
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
@@ -238,11 +220,9 @@ class DefaultLocaleTests {
 		@DisplayName("on the class level")
 		class ClassLevel {
 
-			@Test
+			@TestKitTest(testClass = ClassLevelInitializationFailureTestCase.class)
 			@DisplayName("should fail when variant is set but country is not")
-			void shouldFailWhenVariantIsSetButCountryIsNot() {
-				ExecutionResults results = executeTestClass(ClassLevelInitializationFailureTestCase.class);
-
+			void shouldFailWhenVariantIsSetButCountryIsNot(ExecutionResults results) {
 				assertThat(results)
 						.hasSingleFailedTest()
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
