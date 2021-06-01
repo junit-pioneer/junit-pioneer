@@ -238,8 +238,6 @@ class SystemPropertyExtensionTests {
 			@Test
 			@SetSystemProperty(key = "A", value = "newest A")
 			void setForTestMethod() {
-				// only here to set the property, so another test can verify whether it was reset;
-				// still, better to assert the value was actually set
 				assertThat(System.getProperty("A")).isEqualTo("newest A");
 			}
 
