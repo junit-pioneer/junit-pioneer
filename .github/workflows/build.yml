@@ -1,0 +1,265 @@
+name: Main build
+
+env:
+  EXPERIMENTAL_JAVA: 17
+
+on:
+  # We want to trigger our builds all the time for the default branch and
+  # for tags starting with `v`.
+  push:
+    branches: 'main'
+    tags-ignore: 
+      - 'v**'
+  # Each pull request is important to us, doesnt matter from which branch.
+  # Furthermore, we do not want to build on just the default GitHub Action
+  # events, we also want to react onto `labeled` events for our extended
+  # build execution.
+  pull_request:
+    branches: '*'
+    types: [labeled, opened, synchronize, reopened]
+  # We also utilize this pipeline for releasing. By providing a `version`
+  # and setting releasing to `true`, we can trigger a release.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version string, e.g. 1.4.0'
+        required: true
+      releasing:
+        description: "Is this a release build? true/false"
+        required: true
+        default: "false"
+
+jobs:
+  # Basic Gradle Wrapper validation. This step is run first, due to security
+  # concerns. Running our whole pipeline with gradle with a corrupt wrapper,
+  # could expose our secrets, and we definitely want to prevent this.
+  validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    name: Gradle Wrapper Validation
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+  # Our basic build step as we want the Contributors to have a nice developer
+  # experience with little build time and a lot of information. Therefore we
+  # only build this on our default java version and for all operating systems
+  # we are supporting. This allows for a fast execution and fast feedback, the
+  # extended tests are run later on some conditions.
+  basic:
+    runs-on: ${{ matrix.os }}-latest
+    needs: validation
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        # test against latest update of each major Java version, as well as specific updates of LTS versions:
+        java: [ 8 ]
+        os: [ubuntu, macos, windows]
+    name: with Java ${{ matrix.java }} on ${{ matrix.os }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Set up java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - name: Gradle build
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: --refresh-dependencies --stacktrace --scan clean build
+
+  # Sonarcloud analysis does not support Java 8, hence that we need to execute the
+  # analysis separately with Java 11. It is acceptable because we are done to a few
+  # default builds for the contributors.
+  sonarcloud:
+    runs-on: ubuntu-latest
+    needs: validation
+    timeout-minutes: 15
+    name: sonarcloud analysis
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+        with:
+          # fetch unshallow to enable blame for Sonar
+          fetch-depth: 0
+      - name: Set up java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches/
+          key: ubuntu-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ubuntu-gradle-
+      - name: Cache Sonar
+        uses: actions/cache@v2
+        with:
+          path: ~/.sonar/cache/
+          key: ubuntu-sonar
+      - name: Gradle build
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: --refresh-dependencies --stacktrace --scan clean build
+      - name: Sonar analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
+        run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
+
+  # An Action that should signalize that we still need some mainter action, before
+  # we can merge an pull request. The Action needed is defined in the full-featured
+  # steps and this is just a reminder for us maintainer to prevent unintentional
+  # merges.
+  maintainer-action-missing:
+    if: "!contains(github.event.pull_request.labels.*.name, 'merge-ready') && github.event.pull_request"
+    runs-on: ubuntu-latest
+    name: "Maintainer Action is Missing before Merge"
+    needs: basic
+    steps:
+      - run: |
+          echo "A Maintainer will execute this build as soon as it is ready to merge. This action is *NOT* failing due to an error on your side, it is just precaution."
+          exit 1
+  
+  # Our full integration job, which will build for a matrix out of our supported
+  # java versions, operating systems, modular or not, and of cource junit versions.
+  # This build is executed on all tags and the default branch. Furthermore we will
+  # also execute this for pullrequests with the label `merge-ready`.
+  full-featured:
+    if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
+    needs: basic
+    runs-on: ${{ matrix.os }}-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        java: [ 8, 11, 16 ]
+        junit-version: [ '5.7.0', '5.7.1', '5.8.0-M1' ]
+        modular: [true, false]
+        os: [ubuntu, macos, windows]
+        exclude:
+          - java: 8
+            modular: true
+    name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }}, Modular ${{ matrix.modular }} on ${{ matrix.os }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Set up java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - name: Gradle build
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build
+
+  # We want to be up to date and know issues with future java versions as soon as possible.
+  # Furthermore we also would love to see our build working with the latest gradle version.
+  # As those builds might fail, they are allowed to fail, and should not prevent merges.
+  experimental:
+    if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
+    needs: full-featured
+    runs-on: ${{ matrix.os }}-latest
+    continue-on-error: true
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        junit-version: [ '5.7.0', '5.7.1', '5.8.0-M1' ]
+        modular: [true, false]
+        os: [ubuntu, macos, windows]
+    name: Experimental build with java 17 and Gradle Release Candidate
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - uses: sormuras/download-jdk@v1
+        with:
+          feature: ${{ env.EXPERIMENTAL_JAVA }}
+      - uses: actions/setup-java@v2
+        with:
+          java-version: ${{ env.JDK_VERSION }}
+          distribution: jdkfile
+          jdkFile: ${{ env.JDK_FILE }}
+      - name: Prepare JDK_EXPERIMENTAL env var
+        shell: bash
+        run: echo "JDK_EXPERIMENTAL=$JAVA_HOME" >> $GITHUB_ENV
+      - uses: actions/setup-java@v2
+        with:
+          java-version: 16
+          distribution: adopt
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - name: Gradle toolchains
+        uses: eskatos/gradle-command-action@v1
+        with:
+          gradle-version: rc
+          arguments: -Porg.gradle.java.installations.auto-download=false javaToolchains 
+      - name: Gradle build
+        uses: eskatos/gradle-command-action@v1
+        with:
+          gradle-version: rc
+          arguments: --refresh-dependencies -PexperimentalJavaVersion=17 -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
+
+  # Releasing will be only done, if there is a version defined and `releasing` is set to true.
+  # If not this stage will be ignored.
+  release:
+    if: github.event.inputs.version != '' && github.event.inputs.releasing == 'true'
+    runs-on: ubuntu-latest
+    needs: full-featured
+    timeout-minutes: 15
+    name: Release Pioneer into the wild
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: Set up java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Perform release
+        uses: eskatos/gradle-command-action@v1
+        env:
+          # used to trigger website uild
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # used by `io.github.gradle-nexus.publish-plugin` to sign artifacts
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.JUNIT_PIONEER_PGP_SECRET_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.JUNIT_PIONEER_PGP_PASSWORD }}
+          # used by `io.github.gradle-nexus.publish-plugin` to publish to Maven Central
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.NEXUS_TOKEN_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
+          # defines released version according to GitHub Action input
+          ORG_GRADLE_PROJECT_version: ${{ github.event.inputs.version }}
+        with:
+          arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository githubRelease
+
+  # After our release, we also need to trigger an update for our website build.
+  updateWebsite:
+    runs-on: ubuntu-latest
+    needs: release
+    timeout-minutes: 15
+    name: Update Website
+    steps:
+      - name: Trigger website build
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GH_WRITE_TOKEN }}
+          repository: junit-pioneer/junit-pioneer.github.io
+          event-type: triggerSiteBuild
+
