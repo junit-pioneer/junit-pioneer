@@ -21,6 +21,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -220,6 +221,40 @@ class SystemPropertyExtensionTests {
 				assertThat(System.getProperty("B")).isEqualTo("newest B");
 			}
 
+		}
+
+	}
+
+	@Nested
+	@SetSystemProperty(key = "A", value = "new A")
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	class ResettingSystemPropertyTestCases {
+
+		@Nested
+		@SetSystemProperty(key = "A", value = "newer A")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingSystemPropertyNestedTestCases {
+
+			@Test
+			@SetSystemProperty(key = "A", value = "newest A")
+			void setForTestMethod() {
+				// only here to set the property, so another test can verify whether it was reset;
+				// still, better to assert the value was actually set
+				assertThat(System.getProperty("A")).isEqualTo("newest A");
+			}
+
+			@AfterAll
+			@ReadsSystemProperty
+			void resetAfterTestMethodExecution() {
+				assertThat(System.getProperty("A")).isEqualTo("newer A");
+			}
+
+		}
+
+		@AfterAll
+		@ReadsSystemProperty
+		void resetAfterTestContainerExecution() {
+			assertThat(System.getProperty("A")).isEqualTo("new A");
 		}
 
 	}

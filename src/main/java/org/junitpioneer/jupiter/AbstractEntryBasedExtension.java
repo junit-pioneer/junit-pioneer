@@ -10,9 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,21 +49,21 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
-		clearAndSetEntries(context);
+		clearAndSetEntries(context, context.getRequiredTestClass());
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		clearAndSetEntries(context);
+		clearAndSetEntries(context, context.getRequiredTestMethod());
 	}
 
-	private void clearAndSetEntries(ExtensionContext context) {
+	private void clearAndSetEntries(ExtensionContext context, AnnotatedElement element) {
 		Set<K> entriesToClear;
 		Map<K, V> entriesToSet;
 
 		try {
-			entriesToClear = findEntriesToClear(context);
-			entriesToSet = findEntriesToSet(context);
+			entriesToClear = findEntriesToClear(element);
+			entriesToSet = findEntriesToSet(element);
 			preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
 		}
 		catch (IllegalStateException ex) {
@@ -77,26 +79,18 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		setEntries(entriesToSet);
 	}
 
-	private Set<K> findEntriesToClear(ExtensionContext context) {
-		return findAnnotations(context, getClearAnnotationType())
+	private Set<K> findEntriesToClear(AnnotatedElement element) {
+		return findAnnotations(element, getClearAnnotationType())
 				.map(clearKeyMapper())
 				.collect(PioneerUtils.distinctToSet());
 	}
 
-	private Map<K, V> findEntriesToSet(ExtensionContext context) {
-		return findAnnotations(context, getSetAnnotationType()).collect(toMap(setKeyMapper(), setValueMapper()));
+	private Map<K, V> findEntriesToSet(AnnotatedElement element) {
+		return findAnnotations(element, getSetAnnotationType()).collect(toMap(setKeyMapper(), setValueMapper()));
 	}
 
-	private <A extends Annotation> Stream<A> findAnnotations(ExtensionContext context, Class<A> clazz) {
-		/*
-		 * Implementation notes:
-		 *
-		 * This extension implements `BeforeAllCallback` and `BeforeEachCallback` and so if an outer class (i.e. a
-		 * class that the test class is @Nested within) uses this extension, this method will be called on those
-		 * extension points and discover the variables to set/clear. That means we don't need to search for
-		 * enclosing annotations here.
-		 */
-		return AnnotationSupport.findRepeatableAnnotations(context.getElement(), clazz).stream();
+	private <A extends Annotation> Stream<A> findAnnotations(AnnotatedElement element, Class<A> clazz) {
+		return AnnotationSupport.findRepeatableAnnotations(element, clazz).stream();
 	}
 
 	private Class<C> getClearAnnotationType() {
@@ -113,15 +107,14 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void preventClearAndSetSameEntries(Collection<K> entriesToClear, Collection<K> entriesToSet) {
-		entriesToClear
+		String duplicateEntries = entriesToClear
 				.stream()
 				.filter(entriesToSet::contains)
 				.map(Object::toString)
-				.reduce((e0, e1) -> e0 + ", " + e1)
-				.ifPresent(duplicateEntries -> {
-					throw new IllegalStateException(
-						"Cannot clear and set the following entries at the same time: " + duplicateEntries);
-				});
+				.collect(joining(", "));
+		if (!duplicateEntries.isEmpty())
+			throw new IllegalStateException(
+				"Cannot clear and set the following entries at the same time: " + duplicateEntries);
 	}
 
 	private void storeOriginalEntries(ExtensionContext context, Collection<K> entriesToClear,
