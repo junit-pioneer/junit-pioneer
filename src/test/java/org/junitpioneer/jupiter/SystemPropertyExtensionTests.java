@@ -228,12 +228,12 @@ class SystemPropertyExtensionTests {
 	@Nested
 	@SetSystemProperty(key = "A", value = "new A")
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-	class ResettingSystemPropertyTestCases {
+	class ResettingSystemPropertyTests {
 
 		@Nested
 		@SetSystemProperty(key = "A", value = "newer A")
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-		class ResettingSystemPropertyNestedTestCases {
+		class ResettingSystemPropertyNestedTests {
 
 			@Test
 			@SetSystemProperty(key = "A", value = "newest A")
