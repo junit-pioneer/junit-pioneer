@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
@@ -140,7 +141,7 @@ class DefaultLocaleTests {
 			@Test
 			@ReadsDefaultLocale
 			@DisplayName("DefaultLocale should be set from enclosed class when it is not provided in nested")
-			public void shouldSetLocaleFromEnclosedClass() {
+			void shouldSetLocaleFromEnclosedClass() {
 				assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
 			}
 
@@ -154,17 +155,51 @@ class DefaultLocaleTests {
 			@Test
 			@ReadsDefaultLocale
 			@DisplayName("DefaultLocale should be set from nested class when it is provided")
-			public void shouldSetLocaleFromNestedClass() {
+			void shouldSetLocaleFromNestedClass() {
 				assertThat(Locale.getDefault().getLanguage()).isEqualTo("de");
 			}
 
 			@Test
 			@DefaultLocale(language = "ch")
 			@DisplayName("DefaultLocale should be set from method when it is provided")
-			public void shouldSetLocaleFromMethodOfNestedClass() {
+			void shouldSetLocaleFromMethodOfNestedClass() {
 				assertThat(Locale.getDefault().getLanguage()).isEqualTo("ch");
 			}
 
+		}
+
+	}
+
+	@Nested
+	@DefaultLocale(language = "fi")
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	class ResettingDefaultLocaleTests {
+
+		@Nested
+		@DefaultLocale(language = "en")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingDefaultNestedLocaleTests {
+
+			@Test
+			@DefaultLocale(language = "de")
+			void setForTestMethod() {
+				// only here to set the locale, so another test can verify whether it was reset;
+				// still, better to assert the value was actually set
+				assertThat(Locale.getDefault().getLanguage()).isEqualTo("de");
+			}
+
+			@AfterAll
+			@ReadsDefaultLocale
+			void resetAfterTestMethodExecution() {
+				assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
+			}
+
+		}
+
+		@AfterAll
+		@ReadsDefaultLocale
+		void resetAfterTestMethodExecution() {
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
 		}
 
 	}
@@ -244,7 +279,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestClass(ClassLevelInitializationFailureTestCase.class);
 
 				assertThat(results)
-						.hasSingleFailedTest()
+						.hasSingleFailedContainer()
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
 			}
 

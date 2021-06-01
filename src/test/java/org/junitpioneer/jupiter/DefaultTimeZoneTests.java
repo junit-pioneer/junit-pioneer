@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
@@ -161,6 +162,40 @@ class DefaultTimeZoneTests {
 	}
 
 	@Nested
+	@DefaultTimeZone("GMT-12:00")
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	class ResettingDefaultLocaleTests {
+
+		@Nested
+		@DefaultTimeZone("GMT-3:00")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingDefaultNestedLocaleTests {
+
+			@Test
+			@DefaultTimeZone("GMT+6:00")
+			void setForTestMethod() {
+				// only here to set the time zone, so another test can verify whether it was reset;
+				// still, better to assert the value was actually set
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT+6:00"));
+			}
+
+			@AfterAll
+			@ReadsDefaultTimeZone
+			void resetAfterTestMethodExecution() {
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-3:00"));
+			}
+
+		}
+
+		@AfterAll
+		@ReadsDefaultTimeZone
+		void resetAfterTestMethodExecution() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
+		}
+
+	}
+
+	@Nested
 	@DisplayName("when misconfigured")
 	class ConfigurationTests {
 
@@ -184,7 +219,7 @@ class DefaultTimeZoneTests {
 			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
 
 			assertThat(results)
-					.hasSingleFailedTest()
+					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
 		}
