@@ -45,7 +45,7 @@ import org.junitpioneer.jupiter.CartesianArgumentsProvider;
  * @see FloatRangeSource
  */
 class RangeSourceArgumentsProvider
-		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider {
+		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
 
 	private Annotation argumentsSource;
 

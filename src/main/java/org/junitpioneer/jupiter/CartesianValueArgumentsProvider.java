@@ -30,7 +30,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
  * instead of an annotation.
  */
 class CartesianValueArgumentsProvider
-		implements CartesianAnnotationConsumer<CartesianValueSource>, ArgumentsProvider, CartesianArgumentsProvider {
+		implements CartesianAnnotationConsumer<CartesianValueSource>, ArgumentsProvider, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
 
 	private Object[] arguments;
 

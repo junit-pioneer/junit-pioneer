@@ -25,6 +25,8 @@ import org.apiguardian.api.API.Status;
  * @param <A> the annotation holding necessary data for providing the arguments
  * @see org.junit.jupiter.params.provider.ArgumentsProvider
  * @see CartesianProductTestExtension
+ *
+ * @deprecated has been superseded by CartesianArgumentsProvider
  */
 @Deprecated
 @API(status = Status.STABLE)

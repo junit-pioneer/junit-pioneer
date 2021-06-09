@@ -49,7 +49,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * </p>
  * @see org.junitpioneer.jupiter.CartesianValueSource
  *
- * @deprecated CartesianProductTest has been superseded by CartesianTest
+ * @deprecated has been superseded by CartesianTest
  * @since 1.0
  */
 @TestTemplate

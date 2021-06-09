@@ -36,7 +36,7 @@ import org.junitpioneer.internal.PioneerAnnotationUtils;
  * instead of an annotation.
  */
 class CartesianEnumArgumentsProvider
-		implements CartesianAnnotationConsumer<CartesianEnumSource>, ArgumentsProvider, CartesianArgumentsProvider {
+		implements CartesianAnnotationConsumer<CartesianEnumSource>, ArgumentsProvider, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
 
 	private CartesianEnumSource enumSource;
 	private Class<?> parameterType;
