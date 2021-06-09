@@ -13,9 +13,6 @@ package org.junitpioneer.jupiter;
 import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-
 /**
  * If you are implementing an {@link org.junit.jupiter.params.provider.ArgumentsProvider ArgumentsProvider}
  * for {@link CartesianProductTest}, it has to implement this annotation to 'consume' the annotation on
@@ -29,6 +26,5 @@ import org.apiguardian.api.API.Status;
  * @deprecated has been superseded by CartesianArgumentsProvider
  */
 @Deprecated
-@API(status = Status.STABLE)
 public interface CartesianAnnotationConsumer<A extends Annotation> extends Consumer<A> {
 }
