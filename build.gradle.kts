@@ -147,7 +147,8 @@ publishing {
 						"smoyer64" to "Steve Moyer",
 						"Bukama" to "Matthias Bünger",
 						"aepfli" to "Simon Schrottner",
-						"Michael1993" to "Mihály Verhás"
+						"Michael1993" to "Mihály Verhás",
+						"beatngu13" to "Daniel Kraus"
 					).forEach {
 						developer {
 							id.set(it.key)
