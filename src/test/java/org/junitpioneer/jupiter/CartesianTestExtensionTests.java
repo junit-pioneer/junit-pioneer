@@ -11,11 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.util.Lists.list;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -607,38 +603,6 @@ public class CartesianTestExtensionTests {
 					.withExceptionInstanceOf(PreconditionViolationException.class)
 					.hasMessageContaining(
 						"You must configure at least one set of arguments for this @ParameterizedTest");
-		}
-
-	}
-
-	@Nested
-	@DisplayName("sets")
-	class SetsTests {
-
-		CartesianTest.Sets sets = new CartesianTest.Sets();
-
-		@Test
-		@DisplayName("should add distinct elements")
-		void shouldAddDistinct() {
-			List<Integer> list = list(4, 5, 6);
-			Stream<Integer> stream = Stream.of(7, 8, 9);
-			Iterable<Integer> iterable = list(10, 11, 12);
-
-			sets.add(1, 2, 3).addAll(list).addAll(stream).addAll(iterable);
-
-			assertThat(sets.getSets()).containsExactly(list(1, 2, 3), list, list(7, 8, 9), list(10, 11, 12));
-		}
-
-		@Test
-		@DisplayName("should remove non-distinct elements")
-		void shouldRemoveNonDistinct() {
-			List<Integer> list = list(4, 5, 4);
-			Stream<Integer> stream = Stream.of(7, 8, 7);
-			Iterable<Integer> iterable = list(10, 11, 10);
-
-			sets.add(1, 2, 1).addAll(list).addAll(stream).addAll(iterable);
-
-			assertThat(sets.getSets()).containsExactly(list(1, 2), list(4, 5), list(7, 8), list(10, 11));
 		}
 
 	}
