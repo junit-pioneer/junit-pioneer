@@ -21,8 +21,10 @@ import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
 import org.junitpioneer.jupiter.CartesianArgumentsProvider;
 
 /**
@@ -42,7 +44,8 @@ import org.junitpioneer.jupiter.CartesianArgumentsProvider;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
-class RangeSourceArgumentsProvider implements CartesianArgumentsProvider {
+class RangeSourceArgumentsProvider
+		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider {
 
 	private Annotation argumentsSource;
 
@@ -76,6 +79,11 @@ class RangeSourceArgumentsProvider implements CartesianArgumentsProvider {
 
 	private Stream<?> asStream(Range<?> r) {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(r, Spliterator.ORDERED), false);
+	}
+
+	@Override
+	public void accept(Annotation argumentsSource) {
+		this.argumentsSource = argumentsSource;
 	}
 
 	@Override

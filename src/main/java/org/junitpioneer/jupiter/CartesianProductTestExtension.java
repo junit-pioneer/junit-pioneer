@@ -18,7 +18,6 @@ import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +38,7 @@ import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 
+@Deprecated
 class CartesianProductTestExtension implements TestTemplateInvocationContextProvider {
 
 	@Override
@@ -69,7 +69,8 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		Method testMethod = context.getRequiredTestMethod();
 		CartesianProductTest annotation = findAnnotation(testMethod, CartesianProductTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianProductTest not found."));
-		List<? extends Annotation> argumentsSources = PioneerAnnotationUtils.findParameterArgumentsSources(testMethod);
+		List<? extends Annotation> argumentsSources = PioneerAnnotationUtils
+				.findAnnotatedAnnotations(testMethod, ArgumentsSource.class);
 		ensureNoInputConflicts(annotation, argumentsSources);
 		// Compute A ⨯ A ⨯ ... ⨯ A from single source "set"
 		if (annotation.value().length > 0)
@@ -102,19 +103,15 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	private List<List<?>> getSetsFromArgumentsSources(List<? extends Annotation> argumentsSources,
 			ExtensionContext context) {
 		List<List<?>> sets = new ArrayList<>();
-		List<Parameter> parameters = Arrays.asList(context.getRequiredTestMethod().getParameters());
-		/*if (parameters.size() != argumentsSources.size())
-			throw new PreconditionViolationException("Argument sources and parameters do not match up.");*/
-		for (int i = 0; i < Math.min(parameters.size(), argumentsSources.size()); i++) {
-			sets.add(getSetFromAnnotation(context, argumentsSources.get(i), parameters.get(i)));
-		}
+		for (Annotation source : argumentsSources)
+			sets.add(getSetFromAnnotation(context, source));
 		return sets;
 	}
 
-	private List<Object> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
+	private List<Object> getSetFromAnnotation(ExtensionContext context, Annotation source) {
 		try {
 			ArgumentsProvider provider = initializeArgumentsProvider(source);
-			return provideArguments(context, parameter, provider);
+			return provideArguments(context, source, provider);
 		}
 		catch (Exception ex) {
 			throw new ExtensionConfigurationException("Could not provide arguments because of exception.", ex);
@@ -130,10 +127,11 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		return ReflectionSupport.newInstance(providerAnnotation.value());
 	}
 
-	private List<Object> provideArguments(ExtensionContext context, Parameter source, ArgumentsProvider provider)
+	@SuppressWarnings("unchecked")
+	private List<Object> provideArguments(ExtensionContext context, Annotation source, ArgumentsProvider provider)
 			throws Exception {
-		if (provider instanceof CartesianArgumentsProvider) {
-			((CartesianArgumentsProvider) provider).accept(source);
+		if (provider instanceof CartesianAnnotationConsumer) {
+			((CartesianAnnotationConsumer) provider).accept(source);
 			return provider
 					.provideArguments(context)
 					.map(Arguments::get)

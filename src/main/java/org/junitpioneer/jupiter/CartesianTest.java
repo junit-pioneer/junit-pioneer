@@ -27,36 +27,35 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @CartesianProductTest} is a JUnit Jupiter extension that marks
+ * {@code @CartesianTest} is a JUnit Jupiter extension that marks
  * a test to be executed with all possible input combinations.
  *
  * <p>Methods annotated with this annotation should not be annotated with {@code Test}.
  * </p>
  *
  * <p>This annotation is somewhat similar to {@code @ParameterizedTest}, as in it also takes
- * arguments and can run the same test multiple times. With {@code @CartesianProductTest} you
- * don't specify the test cases themselves. though. Instead you specify possible values for
- * each test method parameter (see @{@link CartesianValueSource}) and the extension runs the
- * method with each possible combination.
+ * arguments and can run the same test multiple times. With {@code @CartesianTest} you
+ * don't specify the test cases themselves, though. Instead you specify possible values for
+ * each test method parameter (see @{@link CartesianValueSource}) by annotating the parameters
+ * themselves and the extension runs the method with each possible combination.
  * </p>
  *
- * <p>You can specify a custom Display Name for the tests ran by {@code @CartesianProductTest}.
+ * <p>You can specify a custom Display Name for the tests ran by {@code @CartesianTest}.
  * By default it's [{index}] {arguments}.
  * </p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>@CartesianProductTest</code></a>.
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>@CartesianTest</code></a>.
  * </p>
  * @see org.junitpioneer.jupiter.CartesianValueSource
  *
- * @since 1.0
+ * @since 1.5.0
  */
 @TestTemplate
-@ExtendWith(CartesianProductTestExtension.class)
+@ExtendWith(CartesianTestExtension.class)
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Deprecated
-public @interface CartesianProductTest {
+public @interface CartesianTest {
 
 	/**
 	 * <p>The display name to be used for individual invocations of the
@@ -81,16 +80,6 @@ public @interface CartesianProductTest {
 	 * @see org.junit.jupiter.params.ParameterizedTest#name()
 	 */
 	String name() default "[{index}] {arguments}";
-
-	/**
-	 * Specifies {@code String} values for all inputs simultaneously.
-	 */
-	String[] value() default {};
-
-	/**
-	 * Specifies the name of the method that supplies the {@code Sets} for the test.
-	 */
-	String factory() default "";
 
 	/**
 	 * Class for defining sets to a {@code CartesianProductTest} execution.

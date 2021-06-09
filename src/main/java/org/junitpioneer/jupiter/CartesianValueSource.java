@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -31,13 +32,18 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * <p>The supplied literal values will be provided as an argument source to
  * the corresponding parameter of the annotated {@code @CartesianProductTest} method.
  *
+ * <p>This annotation is {@link Repeatable}. You should declare one
+ * {@code @CartesianValueSource} per parameter.
+ * </p>
+ *
  * @see CartesianProductTest
  *
  * @since 1.0
  */
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.PARAMETER })
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Repeatable(CartesianValueSource.CartesianValueSources.class)
 @ArgumentsSource(CartesianValueArgumentsProvider.class)
 public @interface CartesianValueSource {
 
@@ -90,5 +96,14 @@ public @interface CartesianValueSource {
 	 * The {@link Class} values to use as sources of arguments; must not be empty.
 	 */
 	Class<?>[] classes() default {};
+
+	@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface CartesianValueSources {
+
+		CartesianValueSource[] value();
+
+	}
 
 }

@@ -15,6 +15,7 @@ import static java.util.stream.Collectors.toSet;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -25,6 +26,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
 
 /**
  * {@code @CartesianEnumSource} is an argument source for constants of a
@@ -38,11 +40,16 @@ import org.junit.platform.commons.PreconditionViolationException;
  *
  * @see CartesianProductTest
  *
+ * <p>This annotation is {@link Repeatable}. You should declare one
+ * {@code @CartesianEnumSource} per parameter.
+ * </p>
+ *
  * @since 1.3.0
  */
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.PARAMETER })
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Repeatable(CartesianEnumSources.class)
 @ArgumentsSource(CartesianEnumArgumentsProvider.class)
 public @interface CartesianEnumSource {
 
@@ -171,6 +178,15 @@ public @interface CartesianEnumSource {
 			void validate(CartesianEnumSource enumSource, Set<? extends Enum<?>> constants, Set<String> names);
 
 		}
+
+	}
+
+	@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface CartesianEnumSources {
+
+		CartesianEnumSource[] value();
 
 	}
 
