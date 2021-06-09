@@ -38,11 +38,12 @@ import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
  * <p>The set of enum constants can be restricted via the {@link #names} and
  * {@link #mode} attributes.
  *
- * @see CartesianProductTest
- *
  * <p>This annotation is {@link Repeatable}. You should declare one
  * {@code @CartesianEnumSource} per parameter.
  * </p>
+ *
+ * @see CartesianProductTest
+ * @see CartesianTest
  *
  * @since 1.3.0
  */
