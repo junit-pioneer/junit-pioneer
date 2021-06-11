@@ -82,7 +82,10 @@ In lexicographic order, these are:
 
 <dl>
 	<dt>Daniel Kraus aka <a href="https://github.com/beatngu13">beatngu13</a></dt>
-	<dd>TODO</dd>
+	<dd>Banking software by day, OSS by night.
+		Punk rock enthusiast and passionate hiker.
+		Into Java, software testing, and web services.
+		<a href="https://twitter.com/beatngu1101">Tweets</a> occasionally.</dd>
 	<dt>Matthias Bünger aka <a href="https://github.com/Bukama">Bukama</a></dt>
 	<dd>(Always tries to become a better) Java developer, loves testing and reads <a href="https://twitter.com/bukamabish">tweets</a>.
 		Became a maintainer in April 2020 after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
