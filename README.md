@@ -81,6 +81,11 @@ JUnit Pioneer is maintained by a small team of people who work on it in their fr
 In lexicographic order, these are:
 
 <dl>
+	<dt>Daniel Kraus aka <a href="https://github.com/beatngu13">beatngu13</a></dt>
+	<dd>Banking software by day, OSS by night.
+		Punk rock enthusiast and passionate hiker.
+		Into Java, software testing, and web services.
+		<a href="https://twitter.com/beatngu1101">Tweets</a> occasionally.</dd>
 	<dt>Matthias Bünger aka <a href="https://github.com/Bukama">Bukama</a></dt>
 	<dd>(Always tries to become a better) Java developer, loves testing and reads <a href="https://twitter.com/bukamabish">tweets</a>.
 		Became a maintainer in April 2020 after he "caused" (authored) too many <a href="https://github.com/junit-pioneer/junit-pioneer/issues">bishues</a>.</dd>
@@ -111,7 +116,7 @@ The least we can do is to thank them and list some of their accomplishments here
 #### 2021
 
 * [Cory Thomas](https://github.com/dump247) contributed the `minSuccess` attribute in [retrying tests](https://junit-pioneer.org/docs/retrying-test/) (#408 / #430)
-* [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more) before revamping its annotation handling (#460 / #485) and improved the build process (#482 / #483)
+* [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more), revamped their annotation handling (#460 / #485), and improved the build process (#482 / #483) before becoming a maintainer
 * [Slawomir Jaranowski](https://github.com/slawekjaranowski) Migrate to new Shipkit plugins (#410 / #419)
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409 and #414 / #453)
 
