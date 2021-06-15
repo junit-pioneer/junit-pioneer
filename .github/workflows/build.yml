@@ -125,9 +125,15 @@ jobs:
     name: "Maintainer Action is Missing before Merge"
     needs: basic
     steps:
-      - run: |
-          echo "A Maintainer will execute this build as soon as it is ready to merge. This action is *NOT* failing due to an error on your side, it is just precaution."
-          exit 1
+      - uses: LouisBrunner/checks-action@v1.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Maintainer Action required, but your PR looks great
+          conclusion: action_required
+          action_url: "http://google.com" #replace this with a link to junit-pioneer contributing.md with a text about this
+          output: |
+              {"summary": "A Maintainer needs to apply the `merge-ready` label, which will trigger a fully featured build."}
+ 
   
   # Our full integration job, which will build for a matrix out of our supported
   # java versions, operating systems, modular or not, and of cource junit versions.
