@@ -338,7 +338,7 @@ public class ReportEntryExtensionTests {
 
 	@Nested
 	@DisplayName("with parameterized tests")
-	class ParameterEntriesTests {
+	class PropertyEntriesTests {
 
 		@Test
 		@DisplayName("publishes the parameter")
