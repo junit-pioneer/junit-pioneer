@@ -54,7 +54,6 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        # test against latest update of each major Java version, as well as specific updates of LTS versions:
         java: [ 8 ]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }} on ${{ matrix.os }}
@@ -130,7 +129,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: Maintainer Action required, but your PR looks great
           conclusion: action_required
-          action_url: "http://google.com" #replace this with a link to junit-pioneer contributing.md with a text about this
+          action_url: "https://github.com/junit-pioneer/junit-pioneer/blob/main/CONTRIBUTING.md"
           output: |
               {"summary": "A maintainer needs to apply the `merge-ready` label, which will trigger a fully-featured build."}
  
@@ -234,7 +233,8 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v2
         with:
-          fetch-depth: '0'
+          # Sonar needs the whole git history for issue assignment
+          fetch-depth: 0
       - name: Set up java
         uses: actions/setup-java@v1
         with:
@@ -256,7 +256,7 @@ jobs:
           arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository githubRelease
 
   # After our release, we also need to trigger an update for our website build.
-  updateWebsite:
+  update-website:
     runs-on: ubuntu-latest
     needs: release
     timeout-minutes: 15
