@@ -30,8 +30,8 @@ on:
         default: "false"
 
 jobs:
-  # Basic Gradle Wrapper validation. This step is run first, due to security
-  # concerns. Running our whole pipeline with gradle with a corrupt wrapper,
+  # Basic Gradle wrapper validation. This step is run first, due to security
+  # concerns. Running our whole pipeline with Gradle with a corrupt wrapper,
   # could expose our secrets, and we definitely want to prevent this.
   validation:
     runs-on: ubuntu-latest
@@ -43,11 +43,11 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
-  # Our basic build step as we want the Contributors to have a nice developer
-  # experience with little build time and a lot of information. Therefore we
-  # only build this on our default java version and for all operating systems
+  # Our basic build step as we want contributors to have a nice developer
+  # experience with little build time and sufficient feedback. Therefore, we
+  # only build this on our default Java version but for all operating systems
   # we are supporting. This allows for a fast execution and fast feedback, the
-  # extended tests are run later on some conditions.
+  # extended tests will run later under certain conditions.
   basic:
     runs-on: ${{ matrix.os }}-latest
     needs: validation
@@ -76,9 +76,9 @@ jobs:
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
 
-  # Sonarcloud analysis does not support Java 8, hence that we need to execute the
-  # analysis separately with Java 11. It is acceptable because we are done to a few
-  # default builds for the contributors.
+  # SonarCloud analysis does not support Java 8, hence, we need to execute the
+  # analysis separately with Java 11. This is fine because we are done with the basic
+  # builds for the contributors.
   sonarcloud:
     runs-on: ubuntu-latest
     needs: validation
@@ -115,9 +115,9 @@ jobs:
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
 
-  # An Action that should signalize that we still need some mainter action, before
-  # we can merge an pull request. The Action needed is defined in the full-featured
-  # steps and this is just a reminder for us maintainer to prevent unintentional
+  # An action that should signalize that we still need some mainter action, before
+  # we can merge a pull request. The action needed is defined in the full-featured
+  # steps and this is just a reminder for us maintainers to prevent unintentional
   # merges.
   maintainer-action-missing:
     if: "!contains(github.event.pull_request.labels.*.name, 'merge-ready') && github.event.pull_request"
@@ -132,13 +132,13 @@ jobs:
           conclusion: action_required
           action_url: "http://google.com" #replace this with a link to junit-pioneer contributing.md with a text about this
           output: |
-              {"summary": "A Maintainer needs to apply the `merge-ready` label, which will trigger a fully featured build."}
+              {"summary": "A maintainer needs to apply the `merge-ready` label, which will trigger a fully-featured build."}
  
   
   # Our full integration job, which will build for a matrix out of our supported
-  # java versions, operating systems, modular or not, and of cource junit versions.
-  # This build is executed on all tags and the default branch. Furthermore we will
-  # also execute this for pullrequests with the label `merge-ready`.
+  # Java versions, operating systems, modular or not, and of cource JUnit versions.
+  # This build is executed on all tags and the default branch. Furthermore, we will
+  # also execute this for pull requests with the label `merge-ready`.
   full-featured:
     if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
     needs: basic
@@ -172,8 +172,8 @@ jobs:
         with:
           arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build
 
-  # We want to be up to date and know issues with future java versions as soon as possible.
-  # Furthermore we also would love to see our build working with the latest gradle version.
+  # We want to be up to date and know issues with future Java versions as soon as possible.
+  # Furthermore, we also would love to see our build working with the latest Gradle version.
   # As those builds might fail, they are allowed to fail, and should not prevent merges.
   experimental:
     if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
@@ -220,7 +220,7 @@ jobs:
         uses: eskatos/gradle-command-action@v1
         with:
           gradle-version: rc
-          arguments: --refresh-dependencies -PexperimentalJavaVersion=17 -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
+          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
 
   # Releasing will be only done, if there is a version defined and `releasing` is set to true.
   # If not this stage will be ignored.
@@ -268,4 +268,3 @@ jobs:
           token: ${{ secrets.GH_WRITE_TOKEN }}
           repository: junit-pioneer/junit-pioneer.github.io
           event-type: triggerSiteBuild
-

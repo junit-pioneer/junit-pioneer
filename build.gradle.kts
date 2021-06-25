@@ -25,15 +25,15 @@ description = "JUnit 5 Extension Pack"
 
 val modularBuild : String by project;
 val experimentalJavaVersion : String? by project;
-val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty()?: false
+val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 
 java {
-	if(experimentalBuild) {
+	if (experimentalBuild) {
 		toolchain {
 			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion))
 		}
 	} else {
-		if(modularBuild.toBoolean()) {
+		if (modularBuild.toBoolean()) {
 			sourceCompatibility = JavaVersion.VERSION_11
 		} else {
 			sourceCompatibility = JavaVersion.VERSION_1_8
@@ -204,7 +204,7 @@ tasks {
 
 	test {
 		
-    	configure<JacocoTaskExtension> {
+    	    	configure<JacocoTaskExtension> {
        		isEnabled = !experimentalBuild
 		}
 		testLogging {
