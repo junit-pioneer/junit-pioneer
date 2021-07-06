@@ -1,7 +1,7 @@
 name: Main build
 
 env:
-  EXPERIMENTAL_JAVA: 17
+  EXPERIMENTAL_JAVA: 18
 
 on:
   # We want to trigger our builds all the time for the default branch
@@ -185,7 +185,7 @@ jobs:
         junit-version: [ '5.7.0', '5.7.1', '5.8.0-M1' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
-    name: Experimental build with Java 17 and Gradle release candidate
+    name: Experimental build with newest JDK early-access build and Gradle release candidate
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
