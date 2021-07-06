@@ -166,6 +166,8 @@ jobs:
         modular: [true, false]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
+    # Gradle doesn't work with JDK EA builds, so we start it with a supported Java version,
+    # but execute the build on the experimental version
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
@@ -180,8 +182,6 @@ jobs:
       - name: Prepare JDK_EXPERIMENTAL env var
         shell: bash
         run: echo "JDK_EXPERIMENTAL=$JAVA_HOME" >> $GITHUB_ENV
-      # Gradle doesn't work with JDK EA builds, so we start it with a supported Java version,
-      # but execute the build on the experimental version
       - uses: actions/setup-java@v2
         with:
           java-version: 16
