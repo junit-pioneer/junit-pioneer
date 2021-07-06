@@ -114,26 +114,6 @@ jobs:
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
 
-  # An action that should signalize that we still need some mainter action, before
-  # we can merge a pull request. The action needed is defined in the full-featured
-  # steps and this is just a reminder for us maintainers to prevent unintentional
-  # merges.
-  maintainer-action-missing:
-    if: "!contains(github.event.pull_request.labels.*.name, 'merge-ready') && github.event.pull_request"
-    runs-on: ubuntu-latest
-    name: Missing maintainer action
-    needs: basic
-    steps:
-      - uses: LouisBrunner/checks-action@v1.1.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: Missing maintainer action (but your PR looks great)
-          conclusion: action_required
-          action_url: "https://github.com/junit-pioneer/junit-pioneer/blob/main/CONTRIBUTING.md"
-          output: |
-              {"summary": "A maintainer needs to apply the `merge-ready` label, which will trigger a fully-featured build."}
- 
-  
   # Our full integration job, which will build for a matrix out of our supported
   # Java versions, operating systems, modular or not, and of course JUnit versions.
   # This build is executed on all tags and the default branch. Furthermore, we will

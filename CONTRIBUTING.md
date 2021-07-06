@@ -272,6 +272,11 @@ The [pull requests template](.github/PULL_REQUEST_TEMPLATE.md) contains a footer
 
 To enforce the [branching strategy](#branching-strategy) pull requests from `main` will be closed.
 
+### Full Testing
+
+In order to minimize the delay between a push and feedback, the default build is only run on a small subset of all possible builds (which include different operating system, Java versions and so on).
+Once a pull request is ready to be merged, a maintainer needs to apply the _merge-ready_ label to trigger a full build.
+
 ### Merging
 
 Only maintainers can merge pull requests, so PRs from contributors require that at least one maintainer agrees with the changes.
