@@ -16,73 +16,133 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@DisplayName("Resource manager extension")
-@ExtendWith(ResourceManagerExtension.class)
+@DisplayName("ResourceManager extension")
 // TODO: Do we need a test that checks a test case with LifeCycle.PER_METHOD? Ask maintainers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ResourceManagerExtensionTests {
 
-	private Path firstRecordedTempDir;
-	private final List<Path> recordedTempDirs = new CopyOnWriteArrayList<>();
+	@DisplayName("when a test class has a test method with a @New(TemporaryDirectory.class)-annotated parameter")
+	@ExtendWith(ResourceManagerExtension.class)
+	@Nested
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	class NewTemporaryDirectoryInMethodTests {
 
-	// TODO: Consider adding a constructor with a @New(TemporaryDirectory.class) Path
+		Path recordedPath;
 
-	@DisplayName("should populate a @New(TemporaryDirectory.class)-annotated parameter with a temp dir resource")
-	@Order(0)
-	@Test
-	void shouldPopulateNewAnnotatedParameterWithTempDirResource(@New(TemporaryDirectory.class) Path tempDir) {
-		assertThat(tempDir).startsWith(Paths.get(System.getProperty("java.io.tmpdir")));
+		@DisplayName("then the parameter is populated with a new temporary directory")
+		@Order(0)
+		@Test
+		void thenParameterIsPopulatedWithNewTemporaryDirectory(@New(TemporaryDirectory.class) Path tempDir) {
+			assertThat(tempDir).startsWith(Paths.get(System.getProperty("java.io.tmpdir")));
 
-		firstRecordedTempDir = tempDir;
-		recordedTempDirs.add(tempDir);
+			recordedPath = tempDir;
+		}
+
+		@DisplayName("then the respective temporary directory is torn down when finished")
+		@Order(1)
+		@Test
+		void thenRespectiveTemporaryDirectoryIsTornDownWhenFinished() {
+			assertThat(recordedPath).doesNotExist();
+		}
+
+		@DisplayName("then the associated directory is writeable and readable")
+		@Order(0)
+		@Test
+		void thenAssociatedDirectoryIsWriteableAndReadable(@New(TemporaryDirectory.class) Path tempDir)
+				throws Exception {
+			Files.write(tempDir.resolve("file.txt"), "some random text".getBytes(UTF_8));
+			assertThat(tempDir.resolve("file.txt")).usingCharset(UTF_8).hasContent("some random text");
+		}
+
 	}
 
-	@DisplayName("should tear down the new resource at the end")
-	@Order(1)
-	@Test
-	void shouldTearDownNewResourceAtTheEnd() {
-		assertThat(firstRecordedTempDir).doesNotExist();
+	// ---
+
+	@DisplayName("when a test class has multiple test methods with a @New(TemporaryDirectory.class)-annotated parameter")
+	@ExtendWith(ResourceManagerExtension.class)
+	@Nested
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	class NewTemporaryDirectoryInMultipleMethodsTests {
+
+		List<Path> recordedPaths = new ArrayList<>();
+
+		@DisplayName("then the parameter on the first test method is populated with a new temporary directory")
+		@Order(0)
+		@Test
+		void thenParameterOnFirstTestMethodIsPopulatedWithNewTemporaryDirectory(
+				@New(TemporaryDirectory.class) Path tempDir) {
+			assertThat(tempDir).startsWith(Paths.get(System.getProperty("java.io.tmpdir")));
+			recordedPaths.add(tempDir);
+		}
+
+		@DisplayName("then the parameter on the second test method is populated with a new temporary directory")
+		@Order(0)
+		@Test
+		void thenParameterOnSecondTestMethodIsPopulatedWithNewTemporaryDirectory(
+				@New(TemporaryDirectory.class) Path tempDir) {
+			assertThat(tempDir).startsWith(Paths.get(System.getProperty("java.io.tmpdir")));
+			recordedPaths.add(tempDir);
+		}
+
+		@DisplayName("then the respective temporary directories are torn down when finished")
+		@Order(1)
+		@Test
+		void thenRespectiveTemporaryDirectoryIsTornDownWhenFinished() {
+			assertThat(recordedPaths).hasSize(2).allSatisfy(path -> assertThat(path).doesNotExist());
+		}
+
+		@DisplayName("then the respective temporary directories are distinct")
+		@Order(1)
+		@Test
+		void thenRespectiveTemporaryDirectoriesAreDistinct() {
+			assertThat(recordedPaths.stream().distinct()).hasSize(recordedPaths.size());
+		}
+
 	}
 
-	@DisplayName("should populate a second @New(TemporaryDirectory.class)-annotated parameter with a temp dir resource")
-	@Order(2)
-	@Test
-	void shouldPopulateSecondNewAnnotatedParameterWithTempDirResource(@New(TemporaryDirectory.class) Path tempDir) {
-		assertThat(tempDir).startsWith(Paths.get(System.getProperty("java.io.tmpdir")));
+	// ---
 
-		recordedTempDirs.add(tempDir);
+	Path recordedPathFromConstructor;
+
+	@DisplayName("when a test class has a constructor with a @New(TemporaryDirectory.class)-annotated parameter")
+	@ExtendWith(ResourceManagerExtension.class)
+	@Nested
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	class NewTemporaryDirectoryInConstructorTests {
+
+		NewTemporaryDirectoryInConstructorTests(@New(TemporaryDirectory.class) Path tempDir) {
+			recordedPathFromConstructor = tempDir;
+		}
+
+		@DisplayName("then the parameter is populated with a new temporary directory")
+		@Test
+		void thenParameterIsPopulatedWithNewTemporaryDirectory() {
+			assertThat(recordedPathFromConstructor).startsWith(Paths.get(System.getProperty("java.io.tmpdir")));
+		}
+
 	}
 
-	@DisplayName("should populate @New(TemporaryDirectory.class)-annotated parameters with writeable temp dirs")
-	@Order(2)
-	@Test
-	void shouldPopulateNewAnnotatedParametersWithWriteableTempDirs(@New(TemporaryDirectory.class) Path tempDir)
-			throws Exception {
-		Files.write(tempDir.resolve("file.txt"), "some random text".getBytes(UTF_8));
-		assertThat(tempDir.resolve("file.txt")).usingCharset(UTF_8).hasContent("some random text");
+	// ---
 
-		recordedTempDirs.add(tempDir);
-	}
-
-	@DisplayName("should have generated new resources each time @New was used")
-	@Order(3)
-	@Test
-	void shouldHaveGeneratedNewResourcesEachTimeNewAnnotationWasUsed() {
-		int numberOfNewTempDirsInThisClass = 3;
-		assertThat(recordedTempDirs).hasSize(numberOfNewTempDirsInThisClass);
-		assertThat(recordedTempDirs.stream().distinct()).hasSize(numberOfNewTempDirsInThisClass);
+	@AfterAll
+	@DisplayName("Check that the temporary directory created in a test class constructor is torn down")
+	void checkThatTemporaryDirectoryCreatedInTestClassConstructorIsTornDown() {
+		assertThat(recordedPathFromConstructor).doesNotExist();
 	}
 
 	// TODO: Write and test with two custom ResourceFactory implementations: jimfs and OkHttp's MockWebServer
