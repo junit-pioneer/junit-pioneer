@@ -48,7 +48,7 @@ class ResourceManagerExtensionTests {
 	@Nested
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-	class NewTemporaryDirectoryInMethodTests {
+	class WhenTestClassHasTestMethodWithNewTemporaryDirectoryAnnotatedParameterTests {
 
 		Path recordedPath;
 
@@ -86,7 +86,7 @@ class ResourceManagerExtensionTests {
 	@Nested
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-	class NewTemporaryDirectoryInMultipleMethodsTests {
+	class WhenTestClassHasMultipleTestMethodsWithNewTemporaryDirectoryAnnotatedParameterTests {
 
 		List<Path> recordedPaths = new ArrayList<>();
 
@@ -136,9 +136,10 @@ class ResourceManagerExtensionTests {
 	@ExtendWith(ResourceManagerExtension.class)
 	@Nested
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-	class NewTemporaryDirectoryInConstructorTests {
+	class WhenTestClassHasConstructorWithNewTemporaryDirectoryAnnotatedParameterTests {
 
-		NewTemporaryDirectoryInConstructorTests(@New(TemporaryDirectory.class) Path tempDir) {
+		WhenTestClassHasConstructorWithNewTemporaryDirectoryAnnotatedParameterTests(
+				@New(TemporaryDirectory.class) Path tempDir) {
 			recordedPathFromConstructor = tempDir;
 		}
 
@@ -160,7 +161,7 @@ class ResourceManagerExtensionTests {
 
 	@DisplayName("when ResourceManagerExtension is applied to a test method with an unannotated parameter")
 	@Nested
-	class WhenResourceManagerExtensionIsAppliedToTestMethodWithUnannotatedParameter {
+	class WhenResourceManagerExtensionIsAppliedToTestMethodWithUnannotatedParameterTests {
 
 		@DisplayName("then ResourceManagerExtension does not populate the parameter")
 		@Test
@@ -193,11 +194,11 @@ class ResourceManagerExtensionTests {
 
 	@DisplayName("when a ResourceFactory is applied to a parameter and the factory throws on ::create")
 	@Nested
-	class FooTests {
+	class WhenResourceFactoryAppliesToParameterAndFactoryThrowsOnCreateTests {
 
 		@DisplayName("then the thrown exception is propagated")
 		@Test
-		void foo() {
+		void thenThrownExceptionIsPropagated() {
 			ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowingResourceFactoryTestCase.class);
 			executionResults
 					.testEvents()
