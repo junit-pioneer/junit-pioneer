@@ -16,28 +16,30 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.ReflectionSupport;
 
+// TODO: Make final, or make private and hide behind a new annotation, e.g. @Resources
 public class ResourceManagerExtension implements ParameterResolver {
 
 	private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace
 			.create(ResourceManagerExtension.class);
 
 	@Override
-	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-			throws ParameterResolutionException {
-		// TODO: Only return true if the parameter is annotated with @New or @Shared
-		// TODO: Check that we're on a test method, rather than say a constructor or a before-each block?
-		// return parameterContext.isAnnotated(New.class);
-		return true;
+	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+		// TODO: Also return true if the parameter is annotated with @Shared
+		return parameterContext.isAnnotated(New.class);
 	}
 
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
+		// TODO: Check that the parameter is annotated with at least @New or @Shared.
+		// TODO: Check that the parameter is not annotated with both @New and @Shared.
 		New newResourceAnnotation = parameterContext
 				.findAnnotation(New.class)
 				.orElseThrow(() -> {
 					// TODO
 					throw new UnsupportedOperationException("TODO");
+					//	throw new ParameterResolutionException(
+					//		String.format("Parameter `%s` is not annotated with @New", parameterContext.getParameter()));
 				});
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newResourceAnnotation.value());
 		// TODO: Put the resourceFactory in the store too?
@@ -46,12 +48,13 @@ public class ResourceManagerExtension implements ParameterResolver {
 			resource = resourceFactory.create();
 		}
 		catch (Exception e) {
-			// TODO
-			throw new UnsupportedOperationException("TODO");
+			throw new ParameterResolutionException(
+				"Unable to create an instance of `" + resourceFactory.getClass() + '`', e);
 		}
 		// TODO: Check that we're using a custom NAMESPACE
 		extensionContext
 				.getStore(ExtensionContext.Namespace.GLOBAL)
+				// TODO: Use a unique key per resource?
 				.put("theResource", (ExtensionContext.Store.CloseableResource) resource::close);
 		try {
 			return resource.get();
