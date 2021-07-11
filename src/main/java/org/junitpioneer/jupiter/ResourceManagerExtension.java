@@ -19,9 +19,6 @@ import org.junit.platform.commons.support.ReflectionSupport;
 // TODO: Make final, or make private and hide behind a new annotation, e.g. @Resources
 public class ResourceManagerExtension implements ParameterResolver {
 
-	private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace
-			.create(ResourceManagerExtension.class);
-
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		// TODO: Also return true if the parameter is annotated with @Shared

@@ -154,30 +154,40 @@ class ResourceManagerExtensionTests {
 	@Nested
 	class WhenTestClassHasConstructorWithNewTemporaryDirectoryAnnotatedParameterTests {
 
-		@DisplayName("then the parameter is populated with a new readable and writeable temporary directory "
+		@DisplayName("then each test method has access to a new readable and writeable temporary directory "
 				+ "that lasts as long as the test instance")
 		@Test
-		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTestInstance() {
+		void thenEachTestMethodHasAccessToNewReadableAndWriteableTempDirThatLastsAsLongAsTestInstance() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestConstructorWithNewTempDirParameterTestCase.class);
-			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestConstructorWithNewTempDirParameterTestCase.recordedPathFromConstructor).doesNotExist();
+					.executeTestClass(TestConstructorWithNewTempDirParameterTestCase.class);
+			assertThat(executionResults).hasNumberOfSucceededTests(2);
+			assertThat(TestConstructorWithNewTempDirParameterTestCase.recordedPathsFromConstructor)
+					.hasSize(2)
+					.doesNotHaveDuplicates()
+					.allSatisfy(path -> assertThat(path).doesNotExist());
 		}
 
 	}
 
 	@ExtendWith(ResourceManagerExtension.class)
-	static class SingleTestConstructorWithNewTempDirParameterTestCase {
+	static class TestConstructorWithNewTempDirParameterTestCase {
 
-		static Path recordedPathFromConstructor;
+		static List<Path> recordedPathsFromConstructor = new CopyOnWriteArrayList<>();
+		Path recordedPath;
 
-		SingleTestConstructorWithNewTempDirParameterTestCase(@New(TemporaryDirectory.class) Path tempDir) {
-			recordedPathFromConstructor = tempDir;
+		TestConstructorWithNewTempDirParameterTestCase(@New(TemporaryDirectory.class) Path tempDir) {
+			recordedPathsFromConstructor.add(tempDir);
+			recordedPath = tempDir;
 		}
 
 		@Test
-		void theTest() {
-			assertEmptyReadableWriteableTemporaryDirectory(recordedPathFromConstructor);
+		void firstTest() {
+			assertEmptyReadableWriteableTemporaryDirectory(recordedPath);
+		}
+
+		@Test
+		void secondTest() {
+			assertEmptyReadableWriteableTemporaryDirectory(recordedPath);
 		}
 
 	}

@@ -15,8 +15,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// TODO: Add a new method - Object[] arguments() - to allow e.g. a @New(TemporaryFile) to
+// TODO: Add a new method - Object[] arguments() - to allow e.g. a @New(TemporaryFile.class) to
 //       specify its file name suffix. https://github.com/junit-pioneer/junit-pioneer/issues/348#issuecomment-850816098
+
+// TODO: Add @Dir, a shortcut for @New(TemporaryDirectory.class)
+
+// TODO: Add @New(TemporaryFile.class)
+
+// TODO: Add @File, a shortcut for @New(TemporaryFile.class)
 
 @Retention(RetentionPolicy.RUNTIME)
 // TODO: Consider adding and testing ElementType.FIELD
