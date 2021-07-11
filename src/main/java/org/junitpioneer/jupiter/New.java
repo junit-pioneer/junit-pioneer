@@ -15,6 +15,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+// TODO: Add a new method - Object[] arguments() - to allow e.g. a @New(TemporaryFile) to
+//       specify its file name suffix. https://github.com/junit-pioneer/junit-pioneer/issues/348#issuecomment-850816098
+
 @Retention(RetentionPolicy.RUNTIME)
 // TODO: Consider adding and testing ElementType.FIELD
 @Target(ElementType.PARAMETER)

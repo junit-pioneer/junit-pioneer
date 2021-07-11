@@ -10,16 +10,16 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -49,7 +49,7 @@ class ResourceManagerExtensionTests {
 		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTest() {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(SingleTestMethodWithNewTempDirParameterTestCase.class);
-			executionResults.testEvents().debug().succeeded().assertThatEvents().hasSize(1);
+			assertThat(executionResults).hasSingleSucceededTest();
 			assertThat(SingleTestMethodWithNewTempDirParameterTestCase.recordedPath).doesNotExist();
 		}
 
@@ -61,7 +61,7 @@ class ResourceManagerExtensionTests {
 		static Path recordedPath;
 
 		@Test
-		void theTest(@New(TemporaryDirectory.class) Path tempDir) throws Exception {
+		void theTest(@New(TemporaryDirectory.class) Path tempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
 
 			recordedPath = tempDir;
@@ -81,7 +81,7 @@ class ResourceManagerExtensionTests {
 		void thenParametersOnBothTestMethodsArePopulatedWithNewReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(TwoTestMethodsWithNewTempDirParameterTestCase.class);
-			executionResults.testEvents().debug().succeeded().assertThatEvents().hasSize(2);
+			assertThat(executionResults).hasNumberOfSucceededTests(2);
 			assertThat(TwoTestMethodsWithNewTempDirParameterTestCase.recordedPaths)
 					.hasSize(2)
 					.doesNotHaveDuplicates()
@@ -96,14 +96,14 @@ class ResourceManagerExtensionTests {
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
 
 		@Test
-		void firstTest(@New(TemporaryDirectory.class) Path tempDir) throws Exception {
+		void firstTest(@New(TemporaryDirectory.class) Path tempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
 
 			recordedPaths.add(tempDir);
 		}
 
 		@Test
-		void secondTest(@New(TemporaryDirectory.class) Path tempDir) throws Exception {
+		void secondTest(@New(TemporaryDirectory.class) Path tempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
 
 			recordedPaths.add(tempDir);
@@ -113,7 +113,40 @@ class ResourceManagerExtensionTests {
 
 	// ---
 
-	// TODO: Check that everything works fine when a test method has two @New-annotated parameters
+	@DisplayName("when a test class has a test method with multiple @New(TemporaryDirectory.class)-annotated parameters")
+	@Nested
+	class WhenTestClassHasTestMethodWithMultipleNewTempDirAnnotatedParameterTests {
+
+		@DisplayName("then the parameters on the test method are populated with new readable and writeable "
+				+ "temporary directories that are torn down afterwards")
+		@Test
+		void thenParametersOnTheTestMethodArePopulatedWithNewReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(SingleTestMethodWithTwoNewTempDirParametersTestCase.class);
+			assertThat(executionResults).hasSingleSucceededTest();
+			assertThat(SingleTestMethodWithTwoNewTempDirParametersTestCase.recordedPaths)
+					.hasSize(2)
+					.doesNotHaveDuplicates()
+					.allSatisfy(path -> assertThat(path).doesNotExist());
+		}
+
+	}
+
+	@ExtendWith(ResourceManagerExtension.class)
+	static class SingleTestMethodWithTwoNewTempDirParametersTestCase {
+
+		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
+
+		@Test
+		void firstTest(@New(TemporaryDirectory.class) Path firstTempDir,
+				@New(TemporaryDirectory.class) Path secondTempDir) {
+			assertEmptyReadableWriteableTemporaryDirectory(firstTempDir);
+			assertEmptyReadableWriteableTemporaryDirectory(secondTempDir);
+
+			recordedPaths.addAll(asList(firstTempDir, secondTempDir));
+		}
+
+	}
 
 	// ---
 
@@ -127,7 +160,7 @@ class ResourceManagerExtensionTests {
 		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTestInstance() {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(SingleTestConstructorWithNewTempDirParameterTestCase.class);
-			executionResults.testEvents().debug().succeeded().assertThatEvents().hasSize(1);
+			assertThat(executionResults).hasSingleSucceededTest();
 			assertThat(SingleTestConstructorWithNewTempDirParameterTestCase.recordedPathFromConstructor).doesNotExist();
 		}
 
@@ -143,7 +176,7 @@ class ResourceManagerExtensionTests {
 		}
 
 		@Test
-		void theTest() throws Exception {
+		void theTest() {
 			assertEmptyReadableWriteableTemporaryDirectory(recordedPathFromConstructor);
 		}
 
@@ -174,6 +207,7 @@ class ResourceManagerExtensionTests {
 	}
 
 	@ExtendWith(ResourceManagerExtension.class)
+	@SuppressWarnings("unused")
 	static class UnannotatedParameterTestCase {
 
 		@Test
@@ -202,8 +236,7 @@ class ResourceManagerExtensionTests {
 						finished(//
 							throwable(//
 								instanceOf(ParameterResolutionException.class), //
-								message(String
-										.format("Unable to create an instance of `%s`", ThrowingResourceFactory.class)), //
+								message("Unable to create an instance of `" + ThrowingResourceFactory.class + "`"), //
 								cause(//
 									instanceOf(EXPECTED_EXCEPTION.getClass()), //
 									message(EXPECTED_EXCEPTION.getMessage())))));
@@ -212,6 +245,7 @@ class ResourceManagerExtensionTests {
 	}
 
 	@ExtendWith(ResourceManagerExtension.class)
+	@SuppressWarnings("unused")
 	static class ThrowingResourceFactoryTestCase {
 
 		@Test
@@ -243,15 +277,12 @@ class ResourceManagerExtensionTests {
 
 	// ---
 
-	private static void assertEmptyReadableWriteableTemporaryDirectory(@New(TemporaryDirectory.class) Path tempDir)
-			throws IOException {
-		assertThat(tempDir).isEmptyDirectory();
-		assertThat(tempDir).startsWith(Paths.get(System.getProperty("java.io.tmpdir")));
-		assertThat(tempDir).isReadable();
-		assertThat(tempDir).isWritable();
-
-		Files.write(tempDir.resolve("file.txt"), "some random text".getBytes(UTF_8));
-		assertThat(tempDir.resolve("file.txt")).usingCharset(UTF_8).hasContent("some random text");
+	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
+		assertThat(tempDir)
+				.isEmptyDirectory()
+				.startsWith(Paths.get(System.getProperty("java.io.tmpdir")))
+				.isReadable()
+				.isWritable();
 	}
 
 }

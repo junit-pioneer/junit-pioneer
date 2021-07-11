@@ -41,6 +41,7 @@ public class ResourceManagerExtension implements ParameterResolver {
 					//	throw new ParameterResolutionException(
 					//		String.format("Parameter `%s` is not annotated with @New", parameterContext.getParameter()));
 				});
+		// TODO: Write a test that confirms creating a ResourceFactory with just a non-default constructor fails
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newResourceAnnotation.value());
 		// TODO: Put the resourceFactory in the store too?
 		Resource<?> resource;
@@ -51,11 +52,11 @@ public class ResourceManagerExtension implements ParameterResolver {
 			throw new ParameterResolutionException(
 				"Unable to create an instance of `" + resourceFactory.getClass() + '`', e);
 		}
-		// TODO: Check that we're using a custom NAMESPACE
 		extensionContext
-				.getStore(ExtensionContext.Namespace.GLOBAL)
-				// TODO: Use a unique key per resource?
-				.put("theResource", (ExtensionContext.Store.CloseableResource) resource::close);
+				.getStore(
+					ExtensionContext.Namespace.create(ResourceManagerExtension.class, extensionContext.getUniqueId()))
+				.put(System.identityHashCode(newResourceAnnotation),
+					(ExtensionContext.Store.CloseableResource) resource::close);
 		try {
 			return resource.get();
 		}
