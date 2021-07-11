@@ -16,8 +16,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.ReflectionSupport;
 
-// TODO: Make final, or make private and hide behind a new annotation, e.g. @Resources
-public class ResourceManagerExtension implements ParameterResolver {
+final class ResourceManagerExtension implements ParameterResolver {
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {

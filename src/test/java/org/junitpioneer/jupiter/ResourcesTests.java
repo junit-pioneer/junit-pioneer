@@ -28,16 +28,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
-@DisplayName("ResourceManager extension")
-// TODO: Do we need this annotation anymore?
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ResourceManagerExtensionTests {
+@DisplayName("Resources extension")
+class ResourcesTests {
 
 	@DisplayName("when a test class has a test method with a @New(TemporaryDirectory.class)-annotated parameter")
 	@Nested
@@ -55,7 +51,7 @@ class ResourceManagerExtensionTests {
 
 	}
 
-	@ExtendWith(ResourceManagerExtension.class)
+	@Resources
 	static class SingleTestMethodWithNewTempDirParameterTestCase {
 
 		static Path recordedPath;
@@ -90,7 +86,7 @@ class ResourceManagerExtensionTests {
 
 	}
 
-	@ExtendWith(ResourceManagerExtension.class)
+	@Resources
 	static class TwoTestMethodsWithNewTempDirParameterTestCase {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -132,7 +128,7 @@ class ResourceManagerExtensionTests {
 
 	}
 
-	@ExtendWith(ResourceManagerExtension.class)
+	@Resources
 	static class SingleTestMethodWithTwoNewTempDirParametersTestCase {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -169,7 +165,7 @@ class ResourceManagerExtensionTests {
 
 	}
 
-	@ExtendWith(ResourceManagerExtension.class)
+	@Resources
 	static class TestConstructorWithNewTempDirParameterTestCase {
 
 		static List<Path> recordedPathsFromConstructor = new CopyOnWriteArrayList<>();
@@ -194,11 +190,11 @@ class ResourceManagerExtensionTests {
 
 	// ---
 
-	@DisplayName("when ResourceManagerExtension is applied to a test method with an unannotated parameter")
+	@DisplayName("when Resources is applied to a test method with an unannotated parameter")
 	@Nested
-	class WhenResourceManagerExtensionIsAppliedToTestMethodWithUnannotatedParameterTests {
+	class WhenResourcesIsAppliedToTestMethodWithUnannotatedParameterTests {
 
-		@DisplayName("then ResourceManagerExtension does not populate the parameter")
+		@DisplayName("then Resources does not populate the parameter")
 		@Test
 		void thenSupportsParameterReturnsTrue() {
 			ExecutionResults executionResults = PioneerTestKit.executeTestClass(UnannotatedParameterTestCase.class);
@@ -210,13 +206,13 @@ class ResourceManagerExtensionTests {
 						finished(throwable(message(
 							m -> m.startsWith("No ParameterResolver registered for parameter [java.lang.Object") && m
 									.endsWith("in method [void org.junitpioneer.jupiter."
-											+ "ResourceManagerExtensionTests$UnannotatedParameterTestCase."
+											+ "ResourcesTests$UnannotatedParameterTestCase."
 											+ "theTest(java.lang.Object)].")))));
 		}
 
 	}
 
-	@ExtendWith(ResourceManagerExtension.class)
+	@Resources
 	@SuppressWarnings("unused")
 	static class UnannotatedParameterTestCase {
 
@@ -254,7 +250,7 @@ class ResourceManagerExtensionTests {
 
 	}
 
-	@ExtendWith(ResourceManagerExtension.class)
+	@Resources
 	@SuppressWarnings("unused")
 	static class ThrowingResourceFactoryTestCase {
 
