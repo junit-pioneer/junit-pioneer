@@ -29,14 +29,16 @@ final class ResourceManagerExtension implements ParameterResolver {
 			throws ParameterResolutionException {
 		// TODO: Check that the parameter is annotated with at least @New or @Shared.
 		// TODO: Check that the parameter is not annotated with both @New and @Shared.
-		New newResourceAnnotation = parameterContext
-				.findAnnotation(New.class)
-				.orElseThrow(() -> {
-					// TODO
-					throw new UnsupportedOperationException("TODO");
-					//	throw new ParameterResolutionException(
-					//		String.format("Parameter `%s` is not annotated with @New", parameterContext.getParameter()));
-				});
+		New newResourceAnnotation = parameterContext.findAnnotation(New.class).orElseThrow(() -> {
+			throw new ParameterResolutionException(String
+					.format( //
+						"Parameter `%s` on %s is not annotated with @New", //
+						parameterContext.getParameter(), //
+						extensionContext
+								.getTestMethod()
+								.map(method -> "method `" + method + '`')
+								.orElse("unknown method")));
+		});
 		// TODO: Write a test that confirms creating a ResourceFactory with just a non-default constructor fails
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newResourceAnnotation.value());
 		// TODO: Put the resourceFactory in the store too?

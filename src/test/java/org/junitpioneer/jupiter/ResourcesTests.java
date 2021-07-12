@@ -12,23 +12,32 @@ package org.junitpioneer.jupiter;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -276,6 +285,62 @@ class ResourcesTests {
 	}
 
 	private static final Exception EXPECTED_EXCEPTION = new IOException("failed to connect to the Matrix");
+
+	// ---
+
+	// TODO: It's generally good advice to avoid mocking things that we, JUnit Pioneer, don't own, because if we mock
+	//       third-party things, then their real behaviour is likely to be updated over time and get out-of-sync with
+	//       our mocks.
+	//       Do we care about this, given that JUnit 5 avoids backwards-incompatible changes and that we're so closely
+	//       tied to JUnit 5 itself?
+
+	@DisplayName("when ResourceManagerExtension is unable to find @New on a parameter")
+	@Nested
+	class WhenResourceManagerExtensionUnableToFindNewOnParameter {
+
+		@DisplayName("then an exception mentioning the parameter and the test method it's on is thrown")
+		@Test
+		void thenExceptionMentioningParameterAndTestMethodItsOnIsThrown() {
+			ParameterContext mockParameterContext = mock(ParameterContext.class);
+			when(mockParameterContext.findAnnotation(New.class)).thenReturn(Optional.empty());
+			Method exampleMethod = ReflectionSupport.findMethod(String.class, "valueOf", Object.class).get();
+			Parameter exampleParameter = exampleMethod.getParameters()[0];
+			when(mockParameterContext.getParameter()).thenReturn(exampleParameter);
+			ExtensionContext mockExtensionContext = mock(ExtensionContext.class);
+			when(mockExtensionContext.getTestMethod()).thenReturn(Optional.of(exampleMethod));
+
+			assertThatThrownBy(
+				() -> new ResourceManagerExtension().resolveParameter(mockParameterContext, mockExtensionContext))
+						.isInstanceOf(ParameterResolutionException.class)
+						.hasMessage("Parameter `" + exampleParameter + "` on method `" + exampleMethod
+								+ "` is not annotated with @New");
+		}
+
+		@DisplayName("and the test method does not exist")
+		@Nested
+		class AndTestMethodDoesNotExist {
+
+			@DisplayName("then an exception mentioning just the parameter is thrown")
+			@Test
+			void thenExceptionMentioningJustParameterIsThrown() {
+				ParameterContext mockParameterContext = mock(ParameterContext.class);
+				when(mockParameterContext.findAnnotation(New.class)).thenReturn(Optional.empty());
+				Method exampleMethod = ReflectionSupport.findMethod(String.class, "valueOf", Object.class).get();
+				Parameter exampleParameter = exampleMethod.getParameters()[0];
+				when(mockParameterContext.getParameter()).thenReturn(exampleParameter);
+				ExtensionContext mockExtensionContext = mock(ExtensionContext.class);
+				when(mockExtensionContext.getTestMethod()).thenReturn(Optional.empty());
+
+				assertThatThrownBy(
+					() -> new ResourceManagerExtension().resolveParameter(mockParameterContext, mockExtensionContext))
+							.isInstanceOf(ParameterResolutionException.class)
+							.hasMessage(
+								"Parameter `" + exampleParameter + "` on unknown method is not annotated with @New");
+			}
+
+		}
+
+	}
 
 	// ---
 
