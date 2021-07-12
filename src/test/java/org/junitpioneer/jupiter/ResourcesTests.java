@@ -28,6 +28,10 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.net.UnknownHostException;
+import java.nio.file.ClosedFileSystemException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,7 +39,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.junit.jupiter.api.Disabled;
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -161,6 +166,61 @@ class ResourcesTests {
 
 	// ---
 
+	@DisplayName("when a test class has a test method with a @New(InMemoryDirectory.class)-annotated parameter")
+	@Nested
+	class WhenTestClassHasTestMethodWithNewInMemoryDirParameterTests {
+
+		@DisplayName("then the parameter is populated with a new readable and writeable temporary directory "
+				+ "that lasts as long as the test")
+		@Test
+		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTest() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(SingleTestMethodWithNewInMemoryDirParameterTestCase.class);
+			assertThat(executionResults).hasSingleSucceededTest();
+			assertThatThrownBy(
+				() -> Files.readAllLines(SingleTestMethodWithNewInMemoryDirParameterTestCase.recordedPath))
+						.isInstanceOf(ClosedFileSystemException.class);
+		}
+
+	}
+
+	@Resources
+	static class SingleTestMethodWithNewInMemoryDirParameterTestCase {
+
+		static Path recordedPath;
+
+		@Test
+		void theTest(@New(InMemoryDirectory.class) Path inMemoryDir) {
+			assertEmptyReadableWriteableInMemoryDirectory(inMemoryDir);
+			assertCanAddAndReadTextFile(inMemoryDir);
+
+			recordedPath = inMemoryDir;
+		}
+
+	}
+
+	static class InMemoryDirectory implements ResourceFactory<Path> {
+
+		private final FileSystem inMemoryFileSystem = Jimfs.newFileSystem(Configuration.unix());
+
+		@Override
+		public Resource<Path> create() {
+			return () -> {
+				Path result = inMemoryFileSystem.getPath("test");
+				Files.createDirectory(result);
+				return result;
+			};
+		}
+
+		@Override
+		public void close() throws Exception {
+			inMemoryFileSystem.close();
+		}
+
+	}
+
+	// ---
+
 	@DisplayName("when a test class has a constructor with a @New(TemporaryDirectory.class)-annotated parameter")
 	@Nested
 	class WhenTestClassHasConstructorWithNewTemporaryDirectoryAnnotatedParameterTests {
@@ -240,17 +300,17 @@ class ResourcesTests {
 
 	// ---
 
-	@DisplayName("when a ResourceFactory is applied to a parameter and the factory throws on ::create")
+	@DisplayName("when new resource factory is applied to a parameter")
 	@Nested
-	class WhenResourceFactoryAppliesToParameterTests {
+	class WhenNewResourceFactoryAppliedToParameterTests {
 
 		@DisplayName("and the factory throws on ::create")
 		@Nested
 		class AndFactoryThrowsOnCreateTests {
 
-			@DisplayName("then the thrown exception is propagated")
+			@DisplayName("then the thrown exception is wrapped and propagated")
 			@Test
-			void thenThrownExceptionIsPropagated() {
+			void thenThrownExceptionIsWrappedAndPropagated() {
 				ExecutionResults executionResults = PioneerTestKit
 						.executeTestClass(ThrowOnCreateResourceFactoryTestCase.class);
 				executionResults
@@ -265,14 +325,12 @@ class ResourcesTests {
 									message(
 										"Unable to create an instance of `" + ThrowOnCreateResourceFactory.class + "`"), //
 									cause(//
-										instanceOf(IOException.class), //
-										message("failed to connect to the Matrix")))));
+										instanceOf(EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION.getClass()), //
+										message(EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION.getMessage())))));
 			}
 
 		}
 
-		// TODO: Remove or replace this test
-		@Disabled("Disabled because I think this will be tested through one of the unhappy paths of a ResourceFactory that overrides ::close, like a jimfs-based InMemoryDirectory")
 		@DisplayName("and the factory throws on ::close")
 		@Nested
 		class AndFactoryThrowsOnCloseTests {
@@ -290,23 +348,72 @@ class ResourcesTests {
 							1, //
 							finished(//
 								throwable(//
-									instanceOf(ParameterResolutionException.class), //
-									message("Unable to close the current instance of `"
-											+ ThrowOnCloseResourceFactory.class + "`"), //
-									cause(//
-										instanceOf(CloneNotSupportedException.class), //
-										message("failed to clone a homunculus")))));
+									instanceOf(EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION.getClass()), //
+									message(EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION.getMessage()))));
 			}
 
+		}
+
+		@DisplayName("and a new resource is created")
+		@Nested
+		class AndNewResourceIsCreatedTests {
+
+			@DisplayName("and the resource throws on ::get")
+			@Nested
+			class AndResourceThrowsOnGetTests {
+
+				@DisplayName("then the thrown exception is wrapped and propagated")
+				@Test
+				void thenThrownExceptionIsWrappedAndPropagated() {
+					ExecutionResults executionResults = PioneerTestKit
+							.executeTestClass(ThrowOnGetResourceTestCase.class);
+					executionResults
+							.testEvents()
+							.debug()
+							.assertThatEvents()
+							.haveExactly(//
+									1, //
+									finished(//
+											throwable(//
+													instanceOf(ParameterResolutionException.class), //
+													message(
+															"Unable to create an instance of `" + ThrowOnGetResource.class + "`"), //
+													cause(//
+															instanceOf(EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION.getClass()), //
+															message(EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION.getMessage())))));
+				}
+			}
+
+			@DisplayName("and the resource throws on ::close")
+			@Nested
+			class AndResourceThrowsOnCloseTests {
+
+				@DisplayName("then the thrown exception is propagated")
+				@Test
+				void thenThrownExceptionIsWrappedAndPropagated() {
+					ExecutionResults executionResults = PioneerTestKit
+							.executeTestClass(ThrowOnCloseResourceResourceFactoryTestCase.class);
+					executionResults
+							.testEvents()
+							.debug()
+							.assertThatEvents()
+							.haveExactly(//
+									1, //
+									finished(//
+											throwable(//
+													instanceOf(EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION.getClass()), //
+													message(EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION.getMessage()))));
+				}
+			}
 		}
 
 	}
 
 	@Resources
-	@SuppressWarnings("unused")
 	static class ThrowOnCreateResourceFactoryTestCase {
 
 		@Test
+		@SuppressWarnings("unused")
 		void foo(@New(ThrowOnCreateResourceFactory.class) Object object) {
 
 		}
@@ -317,21 +424,19 @@ class ResourcesTests {
 
 		@Override
 		public Resource<Object> create() throws Exception {
-			throw new IOException("failed to connect to the Matrix");
-		}
-
-		@Override
-		public void close() {
-			fail("Not expected to be called.");
+			throw EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION;
 		}
 
 	}
 
+	private static final Exception EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION =
+			new IOException("failed to connect to the Matrix");
+
 	@Resources
-	@SuppressWarnings("unused")
 	static class ThrowOnCloseResourceFactoryTestCase {
 
 		@Test
+		@SuppressWarnings("unused")
 		void foo(@New(ThrowOnCloseResourceFactory.class) Object object) {
 
 		}
@@ -347,10 +452,74 @@ class ResourcesTests {
 
 		@Override
 		public void close() throws Exception {
-			throw new CloneNotSupportedException("failed to clone a homunculus");
+			throw EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION;
 		}
 
 	}
+
+	private static final Exception EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION =
+			new CloneNotSupportedException("failed to clone a homunculus");
+
+	@Resources
+	static class ThrowOnGetResourceTestCase {
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@New(ThrowOnGetResourceResourceFactory.class) Object object) {
+
+		}
+	}
+
+	static final class ThrowOnGetResourceResourceFactory implements ResourceFactory<Object> {
+
+		@Override
+		public Resource<Object> create() {
+			return new ThrowOnGetResource();
+		}
+	}
+
+	static final class ThrowOnGetResource implements Resource<Object> {
+
+		@Override
+		public Object get() throws Exception {
+			throw EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION;
+		}
+	}
+
+	private static final Exception EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION =
+			new FileAlreadyExistsException("wait, what's that file doing there?");
+
+	@Resources
+	static class ThrowOnCloseResourceResourceFactoryTestCase {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@New(ThrowOnCloseResourceResourceFactory.class) Object object) {
+
+		}
+
+	}
+
+	static final class ThrowOnCloseResourceResourceFactory implements ResourceFactory<Object> {
+
+		@Override
+		public Resource<Object> create() {
+			return new Resource<Object>() {
+				@Override
+				public Object get() {
+					return "foo";
+				}
+
+				@Override
+				public void close() throws Exception {
+					throw EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION;
+				}
+			};
+		}
+
+	}
+
+	private static final Exception EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION =
+			new UnknownHostException("wait, where's the Internet gone?!");
 
 	// ---
 
@@ -429,6 +598,15 @@ class ResourcesTests {
 				.startsWith(Paths.get(System.getProperty("java.io.tmpdir")))
 				.isReadable()
 				.isWritable();
+	}
+
+	private static void assertEmptyReadableWriteableInMemoryDirectory(Path tempDir) {
+		assertThat(tempDir).isEmptyDirectory().isReadable().isWritable();
+		try (FileSystem fileSystem = Jimfs.newFileSystem()) {
+			assertThat(tempDir.getFileSystem()).isInstanceOf(fileSystem.getClass());
+		} catch (IOException e) {
+			fail(e);
+		}
 	}
 
 	private static void assertCanAddAndReadTextFile(Path tempDir) {

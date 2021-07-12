@@ -21,6 +21,7 @@ final class ResourceManagerExtension implements ParameterResolver {
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		// TODO: Also return true if the parameter is annotated with @Shared
+		// TODO: Check that the parameter is not annotated with both @New and @Shared.
 		return parameterContext.isAnnotated(New.class);
 	}
 
@@ -40,7 +41,11 @@ final class ResourceManagerExtension implements ParameterResolver {
 								.orElse("unknown method")));
 		});
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newResourceAnnotation.value());
-		// TODO: Put the resourceFactory in the store too?
+		extensionContext
+				.getStore(
+					ExtensionContext.Namespace.create(ResourceManagerExtension.class, extensionContext.getUniqueId()))
+				.put(System.identityHashCode(newResourceAnnotation) + "-resource-factory",
+					(ExtensionContext.Store.CloseableResource) resourceFactory::close);
 		Resource<?> resource;
 		try {
 			resource = resourceFactory.create();
@@ -52,14 +57,13 @@ final class ResourceManagerExtension implements ParameterResolver {
 		extensionContext
 				.getStore(
 					ExtensionContext.Namespace.create(ResourceManagerExtension.class, extensionContext.getUniqueId()))
-				.put(System.identityHashCode(newResourceAnnotation),
+				.put(System.identityHashCode(newResourceAnnotation) + "-resource",
 					(ExtensionContext.Store.CloseableResource) resource::close);
 		try {
 			return resource.get();
 		}
 		catch (Exception e) {
-			// TODO
-			throw new UnsupportedOperationException("TODO");
+			throw new ParameterResolutionException("Unable to create an instance of `" + resource.getClass() + '`', e);
 		}
 	}
 
