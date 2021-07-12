@@ -43,6 +43,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.platform.commons.support.ReflectionSupport;
+import org.junitpioneer.internal.TestExtensionContext;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -73,6 +74,7 @@ class ResourcesTests {
 		@Test
 		void theTest(@New(TemporaryDirectory.class) Path tempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertCanAddAndReadTextFile(tempDir);
 
 			recordedPath = tempDir;
 		}
@@ -366,16 +368,16 @@ class ResourcesTests {
 		@DisplayName("then an exception mentioning the parameter and the test method it's on is thrown")
 		@Test
 		void thenExceptionMentioningParameterAndTestMethodItsOnIsThrown() {
+			// TODO: Consider introducing a TestParameterContext, similar to TestExtensionContext
 			ParameterContext mockParameterContext = mock(ParameterContext.class);
 			when(mockParameterContext.findAnnotation(New.class)).thenReturn(Optional.empty());
-			Method exampleMethod = ReflectionSupport.findMethod(String.class, "valueOf", Object.class).get();
+			Class<?> exampleClass = String.class;
+			Method exampleMethod = ReflectionSupport.findMethod(exampleClass, "valueOf", Object.class).get();
 			Parameter exampleParameter = exampleMethod.getParameters()[0];
 			when(mockParameterContext.getParameter()).thenReturn(exampleParameter);
-			ExtensionContext mockExtensionContext = mock(ExtensionContext.class);
-			when(mockExtensionContext.getTestMethod()).thenReturn(Optional.of(exampleMethod));
 
 			assertThatThrownBy(
-				() -> new ResourceManagerExtension().resolveParameter(mockParameterContext, mockExtensionContext))
+				() -> new ResourceManagerExtension().resolveParameter(mockParameterContext, new TestExtensionContext(exampleClass, exampleMethod)))
 						.isInstanceOf(ParameterResolutionException.class)
 						.hasMessage("Parameter `" + exampleParameter + "` on method `" + exampleMethod
 								+ "` is not annotated with @New");
@@ -390,14 +392,13 @@ class ResourcesTests {
 			void thenExceptionMentioningJustParameterIsThrown() {
 				ParameterContext mockParameterContext = mock(ParameterContext.class);
 				when(mockParameterContext.findAnnotation(New.class)).thenReturn(Optional.empty());
-				Method exampleMethod = ReflectionSupport.findMethod(String.class, "valueOf", Object.class).get();
+				Class<?> exampleClass = String.class;
+				Method exampleMethod = ReflectionSupport.findMethod(exampleClass, "valueOf", Object.class).get();
 				Parameter exampleParameter = exampleMethod.getParameters()[0];
 				when(mockParameterContext.getParameter()).thenReturn(exampleParameter);
-				ExtensionContext mockExtensionContext = mock(ExtensionContext.class);
-				when(mockExtensionContext.getTestMethod()).thenReturn(Optional.empty());
 
 				assertThatThrownBy(
-					() -> new ResourceManagerExtension().resolveParameter(mockParameterContext, mockExtensionContext))
+					() -> new ResourceManagerExtension().resolveParameter(mockParameterContext, new TestExtensionContext(null, null)))
 							.isInstanceOf(ParameterResolutionException.class)
 							.hasMessage(
 								"Parameter `" + exampleParameter + "` on unknown method is not annotated with @New");
@@ -429,6 +430,9 @@ class ResourcesTests {
 				.startsWith(Paths.get(System.getProperty("java.io.tmpdir")))
 				.isReadable()
 				.isWritable();
+	}
+
+	private static void assertCanAddAndReadTextFile(Path tempDir) {
 		assertDoesNotThrow(() -> Files.write(tempDir.resolve("some-file.txt"), singletonList("some-text")));
 		List<String> lines = assertDoesNotThrow(() -> Files.readAllLines(tempDir.resolve("some-file.txt")));
 		assertThat(lines).containsExactly("some-text");
