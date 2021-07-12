@@ -39,7 +39,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.platform.commons.support.ReflectionSupport;
@@ -376,11 +375,11 @@ class ResourcesTests {
 			Parameter exampleParameter = exampleMethod.getParameters()[0];
 			when(mockParameterContext.getParameter()).thenReturn(exampleParameter);
 
-			assertThatThrownBy(
-				() -> new ResourceManagerExtension().resolveParameter(mockParameterContext, new TestExtensionContext(exampleClass, exampleMethod)))
-						.isInstanceOf(ParameterResolutionException.class)
-						.hasMessage("Parameter `" + exampleParameter + "` on method `" + exampleMethod
-								+ "` is not annotated with @New");
+			assertThatThrownBy(() -> new ResourceManagerExtension()
+					.resolveParameter(mockParameterContext, new TestExtensionContext(exampleClass, exampleMethod)))
+							.isInstanceOf(ParameterResolutionException.class)
+							.hasMessage("Parameter `" + exampleParameter + "` on method `" + exampleMethod
+									+ "` is not annotated with @New");
 		}
 
 		@DisplayName("and the test method does not exist")
@@ -397,11 +396,11 @@ class ResourcesTests {
 				Parameter exampleParameter = exampleMethod.getParameters()[0];
 				when(mockParameterContext.getParameter()).thenReturn(exampleParameter);
 
-				assertThatThrownBy(
-					() -> new ResourceManagerExtension().resolveParameter(mockParameterContext, new TestExtensionContext(null, null)))
-							.isInstanceOf(ParameterResolutionException.class)
-							.hasMessage(
-								"Parameter `" + exampleParameter + "` on unknown method is not annotated with @New");
+				assertThatThrownBy(() -> new ResourceManagerExtension()
+						.resolveParameter(mockParameterContext, new TestExtensionContext(null, null)))
+								.isInstanceOf(ParameterResolutionException.class)
+								.hasMessage("Parameter `" + exampleParameter
+										+ "` on unknown method is not annotated with @New");
 			}
 
 		}
