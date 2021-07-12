@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-public class TemporaryDirectory implements ResourceFactory<Path> {
+public final class TemporaryDirectory implements ResourceFactory<Path> {
 
 	@Override
 	public Resource<Path> create() throws Exception {
@@ -39,12 +39,6 @@ public class TemporaryDirectory implements ResourceFactory<Path> {
 			}
 
 		};
-	}
-
-	@Override
-	public void close() throws Exception {
-		// TODO
-		throw new UnsupportedOperationException("TODO in TemporaryDirectory#close");
 	}
 
 	private void deleteRecursively(Path tempDir) throws IOException {

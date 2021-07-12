@@ -11,8 +11,11 @@
 package org.junitpioneer.jupiter;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
@@ -25,12 +28,14 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -236,55 +241,115 @@ class ResourcesTests {
 
 	@DisplayName("when a ResourceFactory is applied to a parameter and the factory throws on ::create")
 	@Nested
-	class WhenResourceFactoryAppliesToParameterAndFactoryThrowsOnCreateTests {
+	class WhenResourceFactoryAppliesToParameterTests {
 
-		@DisplayName("then the thrown exception is propagated")
-		@Test
-		void thenThrownExceptionIsPropagated() {
-			ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowingResourceFactoryTestCase.class);
-			executionResults
-					.testEvents()
-					.debug()
-					.assertThatEvents()
-					.haveExactly(//
-						1, //
-						finished(//
-							throwable(//
-								instanceOf(ParameterResolutionException.class), //
-								message("Unable to create an instance of `" + ThrowingResourceFactory.class + "`"), //
-								cause(//
-									instanceOf(EXPECTED_EXCEPTION.getClass()), //
-									message(EXPECTED_EXCEPTION.getMessage())))));
+		@DisplayName("and the factory throws on ::create")
+		@Nested
+		class AndFactoryThrowsOnCreateTests {
+
+			@DisplayName("then the thrown exception is propagated")
+			@Test
+			void thenThrownExceptionIsPropagated() {
+				ExecutionResults executionResults = PioneerTestKit
+						.executeTestClass(ThrowOnCreateResourceFactoryTestCase.class);
+				executionResults
+						.testEvents()
+						.debug()
+						.assertThatEvents()
+						.haveExactly(//
+							1, //
+							finished(//
+								throwable(//
+									instanceOf(ParameterResolutionException.class), //
+									message(
+										"Unable to create an instance of `" + ThrowOnCreateResourceFactory.class + "`"), //
+									cause(//
+										instanceOf(IOException.class), //
+										message("failed to connect to the Matrix")))));
+			}
+
+		}
+
+		// TODO: Remove or replace this test
+		@Disabled("Disabled because I think this will be tested through one of the unhappy paths of a ResourceFactory that overrides ::close, like a jimfs-based InMemoryDirectory")
+		@DisplayName("and the factory throws on ::close")
+		@Nested
+		class AndFactoryThrowsOnCloseTests {
+
+			@DisplayName("then the thrown exception is propagated")
+			@Test
+			void thenThrownExceptionIsPropagated() {
+				ExecutionResults executionResults = PioneerTestKit
+						.executeTestClass(ThrowOnCloseResourceFactoryTestCase.class);
+				executionResults
+						.allEvents()
+						.debug()
+						.assertThatEvents()
+						.haveExactly(//
+							1, //
+							finished(//
+								throwable(//
+									instanceOf(ParameterResolutionException.class), //
+									message("Unable to close the current instance of `"
+											+ ThrowOnCloseResourceFactory.class + "`"), //
+									cause(//
+										instanceOf(CloneNotSupportedException.class), //
+										message("failed to clone a homunculus")))));
+			}
+
 		}
 
 	}
 
 	@Resources
 	@SuppressWarnings("unused")
-	static class ThrowingResourceFactoryTestCase {
+	static class ThrowOnCreateResourceFactoryTestCase {
 
 		@Test
-		void foo(@New(ThrowingResourceFactory.class) Object object) {
+		void foo(@New(ThrowOnCreateResourceFactory.class) Object object) {
 
 		}
 
 	}
 
-	static final class ThrowingResourceFactory implements ResourceFactory<Object> {
+	static final class ThrowOnCreateResourceFactory implements ResourceFactory<Object> {
 
 		@Override
 		public Resource<Object> create() throws Exception {
-			throw EXPECTED_EXCEPTION;
+			throw new IOException("failed to connect to the Matrix");
 		}
 
 		@Override
 		public void close() {
-			// do nothing
+			fail("Not expected to be called.");
 		}
 
 	}
 
-	private static final Exception EXPECTED_EXCEPTION = new IOException("failed to connect to the Matrix");
+	@Resources
+	@SuppressWarnings("unused")
+	static class ThrowOnCloseResourceFactoryTestCase {
+
+		@Test
+		void foo(@New(ThrowOnCloseResourceFactory.class) Object object) {
+
+		}
+
+	}
+
+	static final class ThrowOnCloseResourceFactory implements ResourceFactory<Object> {
+
+		@Override
+		public Resource<Object> create() {
+			return () -> "foo";
+		}
+
+		@Override
+		public void close() throws Exception {
+			throw new CloneNotSupportedException("failed to clone a homunculus");
+		}
+
+	}
 
 	// ---
 
@@ -296,7 +361,7 @@ class ResourcesTests {
 
 	@DisplayName("when ResourceManagerExtension is unable to find @New on a parameter")
 	@Nested
-	class WhenResourceManagerExtensionUnableToFindNewOnParameter {
+	class WhenResourceManagerExtensionUnableToFindNewOnParameterTests {
 
 		@DisplayName("then an exception mentioning the parameter and the test method it's on is thrown")
 		@Test
@@ -318,7 +383,7 @@ class ResourcesTests {
 
 		@DisplayName("and the test method does not exist")
 		@Nested
-		class AndTestMethodDoesNotExist {
+		class AndTestMethodDoesNotExistTests {
 
 			@DisplayName("then an exception mentioning just the parameter is thrown")
 			@Test
@@ -348,12 +413,25 @@ class ResourcesTests {
 
 	// ---
 
+	@DisplayName("check that all Resources-related classes are final")
+	@Test
+	void checkThatAllResourcesRelatedClassesAreFinal() {
+		assertThat(TemporaryDirectory.class).isFinal();
+		assertThat(ResourceManagerExtension.class).isFinal();
+		// TODO: Add the jimfs and OkHttp MockServer-based resource factories here
+	}
+
+	// ---
+
 	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
 		assertThat(tempDir)
 				.isEmptyDirectory()
 				.startsWith(Paths.get(System.getProperty("java.io.tmpdir")))
 				.isReadable()
 				.isWritable();
+		assertDoesNotThrow(() -> Files.write(tempDir.resolve("some-file.txt"), singletonList("some-text")));
+		List<String> lines = assertDoesNotThrow(() -> Files.readAllLines(tempDir.resolve("some-file.txt")));
+		assertThat(lines).containsExactly("some-text");
 	}
 
 }

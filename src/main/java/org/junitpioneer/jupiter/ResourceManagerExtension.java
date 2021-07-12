@@ -39,7 +39,6 @@ final class ResourceManagerExtension implements ParameterResolver {
 								.map(method -> "method `" + method + '`')
 								.orElse("unknown method")));
 		});
-		// TODO: Write a test that confirms creating a ResourceFactory with just a non-default constructor fails
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newResourceAnnotation.value());
 		// TODO: Put the resourceFactory in the store too?
 		Resource<?> resource;
