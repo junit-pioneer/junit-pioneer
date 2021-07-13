@@ -3,9 +3,6 @@ name: Main build
 env:
   EXPERIMENTAL_JAVA: 18
 
-defaults:
-  timeout-minutes: 1
-
 on:
   # We want to trigger our builds all the time for the default branch
   # except when Shipkit creates a new version tag
@@ -38,6 +35,7 @@ jobs:
   # could expose our secrets, and we definitely want to prevent this.
   validation:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: Gradle wrapper validation
     steps:
       - name: Check out repo
@@ -53,6 +51,7 @@ jobs:
   basic:
     runs-on: ${{ matrix.os }}-latest
     needs: validation
+    timeout-minutes: 15
     strategy:
       matrix:
         java: [ 8 ]
@@ -82,6 +81,7 @@ jobs:
   sonarcloud:
     runs-on: ubuntu-latest
     needs: validation
+    timeout-minutes: 15
     name: SonarCloud analysis
     steps:
       - name: Check out repo
@@ -122,6 +122,7 @@ jobs:
     if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
     needs: basic
     runs-on: ${{ matrix.os }}-latest
+    timeout-minutes: 15
     strategy:
       matrix:
         java: [ 8, 11, 16 ]
@@ -158,6 +159,7 @@ jobs:
     needs: full-featured
     runs-on: ${{ matrix.os }}-latest
     continue-on-error: true
+    timeout-minutes: 15
     strategy:
       matrix:
         junit-version: [ '5.7.0', '5.7.1', '5.8.0-M1' ]
@@ -207,6 +209,7 @@ jobs:
     if: github.event.inputs.version != '' && github.event.inputs.releasing == 'true'
     runs-on: ubuntu-latest
     needs: full-featured
+    timeout-minutes: 15
     name: Release Pioneer into the wild
     steps:
       - name: Check out repo
@@ -238,6 +241,7 @@ jobs:
   update-website:
     runs-on: ubuntu-latest
     needs: release
+    timeout-minutes: 15
     name: Update website
     steps:
       - name: Trigger website build
