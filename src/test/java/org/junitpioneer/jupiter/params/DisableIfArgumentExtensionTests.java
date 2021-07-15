@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.PioneerTestKit;
+import org.junitpioneer.testkit.TestKitTest;
 
 /**
  * Oscar Wilde: Requiescat is in the public domain
@@ -37,73 +37,52 @@ class DisableIfArgumentExtensionTests {
 	@DisplayName("when configured correctly")
 	class CorrectConfigurationTests {
 
-		@Test
+		@TestKitTest(testClass = CorrectConfigTestCases.class, method = "interceptContainsExplicitIndex", methodParameterTypes = {
+				String.class, String.class })
 		@DisplayName("disables tests when parameter targeted by explicit index contains any value from the 'contains' array")
-		void interceptContainsExplicitIndex() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContainsExplicitIndex",
-						String.class, String.class);
-
+		void interceptContainsExplicitIndex(ExecutionResults results) {
 			assertThat(results).hasNumberOfAbortedTests(1).hasNumberOfSucceededTests(7).hasNumberOfFailedTests(2);
 		}
 
-		@Test
+		@TestKitTest(testClass = CorrectConfigTestCases.class, method = "interceptContainsImplicitIndex", methodParameterTypes = {
+				String.class, String.class })
 		@DisplayName("disables tests when parameter targeted by implicit index contains any value from the 'contains' array")
-		void interceptContainsImplicitIndex() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContainsImplicitIndex",
-						String.class, String.class);
-
+		void interceptContainsImplicitIndex(ExecutionResults results) {
 			assertThat(results).hasNumberOfAbortedTests(2).hasNumberOfSucceededTests(6).hasNumberOfFailedTests(2);
 		}
 
-		@Test
+		@TestKitTest(testClass = CorrectConfigTestCases.class, method = "interceptContainsAny", methodParameterTypes = {
+				String.class, String.class })
 		@DisplayName("disables tests when any parameter contains any value from the 'contains' array")
-		void interceptContainsAny() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContainsAny",
-						String.class, String.class);
-
+		void interceptContainsAny(ExecutionResults results) {
 			assertThat(results).hasNumberOfAbortedTests(4).hasNumberOfSucceededTests(6);
 		}
 
-		@Test
+		@TestKitTest(testClass = CorrectConfigTestCases.class, method = "interceptContainsAll", methodParameterTypes = {
+				String.class, String.class })
 		@DisplayName("disables tests when all parameters contains any value from the 'contains' array")
-		void interceptContainsAll() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptContainsAll",
-						String.class, String.class);
-
+		void interceptContainsAll(ExecutionResults results) {
 			assertThat(results).hasNumberOfAbortedTests(1).hasNumberOfSucceededTests(9);
 		}
 
-		@Test
+		@TestKitTest(testClass = CorrectConfigTestCases.class, method = "interceptMatches", methodParameterTypes = {
+				String.class, String.class })
 		@DisplayName("disables tests when parameter matches any regex from the 'matches' array")
-		void interceptMatches() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptMatches", String.class,
-						String.class);
-
+		void interceptMatches(ExecutionResults results) {
 			assertThat(results).hasNumberOfAbortedTests(5).hasNumberOfSucceededTests(2).hasNumberOfFailedTests(3);
 		}
 
-		@Test
+		@TestKitTest(testClass = CorrectConfigTestCases.class, method = "interceptMatchesAny", methodParameterTypes = {
+				String.class, String.class })
 		@DisplayName("disables tests when any parameter matches any regex from the 'matches' array")
-		void interceptMatchesAny() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptMatchesAny",
-						String.class, String.class);
-
+		void interceptMatchesAny(ExecutionResults results) {
 			assertThat(results).hasNumberOfAbortedTests(3).hasNumberOfSucceededTests(7);
 		}
 
-		@Test
+		@TestKitTest(testClass = CorrectConfigTestCases.class, method = "interceptMatchesAll", methodParameterTypes = {
+				String.class, String.class })
 		@DisplayName("disables tests when all parameters match any regex from the 'matches' array")
-		void interceptMatchesAll() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CorrectConfigTestCases.class, "interceptMatchesAll",
-						String.class, String.class);
-
+		void interceptMatchesAll(ExecutionResults results) {
 			assertThat(results).hasNumberOfAbortedTests(1).hasNumberOfSucceededTests(2).hasNumberOfFailedTests(7);
 		}
 
@@ -113,32 +92,24 @@ class DisableIfArgumentExtensionTests {
 	@DisplayName("when not configured correctly")
 	class MisconfigurationTests {
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "simpleTest")
 		@DisplayName("does not intercept non-parameterized tests")
-		void simpleTest() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(BadConfigTestCases.class, "simpleTest");
-
+		void simpleTest(ExecutionResults results) {
 			assertThat(results).hasSingleSucceededTest();
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "overindexed", methodParameterTypes = String.class)
 		@DisplayName("throws an exception if DisableIfArgument index is too large")
-		void overindex() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "overindexed", String.class);
-
+		void overindex(ExecutionResults results) {
 			assertThat(results)
 					.hasNumberOfFailedTests(2)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
 					.allMatch(s -> s.startsWith("Annotation has invalid index"));
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "multipleTargets", methodParameterTypes = String.class)
 		@DisplayName("throws an exception if both index and name is set on DisableIfArgument")
-		void multipleTargets() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "multipleTargets", String.class);
-
+		void multipleTargets(ExecutionResults results) {
 			assertThat(results)
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
@@ -146,107 +117,81 @@ class DisableIfArgumentExtensionTests {
 						"Using both name and index parameter targeting in a single @DisableIfArgument is not permitted.");
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "noParameters")
 		@DisplayName("throws an exception if method has no parameters")
-		void noParameters() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(BadConfigTestCases.class, "noParameters");
-
+		void noParameters(ExecutionResults results) {
 			assertThat(results)
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContainingAll("Can't disable based on arguments", "had no parameters");
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "missingInputs", methodParameterTypes = String.class)
 		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfArgument")
-		void missingValues() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingInputs", String.class);
-
+		void missingValues(ExecutionResults results) {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
 					.allMatch(("DisableIfArgument requires that either `contains` or `matches` is set.")::equals);
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "missingInputsAny", methodParameterTypes = String.class)
 		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfAnyArgument")
-		void missingValuesAny() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingInputsAny", String.class);
-
+		void missingValuesAny(ExecutionResults results) {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
 					.allMatch(("DisableIfAnyArgument requires that either `contains` or `matches` is set.")::equals);
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "missingInputsAll", methodParameterTypes = String.class)
 		@DisplayName("throws an exception if both 'matches' and 'contains' is missing for DisableIfAllArguments")
-		void missingValuesAll() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "missingInputsAll", String.class);
-
+		void missingValuesAll(ExecutionResults results) {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
 					.allMatch(("DisableIfAllArguments requires that either `contains` or `matches` is set.")::equals);
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "setBothParams", methodParameterTypes = String.class)
 		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfArgument")
-		void bothValuesSet() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "setBothParams", String.class);
-
+		void bothValuesSet(ExecutionResults results) {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
 					.allMatch(("DisableIfArgument requires that either `contains` or `matches` is set.")::equals);
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "setBothParamsAny", methodParameterTypes = String.class)
 		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfAnyArgument")
-		void bothValuesSetAny() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "setBothParamsAny", String.class);
-
+		void bothValuesSetAny(ExecutionResults results) {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
 					.allMatch(("DisableIfAnyArgument requires that either `contains` or `matches` is set.")::equals);
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "setBothParamsAll", methodParameterTypes = String.class)
 		@DisplayName("throws an exception if both 'matches' and 'contains' is set for DisableIfAllArguments")
-		void bothValuesSetAll() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "setBothParamsAll", String.class);
-
+		void bothValuesSetAll(ExecutionResults results) {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptionInstancesOf(ExtensionConfigurationException.class)
 					.allMatch(("DisableIfAllArguments requires that either `contains` or `matches` is set.")::equals);
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "badlyNamedParam", methodParameterTypes = String.class)
 		@DisplayName("throws an exception if it can not find the parameter based on the given name for DisableIfArgument")
-		void missingParameter() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "badlyNamedParam", String.class);
-
+		void missingParameter(ExecutionResults results) {
 			assertThat(results)
 					.hasNumberOfFailedTests(3)
 					.withExceptions()
 					.allMatch(s -> s.contains("Could not resolve parameter"));
 		}
 
-		@Test
+		@TestKitTest(testClass = BadConfigTestCases.class, method = "forced", methodParameterTypes = String.class)
 		@DisplayName("does not work without required annotation(s)")
-		void forcedExtension() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigTestCases.class, "forced", String.class);
-
+		void forcedExtension(ExecutionResults results) {
 			assertThat(results)
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
