@@ -10,21 +10,21 @@
 
 package org.junitpioneer.jupiter;
 
-import java.lang.annotation.Annotation;
-import java.util.function.Consumer;
+import java.lang.reflect.Parameter;
+
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 /**
  * If you are implementing an {@link org.junit.jupiter.params.provider.ArgumentsProvider ArgumentsProvider}
- * for {@link CartesianProductTest}, it has to implement this annotation to 'consume' the annotation on
- * your test. For more information, see
+ * for {@link CartesianProductTest}, it has to implement this interface <b>instead</b> to know which parameter it provides
+ * arguments to. For more information, see
  * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
  *
- * @param <A> the annotation holding necessary data for providing the arguments
  * @see org.junit.jupiter.params.provider.ArgumentsProvider
  * @see CartesianProductTestExtension
- *
- * @deprecated has been superseded by CartesianArgumentsProvider
  */
-@Deprecated
-public interface CartesianAnnotationConsumer<A extends Annotation> extends Consumer<A> {
+public interface CartesianArgumentsProvider extends ArgumentsProvider {
+
+	void accept(Parameter parameter);
+
 }

@@ -43,10 +43,11 @@ import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
  * </p>
  *
  * @see CartesianProductTest
+ * @see CartesianTest
  *
  * @since 1.3.0
  */
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Repeatable(CartesianEnumSources.class)

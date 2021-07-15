@@ -14,13 +14,13 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
 import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
+import static org.junitpioneer.internal.PioneerUtils.cartesianProduct;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -130,7 +130,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	private List<Object> provideArguments(ExtensionContext context, Annotation source, ArgumentsProvider provider)
 			throws Exception {
 		if (provider instanceof CartesianAnnotationConsumer) {
-			((CartesianAnnotationConsumer<Annotation>) provider).accept(source);
+			((CartesianAnnotationConsumer) provider).accept(source);
 			return provider
 					.provideArguments(context)
 					.map(Arguments::get)
@@ -200,26 +200,6 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 				factory, testMethod.getParameterCount(), sets.getSets().size()));
 		}
 		return sets;
-	}
-
-	private static List<List<?>> cartesianProduct(List<List<?>> lists) {
-		List<List<?>> resultLists = new ArrayList<>();
-		if (lists.isEmpty()) {
-			resultLists.add(Collections.emptyList());
-			return resultLists;
-		}
-		List<?> firstList = lists.get(0);
-		// Note the recursion here
-		List<List<?>> remainingLists = cartesianProduct(lists.subList(1, lists.size()));
-		for (Object item : firstList) {
-			for (List<?> remainingList : remainingLists) {
-				ArrayList<Object> resultList = new ArrayList<>();
-				resultList.add(item);
-				resultList.addAll(remainingList);
-				resultLists.add(resultList);
-			}
-		}
-		return resultLists;
 	}
 
 }

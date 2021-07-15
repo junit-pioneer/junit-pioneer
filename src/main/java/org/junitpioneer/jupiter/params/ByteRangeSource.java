@@ -35,6 +35,10 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * more than one parameter.
  * </p>
  *
+ * <p>This annotation can be used on a method parameter, to make it usable with
+ * {@link org.junitpioneer.jupiter.CartesianTest}. If used with {@link org.junit.jupiter.params.ParameterizedTest},
+ * the annotation has to be on the method itself as any other {@link ArgumentsSource}.
+ *
  * <p>
  * For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>Cartesian product tests</code></a>
@@ -45,7 +49,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * @see org.junit.jupiter.params.ParameterizedTest
  * @see org.junitpioneer.jupiter.CartesianProductTest
  */
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ArgumentsSource(RangeSourceArgumentsProvider.class)

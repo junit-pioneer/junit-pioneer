@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -21,12 +22,15 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
- * This is basically a copy of Jupiter's {@code ValueSourceArgumentsProvider},
- * except it does NOT support {@code @ParameterizedTest}.
+ * This is a slightly modified copy of Jupiter's {@code ValueSourceArgumentsProvider},
+ * except it does NOT support {@code @ParameterizedTest} and can consume a {@code Parameter}
+ * instead of an annotation.
  */
-class CartesianValueArgumentsProvider implements CartesianAnnotationConsumer<CartesianValueSource>, ArgumentsProvider {
+class CartesianValueArgumentsProvider
+		implements CartesianAnnotationConsumer<CartesianValueSource>, ArgumentsProvider, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
 
 	private Object[] arguments;
 
@@ -60,6 +64,15 @@ class CartesianValueArgumentsProvider implements CartesianAnnotationConsumer<Car
 				.range(0, Array.getLength(originalArray)) //
 				.mapToObj(index -> Array.get(originalArray, index)) //
 				.toArray();
+	}
+
+	@Override
+	public void accept(Parameter parameter) {
+		CartesianValueSource source = AnnotationSupport
+				.findAnnotation(parameter, CartesianValueSource.class)
+				.orElseThrow(() -> new PreconditionViolationException(
+					"Parameter has to be annotated with " + CartesianValueSource.class.getName()));
+		accept(source);
 	}
 
 	@Override

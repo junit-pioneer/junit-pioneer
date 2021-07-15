@@ -15,6 +15,7 @@ import static java.util.stream.Collectors.toSet;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -26,19 +27,37 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 /**
  * This is basically an enhanced copy of Jupiter's {@code EnumArgumentsProvider},
- * except it does NOT support {@code @ParameterizedTest}.
+ * except it does NOT support {@code @ParameterizedTest} and consumes a {@code Parameter}
+ * instead of an annotation.
  */
-class CartesianEnumArgumentsProvider implements CartesianAnnotationConsumer<CartesianEnumSource>, ArgumentsProvider {
+class CartesianEnumArgumentsProvider
+		implements CartesianAnnotationConsumer<CartesianEnumSource>, ArgumentsProvider, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
 
 	private CartesianEnumSource enumSource;
+	private Class<?> parameterType;
 
 	@Override
 	public void accept(CartesianEnumSource enumSource) {
 		this.enumSource = enumSource;
+	}
+
+	@Override
+	public void accept(Parameter parameter) {
+		this.parameterType = parameter.getType();
+		if (!Enum.class.isAssignableFrom(this.parameterType))
+			throw new PreconditionViolationException(String
+					.format(
+						"Parameter of type %s must reference an Enum type (alternatively, use the annotation's 'value' attribute to specify the type explicitly)",
+						this.parameterType));
+		this.enumSource = AnnotationSupport
+				.findAnnotation(parameter, CartesianEnumSource.class)
+				.orElseThrow(() -> new PreconditionViolationException(
+					"Parameter has to be annotated with " + CartesianEnumSource.class.getName()));
 	}
 
 	@Override
@@ -67,22 +86,26 @@ class CartesianEnumArgumentsProvider implements CartesianAnnotationConsumer<Cart
 	private <E extends Enum<E>> Class<E> determineEnumClass(ExtensionContext context) {
 		Class enumClass = enumSource.value();
 		if (enumClass.equals(NullEnum.class)) {
-			Method method = context.getRequiredTestMethod();
-			Class<?>[] parameterTypes = method.getParameterTypes();
+			if (this.parameterType != null) {
+				enumClass = this.parameterType;
+			} else {
+				Method method = context.getRequiredTestMethod();
+				Class<?>[] parameterTypes = method.getParameterTypes();
 
-			if (parameterTypes.length <= 0)
-				throw new PreconditionViolationException(
-					"Test method must declare at least one parameter: " + method.toGenericString());
+				if (parameterTypes.length <= 0)
+					throw new PreconditionViolationException(
+						"Test method must declare at least one parameter: " + method.toGenericString());
 
-			Class<?> parameterType = parameterTypes[determineParameterTypeIndex(method)];
+				Class<?> parameterType = parameterTypes[determineParameterTypeIndex(method)];
 
-			if (!Enum.class.isAssignableFrom(parameterType))
-				throw new PreconditionViolationException(String
-						.format(
-							"Parameter of type %s must reference an Enum type (alternatively, use the annotation's 'value' attribute to specify the type explicitly): %s",
-							parameterType, method.toGenericString()));
+				if (!Enum.class.isAssignableFrom(parameterType))
+					throw new PreconditionViolationException(String
+							.format(
+								"Parameter of type %s must reference an Enum type (alternatively, use the annotation's 'value' attribute to specify the type explicitly): %s",
+								parameterType, method.toGenericString()));
 
-			enumClass = parameterType;
+				enumClass = parameterType;
+			}
 		}
 		return enumClass;
 	}
