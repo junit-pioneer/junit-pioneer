@@ -12,23 +12,32 @@ package org.junitpioneer.jupiter;
 
 import java.util.Locale;
 
+import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junit.platform.commons.support.AnnotationSupport;
 
-class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
+class DefaultLocaleExtension implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(DefaultLocaleExtension.class);
 
 	private static final String KEY = "DefaultLocale";
 
 	@Override
+	public void beforeAll(ExtensionContext context) {
+		AnnotationSupport
+				.findAnnotation(context.getRequiredTestClass(), DefaultLocale.class)
+				.ifPresent(annotation -> setDefaultLocale(context, annotation));
+	}
+
+	@Override
 	public void beforeEach(ExtensionContext context) {
-		PioneerAnnotationUtils
-				.findClosestEnclosingAnnotation(context, DefaultLocale.class)
+		AnnotationSupport
+				.findAnnotation(context.getRequiredTestMethod(), DefaultLocale.class)
 				.ifPresent(annotation -> setDefaultLocale(context, annotation));
 	}
 
@@ -80,8 +89,15 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		PioneerAnnotationUtils
-				.findClosestEnclosingAnnotation(context, DefaultLocale.class)
+		AnnotationSupport
+				.findAnnotation(context.getRequiredTestMethod(), DefaultLocale.class)
+				.ifPresent(__ -> resetDefaultLocale(context));
+	}
+
+	@Override
+	public void afterAll(ExtensionContext context) {
+		AnnotationSupport
+				.findAnnotation(context.getRequiredTestClass(), DefaultLocale.class)
 				.ifPresent(__ -> resetDefaultLocale(context));
 	}
 
