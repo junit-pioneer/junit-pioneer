@@ -4,6 +4,9 @@ module org.junitpioneer {
 	requires org.junit.platform.commons;
 	requires org.junit.platform.launcher;
 
+	requires static com.fasterxml.jackson.core;
+	requires static com.fasterxml.jackson.databind;
+
 	exports org.junitpioneer.vintage;
 	exports org.junitpioneer.jupiter;
 	exports org.junitpioneer.jupiter.params;

@@ -41,6 +41,9 @@ java {
 	}
 	withJavadocJar()
 	withSourcesJar()
+	registerFeature("jackson") {
+		usingSourceSet(sourceSets["main"])
+	}
 }
 
 repositories {
@@ -56,6 +59,7 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-commons")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
+	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = "2.12.3")
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
