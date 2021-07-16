@@ -35,12 +35,12 @@ public class TestExtensionContext implements ExtensionContext {
 
 	@Override
 	public Optional<Class<?>> getTestClass() {
-		return Optional.of(testClass);
+		return Optional.ofNullable(testClass);
 	}
 
 	@Override
 	public Optional<Method> getTestMethod() {
-		return Optional.of(testMethod);
+		return Optional.ofNullable(testMethod);
 	}
 
 	@Override
