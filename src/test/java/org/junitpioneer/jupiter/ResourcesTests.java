@@ -41,6 +41,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -81,6 +82,32 @@ class ResourcesTests {
 			assertCanAddAndReadTextFile(tempDir);
 
 			recordedPath = tempDir;
+		}
+
+	}
+
+	// ---
+
+	@DisplayName("when a test class has a test method with a parameter annotated with " +
+			"@New(value = TemporaryDirectory.class, arguments = {\"tempDirPrefix\"}")
+	@Nested
+	class WhenTestClassHasTestMethodWithParameterAnnotatedWithNewTempDirWithArg {
+
+		@DisplayName("then the parameter is populated with a new temporary directory that has the prefix \"tempDirPrefix\"")
+		@Test
+		void thenParameterIsPopulatedWithNewTempDirWithSuffixEquallingArg() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(SingleTestMethodWithParameterWithNewTempDirAndArgTestCase.class);
+			assertThat(executionResults).hasSingleSucceededTest();
+		}
+	}
+
+	@Resources
+	static class SingleTestMethodWithParameterWithNewTempDirAndArgTestCase {
+
+		@Test
+		void theTest(@New(value = TemporaryDirectory.class, arguments = {"tempDirPrefix"}) Path tempDir) {
+			assertThat(ROOT_TMP_DIR.relativize(tempDir)).asString().startsWith("tempDirPrefix");
 		}
 
 	}
@@ -265,6 +292,42 @@ class ResourcesTests {
 
 	// ---
 
+	// TODO: Uncomment this test
+
+	//	@DisplayName("when a test class has a test method with a @Shared(TemporaryDirectory.class)-annotated parameter")
+	//	@Nested
+	//	class WhenTestClassHasTestMethodWithSharedTempDirParameterTests {
+	//		@DisplayName("then the parameter is populated with a new readable and writeable temporary directory "
+	//				+ "that lasts the entire test run")
+	//		@Test
+	//		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsTheEntireTestRun() {
+	//			ExecutionResults executionResults = PioneerTestKit.executeTestClass(SingleTestMethodWithSharedTempDirParameterTestCase.class);
+	//			assertThat(executionResults).hasSingleSucceededTest();
+	//			assertThat(SingleTestMethodWithSharedTempDirParameterTestCase.recordedPath).doesNotExist();
+	//		}
+	//	}
+	//
+	//	@Resources
+	//	static class SingleTestMethodWithSharedTempDirParameterTestCase {
+	//
+	//		static Path recordedPath;
+	//
+	//		@Test
+	//		void theTest(@Shared(value = TemporaryDirectory.class, name = "uniqueTempDirName") Path tempDir) {
+	//			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+	//			assertCanAddAndReadTextFile(tempDir);
+	//
+	//			recordedPath = tempDir;
+	//		}
+	//
+	//	}
+
+	// ---
+
+	// TODO: Write a test that checks when two or more test classes are run, then a @Shared resource is used
+	//       across both of them.
+	//       Use JUnit 5's own EngineTestKit for this, or adapt PioneerTestKit to accept many classes.
+
 	@DisplayName("when Resources is applied to a test method with an unannotated parameter")
 	@Nested
 	class WhenResourcesIsAppliedToTestMethodWithUnannotatedParameterTests {
@@ -372,16 +435,16 @@ class ResourcesTests {
 							.debug()
 							.assertThatEvents()
 							.haveExactly(//
-									1, //
-									finished(//
-											throwable(//
-													instanceOf(ParameterResolutionException.class), //
-													message(
-															"Unable to create an instance of `" + ThrowOnGetResource.class + "`"), //
-													cause(//
-															instanceOf(EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION.getClass()), //
-															message(EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION.getMessage())))));
+								1, //
+								finished(//
+									throwable(//
+										instanceOf(ParameterResolutionException.class), //
+										message("Unable to create an instance of `" + ThrowOnGetResource.class + "`"), //
+										cause(//
+											instanceOf(EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION.getClass()), //
+											message(EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION.getMessage())))));
 				}
+
 			}
 
 			@DisplayName("and the resource throws on ::close")
@@ -398,13 +461,15 @@ class ResourcesTests {
 							.debug()
 							.assertThatEvents()
 							.haveExactly(//
-									1, //
-									finished(//
-											throwable(//
-													instanceOf(EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION.getClass()), //
-													message(EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION.getMessage()))));
+								1, //
+								finished(//
+									throwable(//
+										instanceOf(EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION.getClass()), //
+										message(EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION.getMessage()))));
 				}
+
 			}
+
 		}
 
 	}
@@ -429,8 +494,8 @@ class ResourcesTests {
 
 	}
 
-	private static final Exception EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION =
-			new IOException("failed to connect to the Matrix");
+	private static final Exception EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION = new IOException(
+		"failed to connect to the Matrix");
 
 	@Resources
 	static class ThrowOnCloseResourceFactoryTestCase {
@@ -457,16 +522,18 @@ class ResourcesTests {
 
 	}
 
-	private static final Exception EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION =
-			new CloneNotSupportedException("failed to clone a homunculus");
+	private static final Exception EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION = new CloneNotSupportedException(
+		"failed to clone a homunculus");
 
 	@Resources
 	static class ThrowOnGetResourceTestCase {
+
 		@Test
 		@SuppressWarnings("unused")
 		void foo(@New(ThrowOnGetResourceResourceFactory.class) Object object) {
 
 		}
+
 	}
 
 	static final class ThrowOnGetResourceResourceFactory implements ResourceFactory<Object> {
@@ -475,6 +542,7 @@ class ResourcesTests {
 		public Resource<Object> create() {
 			return new ThrowOnGetResource();
 		}
+
 	}
 
 	static final class ThrowOnGetResource implements Resource<Object> {
@@ -483,10 +551,11 @@ class ResourcesTests {
 		public Object get() throws Exception {
 			throw EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION;
 		}
+
 	}
 
-	private static final Exception EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION =
-			new FileAlreadyExistsException("wait, what's that file doing there?");
+	private static final Exception EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION = new FileAlreadyExistsException(
+		"wait, what's that file doing there?");
 
 	@Resources
 	static class ThrowOnCloseResourceResourceFactoryTestCase {
@@ -504,6 +573,7 @@ class ResourcesTests {
 		@Override
 		public Resource<Object> create() {
 			return new Resource<Object>() {
+
 				@Override
 				public Object get() {
 					return "foo";
@@ -513,13 +583,14 @@ class ResourcesTests {
 				public void close() throws Exception {
 					throw EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION;
 				}
+
 			};
 		}
 
 	}
 
-	private static final Exception EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION =
-			new UnknownHostException("wait, where's the Internet gone?!");
+	private static final Exception EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION = new UnknownHostException(
+		"wait, where's the Internet gone?!");
 
 	// ---
 
@@ -595,7 +666,7 @@ class ResourcesTests {
 	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
 		assertThat(tempDir)
 				.isEmptyDirectory()
-				.startsWith(Paths.get(System.getProperty("java.io.tmpdir")))
+				.startsWith(ROOT_TMP_DIR)
 				.isReadable()
 				.isWritable();
 	}
@@ -604,7 +675,8 @@ class ResourcesTests {
 		assertThat(tempDir).isEmptyDirectory().isReadable().isWritable();
 		try (FileSystem fileSystem = Jimfs.newFileSystem()) {
 			assertThat(tempDir.getFileSystem()).isInstanceOf(fileSystem.getClass());
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			fail(e);
 		}
 	}
@@ -614,5 +686,7 @@ class ResourcesTests {
 		List<String> lines = assertDoesNotThrow(() -> Files.readAllLines(tempDir.resolve("some-file.txt")));
 		assertThat(lines).containsExactly("some-text");
 	}
+
+	private static final Path ROOT_TMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
 }

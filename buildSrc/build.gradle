@@ -3,24 +3,26 @@ import groovy.xml.XmlUtil
 build {
 	doLast {
 		def ideaFolder = new File('.idea');
-		if(ideaFolder.exists() && ideaFolder.isDirectory()) {
+		if (ideaFolder.exists() && ideaFolder.isDirectory()) {
 			def xmlFile = new File(".idea/vcs.xml")
-			def xml = new XmlSlurper().parse(xmlFile)
-			xml.component.find {it.@name == 'IssueNavigationConfiguration'}.replaceNode {}
-			xml.appendNode {
-				component(name: "IssueNavigationConfiguration") {
-					option(name: 'links') {
-						list {
-							IssueNavigationLink {
-								option(name: "issueRegexp", value: '#(\\d+)')
-								option(name: "linkRegexp", value: 'https://github.com/junit-pioneer/junit-pioneer/issues/$1')
+			if (xmlFile.exists() && xmlFile.isFile()) {
+				def xml = new XmlSlurper().parse(xmlFile)
+				xml.component.find { it.@name == 'IssueNavigationConfiguration' }.replaceNode {}
+				xml.appendNode {
+					component(name: "IssueNavigationConfiguration") {
+						option(name: 'links') {
+							list {
+								IssueNavigationLink {
+									option(name: "issueRegexp", value: '#(\\d+)')
+									option(name: "linkRegexp", value: 'https://github.com/junit-pioneer/junit-pioneer/issues/$1')
+								}
 							}
 						}
 					}
 				}
-			}
-			xmlFile.withWriter {out->
-				XmlUtil.serialize(xml, out)
+				xmlFile.withWriter { out ->
+					XmlUtil.serialize(xml, out)
+				}
 			}
 		}
 	}

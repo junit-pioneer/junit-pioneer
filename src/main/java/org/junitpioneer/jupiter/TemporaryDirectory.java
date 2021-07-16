@@ -19,6 +19,16 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public final class TemporaryDirectory implements ResourceFactory<Path> {
 
+	private final String prefix;
+
+	public TemporaryDirectory() {
+		this.prefix = "";
+	}
+
+	public TemporaryDirectory(String prefix) {
+		this.prefix = prefix;
+	}
+
 	@Override
 	public Resource<Path> create() throws Exception {
 		return new Resource<Path>() {
@@ -27,7 +37,7 @@ public final class TemporaryDirectory implements ResourceFactory<Path> {
 
 			@Override
 			public Path get() throws Exception {
-				return (tempDir = Files.createTempDirectory(""));
+				return (tempDir = Files.createTempDirectory(prefix));
 			}
 
 			@Override

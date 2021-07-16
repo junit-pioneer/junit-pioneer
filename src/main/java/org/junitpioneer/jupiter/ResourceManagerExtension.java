@@ -40,7 +40,8 @@ final class ResourceManagerExtension implements ParameterResolver {
 								.map(method -> "method `" + method + '`')
 								.orElse("unknown method")));
 		});
-		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newResourceAnnotation.value());
+		ResourceFactory<?> resourceFactory =
+				ReflectionSupport.newInstance(newResourceAnnotation.value(), (Object[]) newResourceAnnotation.arguments());
 		extensionContext
 				.getStore(
 					ExtensionContext.Namespace.create(ResourceManagerExtension.class, extensionContext.getUniqueId()))
