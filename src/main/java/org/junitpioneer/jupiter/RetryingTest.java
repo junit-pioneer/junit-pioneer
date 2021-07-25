@@ -105,6 +105,8 @@ public @interface RetryingTest {
 	 * If no exceptions are specified, tests will always be retried; otherwise only when it throws
 	 * an exception that can be assigned to one of the specified types.
 	 */
+	// for rationale to handle Throwable instead of just Exception, see
+	// explanation in org.junit.jupiter.api.function.Executable
 	Class<? extends Throwable>[] onExceptions() default {};
 
 }
