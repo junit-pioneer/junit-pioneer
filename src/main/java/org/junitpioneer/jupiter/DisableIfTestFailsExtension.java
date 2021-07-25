@@ -62,7 +62,8 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 		findOnContextClass(testClassContext)
 				.filter(configuration -> configuration.shouldDisable(throwable))
 				.findFirst()
-				.ifPresent(configuration -> configuration.context().getStore(NAMESPACE).put(DISABLED_KEY, DISABLED_VALUE));
+				.ifPresent(
+					configuration -> configuration.context().getStore(NAMESPACE).put(DISABLED_KEY, DISABLED_VALUE));
 		throw throwable;
 	}
 
