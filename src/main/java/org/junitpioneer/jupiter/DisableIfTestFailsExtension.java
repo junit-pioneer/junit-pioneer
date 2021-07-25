@@ -60,13 +60,13 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 		// (which should hence always exist!)
 		ExtensionContext testClassContext = context.getParent().orElseThrow(IllegalStateException::new);
 		findOnContextClass(testClassContext)
-				.filter(info -> info.shouldDisable(throwable))
+				.filter(configuration -> configuration.shouldDisable(throwable))
 				.findFirst()
-				.ifPresent(info -> info.context().getStore(NAMESPACE).put(DISABLED_KEY, DISABLED_VALUE));
+				.ifPresent(configuration -> configuration.context().getStore(NAMESPACE).put(DISABLED_KEY, DISABLED_VALUE));
 		throw throwable;
 	}
 
-	private static Stream<Info> findOnContextClass(ExtensionContext context) {
+	private static Stream<Configuration> findOnContextClass(ExtensionContext context) {
 		Optional<Class<?>> type = context.getTestClass();
 		if (!type.isPresent())
 			return Stream.empty();
@@ -80,16 +80,16 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 				.distinct()
 				.collect(toList());
 		//@formatter:off
-		Stream<Info> onClassInfo = onClassExceptions.isEmpty()
+		Stream<Configuration> onClassConfig = onClassExceptions.isEmpty()
 				? Stream.empty()
-				: Stream.of(new Info(context, onClassExceptions));
+				: Stream.of(new Configuration(context, onClassExceptions));
 		//@formatter:on
-		Stream<Info> onParentClassInfos = context
+		Stream<Configuration> onParentClassConfigs = context
 				.getParent()
 				.map(DisableIfTestFailsExtension::findOnContextClass)
 				.orElse(Stream.empty());
 
-		return Stream.concat(onClassInfo, onParentClassInfos);
+		return Stream.concat(onClassConfig, onParentClassConfigs);
 	}
 
 	private static Stream<DisableIfTestFails> findOnType(Class<?> element) {
@@ -107,12 +107,12 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 		return Stream.of(onElement, onInterfaces, onSuperclass).flatMap(s -> s);
 	}
 
-	private static class Info {
+	private static class Configuration {
 
 		private final ExtensionContext context;
 		private final List<Class<? extends Throwable>> disableOnExceptions;
 
-		public Info(ExtensionContext context, List<Class<? extends Throwable>> disableOnExceptions) {
+		public Configuration(ExtensionContext context, List<Class<? extends Throwable>> disableOnExceptions) {
 			this.context = context;
 			this.disableOnExceptions = disableOnExceptions;
 			if (disableOnExceptions.isEmpty())
