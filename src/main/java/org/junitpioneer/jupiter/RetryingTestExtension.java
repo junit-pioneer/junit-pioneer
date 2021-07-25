@@ -74,6 +74,7 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 
 		private int retriesSoFar;
 		private int exceptionsSoFar;
+		private boolean seenFailedAssumption;
 		private boolean seenUnexpectedException;
 
 		private FailedTestRetrier(int maxRetries, int minSuccess, Class<? extends Throwable>[] expectedExceptions) {
@@ -114,11 +115,13 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 		}
 
 		void failed(Throwable exception) throws Throwable {
-			if (exception instanceof TestAbortedException)
+			exceptionsSoFar++;
+
+			if (exception instanceof TestAbortedException) {
+				seenFailedAssumption = true;
 				throw new TestAbortedException("Test execution was skipped, possibly because of a failed assumption.",
 					exception);
-
-			exceptionsSoFar++;
+			}
 
 			if (!expectedException(exception)) {
 				seenUnexpectedException = true;
@@ -148,7 +151,7 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			// there's always at least one execution
 			if (retriesSoFar == 0)
 				return true;
-			if (seenUnexpectedException)
+			if (seenFailedAssumption || seenUnexpectedException)
 				return false;
 
 			int successfulExecutionCount = retriesSoFar - exceptionsSoFar;
