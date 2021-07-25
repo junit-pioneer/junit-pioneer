@@ -60,6 +60,22 @@ public class DisableIfTestFailsTests {
 	}
 
 	@Test
+	void annotationOnBothClasses_outerAndInnerTestsFail() {
+		ExecutionResults results = PioneerTestKit.executeTestClass(OuterAndInnerTestsFail.class);
+
+		// these assertions depend on tests in outer classes getting executed first
+		assertThat(results)
+				.hasNumberOfStartedTests(3)
+				// one test in inner and outer each fail
+				.hasNumberOfFailedTests(2)
+				// outer failing test throws unrelated exception, so second outer tests runs
+				.hasNumberOfSucceededTests(1)
+				// inner failing test throws outer class' exception, so second inner tests is disabled
+				.hasNumberOfSkippedTests(1);
+		assertThat(results).hasNumberOfStartedContainers(3);
+	}
+
+	@Test
 	void threeTestsPassing_noneAreDisabled() {
 		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsPass.class);
 
@@ -121,7 +137,7 @@ public class DisableIfTestFailsTests {
 
 		@Nested
 		@TestInstance(PER_CLASS)
-		class ThreeTestsWithSecondFailing {
+		class FirstTestFails {
 
 			private int EXECUTION_COUNT;
 
@@ -157,6 +173,52 @@ public class DisableIfTestFailsTests {
 
 			@Test
 			void test1() {
+			}
+
+		}
+
+	}
+
+	@DisableIfTestFails(with = IOException.class)
+	@Execution(SAME_THREAD)
+	@TestInstance(PER_CLASS)
+	static class OuterAndInnerTestsFail {
+
+		private int EXECUTION_COUNT;
+
+		@Test
+		void test1() throws InterruptedException {
+			EXECUTION_COUNT++;
+			if (EXECUTION_COUNT == 1)
+				throw new InterruptedException();
+		}
+
+		@Test
+		void test2() throws InterruptedException {
+			EXECUTION_COUNT++;
+			if (EXECUTION_COUNT == 1)
+				throw new InterruptedException();
+		}
+
+		@Nested
+		@DisableIfTestFails(with = InterruptedException.class)
+		@TestInstance(PER_CLASS)
+		class ThreeTestsWithSecondFailing {
+
+			private int EXECUTION_COUNT;
+
+			@Test
+			void test1() throws IOException {
+				EXECUTION_COUNT++;
+				if (EXECUTION_COUNT == 1)
+					throw new IOException();
+			}
+
+			@Test
+			void test2() throws IOException {
+				EXECUTION_COUNT++;
+				if (EXECUTION_COUNT == 1)
+					throw new IOException();
 			}
 
 		}
