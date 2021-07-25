@@ -96,4 +96,6 @@ public @interface RetryingTest {
 	 */
 	int minSuccess() default 1;
 
+	Class<? extends Throwable>[] onExceptions() default {};
+
 }
