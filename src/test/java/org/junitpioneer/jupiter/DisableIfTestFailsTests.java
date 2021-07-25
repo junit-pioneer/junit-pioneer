@@ -16,25 +16,51 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 public class DisableIfTestFailsTests {
 
 	@Test
-	void threeTestsWithSecondFailing_thirdIsAborted() {
+	void threeTestsWithSecondFailing_thirdIsDisabled() {
 		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsWithSecondFailing.class);
 
 		// TODO assert that failed test ran after successful test
-		assertThat(results).hasNumberOfStartedTests(2).hasNumberOfSucceededTests(1).hasNumberOfFailedTests(1);
+		assertThat(results)
+				.hasNumberOfStartedTests(2)
+				.hasNumberOfSucceededTests(1)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSkippedTests(1);
 	}
 
 	@Test
-	void threeTestsPassing_noneAreAborted() {
+	void annotationOnOuterClass_innerTestFails_innerTestsDisabled() {
+		ExecutionResults results = PioneerTestKit.executeTestClass(InnerTestsFail.class);
+
+		// these assertions depend on tests in outer classes getting executed first
+		assertThat(results)
+				.hasNumberOfStartedTests(2)
+				.hasNumberOfSucceededTests(1)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSkippedTests(1);
+		assertThat(results).hasNumberOfStartedContainers(3);
+	}
+
+	@Test
+	void annotationOnOuterClass_outerTestFails_innerTestContainerDisabled() {
+		ExecutionResults results = PioneerTestKit.executeTestClass(OuterTestsFail.class);
+
+		// these assertions depend on tests in outer classes getting executed first
+		assertThat(results).hasNumberOfStartedTests(1).hasNumberOfFailedTests(1);
+		assertThat(results).hasNumberOfStartedContainers(2).hasNumberOfSkippedContainers(1);
+	}
+
+	@Test
+	void threeTestsPassing_noneAreDisabled() {
 		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsPass.class);
 
 		assertThat(results).hasNumberOfStartedTests(3).hasNumberOfSucceededTests(3);
@@ -50,7 +76,7 @@ public class DisableIfTestFailsTests {
 	// instance field and that worked.
 
 	// The tests that run the following classes assert the extension works by counting the number of
-	// executed and aborted tests, which depends on the assumption that they're executed one after another.
+	// executed and skipped tests, which depends on the assumption that they're executed one after another.
 	// (If they're executed in parallel, all tests might already have passed the condition evaluation
 	// extension point before the first test fails and so none would be disabled.)
 	// Hence use `@Execution(SAME_THREAD)`.
@@ -85,7 +111,58 @@ public class DisableIfTestFailsTests {
 
 	}
 
-	@TestInstance(PER_CLASS)
+	@DisableIfTestFails(with = IOException.class)
+	@Execution(SAME_THREAD)
+	static class InnerTestsFail {
+
+		@Test
+		void test1() {
+		}
+
+		@Nested
+		@TestInstance(PER_CLASS)
+		class ThreeTestsWithSecondFailing {
+
+			private int EXECUTION_COUNT;
+
+			@Test
+			void test1() throws IOException {
+				EXECUTION_COUNT++;
+				if (EXECUTION_COUNT == 1)
+					throw new IOException();
+			}
+
+			@Test
+			void test2() throws IOException {
+				EXECUTION_COUNT++;
+				if (EXECUTION_COUNT == 1)
+					throw new IOException();
+			}
+
+		}
+
+	}
+
+	@DisableIfTestFails(with = IOException.class)
+	@Execution(SAME_THREAD)
+	static class OuterTestsFail {
+
+		@Test
+		void test1() throws IOException {
+			throw new IOException();
+		}
+
+		@Nested
+		class OneTestPasses {
+
+			@Test
+			void test1() {
+			}
+
+		}
+
+	}
+
 	@DisableIfTestFails(with = IOException.class)
 	static class ThreeTestsPass {
 
