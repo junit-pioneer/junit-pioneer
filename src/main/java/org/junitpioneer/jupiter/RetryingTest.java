@@ -37,6 +37,9 @@ import org.junit.jupiter.api.parallel.Execution;
  * Each ignored/aborted or failed execution includes the underlying
  * exception.
  *
+ * <p>The default behavior is to treat all exceptions alike (i.e. retry the test).
+ * To only retry on specific exceptions, use {@link RetryingTest#onExceptions() onExceptions()}.</p>
+ *
  * <p>{@code @RetryingTest} has a number of limitations:</p>
  *
  * <ul>
@@ -96,6 +99,12 @@ public @interface RetryingTest {
 	 */
 	int minSuccess() default 1;
 
+	/**
+	 * Specifies on which exceptions a failed test is retried.
+	 *
+	 * If no exceptions are specified, tests will always be retried; otherwise only when it throws
+	 * an exception that can be assigned to one of the specified types.
+	 */
 	Class<? extends Throwable>[] onExceptions() default {};
 
 }
