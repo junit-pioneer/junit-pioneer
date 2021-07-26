@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * more than one parameter.
  *
  * <p>This annotation can be used on a method parameter, to make it usable with
- * {@link org.junitpioneer.jupiter.CartesianTest}. If used with {@link org.junit.jupiter.params.ParameterizedTest},
+ * {@link org.junitpioneer.jupiter.cartesian.CartesianTest}. If used with {@link org.junit.jupiter.params.ParameterizedTest},
  * the annotation has to be on the method itself as any other {@link ArgumentsSource}.
  * </p>
  *
@@ -48,6 +48,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * @see ArgumentsSource
  * @see org.junit.jupiter.params.ParameterizedTest
  * @see org.junitpioneer.jupiter.CartesianProductTest
+ * @see org.junitpioneer.jupiter.cartesian.CartesianTest
  */
 @Target({ ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)

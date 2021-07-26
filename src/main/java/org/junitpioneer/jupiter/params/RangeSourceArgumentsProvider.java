@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
-import org.junitpioneer.jupiter.CartesianArgumentsProvider;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 
 /**
  * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.

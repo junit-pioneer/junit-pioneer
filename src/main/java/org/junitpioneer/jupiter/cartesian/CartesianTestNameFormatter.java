@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.cartesian;
 
 import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.params.ParameterizedTest.ARGUMENTS_PLACEHOLDER;
@@ -22,16 +22,12 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.internal.PioneerUtils;
 
-/**
- * @deprecated scheduled to be removed in 2.0
- */
-@Deprecated
-class CartesianProductTestNameFormatter {
+class CartesianTestNameFormatter {
 
 	private final String pattern;
 	private final String displayName;
 
-	CartesianProductTestNameFormatter(String pattern, String displayName) {
+	CartesianTestNameFormatter(String pattern, String displayName) {
 		this.pattern = pattern;
 		this.displayName = displayName;
 	}

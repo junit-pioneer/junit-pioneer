@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.cartesian;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -45,20 +45,18 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		List<List<?>> sets = computeSets(context);
-		CartesianProductTestNameFormatter formatter = createNameFormatter(context);
-		return cartesianProduct(sets)
-				.stream()
-				.map(params -> new CartesianProductTestInvocationContext(params, formatter));
+		CartesianTestNameFormatter formatter = createNameFormatter(context);
+		return cartesianProduct(sets).stream().map(params -> new CartesianTestInvocationContext(params, formatter));
 	}
 
-	private CartesianProductTestNameFormatter createNameFormatter(ExtensionContext context) {
+	private CartesianTestNameFormatter createNameFormatter(ExtensionContext context) {
 		CartesianTest annotation = findAnnotation(context.getRequiredTestMethod(), CartesianTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianTest not found."));
 		String pattern = annotation.name();
 		if (pattern.isEmpty())
 			throw new ExtensionConfigurationException("CartesianTest can not have a non-empty display name.");
 		String displayName = context.getDisplayName();
-		return new CartesianProductTestNameFormatter(pattern, displayName);
+		return new CartesianTestNameFormatter(pattern, displayName);
 	}
 
 	private List<List<?>> computeSets(ExtensionContext context) {
@@ -74,7 +72,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 	private static void ensureNoInputConflicts(List<?> methodSources, List<?> parameterSources, Method testMethod) {
 		if (methodSources.isEmpty() && parameterSources.isEmpty() && testMethod.getParameters().length > 0)
 			throw new ExtensionConfigurationException("No arguments sources were found for @CartesianTest");
-		if (!methodSources.isEmpty() && parameterSources.isEmpty())
+		if (!methodSources.isEmpty() && !parameterSources.isEmpty())
 			throw new ExtensionConfigurationException(
 				"Providing both method-level and parameter-level argument sources for @CartesianTest is not supported.");
 	}

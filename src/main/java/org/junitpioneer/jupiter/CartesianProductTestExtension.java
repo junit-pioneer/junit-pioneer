@@ -38,6 +38,11 @@ import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 
+/**
+ * @deprecated Replaced by `org.junitpioneer.jupiter.cartesian.CartesianTestExtension`.
+ * Scheduled to be removed in 2.0
+ */
+@Deprecated
 class CartesianProductTestExtension implements TestTemplateInvocationContextProvider {
 
 	@Override

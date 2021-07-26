@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.cartesian;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,16 +16,12 @@ import java.util.List;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 
-/**
- * @deprecated scheduled to be removed in 2.0
- */
-@Deprecated
-class CartesianProductTestInvocationContext implements TestTemplateInvocationContext {
+class CartesianTestInvocationContext implements TestTemplateInvocationContext {
 
 	private final List<?> parameters;
-	private final CartesianProductTestNameFormatter formatter;
+	private final CartesianTestNameFormatter formatter;
 
-	CartesianProductTestInvocationContext(List<?> parameters, CartesianProductTestNameFormatter formatter) {
+	CartesianTestInvocationContext(List<?> parameters, CartesianTestNameFormatter formatter) {
 		this.parameters = parameters;
 		this.formatter = formatter;
 	}
