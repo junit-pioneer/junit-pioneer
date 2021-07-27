@@ -19,12 +19,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestTemplate;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtensionTests {
 
@@ -231,7 +231,7 @@ class RetryingTestExtensionTests {
 	@TestInstance(PER_CLASS)
 	static class RetryingTestTestCase {
 
-		private int EXECUTION_COUNT;
+		private int executionCount;
 
 		@Test
 		@RetryingTest(3)
@@ -249,35 +249,35 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void failsOnlyOnFirstInvocation() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 1) {
+			executionCount++;
+			if (executionCount == 1) {
 				throw new IllegalArgumentException();
 			}
 		}
 
 		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
 		void failsOnlyOnFirstInvocationWithExpectedException() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 1) {
+			executionCount++;
+			if (executionCount == 1) {
 				throw new IllegalArgumentException();
 			}
 		}
 
 		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
 		void failsOnlyOnFirstInvocationWithUnexpectedException() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 1) {
+			executionCount++;
+			if (executionCount == 1) {
 				throw new NullPointerException();
 			}
 		}
 
 		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
 		void failsFirstWithExpectedThenWithUnexpectedException() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 1) {
+			executionCount++;
+			if (executionCount == 1) {
 				throw new IllegalArgumentException();
 			}
-			if (EXECUTION_COUNT == 2) {
+			if (executionCount == 2) {
 				throw new NullPointerException();
 			}
 		}
@@ -289,17 +289,17 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void skipByAssumption() {
-			Assumptions.assumeFalse(true);
+			throw new TestAbortedException();
 		}
 
 		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
 		void failsFirstWithExpectedExceptionThenSkippedByAssumption() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 1) {
+			executionCount++;
+			if (executionCount == 1) {
 				throw new IllegalArgumentException();
 			}
-			if (EXECUTION_COUNT == 2) {
-				Assumptions.assumeFalse(true);
+			if (executionCount == 2) {
+				throw new TestAbortedException();
 			}
 		}
 
@@ -309,16 +309,16 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(maxAttempts = 4, minSuccess = 2)
 		void executesTwiceWithTwoFails() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 2 || EXECUTION_COUNT == 3) {
+			executionCount++;
+			if (executionCount == 2 || executionCount == 3) {
 				throw new IllegalArgumentException();
 			}
 		}
 
 		@RetryingTest(maxAttempts = 4, minSuccess = 2)
 		void executesOnceWithThreeFails() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT != 2) {
+			executionCount++;
+			if (executionCount != 2) {
 				throw new IllegalArgumentException();
 			}
 		}
