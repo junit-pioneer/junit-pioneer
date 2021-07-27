@@ -16,6 +16,7 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -143,7 +144,7 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 			if (expectedExceptions.length == 0)
 				return true;
 
-			return Stream.of(expectedExceptions).anyMatch(type -> type.isInstance(exception));
+			return Arrays.stream(expectedExceptions).anyMatch(type -> type.isInstance(exception));
 		}
 
 		@Override
