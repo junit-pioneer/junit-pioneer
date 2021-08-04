@@ -18,9 +18,12 @@ import org.junit.platform.commons.support.ReflectionSupport;
 
 final class ResourceManagerExtension implements ParameterResolver {
 
+	private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace
+			.create(ResourceManagerExtension.class);
+
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		// TODO: Also return true if the parameter is annotated with @Shared
+		// TODO: Also return true if the parameter is annotated with @Shared.
 		// TODO: Check that the parameter is not annotated with both @New and @Shared.
 		return parameterContext.isAnnotated(New.class);
 	}
@@ -28,8 +31,6 @@ final class ResourceManagerExtension implements ParameterResolver {
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
-		// TODO: Check that the parameter is annotated with at least @New or @Shared.
-		// TODO: Check that the parameter is not annotated with both @New and @Shared.
 		New newResourceAnnotation = parameterContext.findAnnotation(New.class).orElseThrow(() -> {
 			throw new ParameterResolutionException(String
 					.format( //
@@ -40,11 +41,10 @@ final class ResourceManagerExtension implements ParameterResolver {
 								.map(method -> "method `" + method + '`')
 								.orElse("unknown method")));
 		});
-		ResourceFactory<?> resourceFactory =
-				ReflectionSupport.newInstance(newResourceAnnotation.value(), (Object[]) newResourceAnnotation.arguments());
+		ResourceFactory<?> resourceFactory = ReflectionSupport
+				.newInstance(newResourceAnnotation.value(), (Object[]) newResourceAnnotation.arguments());
 		extensionContext
-				.getStore(
-					ExtensionContext.Namespace.create(ResourceManagerExtension.class, extensionContext.getUniqueId()))
+				.getStore(NAMESPACE)
 				.put(System.identityHashCode(newResourceAnnotation) + "-resource-factory",
 					(ExtensionContext.Store.CloseableResource) resourceFactory::close);
 		Resource<?> resource;
@@ -56,8 +56,7 @@ final class ResourceManagerExtension implements ParameterResolver {
 				"Unable to create an instance of `" + resourceFactory.getClass() + '`', e);
 		}
 		extensionContext
-				.getStore(
-					ExtensionContext.Namespace.create(ResourceManagerExtension.class, extensionContext.getUniqueId()))
+				.getStore(NAMESPACE)
 				.put(System.identityHashCode(newResourceAnnotation) + "-resource",
 					(ExtensionContext.Store.CloseableResource) resource::close);
 		try {

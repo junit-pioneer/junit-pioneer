@@ -88,8 +88,8 @@ class ResourcesTests {
 
 	// ---
 
-	@DisplayName("when a test class has a test method with a parameter annotated with " +
-			"@New(value = TemporaryDirectory.class, arguments = {\"tempDirPrefix\"}")
+	@DisplayName("when a test class has a test method with a parameter annotated with "
+			+ "@New(value = TemporaryDirectory.class, arguments = {\"tempDirPrefix\"}")
 	@Nested
 	class WhenTestClassHasTestMethodWithParameterAnnotatedWithNewTempDirWithArg {
 
@@ -100,13 +100,14 @@ class ResourcesTests {
 					.executeTestClass(SingleTestMethodWithParameterWithNewTempDirAndArgTestCase.class);
 			assertThat(executionResults).hasSingleSucceededTest();
 		}
+
 	}
 
 	@Resources
 	static class SingleTestMethodWithParameterWithNewTempDirAndArgTestCase {
 
 		@Test
-		void theTest(@New(value = TemporaryDirectory.class, arguments = {"tempDirPrefix"}) Path tempDir) {
+		void theTest(@New(value = TemporaryDirectory.class, arguments = { "tempDirPrefix" }) Path tempDir) {
 			assertThat(ROOT_TMP_DIR.relativize(tempDir)).asString().startsWith("tempDirPrefix");
 		}
 
@@ -664,11 +665,7 @@ class ResourcesTests {
 	// ---
 
 	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
-		assertThat(tempDir)
-				.isEmptyDirectory()
-				.startsWith(ROOT_TMP_DIR)
-				.isReadable()
-				.isWritable();
+		assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TMP_DIR).isReadable().isWritable();
 	}
 
 	private static void assertEmptyReadableWriteableInMemoryDirectory(Path tempDir) {
