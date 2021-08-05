@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -18,8 +20,10 @@ import org.junit.platform.commons.support.ReflectionSupport;
 
 final class ResourceManagerExtension implements ParameterResolver {
 
-	private static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace
-			.create(ResourceManagerExtension.class);
+	private static final ExtensionContext.Namespace NAMESPACE = //
+		ExtensionContext.Namespace.create(ResourceManagerExtension.class);
+
+	private final AtomicLong resourceIdGenerator = new AtomicLong(0);
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
@@ -41,11 +45,12 @@ final class ResourceManagerExtension implements ParameterResolver {
 								.map(method -> "method `" + method + '`')
 								.orElse("unknown method")));
 		});
-		ResourceFactory<?> resourceFactory = ReflectionSupport
-				.newInstance(newResourceAnnotation.value(), (Object[]) newResourceAnnotation.arguments());
+
+		ResourceFactory<?> resourceFactory = //
+			ReflectionSupport.newInstance(newResourceAnnotation.value(), (Object[]) newResourceAnnotation.arguments());
 		extensionContext
 				.getStore(NAMESPACE)
-				.put(System.identityHashCode(newResourceAnnotation) + "-resource-factory",
+				.put(resourceIdGenerator.getAndIncrement(),
 					(ExtensionContext.Store.CloseableResource) resourceFactory::close);
 		Resource<?> resource;
 		try {
@@ -57,8 +62,7 @@ final class ResourceManagerExtension implements ParameterResolver {
 		}
 		extensionContext
 				.getStore(NAMESPACE)
-				.put(System.identityHashCode(newResourceAnnotation) + "-resource",
-					(ExtensionContext.Store.CloseableResource) resource::close);
+				.put(resourceIdGenerator.getAndIncrement(), (ExtensionContext.Store.CloseableResource) resource::close);
 		try {
 			return resource.get();
 		}

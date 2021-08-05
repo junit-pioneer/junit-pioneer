@@ -93,7 +93,8 @@ class ResourcesTests {
 	@Nested
 	class WhenTestClassHasTestMethodWithParameterAnnotatedWithNewTempDirWithArg {
 
-		@DisplayName("then the parameter is populated with a new temporary directory that has the prefix \"tempDirPrefix\"")
+		@DisplayName("then the parameter is populated with a new temporary directory "
+				+ "that has the prefix \"tempDirPrefix\"")
 		@Test
 		void thenParameterIsPopulatedWithNewTempDirWithSuffixEquallingArg() {
 			ExecutionResults executionResults = PioneerTestKit
