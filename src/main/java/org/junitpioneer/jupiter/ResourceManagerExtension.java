@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -47,14 +49,15 @@ final class ResourceManagerExtension implements ParameterResolver {
 		});
 
 		ResourceFactory<?> resourceFactory = //
-			ReflectionSupport.newInstance(newResourceAnnotation.value(), (Object[]) newResourceAnnotation.arguments());
+			ReflectionSupport.newInstance(newResourceAnnotation.value());
 		extensionContext
 				.getStore(NAMESPACE)
 				.put(resourceIdGenerator.getAndIncrement(),
 					(ExtensionContext.Store.CloseableResource) resourceFactory::close);
 		Resource<?> resource;
 		try {
-			resource = resourceFactory.create();
+			resource = resourceFactory
+					.create(Collections.unmodifiableList(Arrays.asList(newResourceAnnotation.arguments())));
 		}
 		catch (Exception e) {
 			throw new ParameterResolutionException(

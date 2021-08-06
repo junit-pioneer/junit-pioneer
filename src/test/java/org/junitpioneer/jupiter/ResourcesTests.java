@@ -233,7 +233,7 @@ class ResourcesTests {
 		private final FileSystem inMemoryFileSystem = Jimfs.newFileSystem(Configuration.unix());
 
 		@Override
-		public Resource<Path> create() {
+		public Resource<Path> create(List<String> arguments) {
 			return () -> {
 				Path result = inMemoryFileSystem.getPath("test");
 				Files.createDirectory(result);
@@ -490,7 +490,7 @@ class ResourcesTests {
 	static final class ThrowOnCreateResourceFactory implements ResourceFactory<Object> {
 
 		@Override
-		public Resource<Object> create() throws Exception {
+		public Resource<Object> create(List<String> arguments) throws Exception {
 			throw EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION;
 		}
 
@@ -513,7 +513,7 @@ class ResourcesTests {
 	static final class ThrowOnCloseResourceFactory implements ResourceFactory<Object> {
 
 		@Override
-		public Resource<Object> create() {
+		public Resource<Object> create(List<String> arguments) {
 			return () -> "foo";
 		}
 
@@ -541,7 +541,7 @@ class ResourcesTests {
 	static final class ThrowOnGetResourceResourceFactory implements ResourceFactory<Object> {
 
 		@Override
-		public Resource<Object> create() {
+		public Resource<Object> create(List<String> arguments) {
 			return new ThrowOnGetResource();
 		}
 
@@ -573,7 +573,7 @@ class ResourcesTests {
 	static final class ThrowOnCloseResourceResourceFactory implements ResourceFactory<Object> {
 
 		@Override
-		public Resource<Object> create() {
+		public Resource<Object> create(List<String> arguments) {
 			return new Resource<Object>() {
 
 				@Override

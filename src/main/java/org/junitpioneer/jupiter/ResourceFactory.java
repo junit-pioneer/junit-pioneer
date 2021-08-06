@@ -10,9 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.List;
+
 public interface ResourceFactory<T> extends AutoCloseable {
 
-	Resource<T> create() throws Exception;
+	Resource<T> create(List<String> arguments) throws Exception;
 
 	@Override
 	default void close() throws Exception {

@@ -16,42 +16,46 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 public final class TemporaryDirectory implements ResourceFactory<Path> {
 
-	private final String prefix;
-
-	public TemporaryDirectory() {
-		this.prefix = "";
-	}
-
-	public TemporaryDirectory(String prefix) {
-		this.prefix = prefix;
-	}
-
 	@Override
-	public Resource<Path> create() throws Exception {
-		return new Resource<Path>() {
-
-			private Path tempDir;
-
-			@Override
-			public Path get() throws Exception {
-				return (tempDir = Files.createTempDirectory(prefix));
-			}
-
-			@Override
-			public void close() throws Exception {
-				// TODO: Restore file permissions if needed.
-				//       See: https://github.com/junit-team/junit5/issues/2609
-
-				deleteRecursively(tempDir);
-			}
-
-		};
+	public Resource<Path> create(List<String> arguments) throws Exception {
+		if (arguments.size() >= 2) {
+			throw new IllegalArgumentException("`arguments` was expected to have 0 or 1 elements, but it did not");
+		}
+		String prefix = (arguments.size() == 1) ? arguments.get(0) : "";
+		return new InnerResource(prefix);
 	}
 
-	private void deleteRecursively(Path tempDir) throws IOException {
+	private static final class InnerResource implements Resource<Path> {
+
+		private final String prefix;
+
+		InnerResource(String prefix) {
+			this.prefix = requireNonNull(prefix);
+		}
+
+		private Path tempDir;
+
+		@Override
+		public Path get() throws Exception {
+			return (tempDir = Files.createTempDirectory(prefix));
+		}
+
+		@Override
+		public void close() throws Exception {
+			// TODO: Restore file permissions if needed.
+			//       See: https://github.com/junit-team/junit5/issues/2609
+
+			deleteRecursively(tempDir);
+		}
+	}
+
+	private static void deleteRecursively(Path tempDir) throws IOException {
 		// TODO: See how JUnit 5 recursively deletes temp directories, and if there's anything
 		//       it does that we don't, write unit tests to reproduce their behaviour.
 		Files.walkFileTree(tempDir, new SimpleFileVisitor<Path>() {
