@@ -10,8 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
-import java.util.Arrays;
-import java.util.Collections;
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -37,27 +38,27 @@ final class ResourceManagerExtension implements ParameterResolver {
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
-		New newResourceAnnotation = parameterContext.findAnnotation(New.class).orElseThrow(() -> {
-			throw new ParameterResolutionException(String
-					.format( //
-						"Parameter `%s` on %s is not annotated with @New", //
-						parameterContext.getParameter(), //
-						extensionContext
-								.getTestMethod()
-								.map(method -> "method `" + method + '`')
-								.orElse("unknown method")));
-		});
+		New newResourceAnnotation = parameterContext
+				.findAnnotation(New.class)
+				.<ParameterResolutionException> orElseThrow(() -> {
+					throw new ParameterResolutionException(String
+							.format( //
+								"Parameter `%s` on %s is not annotated with @New", //
+								parameterContext.getParameter(), //
+								extensionContext
+										.getTestMethod()
+										.map(method -> "method `" + method + '`')
+										.orElse("unknown method")));
+				});
 
-		ResourceFactory<?> resourceFactory = //
-			ReflectionSupport.newInstance(newResourceAnnotation.value());
+		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newResourceAnnotation.value());
 		extensionContext
 				.getStore(NAMESPACE)
 				.put(resourceIdGenerator.getAndIncrement(),
 					(ExtensionContext.Store.CloseableResource) resourceFactory::close);
 		Resource<?> resource;
 		try {
-			resource = resourceFactory
-					.create(Collections.unmodifiableList(Arrays.asList(newResourceAnnotation.arguments())));
+			resource = resourceFactory.create(unmodifiableList(asList(newResourceAnnotation.arguments())));
 		}
 		catch (Exception e) {
 			throw new ParameterResolutionException(

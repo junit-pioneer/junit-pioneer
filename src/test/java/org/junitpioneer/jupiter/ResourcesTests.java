@@ -49,6 +49,7 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.TestExtensionContext;
+import org.junitpioneer.internal.TestParameterContext;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -609,19 +610,17 @@ class ResourcesTests {
 		@DisplayName("then an exception mentioning the parameter and the test method it's on is thrown")
 		@Test
 		void thenExceptionMentioningParameterAndTestMethodItsOnIsThrown() {
-			// TODO: Consider introducing a TestParameterContext, similar to TestExtensionContext
-			ParameterContext mockParameterContext = mock(ParameterContext.class);
-			when(mockParameterContext.findAnnotation(New.class)).thenReturn(Optional.empty());
 			Class<?> exampleClass = String.class;
 			Method exampleMethod = ReflectionSupport.findMethod(exampleClass, "valueOf", Object.class).get();
 			Parameter exampleParameter = exampleMethod.getParameters()[0];
-			when(mockParameterContext.getParameter()).thenReturn(exampleParameter);
 
 			assertThatThrownBy(() -> new ResourceManagerExtension()
-					.resolveParameter(mockParameterContext, new TestExtensionContext(exampleClass, exampleMethod)))
-							.isInstanceOf(ParameterResolutionException.class)
-							.hasMessage("Parameter `" + exampleParameter + "` on method `" + exampleMethod
-									+ "` is not annotated with @New");
+					.resolveParameter( //
+						new TestParameterContext(exampleParameter),
+						new TestExtensionContext(exampleClass, exampleMethod)))
+								.isInstanceOf(ParameterResolutionException.class)
+								.hasMessage("Parameter `" + exampleParameter + "` on method `" + exampleMethod
+										+ "` is not annotated with @New");
 		}
 
 		@DisplayName("and the test method does not exist")

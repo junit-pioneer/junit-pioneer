@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -17,8 +19,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
 
 public final class TemporaryDirectory implements ResourceFactory<Path> {
 
@@ -53,6 +53,7 @@ public final class TemporaryDirectory implements ResourceFactory<Path> {
 
 			deleteRecursively(tempDir);
 		}
+
 	}
 
 	private static void deleteRecursively(Path tempDir) throws IOException {
