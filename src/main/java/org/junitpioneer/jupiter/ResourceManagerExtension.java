@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
 import java.util.Optional;
@@ -83,12 +82,11 @@ final class ResourceManagerExtension implements ParameterResolver {
 	}
 
 	private Object resolve(Shared sharedAnnotation, ExtensionContext.Store store) {
-
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(sharedAnnotation.factory());
 		// TODO: Put resourceFactory in store.
 		Resource<?> resource;
 		try {
-			resource = resourceFactory.create(emptyList());
+			resource = resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments())));
 		}
 		catch (Exception e) {
 			// TODO

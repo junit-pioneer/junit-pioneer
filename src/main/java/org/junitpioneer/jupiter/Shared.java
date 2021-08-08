@@ -24,6 +24,6 @@ public @interface Shared {
 
 	String name();
 
-	// TODO
-	//String[] arguments() default {};
+	String[] arguments() default {};
+
 }

@@ -648,16 +648,6 @@ class ResourcesTests {
 
 	// ---
 
-	@DisplayName("check that all resource-related classes are final")
-	@Test
-	void checkThatAllResourceRelatedClassesAreFinal() {
-		assertThat(TemporaryDirectory.class).isFinal();
-		assertThat(ResourceManagerExtension.class).isFinal();
-		// TODO: Add the jimfs and OkHttp MockServer-based resource factories here
-	}
-
-	// ---
-
 	@DisplayName("when a test class has a test method with a "
 			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\")-annotated parameter")
 	@Nested
@@ -688,6 +678,49 @@ class ResourcesTests {
 			recordedPath = tempDir;
 		}
 
+	}
+
+	// ---
+
+	@DisplayName("when a test class has a test method with a parameter annotated with "
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\", arguments = {\"tempDirPrefix\"}")
+	@Nested
+	class WhenTestClassHasTestMethodWithParameterAnnotatedWithSharedTempDirWithArg {
+
+		@DisplayName("then the parameter is populated with a new temporary directory "
+				+ "that has the prefix \"tempDirPrefix\"")
+		@Test
+		void thenParameterIsPopulatedWithSharedTempDirWithSuffixEquallingArg() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(SingleTestMethodWithParameterWithSharedTempDirAndArgTestCase.class);
+			assertThat(executionResults).hasSingleSucceededTest();
+		}
+
+	}
+
+	@Resources
+	static class SingleTestMethodWithParameterWithSharedTempDirAndArgTestCase {
+
+		@Test
+		void theTest( //
+				@Shared( //
+						factory = TemporaryDirectory.class, //
+						name = "some-name", //
+						arguments = { "tempDirPrefix" }) //
+				Path tempDir) {
+			assertThat(ROOT_TMP_DIR.relativize(tempDir)).asString().startsWith("tempDirPrefix");
+		}
+
+	}
+
+	// ---
+
+	@DisplayName("check that all resource-related classes are final")
+	@Test
+	void checkThatAllResourceRelatedClassesAreFinal() {
+		assertThat(TemporaryDirectory.class).isFinal();
+		assertThat(ResourceManagerExtension.class).isFinal();
+		// TODO: Add the jimfs and OkHttp MockServer-based resource factories here
 	}
 
 	// ---
