@@ -22,8 +22,6 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.in
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -36,7 +34,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.common.jimfs.Configuration;
@@ -45,7 +42,6 @@ import com.google.common.jimfs.Jimfs;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.TestExtensionContext;
@@ -630,18 +626,16 @@ class ResourcesTests {
 			@DisplayName("then an exception mentioning just the parameter is thrown")
 			@Test
 			void thenExceptionMentioningJustParameterIsThrown() {
-				ParameterContext mockParameterContext = mock(ParameterContext.class);
-				when(mockParameterContext.findAnnotation(New.class)).thenReturn(Optional.empty());
 				Class<?> exampleClass = String.class;
 				Method exampleMethod = ReflectionSupport.findMethod(exampleClass, "valueOf", Object.class).get();
 				Parameter exampleParameter = exampleMethod.getParameters()[0];
-				when(mockParameterContext.getParameter()).thenReturn(exampleParameter);
 
 				assertThatThrownBy(() -> new ResourceManagerExtension()
-						.resolveParameter(mockParameterContext, new TestExtensionContext(null, null)))
-								.isInstanceOf(ParameterResolutionException.class)
-								.hasMessage("Parameter `" + exampleParameter
-										+ "` on unknown method is not annotated with @New");
+						.resolveParameter(new TestParameterContext(exampleParameter),
+							new TestExtensionContext(null, null)))
+									.isInstanceOf(ParameterResolutionException.class)
+									.hasMessage("Parameter `" + exampleParameter
+											+ "` on unknown method is not annotated with @New");
 			}
 
 		}
@@ -654,9 +648,9 @@ class ResourcesTests {
 
 	// ---
 
-	@DisplayName("check that all Resources-related classes are final")
+	@DisplayName("check that all resource-related classes are final")
 	@Test
-	void checkThatAllResourcesRelatedClassesAreFinal() {
+	void checkThatAllResourceRelatedClassesAreFinal() {
 		assertThat(TemporaryDirectory.class).isFinal();
 		assertThat(ResourceManagerExtension.class).isFinal();
 		// TODO: Add the jimfs and OkHttp MockServer-based resource factories here
