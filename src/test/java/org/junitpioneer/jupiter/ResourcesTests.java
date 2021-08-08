@@ -664,6 +664,40 @@ class ResourcesTests {
 
 	// ---
 
+	@DisplayName("when a test class has a test method with a "
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\")-annotated parameter")
+	@Nested
+	class WhenTestClassHasTestMethodWithSharedTempDirParameterTests {
+
+		@DisplayName("then the parameter is populated with a new readable and writeable temporary directory "
+				+ "that lasts as long as the test suite")
+		@Test
+		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTestSuite() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(SingleTestMethodWithSharedTempDirParameterTestCase.class);
+			assertThat(executionResults).hasSingleSucceededTest();
+			assertThat(SingleTestMethodWithSharedTempDirParameterTestCase.recordedPath).doesNotExist();
+		}
+
+	}
+
+	@Resources
+	static class SingleTestMethodWithSharedTempDirParameterTestCase {
+
+		static Path recordedPath;
+
+		@Test
+		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
+			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertCanAddAndReadTextFile(tempDir);
+
+			recordedPath = tempDir;
+		}
+
+	}
+
+	// ---
+
 	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
 		assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TMP_DIR).isReadable().isWritable();
 	}
