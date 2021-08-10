@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode;
 import org.junitpioneer.jupiter.params.ByteRangeSource;
 import org.junitpioneer.jupiter.params.DoubleRangeSource;
@@ -646,9 +647,9 @@ public class CartesianTestExtensionTests {
 		@CartesianTest
 		@ReportEntry("{0} - {1}")
 		void poeticValues(
-				@CartesianTest.Values(strings = { "Two roads diverged in a yellow wood,",
+				@Values(strings = { "Two roads diverged in a yellow wood,",
 						"And sorry I could not travel both", "And be one traveler, long I stood" }) String line,
-				@CartesianTest.Values(strings = { "And looked down one as far as I could",
+				@Values(strings = { "And looked down one as far as I could",
 						"To where it bent in the undergrowth;" }) String endLine) {
 			assertThat(line).startsWith("And");
 		}
