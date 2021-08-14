@@ -28,22 +28,20 @@ public final class TemporaryDirectory implements ResourceFactory<Path> {
 			throw new IllegalArgumentException("`arguments` was expected to have 0 or 1 elements, but it did not");
 		}
 		String prefix = (arguments.size() == 1) ? arguments.get(0) : "";
-		return new InnerResource(prefix);
+		return new InnerResource(Files.createTempDirectory(requireNonNull(prefix, "Argument 0 is null")));
 	}
 
 	private static final class InnerResource implements Resource<Path> {
 
-		private final String prefix;
+		private final Path tempDir;
 
-		InnerResource(String prefix) {
-			this.prefix = requireNonNull(prefix);
+		InnerResource(Path tempDir) {
+			this.tempDir = tempDir;
 		}
-
-		private Path tempDir;
 
 		@Override
 		public Path get() throws Exception {
-			return (tempDir = Files.createTempDirectory(prefix));
+			return tempDir;
 		}
 
 		@Override
@@ -66,6 +64,9 @@ public final class TemporaryDirectory implements ResourceFactory<Path> {
 				// TODO: Can we unit test that we don't throw an exception if
 				//       the dir being deleted doesn't exist anymore due to
 				//       a race condition?
+				//       We could do this by making this SimpleFileVisitor a concrete class, calling
+				//       TheNewSimpleFileVisitorClass::visitFile with a fake Path, and confirm that
+				//       NoSuchFileException isn't thrown.
 				Files.delete(file);
 				return FileVisitResult.CONTINUE;
 			}

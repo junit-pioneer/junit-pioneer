@@ -15,12 +15,12 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
+import static org.junitpioneer.internal.AllElementsAreEqual.allElementsAreEqual;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.IOException;
@@ -290,42 +290,6 @@ class ResourcesTests {
 	}
 
 	// ---
-
-	// TODO: Uncomment this test
-
-	//	@DisplayName("when a test class has a test method with a @Shared(TemporaryDirectory.class)-annotated parameter")
-	//	@Nested
-	//	class WhenTestClassHasTestMethodWithSharedTempDirParameterTests {
-	//		@DisplayName("then the parameter is populated with a new readable and writeable temporary directory "
-	//				+ "that lasts the entire test run")
-	//		@Test
-	//		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsTheEntireTestRun() {
-	//			ExecutionResults executionResults = PioneerTestKit.executeTestClass(SingleTestMethodWithSharedTempDirParameterTestCase.class);
-	//			assertThat(executionResults).hasSingleSucceededTest();
-	//			assertThat(SingleTestMethodWithSharedTempDirParameterTestCase.recordedPath).doesNotExist();
-	//		}
-	//	}
-	//
-	//	@Resources
-	//	static class SingleTestMethodWithSharedTempDirParameterTestCase {
-	//
-	//		static Path recordedPath;
-	//
-	//		@Test
-	//		void theTest(@Shared(value = TemporaryDirectory.class, name = "uniqueTempDirName") Path tempDir) {
-	//			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
-	//			assertCanAddAndReadTextFile(tempDir);
-	//
-	//			recordedPath = tempDir;
-	//		}
-	//
-	//	}
-
-	// ---
-
-	// TODO: Write a test that checks when two or more test classes are run, then a @Shared resource is used
-	//       across both of them.
-	//       Use JUnit 5's own EngineTestKit for this, or adapt PioneerTestKit to accept many classes.
 
 	@DisplayName("when Resources is applied to a test method with an unannotated parameter")
 	@Nested
@@ -687,7 +651,7 @@ class ResourcesTests {
 	@Nested
 	class WhenTestClassHasTestMethodWithParameterAnnotatedWithSharedTempDirWithArg {
 
-		@DisplayName("then the parameter is populated with a new temporary directory "
+		@DisplayName("then the parameter is populated with a shared temporary directory "
 				+ "that has the prefix \"tempDirPrefix\"")
 		@Test
 		void thenParameterIsPopulatedWithSharedTempDirWithSuffixEquallingArg() {
@@ -715,6 +679,57 @@ class ResourcesTests {
 
 	// ---
 
+	@DisplayName("when a test class has multiple test methods with a "
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\")-annotated parameter")
+	@Nested
+	class WhenTestClassHasMultipleTestMethodsWithParameterWithSameNamedSharedTempDirTests {
+
+		@DisplayName("then the parameters on both test methods are populated with a shared readable and writeable "
+				+ "temporary directory that is torn down afterwards")
+		@Test
+		void thenParametersOnBothTestMethodsArePopulatedWithSharedReadableAndWriteableTempDirThatIsTornDownAfterwards() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(TwoTestMethodsWithSharedSameNameTempDirParameterTestCase.class);
+			assertThat(executionResults).hasNumberOfSucceededTests(2);
+			assertThat(TwoTestMethodsWithSharedSameNameTempDirParameterTestCase.recordedPaths)
+					.hasSize(2)
+					.satisfies(allElementsAreEqual())
+					.allSatisfy(path -> assertThat(path).doesNotExist());
+		}
+
+	}
+
+	@Resources
+	static class TwoTestMethodsWithSharedSameNameTempDirParameterTestCase {
+
+		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
+
+		@Test
+		void firstTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
+			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertCanAddAndReadTextFile(tempDir);
+
+			recordedPaths.add(tempDir);
+		}
+
+		@Test
+		void secondTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
+			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertCanAddAndReadTextFile(tempDir);
+
+			recordedPaths.add(tempDir);
+		}
+
+	}
+
+	// ---
+
+	// TODO: Write a test that checks when two or more test classes are run, then a @Shared resource is used
+	//       across both of them.
+	//       Use JUnit 5's own EngineTestKit for this, or adapt PioneerTestKit to accept many classes.
+
+	// ---
+
 	@DisplayName("check that all resource-related classes are final")
 	@Test
 	void checkThatAllResourceRelatedClassesAreFinal() {
@@ -731,18 +746,18 @@ class ResourcesTests {
 
 	private static void assertEmptyReadableWriteableInMemoryDirectory(Path tempDir) {
 		assertThat(tempDir).isEmptyDirectory().isReadable().isWritable();
-		try (FileSystem fileSystem = Jimfs.newFileSystem()) {
-			assertThat(tempDir.getFileSystem()).isInstanceOf(fileSystem.getClass());
-		}
-		catch (IOException e) {
-			fail(e);
-		}
+		assertDoesNotThrow(() -> {
+			try (FileSystem fileSystem = Jimfs.newFileSystem()) {
+				assertThat(tempDir.getFileSystem()).isInstanceOf(fileSystem.getClass());
+			}
+		});
 	}
 
 	private static void assertCanAddAndReadTextFile(Path tempDir) {
 		assertDoesNotThrow(() -> Files.write(tempDir.resolve("some-file.txt"), singletonList("some-text")));
 		List<String> lines = assertDoesNotThrow(() -> Files.readAllLines(tempDir.resolve("some-file.txt")));
 		assertThat(lines).containsExactly("some-text");
+		assertDoesNotThrow(() -> Files.delete(tempDir.resolve("some-file.txt")));
 	}
 
 	private static final Path ROOT_TMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));

@@ -27,11 +27,8 @@ final class ResourceManagerExtension implements ParameterResolver {
 	private static final ExtensionContext.Namespace NAMESPACE = //
 		ExtensionContext.Namespace.create(ResourceManagerExtension.class);
 
-	private final AtomicLong resourceIdGenerator = new AtomicLong(0);
-
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		// TODO: Also return true if the parameter is annotated with @Shared.
 		// TODO: Check that the parameter is not annotated with both @New and @Shared.
 		return parameterContext.isAnnotated(New.class) || parameterContext.isAnnotated(Shared.class);
 	}
@@ -44,7 +41,7 @@ final class ResourceManagerExtension implements ParameterResolver {
 		if (newAnnotation.isPresent()) {
 			return resolve(newAnnotation.get(), extensionContext.getStore(NAMESPACE));
 		} else if (sharedAnnotation.isPresent()) {
-			return resolve(sharedAnnotation.get(), extensionContext.getStore(NAMESPACE));
+			return resolve(sharedAnnotation.get(), extensionContext.getRoot().getStore(NAMESPACE));
 		} else {
 			throw new ParameterResolutionException(String
 					.format( //
@@ -72,7 +69,7 @@ final class ResourceManagerExtension implements ParameterResolver {
 			throw new ParameterResolutionException(
 				"Unable to create an instance of `" + resourceFactory.getClass() + '`', e);
 		}
-		store.put(resourceIdGenerator.getAndIncrement(), (ExtensionContext.Store.CloseableResource) resource::close);
+		store.put(resourceIdGenerator.getAndIncrement(), resource);
 		try {
 			return resource.get();
 		}
@@ -81,18 +78,34 @@ final class ResourceManagerExtension implements ParameterResolver {
 		}
 	}
 
+	private final AtomicLong resourceIdGenerator = new AtomicLong(0);
+
 	private Object resolve(Shared sharedAnnotation, ExtensionContext.Store store) {
-		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(sharedAnnotation.factory());
-		// TODO: Put resourceFactory in store.
 		Resource<?> resource;
 		try {
-			resource = resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments())));
+			resource = store
+					.getOrComputeIfAbsent( //
+						sharedAnnotation.name() + " resource", //
+						unused -> {
+							try {
+								// TODO: Put resourceFactory in store.
+								ResourceFactory<?> resourceFactory = //
+									ReflectionSupport.newInstance(sharedAnnotation.factory());
+								return resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments())));
+							}
+							catch (Exception e) {
+								throw new InnerException(e);
+							}
+						}, Resource.class);
+		}
+		catch (InnerException e) {
+			// TODO
+			throw new UnsupportedOperationException("TODO");
 		}
 		catch (Exception e) {
 			// TODO
 			throw new UnsupportedOperationException("TODO");
 		}
-		store.put(resourceIdGenerator.getAndIncrement(), (ExtensionContext.Store.CloseableResource) resource::close);
 		try {
 			return resource.get();
 		}
@@ -100,6 +113,14 @@ final class ResourceManagerExtension implements ParameterResolver {
 			// TODO
 			throw new UnsupportedOperationException("TODO");
 		}
+	}
+
+	private static final class InnerException extends RuntimeException {
+
+		public InnerException(Throwable cause) {
+			super(cause);
+		}
+
 	}
 
 }

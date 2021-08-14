@@ -10,12 +10,14 @@
 
 package org.junitpioneer.jupiter;
 
-public interface Resource<T> extends AutoCloseable {
+import org.junit.jupiter.api.extension.ExtensionContext;
+
+public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
 
 	T get() throws Exception;
 
 	@Override
-	default void close() throws Exception {
+	default void close() throws Throwable {
 		// no op by default
 	}
 
