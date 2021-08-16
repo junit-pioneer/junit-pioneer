@@ -557,12 +557,6 @@ class ResourcesTests {
 
 	// ---
 
-	// TODO: It's generally good advice to avoid mocking things that we, JUnit Pioneer, don't own, because if we mock
-	//       third-party things, then their real behaviour is likely to be updated over time and get out-of-sync with
-	//       our mocks.
-	//       Do we care about this, given that JUnit 5 avoids backwards-incompatible changes and that we're so closely
-	//       tied to JUnit 5 itself?
-
 	@DisplayName("when ResourceManagerExtension is unable to find @New on a parameter")
 	@Nested
 	class WhenResourceManagerExtensionUnableToFindNewOnParameterTests {
