@@ -14,8 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener.REPORT_ENTRY_KEY;
 import static org.junitpioneer.jupiter.issue.TestPlanHelper.createTestIdentifier;
+import static org.mockito.Mockito.mock;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,9 @@ public class IssueExtensionExecutionListenerTests {
 	// when debugging, be aware that the service loader also created instances of the listener;
 	// we can't use it here, because the running Jupiter instance uses it to gather test information
 	private final IssueExtensionExecutionListener executionListener = new IssueExtensionExecutionListener();
-	private final TestPlan testPlan = TestPlan.from(Collections.emptyList());
+	// TestPlan only offers a single public but internal factory method that changed in JUnit v5.8.0-RC1
+	// since we test with multiple JUnit versions, we mock this class to circumvent the problem of creating it
+	private final TestPlan testPlan = mock(TestPlan.class);
 
 	@Test
 	void noIssueTestCasesCreated() {
