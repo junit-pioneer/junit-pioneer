@@ -14,7 +14,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
@@ -557,6 +557,12 @@ class ResourcesTests {
 
 	// ---
 
+	// TODO: Consider writing tests that check what happens when trying to instantiate
+	//       the class specified by an @New or @Shared annotation doesn't have a constructor
+	//       with the matching number and types of arguments.
+
+	// ---
+
 	@DisplayName("when ResourceManagerExtension is unable to find @New on a parameter")
 	@Nested
 	class WhenResourceManagerExtensionUnableToFindNewOnParameterTests {
@@ -718,9 +724,45 @@ class ResourcesTests {
 
 	// ---
 
-	// TODO: Write a test that checks when two or more test classes are run, then a @Shared resource is used
-	//       across both of them.
-	//       Use JUnit 5's own EngineTestKit for this, or adapt PioneerTestKit to accept many classes.
+	@DisplayName("when two test classes have a test method with a "
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\")-annotated parameter")
+	@Nested
+	class WhenTwoTestClassesHaveATestMethodWithParameterWithSameNamedSharedTempDirTests {
+
+		@DisplayName("then the parameters on both test methods are populated with a shared readable and writeable "
+				+ "temporary directory that is torn down afterwards")
+		@Test
+		void thenParametersOnBothTestMethodsArePopulatedWithSharedReadableAndWriteableTempDirThatIsTornDownAfterwards() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClasses( //
+						asList( //
+							SingleTestMethodWithSharedTempDirParameterTestCase.class,
+							AnotherSingleTestMethodWithSharedTempDirParameterTestCase.class));
+			assertThat(executionResults).hasNumberOfSucceededTests(2);
+			assertThat( //
+				asList( //
+					SingleTestMethodWithSharedTempDirParameterTestCase.recordedPath,
+					AnotherSingleTestMethodWithSharedTempDirParameterTestCase.recordedPath))
+							.satisfies(allElementsAreEqual())
+							.allSatisfy(path -> assertThat(path).doesNotExist());
+		}
+
+	}
+
+	@Resources
+	static class AnotherSingleTestMethodWithSharedTempDirParameterTestCase {
+
+		static Path recordedPath;
+
+		@Test
+		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
+			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertCanAddAndReadTextFile(tempDir);
+
+			recordedPath = tempDir;
+		}
+
+	}
 
 	// ---
 
@@ -740,18 +782,24 @@ class ResourcesTests {
 
 	private static void assertEmptyReadableWriteableInMemoryDirectory(Path tempDir) {
 		assertThat(tempDir).isEmptyDirectory().isReadable().isWritable();
-		assertDoesNotThrow(() -> {
-			try (FileSystem fileSystem = Jimfs.newFileSystem()) {
-				assertThat(tempDir.getFileSystem()).isInstanceOf(fileSystem.getClass());
-			}
-		});
+		try (FileSystem fileSystem = Jimfs.newFileSystem()) {
+			assertThat(tempDir.getFileSystem()).isInstanceOf(fileSystem.getClass());
+		}
+		catch (IOException e) {
+			fail(e);
+		}
 	}
 
 	private static void assertCanAddAndReadTextFile(Path tempDir) {
-		assertDoesNotThrow(() -> Files.write(tempDir.resolve("some-file.txt"), singletonList("some-text")));
-		List<String> lines = assertDoesNotThrow(() -> Files.readAllLines(tempDir.resolve("some-file.txt")));
-		assertThat(lines).containsExactly("some-text");
-		assertDoesNotThrow(() -> Files.delete(tempDir.resolve("some-file.txt")));
+		try {
+			Path testFile = Files.createTempFile(tempDir, "some-test-file", ".txt");
+			Files.write(testFile, singletonList("some-text"));
+			assertThat(Files.readAllLines(testFile)).containsExactly("some-text");
+			Files.delete(testFile);
+		}
+		catch (IOException e) {
+			fail(e);
+		}
 	}
 
 	private static final Path ROOT_TMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));

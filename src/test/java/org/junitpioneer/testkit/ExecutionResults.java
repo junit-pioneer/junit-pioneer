@@ -10,6 +10,10 @@
 
 package org.junitpioneer.testkit;
 
+import java.util.stream.Stream;
+
+import org.junit.platform.commons.util.CollectionUtils;
+import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.testkit.engine.EngineExecutionResults;
 import org.junit.platform.testkit.engine.EngineTestKit;
@@ -27,9 +31,21 @@ public class ExecutionResults {
 	private static final String JUPITER_ENGINE_NAME = "junit-jupiter";
 
 	ExecutionResults(Class<?> testClass) {
+		// TODO: Consider swapping `EngineTestKit::engine` with `getConfiguredJuputerEngine()`,
+		//       to make ResourcesTests run its test cases in parallel mode, to in turn tease out
+		//       concurrency bugs.
 		executionResults = EngineTestKit
 				.engine(JUPITER_ENGINE_NAME)
 				.selectors(DiscoverySelectors.selectClass(testClass))
+				.execute();
+	}
+
+	@SuppressWarnings("unchecked")
+	ExecutionResults(Iterable<Class<?>> testClasses) {
+		executionResults = getConfiguredJupiterEngine()
+				.selectors(((Stream<Class<?>>) CollectionUtils.toStream(testClasses))
+						.map(DiscoverySelectors::selectClass)
+						.toArray(DiscoverySelector[]::new))
 				.execute();
 	}
 
