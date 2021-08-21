@@ -117,10 +117,10 @@ class ResourcesTests {
 	@Nested
 	class WhenTestClassHasMultipleTestMethodsWithNewTempDirAnnotatedParameterTests {
 
-		@DisplayName("then the parameters on both test methods are populated with new readable and writeable "
+		@DisplayName("then the parameters are populated with new readable and writeable "
 				+ "temporary directories that are torn down afterwards")
 		@Test
-		void thenParametersOnBothTestMethodsArePopulatedWithNewReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
+		void thenParametersArePopulatedWithNewReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(TwoTestMethodsWithNewTempDirParameterTestCase.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
@@ -157,12 +157,12 @@ class ResourcesTests {
 
 	@DisplayName("when a test class has a test method with multiple @New(TemporaryDirectory.class)-annotated parameters")
 	@Nested
-	class WhenTestClassHasTestMethodWithMultipleNewTempDirAnnotatedParameterTests {
+	class WhenTestClassHasTestMethodWithMultipleNewTempDirAnnotatedParametersTests {
 
-		@DisplayName("then the parameters on the test method are populated with new readable and writeable "
+		@DisplayName("then the parameters are populated with new readable and writeable "
 				+ "temporary directories that are torn down afterwards")
 		@Test
-		void thenParametersOnTheTestMethodArePopulatedWithNewReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
+		void thenParametersArePopulatedWithNewReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(SingleTestMethodWithTwoNewTempDirParametersTestCase.class);
 			assertThat(executionResults).hasSingleSucceededTest();
@@ -183,7 +183,9 @@ class ResourcesTests {
 		void firstTest(@New(TemporaryDirectory.class) Path firstTempDir,
 				@New(TemporaryDirectory.class) Path secondTempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(firstTempDir);
+			assertCanAddAndReadTextFile(firstTempDir);
 			assertEmptyReadableWriteableTemporaryDirectory(secondTempDir);
+			assertCanAddAndReadTextFile(secondTempDir);
 
 			recordedPaths.addAll(asList(firstTempDir, secondTempDir));
 		}
@@ -679,15 +681,55 @@ class ResourcesTests {
 
 	// ---
 
+	@DisplayName("when a test class has a test method with multiple @Shared(factory = TemporaryDirectory.class, name = \"...\")-annotated parameters with different names")
+	@Nested
+	class WhenTestClassHasTestMethodWithMultipleSharedTempDirAnnotatedParametersWithDifferentNamesTests {
+
+		@DisplayName("then the parameters are populated with different readable and writeable "
+				+ "temporary directories that are torn down afterwards")
+		@Test
+		void thenParametersArePopulatedWithDifferentReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCase.class);
+			assertThat(executionResults).hasSingleSucceededTest();
+			assertThat(SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCase.recordedPaths)
+					.hasSize(2)
+					.doesNotHaveDuplicates()
+					.allSatisfy(path -> assertThat(path).doesNotExist());
+		}
+
+	}
+
+	@Resources
+	static class SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCase {
+
+		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
+
+		@Test
+		void theTest(@Shared(factory = TemporaryDirectory.class, name = "first-name") Path firstTempDir,
+				@Shared(factory = TemporaryDirectory.class, name = "second-name") Path secondTempDir) {
+			assertEmptyReadableWriteableTemporaryDirectory(firstTempDir);
+			assertCanAddAndReadTextFile(firstTempDir);
+			assertEmptyReadableWriteableTemporaryDirectory(secondTempDir);
+			assertCanAddAndReadTextFile(secondTempDir);
+
+			recordedPaths.add(firstTempDir);
+			recordedPaths.add(secondTempDir);
+		}
+
+	}
+
+	// ---
+
 	@DisplayName("when a test class has multiple test methods with a "
 			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\")-annotated parameter")
 	@Nested
 	class WhenTestClassHasMultipleTestMethodsWithParameterWithSameNamedSharedTempDirTests {
 
-		@DisplayName("then the parameters on both test methods are populated with a shared readable and writeable "
+		@DisplayName("then the parameters are populated with a shared readable and writeable "
 				+ "temporary directory that is torn down afterwards")
 		@Test
-		void thenParametersOnBothTestMethodsArePopulatedWithSharedReadableAndWriteableTempDirThatIsTornDownAfterwards() {
+		void thenParametersArePopulatedWithSharedReadableAndWriteableTempDirThatIsTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(TwoTestMethodsWithSharedSameNameTempDirParameterTestCase.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
@@ -729,20 +771,20 @@ class ResourcesTests {
 	@Nested
 	class WhenTwoTestClassesHaveATestMethodWithParameterWithSameNamedSharedTempDirTests {
 
-		@DisplayName("then the parameters on both test methods are populated with a shared readable and writeable "
+		@DisplayName("then the parameters are populated with a shared readable and writeable "
 				+ "temporary directory that is torn down afterwards")
 		@Test
-		void thenParametersOnBothTestMethodsArePopulatedWithSharedReadableAndWriteableTempDirThatIsTornDownAfterwards() {
+		void thenParametersArePopulatedWithSharedReadableAndWriteableTempDirThatIsTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClasses( //
 						asList( //
-							SingleTestMethodWithSharedTempDirParameterTestCase.class,
-							AnotherSingleTestMethodWithSharedTempDirParameterTestCase.class));
+							FirstSingleTestMethodWithSharedTempDirParameterTestCase.class,
+							SecondSingleTestMethodWithSharedTempDirParameterTestCase.class));
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
 			assertThat( //
 				asList( //
-					SingleTestMethodWithSharedTempDirParameterTestCase.recordedPath,
-					AnotherSingleTestMethodWithSharedTempDirParameterTestCase.recordedPath))
+					FirstSingleTestMethodWithSharedTempDirParameterTestCase.recordedPath,
+					SecondSingleTestMethodWithSharedTempDirParameterTestCase.recordedPath))
 							.satisfies(allElementsAreEqual())
 							.allSatisfy(path -> assertThat(path).doesNotExist());
 		}
@@ -750,7 +792,22 @@ class ResourcesTests {
 	}
 
 	@Resources
-	static class AnotherSingleTestMethodWithSharedTempDirParameterTestCase {
+	static class FirstSingleTestMethodWithSharedTempDirParameterTestCase {
+
+		static Path recordedPath;
+
+		@Test
+		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
+			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertCanAddAndReadTextFile(tempDir);
+
+			recordedPath = tempDir;
+		}
+
+	}
+
+	@Resources
+	static class SecondSingleTestMethodWithSharedTempDirParameterTestCase {
 
 		static Path recordedPath;
 
