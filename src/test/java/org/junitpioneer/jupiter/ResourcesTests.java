@@ -272,7 +272,8 @@ class ResourcesTests {
 	static class TestConstructorWithNewTempDirParameterTestCase {
 
 		static List<Path> recordedPathsFromConstructor = new CopyOnWriteArrayList<>();
-		Path recordedPath;
+
+		private final Path recordedPath;
 
 		TestConstructorWithNewTempDirParameterTestCase(@New(TemporaryDirectory.class) Path tempDir) {
 			recordedPathsFromConstructor.add(tempDir);
@@ -604,6 +605,35 @@ class ResourcesTests {
 											+ "` on unknown method is not annotated with @New");
 			}
 
+		}
+
+	}
+
+	// ---
+
+	@DisplayName("when a test class has a test method with a parameter annotated with both @New and @Shared")
+	@Nested
+	class WhenTestClassHasTestMethodWithParameterAnnotatedWithBothNewAndShared {
+
+		@DisplayName("then an exception is thrown")
+		@Test
+		void thenExceptionIsThrown() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndShared.class);
+			assertThat(executionResults)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class);
+		}
+
+	}
+
+	@Resources
+	static class TestMethodWithParameterAnnotatedWithBothNewAndShared {
+
+		@Test
+		void theTest(
+				@New(TemporaryDirectory.class) @Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
+			fail("We should not get this far.");
 		}
 
 	}

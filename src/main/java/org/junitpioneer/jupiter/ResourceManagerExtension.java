@@ -30,7 +30,7 @@ final class ResourceManagerExtension implements ParameterResolver {
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		// TODO: Check that the parameter is not annotated with both @New and @Shared.
-		return parameterContext.isAnnotated(New.class) || parameterContext.isAnnotated(Shared.class);
+		return parameterContext.isAnnotated(New.class) ^ parameterContext.isAnnotated(Shared.class);
 	}
 
 	@Override
