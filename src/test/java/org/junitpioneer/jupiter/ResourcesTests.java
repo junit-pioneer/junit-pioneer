@@ -294,6 +294,53 @@ class ResourcesTests {
 
 	// ---
 
+	// TODO: Uncomment this test if or when supporting field injection.
+
+	//	@DisplayName("when a test class has a field annotated with @New(TemporaryDirectory.class)")
+	//	@Nested
+	//	class WhenTestClassHasFieldAnnotatedWithNewTemporaryDirectory {
+	//
+	//		@DisplayName("then each test method has access to a new readable and writeable temporary directory " +
+	//				"that lasts as long as the test instance")
+	//		@Test
+	//		void thenEachTestMethodHasAccessToNewReadableAndWriteableTempDirThatLastsAsLongAsTestInstance() {
+	//			ExecutionResults executionResults = PioneerTestKit
+	//					.executeTestClass(TestFieldWithNewTempDirTestCase.class);
+	//			assertThat(executionResults).hasNumberOfSucceededTests(2);
+	//			assertThat(TestFieldWithNewTempDirTestCase.recordedPathsFromField)
+	//					.hasSize(2)
+	//					.doesNotHaveDuplicates()
+	//					.allSatisfy(path -> assertThat(path).doesNotExist());
+	//		}
+	//
+	//	}
+	//
+	//	@Resources
+	//	static class TestFieldWithNewTempDirTestCase {
+	//
+	//		static List<Path> recordedPathsFromField = new CopyOnWriteArrayList<>();
+	//
+	//		@New(TemporaryDirectory.class)
+	//		private Path tempDir;
+	//
+	//		TestFieldWithNewTempDirTestCase() {
+	//			recordedPathsFromField.add(tempDir);
+	//		}
+	//
+	//		@Test
+	//		void firstTest() {
+	//			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+	//		}
+	//
+	//		@Test
+	//		void secondTest() {
+	//			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+	//		}
+	//
+	//	}
+
+	// ---
+
 	@DisplayName("when Resources is applied to a test method with an unannotated parameter")
 	@Nested
 	class WhenResourcesIsAppliedToTestMethodWithUnannotatedParameterTests {
