@@ -1,5 +1,5 @@
 :page-title: Cartesian product of all test parameters
-:page-description: Extends JUnit Jupiter with `@CartesianProductTest`, a variant of parameterized tests that tests all combinations of its input
+:page-description: Extends JUnit Jupiter with `@CartesianTest`, a variant of parameterized tests that tests all combinations of its input
 
 From Wikipedia:
 
@@ -15,98 +15,102 @@ If you have two sets, `{ 1, 2 }` and `{ 3, 4 }`, their cartesian product is `{ {
 
 Sometimes it's useful to test all possible combinations of parameter sets.
 Normally, this results in a lot of written test data parameters.
-For a more comfortable way you may use the `@CartesianProductTest` extension.
+For a more comfortable way you may use the `@CartesianTest` extension.
 The extension takes the test data parameter values and runs the test for every possible combination of them.
+
+NOTE: The CartesianTest extension has undergone significant changes in 1.5.0.
+This included moving it into a new package.
+link:docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for December 2021).
 
 == Basic Use
 
-`@CartesianProductTest` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
+`@CartesianTest` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
 
-You can supply test parameters to `@CartesianProductTest` in multiple ways.
+You can supply test parameters to `@CartesianTest` in two ways:
 
- - the annotation can have a `String[]` value (see <<Supplying CartesianProductTest with a `String[]`>>)
- - the test method can be annotated with `@CartesianValueSource`, `@CartesianEnumSource`, or range source annotations (see <<Annotating your test method>>)
- - the test class can have a static factory method providing the arguments (see <<Writing a static factory method for the parameters>>)
+ - You can annotate your test method, providing all parameter values in a single annotation (Not yet implemented).
+ - The test parameters can be annotated with `@CartesianTest.Values`, `@CartesianTest.Enum`, or range source annotations (see <<Annotating your test parameters>>)
 
-Specifying more than one kind of parameter source (e.g.: both annotating your test method and having a static factory) does not work and will throw an `ExtensionConfigurationException`.
+Specifying more than one kind of parameter source (i.e.: annotating your test parameters and the test method itself) does not work and will throw an `ExtensionConfigurationException`.
 
 Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
 
 [source,java]
 ----
-@CartesianProductTest
-@CartesianValueSource(ints = { 1, 2 })
-@CartesianValueSource(ints = { 3, 4 })
-void myCartesianTestMethod(int x, int y) {
-	// passing test code
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
+
+class MyCartesianTestClass {
+	@CartesianTest
+	void myCartesianTestMethod(
+			@Values(ints = { 1, 2 }) int x,
+			@Values(ints = { 3, 4 }) int y) {
+		// passing test code
+	}
 }
 ----
 
-`@CartesianProductTest` works with parameters injected by JUnit automatically (e.g.: `TestReporter`).
+`@CartesianTest` works with parameters injected by JUnit automatically (e.g.: `TestReporter`).
 https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection::[You can read about auto-injected parameters here.]
 
-Just like the mathematical Cartesian product, `@CartesianProductTest` works with sets.
+Just like the mathematical Cartesian product, `@CartesianTest` works with sets.
 Duplicate elements get removed automatically.
 If your input is `{ 1, 1, 3 }` and `{ 2, 2 }` the extension will consider their Cartesian product `{ { 1, 2 }, { 3, 2 } }`.
 Otherwise, the test would run with the same parameters multiple times.
 If you need to pass the same parameters multiple times, you might want to look into https://junit.org/junit5/docs/current/user-guide/#writing-tests-repeated-tests[repeated tests].
 
-== Supplying CartesianProductTest with a `String[]`
+== Annotating your test parameters
 
-If all your test parameters are strings, you can supply all input parameters simultaneously by giving a string array value to `@CartesianProductTest`.
-This value is the input for all parameters.
-The test will try every combination of its elements.
+You can annotate the parameters of your `@CartesianTest`, to provide values to that specific parameter.
+Parameter annotations are "self-contained", they only provide values to the parameter they are on and do not interfere with each other.
+You can mix and match parameter annotations as you need.
 
 [source,java]
 ----
-@CartesianProductTest({ "0", "1" })
-void threeBits(String a, String b, String c) {
-	// passing test code
+import java.time.temporal.ChronoUnit;
+
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.params.*;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
+
+class MyCartesianTestClass {
+	@CartesianTest
+	void testIntChars(
+			@ShortRangeSource(from = 1, to = 3, step = 1) short s,
+			@Values(strings = { "A", "B" }) String character,
+			@Enum ChronoUnit unit) {
+		// passing test code
+	}
 }
 ----
 
-The test `threeBits` is executed exactly eight times, because all three input parameters can have the values "0" or "1".
-`@CartesianProductTest` tests for all input combinations, that's `2 × 2 × 2`, so eight tests in total.
+=== `@CartesianTest.Values`
 
-To demonstrate with a table:
-
-|===
-| # of test | value of `a`   | value of `b`   | value of `c`
-| 1st test  | "0"            | "0"            | "0"
-| 2nd test  | "0"            | "0"            | "1"
-| 3rd test  | "0"            | "1"            | "0"
-| 4th test  | "0"            | "1"            | "1"
-| 5th test  | "1"            | "0"            | "0"
-| 6th test  | "1"            | "0"            | "1"
-| 7th test  | "1"            | "1"            | "0"
-| 8th test  | "1"            | "1"            | "1"
-|===
-
-== Annotating your test method
-
-=== `@CartesianValueSource`
-
-If you don't only supply string values to your test method like in the example of the previous section, you can annotate your method with `@CartesianValueSource`.
-`@CartesianValueSource` is used to define the possible inputs of a single test parameter - as annotations are listed top-to-bottom, they provide parameter values left-to-right.
+`@CartesianTest.Values` is used to define the possible inputs of a single test parameter.
 The test will try every combination those values can have.
 
 [source,java]
 ----
-@CartesianProductTest
-@CartesianValueSource(ints = { 1, 2, 4 })
-@CartesianValueSource(strings = { "A", "B" })
-void testIntChars(int number, String character) {
-	// passing test code
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
+
+class MyCartesianTestClass {
+	@CartesianTest
+	void testIntChars(
+			@Values(ints = { 1, 2, 4 }) int number,
+			@Values(strings = { "A", "B" }) String character) {
+		// passing test code
+	}
 }
 ----
 
-This annotation might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-ValueSource::[JUnit's `@ValueSource`], except `@CartesianValueSource` is repeatable.
-It also does NOT work with `@ParameterizedTest`.
+This annotation might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-ValueSource::[JUnit's `@ValueSource`], except `@CartesianTest.Values` must be put on the parameter.
+It does *NOT* work with `@ParameterizedTest`.
 
 The test `testIntChars` is executed exactly six times.
 The first parameter can have any of the three values `1`, `2` or `4`.
 The second parameter can have any of the two values `"A"` or `"B"`.
-`@CartesianProductTest` tests for all input combinations, that's `3 × 2`, so six tests in total.
+`@CartesianTest` tests for all input combinations, that's `3 × 2`, so six tests in total.
 
 To demonstrate with a table:
 
@@ -120,52 +124,45 @@ To demonstrate with a table:
 | 6th test  | 4                 | "B"
 |===
 
-=== `@CartesianEnumSource`
+=== `@CartesianTest.Enum`
 
-`@CartesianEnumSource` provides a convenient way to use `Enum` constants.
+`@CartesianTest.Enum` provides a convenient way to use `Enum` constants.
 
 [source,java]
 ----
-@CartesianProductTest
-@CartesianEnumSource(ChronoUnit.class)
-void testWithCartesianEnumSource(TemporalUnit unit) {
-    assertThat(unit).isNotNull();
+import java.time.temporal.ChronoUnit;
+
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
+
+class MyCartesianTestClass {
+	@CartesianTest
+	void testWithEnum(@Enum ChronoUnit unit) {
+		assertThat(unit).isNotNull();
+	}
 }
 ----
 
-Like `@CartesianValueSource`, `@CartesianEnumSource` is an annotation that might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-EnumSource::[JUnit's `@EnumSource`], except `@CartesianEnumSource` is repeatable.
-It also does NOT work with `@ParameterizedTest`.
+Like `@CartesianTest.Values`, `@CartesianTest.Enum` is an annotation that might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-EnumSource::[JUnit's `@EnumSource`], except `@CartesianTest.Enum` must be put on the parameter.
+It does *NOT* work with `@ParameterizedTest`.
 
-The annotation's `value` attribute is optional.
-When omitted, the declared type of the parameter of the `@CartesianProductTest` method, which has the same relative index of the annotation, is used.
-The test will fail if it does not reference an enum type.
-Thus, the `value` attribute is required in the above example because the method parameter is declared as `TemporalUnit`, i.e. the interface implemented by `ChronoUnit`, which isn't an enum type.
-Changing the method parameter type to `ChronoUnit` allows you to omit the explicit enum type from the annotation as follows.
-
-[source,java]
-----
-@CartesianProductTest
-@CartesianEnumSource
-void testWithCartesianEnumSourceWithAutoDetection(ChronoUnit unit) {
-    assertThat(unit).isNotNull();
-}
-----
-
-As the above example has only one annotation, the type of the first parameter is used.
-The automatic detection of the enum type also works in cases with several `@CartesianEnumSource` annotations, even when mixed with other annotation supported by `@CartesianProductTest`.
+The annotation has an optional `value` attribute.
+When omitted, the declared type of the parameter is used.
+The test will fail if it is not an enum type.
+The `value` attribute is required in the following example because the method parameter is declared as `TemporalUnit`, i.e. the interface implemented by `ChronoUnit`, which isn't an enum type.
 
 [source,java]
 ----
-@CartesianProductTest
-@IntRangeSource(from = 0, to = 2)
-@CartesianEnumSource
-@CartesianEnumSource
-@CartesianValueSource(longs = { 2, 3 })
-void testWithCartesianEnumSourceMixedWithOtherAnnotations(int i, TestEnum e1, AnotherTestEnum e2, long l) {
-    assertThat(i).isNotNull();
-    assertThat(e1).isNotNull();
-    assertThat(e2).isNotNull();
-    assertThat(l).isNotNull();
+import java.time.temporal.*;
+
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
+
+class MyCartesianTestClass {
+	@CartesianTest
+	void testExplicitEnum(@Enum(ChronoUnit.class) TemporalUnit unit) {
+		assertThat(unit).isNotNull();
+	}
 }
 ----
 
@@ -174,10 +171,17 @@ If omitted, all constants will be used.
 
 [source,java]
 ----
-@CartesianProductTest
-@CartesianEnumSource(names = { "DAYS", "HOURS" })
-void testWithCartesianEnumSourceInclude(ChronoUnit unit) {
-    assertThat(EnumSet.of(ChronoUnit.DAYS, ChronoUnit.HOURS)).contains(unit);
+import java.time.temporal.*;
+
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
+
+class MyCartesianTestClass {
+	@CartesianTest
+	void testEnumNames(
+			@Enum(names = { "DAYS", "HOURS" }) ChronoUnit unit) {
+		assertThat(EnumSet.of(ChronoUnit.DAYS, ChronoUnit.HOURS)).contains(unit);
+	}
 }
 ----
 
@@ -186,26 +190,43 @@ For example, you can exclude names from the enum constant pool or specify regula
 
 [source,java]
 ----
-@CartesianProductTest
-@CartesianEnumSource(mode = EXCLUDE, names = { "ERAS", "FOREVER" })
-void testWithCartesianEnumSourceExclude(ChronoUnit unit) {
-    assertThat(EnumSet.of(ChronoUnit.ERAS, ChronoUnit.FOREVER)).doesNotContain(unit);
+import java.time.temporal.*;
+
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
+
+class MyCartesianTestClass {
+	@CartesianTest
+	void testWithEnumModes(
+			@Enum(mode = EXCLUDE, names = { "ERAS", "FOREVER" }) ChronoUnit unit) {
+		assertThat(EnumSet.of(ChronoUnit.ERAS, ChronoUnit.FOREVER)).doesNotContain(unit);
+	}
 }
 ----
 
 [source,java]
 ----
-@CartesianProductTest
-@CartesianEnumSource(mode = MATCH_ALL, names = "^.*DAYS$")
-void testWithCartesianEnumSourceRegex(ChronoUnit unit) {
-    assertThat(unit.name()).endsWith("DAYS");
+import java.time.temporal.*;
+
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
+
+class MyCartesianTestClass {
+	@CartesianTest
+	void testWithEnumRegex(
+			@Enum(mode = MATCH_ALL, names = "^.*DAYS$") ChronoUnit unit) {
+		assertThat(unit.name()).endsWith("DAYS");
+	}
 }
 ----
 
-The example below shows how to use `@CartesianEnumSource` with two `Enum` types.
+The example below shows how to use `@CartesianTest.Enum` with two `Enum` types.
 
 [source,java]
 ----
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
+
 enum MyEnum {
 	ONE, TWO, THREE
 }
@@ -214,18 +235,20 @@ enum AnotherEnum {
 	ALPHA, BETA, GAMMA, DELTA
 }
 
-@CartesianProductTest
-@CartesianEnumSource(MyEnum.class)
-@CartesianEnumSource(value = AnotherEnum.class, names = { "ALPHA", "DELTA" }, mode = Mode.EXCLUDE)
-void testEnumValues(MyEnum myEnum, AnotherEnum anotherEnum) {
-	// passing test code
+class MyCartesianTestClass {
+	@CartesianTest
+	void testEnumValues(
+			@Enum MyEnum myEnum,
+		@Enum(names = { "ALPHA", "DELTA" }, mode = Mode.EXCLUDE) AnotherEnum anotherEnum) {
+		// passing test code
+	}
 }
 ----
 
 The test `testEnumValues` is executed exactly six times.
 The first parameter can have any of the three constants `ONE`, `TWO` or `THREE`.
 The second parameter can have any of the two constants `BETA` or `GAMMA` (note the `EXCLUDE` mode applied to the other two constants).
-`@CartesianProductTest` tests for all input combinations, that's `3 × 2`, so six tests in total.
+`@CartesianTest` tests for all input combinations, that's `3 × 2`, so six tests in total.
 
 To demonstrate with a table:
 
@@ -239,46 +262,30 @@ To demonstrate with a table:
 | 6th test  | THREE             | GAMMA
 |===
 
-`@CartesianEnumSource` can also be combined with other supported annotations, like `@CartesianValueSource`:
-
-[source,java]
-----
-enum MyEnum {
-	ONE, TWO, THREE
-}
-
-@CartesianProductTest
-@CartesianValueSource(ints = { 1, 2, 3 })
-@CartesianEnumSource(MyEnum.class)
-void testEnumValues(int i, MyEnum myEnum) {
-	// passing test code
-}
-----
-
 === Range Source annotations
 
-Alternatively, you can annotate your test method with link:range-sources.adoc[range source annotations].
-For _this purpose only_, range sources are repeatable.
-When you annotate your `@CartesianProductTest` with a range source, you specify the inputs to a single test parameter.
-This is _not_ like `@ParameterizedTest` where you have to define all inputs in a single `@ArgumentsSource`.
+You can annotate your test parameters with link:docs/range-sources[range source annotations].
+For _this purpose only_, range sources can be used on parameters.
 
 [source,java]
 ----
-@CartesianProductTest
-@ShortRangeSource(from = 1, to = 3, step = 1)
-@LongRangeSource(from = 0L, to = 2L, step = 1, closed = true)
-void testShortAndLong(short s, long l) {
-	// passing test code
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.params.*;
+
+class MyCartesianTestClass {
+	@CartesianTest
+	void testShortAndLong(
+			@ShortRangeSource(from = 1, to = 3, step = 1) short s,
+			@LongRangeSource(from = 0L, to = 2L, step = 1, closed = true) long l) {
+		// passing test code
+	}
 }
 ----
-
-Just like with `@CartesianValueSource`, annotations get assigned to parameters in order.
-The first annotation from the top gets assigned to the first parameter, the second annotation to the second parameter and so on.
 
 The test `testShortAndLong` is executed exactly six times.
 The first parameter can have any of the two values `1`, `2`.
 The second parameter can have any of the three values `0L`, `1L` or `2L`.
-`@CartesianProductTest` tests for all input combinations, that's `2 × 3`, so six tests in total.
+`@CartesianTest` tests for all input combinations, that's `2 × 3`, so six tests in total.
 
 To demonstrate with a table:
 |===
@@ -291,152 +298,18 @@ To demonstrate with a table:
 | 6th test  | 2            | 2L
 |===
 
-For more information, please see the link:range-sources.adoc[separate documentation about range sources].
-You can combine range sources with `@CartesianValueSource`, it works as you'd expect:
+For more information, please see the link:docs/range-sources[separate documentation about range sources].
 
-[source, java]
-----
-@CartesianProductTest
-@ShortRangeSource(from = 1, to = 3)
-@CartesianValueSource(strings = { "text one", "text two" })
-void mixAndMatchTest(short number, String text) {
-	// passing test code
-}
-----
-
-== Writing a static factory method for the parameters
-
-If your tests require special inputs that `@CartesianValueSource` is not able to supply, you can define a static factory method to supply your test parameters.
-By default, this method must have the same name as the test method, but you can specify a different name with the `factory` annotation parameter.
-Just like with JUnit's `@MethodSource`, you can specify the factory method with its fully-qualified name (including the class), e.g. `com.example.Class#factory`.
-This method must return `CartesianProductTest.Sets`.
-`CartesianProductTest.Sets` is a helper class, specifically for creating sets for `@CartesianProductTest`.
-To create the test data, instantiate a `new CartesianProductTest.Sets()` then use the methods `add()` (with varargs arguments) or `addAll()` (with `Iterable` or `Stream` argument) to register the values for the parameters.
-
-[source,java]
-----
-@CartesianProductTest
-void nFold(String string, Class<?> clazz, TimeUnit unit) {
-	// passing test code
-}
-
-static CartesianProductTest.Sets nFold() {
-	return new CartesianProductTest.Sets()
-		// e.g. with a `List<String> letters`,
-		// you can use `addAll`:
-		// .addAll(letters)
-		.add("Alpha", "Omega")
-		.add(Runnable.class, Cloneable.class, Predicate.class)
-		.add(TimeUnit.DAYS, TimeUnit.HOURS);
-}
-----
-
-The test `nFold` is executed exactly twelve times.
-The first parameter can have any of the two values `"Alpha"` or `"Omega"`.
-The second parameter can have any of the three values `Runnable.class`, `Cloneable.class` or `Predicate.class`.
-The third parameter can have any of the two values `TimeUnit.DAYS` or `TimeUnit.HOURS`.
-`@CartesianProductTest` tests for all input combinations, that's `2 × 3 × 2`, so twelve tests in total.
-
-To demonstrate with a table:
-
-|===
-| # of test  | value of `string` | value of `clazz` | value of `unit`
-| 1st test   | "Alpha"           | Runnable.class   | TimeUnit.DAYS
-| 2nd test   | "Alpha"           | Runnable.class   | TimeUnit.HOURS
-| 3rd test   | "Alpha"           | Cloneable.class  | TimeUnit.DAYS
-| 4th test   | "Alpha"           | Cloneable.class  | TimeUnit.HOURS
-| 5th test   | "Alpha"           | Predicate.class  | TimeUnit.DAYS
-| 6th test   | "Alpha"           | Predicate.class  | TimeUnit.HOURS
-| 7th test   | "Omega"           | Runnable.class   | TimeUnit.DAYS
-| 8th test   | "Omega"           | Runnable.class   | TimeUnit.HOURS
-| 9th test   | "Omega"           | Cloneable.class  | TimeUnit.DAYS
-| 10th test  | "Omega"           | Cloneable.class  | TimeUnit.HOURS
-| 11th test  | "Omega"           | Predicate.class  | TimeUnit.DAYS
-| 12th test  | "Omega"           | Predicate.class  | TimeUnit.HOURS
-|===
-
-Remember, you can reuse the same argument provider method, by explicitly passing its name to `@CartesianProductTest`'s `factory` attribute.
-
-[source,java]
-----
-@CartesianProductTest(factory = "provideArguments")
-void testNeedingArguments(String string, int i) {
-	// passing test code
-}
-
-@CartesianProductTest(factory = "provideArguments")
-void testNeedingSameArguments(String string, int i) {
-	// different passing test code
-}
-
-static CartesianProductTest.Sets provideArguments() {
-	return new CartesianProductTest.Sets()
-		.add("Mercury", "Earth", "Venus")
-		.add(1, 12, 144);
-}
-----
-
-=== Conditions for the static factory method
-
-There are multiple conditions the static factory method has to fulfill to qualify:
-
-- must have the same name as the test method (or its name must be specified via the `factory` attribute)
-- must be `static`
-- must have **no** parameters
-- must return `CartesianProductTest.Sets`
-- must register values for every parameter exactly once
-- must register values in order
-
-=== Returning wrong `Sets` in the static factory method
-
-If you register too few, too many, or conflicting parameters, you will get an https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/ParameterResolutionException.html[`ParameterResolutionException`].
-"Conflicting parameters" means your test method has a parameter that should be injected by JUnit (e.g.: `TestReporter`) but you also try to inject it.
-
-Examples of badly configured tests/static factory method:
-
-[source,java]
-----
-@CartesianProductTest(factory = "resolveParameters")
-void tooFewParameters(String string, int i, boolean b) {
-	// fails because the boolean parameter is not resolved
-}
-
-@CartesianProductTest(factory = "resolveParameters")
-void tooManyParameters(String string) {
-	// fails because we try to supply a non-existent integer parameter
-}
-
-@CartesianProductTest(factory = "resolveParameters")
-void wrongOrderParameters(int i, String string) {
-	// fails because the static factory method declared parameter sets in the wrong order
-}
-
-@CartesianProductTest(factory = "resolveTestReporterParam")
-void conflictingParameters(String string, TestReporter info) {
-	// fails because both the factory method and JUnit tries to inject TestReporter
-}
-
-static CartesianProductTest.Sets resolveParameters() {
-	return new CartesianProductTest.Sets()
-		.add("A", "B", "C")
-		.add(1, 2, 3);
-}
-
-static CartesianProductTest.Sets resolveTestReporterParam() {
-	return new CartesianProductTest.Sets()
-		.add("A", "B", "C")
-		.add(new MyTestReporter()); // in this case MyTestReporter implements TestReporter
-}
-----
-
-== Writing your own `@ArgumentsSource` for `@CartesianProductTest`
+== Writing your own `@ArgumentsSource` for `@CartesianTest`
 
 You might find that the available `@ArgumentsSource` annotations do not fit your need.
-In that case, you can write a custom https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsSource.html[`@ArgumentsSource`] and a corresponding https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsProvider.html[`ArgumentsProvider`] for `@CartesianProductTest`.
+In that case, you can write a custom https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsSource.html[`@ArgumentsSource`] and a corresponding https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsProvider.html[`ArgumentsProvider`] for `@CartesianTest`.
+Because `CartesianTest` works with parameters, you will have to use `CartesianArgumentsProvider` instead of `ArgumentsProvider`.
+This will let you initialize your argument source with it's corresponding parameter.
 
 Let's demonstrate with an example.
 
-For the sake of the example, let's imagine that `@CartesianValueSource` does not exist.
+For the sake of simplicity, let's imagine that `@CartesianTest.Values` does not exist.
 We would like to have an `@ArgumentsSource`, where we can specify integers.
 Let's create an annotation for it.
 
@@ -444,42 +317,39 @@ Let's create an annotation for it.
 ----
 import java.lang.annotation.*;
 
-@Target(ElementType.METHOD)
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(CartesianIntSources.class)
 @ArgumentsSource(IntArgumentsProvider.class)
-public @interface CartesianIntSource {
+public @interface Ints {
 
-	int[] numbers();
+	int[] value();
 
-	@interface CartesianIntSources {
-		CartesianIntSource[] value();
-	}
 }
 ----
 
 The annotation has to have `RUNTIME` retention, so JUnit (and Pioneer) can discover it on your test via reflection.
-It does not have to be repeatable, necessarily, but it is strongly recommended, since you can only specify the input of a single test parameter in a single annotation.
-It has to be annotated with `@ArgumentsSource`, so Pioneer knows which ArgumentsProvider it should invoke.
+It has to be annotated with `@ArgumentsSource`, so Pioneer knows which `CartesianArgumentsProvider` it should invoke.
 
 Next, we need to have a class that takes these values and passes them to our test.
 
 [source,java]
 ----
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 
-class IntArgumentsProvider implements ArgumentsProvider, CartesianAnnotationConsumer<CartesianIntSource> {
+class IntArgumentsProvider implements CartesianArgumentsProvider {
 
-	private CartesianIntSource source;
+	private Ints source;
 
 	@Override
-	void accept(CartesianIntSource source) {
-		this.source = source;
+	void accept(Parameter parameter) {
+		this.source = Objects.requireNonNull(parameter.getAnnotation(Ints.class));
 	}
 
 	@Override
@@ -490,17 +360,28 @@ class IntArgumentsProvider implements ArgumentsProvider, CartesianAnnotationCons
 }
 ----
 
-The class has to implement both interfaces (`ArgumentsProvider` and `CartesianAnnotationConsumer<? extends Annotation>`).
-Note that an implementation of `ArgumentsProvider` must be declared as either a top-level class or as a static nested class.
-The `IntArgumentsProvider` class first 'consumes' the annotation via the `accept` method, then provides the arguments to JUnit via the `provideArguments` method.
+The class has to implement `CartesianArgumentsProvider`.
+Note that an implementation of `CartesianArgumentsProvider` must be declared as either a top-level class or as a static nested class.
+It must also provide a default (no argument) constructor.
+The `IntArgumentsProvider` class first initializes itself via the `accept` method, then provides the arguments to JUnit via the `provideArguments` method.
 The order of these operations is guaranteed, so `accept` is always first and `provideArguments` is always second.
 
-In our case, we don't have to process the values we pass in the annotation, so we just return the values as is, but you could do additional processing, for example:
+In our case, we don't have to process the values from our annotation, so we just return the values as is, but you could do additional processing, for example:
 
 [source,java]
 ----
-// no annotations to make example shorter
-@interface PeopleSource {
+import java.lang.annotation.*;
+import java.util.*;
+import java.lang.reflect.Parameter;
+
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
+
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@ArgumentsSource(PeopleProvider.class)
+@interface People {
 
 	String[] names();
 
@@ -508,27 +389,43 @@ In our case, we don't have to process the values we pass in the annotation, so w
 
 }
 
-// no class definition to make example shorter
-@Override
+class PeopleProvider implements CartesianArgumentsProvider {
+
+	private People source;
+
+	@Override
+	void accept(Parameter parameter) {
+		this.source = Objects.requireNonNull(parameter.getAnnotation(People.class));
+	}
+
+	@Override
 public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
 	return IntStream.range(0, source.names().length)
 		.mapToObj(i -> new Person(source.names()[i], source.ages()[i]))
 		.map(Arguments::of);
+	}
 }
 ----
 
 == Customizing Display Names
 
-By default, the display name of a CartesianProductTest invocation contains the invocation index and the String representation of all arguments for that specific invocation.
-You can customize invocation display names via the `name` attribute of the `@CartesianProductTest` annotation.
+By default, the display name of a `CartesianTest` invocation contains the invocation index and the String representation of all arguments for that specific invocation.
+You can customize invocation display names via the `name` attribute of the `@CartesianTest` annotation.
 For example:
 
 [source,java]
 ----
-@CartesianProductTest(value = {"0", "1"}, name = "{index} => first bit: {0} second bit: {1}")
-@DisplayName("Basic bit test")
-void testWithCustomDisplayName(String a, String b) {
-	// passing test code
+import org.junitpioneer.jupiter.cartesian.*;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
+
+class MyCartesianTest {
+
+	@CartesianTest(name = "{index} => first bit: {0} second bit: {1}")
+	@DisplayName("Basic bit test")
+	void testWithCustomDisplayName(
+			@Values({"0", "1"}) String a, @Values({"0", "1"}) String b) {
+		// passing test code
+	}
 }
 ----
 
@@ -543,33 +440,29 @@ Basic bit test
 └─ 4 => first bit: 1 second bit: 1
 ----
 
-Please note that name is a MessageFormat pattern.
+Please note that name is a https://docs.oracle.com/en/java/javase/16/docs/api/java.base/java/text/MessageFormat.html::[`MessageFormat`] pattern.
 A single quote (') needs to be represented as a doubled single quote ('') in order to be displayed.
 
-CartesianProductTest supports the following placeholders in custom display names:
+`CartesianTest` supports the following placeholders in custom display names:
 
 |===
-| Placeholder | Description
+| Placeholder		| Description
 
-| `{displayName}`
-| the display name of the method
-| `{index}`
-| the current invocation index, starting with 1
-| `{arguments}`
-| the complete, comma-separated arguments list
-| `{0}`, `{1}`, ...
-| an individual argument
+| `{displayName}`	| the display name of the method
+| `{index}`			| the current invocation index, starting with 1
+| `{arguments}`		| the complete, comma-separated arguments list
+| `{0}`, `{1}`, ...	| an individual argument
 |===
 
-== Warning: Do not `@CartesianProductTest` with `@Test`
+== Do not use `@CartesianTest` with `@Test`
 
-If `@CartesianProductTest` is combined with `@Test` or `TestTemplate`-based mechanisms (like `@RepeatedTest` or `@ParameterizedTest`), the test engine will execute it according to each annotation (i.e. more than once).
+If `@CartesianTest` is combined with `@Test` or `TestTemplate`-based mechanisms (like `@RepeatedTest` or `@ParameterizedTest`), the test engine will execute it according to each annotation (i.e. more than once).
 This is most likely unwanted and will probably lead to the following exception/failure message:
 
 > org.junit.jupiter.api.extension.ParameterResolutionException:
 > No ParameterResolver registered for parameter [...]
 
-This is because `@Test` does not know what to do with the parameter(s) of the `@CartesianProductTest`.
+This is because `@Test` does not know what to do with the parameter(s) of the `@CartesianTest`.
 
 == Thread-Safety
 

@@ -8,38 +8,35 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.cartesian;
 
 import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
  * This is a slightly modified copy of Jupiter's {@code ValueSourceArgumentsProvider},
  * except it does NOT support {@code @ParameterizedTest} and can consume a {@code Parameter}
  * instead of an annotation.
- *
- * @deprecated scheduled to be removed in 2.0
  */
-@Deprecated
-class CartesianValueArgumentsProvider implements CartesianAnnotationConsumer<CartesianValueSource>, ArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
+class CartesianValueArgumentsProvider implements CartesianArgumentsProvider {
 
 	private Object[] arguments;
 
-	@Override
-	public void accept(CartesianValueSource source) {
+	private void getArgumentsFromAnnotation(CartesianTest.Values source) {
 		// @formatter:off
 		List<Object> arrays =
 				// Declaration of <Object> is necessary due to a bug in Eclipse Photon.
-				Stream.<Object>of(
+				Stream.<Object> of(
 						source.shorts(),
 						source.bytes(),
 						source.ints(),
@@ -57,13 +54,22 @@ class CartesianValueArgumentsProvider implements CartesianAnnotationConsumer<Car
 
 		if (arrays.size() != 1)
 			throw new PreconditionViolationException("Exactly one type of input must be provided in the @"
-					+ CartesianValueSource.class.getSimpleName() + " annotation, but there were " + arrays.size());
+					+ CartesianTest.Values.class.getSimpleName() + " annotation, but there were " + arrays.size());
 
 		Object originalArray = arrays.get(0);
 		arguments = IntStream
 				.range(0, Array.getLength(originalArray)) //
 				.mapToObj(index -> Array.get(originalArray, index)) //
 				.toArray();
+	}
+
+	@Override
+	public void accept(Parameter parameter) {
+		CartesianTest.Values source = AnnotationSupport
+				.findAnnotation(parameter, CartesianTest.Values.class)
+				.orElseThrow(() -> new PreconditionViolationException(
+					"Parameter has to be annotated with " + CartesianTest.Values.class.getName()));
+		getArgumentsFromAnnotation(source);
 	}
 
 	@Override

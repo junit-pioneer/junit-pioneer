@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -936,7 +937,12 @@ public class CartesianProductTestExtensionTests {
 	@DisplayName("sets")
 	class SetsTests {
 
-		CartesianProductTest.Sets sets = new CartesianProductTest.Sets();
+		CartesianProductTest.Sets sets;
+
+		@BeforeEach
+		void setup() {
+			sets = new CartesianProductTest.Sets();
+		}
 
 		@Test
 		@DisplayName("should add distinct elements")
@@ -1336,10 +1342,10 @@ public class CartesianProductTestExtensionTests {
 
 	static CartesianProductTest.Sets nonDistinctInputs() {
 		//@formatter:off
-        return new CartesianProductTest.Sets()
-                .add(TimeUnit.SECONDS, TimeUnit.SECONDS)
-                .add("A", "B", "C");
-        //@formatter:on
+		return new CartesianProductTest.Sets()
+				.add(TimeUnit.SECONDS, TimeUnit.SECONDS)
+				.add("A", "B", "C");
+		//@formatter:on
 	}
 
 	static class ArgumentsSourceTestCases {

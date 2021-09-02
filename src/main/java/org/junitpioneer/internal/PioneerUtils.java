@@ -14,8 +14,11 @@ import static org.junit.platform.commons.support.ReflectionSupport.findMethod;
 
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -119,6 +122,26 @@ public class PioneerUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> Class<T> wrap(Class<T> clazz) {
 		return (Class<T>) MethodType.methodType(clazz).wrap().returnType();
+	}
+
+	public static List<List<?>> cartesianProduct(List<List<?>> lists) {
+		List<List<?>> resultLists = new ArrayList<>();
+		if (lists.isEmpty()) {
+			resultLists.add(Collections.emptyList());
+			return resultLists;
+		}
+		List<?> firstList = lists.get(0);
+		// Note the recursion here
+		List<List<?>> remainingLists = cartesianProduct(lists.subList(1, lists.size()));
+		for (Object item : firstList) {
+			for (List<?> remainingList : remainingLists) {
+				ArrayList<Object> resultList = new ArrayList<>();
+				resultList.add(item);
+				resultList.addAll(remainingList);
+				resultLists.add(resultList);
+			}
+		}
+		return resultLists;
 	}
 
 }

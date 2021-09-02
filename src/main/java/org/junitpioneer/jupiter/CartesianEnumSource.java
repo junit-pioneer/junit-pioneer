@@ -45,12 +45,14 @@ import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
  * @see CartesianProductTest
  *
  * @since 1.3.0
+ * @deprecated scheduled to be removed in 2.0, use {@link org.junitpioneer.jupiter.cartesian.CartesianTest.Enum} instead.
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Repeatable(CartesianEnumSources.class)
 @ArgumentsSource(CartesianEnumArgumentsProvider.class)
+@Deprecated
 public @interface CartesianEnumSource {
 
 	/**

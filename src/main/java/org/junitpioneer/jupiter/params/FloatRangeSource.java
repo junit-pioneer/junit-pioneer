@@ -33,6 +33,10 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * can only take a single {@link ArgumentsSource}). Using it more than once will throw an {@link IllegalArgumentException}.
  * If used with {@link org.junitpioneer.jupiter.CartesianProductTest}, it can be repeated to provide arguments to
  * more than one parameter.
+ *
+ * <p>This annotation can be used on a method parameter, to make it usable with
+ * {@link org.junitpioneer.jupiter.cartesian.CartesianTest}. If used with {@link org.junit.jupiter.params.ParameterizedTest},
+ * the annotation has to be on the method itself as any other {@link ArgumentsSource}.
  * </p>
  *
  * <p>
@@ -44,8 +48,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * @see ArgumentsSource
  * @see org.junit.jupiter.params.ParameterizedTest
  * @see org.junitpioneer.jupiter.CartesianProductTest
+ * @see org.junitpioneer.jupiter.cartesian.CartesianTest
  */
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ArgumentsSource(RangeSourceArgumentsProvider.class)

@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.cartesian;
 
 import static org.junitpioneer.internal.PioneerUtils.wrap;
 
@@ -18,10 +18,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
-/**
- * @deprecated Moved to `org.junitpioneer.jupiter.cartesian`.
- */
-@Deprecated
 class CartesianProductResolver implements ParameterResolver {
 
 	private final List<?> parameters;

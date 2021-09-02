@@ -39,6 +39,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * @see CartesianProductTest
  *
  * @since 1.0
+ * @deprecated scheduled to be removed in 2.0, use {@link org.junitpioneer.jupiter.cartesian.CartesianTest.Values} instead.
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

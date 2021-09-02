@@ -30,9 +30,13 @@ import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 /**
  * This is basically an enhanced copy of Jupiter's {@code EnumArgumentsProvider},
- * except it does NOT support {@code @ParameterizedTest}.
+ * except it does NOT support {@code @ParameterizedTest} and consumes a {@code Parameter}
+ * instead of an annotation.
+ *
+ * @deprecated scheduled to be removed in 2.0
  */
-class CartesianEnumArgumentsProvider implements CartesianAnnotationConsumer<CartesianEnumSource>, ArgumentsProvider {
+@Deprecated
+class CartesianEnumArgumentsProvider implements CartesianAnnotationConsumer<CartesianEnumSource>, ArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
 
 	private CartesianEnumSource enumSource;
 
