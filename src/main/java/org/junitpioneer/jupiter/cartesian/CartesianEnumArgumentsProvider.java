@@ -54,7 +54,6 @@ class CartesianEnumArgumentsProvider implements CartesianArgumentsProvider {
 		String[] declaredConstantNames = enumSource.names();
 		if (declaredConstantNames.length > 0) {
 			Set<String> uniqueNames = stream(declaredConstantNames).collect(toSet());
-
 			if (uniqueNames.size() != declaredConstantNames.length)
 				throw new PreconditionViolationException("Duplicate enum constant name(s) found in " + enumSource);
 

@@ -51,8 +51,8 @@ class CartesianTestNameFormatter {
 	}
 
 	private String prepareMessageFormatPattern(int invocationIndex, Object[] arguments) {
-		String result = pattern//
-				.replace(DISPLAY_NAME_PLACEHOLDER, this.displayName)//
+		String result = pattern
+				.replace(DISPLAY_NAME_PLACEHOLDER, this.displayName)
 				.replace(INDEX_PLACEHOLDER, String.valueOf(invocationIndex));
 
 		if (result.contains(ARGUMENTS_PLACEHOLDER)) {

@@ -89,7 +89,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
 	private List<Object> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
 		try {
-			ArgumentsProvider provider = initializeArgumentsProvider(source);
+			CartesianArgumentsProvider provider = initializeArgumentsProvider(source);
 			return provideArguments(context, parameter, provider);
 		}
 		catch (Exception ex) {
@@ -97,29 +97,32 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		}
 	}
 
-	private ArgumentsProvider initializeArgumentsProvider(Annotation source) {
+	private CartesianArgumentsProvider initializeArgumentsProvider(Annotation source) {
 		ArgumentsSource providerAnnotation = AnnotationSupport
 				.findAnnotation(source.annotationType(), ArgumentsSource.class)
 				// never happens, we already know these annotations are annotated with @ArgumentsSource
 				.orElseThrow(() -> new PreconditionViolationException(format(
 					"%s was not annotated with @ArgumentsSource but should have been.", source.annotationType())));
-		return ReflectionSupport.newInstance(providerAnnotation.value());
-	}
-
-	private List<Object> provideArguments(ExtensionContext context, Parameter source, ArgumentsProvider provider)
-			throws Exception {
-		if (provider instanceof CartesianArgumentsProvider) {
-			((CartesianArgumentsProvider) provider).accept(source);
-			return provider
-					.provideArguments(context)
-					.map(Arguments::get)
-					.flatMap(Arrays::stream)
-					.distinct()
-					.collect(toList());
-		} else {
+		ArgumentsProvider provider = ReflectionSupport.newInstance(providerAnnotation.value());
+		if (provider instanceof CartesianArgumentsProvider)
+			return (CartesianArgumentsProvider) provider;
+		else
 			throw new PreconditionViolationException(
 				format("%s does not implement the CartesianArgumentsProvider interface.", provider.getClass()));
-		}
+	}
+
+	private List<Object> provideArguments(ExtensionContext context, Parameter source,
+			CartesianArgumentsProvider provider) throws Exception {
+		provider.accept(source);
+		return provider
+				.provideArguments(context)
+				.map(Arguments::get)
+				.flatMap(Arrays::stream)
+				.distinct()
+				// We like to keep arguments in the order in which they were listed
+				// in the annotation. Could use a set with defined iteration, but
+				// this is more explicit.
+				.collect(toList());
 	}
 
 }

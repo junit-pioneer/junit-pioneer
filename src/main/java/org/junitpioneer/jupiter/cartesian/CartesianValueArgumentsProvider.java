@@ -36,7 +36,7 @@ class CartesianValueArgumentsProvider implements CartesianArgumentsProvider {
 		// @formatter:off
 		List<Object> arrays =
 				// Declaration of <Object> is necessary due to a bug in Eclipse Photon.
-				Stream.<Object>of(
+				Stream.<Object> of(
 						source.shorts(),
 						source.bytes(),
 						source.ints(),
