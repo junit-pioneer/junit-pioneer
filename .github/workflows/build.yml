@@ -118,7 +118,7 @@ jobs:
     strategy:
       matrix:
         java: [ 8, 11, 16 ]
-        junit-version: [ '5.7.0', '5.7.2', '5.8.0-RC1' ]
+        junit-version: [ '5.7.2', '5.8.0-RC1' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
         exclude:

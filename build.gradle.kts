@@ -4,14 +4,14 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "5.11.1"
+	id("com.diffplug.spotless") version "5.14.3"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "3.1.1"
+	id("org.sonarqube") version "3.3"
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
-	id("org.shipkit.shipkit-changelog") version "1.1.13"
-	id("org.shipkit.shipkit-github-release") version "1.1.13"
-	id("com.github.ben-manes.versions") version "0.38.0"
-	id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
+	id("org.shipkit.shipkit-changelog") version "1.1.15"
+	id("org.shipkit.shipkit-github-release") version "1.1.15"
+	id("com.github.ben-manes.versions") version "0.39.0"
+	id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -60,10 +60,10 @@ dependencies {
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
-	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.19.0")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.8.0")
+	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.20.2")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.12.4")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.5.5")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.7.1")
 
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.14.1")
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.14.1")
