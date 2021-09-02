@@ -18,7 +18,9 @@ Normally, this results in a lot of written test data parameters.
 For a more comfortable way you may use the `@CartesianTest` extension.
 The extension takes the test data parameter values and runs the test for every possible combination of them.
 
-NOTE: The CartesianTest extension has undergone significant changes in 1.4.3 (??? TODO: Fix).
+NOTE: The CartesianTest extension has undergone significant changes in 1.5.0.
+This included moving it into a new package.
+link:docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for December 2021).
 
 == Basic Use
 
@@ -262,7 +264,7 @@ To demonstrate with a table:
 
 === Range Source annotations
 
-You can annotate your test parameters with link:range-sources.adoc[range source annotations].
+You can annotate your test parameters with link:docs/range-sources[range source annotations].
 For _this purpose only_, range sources can be used on parameters.
 
 [source,java]
@@ -296,7 +298,7 @@ To demonstrate with a table:
 | 6th test  | 2            | 2L
 |===
 
-For more information, please see the link:range-sources.adoc[separate documentation about range sources].
+For more information, please see the link:docs/range-sources[separate documentation about range sources].
 
 == Writing your own `@ArgumentsSource` for `@CartesianTest`
 
