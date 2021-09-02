@@ -19,12 +19,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestTemplate;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtensionTests {
 
@@ -64,6 +64,36 @@ class RetryingTestExtensionTests {
 	}
 
 	@Test
+	void failsOnlyOnFirstInvocationWithExpectedException_executedTwice_passes() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocationWithExpectedException");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(2)
+				.hasNumberOfAbortedTests(1)
+				.hasNumberOfSucceededTests(1);
+	}
+
+	@Test
+	void failsOnlyOnFirstInvocationWithUnexpectedException_executedOnce_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocationWithUnexpectedException");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(1).hasNumberOfFailedTests(1);
+	}
+
+	@Test
+	void failsOnlyOnFirstInvocationWithUnexpectedException_executedTwice_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class, "failsFirstWithExpectedThenWithUnexpectedException");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(2)
+				.hasNumberOfAbortedTests(1)
+				.hasNumberOfFailedTests(1);
+	}
+
+	@Test
 	void failsAlways_executedThreeTimes_fails() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsAlways");
 
@@ -79,6 +109,15 @@ class RetryingTestExtensionTests {
 
 		assertThat(results).hasSingleDynamicallyRegisteredTest();
 		assertThat(results).hasSingleAbortedTest();
+	}
+
+	@Test
+	void failsFirstWithExpectedExceptionThenSkippedByAssumption_executedTwice_skipped() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCase.class,
+					"failsFirstWithExpectedExceptionThenSkippedByAssumption");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfAbortedTests(2);
 	}
 
 	@Test
@@ -192,7 +231,7 @@ class RetryingTestExtensionTests {
 	@TestInstance(PER_CLASS)
 	static class RetryingTestTestCase {
 
-		private int EXECUTION_COUNT;
+		private int executionCount;
 
 		@Test
 		@RetryingTest(3)
@@ -210,9 +249,36 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void failsOnlyOnFirstInvocation() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 1) {
+			executionCount++;
+			if (executionCount == 1) {
 				throw new IllegalArgumentException();
+			}
+		}
+
+		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
+		void failsOnlyOnFirstInvocationWithExpectedException() {
+			executionCount++;
+			if (executionCount == 1) {
+				throw new IllegalArgumentException();
+			}
+		}
+
+		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
+		void failsOnlyOnFirstInvocationWithUnexpectedException() {
+			executionCount++;
+			if (executionCount == 1) {
+				throw new NullPointerException();
+			}
+		}
+
+		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
+		void failsFirstWithExpectedThenWithUnexpectedException() {
+			executionCount++;
+			if (executionCount == 1) {
+				throw new IllegalArgumentException();
+			}
+			if (executionCount == 2) {
+				throw new NullPointerException();
 			}
 		}
 
@@ -223,7 +289,18 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void skipByAssumption() {
-			Assumptions.assumeFalse(true);
+			throw new TestAbortedException();
+		}
+
+		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
+		void failsFirstWithExpectedExceptionThenSkippedByAssumption() {
+			executionCount++;
+			if (executionCount == 1) {
+				throw new IllegalArgumentException();
+			}
+			if (executionCount == 2) {
+				throw new TestAbortedException();
+			}
 		}
 
 		@RetryingTest(maxAttempts = 4, minSuccess = 2)
@@ -232,16 +309,16 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(maxAttempts = 4, minSuccess = 2)
 		void executesTwiceWithTwoFails() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 2 || EXECUTION_COUNT == 3) {
+			executionCount++;
+			if (executionCount == 2 || executionCount == 3) {
 				throw new IllegalArgumentException();
 			}
 		}
 
 		@RetryingTest(maxAttempts = 4, minSuccess = 2)
 		void executesOnceWithThreeFails() {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT != 2) {
+			executionCount++;
+			if (executionCount != 2) {
 				throw new IllegalArgumentException();
 			}
 		}

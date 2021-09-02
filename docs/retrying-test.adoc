@@ -25,6 +25,11 @@ The test function will be executed, up to `maxAttempts`, until it completes succ
 
 The default for `minSuccess` is 1. The value must be greater than or equal to 1.
 
+=== onExceptions [optional]
+
+By default a test annotated with `@RetryingTest` will be retried on all exceptions except http://ota4j-team.github.io/opentest4j/docs/current/api/org/opentest4j/TestAbortedException.html[`TestAbortedException`] (which will abort the test entirely).
+To only retry on specific exceptions, use `onExceptions`.
+
 == Basic Use
 
 `@RetryingTest(n)` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
@@ -72,10 +77,12 @@ void aborted() {
 }
 ----
 
-If a test is aborted (e.g.: because of a failed Assumption) `@RetryingTest` won't try again after that.
+If a test is aborted (e.g.: because of a failed assumption) `@RetryingTest` won't try again after that.
 The test `aborted` is aborted before (or during) its first execution.
 The first execution is marked as aborted/skipped, containing the underlying cause.
 The test suite as a whole is also marked as aborted/skipped.
+
+=== Configuring the Number of Successes
 
 [source,java]
 ----
@@ -87,6 +94,32 @@ void requiresTwoSuccesses() {
 
 The test `requiresTwoSuccesses` must run at least two times without raising an exception.
 However, it will not run more than four times.
+
+=== Configuring on which Exceptions to Retry
+
+Use `onExceptions` to only retry on the mentioned exception(s):
+
+[source,java]
+----
+private int EXECUTION_COUNT;
+
+@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
+void failsFirstWithExpectedThenWithUnexpectedException() {
+    EXECUTION_COUNT++;
+    if (EXECUTION_COUNT == 1) {
+        throw new IllegalArgumentException();
+    }
+    if (EXECUTION_COUNT == 2) {
+        throw new NullPointerException();
+    }
+}
+----
+
+This example test method will be executed twice.
+The first run yields an `IllegalArgumentException`, which is mentioned in `onExceptions`, so it is marked as aborted and a second run is launched.
+(This behavior would be the same without `onExceptions` because then the test is always retried.)
+The second run results in a `NullPointerException`, which was _not_ expected and so it is marked as failed and no third run is attempted.
+(This behavior is different from a test without `onExceptions`, which would try a third time.)
 
 == Combining `@RetryingTest` with `@Test` et al
 

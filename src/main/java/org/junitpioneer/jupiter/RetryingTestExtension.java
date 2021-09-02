@@ -16,6 +16,7 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -70,13 +71,17 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 
 		private final int maxRetries;
 		private final int minSuccess;
+		private final Class<? extends Throwable>[] expectedExceptions;
 
 		private int retriesSoFar;
 		private int exceptionsSoFar;
+		private boolean seenFailedAssumption;
+		private boolean seenUnexpectedException;
 
-		private FailedTestRetrier(int maxRetries, int minSuccess) {
+		private FailedTestRetrier(int maxRetries, int minSuccess, Class<? extends Throwable>[] expectedExceptions) {
 			this.maxRetries = maxRetries;
 			this.minSuccess = minSuccess;
+			this.expectedExceptions = expectedExceptions;
 			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
 		}
@@ -107,15 +112,22 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
 
-			return new FailedTestRetrier(maxAttempts, minSuccess);
+			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.onExceptions());
 		}
 
-		void failed(Throwable exception) {
-			if (exception instanceof TestAbortedException)
+		void failed(Throwable exception) throws Throwable {
+			exceptionsSoFar++;
+
+			if (exception instanceof TestAbortedException) {
+				seenFailedAssumption = true;
 				throw new TestAbortedException("Test execution was skipped, possibly because of a failed assumption.",
 					exception);
+			}
 
-			exceptionsSoFar++;
+			if (!expectedException(exception)) {
+				seenUnexpectedException = true;
+				throw exception;
+			}
 
 			if (hasNext())
 				throw new TestAbortedException(
@@ -127,11 +139,21 @@ public class RetryingTestExtension implements TestTemplateInvocationContextProvi
 					retriesSoFar, maxRetries, minSuccess), exception);
 		}
 
+		private boolean expectedException(Throwable exception) {
+			// if not expected exceptions were specified, all are expected
+			if (expectedExceptions.length == 0)
+				return true;
+
+			return Arrays.stream(expectedExceptions).anyMatch(type -> type.isInstance(exception));
+		}
+
 		@Override
 		public boolean hasNext() {
 			// there's always at least one execution
 			if (retriesSoFar == 0)
 				return true;
+			if (seenFailedAssumption || seenUnexpectedException)
+				return false;
 
 			int successfulExecutionCount = retriesSoFar - exceptionsSoFar;
 			int remainingExecutionCount = maxRetries - retriesSoFar;
