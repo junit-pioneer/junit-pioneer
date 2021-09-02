@@ -64,7 +64,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: ${{ matrix.java }}
-          distribution: adopt
+          distribution: temurin
           cache: 'gradle'
       - name: Gradle build
         uses: eskatos/gradle-command-action@v1
@@ -89,7 +89,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 11
-          distribution: adopt
+          distribution: temurin
           cache: 'gradle'
       - name: Cache SonarCloud results
         uses: actions/cache@v2
@@ -132,7 +132,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: ${{ matrix.java }}
-          distribution: adopt
+          distribution: temurin
           cache: 'gradle'
       - name: Gradle build
         uses: eskatos/gradle-command-action@v1
@@ -173,7 +173,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           java-version: 16
-          distribution: adopt
+          distribution: temurin
           cache: 'gradle'
       - name: Gradle toolchains
         uses: eskatos/gradle-command-action@v1
@@ -204,7 +204,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 8
-          distribution: adopt
+          distribution: temurin
       - name: Perform release
         uses: eskatos/gradle-command-action@v1
         env:
