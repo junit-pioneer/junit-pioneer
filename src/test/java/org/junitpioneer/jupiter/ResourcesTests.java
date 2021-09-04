@@ -376,7 +376,7 @@ class ResourcesTests {
 
 	// ---
 
-	@DisplayName("when new resource factory is applied to a parameter")
+	@DisplayName("when a new resource factory is applied to a parameter")
 	@Nested
 	class WhenNewResourceFactoryAppliedToParameterTests {
 
@@ -387,8 +387,7 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is wrapped and propagated")
 			@Test
 			void thenThrownExceptionIsWrappedAndPropagated() {
-				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(ThrowOnCreateResourceFactoryTestCase.class);
+				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRFCreateTestCase.class);
 				executionResults
 						.testEvents()
 						.debug()
@@ -398,11 +397,11 @@ class ResourcesTests {
 							finished(//
 								throwable(//
 									instanceOf(ParameterResolutionException.class), //
-									message(
-										"Unable to create an instance of `" + ThrowOnCreateResourceFactory.class + "`"), //
+									message("Unable to create a resource from `" + ThrowOnRFCreateResourceFactory.class
+											+ "`"), //
 									cause(//
-										instanceOf(EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION.getClass()), //
-										message(EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION.getMessage())))));
+										instanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass()), //
+										message(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage())))));
 			}
 
 		}
@@ -414,8 +413,7 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is propagated")
 			@Test
 			void thenThrownExceptionIsPropagated() {
-				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(ThrowOnCloseResourceFactoryTestCase.class);
+				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRFCloseTestCase.class);
 				executionResults
 						.allEvents()
 						.debug()
@@ -424,15 +422,15 @@ class ResourcesTests {
 							1, //
 							finished(//
 								throwable(//
-									instanceOf(EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION.getClass()), //
-									message(EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION.getMessage()))));
+									instanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass()), //
+									message(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage()))));
 			}
 
 		}
 
-		@DisplayName("and a new resource is created")
+		@DisplayName("and a resource is created")
 		@Nested
-		class AndNewResourceIsCreatedTests {
+		class AndResourceIsCreatedTests {
 
 			@DisplayName("and the resource throws on ::get")
 			@Nested
@@ -441,8 +439,7 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is wrapped and propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					ExecutionResults executionResults = PioneerTestKit
-							.executeTestClass(ThrowOnGetResourceTestCase.class);
+					ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRGetTestCase.class);
 					executionResults
 							.testEvents()
 							.debug()
@@ -452,10 +449,11 @@ class ResourcesTests {
 								finished(//
 									throwable(//
 										instanceOf(ParameterResolutionException.class), //
-										message("Unable to create an instance of `" + ThrowOnGetResource.class + "`"), //
+										message("Unable to get the contents of the resource created by `"
+												+ ThrowOnRGetResourceFactory.class + "`"), //
 										cause(//
-											instanceOf(EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION.getClass()), //
-											message(EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION.getMessage())))));
+											instanceOf(EXPECTED_THROW_ON_R_GET_EXCEPTION.getClass()), //
+											message(EXPECTED_THROW_ON_R_GET_EXCEPTION.getMessage())))));
 				}
 
 			}
@@ -467,8 +465,7 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					ExecutionResults executionResults = PioneerTestKit
-							.executeTestClass(ThrowOnCloseResourceResourceFactoryTestCase.class);
+					ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRCloseTestCase.class);
 					executionResults
 							.testEvents()
 							.debug()
@@ -477,8 +474,8 @@ class ResourcesTests {
 								1, //
 								finished(//
 									throwable(//
-										instanceOf(EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION.getClass()), //
-										message(EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION.getMessage()))));
+										instanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass()), //
+										message(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage()))));
 				}
 
 			}
@@ -488,40 +485,40 @@ class ResourcesTests {
 	}
 
 	@Resources
-	static class ThrowOnCreateResourceFactoryTestCase {
+	static class ThrowOnNewRFCreateTestCase {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(ThrowOnCreateResourceFactory.class) Object object) {
+		void foo(@New(ThrowOnRFCreateResourceFactory.class) Object object) {
 
 		}
 
 	}
 
-	static final class ThrowOnCreateResourceFactory implements ResourceFactory<Object> {
+	static final class ThrowOnRFCreateResourceFactory implements ResourceFactory<Object> {
 
 		@Override
 		public Resource<Object> create(List<String> arguments) throws Exception {
-			throw EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION;
+			throw EXPECTED_THROW_ON_RF_CREATE_EXCEPTION;
 		}
 
 	}
 
-	private static final Exception EXPECTED_THROW_ON_CREATE_RESOURCE_FACTORY_EXCEPTION = new IOException(
+	private static final Exception EXPECTED_THROW_ON_RF_CREATE_EXCEPTION = new IOException(
 		"failed to connect to the Matrix");
 
 	@Resources
-	static class ThrowOnCloseResourceFactoryTestCase {
+	static class ThrowOnNewRFCloseTestCase {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(ThrowOnCloseResourceFactory.class) Object object) {
+		void foo(@New(ThrowOnRFCloseResourceFactory.class) Object object) {
 
 		}
 
 	}
 
-	static final class ThrowOnCloseResourceFactory implements ResourceFactory<Object> {
+	static final class ThrowOnRFCloseResourceFactory implements ResourceFactory<Object> {
 
 		@Override
 		public Resource<Object> create(List<String> arguments) {
@@ -530,58 +527,58 @@ class ResourcesTests {
 
 		@Override
 		public void close() throws Exception {
-			throw EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION;
+			throw EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION;
 		}
 
 	}
 
-	private static final Exception EXPECTED_THROW_ON_CLOSE_RESOURCE_FACTORY_EXCEPTION = new CloneNotSupportedException(
+	private static final Exception EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION = new CloneNotSupportedException(
 		"failed to clone a homunculus");
 
 	@Resources
-	static class ThrowOnGetResourceTestCase {
+	static class ThrowOnNewRGetTestCase {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(ThrowOnGetResourceResourceFactory.class) Object object) {
+		void foo(@New(ThrowOnRGetResourceFactory.class) Object object) {
 
 		}
 
 	}
 
-	static final class ThrowOnGetResourceResourceFactory implements ResourceFactory<Object> {
+	static final class ThrowOnRGetResourceFactory implements ResourceFactory<Object> {
 
 		@Override
 		public Resource<Object> create(List<String> arguments) {
-			return new ThrowOnGetResource();
+			return new ThrowOnRGetResource();
 		}
 
 	}
 
-	static final class ThrowOnGetResource implements Resource<Object> {
+	static final class ThrowOnRGetResource implements Resource<Object> {
 
 		@Override
 		public Object get() throws Exception {
-			throw EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION;
+			throw EXPECTED_THROW_ON_R_GET_EXCEPTION;
 		}
 
 	}
 
-	private static final Exception EXPECTED_THROW_ON_GET_RESOURCE_EXCEPTION = new FileAlreadyExistsException(
+	private static final Exception EXPECTED_THROW_ON_R_GET_EXCEPTION = new FileAlreadyExistsException(
 		"wait, what's that file doing there?");
 
 	@Resources
-	static class ThrowOnCloseResourceResourceFactoryTestCase {
+	static class ThrowOnNewRCloseTestCase {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(ThrowOnCloseResourceResourceFactory.class) Object object) {
+		void foo(@New(ThrowOnRCloseResourceFactory.class) Object object) {
 
 		}
 
 	}
 
-	static final class ThrowOnCloseResourceResourceFactory implements ResourceFactory<Object> {
+	static final class ThrowOnRCloseResourceFactory implements ResourceFactory<Object> {
 
 		@Override
 		public Resource<Object> create(List<String> arguments) {
@@ -594,7 +591,7 @@ class ResourcesTests {
 
 				@Override
 				public void close() throws Exception {
-					throw EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION;
+					throw EXPECTED_THROW_ON_R_CLOSE_EXCEPTION;
 				}
 
 			};
@@ -602,7 +599,7 @@ class ResourcesTests {
 
 	}
 
-	private static final Exception EXPECTED_THROW_ON_CLOSE_RESOURCE_EXCEPTION = new UnknownHostException(
+	private static final Exception EXPECTED_THROW_ON_R_CLOSE_EXCEPTION = new UnknownHostException(
 		"wait, where's the Internet gone?!");
 
 	// ---
@@ -894,6 +891,163 @@ class ResourcesTests {
 			assertCanAddAndReadTextFile(tempDir);
 
 			recordedPath = tempDir;
+		}
+
+	}
+
+	// ---
+
+	@DisplayName("when a shared resource factory is applied to a parameter")
+	@Nested
+	class WhenSharedResourceFactoryAppliedToParameterTests {
+
+		@DisplayName("and the factory throws on ::create")
+		@Nested
+		class AndFactoryThrowsOnCreateTests {
+
+			@DisplayName("then the thrown exception is wrapped and propagated")
+			@Test
+			void thenThrownExceptionIsWrappedAndPropagated() {
+				ExecutionResults executionResults = PioneerTestKit
+						.executeTestClass(ThrowOnSharedRFCreateTestCase.class);
+				executionResults
+						.testEvents()
+						.debug()
+						.assertThatEvents()
+						.haveExactly(//
+							1, //
+							finished(//
+								throwable(//
+									instanceOf(ParameterResolutionException.class), //
+									message("Unable to create a resource from `" + ThrowOnRFCreateResourceFactory.class
+											+ "`"), //
+									cause(//
+										instanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass()), //
+										message(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage())))));
+			}
+
+		}
+
+		@DisplayName("and the factory throws on ::close")
+		@Nested
+		class AndFactoryThrowsOnCloseTests {
+
+			@DisplayName("then the thrown exception is propagated")
+			@Test
+			void thenThrownExceptionIsPropagated() {
+				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnSharedRFCloseTestCase.class);
+				executionResults
+						.allEvents()
+						.debug()
+						.assertThatEvents()
+						.haveExactly(//
+							1, //
+							finished(//
+								throwable(//
+									instanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass()), //
+									message(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage()))));
+			}
+
+		}
+
+		@DisplayName("and a resource is created")
+		@Nested
+		class AndResourceIsCreatedTests {
+
+			@DisplayName("and the resource throws on ::get")
+			@Nested
+			class AndResourceThrowsOnGetTests {
+
+				@DisplayName("then the thrown exception is wrapped and propagated")
+				@Test
+				void thenThrownExceptionIsWrappedAndPropagated() {
+					ExecutionResults executionResults = PioneerTestKit
+							.executeTestClass(ThrowOnSharedRGetTestCase.class);
+					executionResults
+							.testEvents()
+							.debug()
+							.assertThatEvents()
+							.haveExactly(//
+								1, //
+								finished(//
+									throwable(//
+										instanceOf(ParameterResolutionException.class), //
+										message("Unable to get the contents of the resource created by `"
+												+ ThrowOnRGetResourceFactory.class + "`"), //
+										cause(//
+											instanceOf(EXPECTED_THROW_ON_R_GET_EXCEPTION.getClass()), //
+											message(EXPECTED_THROW_ON_R_GET_EXCEPTION.getMessage())))));
+				}
+
+			}
+
+			@DisplayName("and the resource throws on ::close")
+			@Nested
+			class AndResourceThrowsOnCloseTests {
+
+				@DisplayName("then the thrown exception is propagated")
+				@Test
+				void thenThrownExceptionIsWrappedAndPropagated() {
+					ExecutionResults executionResults = PioneerTestKit
+							.executeTestClass(ThrowOnSharedRCloseTestCase.class);
+					executionResults
+							.testEvents()
+							.debug()
+							.assertThatEvents()
+							.haveExactly(//
+								1, //
+								finished(//
+									throwable(//
+										instanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass()), //
+										message(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage()))));
+				}
+
+			}
+
+		}
+
+	}
+
+	@Resources
+	static class ThrowOnSharedRFCreateTestCase {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@Shared(factory = ThrowOnRFCreateResourceFactory.class, name = "some-name") Object object) {
+
+		}
+
+	}
+
+	@Resources
+	static class ThrowOnSharedRFCloseTestCase {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@Shared(factory = ThrowOnRFCloseResourceFactory.class, name = "some-name") Object object) {
+
+		}
+
+	}
+
+	@Resources
+	static class ThrowOnSharedRGetTestCase {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@Shared(factory = ThrowOnRGetResourceFactory.class, name = "some-name") Object object) {
+
+		}
+
+	}
+
+	@Resources
+	static class ThrowOnSharedRCloseTestCase {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@Shared(factory = ThrowOnRCloseResourceFactory.class, name = "some-name") Object object) {
+
 		}
 
 	}

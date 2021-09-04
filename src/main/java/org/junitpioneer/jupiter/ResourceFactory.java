@@ -12,7 +12,9 @@ package org.junitpioneer.jupiter;
 
 import java.util.List;
 
-public interface ResourceFactory<T> extends AutoCloseable {
+import org.junit.jupiter.api.extension.ExtensionContext;
+
+public interface ResourceFactory<T> extends ExtensionContext.Store.CloseableResource {
 
 	Resource<T> create(List<String> arguments) throws Exception;
 

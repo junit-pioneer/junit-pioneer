@@ -55,31 +55,35 @@ final class ResourceManagerExtension implements ParameterResolver {
 
 	private Object resolve(New newAnnotation, ExtensionContext.Store store) {
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newAnnotation.value());
-		// @formatter:off
-		store.put(
-				resourceIdGenerator.getAndIncrement(),
-				(ExtensionContext.Store.CloseableResource) resourceFactory::close);
-		// @formatter:on
+		store.put(resourceIdGenerator.getAndIncrement(), resourceFactory);
 		Resource<?> resource;
 		try {
 			resource = resourceFactory.create(unmodifiableList(asList(newAnnotation.arguments())));
 		}
 		catch (Exception e) {
 			throw new ParameterResolutionException(
-				"Unable to create an instance of `" + resourceFactory.getClass() + '`', e);
+				"Unable to create a resource from `" + resourceFactory.getClass() + '`', e);
 		}
 		store.put(resourceIdGenerator.getAndIncrement(), resource);
 		try {
 			return resource.get();
 		}
 		catch (Exception e) {
-			throw new ParameterResolutionException("Unable to create an instance of `" + resource.getClass() + '`', e);
+			throw new ParameterResolutionException(
+				"Unable to get the contents of the resource created by `" + resourceFactory.getClass() + '`', e);
 		}
 	}
 
 	private final AtomicLong resourceIdGenerator = new AtomicLong(0);
 
 	private Object resolve(Shared sharedAnnotation, ExtensionContext.Store store) {
+		// TODO: Consider disallowing someone from creating two @Shared
+		//       resources with the same name but different factories.
+		ResourceFactory<?> resourceFactory = store
+				.getOrComputeIfAbsent( //
+					sharedAnnotation.name() + " resource factory", //
+					unused -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
+					ResourceFactory.class);
 		Resource<?> resource;
 		try {
 			resource = store
@@ -87,37 +91,35 @@ final class ResourceManagerExtension implements ParameterResolver {
 						sharedAnnotation.name() + " resource", //
 						unused -> {
 							try {
-								// TODO: Put resourceFactory in store.
-								ResourceFactory<?> resourceFactory = //
-									ReflectionSupport.newInstance(sharedAnnotation.factory());
 								return resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments())));
 							}
 							catch (Exception e) {
-								throw new InnerException(e);
+								throw new UncheckedParameterResolutionException(new ParameterResolutionException(
+									"Unable to create a resource from `" + sharedAnnotation.factory() + "`", e));
 							}
 						}, Resource.class);
 		}
-		catch (InnerException e) {
-			// TODO
-			throw new UnsupportedOperationException("TODO");
-		}
-		catch (Exception e) {
-			// TODO
-			throw new UnsupportedOperationException("TODO");
+		catch (UncheckedParameterResolutionException e) {
+			throw e.getCause();
 		}
 		try {
 			return resource.get();
 		}
 		catch (Exception e) {
-			// TODO
-			throw new UnsupportedOperationException("TODO");
+			throw new ParameterResolutionException(
+				"Unable to get the contents of the resource created by `" + sharedAnnotation.factory() + '`', e);
 		}
 	}
 
-	private static final class InnerException extends RuntimeException {
+	private static final class UncheckedParameterResolutionException extends RuntimeException {
 
-		public InnerException(Throwable cause) {
+		public UncheckedParameterResolutionException(ParameterResolutionException cause) {
 			super(cause);
+		}
+
+		@Override
+		public synchronized ParameterResolutionException getCause() {
+			return (ParameterResolutionException) super.getCause();
 		}
 
 	}

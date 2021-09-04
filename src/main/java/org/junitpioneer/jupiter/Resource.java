@@ -17,7 +17,7 @@ public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
 	T get() throws Exception;
 
 	@Override
-	default void close() throws Throwable {
+	default void close() throws Exception {
 		// no op by default
 	}
 
