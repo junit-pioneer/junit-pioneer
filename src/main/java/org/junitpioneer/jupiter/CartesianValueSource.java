@@ -46,6 +46,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 @Documented
 @Repeatable(CartesianValueSource.CartesianValueSources.class)
 @ArgumentsSource(CartesianValueArgumentsProvider.class)
+@Deprecated
 public @interface CartesianValueSource {
 
 	/**
