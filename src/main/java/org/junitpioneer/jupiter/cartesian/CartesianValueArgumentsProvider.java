@@ -23,7 +23,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 import org.junit.platform.commons.PreconditionViolationException;
-import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
  * This is a slightly modified copy of Jupiter's {@code ValueArgumentsProvider},
