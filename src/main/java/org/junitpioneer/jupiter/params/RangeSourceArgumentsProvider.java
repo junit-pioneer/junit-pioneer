@@ -50,11 +50,24 @@ class RangeSourceArgumentsProvider
 	private Annotation argumentsSource;
 
 	@Override
+	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter)
+			throws Exception {
+		initArgumentsSource(parameter);
+		return provideArguments(context, argumentsSource);
+	}
+
+	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
 		// argumentSource is present if fed through the CartesianAnnotationConsumer interface
 		if (argumentsSource == null)
 			// since it's a method annotation, the element will always be present
 			initArgumentsSource(context.getRequiredTestMethod());
+
+		return provideArguments(context, argumentsSource);
+	}
+
+	private Stream<? extends Arguments> provideArguments(ExtensionContext context, Annotation argumentsSource)
+			throws Exception {
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
 
@@ -84,11 +97,6 @@ class RangeSourceArgumentsProvider
 	@Override
 	public void accept(Annotation argumentsSource) {
 		this.argumentsSource = argumentsSource;
-	}
-
-	@Override
-	public void accept(Parameter parameter) {
-		initArgumentsSource(parameter);
 	}
 
 }

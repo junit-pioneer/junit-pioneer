@@ -405,7 +405,7 @@ public class CartesianTestExtensionTests {
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("Could not provide arguments")
-					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+					.hasRootCauseExactlyInstanceOf(PreconditionViolationException.class);
 		}
 
 		@Test
