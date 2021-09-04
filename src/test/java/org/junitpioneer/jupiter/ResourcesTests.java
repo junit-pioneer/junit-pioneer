@@ -350,7 +350,7 @@ class ResourcesTests {
 		void thenSupportsParameterReturnsTrue() {
 			ExecutionResults executionResults = PioneerTestKit.executeTestClass(UnannotatedParameterTestCase.class);
 			executionResults
-					.testEvents()
+					.allEvents()
 					.debug()
 					.assertThatEvents()
 					.haveExactly(1,
@@ -389,7 +389,7 @@ class ResourcesTests {
 			void thenThrownExceptionIsWrappedAndPropagated() {
 				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRFCreateTestCase.class);
 				executionResults
-						.testEvents()
+						.allEvents()
 						.debug()
 						.assertThatEvents()
 						.haveExactly(//
@@ -441,7 +441,7 @@ class ResourcesTests {
 				void thenThrownExceptionIsWrappedAndPropagated() {
 					ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRGetTestCase.class);
 					executionResults
-							.testEvents()
+							.allEvents()
 							.debug()
 							.assertThatEvents()
 							.haveExactly(//
@@ -467,7 +467,7 @@ class ResourcesTests {
 				void thenThrownExceptionIsWrappedAndPropagated() {
 					ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRCloseTestCase.class);
 					executionResults
-							.testEvents()
+							.allEvents()
 							.debug()
 							.assertThatEvents()
 							.haveExactly(//
@@ -582,19 +582,21 @@ class ResourcesTests {
 
 		@Override
 		public Resource<Object> create(List<String> arguments) {
-			return new Resource<Object>() {
+			return new ThrowOnRCloseResource();
+		}
 
-				@Override
-				public Object get() {
-					return "foo";
-				}
+	}
 
-				@Override
-				public void close() throws Exception {
-					throw EXPECTED_THROW_ON_R_CLOSE_EXCEPTION;
-				}
+	static final class ThrowOnRCloseResource implements Resource<Object> {
 
-			};
+		@Override
+		public Object get() throws Exception {
+			return "foo";
+		}
+
+		@Override
+		public void close() throws Exception {
+			throw EXPECTED_THROW_ON_R_CLOSE_EXCEPTION;
 		}
 
 	}
@@ -911,7 +913,7 @@ class ResourcesTests {
 				ExecutionResults executionResults = PioneerTestKit
 						.executeTestClass(ThrowOnSharedRFCreateTestCase.class);
 				executionResults
-						.testEvents()
+						.allEvents()
 						.debug()
 						.assertThatEvents()
 						.haveExactly(//
@@ -964,7 +966,7 @@ class ResourcesTests {
 					ExecutionResults executionResults = PioneerTestKit
 							.executeTestClass(ThrowOnSharedRGetTestCase.class);
 					executionResults
-							.testEvents()
+							.allEvents()
 							.debug()
 							.assertThatEvents()
 							.haveExactly(//
@@ -991,7 +993,7 @@ class ResourcesTests {
 					ExecutionResults executionResults = PioneerTestKit
 							.executeTestClass(ThrowOnSharedRCloseTestCase.class);
 					executionResults
-							.testEvents()
+							.allEvents()
 							.debug()
 							.assertThatEvents()
 							.haveExactly(//
