@@ -63,8 +63,8 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
 	private List<List<?>> computeSets(ExtensionContext context) {
 		Method testMethod = context.getRequiredTestMethod();
-		List<? extends Annotation> methodArgumentsSources = PioneerAnnotationUtils
-				.findAnnotatedAnnotations(testMethod, ArgumentsSource.class);
+		List<? extends Annotation> methodArgumentsSources = AnnotationSupport
+				.findRepeatableAnnotations(testMethod, ArgumentsSource.class);
 		List<? extends Annotation> parameterArgumentsSources = PioneerAnnotationUtils
 				.findParameterArgumentsSources(testMethod);
 		ensureNoInputConflicts(methodArgumentsSources, parameterArgumentsSources, testMethod);
@@ -101,7 +101,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
 	private CartesianArgumentsProvider initializeArgumentsProvider(Annotation source, Parameter parameter) {
 		Optional<CartesianArgumentsSource> cartesianProviderAnnotation = AnnotationSupport
-				.findAnnotation(source.annotationType(), CartesianArgumentsSource.class);
+				.findAnnotation(parameter, CartesianArgumentsSource.class);
 
 		if (cartesianProviderAnnotation.isPresent()) {
 			return AnnotationConsumerInitializer
@@ -109,7 +109,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		}
 
 		ArgumentsSource providerAnnotation = AnnotationSupport
-				.findAnnotation(source.annotationType(), ArgumentsSource.class)
+				.findAnnotation(parameter, ArgumentsSource.class)
 				// never happens, we already know these annotations are annotated with @ArgumentsSource
 				.orElseThrow(() -> new PreconditionViolationException(format(
 					"%s was not annotated with @CartesianArgumentsSource or @ArgumentsSource but should have been.",

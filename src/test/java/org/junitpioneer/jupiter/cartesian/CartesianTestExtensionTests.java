@@ -13,14 +13,21 @@ package org.junitpioneer.jupiter.cartesian;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.reflect.Parameter;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode;
@@ -349,6 +356,38 @@ public class CartesianTestExtensionTests {
 
 				assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
 				assertThat(results).hasNumberOfReportEntries(4).withValues("13", "14", "23", "24");
+			}
+
+		}
+
+		@Nested
+		@DisplayName("use custom arguments provider")
+		class CartesianProductCustomArgumentsProviderTests {
+
+			@Test
+			@DisplayName("when configured on parameters")
+			void usesCustomCartesianArgumentsProviderOnParameters() {
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethodWithParameterTypes(CustomCartesianArgumentsProviderTestCases.class,
+							"twoCustomCartesianArgumentProviders", String.class, int.class);
+
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
+				assertThat(results)
+						.hasNumberOfReportEntries(6)
+						.withValues("first(1)", "first(2)", "second(1)", "second(2)", "third(1)", "third(2)");
+			}
+
+			@Test
+			@DisplayName("when configured on test")
+			void usesCustomArgumentsProviderOnTest() {
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethodWithParameterTypes(CustomCartesianArgumentsProviderTestCases.class,
+							"customArgumentProvider", String.class);
+
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
+				assertThat(results)
+						.hasNumberOfReportEntries(6)
+						.withValues("first(1)", "first(2)", "second(1)", "second(2)", "third(1)", "third(2)");
 			}
 
 		}
@@ -887,12 +926,58 @@ public class CartesianTestExtensionTests {
 
 	}
 
+	static class CustomCartesianArgumentsProviderTestCases {
+
+		@CartesianTest
+		@ReportEntry("{0}({1})")
+		void twoCustomCartesianArgumentProviders(
+				@CartesianArgumentsSource(FirstCustomCartesianArgumentsProvider.class) String string,
+				@CartesianArgumentsSource(SecondCustomCartesianArgumentsProvider.class) int integer) {
+
+		}
+
+		@CartesianTest
+		@ReportEntry("{0}")
+		@ArgumentsSource(FirstCustomArgumentsProvider.class)
+		void customArgumentProvider(String string) {
+
+		}
+
+	}
+
 	private enum TestEnum {
 		ONE, TWO, THREE
 	}
 
 	private enum AnotherTestEnum {
 		ALPHA, BETA, GAMMA
+	}
+
+	static class FirstCustomCartesianArgumentsProvider implements CartesianArgumentsProvider {
+
+		@Override
+		public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of("first", "second", "third").map(Arguments::of);
+		}
+
+	}
+
+	static class SecondCustomCartesianArgumentsProvider implements CartesianArgumentsProvider {
+
+		@Override
+		public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of(1, 2).map(Arguments::of);
+		}
+
+	}
+
+	static class FirstCustomArgumentsProvider implements ArgumentsProvider {
+
+		@Override
+		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+			return Stream.of("first", "second").map(Arguments::of);
+		}
+
 	}
 
 }

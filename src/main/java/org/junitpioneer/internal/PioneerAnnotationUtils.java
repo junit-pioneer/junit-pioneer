@@ -264,8 +264,8 @@ public class PioneerAnnotationUtils {
 				.map(parameter -> {
 					List<Annotation> annotations = new ArrayList<>();
 					annotations
-							.addAll(PioneerAnnotationUtils.findAnnotatedAnnotations(parameter, CartesianArgumentsSource.class));
-					annotations.addAll(PioneerAnnotationUtils.findAnnotatedAnnotations(parameter, ArgumentsSource.class));
+							.addAll(AnnotationSupport.findRepeatableAnnotations(parameter, CartesianArgumentsSource.class));
+					annotations.addAll(AnnotationSupport.findRepeatableAnnotations(parameter, ArgumentsSource.class));
 					return annotations;
 				})
 				.filter(list -> !list.isEmpty())
