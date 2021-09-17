@@ -31,13 +31,7 @@ public class ExecutionResults {
 	private static final String JUPITER_ENGINE_NAME = "junit-jupiter";
 
 	ExecutionResults(Class<?> testClass) {
-		// TODO: Consider swapping `EngineTestKit::engine` with `getConfiguredJuputerEngine()`,
-		//       to make ResourcesTests run its test cases in parallel mode, to in turn tease out
-		//       concurrency bugs.
-		executionResults = EngineTestKit
-				.engine(JUPITER_ENGINE_NAME)
-				.selectors(DiscoverySelectors.selectClass(testClass))
-				.execute();
+		executionResults = getConfiguredJupiterEngine().selectors(DiscoverySelectors.selectClass(testClass)).execute();
 	}
 
 	@SuppressWarnings("unchecked")

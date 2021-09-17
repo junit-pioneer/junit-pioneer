@@ -227,6 +227,7 @@ class ResourcesTests {
 
 	}
 
+	// TODO: Consider removing this ResourceFactory and its test
 	static class InMemoryDirectory implements ResourceFactory<Path> {
 
 		private final FileSystem inMemoryFileSystem = Jimfs.newFileSystem(Configuration.unix());
