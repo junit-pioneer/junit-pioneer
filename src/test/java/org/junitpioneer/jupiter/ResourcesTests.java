@@ -1085,7 +1085,6 @@ class ResourcesTests {
 			Path testFile = Files.createTempFile(tempDir, "some-test-file", ".txt");
 			Files.write(testFile, singletonList("some-text"));
 			assertThat(Files.readAllLines(testFile)).containsExactly("some-text");
-			Files.delete(testFile);
 		}
 		catch (IOException e) {
 			fail(e);
