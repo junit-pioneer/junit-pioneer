@@ -263,8 +263,8 @@ public class PioneerAnnotationUtils {
 		return Arrays.stream(testMethod.getParameters())
 				.map(parameter -> {
 					List<Annotation> annotations = new ArrayList<>();
-					annotations
-							.addAll(AnnotationSupport.findRepeatableAnnotations(parameter, CartesianArgumentsSource.class));
+					AnnotationSupport.findAnnotation(parameter, CartesianArgumentsSource.class)
+							.ifPresent(annotations::add);
 					annotations.addAll(AnnotationSupport.findRepeatableAnnotations(parameter, ArgumentsSource.class));
 					return annotations;
 				})

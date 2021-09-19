@@ -47,6 +47,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 class RangeSourceArgumentsProvider
 		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
 
+	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
 
 	@Override
