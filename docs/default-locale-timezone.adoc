@@ -136,3 +136,8 @@ Tests that cover code that reads or writes the default locale or time zone need 
 * `@WritesDefaultTimeZone`
 
 Tests annotated in this way will never execute in parallel with tests annotated with `@DefaultLocale` or `@DefaultTimeZone`.
+
+== Extension Scope
+
+`@DefaultLocale` and `@DefaultTimeZone` implement `BeforeAllCallback` in addition to `BeforeEachCallback`.
+Hence, you can use them in setup/teardown methods if the enclosing container is annotated accordingly.

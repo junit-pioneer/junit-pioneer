@@ -115,3 +115,8 @@ Tests that cover code that reads or writes environment variables need to be anno
 * `@WritesEnvironmentVariable`
 
 Tests annotated in this way will never execute in parallel with tests annotated with `@ClearEnvironmentVariable` or `@SetEnvironmentVariable`.
+
+== Extension Scope
+
+`@ClearEnvironmentVariable` and `@SetEnvironmentVariable` implement `BeforeAllCallback` in addition to `BeforeEachCallback`.
+Hence, you can use them in setup/teardown methods if the enclosing container is annotated accordingly.

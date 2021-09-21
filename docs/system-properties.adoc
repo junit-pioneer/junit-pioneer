@@ -92,3 +92,8 @@ Tests that cover code that reads or writes system properties need to be annotate
 * `@WritesSystemProperty`
 
 Tests annotated in this way will never execute in parallel with tests annotated with `@ClearSystemProperty` or `@SetSystemProperty`.
+
+== Extension Scope
+
+`@ClearSystemProperty` and `@SetSystemProperty` implement `BeforeAllCallback` in addition to `BeforeEachCallback`.
+Hence, you can use them in setup/teardown methods if the enclosing container is annotated accordingly.
