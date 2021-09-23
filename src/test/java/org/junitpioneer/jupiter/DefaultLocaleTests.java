@@ -87,29 +87,13 @@ class DefaultLocaleTests {
 
 	}
 
-	@Nested
-	@DisplayName("applied on the class level")
-	class ClassLevelTests {
+	@Test
+	@WritesDefaultLocale
+	@DisplayName("applied on the class level, should execute tests with configured Locale")
+	void shouldExecuteTestsWithConfiguredLocale() {
+		ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
 
-		@BeforeEach
-		void setUp() {
-			assertThat(Locale.getDefault()).isEqualTo(TEST_DEFAULT_LOCALE);
-		}
-
-		@Test
-		@WritesDefaultLocale
-		@DisplayName("should execute tests with configured Locale")
-		void shouldExecuteTestsWithConfiguredLocale() {
-			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
-
-			assertThat(results).hasNumberOfSucceededTests(2);
-		}
-
-		@AfterEach
-		void tearDown() {
-			assertThat(Locale.getDefault()).isEqualTo(TEST_DEFAULT_LOCALE);
-		}
-
+		assertThat(results).hasNumberOfSucceededTests(2);
 	}
 
 	@DefaultLocale(language = "fr", country = "FR")
@@ -173,33 +157,79 @@ class DefaultLocaleTests {
 	@Nested
 	@DefaultLocale(language = "fi")
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-	class ResettingDefaultLocaleTests {
+	@DisplayName("correctly sets/resets before/after each/all extension points")
+	class ReSettingDefaultLocaleTests {
 
-		@Nested
-		@DefaultLocale(language = "en")
-		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-		class ResettingDefaultNestedLocaleTests {
+		@BeforeAll
+		void setsBeforeBeforeAllMethod() {
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
+		}
 
-			@Test
-			@DefaultLocale(language = "de")
-			void setForTestMethod() {
-				// only here to set the locale, so another test can verify whether it was reset;
-				// still, better to assert the value was actually set
-				assertThat(Locale.getDefault().getLanguage()).isEqualTo("de");
-			}
+		@BeforeEach
+		void setsBeforeBeforeEachMethod() {
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
+		}
 
-			@AfterAll
-			@ReadsDefaultLocale
-			void resetAfterTestMethodExecution() {
-				assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
-			}
+		@Test
+		@DisplayName("correctly sets before test")
+		void setsBeforeTestExecution() {
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
+		}
 
+		@Test
+		@DisplayName("correctly resets after test class")
+		void resetsAfterTestClassExecution() {
+			ExecutionResults results = executeTestClass(ClassLevelResetCase.class);
+			assertThat(results).hasSingleSucceededTest();
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
+		}
+
+		@AfterEach
+		void doesNotResetBeforeAfterEachMethod() {
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
+		}
+
+		@AfterAll
+		void doesNotResetBeforeAfterAllMethod() {
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
+		}
+
+	}
+
+	@DefaultLocale(language = "en")
+	static class ClassLevelResetCase {
+
+		@Test
+		void setForTestMethod() {
+			// only here to set the locale, so another test can verify whether it was reset;
+			// still, better to assert the value was actually set
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
+		}
+
+	}
+
+	@Nested
+	@DefaultLocale(language = "en")
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	class ResettingDefaultNestedLocaleTests {
+
+		@BeforeAll
+		void setsBeforeBeforeEachMethod() {
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
+		}
+
+		@Test
+		@DefaultLocale(language = "de")
+		void setForTestMethod() {
+			// only here to set the locale, so another test can verify whether it was reset;
+			// still, better to assert the value was actually set
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("de");
 		}
 
 		@AfterAll
 		@ReadsDefaultLocale
-		void resetAfterTestMethodExecution() {
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
+		void resetsAfterTestMethodExecution() {
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
 		}
 
 	}
