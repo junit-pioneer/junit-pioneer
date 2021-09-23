@@ -25,7 +25,6 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode;
@@ -373,6 +372,16 @@ public class CartesianTestExtensionTests {
 				assertThat(results)
 						.hasNumberOfReportEntries(6)
 						.withValues("first(1)", "first(2)", "second(1)", "second(2)", "third(1)", "third(2)");
+			}
+
+			@Test
+			@DisplayName("when configured with array parameters")
+			void usesCustomCartesianArgumentsProviderWithArrayArgumentOnParameters() {
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethodWithParameterTypes(CustomCartesianArgumentsProviderTestCases.class,
+							"singleArrayArgument", String[].class);
+
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
 			}
 
 		}
@@ -921,6 +930,11 @@ public class CartesianTestExtensionTests {
 
 		}
 
+		@CartesianTest
+		void singleArrayArgument(@CartesianArgumentsSource(StringArrayArgumentsProvider.class) String[] source) {
+			assertThat(source).hasSize(2);
+		}
+
 	}
 
 	private enum TestEnum {
@@ -934,8 +948,8 @@ public class CartesianTestExtensionTests {
 	static class FirstCustomCartesianArgumentsProvider implements CartesianArgumentsProvider {
 
 		@Override
-		public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
-			return Stream.of("first", "second", "third").map(Arguments::of);
+		public Stream<String> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of("first", "second", "third");
 		}
 
 	}
@@ -943,8 +957,17 @@ public class CartesianTestExtensionTests {
 	static class SecondCustomCartesianArgumentsProvider implements CartesianArgumentsProvider {
 
 		@Override
-		public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
-			return Stream.of(1, 2).map(Arguments::of);
+		public Stream<Integer> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of(1, 2);
+		}
+
+	}
+
+	static class StringArrayArgumentsProvider implements CartesianArgumentsProvider {
+
+		@Override
+		public Stream<String[]> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of(new String[] { "1", "2" }, new String[] { "3", "4" });
 		}
 
 	}

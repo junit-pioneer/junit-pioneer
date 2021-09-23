@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -34,7 +33,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 class CartesianEnumArgumentsProvider implements CartesianArgumentsProvider {
 
 	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
+	public Stream<? extends Enum<?>> provideArguments(ExtensionContext context, Parameter parameter) {
 		Class<?> parameterType = parameter.getType();
 		if (!Enum.class.isAssignableFrom(parameterType))
 			throw new PreconditionViolationException(String
@@ -57,7 +56,7 @@ class CartesianEnumArgumentsProvider implements CartesianArgumentsProvider {
 			mode.validate(enumSource, constants, uniqueNames);
 			constants.removeIf(constant -> !mode.select(constant, uniqueNames));
 		}
-		return constants.stream().map(Arguments::of);
+		return constants.stream();
 	}
 
 	private <E extends Enum<E>> Set<? extends E> getEnumConstants(CartesianTest.Enum enumSource,

@@ -51,8 +51,7 @@ class RangeSourceArgumentsProvider
 	private Annotation argumentsSource;
 
 	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter)
-			throws Exception {
+	public Stream<? extends Number> provideArguments(ExtensionContext context, Parameter parameter) throws Exception {
 		initArgumentsSource(parameter);
 		return provideArguments(context, argumentsSource);
 	}
@@ -64,17 +63,17 @@ class RangeSourceArgumentsProvider
 			// since it's a method annotation, the element will always be present
 			initArgumentsSource(context.getRequiredTestMethod());
 
-		return provideArguments(context, argumentsSource);
+		return provideArguments(context, argumentsSource).map(Arguments::of);
 	}
 
-	private Stream<? extends Arguments> provideArguments(ExtensionContext context, Annotation argumentsSource)
+	private Stream<? extends Number> provideArguments(ExtensionContext context, Annotation argumentsSource)
 			throws Exception {
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
 
 		Range<?> range = (Range<?>) rangeClass.getConstructors()[0].newInstance(argumentsSource);
 		range.validate();
-		return asStream(range).map(Arguments::of);
+		return asStream(range);
 	}
 
 	private void initArgumentsSource(AnnotatedElement element) {
@@ -91,7 +90,7 @@ class RangeSourceArgumentsProvider
 		argumentsSource = argumentsSources.get(0);
 	}
 
-	private Stream<?> asStream(Range<?> r) {
+	private Stream<? extends Number> asStream(Range<?> r) {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(r, Spliterator.ORDERED), false);
 	}
 

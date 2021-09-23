@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.support.AnnotationConsumerInitializer;
@@ -126,8 +125,6 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 			CartesianArgumentsProvider provider) throws Exception {
 		return provider
 				.provideArguments(context, source)
-				.map(Arguments::get)
-				.flatMap(Arrays::stream)
 				.distinct()
 				// We like to keep arguments in the order in which they were listed
 				// in the annotation. Could use a set with defined iteration, but
