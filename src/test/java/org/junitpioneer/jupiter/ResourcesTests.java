@@ -687,10 +687,6 @@ class ResourcesTests {
 
 	// ---
 
-	// TODO: Write and test with two custom ResourceFactory implementations: jimfs and OkHttp's MockWebServer
-
-	// ---
-
 	@DisplayName("when a test class has a test method with a "
 			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\")-annotated parameter")
 	@Nested
@@ -894,6 +890,66 @@ class ResourcesTests {
 			assertCanAddAndReadTextFile(tempDir);
 
 			recordedPath = tempDir;
+		}
+
+	}
+
+	// ---
+
+	@DisplayName("when a parameter is annotated with "
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\"), and another parameter is annotated with "
+			+ "@Shared with the same name but a different factory type")
+	@Nested
+	class WhenParameterIsAnnotatedWithSharedAndAnotherParamIsAnnotatedWithSharedWithSameNameButDifferentFactoryType {
+
+		@DisplayName("then it throws an exception")
+		@Test
+		void thenItThrowsAnException() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(SingleTestMethodWithConflictingSharedTempDirParametersTestCase.class);
+			executionResults
+					.allEvents()
+					.debug()
+					.assertThatEvents()
+					.haveExactly(//
+						1, //
+						finished(//
+							throwable(//
+								instanceOf(ParameterResolutionException.class), //
+								message(String
+										.format(
+											"Two or more parameters are annotated with @Shared annotations with the "
+													+ "name \"%s\" but with different factory classes",
+											"some-name")))));
+		}
+
+		private List<Parameter> parametersOfTestCase() {
+			Parameter[] parameters = ReflectionSupport
+					.findMethod(SingleTestMethodWithConflictingSharedTempDirParametersTestCase.class, "theTest",
+						Path.class, Path.class)
+					.get()
+					.getParameters();
+			return asList(parameters);
+		}
+
+	}
+
+	@Resources
+	static class SingleTestMethodWithConflictingSharedTempDirParametersTestCase {
+
+		@Test
+		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path first,
+				@Shared(factory = OtherResourceFactory.class, name = "some-name") Path second) {
+
+		}
+
+	}
+
+	static final class OtherResourceFactory implements ResourceFactory<Path> {
+
+		@Override
+		public Resource<Path> create(List<String> arguments) {
+			return () -> null;
 		}
 
 	}

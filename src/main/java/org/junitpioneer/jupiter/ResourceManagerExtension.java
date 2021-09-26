@@ -36,26 +36,26 @@ final class ResourceManagerExtension implements ParameterResolver {
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
 		Optional<New> newAnnotation = parameterContext.findAnnotation(New.class);
-		Optional<Shared> sharedAnnotation = parameterContext.findAnnotation(Shared.class);
 		if (newAnnotation.isPresent()) {
 			return resolve(newAnnotation.get(), extensionContext.getStore(NAMESPACE));
-		} else if (sharedAnnotation.isPresent()) {
-			return resolve(sharedAnnotation.get(), extensionContext.getRoot().getStore(NAMESPACE));
-		} else {
-			throw new ParameterResolutionException(String
-					.format( //
-						"Parameter `%s` on %s is not annotated with @New", //
-						parameterContext.getParameter(), //
-						extensionContext
-								.getTestMethod()
-								.map(method -> "method `" + method + '`')
-								.orElse("unknown method")));
 		}
+		Optional<Shared> sharedAnnotation = parameterContext.findAnnotation(Shared.class);
+		if (sharedAnnotation.isPresent()) {
+			return resolve(sharedAnnotation.get(), extensionContext.getRoot().getStore(NAMESPACE));
+		}
+		throw new ParameterResolutionException(String
+				.format( //
+					"Parameter `%s` on %s is not annotated with @New", //
+					parameterContext.getParameter(), //
+					extensionContext
+							.getTestMethod()
+							.map(method -> "method `" + method + '`')
+							.orElse("unknown method")));
 	}
 
 	private Object resolve(New newAnnotation, ExtensionContext.Store store) {
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newAnnotation.value());
-		store.put(resourceIdGenerator.getAndIncrement(), resourceFactory);
+		store.put(newKey(), resourceFactory);
 		Resource<?> resource;
 		try {
 			resource = resourceFactory.create(unmodifiableList(asList(newAnnotation.arguments())));
@@ -64,7 +64,7 @@ final class ResourceManagerExtension implements ParameterResolver {
 			throw new ParameterResolutionException(
 				"Unable to create a resource from `" + resourceFactory.getClass() + '`', e);
 		}
-		store.put(resourceIdGenerator.getAndIncrement(), resource);
+		store.put(newKey(), resource);
 		try {
 			return resource.get();
 		}
@@ -74,30 +74,31 @@ final class ResourceManagerExtension implements ParameterResolver {
 		}
 	}
 
-	private final AtomicLong resourceIdGenerator = new AtomicLong(0);
+	private long newKey() {
+		return keyGenerator.getAndIncrement();
+	}
+
+	private final AtomicLong keyGenerator = new AtomicLong(0);
 
 	private Object resolve(Shared sharedAnnotation, ExtensionContext.Store store) {
-		// TODO: Consider disallowing someone from creating two @Shared
-		//       resources with the same name but different factories.
+		throwIfConflicting(sharedAnnotation, store);
+
 		ResourceFactory<?> resourceFactory = store
-				.getOrComputeIfAbsent( //
-					sharedAnnotation.name() + " resource factory", //
-					unused -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
+				.getOrComputeIfAbsent(//
+					factoryKey(sharedAnnotation), //
+					__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
 					ResourceFactory.class);
 		Resource<?> resource;
 		try {
-			resource = store
-					.getOrComputeIfAbsent( //
-						sharedAnnotation.name() + " resource", //
-						unused -> {
-							try {
-								return resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments())));
-							}
-							catch (Exception e) {
-								throw new UncheckedParameterResolutionException(new ParameterResolutionException(
-									"Unable to create a resource from `" + sharedAnnotation.factory() + "`", e));
-							}
-						}, Resource.class);
+			resource = store.getOrComputeIfAbsent(key(sharedAnnotation), __ -> {
+				try {
+					return resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments())));
+				}
+				catch (Exception e) {
+					throw new UncheckedParameterResolutionException(new ParameterResolutionException(
+						"Unable to create a resource from `" + sharedAnnotation.factory() + "`", e));
+				}
+			}, Resource.class);
 		}
 		catch (UncheckedParameterResolutionException e) {
 			throw e.getCause();
@@ -109,6 +110,38 @@ final class ResourceManagerExtension implements ParameterResolver {
 			throw new ParameterResolutionException(
 				"Unable to get the contents of the resource created by `" + sharedAnnotation.factory() + '`', e);
 		}
+	}
+
+	private void throwIfConflicting(Shared sharedAnnotation, ExtensionContext.Store store) {
+		ResourceFactory<?> presentResourceFactory = //
+			store.getOrDefault(factoryKey(sharedAnnotation), ResourceFactory.class, null);
+
+		if (presentResourceFactory == null) {
+			store.put(keyOfFactoryKey(sharedAnnotation), factoryKey(sharedAnnotation));
+		} else {
+			String presentResourceFactoryName = //
+				store.getOrDefault(keyOfFactoryKey(sharedAnnotation), String.class, null);
+
+			if (factoryKey(sharedAnnotation).equals(presentResourceFactoryName)
+					&& !sharedAnnotation.factory().equals(presentResourceFactory.getClass())) {
+				throw new ParameterResolutionException(String
+						.format("Two or more parameters are annotated with @Shared annotations with the name \"%s\" "
+								+ "but with different factory classes",
+							sharedAnnotation.name()));
+			}
+		}
+	}
+
+	private String key(Shared sharedAnnotation) {
+		return sharedAnnotation.name() + " resource";
+	}
+
+	private String factoryKey(Shared sharedAnnotation) {
+		return sharedAnnotation.name() + " resource factory";
+	}
+
+	private String keyOfFactoryKey(Shared sharedAnnotation) {
+		return sharedAnnotation.name() + " resource factory key";
 	}
 
 	private static final class UncheckedParameterResolutionException extends RuntimeException {
