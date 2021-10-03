@@ -194,62 +194,6 @@ class ResourcesTests {
 
 	// ---
 
-	@DisplayName("when a test class has a test method with a @New(InMemoryDirectory.class)-annotated parameter")
-	@Nested
-	class WhenTestClassHasTestMethodWithNewInMemoryDirParameterTests {
-
-		@DisplayName("then the parameter is populated with a new readable and writeable temporary directory "
-				+ "that lasts as long as the test")
-		@Test
-		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTest() {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithNewInMemoryDirParameterTestCase.class);
-			assertThat(executionResults).hasSingleSucceededTest();
-			assertThatThrownBy(
-				() -> Files.readAllLines(SingleTestMethodWithNewInMemoryDirParameterTestCase.recordedPath))
-						.isInstanceOf(ClosedFileSystemException.class);
-		}
-
-	}
-
-	@Resources
-	static class SingleTestMethodWithNewInMemoryDirParameterTestCase {
-
-		static Path recordedPath;
-
-		@Test
-		void theTest(@New(InMemoryDirectory.class) Path inMemoryDir) {
-			assertEmptyReadableWriteableInMemoryDirectory(inMemoryDir);
-			assertCanAddAndReadTextFile(inMemoryDir);
-
-			recordedPath = inMemoryDir;
-		}
-
-	}
-
-	// TODO: Consider removing this ResourceFactory and its test
-	static class InMemoryDirectory implements ResourceFactory<Path> {
-
-		private final FileSystem inMemoryFileSystem = Jimfs.newFileSystem(Configuration.unix());
-
-		@Override
-		public Resource<Path> create(List<String> arguments) {
-			return () -> {
-				Path result = inMemoryFileSystem.getPath("test");
-				Files.createDirectory(result);
-				return result;
-			};
-		}
-
-		@Override
-		public void close() throws Exception {
-			inMemoryFileSystem.close();
-		}
-
-	}
-
-	// ---
-
 	@DisplayName("when a test class has a constructor with a @New(TemporaryDirectory.class)-annotated parameter")
 	@Nested
 	class WhenTestClassHasConstructorWithNewTemporaryDirectoryAnnotatedParameterTests {

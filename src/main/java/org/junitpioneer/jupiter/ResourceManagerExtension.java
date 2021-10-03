@@ -110,6 +110,7 @@ final class ResourceManagerExtension implements ParameterResolver {
 			throw new ParameterResolutionException(
 				"Unable to get the contents of the resource created by `" + sharedAnnotation.factory() + '`', e);
 		}
+
 	}
 
 	private void throwIfConflicting(Shared sharedAnnotation, ExtensionContext.Store store) {

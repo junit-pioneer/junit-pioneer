@@ -48,7 +48,7 @@ public final class TemporaryDirectory implements ResourceFactory<Path> {
 
 	}
 
-	static void deleteRecursively(Path tempDir) throws IOException {
+	private static void deleteRecursively(Path tempDir) throws IOException {
 		Files.walkFileTree(tempDir, PathDeleter.INSTANCE);
 	}
 
