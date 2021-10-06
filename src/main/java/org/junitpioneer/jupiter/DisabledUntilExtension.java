@@ -30,7 +30,7 @@ import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 class DisabledUntilExtension implements ExecutionCondition {
 
     private static final LocalDate TODAY = LocalDate.now();
-    public static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ISO_DATE;
+    private static final DateTimeFormatter ISO_DATE_FORMATTER = DateTimeFormatter.ISO_DATE;
 
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
