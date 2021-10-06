@@ -10,6 +10,8 @@
         url: /docs/environment-variables/
       - title: "Default Locale and TimeZone"
         url: /docs/default-locale-timezone/
+      - title: "Temporarily disable a test"
+        url: /docs/disabled-until/
       - title: "Disable Parameterized Tests"
         url: /docs/disable-parameterized-tests/
       - title: "Issue information"
