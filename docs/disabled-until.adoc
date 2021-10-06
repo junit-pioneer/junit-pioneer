@@ -1,0 +1,68 @@
+:page-title: Temporarily disable a test
+:page-description: Extends JUnit Jupiter with `@DisabledUntil` to temporarily disable a test.
+
+== Introduction
+
+It's sometimes useful to disable a test.
+One can imagine many reasons for doing so, maybe a remote dependency of the test is broken or not yet deployed.
+Maybe the test is still in development and unstable.
+
+The `@Disable` annotation is perfectly adequate to use in such cases, the test gets skipped and the test suite can terminate successfully.
+The only problem with this approach is remembering to activate the test again once the original impediment has been resolved.
+`@DisabledUntil` may be used to only temporarily disable a test.
+The test will be automatically executed again once the date supplied by the `untilDate` parameter is reached.
+
+It's a JUnit Jupiter extension for temporarily disabling a test.
+
+== Implementation
+
+The extension is divided into two parts:
+First there is an annotation to mark a test that should be temporarily disabled.
+
+The second part of the extension deals with enabling or disabling the test's execution based on the current date in relation to the supplied `untilDate`.
+
+=== Usage
+
+To mark a test to be temporarily disabled add the `@DisabledUntil` annotation like so:
+
+[source,java]
+----
+@DisabledUntil(untilDate = "2022-01-01")
+@Test
+void test() {
+	// Test will be skipped if it's 2021-12-31 or earlier
+}
+----
+
+The `@DisabledUntil annotation may optionally be declared with a reason to document why the annotated test class or test method is disabled:
+
+[source,java]
+----
+@DisabledUntil(reason = "The remote server won't be ready until next year", untilDate = "2022-01-01")
+@Test
+void test() {
+    // Test will be skipped if it's 2021-12-31 or earlier
+}
+----
+
+The `@DisabledUntil` annotation can be used on the class and method level, it will be inherited from higher level containers:
+
+[source,java]
+----
+@DisabledUntil(untilDate = "2022-01-01")
+class TestClass {
+    @Test
+    void test() {
+        // Test will be skipped if it's 2021-12-31 or earlier
+    }
+}
+----
+
+The `@DisabledUntil` annotation can only be used once per class or method.
+
+=== Contract
+
+The test will be skipped only if the date specified by `untilDate` is the future.
+If `untilDate` is today or in the past, the test will be executed normally but a warning entry will be published to the https://junit-pioneer.org/docs/report-entries[test report].
+The `untilDate` parameter must be a string in the date format specified by https://en.m.wikipedia.org/wiki/ISO_8601[ISO 8601], e.g. "1985-10-26".
+Invalid or unparseable date strings will be ignored and the test will be executed normally.
