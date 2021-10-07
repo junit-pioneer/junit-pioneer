@@ -9,17 +9,8 @@ Maybe the test is still in development and unstable.
 
 The `@Disable` annotation is perfectly adequate to use in such cases, the test gets skipped and the test suite can terminate successfully.
 The only problem with this approach is remembering to activate the test again once the original impediment has been resolved.
-`@DisabledUntil` may be used to only temporarily disable a test.
+The `@DisabledUntil` annotation may be used to disable a test only for a certain period of time.
 The test will be automatically executed again once the date supplied by the `untilDate` parameter is reached.
-
-It's a JUnit Jupiter extension for temporarily disabling a test.
-
-== Implementation
-
-The extension is divided into two parts:
-First there is an annotation to mark a test that should be temporarily disabled.
-
-The second part of the extension deals with enabling or disabling the test's execution based on the current date in relation to the supplied `untilDate`.
 
 === Usage
 
@@ -59,6 +50,13 @@ class TestClass {
 ----
 
 The `@DisabledUntil` annotation can only be used once per class or method.
+
+== Implementation
+
+The extension is divided into two parts:
+First there is an annotation to mark a test that should be temporarily disabled.
+
+The second part of the extension deals with enabling or disabling the test's execution based on the current date in relation to the supplied `untilDate`.
 
 === Contract
 
