@@ -7,10 +7,6 @@ import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 import org.junitpioneer.testkit.assertion.PioneerAssert;
 
-import java.time.LocalDate;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("Tests for the DisabledUntil extension")
 class DisabledUntilExtensionTest {
 
@@ -68,24 +64,6 @@ class DisabledUntilExtensionTest {
         PioneerAssert.assertThat(results).hasNumberOfSucceededTests(0);
         PioneerAssert.assertThat(results).hasNumberOfSkippedTests(0);
         PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
-    }
-
-    @Test
-    @DisplayName("Should return true if localDate is today")
-    void shouldReturnTrueIfLocalDateIsToday() {
-        assertThat(DisabledUntilExtension.isTodayOrInThePast(LocalDate.now())).isTrue();
-    }
-
-    @Test
-    @DisplayName("Should return true if localDate is in the past")
-    void shouldReturnTrueIfLocalDateIsInThePast() {
-        assertThat(DisabledUntilExtension.isTodayOrInThePast(LocalDate.now().minusDays(1))).isTrue();
-    }
-
-    @Test
-    @DisplayName("Should return false if localDate is in the future")
-    void shouldReturnFalseIfLocalDateIsInTheFuture() {
-        assertThat(DisabledUntilExtension.isTodayOrInThePast(LocalDate.now().plusDays(1))).isFalse();
     }
 
     static class DisabledUntilDummyTestClass {
