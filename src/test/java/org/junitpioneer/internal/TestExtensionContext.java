@@ -20,7 +20,16 @@ import java.util.function.Function;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstances;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
+/**
+ * Rudimentary implementation of an {@link ExtensionContext} that
+ * returns a {@link Class} and {@link Method} that were specified
+ * during construction.
+ *
+ * Best used to text annotation discovery mechanisms that expect an
+ * {@code ExtensionContext} as input.
+ */
 public class TestExtensionContext implements ExtensionContext {
 
 	private static final UnsupportedOperationException NOT_SUPPORTED_IN_TEST_CONTEXT = new UnsupportedOperationException(
@@ -31,6 +40,11 @@ public class TestExtensionContext implements ExtensionContext {
 	public TestExtensionContext(Class<?> testClass, Method testMethod) {
 		this.testClass = testClass;
 		this.testMethod = testMethod;
+	}
+
+	// @Override once we baseline against 5.8
+	public ExecutionMode getExecutionMode() {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
 	@Override
