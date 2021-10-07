@@ -14,25 +14,30 @@ import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.support.AnnotationConsumer;
 import org.junit.platform.commons.PreconditionViolationException;
-import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
- * This is a slightly modified copy of Jupiter's {@code ValueSourceArgumentsProvider},
- * except it does NOT support {@code @ParameterizedTest} and can consume a {@code Parameter}
- * instead of an annotation.
+ * This is a slightly modified copy of Jupiter's {@code ValueArgumentsProvider},
+ * except it does NOT support {@code @ParameterizedTest} and implements {@link CartesianArgumentsProvider}
+ * for use with {@code @CartesianTest}.
+ *
+ * @implNote This class does not implement {@code ArgumentsProvider} since the Jupiter's {@code ValueSource}
+ * should be used for that.
  */
-class CartesianValueArgumentsProvider implements CartesianArgumentsProvider {
+class CartesianValueArgumentsProvider implements CartesianArgumentsProvider, AnnotationConsumer<CartesianTest.Values> {
 
 	private Object[] arguments;
 
-	private void getArgumentsFromAnnotation(CartesianTest.Values source) {
+	@Override
+	public void accept(CartesianTest.Values source) {
 		// @formatter:off
 		List<Object> arrays =
 				// Declaration of <Object> is necessary due to a bug in Eclipse Photon.
@@ -64,17 +69,8 @@ class CartesianValueArgumentsProvider implements CartesianArgumentsProvider {
 	}
 
 	@Override
-	public void accept(Parameter parameter) {
-		CartesianTest.Values source = AnnotationSupport
-				.findAnnotation(parameter, CartesianTest.Values.class)
-				.orElseThrow(() -> new PreconditionViolationException(
-					"Parameter has to be annotated with " + CartesianTest.Values.class.getName()));
-		getArgumentsFromAnnotation(source);
-	}
-
-	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-		return Stream.of(Arguments.of(arguments));
+	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
+		return Arrays.stream(arguments).map(Arguments::of);
 	}
 
 }
