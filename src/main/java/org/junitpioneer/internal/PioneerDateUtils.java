@@ -21,29 +21,31 @@ import java.util.Optional;
  */
 public class PioneerDateUtils {
 
-    public static final LocalDate TODAY = LocalDate.now();
-    public static final DateTimeFormatter ISO_8601_DATE_FORMATTER = DateTimeFormatter.ISO_DATE;
+	public static final LocalDate TODAY = LocalDate.now();
+	public static final DateTimeFormatter ISO_8601_DATE_FORMATTER = DateTimeFormatter.ISO_DATE;
 
-    private PioneerDateUtils() {
-        // private constructor to prevent instantiation of utility class
-    }
+	private PioneerDateUtils() {
+		// private constructor to prevent instantiation of utility class
+	}
 
-    /**
-     * Returns true if the given {@link LocalDate} is today or in the past, false otherwise.
-     */
-    public static boolean isTodayOrInThePast(LocalDate dateToCompare) {
-        return dateToCompare.isEqual(TODAY) || dateToCompare.isBefore(TODAY);
-    }
+	/**
+	 * Returns true if the given {@link LocalDate} is today or in the past, false otherwise.
+	 */
+	public static boolean isTodayOrInThePast(LocalDate dateToCompare) {
+		return dateToCompare.isEqual(TODAY) || dateToCompare.isBefore(TODAY);
+	}
 
-    /**
-     * Returns an {@link Optional} containing a {@link LocalDate} parsed from a given ISO 8601 date string, or an empty
-     * {@link Optional} if the string couldn't be parsed.
-     */
-    public static Optional<LocalDate> parseIso8601DateString(String isoDateString) {
-        try {
-            return Optional.of(LocalDate.parse(isoDateString, ISO_8601_DATE_FORMATTER));
-        } catch (DateTimeParseException e) {
-            return Optional.empty();
-        }
-    }
+	/**
+	 * Returns an {@link Optional} containing a {@link LocalDate} parsed from a given ISO 8601 date string, or an empty
+	 * {@link Optional} if the string couldn't be parsed.
+	 */
+	public static Optional<LocalDate> parseIso8601DateString(String isoDateString) {
+		try {
+			return Optional.of(LocalDate.parse(isoDateString, ISO_8601_DATE_FORMATTER));
+		}
+		catch (DateTimeParseException e) {
+			return Optional.empty();
+		}
+	}
+
 }
