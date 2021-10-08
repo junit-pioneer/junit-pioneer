@@ -22,7 +22,7 @@ public final class TemporaryDirectory implements ResourceFactory<Path> {
 	@Override
 	public Resource<Path> create(List<String> arguments) throws Exception {
 		if (arguments.size() >= 2) {
-			throw new IllegalArgumentException("'arguments' was expected to have 0 or 1 elements, but it did not");
+			throw new IllegalArgumentException("Expected 0 or 1 arguments, but got " + arguments.size());
 		}
 		String prefix = (arguments.size() == 1) ? arguments.get(0) : "";
 		return new InnerResource(Files.createTempDirectory(requireNonNull(prefix, "Argument 0 is null")));

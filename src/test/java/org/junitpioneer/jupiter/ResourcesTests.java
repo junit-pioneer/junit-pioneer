@@ -28,14 +28,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.UnknownHostException;
 import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import com.google.common.jimfs.Jimfs;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -237,50 +234,41 @@ class ResourcesTests {
 
 	// ---
 
-	// TODO: Uncomment this test if or when supporting field injection.
+	@DisplayName("when trying to instantiate a TemporaryDirectory with the wrong number of arguments")
+	@Nested
+	class WhenTryingToInstantiateTempDirWithWrongNumberOfArguments {
 
-	//	@DisplayName("when a test class has a field annotated with @New(TemporaryDirectory.class)")
-	//	@Nested
-	//	class WhenTestClassHasFieldAnnotatedWithNewTemporaryDirectory {
-	//
-	//		@DisplayName("then each test method has access to a new readable and writeable temporary directory " +
-	//				"that lasts as long as the test instance")
-	//		@Test
-	//		void thenEachTestMethodHasAccessToNewReadableAndWriteableTempDirThatLastsAsLongAsTestInstance() {
-	//			ExecutionResults executionResults = PioneerTestKit
-	//					.executeTestClass(TestFieldWithNewTempDirTestCase.class);
-	//			assertThat(executionResults).hasNumberOfSucceededTests(2);
-	//			assertThat(TestFieldWithNewTempDirTestCase.recordedPathsFromField)
-	//					.hasSize(2)
-	//					.doesNotHaveDuplicates()
-	//					.allSatisfy(path -> assertThat(path).doesNotExist());
-	//		}
-	//
-	//	}
-	//
-	//	@Resources
-	//	static class TestFieldWithNewTempDirTestCase {
-	//
-	//		static List<Path> recordedPathsFromField = new CopyOnWriteArrayList<>();
-	//
-	//		@New(TemporaryDirectory.class)
-	//		private Path tempDir;
-	//
-	//		TestFieldWithNewTempDirTestCase() {
-	//			recordedPathsFromField.add(tempDir);
-	//		}
-	//
-	//		@Test
-	//		void firstTest() {
-	//			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
-	//		}
-	//
-	//		@Test
-	//		void secondTest() {
-	//			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
-	//		}
-	//
-	//	}
+		@DisplayName("then an exception mentioning the number of arguments is thrown")
+		@Test
+		void thenExceptionMentioningNumberOfArgumentsIsThrown() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(NewTempDirWithWrongNumberOfArgumentsTestCase.class);
+			executionResults
+					.allEvents()
+					.debug()
+					.assertThatEvents()
+					.haveExactly(//
+						1, //
+						finished(//
+							throwable(//
+								instanceOf(ParameterResolutionException.class), //
+								message("Unable to create a resource from `" + TemporaryDirectory.class + "`"),
+								cause(instanceOf(IllegalArgumentException.class),
+									message("Expected 0 or 1 arguments, but got 2")))));
+
+		}
+
+	}
+
+	@Resources
+	static class NewTempDirWithWrongNumberOfArgumentsTestCase {
+
+		@Test
+		void theTest(@New(value = TemporaryDirectory.class, arguments = { "1", "2" }) Path tempDir) {
+			fail("We should not get this far.");
+		}
+
+	}
 
 	// ---
 
@@ -550,7 +538,7 @@ class ResourcesTests {
 	// ---
 
 	// TODO: Consider writing tests that check what happens when trying to instantiate
-	//       the class specified by an @New or @Shared annotation doesn't have a constructor
+	//       the class specified by an @Shared annotation doesn't have a constructor
 	//       with the matching number and types of arguments.
 
 	// ---
@@ -865,15 +853,6 @@ class ResourcesTests {
 											"some-name")))));
 		}
 
-		private List<Parameter> parametersOfTestCase() {
-			Parameter[] parameters = ReflectionSupport
-					.findMethod(SingleTestMethodWithConflictingSharedTempDirParametersTestCase.class, "theTest",
-						Path.class, Path.class)
-					.get()
-					.getParameters();
-			return asList(parameters);
-		}
-
 	}
 
 	@Resources
@@ -1060,23 +1039,12 @@ class ResourcesTests {
 	void checkThatAllResourceRelatedClassesAreFinal() {
 		assertThat(TemporaryDirectory.class).isFinal();
 		assertThat(ResourceManagerExtension.class).isFinal();
-		// TODO: Add the jimfs and OkHttp MockServer-based resource factories here
 	}
 
 	// ---
 
 	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
 		assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TMP_DIR).isReadable().isWritable();
-	}
-
-	private static void assertEmptyReadableWriteableInMemoryDirectory(Path tempDir) {
-		assertThat(tempDir).isEmptyDirectory().isReadable().isWritable();
-		try (FileSystem fileSystem = Jimfs.newFileSystem()) {
-			assertThat(tempDir.getFileSystem()).isInstanceOf(fileSystem.getClass());
-		}
-		catch (IOException e) {
-			fail(e);
-		}
 	}
 
 	private static void assertCanAddAndReadTextFile(Path tempDir) {
