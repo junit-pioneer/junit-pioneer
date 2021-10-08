@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.UnknownHostException;
-import java.nio.file.ClosedFileSystemException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -36,7 +35,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 
 import org.junit.jupiter.api.DisplayName;

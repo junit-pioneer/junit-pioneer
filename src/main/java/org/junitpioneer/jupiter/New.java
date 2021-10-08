@@ -15,14 +15,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// TODO: Add @Dir, a shortcut for @New(TemporaryDirectory.class)
-
-// TODO: Add @New(TemporaryFile.class)
-
-// TODO: Add @File, a shortcut for @New(TemporaryFile.class)
-
 @Retention(RetentionPolicy.RUNTIME)
-// TODO: Consider adding and testing ElementType.FIELD
 @Target(ElementType.PARAMETER)
 public @interface New {
 

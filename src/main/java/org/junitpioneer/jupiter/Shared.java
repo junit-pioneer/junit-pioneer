@@ -16,7 +16,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-// TODO: Consider adding and testing ElementType.FIELD
 @Target(ElementType.PARAMETER)
 public @interface Shared {
 
