@@ -537,12 +537,6 @@ class ResourcesTests {
 
 	// ---
 
-	// TODO: Consider writing tests that check what happens when trying to instantiate
-	//       the class specified by an @Shared annotation doesn't have a constructor
-	//       with the matching number and types of arguments.
-
-	// ---
-
 	@DisplayName("when ResourceManagerExtension is unable to find @New on a parameter")
 	@Nested
 	class WhenResourceManagerExtensionUnableToFindNewOnParameterTests {
