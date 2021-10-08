@@ -114,6 +114,7 @@ Thank you for your efforts! 🙏
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
 #### 2021
+
 * [Cory Thomas](https://github.com/dump247) contributed the `minSuccess` attribute in [retrying tests](https://junit-pioneer.org/docs/retrying-test/) (#408 / #430)
 * [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more), revamped their annotation handling (#460 / #485), and improved the build process (#482 / #483) before becoming a maintainer
 *  [John Lehne](https://github.com/johnlehne) resolved an issue with the latest build status not showing correctly in README.md (#530)
