@@ -63,7 +63,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class SingleTestMethodWithNewTempDirParameterTestCase {
 
 		static Path recordedPath;
@@ -96,7 +95,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class SingleTestMethodWithParameterWithNewTempDirAndArgTestCase {
 
 		@Test
@@ -127,7 +125,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class TwoTestMethodsWithNewTempDirParameterTestCase {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -169,7 +166,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class SingleTestMethodWithTwoNewTempDirParametersTestCase {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -208,7 +204,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class TestConstructorWithNewTempDirParameterTestCase {
 
 		static List<Path> recordedPathsFromConstructor = new CopyOnWriteArrayList<>();
@@ -260,47 +255,11 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class NewTempDirWithWrongNumberOfArgumentsTestCase {
 
 		@Test
 		void theTest(@New(value = TemporaryDirectory.class, arguments = { "1", "2" }) Path tempDir) {
 			fail("We should not get this far.");
-		}
-
-	}
-
-	// ---
-
-	@DisplayName("when Resources is applied to a test method with an unannotated parameter")
-	@Nested
-	class WhenResourcesIsAppliedToTestMethodWithUnannotatedParameterTests {
-
-		@DisplayName("then Resources does not populate the parameter")
-		@Test
-		void thenSupportsParameterReturnsTrue() {
-			ExecutionResults executionResults = PioneerTestKit.executeTestClass(UnannotatedParameterTestCase.class);
-			executionResults
-					.allEvents()
-					.debug()
-					.assertThatEvents()
-					.haveExactly(1,
-						finished(throwable(message(
-							m -> m.startsWith("No ParameterResolver registered for parameter [java.lang.Object") && m
-									.endsWith("in method [void org.junitpioneer.jupiter."
-											+ "ResourcesTests$UnannotatedParameterTestCase."
-											+ "theTest(java.lang.Object)].")))));
-		}
-
-	}
-
-	@Resources
-	@SuppressWarnings("unused")
-	static class UnannotatedParameterTestCase {
-
-		@Test
-		void theTest(Object randomParameter) {
-
 		}
 
 	}
@@ -415,7 +374,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class ThrowOnNewRFCreateTestCase {
 
 		@Test
@@ -438,7 +396,6 @@ class ResourcesTests {
 	private static final Exception EXPECTED_THROW_ON_RF_CREATE_EXCEPTION = new IOException(
 		"failed to connect to the Matrix");
 
-	@Resources
 	static class ThrowOnNewRFCloseTestCase {
 
 		@Test
@@ -466,7 +423,6 @@ class ResourcesTests {
 	private static final Exception EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION = new CloneNotSupportedException(
 		"failed to clone a homunculus");
 
-	@Resources
 	static class ThrowOnNewRGetTestCase {
 
 		@Test
@@ -498,7 +454,6 @@ class ResourcesTests {
 	private static final Exception EXPECTED_THROW_ON_R_GET_EXCEPTION = new FileAlreadyExistsException(
 		"wait, what's that file doing there?");
 
-	@Resources
 	static class ThrowOnNewRCloseTestCase {
 
 		@Test
@@ -598,7 +553,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class TestMethodWithParameterAnnotatedWithBothNewAndShared {
 
 		@Test
@@ -628,7 +582,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class SingleTestMethodWithSharedTempDirParameterTestCase {
 
 		static Path recordedPath;
@@ -661,7 +614,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class SingleTestMethodWithParameterWithSharedTempDirAndArgTestCase {
 
 		@Test
@@ -697,7 +649,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCase {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -738,7 +689,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class TwoTestMethodsWithSharedSameNameTempDirParameterTestCase {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -788,7 +738,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class FirstSingleTestMethodWithSharedTempDirParameterTestCase {
 
 		static Path recordedPath;
@@ -803,7 +752,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class SecondSingleTestMethodWithSharedTempDirParameterTestCase {
 
 		static Path recordedPath;
@@ -849,7 +797,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class SingleTestMethodWithConflictingSharedTempDirParametersTestCase {
 
 		@Test
@@ -982,7 +929,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class ThrowOnSharedRFCreateTestCase {
 
 		@Test
@@ -993,7 +939,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class ThrowOnSharedRFCloseTestCase {
 
 		@Test
@@ -1004,7 +949,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class ThrowOnSharedRGetTestCase {
 
 		@Test
@@ -1015,7 +959,6 @@ class ResourcesTests {
 
 	}
 
-	@Resources
 	static class ThrowOnSharedRCloseTestCase {
 
 		@Test
