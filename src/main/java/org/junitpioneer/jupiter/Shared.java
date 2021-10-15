@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(ResourceManagerExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 public @interface Shared {
 
 	Class<? extends ResourceFactory<?>> factory();
