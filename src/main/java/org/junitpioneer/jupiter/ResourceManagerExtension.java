@@ -45,12 +45,12 @@ final class ResourceManagerExtension implements ParameterResolver {
 		}
 		throw new ParameterResolutionException(String
 				.format( //
-					"Parameter `%s` on %s is not annotated with @New", //
+					"Parameter `%s` on %s is not annotated with @New or @Shared", //
 					parameterContext.getParameter(), //
 					extensionContext
 							.getTestMethod()
 							.map(method -> "method `" + method + '`')
-							.orElse("unknown method")));
+							.orElse("an unknown method")));
 	}
 
 	private Object resolve(New newAnnotation, ExtensionContext.Store store) {
