@@ -834,6 +834,8 @@ class ResourcesTests {
 
 	}
 
+	// ---
+
 	@DisplayName("when a shared resource factory is applied to a parameter")
 	@Nested
 	class WhenSharedResourceFactoryAppliedToParameterTests {
