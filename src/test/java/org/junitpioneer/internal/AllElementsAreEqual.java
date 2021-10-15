@@ -10,17 +10,17 @@
 
 package org.junitpioneer.internal;
 
-import java.util.List;
+import java.util.stream.StreamSupport;
 
 import org.assertj.core.api.Condition;
 
-public final class AllElementsAreEqual extends Condition<List<?>> {
+public final class AllElementsAreEqual extends Condition<Iterable<?>> {
 
 	private static final AllElementsAreEqual INSTANCE = new AllElementsAreEqual();
 
 	private AllElementsAreEqual() {
-		super(elements -> elements.stream().skip(1).allMatch(e -> e.equals(elements.get(0))),
-			"is a list where all the elements are equal");
+		super(elements -> StreamSupport.stream(elements.spliterator(), false).skip(1).allMatch(e -> e.equals(elements.iterator().next())),
+			"is an iterable where all the elements are equal");
 	}
 
 	public static AllElementsAreEqual allElementsAreEqual() {

@@ -28,7 +28,9 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.jupiter.api.DisplayName;
@@ -84,7 +86,7 @@ class ResourcesTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(SingleTestMethodWithDirParameterTestCase.class);
 			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestMethodWithNewTempDirParameterTestCase.recordedPath).doesNotExist();
+			assertThat(SingleTestMethodWithDirParameterTestCase.recordedPath).doesNotExist();
 		}
 
 	}
@@ -676,7 +678,7 @@ class ResourcesTests {
 
 		@Test
 		void firstTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
-			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertReadableWriteableTemporaryDirectory(tempDir);
 			assertCanAddAndReadTextFile(tempDir);
 
 			recordedPaths.add(tempDir);
@@ -684,7 +686,7 @@ class ResourcesTests {
 
 		@Test
 		void secondTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
-			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertReadableWriteableTemporaryDirectory(tempDir);
 			assertCanAddAndReadTextFile(tempDir);
 
 			recordedPaths.add(tempDir);
@@ -725,7 +727,7 @@ class ResourcesTests {
 
 		@Test
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
-			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertReadableWriteableTemporaryDirectory(tempDir);
 			assertCanAddAndReadTextFile(tempDir);
 
 			recordedPath = tempDir;
@@ -739,7 +741,7 @@ class ResourcesTests {
 
 		@Test
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
-			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertReadableWriteableTemporaryDirectory(tempDir);
 			assertCanAddAndReadTextFile(tempDir);
 
 			recordedPath = tempDir;
@@ -1000,6 +1002,10 @@ class ResourcesTests {
 
 	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
 		assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TMP_DIR).isReadable().isWritable();
+	}
+
+	private static void assertReadableWriteableTemporaryDirectory(Path tempDir) {
+		assertThat(tempDir).startsWith(ROOT_TMP_DIR).isReadable().isWritable();
 	}
 
 	private static void assertCanAddAndReadTextFile(Path tempDir) {
