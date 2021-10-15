@@ -13,6 +13,8 @@ package org.junitpioneer.jupiter;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 
+import java.lang.reflect.Executable;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 final class ResourceManagerExtension implements ParameterResolver {
@@ -41,7 +44,7 @@ final class ResourceManagerExtension implements ParameterResolver {
 		}
 		Optional<Shared> sharedAnnotation = parameterContext.findAnnotation(Shared.class);
 		if (sharedAnnotation.isPresent()) {
-			return resolve(sharedAnnotation.get(), extensionContext.getRoot().getStore(NAMESPACE));
+			return resolve(sharedAnnotation.get(), parameterContext, extensionContext.getRoot().getStore(NAMESPACE));
 		}
 		throw new ParameterResolutionException(String
 				.format( //
@@ -80,8 +83,9 @@ final class ResourceManagerExtension implements ParameterResolver {
 
 	private final AtomicLong keyGenerator = new AtomicLong(0);
 
-	private Object resolve(Shared sharedAnnotation, ExtensionContext.Store store) {
-		throwIfConflicting(sharedAnnotation, store);
+	private Object resolve(Shared sharedAnnotation, ParameterContext parameterContext, ExtensionContext.Store store) {
+		throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
+		throwIfMultipleParamsOfExecutableHaveAnnotation(parameterContext.getDeclaringExecutable(), sharedAnnotation);
 
 		ResourceFactory<?> resourceFactory = store
 				.getOrComputeIfAbsent(//
@@ -113,7 +117,8 @@ final class ResourceManagerExtension implements ParameterResolver {
 
 	}
 
-	private void throwIfConflicting(Shared sharedAnnotation, ExtensionContext.Store store) {
+	private void throwIfHasAnnotationWithSameNameButDifferentType(ExtensionContext.Store store,
+			Shared sharedAnnotation) {
 		ResourceFactory<?> presentResourceFactory = //
 			store.getOrDefault(factoryKey(sharedAnnotation), ResourceFactory.class, null);
 
@@ -125,12 +130,31 @@ final class ResourceManagerExtension implements ParameterResolver {
 
 			if (factoryKey(sharedAnnotation).equals(presentResourceFactoryName)
 					&& !sharedAnnotation.factory().equals(presentResourceFactory.getClass())) {
-				throw new ParameterResolutionException(String
-						.format("Two or more parameters are annotated with @Shared annotations with the name \"%s\" "
-								+ "but with different factory classes",
-							sharedAnnotation.name()));
+				throw new ParameterResolutionException(
+					"Two or more parameters are annotated with @Shared annotations with the name \""
+							+ sharedAnnotation.name() + "\" but with different factory classes");
 			}
 		}
+	}
+
+	private void throwIfMultipleParamsOfExecutableHaveAnnotation(Executable executable, Shared sharedAnnotation) {
+		long parameterCount = numParamsWithAnnotation(executable, sharedAnnotation);
+		if (parameterCount > 1) {
+			throw new ParameterResolutionException(
+				"A test method has " + parameterCount + " parameters annotated with @Shared with the same "
+						+ "factory type and name; this is redundant, so it is not allowed");
+		}
+	}
+
+	private long numParamsWithAnnotation(Executable executable, Shared sharedAnnotation) {
+		return Arrays
+				.stream(executable.getParameters())
+				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.filter(s -> s.factory().equals(sharedAnnotation.factory()))
+				.filter(s -> s.name().equals(sharedAnnotation.name()))
+				.count();
 	}
 
 	private String key(Shared sharedAnnotation) {

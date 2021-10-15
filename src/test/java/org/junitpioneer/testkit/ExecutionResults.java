@@ -10,9 +10,8 @@
 
 package org.junitpioneer.testkit;
 
-import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import org.junit.platform.commons.util.CollectionUtils;
 import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.testkit.engine.EngineExecutionResults;
@@ -34,10 +33,10 @@ public class ExecutionResults {
 		executionResults = getConfiguredJupiterEngine().selectors(DiscoverySelectors.selectClass(testClass)).execute();
 	}
 
-	@SuppressWarnings("unchecked")
 	ExecutionResults(Iterable<Class<?>> testClasses) {
 		executionResults = getConfiguredJupiterEngine()
-				.selectors(((Stream<Class<?>>) CollectionUtils.toStream(testClasses))
+				.selectors(StreamSupport
+						.stream(testClasses.spliterator(), false)
 						.map(DiscoverySelectors::selectClass)
 						.toArray(DiscoverySelector[]::new))
 				.execute();

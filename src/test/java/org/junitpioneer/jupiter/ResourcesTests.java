@@ -13,7 +13,6 @@ package org.junitpioneer.jupiter;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
@@ -24,8 +23,6 @@ import static org.junitpioneer.internal.AllElementsAreEqual.allElementsAreEqual;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.net.UnknownHostException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -38,9 +35,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junit.platform.commons.support.ReflectionSupport;
-import org.junitpioneer.internal.TestExtensionContext;
-import org.junitpioneer.internal.TestParameterContext;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -804,6 +798,41 @@ class ResourcesTests {
 	}
 
 	// ---
+
+	@DisplayName("when a test method has two parameters annotated with "
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\")")
+	@Nested
+	class WhenTestMethodHasTwoParamsAnnotatedWithSharedAnnotationWithSameFactoryAndName {
+
+		@DisplayName("then it throws an exception")
+		@Test
+		void thenItThrowsAnException() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(TestMethodWithTwoParamsWithSameSharedAnnotationTestCase.class);
+			executionResults
+					.allEvents()
+					.debug()
+					.assertThatEvents()
+					.haveExactly(//
+						1, //
+						finished(//
+							throwable(//
+								instanceOf(ParameterResolutionException.class), //
+								message("A test method has 2 parameters annotated with @Shared with the same "
+										+ "factory type and name; this is redundant, so it is not allowed"))));
+		}
+
+	}
+
+	static class TestMethodWithTwoParamsWithSameSharedAnnotationTestCase {
+
+		@Test
+		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path first,
+				@Shared(factory = TemporaryDirectory.class, name = "some-name") Path second) {
+
+		}
+
+	}
 
 	@DisplayName("when a shared resource factory is applied to a parameter")
 	@Nested
