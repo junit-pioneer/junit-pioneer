@@ -524,51 +524,6 @@ class ResourcesTests {
 
 	// ---
 
-	@DisplayName("when ResourceManagerExtension is unable to find @New on a parameter")
-	@Nested
-	class WhenResourceManagerExtensionUnableToFindNewOnParameterTests {
-
-		@DisplayName("then an exception mentioning the parameter and the test method it's on is thrown")
-		@Test
-		void thenExceptionMentioningParameterAndTestMethodItsOnIsThrown() {
-			Class<?> exampleClass = String.class;
-			Method exampleMethod = ReflectionSupport.findMethod(exampleClass, "valueOf", Object.class).get();
-			Parameter exampleParameter = exampleMethod.getParameters()[0];
-
-			assertThatThrownBy(() -> new ResourceManagerExtension()
-					.resolveParameter( //
-						new TestParameterContext(exampleParameter),
-						new TestExtensionContext(exampleClass, exampleMethod)))
-								.isInstanceOf(ParameterResolutionException.class)
-								.hasMessage("Parameter `" + exampleParameter + "` on method `" + exampleMethod
-										+ "` is not annotated with @New");
-		}
-
-		@DisplayName("and the test method does not exist")
-		@Nested
-		class AndTestMethodDoesNotExistTests {
-
-			@DisplayName("then an exception mentioning just the parameter is thrown")
-			@Test
-			void thenExceptionMentioningJustParameterIsThrown() {
-				Class<?> exampleClass = String.class;
-				Method exampleMethod = ReflectionSupport.findMethod(exampleClass, "valueOf", Object.class).get();
-				Parameter exampleParameter = exampleMethod.getParameters()[0];
-
-				assertThatThrownBy(() -> new ResourceManagerExtension()
-						.resolveParameter(new TestParameterContext(exampleParameter),
-							new TestExtensionContext(null, null)))
-									.isInstanceOf(ParameterResolutionException.class)
-									.hasMessage("Parameter `" + exampleParameter
-											+ "` on unknown method is not annotated with @New");
-			}
-
-		}
-
-	}
-
-	// ---
-
 	@DisplayName("when a test class has a test method with a parameter annotated with both @New and @Shared")
 	@Nested
 	class WhenTestClassHasTestMethodWithParameterAnnotatedWithBothNewAndShared {
