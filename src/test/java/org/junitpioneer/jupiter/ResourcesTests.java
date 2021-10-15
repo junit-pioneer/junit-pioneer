@@ -79,6 +79,38 @@ class ResourcesTests {
 
 	// ---
 
+	@DisplayName("when a test class has a test method with a @Dir-annotated parameter")
+	@Nested
+	class WhenTestClassHasTestMethodWithDirParameterTests {
+
+		@DisplayName("then the parameter is populated with a new readable and writeable temporary directory "
+				+ "that lasts as long as the test")
+		@Test
+		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTest() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(SingleTestMethodWithDirParameterTestCase.class);
+			assertThat(executionResults).hasSingleSucceededTest();
+			assertThat(SingleTestMethodWithNewTempDirParameterTestCase.recordedPath).doesNotExist();
+		}
+
+	}
+
+	static class SingleTestMethodWithDirParameterTestCase {
+
+		static Path recordedPath;
+
+		@Test
+		void theTest(@Dir Path tempDir) {
+			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
+			assertCanAddAndReadTextFile(tempDir);
+
+			recordedPath = tempDir;
+		}
+
+	}
+
+	// ---
+
 	@DisplayName("when a test class has a test method with a parameter annotated with "
 			+ "@New(value = TemporaryDirectory.class, arguments = {\"tempDirPrefix\"}")
 	@Nested
