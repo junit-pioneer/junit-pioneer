@@ -11,7 +11,9 @@
 package org.junitpioneer.jupiter.cartesian;
 
 import static java.util.stream.Collectors.joining;
-import static org.junitpioneer.jupiter.cartesian.CartesianTest.*;
+import static org.junitpioneer.jupiter.cartesian.CartesianTest.ARGUMENTS_PLACEHOLDER;
+import static org.junitpioneer.jupiter.cartesian.CartesianTest.DISPLAY_NAME_PLACEHOLDER;
+import static org.junitpioneer.jupiter.cartesian.CartesianTest.INDEX_PLACEHOLDER;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
