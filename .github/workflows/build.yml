@@ -118,7 +118,7 @@ jobs:
     strategy:
       matrix:
         java: [ 8, 11, 16 ]
-        junit-version: [ '5.7.2', '5.8.0-RC1' ]
+        junit-version: [ '5.7.2', '5.8.1' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
         exclude:
@@ -150,7 +150,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        junit-version: [ '5.7.0', '5.7.1', '5.8.0-M1' ]
+        junit-version: [ '5.7.2', '5.8.1' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate

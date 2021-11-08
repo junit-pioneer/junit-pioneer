@@ -345,15 +345,9 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 
 class IntArgumentsProvider implements CartesianArgumentsProvider {
 
-	private Ints source;
-
 	@Override
-	void accept(Parameter parameter) {
-		this.source = Objects.requireNonNull(parameter.getAnnotation(Ints.class));
-	}
-
-	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
+		Ints source = Objects.requireNonNull(parameter.getAnnotation(Ints.class));
 		return Arrays.stream(source.value()).map(Arguments::of);
 	}
 
@@ -391,15 +385,9 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 
 class PeopleProvider implements CartesianArgumentsProvider {
 
-	private People source;
-
 	@Override
-	void accept(Parameter parameter) {
-		this.source = Objects.requireNonNull(parameter.getAnnotation(People.class));
-	}
-
-	@Override
-public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
+		People source = Objects.requireNonNull(parameter.getAnnotation(People.class));
 	return IntStream.range(0, source.names().length)
 		.mapToObj(i -> new Person(source.names()[i], source.ages()[i]))
 		.map(Arguments::of);

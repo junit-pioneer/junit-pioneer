@@ -24,7 +24,6 @@ import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.cartesian.CartesianEnumArgumentsProvider.NullEnum;
 
@@ -85,7 +84,7 @@ public @interface CartesianTest {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
-	@ArgumentsSource(CartesianValueArgumentsProvider.class)
+	@CartesianArgumentsSource(CartesianValueArgumentsProvider.class)
 	@interface Values {
 
 		/**
@@ -142,7 +141,7 @@ public @interface CartesianTest {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
-	@ArgumentsSource(CartesianEnumArgumentsProvider.class)
+	@CartesianArgumentsSource(CartesianEnumArgumentsProvider.class)
 	@interface Enum {
 
 		/**

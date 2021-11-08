@@ -21,6 +21,7 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.AnnotationConsumerInitializer;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
@@ -61,8 +63,8 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
 	private List<List<?>> computeSets(ExtensionContext context) {
 		Method testMethod = context.getRequiredTestMethod();
-		List<? extends Annotation> methodArgumentsSources = PioneerAnnotationUtils
-				.findAnnotatedAnnotations(testMethod, ArgumentsSource.class);
+		List<? extends Annotation> methodArgumentsSources = AnnotationSupport
+				.findRepeatableAnnotations(testMethod, ArgumentsSource.class);
 		List<? extends Annotation> parameterArgumentsSources = PioneerAnnotationUtils
 				.findParameterArgumentsSources(testMethod);
 		ensureNoInputConflicts(methodArgumentsSources, parameterArgumentsSources, testMethod);
@@ -89,7 +91,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
 	private List<Object> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
 		try {
-			CartesianArgumentsProvider provider = initializeArgumentsProvider(source);
+			CartesianArgumentsProvider provider = initializeArgumentsProvider(source, parameter);
 			return provideArguments(context, parameter, provider);
 		}
 		catch (Exception ex) {
@@ -97,15 +99,24 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		}
 	}
 
-	private CartesianArgumentsProvider initializeArgumentsProvider(Annotation source) {
+	private CartesianArgumentsProvider initializeArgumentsProvider(Annotation source, Parameter parameter) {
+		Optional<CartesianArgumentsSource> cartesianProviderAnnotation = AnnotationSupport
+				.findAnnotation(parameter, CartesianArgumentsSource.class);
+
+		if (cartesianProviderAnnotation.isPresent()) {
+			return AnnotationConsumerInitializer
+					.initialize(parameter, ReflectionSupport.newInstance(cartesianProviderAnnotation.get().value()));
+		}
+
 		ArgumentsSource providerAnnotation = AnnotationSupport
-				.findAnnotation(source.annotationType(), ArgumentsSource.class)
+				.findAnnotation(parameter, ArgumentsSource.class)
 				// never happens, we already know these annotations are annotated with @ArgumentsSource
 				.orElseThrow(() -> new PreconditionViolationException(format(
-					"%s was not annotated with @ArgumentsSource but should have been.", source.annotationType())));
+					"%s was not annotated with @CartesianArgumentsSource or @ArgumentsSource but should have been.",
+					source.annotationType())));
 		ArgumentsProvider provider = ReflectionSupport.newInstance(providerAnnotation.value());
 		if (provider instanceof CartesianArgumentsProvider)
-			return (CartesianArgumentsProvider) provider;
+			return AnnotationConsumerInitializer.initialize(parameter, (CartesianArgumentsProvider) provider);
 		else
 			throw new PreconditionViolationException(
 				format("%s does not implement the CartesianArgumentsProvider interface.", provider.getClass()));
@@ -113,9 +124,8 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
 	private List<Object> provideArguments(ExtensionContext context, Parameter source,
 			CartesianArgumentsProvider provider) throws Exception {
-		provider.accept(source);
 		return provider
-				.provideArguments(context)
+				.provideArguments(context, source)
 				.map(Arguments::get)
 				.flatMap(Arrays::stream)
 				.distinct()

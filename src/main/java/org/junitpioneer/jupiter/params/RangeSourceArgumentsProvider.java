@@ -47,7 +47,15 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 class RangeSourceArgumentsProvider
 		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
 
+	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
+
+	@Override
+	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter)
+			throws Exception {
+		initArgumentsSource(parameter);
+		return provideArguments(context, argumentsSource);
+	}
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
@@ -55,6 +63,12 @@ class RangeSourceArgumentsProvider
 		if (argumentsSource == null)
 			// since it's a method annotation, the element will always be present
 			initArgumentsSource(context.getRequiredTestMethod());
+
+		return provideArguments(context, argumentsSource);
+	}
+
+	private Stream<? extends Arguments> provideArguments(ExtensionContext context, Annotation argumentsSource)
+			throws Exception {
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
 
@@ -84,11 +98,6 @@ class RangeSourceArgumentsProvider
 	@Override
 	public void accept(Annotation argumentsSource) {
 		this.argumentsSource = argumentsSource;
-	}
-
-	@Override
-	public void accept(Parameter parameter) {
-		initArgumentsSource(parameter);
 	}
 
 }
