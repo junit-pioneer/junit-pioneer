@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Pioneer date utilities")
-class PioneerDateUtilsTest {
+class PioneerDateUtilsTests {
 
 	private static final LocalDate TODAY = LocalDate.now();
 
