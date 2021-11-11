@@ -428,7 +428,7 @@ Basic bit test
 └─ 4 => first bit: 1 second bit: 1
 ----
 
-Please note that name is a https://docs.oracle.com/en/java/javase/16/docs/api/java.base/java/text/MessageFormat.html::[`MessageFormat`] pattern.
+Please note that name is a https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/MessageFormat.html::[`MessageFormat`] pattern.
 A single quote (') needs to be represented as a doubled single quote ('') in order to be displayed.
 
 `CartesianTest` supports the following placeholders in custom display names:
