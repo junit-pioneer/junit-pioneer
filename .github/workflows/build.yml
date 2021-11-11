@@ -117,7 +117,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 8, 11, 16 ]
+        java: [ 8, 11, 17 ]
         junit-version: [ '5.7.2', '5.8.1' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
@@ -172,7 +172,7 @@ jobs:
         run: echo "JDK_EXPERIMENTAL=$JAVA_HOME" >> $GITHUB_ENV
       - uses: actions/setup-java@v2
         with:
-          java-version: 16
+          java-version: 17
           distribution: temurin
           cache: 'gradle'
       - name: Gradle toolchains
