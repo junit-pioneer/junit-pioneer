@@ -93,6 +93,8 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 	}
 
 	// TODO: Extensions should be stateless! Make this a static field to work around this restriction.
+	//       Idea: Write a test for this that uses reflection or ArchUnit to enforce that there are
+	//       no instance fields.
 	private final AtomicLong keyGenerator = new AtomicLong(0);
 
 	private Object resolve(Shared sharedAnnotation, ParameterContext parameterContext, ExtensionContext.Store store) {
