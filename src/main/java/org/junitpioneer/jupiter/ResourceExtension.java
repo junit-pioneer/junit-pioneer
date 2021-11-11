@@ -12,26 +12,37 @@ package org.junitpioneer.jupiter;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Comparator.comparing;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
-import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
 
-final class ResourceManagerExtension implements ParameterResolver {
+final class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private static final ExtensionContext.Namespace NAMESPACE = //
-		ExtensionContext.Namespace.create(ResourceManagerExtension.class);
+		ExtensionContext.Namespace.create(ResourceExtension.class);
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+		// TODO: if both annotations are present, throw an error instead of silently ignoring the test
 		return parameterContext.isAnnotated(New.class) ^ parameterContext.isAnnotated(Shared.class);
 	}
 
@@ -62,12 +73,12 @@ final class ResourceManagerExtension implements ParameterResolver {
 		Resource<?> resource;
 		try {
 			resource = resourceFactory.create(unmodifiableList(asList(newAnnotation.arguments())));
+			store.put(newKey(), resource);
 		}
 		catch (Exception e) {
 			throw new ParameterResolutionException(
 				"Unable to create a resource from `" + resourceFactory.getClass() + '`', e);
 		}
-		store.put(newKey(), resource);
 		try {
 			return resource.get();
 		}
@@ -81,34 +92,37 @@ final class ResourceManagerExtension implements ParameterResolver {
 		return keyGenerator.getAndIncrement();
 	}
 
+	// TODO: Extensions should be stateless! Make this a static field to work around this restriction.
 	private final AtomicLong keyGenerator = new AtomicLong(0);
 
 	private Object resolve(Shared sharedAnnotation, ParameterContext parameterContext, ExtensionContext.Store store) {
 		throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
-		throwIfMultipleParamsOfExecutableHaveAnnotation(parameterContext.getDeclaringExecutable(), sharedAnnotation);
+		throwIfMultipleParametersHaveExactAnnotation(parameterContext, sharedAnnotation);
 
 		ResourceFactory<?> resourceFactory = store
-				.getOrComputeIfAbsent(//
+				.getOrComputeIfAbsent( //
 					factoryKey(sharedAnnotation), //
 					__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
 					ResourceFactory.class);
-		Resource<?> resource;
+		ResourceWithLock<?> resource;
 		try {
 			resource = store.getOrComputeIfAbsent(key(sharedAnnotation), __ -> {
 				try {
-					return resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments())));
+					return new ResourceWithLock<>(
+						resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments()))),
+						new ReentrantLock());
 				}
 				catch (Exception e) {
 					throw new UncheckedParameterResolutionException(new ParameterResolutionException(
 						"Unable to create a resource from `" + sharedAnnotation.factory() + "`", e));
 				}
-			}, Resource.class);
+			}, ResourceWithLock.class);
 		}
 		catch (UncheckedParameterResolutionException e) {
 			throw e.getCause();
 		}
 		try {
-			return resource.get();
+			return resource.resource().get();
 		}
 		catch (Exception e) {
 			throw new ParameterResolutionException(
@@ -137,8 +151,12 @@ final class ResourceManagerExtension implements ParameterResolver {
 		}
 	}
 
-	private void throwIfMultipleParamsOfExecutableHaveAnnotation(Executable executable, Shared sharedAnnotation) {
-		long parameterCount = numParamsWithAnnotation(executable, sharedAnnotation);
+	private void throwIfMultipleParametersHaveExactAnnotation(ParameterContext parameterContext,
+			Shared sharedAnnotation) {
+		long parameterCount = Arrays
+				.stream(parameterContext.getDeclaringExecutable().getParameters())
+				.filter(parameter -> hasAnnotation(parameter, sharedAnnotation))
+				.count();
 		if (parameterCount > 1) {
 			throw new ParameterResolutionException(
 				"A test method has " + parameterCount + " parameters annotated with @Shared with the same "
@@ -146,15 +164,12 @@ final class ResourceManagerExtension implements ParameterResolver {
 		}
 	}
 
-	private long numParamsWithAnnotation(Executable executable, Shared sharedAnnotation) {
-		return Arrays
-				.stream(executable.getParameters())
-				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.filter(s -> s.factory().equals(sharedAnnotation.factory()))
-				.filter(s -> s.name().equals(sharedAnnotation.name()))
-				.count();
+	private boolean hasAnnotation(Parameter parameter, Shared sharedAnnotation) {
+		return AnnotationSupport
+				.findAnnotation(parameter, Shared.class)
+				.filter(shared -> shared.factory().equals(sharedAnnotation.factory()))
+				.filter(shared -> shared.name().equals(sharedAnnotation.name()))
+				.isPresent();
 	}
 
 	private String key(Shared sharedAnnotation) {
@@ -178,6 +193,88 @@ final class ResourceManagerExtension implements ParameterResolver {
 		@Override
 		public synchronized ParameterResolutionException getCause() {
 			return (ParameterResolutionException) super.getCause();
+		}
+
+	}
+
+	// TODO: Intercept not just test methods, but all kinds of lifecycle methods.
+
+	// TODO: What happens if a user requests a shared resource in a test constructor, and
+	//       saves the resource in a field? That resource could then be used concurrently,
+	//       which could lead to deadlocks!
+	//       |
+	//       So we should consider preventing users from requesting resources in test constructors.
+	//       |
+	//       Regardless, we need to document that if a resource is saved outside its respective
+	//       lifecycle method, then if it's a @New resources then it will be closed when the
+	//       lifecycle method has finished, and if it's a @Shared resource then flaky behaviour
+	//       could occur since the resource can now be accessed concurrently.
+
+	@Override
+	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
+			ExtensionContext extensionContext) throws Throwable {
+		// 1. use extension context to determine whether we're in charge (which is the case if there's at least one @Shared annotation)
+		// 2. get all locks for all shared resources that are involved
+		// 3. wait for all locks to become available
+		// 4. invoke `invocation.proceed()`
+
+		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
+		List<ReentrantLock> locks = findSharedOnInvocation(invocationContext)
+				// sort by @Shared's name to prevent deadlocks when locking later
+				.sorted(comparing(Shared::name))
+				.map(shared -> findLockForShared(shared, store))
+				.collect(toList());
+		System.out.println(invocationContext.getExecutable().getName() + ": locks = " + locks);
+		invokeWithLocks(invocation, locks);
+	}
+
+	private Stream<Shared> findSharedOnInvocation(ReflectiveInvocationContext<Method> invocationContext) {
+		return Arrays
+				.stream(invocationContext.getExecutable().getParameters())
+				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
+				.filter(Optional::isPresent)
+				.map(Optional::get);
+	}
+
+	private ReentrantLock findLockForShared(Shared shared, ExtensionContext.Store store) {
+		return Optional
+				.ofNullable(store.get(key(shared), ResourceWithLock.class))
+				.orElseThrow(
+					() -> new IllegalStateException("There should be a shared resource for the name " + shared.name()))
+				.lock();
+	}
+
+	private static <T> void invokeWithLocks(Invocation<T> invocation, List<ReentrantLock> locks) throws Throwable {
+		// TODO handle `lock` throwing an exception?
+		locks.forEach(Lock::lock);
+		try {
+			invocation.proceed();
+		}
+		finally {
+			// unlock in reverse order because we have a hunch that otherwise there may be deadlocks
+			// TODO handle `unlock` throwing an exception?
+			for (int i = locks.size() - 1; i >= 0; i--) {
+				locks.get(i).unlock();
+			}
+		}
+	}
+
+	private static class ResourceWithLock<T> {
+
+		private final Resource<T> resource;
+		private final ReentrantLock lock;
+
+		public ResourceWithLock(Resource<T> resource, ReentrantLock lock) {
+			this.resource = requireNonNull(resource);
+			this.lock = requireNonNull(lock);
+		}
+
+		public Resource<T> resource() {
+			return resource;
+		}
+
+		public ReentrantLock lock() {
+			return lock;
 		}
 
 	}

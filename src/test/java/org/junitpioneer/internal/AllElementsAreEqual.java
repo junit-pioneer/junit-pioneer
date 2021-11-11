@@ -19,7 +19,11 @@ public final class AllElementsAreEqual extends Condition<Iterable<?>> {
 	private static final AllElementsAreEqual INSTANCE = new AllElementsAreEqual();
 
 	private AllElementsAreEqual() {
-		super(elements -> StreamSupport.stream(elements.spliterator(), false).skip(1).allMatch(e -> e.equals(elements.iterator().next())),
+		super(
+			elements -> StreamSupport
+					.stream(elements.spliterator(), false)
+					.skip(1)
+					.allMatch(e -> e.equals(elements.iterator().next())),
 			"is an iterable where all the elements are equal");
 	}
 

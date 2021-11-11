@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
@@ -28,17 +29,22 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Deque;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+
+// TODO: Some of the tests here fail when run concurrently, or repeatedly with IntelliJ's
+//       "run until failure" feature:
+//       https://intellij-support.jetbrains.com/hc/en-us/community/posts/206898845/comments/360000470940
+//       Figure out why.
 
 @DisplayName("Resources extension")
 class ResourcesTests {
@@ -991,11 +997,107 @@ class ResourcesTests {
 
 	// ---
 
+	// TODO: This test fails most of the time when run concurrently. Figure out why.
+
+	@DisplayName("when two shared resources are used concurrently")
+	@Timeout(value = 30, unit = SECONDS)
+	static class WhenTwoSharedResourcesAreUsedByTestsConcurrently {
+
+		private static final AtomicInteger COUNTER = new AtomicInteger(0);
+		private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
+		private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
+		private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
+
+		@Test
+		void thenTheTestsDoNotRunInParallel() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(ThrowIfTestsRunConcurrentlyTestCase.class);
+			assertThat(executionResults).hasNumberOfSucceededTests(3);
+		}
+
+	}
+
+	static class ThrowIfTestsRunConcurrentlyTestCase {
+
+		private static final AtomicInteger COUNTER = new AtomicInteger(0);
+		private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
+		private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
+		private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
+
+		// In ResourceExtension, we wrap shared resources in locks. This prevents them from being
+		// used concurrently, which in turn prevents race conditions.
+		//
+		// However, we can still suffer from something known in computer science as the
+		// "dining philosophers problem" [1].
+		//
+		// For example, given these tests and the shared resources that they want:
+		// - test1 -> [A, B]
+		// - test2 -> [B, C]
+		// - test3 -> [C, A]
+		//
+		// ...what happens if test1 grabs A, then test2 grabs B, then test3 grabs C, then test1
+		// tries to grab B? Answer: since A, B and C are locked, the tests freeze forever! This is
+		// called a deadlock.
+		//
+		// The purpose of the tests below is to check that this scenario can't happen.
+		//
+		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
+
+		@Test
+		void test1(
+				// we don't actually use the resources, we just have them injected to verify whether sharing the
+				// same resources prevent the tests from running in parallel
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB)
+				throws Exception {
+			failIfExecutedConcurrently("test1");
+		}
+
+		@Test
+		void test2(
+				// we don't actually use the resources, we just have them injected to verify whether sharing the
+				// same resources prevent the tests from running in parallel
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC)
+				throws Exception {
+			failIfExecutedConcurrently("test2");
+		}
+
+		@Test
+		void test3(
+				// we don't actually use the resources, we just have them injected to verify whether sharing the
+				// same resources prevent the tests from running in parallel
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directory)
+				throws Exception {
+			failIfExecutedConcurrently("test3");
+		}
+
+		// this method is written to fail if it is executed at overlapping times in different threads
+		private static void failIfExecutedConcurrently(String testName) throws InterruptedException {
+			boolean wasZero = COUNTER.compareAndSet(0, 1);
+			System.out.println(testName + ": wasZero = " + wasZero);
+			assertThat(wasZero).isTrue();
+			// wait for the next test to catch up and potentially fail
+			Thread.sleep(1_000);
+			boolean wasOne = COUNTER.compareAndSet(1, 2);
+			System.out.println(testName + ": wasOne = " + wasOne);
+			assertThat(wasOne).isTrue();
+			// wait for the last test to catch up and potentially fail
+			Thread.sleep(1_000);
+			boolean wasTwo = COUNTER.compareAndSet(2, 0);
+			System.out.println(testName + ": wasTwo = " + wasTwo);
+			assertThat(wasTwo).isTrue();
+		}
+
+	}
+
+	// ---
+
 	@DisplayName("check that all resource-related classes are final")
 	@Test
 	void checkThatAllResourceRelatedClassesAreFinal() {
 		assertThat(TemporaryDirectory.class).isFinal();
-		assertThat(ResourceManagerExtension.class).isFinal();
+		assertThat(ResourceExtension.class).isFinal();
 	}
 
 	// ---
