@@ -67,7 +67,7 @@ jobs:
           distribution: temurin
           cache: 'gradle'
       - name: Gradle build
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
 
@@ -97,7 +97,7 @@ jobs:
           path: ~/.sonar/cache/
           key: ubuntu-sonar
       - name: Gradle build
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
       - name: SonarCloud analysis
@@ -135,7 +135,7 @@ jobs:
           distribution: temurin
           cache: 'gradle'
       - name: Gradle build
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build
 
@@ -176,14 +176,14 @@ jobs:
           distribution: temurin
           cache: 'gradle'
       - name: Gradle toolchains
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: rc
+          gradle-version: release-candidate
           arguments: -Porg.gradle.java.installations.auto-download=false javaToolchains 
       - name: Gradle build
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: rc
+          gradle-version: release-candidate
           arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
 
   # Releasing will be only done, if there is a version defined and `releasing` is set to true.
@@ -206,7 +206,7 @@ jobs:
           java-version: 8
           distribution: temurin
       - name: Perform release
-        uses: eskatos/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         env:
           # used to trigger website build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
