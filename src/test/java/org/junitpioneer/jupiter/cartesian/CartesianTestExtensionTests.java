@@ -14,9 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.stream.Stream;
-
-import com.sun.tools.javac.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -851,11 +850,12 @@ public class CartesianTestExtensionTests {
 
 		static Sets poem() {
 			return new Sets()
-					.add(List
-							.of("And on the pedestal these words appear:", "My name is Ozymandias, king of kings;",
+					.add(Arrays
+							.asList("And on the pedestal these words appear:", "My name is Ozymandias, king of kings;",
 								"Look on my works, ye Mighty, and despair!"))
-					.add(List
-							.of("Nothing beside remains. Round the decay", "Of that colossal wreck, boundless and bare",
+					.add(Arrays
+							.asList("Nothing beside remains. Round the decay",
+								"Of that colossal wreck, boundless and bare",
 								"The lone and level sands stretch far away."));
 		}
 
