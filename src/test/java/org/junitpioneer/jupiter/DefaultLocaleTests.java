@@ -123,7 +123,6 @@ class DefaultLocaleTests {
 		class NestedClass {
 
 			@Test
-			@ReadsDefaultLocale
 			@DisplayName("DefaultLocale should be set from enclosed class when it is not provided in nested")
 			void shouldSetLocaleFromEnclosedClass() {
 				assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
@@ -137,7 +136,6 @@ class DefaultLocaleTests {
 		class AnnotatedNestedClass {
 
 			@Test
-			@ReadsDefaultLocale
 			@DisplayName("DefaultLocale should be set from nested class when it is provided")
 			void shouldSetLocaleFromNestedClass() {
 				assertThat(Locale.getDefault().getLanguage()).isEqualTo("de");
@@ -158,7 +156,7 @@ class DefaultLocaleTests {
 	@DefaultLocale(language = "fi")
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	@DisplayName("correctly sets/resets before/after each/all extension points")
-	class ReSettingDefaultLocaleTests {
+	class ResettingDefaultLocaleTests {
 
 		@BeforeAll
 		void setsBeforeBeforeAllMethod() {
@@ -203,32 +201,6 @@ class DefaultLocaleTests {
 		void setForTestMethod() {
 			// only here to set the locale, so another test can verify whether it was reset;
 			// still, better to assert the value was actually set
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
-		}
-
-	}
-
-	@Nested
-	@DefaultLocale(language = "en")
-	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-	class ResettingDefaultNestedLocaleTests {
-
-		@BeforeAll
-		void setsBeforeBeforeEachMethod() {
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
-		}
-
-		@Test
-		@DefaultLocale(language = "de")
-		void setForTestMethod() {
-			// only here to set the locale, so another test can verify whether it was reset;
-			// still, better to assert the value was actually set
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("de");
-		}
-
-		@AfterAll
-		@ReadsDefaultLocale
-		void resetsAfterTestMethodExecution() {
 			assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
 		}
 
