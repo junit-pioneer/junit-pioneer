@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.Arguments;
  * @see org.junit.jupiter.params.provider.ArgumentsProvider
  * @see CartesianTestExtension
  */
-public interface CartesianParameterArgumentsProvider extends CartesianArgumentsProvider {
+public interface CartesianParameterArgumentsProvider<T> extends CartesianArgumentsProvider {
 
 	/**
 	 * Provider a {@link Stream} of {@link Arguments} that needs to be used for the {@code @CartesianTest}.
@@ -34,6 +34,6 @@ public interface CartesianParameterArgumentsProvider extends CartesianArgumentsP
 	 * @param parameter the parameter for which the arguments needs to be provided
 	 * @return a stream of arguments; never {@code null}
 	 */
-	Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) throws Exception;
+	Stream<T> provideArguments(ExtensionContext context, Parameter parameter) throws Exception;
 
 }
