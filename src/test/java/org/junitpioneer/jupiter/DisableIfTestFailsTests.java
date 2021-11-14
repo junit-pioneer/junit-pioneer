@@ -27,7 +27,7 @@ public class DisableIfTestFailsTests {
 
 	@Test
 	void threeTestsWithSecondFailing_thirdIsDisabled() {
-		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsWithSecondFailing.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsWithSecondFailingTestCase.class);
 
 		// TODO assert that failed test ran after successful test
 		assertThat(results)
@@ -39,7 +39,7 @@ public class DisableIfTestFailsTests {
 
 	@Test
 	void annotationOnOuterClass_innerTestFails_innerTestsDisabled() {
-		ExecutionResults results = PioneerTestKit.executeTestClass(InnerTestsFail.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(InnerTestsFailTestCase.class);
 
 		// these assertions depend on tests in outer classes getting executed first
 		assertThat(results)
@@ -52,7 +52,7 @@ public class DisableIfTestFailsTests {
 
 	@Test
 	void annotationOnOuterClass_outerTestFails_innerTestContainerDisabled() {
-		ExecutionResults results = PioneerTestKit.executeTestClass(OuterTestsFail.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(OuterTestsFailTestCase.class);
 
 		// these assertions depend on tests in outer classes getting executed first
 		assertThat(results).hasNumberOfStartedTests(1).hasNumberOfFailedTests(1);
@@ -61,7 +61,7 @@ public class DisableIfTestFailsTests {
 
 	@Test
 	void annotationOnBothClasses_outerAndInnerTestsFail() {
-		ExecutionResults results = PioneerTestKit.executeTestClass(OuterAndInnerTestsFail.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(OuterAndInnerTestsFailTestCase.class);
 
 		// these assertions depend on tests in outer classes getting executed first
 		assertThat(results)
@@ -77,7 +77,7 @@ public class DisableIfTestFailsTests {
 
 	@Test
 	void threeTestsPassing_noneAreDisabled() {
-		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsPass.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsPassTestCase.class);
 
 		assertThat(results).hasNumberOfStartedTests(3).hasNumberOfSucceededTests(3);
 	}
@@ -100,7 +100,7 @@ public class DisableIfTestFailsTests {
 	@TestInstance(PER_CLASS)
 	@DisableIfTestFails(with = IOException.class)
 	@Execution(SAME_THREAD)
-	static class ThreeTestsWithSecondFailing {
+	static class ThreeTestsWithSecondFailingTestCase {
 
 		private int executionCount;
 
@@ -129,7 +129,7 @@ public class DisableIfTestFailsTests {
 
 	@DisableIfTestFails(with = IOException.class)
 	@Execution(SAME_THREAD)
-	static class InnerTestsFail {
+	static class InnerTestsFailTestCase {
 
 		@Test
 		void test1() {
@@ -137,7 +137,7 @@ public class DisableIfTestFailsTests {
 
 		@Nested
 		@TestInstance(PER_CLASS)
-		class FirstTestFails {
+		class FirstTestFailsTestCase {
 
 			private int executionCount;
 
@@ -161,7 +161,7 @@ public class DisableIfTestFailsTests {
 
 	@DisableIfTestFails(with = IOException.class)
 	@Execution(SAME_THREAD)
-	static class OuterTestsFail {
+	static class OuterTestsFailTestCase {
 
 		@Test
 		void test1() throws IOException {
@@ -169,7 +169,7 @@ public class DisableIfTestFailsTests {
 		}
 
 		@Nested
-		class OneTestPasses {
+		class OneTestPassesTestCase {
 
 			@Test
 			void test1() {
@@ -182,7 +182,7 @@ public class DisableIfTestFailsTests {
 	@DisableIfTestFails(with = IOException.class)
 	@Execution(SAME_THREAD)
 	@TestInstance(PER_CLASS)
-	static class OuterAndInnerTestsFail {
+	static class OuterAndInnerTestsFailTestCase {
 
 		private int executionCount;
 
@@ -203,7 +203,7 @@ public class DisableIfTestFailsTests {
 		@Nested
 		@DisableIfTestFails(with = InterruptedException.class)
 		@TestInstance(PER_CLASS)
-		class ThreeTestsWithSecondFailing {
+		class ThreeTestsWithSecondFailingTestCase {
 
 			private int executionCount;
 
@@ -226,7 +226,7 @@ public class DisableIfTestFailsTests {
 	}
 
 	@DisableIfTestFails(with = IOException.class)
-	static class ThreeTestsPass {
+	static class ThreeTestsPassTestCase {
 
 		@Test
 		void test1() {
