@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.support.AnnotationConsumerInitializer;
@@ -89,9 +88,9 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		return sets;
 	}
 
-	private List<Object> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
+	private List<?> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
 		try {
-			CartesianArgumentsProvider provider = initializeArgumentsProvider(source, parameter);
+			CartesianArgumentsProvider<?> provider = initializeArgumentsProvider(source, parameter);
 			return provideArguments(context, parameter, provider);
 		}
 		catch (Exception ex) {
@@ -99,7 +98,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		}
 	}
 
-	private CartesianArgumentsProvider initializeArgumentsProvider(Annotation source, Parameter parameter) {
+	private CartesianArgumentsProvider<?> initializeArgumentsProvider(Annotation source, Parameter parameter) {
 		Optional<CartesianArgumentsSource> cartesianProviderAnnotation = AnnotationSupport
 				.findAnnotation(parameter, CartesianArgumentsSource.class);
 
@@ -116,18 +115,16 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 					source.annotationType())));
 		ArgumentsProvider provider = ReflectionSupport.newInstance(providerAnnotation.value());
 		if (provider instanceof CartesianArgumentsProvider)
-			return AnnotationConsumerInitializer.initialize(parameter, (CartesianArgumentsProvider) provider);
+			return AnnotationConsumerInitializer.initialize(parameter, (CartesianArgumentsProvider<?>) provider);
 		else
 			throw new PreconditionViolationException(
 				format("%s does not implement the CartesianArgumentsProvider interface.", provider.getClass()));
 	}
 
-	private List<Object> provideArguments(ExtensionContext context, Parameter source,
-			CartesianArgumentsProvider provider) throws Exception {
+	private List<?> provideArguments(ExtensionContext context, Parameter source, CartesianArgumentsProvider<?> provider)
+			throws Exception {
 		return provider
 				.provideArguments(context, source)
-				.map(Arguments::get)
-				.flatMap(Arrays::stream)
 				.distinct()
 				// We like to keep arguments in the order in which they were listed
 				// in the annotation. Could use a set with defined iteration, but

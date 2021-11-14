@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -31,10 +30,10 @@ import org.junit.platform.commons.support.AnnotationSupport;
  * @implNote This class does not implement {@code ArgumentsProvider} since the Jupiter's {@code EnumSource}
  * should be used for that.
  */
-class CartesianEnumArgumentsProvider implements CartesianArgumentsProvider {
+class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianArgumentsProvider<E> {
 
 	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
+	public Stream<E> provideArguments(ExtensionContext context, Parameter parameter) {
 		Class<?> parameterType = parameter.getType();
 		if (!Enum.class.isAssignableFrom(parameterType))
 			throw new PreconditionViolationException(String
@@ -46,7 +45,7 @@ class CartesianEnumArgumentsProvider implements CartesianArgumentsProvider {
 				.orElseThrow(() -> new PreconditionViolationException(
 					"Parameter has to be annotated with " + CartesianTest.Enum.class.getName()));
 
-		Set<? extends Enum<?>> constants = getEnumConstants(enumSource, parameterType);
+		Set<E> constants = getEnumConstants(enumSource, parameterType);
 		CartesianTest.Enum.Mode mode = enumSource.mode();
 		String[] declaredConstantNames = enumSource.names();
 		if (declaredConstantNames.length > 0) {
@@ -57,17 +56,16 @@ class CartesianEnumArgumentsProvider implements CartesianArgumentsProvider {
 			mode.validate(enumSource, constants, uniqueNames);
 			constants.removeIf(constant -> !mode.select(constant, uniqueNames));
 		}
-		return constants.stream().map(Arguments::of);
+		return constants.stream();
 	}
 
-	private <E extends Enum<E>> Set<? extends E> getEnumConstants(CartesianTest.Enum enumSource,
-			Class<?> parameterType) {
+	private Set<E> getEnumConstants(CartesianTest.Enum enumSource, Class<?> parameterType) {
 		Class<E> enumClass = determineEnumClass(enumSource, parameterType);
 		return EnumSet.allOf(enumClass);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private <E extends Enum<E>> Class<E> determineEnumClass(CartesianTest.Enum enumSource, Class<?> parameterType) {
+	private Class<E> determineEnumClass(CartesianTest.Enum enumSource, Class<?> parameterType) {
 		Class enumClass = enumSource.value();
 		if (enumClass.equals(NullEnum.class)) {
 			enumClass = parameterType;

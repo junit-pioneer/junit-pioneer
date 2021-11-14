@@ -346,9 +346,9 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 class IntArgumentsProvider implements CartesianArgumentsProvider {
 
 	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
+	public Stream<Integer> provideArguments(ExtensionContext context, Parameter parameter) {
 		Ints source = Objects.requireNonNull(parameter.getAnnotation(Ints.class));
-		return Arrays.stream(source.value()).map(Arguments::of);
+		return Arrays.stream(source.value());
 	}
 
 }
@@ -386,11 +386,10 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 class PeopleProvider implements CartesianArgumentsProvider {
 
 	@Override
-public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
+public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
 		People source = Objects.requireNonNull(parameter.getAnnotation(People.class));
 	return IntStream.range(0, source.names().length)
-		.mapToObj(i -> new Person(source.names()[i], source.ages()[i]))
-		.map(Arguments::of);
+		.mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
 	}
 }
 ----

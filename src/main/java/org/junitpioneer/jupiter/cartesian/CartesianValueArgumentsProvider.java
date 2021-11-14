@@ -20,7 +20,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 import org.junit.platform.commons.PreconditionViolationException;
 
@@ -32,7 +31,8 @@ import org.junit.platform.commons.PreconditionViolationException;
  * @implNote This class does not implement {@code ArgumentsProvider} since the Jupiter's {@code ValueSource}
  * should be used for that.
  */
-class CartesianValueArgumentsProvider implements CartesianArgumentsProvider, AnnotationConsumer<CartesianTest.Values> {
+class CartesianValueArgumentsProvider
+		implements CartesianArgumentsProvider<Object>, AnnotationConsumer<CartesianTest.Values> {
 
 	private Object[] arguments;
 
@@ -69,8 +69,8 @@ class CartesianValueArgumentsProvider implements CartesianArgumentsProvider, Ann
 	}
 
 	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
-		return Arrays.stream(arguments).map(Arguments::of);
+	public Stream<Object> provideArguments(ExtensionContext context, Parameter parameter) {
+		return Arrays.stream(arguments);
 	}
 
 }
