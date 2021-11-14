@@ -27,7 +27,7 @@ void test() {
 ----
 
 The `untilDate` parameter must be a string in the date format specified by https://en.m.wikipedia.org/wiki/ISO_8601[ISO 8601], e.g. "1985-10-26".
-If `untilDate` is today or in the past, the test will be executed normally but a warning entry will be published to the https://junit-pioneer.org/docs/report-entries[test report].
+Invalid or unparsable date strings lead to an `ExtensionConfigurationException`.
 
 The `@DisabledUntil annotation may optionally be declared with a reason to document why the annotated test class or test method is disabled:
 

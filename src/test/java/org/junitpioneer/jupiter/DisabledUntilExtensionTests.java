@@ -10,12 +10,17 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.junitpioneer.testkit.assertion.PioneerAssert;
 
 @DisplayName("Tests for the DisabledUntil extension")
 class DisabledUntilExtensionTests {
@@ -25,22 +30,22 @@ class DisabledUntilExtensionTests {
 	void shouldEnableTestWithoutAnnotation() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class, "testNoAnnotation");
-		PioneerAssert.assertThat(results).hasNumberOfStartedTests(1);
-		PioneerAssert.assertThat(results).hasNumberOfSucceededTests(1);
-		PioneerAssert.assertThat(results).hasNumberOfSkippedTests(0);
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
+		assertThat(results).hasSingleStartedTest();
+		assertThat(results).hasSingleSucceededTest();
+		assertThat(results).hasNumberOfSkippedTests(0);
+		assertThat(results).hasNoReportEntries();
 	}
 
 	@Test
-	@DisplayName("Should enable test with unparseable untilDate string")
-	void shouldEnableTestWithUnparseableUntilDateString() {
+	@DisplayName("Should enable test with unparsable untilDate string")
+	void shouldEnableTestWithUnparsableUntilDateString() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class,
-					"testUnparseableUntilDateString");
-		PioneerAssert.assertThat(results).hasNumberOfStartedTests(1);
-		PioneerAssert.assertThat(results).hasNumberOfSucceededTests(1);
-		PioneerAssert.assertThat(results).hasNumberOfSkippedTests(0);
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
+					"testUnparsableUntilDateString");
+		assertThat(results).hasSingleStartedTest();
+		assertThat(results).hasSingleFailedTest();
+		assertThat(results).hasNumberOfSkippedTests(0);
+		assertThat(results).hasNoReportEntries();
 	}
 
 	@Test
@@ -49,10 +54,13 @@ class DisabledUntilExtensionTests {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class,
 					"testIsAnnotatedWithDateInThePast");
-		PioneerAssert.assertThat(results).hasNumberOfStartedTests(1);
-		PioneerAssert.assertThat(results).hasNumberOfSucceededTests(1);
-		PioneerAssert.assertThat(results).hasNumberOfSkippedTests(0);
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
+		assertThat(results).hasSingleStartedTest();
+		assertThat(results).hasSingleSucceededTest();
+		assertThat(results).hasNumberOfSkippedTests(0);
+		assertThat(results)
+				.hasSingleReportEntry()
+				.andThen(entry -> assertThat(entry.getValue())
+						.contains("1993-01-01", LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
 	}
 
 	@Test
@@ -61,10 +69,9 @@ class DisabledUntilExtensionTests {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class,
 					"testIsAnnotatedWithDateInTheFuture");
-		PioneerAssert.assertThat(results).hasNumberOfStartedTests(0);
-		PioneerAssert.assertThat(results).hasNumberOfSucceededTests(0);
-		PioneerAssert.assertThat(results).hasNumberOfSkippedTests(1);
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
+		assertThat(results).hasNumberOfStartedTests(0);
+		assertThat(results).hasSingleSkippedTest();
+		assertThat(results).hasNoReportEntries();
 	}
 
 	@Test
@@ -73,11 +80,10 @@ class DisabledUntilExtensionTests {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.NestedDummyTestClass.class,
 					"shouldRetrieveFromClass");
-		PioneerAssert.assertThat(results).hasNumberOfSkippedContainers(1); // NestedDummyTestClass is skipped as container
-		PioneerAssert.assertThat(results).hasNumberOfStartedTests(0);
-		PioneerAssert.assertThat(results).hasNumberOfSucceededTests(0);
-		PioneerAssert.assertThat(results).hasNumberOfSkippedTests(0);
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
+		assertThat(results).hasSingleSkippedContainer(); // NestedDummyTestClass is skipped as container
+		assertThat(results).hasNumberOfStartedTests(0);
+		assertThat(results).hasNumberOfSkippedTests(0);
+		assertThat(results).hasNoReportEntries();
 	}
 
 	static class DisabledUntilDummyTestClass {
@@ -89,7 +95,7 @@ class DisabledUntilExtensionTests {
 
 		@Test
 		@DisabledUntil(reason = "Boom!", untilDate = "xxxx-yy-zz")
-		void testUnparseableUntilDateString() {
+		void testUnparsableUntilDateString() {
 
 		}
 

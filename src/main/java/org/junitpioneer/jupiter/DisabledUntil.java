@@ -21,11 +21,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 /**
  * {@code @DisabledUntil} is a JUnit Jupiter extension to mark tests that shouldn't be executed until a given date,
  * essentially disabling a test temporarily. The date is given as an ISO 8601 string.
- * <p>{@code @DisabledUntil} may optionally be declared with a reason to document why the annotated test class or test
+ *
+ * <p>It may optionally be declared with a reason to document why the annotated test class or test
  * method is disabled.
- * <p>{@code @DisabledUntil} can be used on the method and class level.</p>
- * <p>{@code @DisabledUntil} can only be used once per method or class.</p>
- * <p>{@code @DisabledUntil} is inherited from higher level containers.</p>
+ *
+ * <p>{@code @DisabledUntil} can be used on the method and class level. It can only be used once per method or class,
+ * but is inherited from higher level containers.</p>
  *
  * @see org.junit.jupiter.api.Disabled
  */

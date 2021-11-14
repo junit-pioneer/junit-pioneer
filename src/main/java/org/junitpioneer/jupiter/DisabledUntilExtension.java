@@ -10,21 +10,20 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.text.MessageFormat.format;
+import static java.lang.String.format;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
 import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
-import static org.junitpioneer.internal.PioneerDateUtils.ISO_8601_DATE_FORMATTER;
-import static org.junitpioneer.internal.PioneerDateUtils.TODAY;
-import static org.junitpioneer.internal.PioneerDateUtils.isTodayOrInThePast;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junitpioneer.internal.PioneerDateUtils;
 
 /**
  * This class implements the functionality for the {@code @DisabledUntil} annotation.
@@ -33,29 +32,46 @@ import org.junitpioneer.internal.PioneerDateUtils;
  */
 class DisabledUntilExtension implements ExecutionCondition {
 
+	private static final DateTimeFormatter ISO_8601 = DateTimeFormatter.ISO_DATE;
+
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
 		return getUntilDateFromAnnotation(context)
 				.map(untilDate -> evaluateUntilDate(context, untilDate))
-				.orElse(enabled("No valid @DisabledUntil annotation found on element"));
+				.orElse(enabled("No @DisabledUntil annotation found on element"));
 	}
 
 	private Optional<LocalDate> getUntilDateFromAnnotation(ExtensionContext context) {
 		return findClosestEnclosingAnnotation(context, DisabledUntil.class)
 				.map(DisabledUntil::untilDate)
-				.flatMap(PioneerDateUtils::parseIso8601DateString);
+				.map(this::parseDate);
+	}
+
+	private LocalDate parseDate(String dateString) {
+		try {
+			return LocalDate.parse(dateString, ISO_8601);
+		}
+		catch (DateTimeParseException ex) {
+			throw new ExtensionConfigurationException(
+				"The `untilDate` string '" + dateString + "' is no valid ISO-8601 string.", ex);
+		}
 	}
 
 	private ConditionEvaluationResult evaluateUntilDate(ExtensionContext context, LocalDate untilDate) {
-		if (isTodayOrInThePast(untilDate)) {
-			final String message = format("untilDate [{0}] is equal to or before current date: [{1}]", untilDate,
-				TODAY.format(ISO_8601_DATE_FORMATTER));
+		LocalDate today = LocalDate.now();
+		boolean disabled = today.isBefore(untilDate);
+
+		if (disabled) {
+			String message = format("The `untilDate` %s is after the current date %s", untilDate.format(ISO_8601),
+				today.format(ISO_8601));
+			return disabled(message);
+		} else {
+			String message = format(
+				"The `untilDate` %s is before or on the current date %s, so `@DisabledUntil` no longer disabled test \"%s\". Please remove the annotation.",
+				untilDate.format(ISO_8601), today.format(ISO_8601), context.getUniqueId());
 			context.publishReportEntry(DisabledUntilExtension.class.getSimpleName(), message);
 			return enabled(message);
 		}
-		final String message = format("untilDate [{0}] is after current date [{1}]", untilDate,
-			TODAY.format(ISO_8601_DATE_FORMATTER));
-		return disabled(message);
 	}
 
 }
