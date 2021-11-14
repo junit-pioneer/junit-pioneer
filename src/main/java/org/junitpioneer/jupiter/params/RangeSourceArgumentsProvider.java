@@ -90,8 +90,8 @@ class RangeSourceArgumentsProvider
 		argumentsSource = argumentsSources.get(0);
 	}
 
-	private Stream<? extends Number> asStream(Range<?> r) {
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(r, Spliterator.ORDERED), false);
+	private Stream<? extends Number> asStream(Range<?> range) {
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(range, Spliterator.ORDERED), false);
 	}
 
 	@Override
