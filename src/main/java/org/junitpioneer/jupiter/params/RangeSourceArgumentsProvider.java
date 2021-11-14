@@ -53,7 +53,7 @@ class RangeSourceArgumentsProvider
 	@Override
 	public Stream<? extends Number> provideArguments(ExtensionContext context, Parameter parameter) throws Exception {
 		initArgumentsSource(parameter);
-		return provideArguments(context, argumentsSource);
+		return provideArguments(argumentsSource);
 	}
 
 	@Override
@@ -63,11 +63,10 @@ class RangeSourceArgumentsProvider
 			// since it's a method annotation, the element will always be present
 			initArgumentsSource(context.getRequiredTestMethod());
 
-		return provideArguments(context, argumentsSource).map(Arguments::of);
+		return provideArguments(argumentsSource).map(Arguments::of);
 	}
 
-	private Stream<? extends Number> provideArguments(ExtensionContext context, Annotation argumentsSource)
-			throws Exception {
+	private Stream<? extends Number> provideArguments(Annotation argumentsSource) throws Exception {
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
 
