@@ -49,7 +49,6 @@ import org.junitpioneer.jupiter.cartesian.CartesianEnumArgumentsProvider.NullEnu
  * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>@CartesianTest</code></a>.
  * </p>
  *
- * @see org.junitpioneer.jupiter.CartesianValueSource
  * @since 1.5.0
  */
 @TestTemplate
@@ -57,6 +56,33 @@ import org.junitpioneer.jupiter.cartesian.CartesianEnumArgumentsProvider.NullEnu
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CartesianTest {
+
+	/**
+	 * Placeholder for the display name of a {@code @CartesianTest}
+	 *
+	 * @since 1.5
+	 * @see #name
+	 */
+	String DISPLAY_NAME_PLACEHOLDER = "{displayName}";
+
+	/**
+	 * Placeholder for the current invocation index of a {@code @CartesianTest}
+	 * method (1-based): <code>{index}</code>
+	 *
+	 * @since 1.5
+	 * @see #name
+	 */
+	String INDEX_PLACEHOLDER = "{index}";
+
+	/**
+	 * Placeholder for the complete, comma-separated arguments list of the
+	 * current invocation of a {@code @CartesianTest} method:
+	 * <code>{arguments}</code>
+	 *
+	 * @since 1.5
+	 * @see #name
+	 */
+	String ARGUMENTS_PLACEHOLDER = "{arguments}";
 
 	/**
 	 * <p>The display name to be used for individual invocations of the
