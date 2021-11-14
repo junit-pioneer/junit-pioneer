@@ -44,14 +44,14 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
-class RangeSourceArgumentsProvider
+class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
 
 	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
 
 	@Override
-	public Stream<? extends Number> provideArguments(ExtensionContext context, Parameter parameter) throws Exception {
+	public Stream<N> provideArguments(ExtensionContext context, Parameter parameter) throws Exception {
 		initArgumentsSource(parameter);
 		return provideArguments(argumentsSource);
 	}
@@ -66,11 +66,12 @@ class RangeSourceArgumentsProvider
 		return provideArguments(argumentsSource).map(Arguments::of);
 	}
 
-	private Stream<? extends Number> provideArguments(Annotation argumentsSource) throws Exception {
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private Stream<N> provideArguments(Annotation argumentsSource) throws Exception {
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
 
-		Range<?> range = (Range<?>) rangeClass.getConstructors()[0].newInstance(argumentsSource);
+		Range<N> range = (Range<N>) rangeClass.getConstructors()[0].newInstance(argumentsSource);
 		range.validate();
 		return asStream(range);
 	}
@@ -89,7 +90,7 @@ class RangeSourceArgumentsProvider
 		argumentsSource = argumentsSources.get(0);
 	}
 
-	private Stream<? extends Number> asStream(Range<?> range) {
+	private Stream<N> asStream(Range<N> range) {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(range, Spliterator.ORDERED), false);
 	}
 

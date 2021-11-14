@@ -88,7 +88,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		return sets;
 	}
 
-	private List<Object> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
+	private List<?> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
 		try {
 			CartesianArgumentsProvider provider = initializeArgumentsProvider(source, parameter);
 			return provideArguments(context, parameter, provider);
@@ -121,7 +121,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 				format("%s does not implement the CartesianArgumentsProvider interface.", provider.getClass()));
 	}
 
-	private List<Object> provideArguments(ExtensionContext context, Parameter source,
+	private List<?> provideArguments(ExtensionContext context, Parameter source,
 			CartesianArgumentsProvider provider) throws Exception {
 		return provider
 				.provideArguments(context, source)
