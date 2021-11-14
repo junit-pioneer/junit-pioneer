@@ -10,15 +10,16 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -84,45 +85,30 @@ public class DisableIfTestFailsTests {
 
 	// TEST CASES -------------------------------------------------------------------
 
-	// Some tests require state to keep track of the number of test executions.
-	// Storing that state in a static field keeps it around from one test suite execution to the next
-	// if they are run in the same JVM (as IntelliJ does), which breaks the test.
-	// One fix would be a @BeforeAll setup that resets the counter to zero, but for no apparent reason,
-	// this lead to flaky tests under threading. Using a `PER_CLASS` lifecycle allows us to make it an
-	// instance field and that worked.
-
 	// The tests that run the following classes assert the extension works by counting the number of
 	// executed and skipped tests, which depends on the assumption that they're executed one after another.
 	// (If they're executed in parallel, all tests might already have passed the condition evaluation
 	// extension point before the first test fails and so none would be disabled.)
-	// Hence use `@Execution(SAME_THREAD)`.
+	// The `@TestMethodOrder(MethodOrderer.OrderAnnotation.class)` creates this consecutive execution.
 
-	@TestInstance(PER_CLASS)
 	@DisableIfTestFails(with = IOException.class)
-	@Execution(SAME_THREAD)
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 	static class ThreeTestsWithSecondFailingTestCase {
 
-		private int executionCount;
-
 		@Test
-		void test1() throws IOException {
-			executionCount++;
-			if (executionCount == 2)
-				throw new IOException();
+		@Order(1)
+		void test1() {
 		}
 
 		@Test
+		@Order(2)
 		void test2() throws IOException {
-			executionCount++;
-			if (executionCount == 2)
-				throw new IOException();
+			throw new IOException();
 		}
 
 		@Test
-		void test3() throws IOException {
-			executionCount++;
-			if (executionCount == 2)
-				throw new IOException();
+		@Order(3)
+		void test3() {
 		}
 
 	}
@@ -136,23 +122,18 @@ public class DisableIfTestFailsTests {
 		}
 
 		@Nested
-		@TestInstance(PER_CLASS)
+		@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 		class FirstTestFailsTestCase {
 
-			private int executionCount;
-
 			@Test
+			@Order(1)
 			void test1() throws IOException {
-				executionCount++;
-				if (executionCount == 1)
-					throw new IOException();
+				throw new IOException();
 			}
 
 			@Test
-			void test2() throws IOException {
-				executionCount++;
-				if (executionCount == 1)
-					throw new IOException();
+			@Order(2)
+			void test2() {
 			}
 
 		}
@@ -180,45 +161,30 @@ public class DisableIfTestFailsTests {
 	}
 
 	@DisableIfTestFails(with = IOException.class)
-	@Execution(SAME_THREAD)
-	@TestInstance(PER_CLASS)
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 	static class OuterAndInnerTestsFailTestCase {
-
-		private int executionCount;
 
 		@Test
 		void test1() throws InterruptedException {
-			executionCount++;
-			if (executionCount == 1)
-				throw new InterruptedException();
+			throw new InterruptedException();
 		}
 
 		@Test
-		void test2() throws InterruptedException {
-			executionCount++;
-			if (executionCount == 1)
-				throw new InterruptedException();
+		void test2() {
 		}
 
 		@Nested
 		@DisableIfTestFails(with = InterruptedException.class)
-		@TestInstance(PER_CLASS)
+		@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 		class ThreeTestsWithSecondFailingTestCase {
-
-			private int executionCount;
 
 			@Test
 			void test1() throws IOException {
-				executionCount++;
-				if (executionCount == 1)
-					throw new IOException();
+				throw new IOException();
 			}
 
 			@Test
-			void test2() throws IOException {
-				executionCount++;
-				if (executionCount == 1)
-					throw new IOException();
+			void test2() {
 			}
 
 		}
