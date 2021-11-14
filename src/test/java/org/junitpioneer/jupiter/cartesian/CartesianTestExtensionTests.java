@@ -945,7 +945,7 @@ public class CartesianTestExtensionTests {
 		ALPHA, BETA, GAMMA
 	}
 
-	static class FirstCustomCartesianArgumentsProvider implements CartesianArgumentsProvider {
+	static class FirstCustomCartesianArgumentsProvider implements CartesianArgumentsProvider<String> {
 
 		@Override
 		public Stream<String> provideArguments(ExtensionContext context, Parameter parameter) {
@@ -954,7 +954,7 @@ public class CartesianTestExtensionTests {
 
 	}
 
-	static class SecondCustomCartesianArgumentsProvider implements CartesianArgumentsProvider {
+	static class SecondCustomCartesianArgumentsProvider implements CartesianArgumentsProvider<Integer> {
 
 		@Override
 		public Stream<Integer> provideArguments(ExtensionContext context, Parameter parameter) {
@@ -963,7 +963,7 @@ public class CartesianTestExtensionTests {
 
 	}
 
-	static class StringArrayArgumentsProvider implements CartesianArgumentsProvider {
+	static class StringArrayArgumentsProvider implements CartesianArgumentsProvider<String[]> {
 
 		@Override
 		public Stream<String[]> provideArguments(ExtensionContext context, Parameter parameter) {

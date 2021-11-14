@@ -30,7 +30,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
  * @implNote This class does not implement {@code ArgumentsProvider} since the Jupiter's {@code EnumSource}
  * should be used for that.
  */
-class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianArgumentsProvider {
+class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianArgumentsProvider<E> {
 
 	@Override
 	public Stream<E> provideArguments(ExtensionContext context, Parameter parameter) {
@@ -59,8 +59,7 @@ class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianArgu
 		return constants.stream();
 	}
 
-	private Set<E> getEnumConstants(CartesianTest.Enum enumSource,
-			Class<?> parameterType) {
+	private Set<E> getEnumConstants(CartesianTest.Enum enumSource, Class<?> parameterType) {
 		Class<E> enumClass = determineEnumClass(enumSource, parameterType);
 		return EnumSet.allOf(enumClass);
 	}

@@ -90,7 +90,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
 	private List<?> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
 		try {
-			CartesianArgumentsProvider provider = initializeArgumentsProvider(source, parameter);
+			CartesianArgumentsProvider<?> provider = initializeArgumentsProvider(source, parameter);
 			return provideArguments(context, parameter, provider);
 		}
 		catch (Exception ex) {
@@ -98,7 +98,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		}
 	}
 
-	private CartesianArgumentsProvider initializeArgumentsProvider(Annotation source, Parameter parameter) {
+	private CartesianArgumentsProvider<?> initializeArgumentsProvider(Annotation source, Parameter parameter) {
 		Optional<CartesianArgumentsSource> cartesianProviderAnnotation = AnnotationSupport
 				.findAnnotation(parameter, CartesianArgumentsSource.class);
 
@@ -115,14 +115,14 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 					source.annotationType())));
 		ArgumentsProvider provider = ReflectionSupport.newInstance(providerAnnotation.value());
 		if (provider instanceof CartesianArgumentsProvider)
-			return AnnotationConsumerInitializer.initialize(parameter, (CartesianArgumentsProvider) provider);
+			return AnnotationConsumerInitializer.initialize(parameter, (CartesianArgumentsProvider<?>) provider);
 		else
 			throw new PreconditionViolationException(
 				format("%s does not implement the CartesianArgumentsProvider interface.", provider.getClass()));
 	}
 
-	private List<?> provideArguments(ExtensionContext context, Parameter source,
-			CartesianArgumentsProvider provider) throws Exception {
+	private List<?> provideArguments(ExtensionContext context, Parameter source, CartesianArgumentsProvider<?> provider)
+			throws Exception {
 		return provider
 				.provideArguments(context, source)
 				.distinct()

@@ -45,7 +45,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
  * @see FloatRangeSource
  */
 class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
-		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
+		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
 
 	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
@@ -66,7 +66,7 @@ class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 		return provideArguments(argumentsSource).map(Arguments::of);
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Stream<N> provideArguments(Annotation argumentsSource) throws Exception {
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
