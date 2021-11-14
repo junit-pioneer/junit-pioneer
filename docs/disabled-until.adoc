@@ -1,0 +1,61 @@
+:page-title: Temporarily Disable a Test
+:page-description: Extends JUnit Jupiter with `@DisabledUntil` to temporarily disable a test.
+
+== Introduction
+
+It's sometimes useful to disable a test.
+One can imagine many reasons for doing so, maybe a remote dependency of the test is broken or not yet deployed.
+Maybe the test is still in development and unstable.
+
+The `@Disable` annotation is perfectly adequate to use in such cases.
+The test gets skipped and the test suite can terminate successfully.
+The only problem with this approach is remembering to activate the test again once the original impediment has been resolved.
+The `@DisabledUntil` annotation may be used to disable a test only for a certain period of time.
+The test will be automatically executed again once the date supplied by the `date` parameter is reached.
+
+== Usage
+
+To mark a test to be temporarily disabled add the `@DisabledUntil` annotation like so:
+
+[source,java]
+----
+@DisabledUntil(date = "2022-01-01")
+@Test
+void test() {
+	// Test will be skipped if it's 2021-12-31 or earlier
+}
+----
+
+The `date` parameter must be a string in the date format specified by https://en.m.wikipedia.org/wiki/ISO_8601[ISO 8601], e.g. "1985-10-26".
+Invalid or unparsable date strings lead to an `ExtensionConfigurationException`.
+
+The `@DisabledUntil annotation may optionally be declared with a reason to document why the annotated test class or test method is disabled:
+
+[source,java]
+----
+@DisabledUntil(reason = "The remote server won't be ready until next year", date = "2022-01-01")
+@Test
+void test() {
+    // Test will be skipped if it's 2021-12-31 or earlier
+}
+----
+
+The `@DisabledUntil` annotation can be used on the class and method level, it will be inherited from higher level containers:
+
+[source,java]
+----
+@DisabledUntil(date = "2022-01-01")
+class TestClass {
+    @Test
+    void test() {
+        // Test will be skipped if it's 2021-12-31 or earlier
+    }
+}
+----
+
+The `@DisabledUntil` annotation can only be used once per class or method.
+
+== Before and After
+
+The test will be skipped only if the date specified by `date` is the future.
+If `date` is today or in the past, the test will be executed normally but a warning entry will be published to the https://junit-pioneer.org/docs/report-entries[test report].
