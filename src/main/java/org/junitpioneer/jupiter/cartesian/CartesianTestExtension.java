@@ -140,19 +140,19 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 			ArgumentsSource providerAnnotation = AnnotationSupport
 					.findAnnotation(parameter, ArgumentsSource.class)
 					.orElseThrow(() -> new PreconditionViolationException(
-							format("%s was not annotated with %s or %s but should have been.", source.annotationType(),
-									CartesianArgumentsSource.class.getName(), ArgumentsSource.class.getName())));
+						format("%s was not annotated with %s or %s but should have been.", source.annotationType(),
+							CartesianArgumentsSource.class.getName(), ArgumentsSource.class.getName())));
 			providerClass = providerAnnotation.value();
 		}
 		return getAndInitializeCartesianParameterArgumentsProvider(providerClass, parameter);
 	}
 
-	private static <T> CartesianParameterArgumentsProvider<?> getAndInitializeCartesianParameterArgumentsProvider(Class<T> providerClass, Parameter parameter) {
-		T provider = AnnotationConsumerInitializer
-				.initialize(parameter, ReflectionSupport.newInstance(providerClass));
+	private static <T> CartesianParameterArgumentsProvider<?> getAndInitializeCartesianParameterArgumentsProvider(
+			Class<T> providerClass, Parameter parameter) {
+		T provider = AnnotationConsumerInitializer.initialize(parameter, ReflectionSupport.newInstance(providerClass));
 		if (!(provider instanceof CartesianParameterArgumentsProvider)) {
-			throw new PreconditionViolationException(format("%s does not implement %s interface.",
-					provider.getClass(), CartesianParameterArgumentsProvider.class.getSimpleName()));
+			throw new PreconditionViolationException(format("%s does not implement %s interface.", provider.getClass(),
+				CartesianParameterArgumentsProvider.class.getSimpleName()));
 		}
 		return (CartesianParameterArgumentsProvider<?>) provider;
 	}
