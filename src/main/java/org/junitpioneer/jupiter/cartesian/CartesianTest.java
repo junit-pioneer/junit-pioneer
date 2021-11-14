@@ -60,7 +60,7 @@ public @interface CartesianTest {
 	/**
 	 * Placeholder for the display name of a {@code @CartesianTest}
 	 *
-	 * @since 5.3
+	 * @since 1.5
 	 * @see #name
 	 */
 	String DISPLAY_NAME_PLACEHOLDER = "{displayName}";
@@ -69,7 +69,7 @@ public @interface CartesianTest {
 	 * Placeholder for the current invocation index of a {@code @CartesianTest}
 	 * method (1-based): <code>{index}</code>
 	 *
-	 * @since 5.3
+	 * @since 1.5
 	 * @see #name
 	 */
 	String INDEX_PLACEHOLDER = "{index}";
@@ -79,7 +79,7 @@ public @interface CartesianTest {
 	 * current invocation of a {@code @CartesianTest} method:
 	 * <code>{arguments}</code>
 	 *
-	 * @since 5.3
+	 * @since 1.5
 	 * @see #name
 	 */
 	String ARGUMENTS_PLACEHOLDER = "{arguments}";
