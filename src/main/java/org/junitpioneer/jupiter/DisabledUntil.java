@@ -46,6 +46,6 @@ public @interface DisabledUntil {
 	 * format yyyy-MM-dd, e.g. 2023-05-28.
 	 * The test will be disabled if that date is in the future, as in not today nor any day in the past.
 	 */
-	String untilDate();
+	String date();
 
 }

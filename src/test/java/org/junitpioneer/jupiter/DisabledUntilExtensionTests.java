@@ -37,7 +37,7 @@ class DisabledUntilExtensionTests {
 	}
 
 	@Test
-	@DisplayName("Should enable test with unparsable untilDate string")
+	@DisplayName("Should enable test with unparsable `date`` string")
 	void shouldEnableTestWithUnparsableUntilDateString() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class,
@@ -49,7 +49,7 @@ class DisabledUntilExtensionTests {
 	}
 
 	@Test
-	@DisplayName("Should enable test with untilDate in the past")
+	@DisplayName("Should enable test with `date` in the past")
 	void shouldEnableTestWithUntilDateInThePast() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class,
@@ -64,7 +64,7 @@ class DisabledUntilExtensionTests {
 	}
 
 	@Test
-	@DisplayName("Should disable test with untilDate in the future")
+	@DisplayName("Should disable test with `date` in the future")
 	void shouldDisableTestWithUntilDateInTheFuture() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class,
@@ -75,7 +75,7 @@ class DisabledUntilExtensionTests {
 	}
 
 	@Test
-	@DisplayName("Should disable nested test with untilDate in the future when meta annotated by higher level container")
+	@DisplayName("Should disable nested test with `date` in the future when meta annotated by higher level container")
 	void shouldDisableNestedTestWithUntilDateInTheFutureWhenMetaAnnotated() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.NestedDummyTestClass.class,
@@ -94,25 +94,25 @@ class DisabledUntilExtensionTests {
 		}
 
 		@Test
-		@DisabledUntil(reason = "Boom!", untilDate = "xxxx-yy-zz")
+		@DisabledUntil(reason = "Boom!", date = "xxxx-yy-zz")
 		void testUnparsableUntilDateString() {
 
 		}
 
 		@Test
-		@DisabledUntil(reason = "Zoink!", untilDate = "1993-01-01")
+		@DisabledUntil(reason = "Zoink!", date = "1993-01-01")
 		void testIsAnnotatedWithDateInThePast() {
 
 		}
 
 		@Test
-		@DisabledUntil(reason = "Ka-pow!", untilDate = "2199-01-01")
+		@DisabledUntil(reason = "Ka-pow!", date = "2199-01-01")
 		void testIsAnnotatedWithDateInTheFuture() {
 
 		}
 
 		@Nested
-		@DisabledUntil(reason = "Yowza!", untilDate = "2199-01-01")
+		@DisabledUntil(reason = "Yowza!", date = "2199-01-01")
 		class NestedDummyTestClass {
 
 			@Test

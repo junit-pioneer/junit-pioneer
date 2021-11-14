@@ -43,7 +43,7 @@ class DisabledUntilExtension implements ExecutionCondition {
 
 	private Optional<LocalDate> getUntilDateFromAnnotation(ExtensionContext context) {
 		return findClosestEnclosingAnnotation(context, DisabledUntil.class)
-				.map(DisabledUntil::untilDate)
+				.map(DisabledUntil::date)
 				.map(this::parseDate);
 	}
 
@@ -62,12 +62,12 @@ class DisabledUntilExtension implements ExecutionCondition {
 		boolean disabled = today.isBefore(untilDate);
 
 		if (disabled) {
-			String message = format("The `untilDate` %s is after the current date %s", untilDate.format(ISO_8601),
+			String message = format("The `date` %s is after the current date %s", untilDate.format(ISO_8601),
 				today.format(ISO_8601));
 			return disabled(message);
 		} else {
 			String message = format(
-				"The `untilDate` %s is before or on the current date %s, so `@DisabledUntil` no longer disabled test \"%s\". Please remove the annotation.",
+				"The `date` %s is before or on the current date %s, so `@DisabledUntil` no longer disabled test \"%s\". Please remove the annotation.",
 				untilDate.format(ISO_8601), today.format(ISO_8601), context.getUniqueId());
 			context.publishReportEntry(DisabledUntilExtension.class.getSimpleName(), message);
 			return enabled(message);
