@@ -48,9 +48,9 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
 		boolean disabled = context.getStore(NAMESPACE).get(DISABLED_KEY) != null;
 		if (disabled)
-			return ConditionEvaluationResult.disabled("Another test threw one of the specified exceptions.");
+			return ConditionEvaluationResult.disabled("Another failed with one of the specified exceptions.");
 		else
-			return ConditionEvaluationResult.enabled("No test threw one of the specified exceptions (yet).");
+			return ConditionEvaluationResult.enabled("No test failed with one of the specified exceptions (yet).");
 	}
 
 	@Override

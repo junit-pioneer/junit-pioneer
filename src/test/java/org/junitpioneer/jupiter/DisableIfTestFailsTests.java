@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
@@ -29,6 +30,18 @@ public class DisableIfTestFailsTests {
 	@Test
 	void threeTestsWithSecondFailing_thirdIsDisabled() {
 		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsWithSecondFailingTestCase.class);
+
+		// TODO assert that failed test ran after successful test
+		assertThat(results)
+				.hasNumberOfStartedTests(2)
+				.hasNumberOfSucceededTests(1)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSkippedTests(1);
+	}
+
+	@Test
+	void threeTestsWithSecondFailingWithConfiguredException_thirdIsDisabled() {
+		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsWithSecondThrowingConfiguredExceptionTestCase.class);
 
 		// TODO assert that failed test ran after successful test
 		assertThat(results)
@@ -91,9 +104,32 @@ public class DisableIfTestFailsTests {
 	// extension point before the first test fails and so none would be disabled.)
 	// The `@TestMethodOrder(MethodOrderer.OrderAnnotation.class)` creates this consecutive execution.
 
-	@DisableIfTestFails(with = IOException.class)
+	@DisableIfTestFails
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 	static class ThreeTestsWithSecondFailingTestCase {
+
+		@Test
+		@Order(1)
+		void test1() {
+		}
+
+		@Test
+		@Order(2)
+		void test2()  {
+			// fail test with assertion
+			assertTrue(false);
+		}
+
+		@Test
+		@Order(3)
+		void test3() {
+		}
+
+	}
+
+	@DisableIfTestFails(with = IOException.class)
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	static class ThreeTestsWithSecondThrowingConfiguredExceptionTestCase {
 
 		@Test
 		@Order(1)
