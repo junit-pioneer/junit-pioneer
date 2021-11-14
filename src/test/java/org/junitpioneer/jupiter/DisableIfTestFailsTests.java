@@ -102,26 +102,26 @@ public class DisableIfTestFailsTests {
 	@Execution(SAME_THREAD)
 	static class ThreeTestsWithSecondFailing {
 
-		private int EXECUTION_COUNT;
+		private int executionCount;
 
 		@Test
 		void test1() throws IOException {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 2)
+			executionCount++;
+			if (executionCount == 2)
 				throw new IOException();
 		}
 
 		@Test
 		void test2() throws IOException {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 2)
+			executionCount++;
+			if (executionCount == 2)
 				throw new IOException();
 		}
 
 		@Test
 		void test3() throws IOException {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 2)
+			executionCount++;
+			if (executionCount == 2)
 				throw new IOException();
 		}
 
@@ -139,19 +139,19 @@ public class DisableIfTestFailsTests {
 		@TestInstance(PER_CLASS)
 		class FirstTestFails {
 
-			private int EXECUTION_COUNT;
+			private int executionCount;
 
 			@Test
 			void test1() throws IOException {
-				EXECUTION_COUNT++;
-				if (EXECUTION_COUNT == 1)
+				executionCount++;
+				if (executionCount == 1)
 					throw new IOException();
 			}
 
 			@Test
 			void test2() throws IOException {
-				EXECUTION_COUNT++;
-				if (EXECUTION_COUNT == 1)
+				executionCount++;
+				if (executionCount == 1)
 					throw new IOException();
 			}
 
@@ -184,19 +184,19 @@ public class DisableIfTestFailsTests {
 	@TestInstance(PER_CLASS)
 	static class OuterAndInnerTestsFail {
 
-		private int EXECUTION_COUNT;
+		private int executionCount;
 
 		@Test
 		void test1() throws InterruptedException {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 1)
+			executionCount++;
+			if (executionCount == 1)
 				throw new InterruptedException();
 		}
 
 		@Test
 		void test2() throws InterruptedException {
-			EXECUTION_COUNT++;
-			if (EXECUTION_COUNT == 1)
+			executionCount++;
+			if (executionCount == 1)
 				throw new InterruptedException();
 		}
 
@@ -205,19 +205,19 @@ public class DisableIfTestFailsTests {
 		@TestInstance(PER_CLASS)
 		class ThreeTestsWithSecondFailing {
 
-			private int EXECUTION_COUNT;
+			private int executionCount;
 
 			@Test
 			void test1() throws IOException {
-				EXECUTION_COUNT++;
-				if (EXECUTION_COUNT == 1)
+				executionCount++;
+				if (executionCount == 1)
 					throw new IOException();
 			}
 
 			@Test
 			void test2() throws IOException {
-				EXECUTION_COUNT++;
-				if (EXECUTION_COUNT == 1)
+				executionCount++;
+				if (executionCount == 1)
 					throw new IOException();
 			}
 
