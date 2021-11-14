@@ -16,6 +16,8 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import java.lang.reflect.Parameter;
 import java.util.stream.Stream;
 
+import com.sun.tools.javac.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.ReportEntry;
+import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider.Sets;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.junitpioneer.jupiter.params.ByteRangeSource;
@@ -830,6 +833,25 @@ public class CartesianTestExtensionTests {
 
 	}
 
+	static class CartesianFactorySourceTestCases {
+
+		@CartesianTest
+		@CartesianTest.Factory("poem")
+		void veryBasicTest(String firstLine, String secondLine) {
+		}
+
+		static Sets poem() {
+			return new Sets()
+					.add(List
+							.of("And on the pedestal these words appear:", "My name is Ozymandias, king of kings;",
+								"Look on my works, ye Mighty, and despair!"))
+					.add(List
+							.of("Nothing beside remains. Round the decay", "Of that colossal wreck, boundless and bare",
+								"The lone and level sands stretch far away."));
+		}
+
+	}
+
 	static class RedundantInputSetTestCases {
 
 		@CartesianTest
@@ -931,7 +953,7 @@ public class CartesianTestExtensionTests {
 		ALPHA, BETA, GAMMA
 	}
 
-	static class FirstCustomCartesianArgumentsProvider implements CartesianArgumentsProvider {
+	static class FirstCustomCartesianArgumentsProvider implements CartesianParameterArgumentsProvider {
 
 		@Override
 		public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {
@@ -940,7 +962,7 @@ public class CartesianTestExtensionTests {
 
 	}
 
-	static class SecondCustomCartesianArgumentsProvider implements CartesianArgumentsProvider {
+	static class SecondCustomCartesianArgumentsProvider implements CartesianParameterArgumentsProvider {
 
 		@Override
 		public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {

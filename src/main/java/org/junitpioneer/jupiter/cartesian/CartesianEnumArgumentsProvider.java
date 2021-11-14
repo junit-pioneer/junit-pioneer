@@ -31,7 +31,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
  * @implNote This class does not implement {@code ArgumentsProvider} since the Jupiter's {@code EnumSource}
  * should be used for that.
  */
-class CartesianEnumArgumentsProvider implements CartesianArgumentsProvider {
+class CartesianEnumArgumentsProvider implements CartesianParameterArgumentsProvider {
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context, Parameter parameter) {

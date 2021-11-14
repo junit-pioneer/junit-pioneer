@@ -29,7 +29,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.support.AnnotationConsumerInitializer;
 import org.junit.platform.commons.PreconditionViolationException;
@@ -63,11 +62,13 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
 	private List<List<?>> computeSets(ExtensionContext context) {
 		Method testMethod = context.getRequiredTestMethod();
-		List<? extends Annotation> methodArgumentsSources = AnnotationSupport
-				.findRepeatableAnnotations(testMethod, ArgumentsSource.class);
+		List<? extends Annotation> methodArgumentsSources = PioneerAnnotationUtils
+				.findMethodArgumentsSources(testMethod);
 		List<? extends Annotation> parameterArgumentsSources = PioneerAnnotationUtils
 				.findParameterArgumentsSources(testMethod);
 		ensureNoInputConflicts(methodArgumentsSources, parameterArgumentsSources, testMethod);
+		if (!methodArgumentsSources.isEmpty())
+			return getSetsFromMethodArgumentsSource(methodArgumentsSources.get(0), context);
 		return getSetsFromArgumentsSources(parameterArgumentsSources, context);
 	}
 
@@ -77,6 +78,22 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		if (!methodSources.isEmpty() && !parameterSources.isEmpty())
 			throw new ExtensionConfigurationException(
 				"Providing both method-level and parameter-level argument sources for @CartesianTest is not supported.");
+		if (methodSources.size() > 1)
+			throw new ExtensionConfigurationException(
+				"Only one method-level arguments source can be used with @CartesianTest");
+	}
+
+	private List<List<?>> getSetsFromMethodArgumentsSource(Annotation argumentsSource, ExtensionContext context) {
+		try {
+			CartesianMethodArgumentsProvider provider = initializeMethodArgumentsProvider(argumentsSource,
+				context.getRequiredTestMethod());
+			// @formatter:off
+			return provider.provideArguments(context).get();
+			// @formatter:on
+		}
+		catch (Exception ex) {
+			throw new ExtensionConfigurationException("Could not provide arguments because of exception.", ex);
+		}
 	}
 
 	private List<List<?>> getSetsFromArgumentsSources(List<? extends Annotation> argumentsSources,
@@ -91,7 +108,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
 	private List<Object> getSetFromAnnotation(ExtensionContext context, Annotation source, Parameter parameter) {
 		try {
-			CartesianArgumentsProvider provider = initializeArgumentsProvider(source, parameter);
+			CartesianParameterArgumentsProvider provider = initializeParameterArgumentsProvider(source, parameter);
 			return provideArguments(context, parameter, provider);
 		}
 		catch (Exception ex) {
@@ -99,31 +116,50 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		}
 	}
 
-	private CartesianArgumentsProvider initializeArgumentsProvider(Annotation source, Parameter parameter) {
-		Optional<CartesianArgumentsSource> cartesianProviderAnnotation = AnnotationSupport
-				.findAnnotation(parameter, CartesianArgumentsSource.class);
-
-		if (cartesianProviderAnnotation.isPresent()) {
-			return AnnotationConsumerInitializer
-					.initialize(parameter, ReflectionSupport.newInstance(cartesianProviderAnnotation.get().value()));
-		}
-
-		ArgumentsSource providerAnnotation = AnnotationSupport
-				.findAnnotation(parameter, ArgumentsSource.class)
+	private CartesianMethodArgumentsProvider initializeMethodArgumentsProvider(Annotation source, Method method) {
+		CartesianArgumentsSource providerAnnotation = AnnotationSupport
+				.findAnnotation(method, CartesianArgumentsSource.class)
 				// never happens, we already know these annotations are annotated with @ArgumentsSource
 				.orElseThrow(() -> new PreconditionViolationException(format(
 					"%s was not annotated with @CartesianArgumentsSource or @ArgumentsSource but should have been.",
 					source.annotationType())));
-		ArgumentsProvider provider = ReflectionSupport.newInstance(providerAnnotation.value());
-		if (provider instanceof CartesianArgumentsProvider)
-			return AnnotationConsumerInitializer.initialize(parameter, (CartesianArgumentsProvider) provider);
-		else
-			throw new PreconditionViolationException(
-				format("%s does not implement the CartesianArgumentsProvider interface.", provider.getClass()));
+		CartesianArgumentsProvider provider = ReflectionSupport.newInstance(providerAnnotation.value());
+		if (!(provider instanceof CartesianMethodArgumentsProvider))
+			throw new PreconditionViolationException(format("%s does not implement %s interface.", provider.getClass(),
+				CartesianMethodArgumentsProvider.class.getSimpleName()));
+		return AnnotationConsumerInitializer.initialize(method, (CartesianMethodArgumentsProvider) provider);
+	}
+
+	private CartesianParameterArgumentsProvider initializeParameterArgumentsProvider(Annotation source,
+			Parameter parameter) {
+		Class<?> providerClass;
+		Optional<CartesianArgumentsSource> cartesianProviderAnnotation = AnnotationSupport
+				.findAnnotation(parameter, CartesianArgumentsSource.class);
+		if (cartesianProviderAnnotation.isPresent()) {
+			providerClass = cartesianProviderAnnotation.get().value();
+		} else {
+			ArgumentsSource providerAnnotation = AnnotationSupport
+					.findAnnotation(parameter, ArgumentsSource.class)
+					.orElseThrow(() -> new PreconditionViolationException(
+							format("%s was not annotated with %s or %s but should have been.", source.annotationType(),
+									CartesianArgumentsSource.class.getName(), ArgumentsSource.class.getName())));
+			providerClass = providerAnnotation.value();
+		}
+		return getAndInitializeCartesianParameterArgumentsProvider(providerClass, parameter);
+	}
+
+	private static <T> CartesianParameterArgumentsProvider getAndInitializeCartesianParameterArgumentsProvider(Class<T> providerClass, Parameter parameter) {
+		T provider = AnnotationConsumerInitializer
+				.initialize(parameter, ReflectionSupport.newInstance(providerClass));
+		if (!(provider instanceof CartesianParameterArgumentsProvider)) {
+			throw new PreconditionViolationException(format("%s does not implement %s interface.",
+					provider.getClass(), CartesianParameterArgumentsProvider.class.getSimpleName()));
+		}
+		return (CartesianParameterArgumentsProvider) provider;
 	}
 
 	private List<Object> provideArguments(ExtensionContext context, Parameter source,
-			CartesianArgumentsProvider provider) throws Exception {
+			CartesianParameterArgumentsProvider provider) throws Exception {
 		return provider
 				.provideArguments(context, source)
 				.map(Arguments::get)

@@ -32,7 +32,8 @@ import org.junit.platform.commons.PreconditionViolationException;
  * @implNote This class does not implement {@code ArgumentsProvider} since the Jupiter's {@code ValueSource}
  * should be used for that.
  */
-class CartesianValueArgumentsProvider implements CartesianArgumentsProvider, AnnotationConsumer<CartesianTest.Values> {
+class CartesianValueArgumentsProvider
+		implements CartesianParameterArgumentsProvider, AnnotationConsumer<CartesianTest.Values> {
 
 	private Object[] arguments;
 
