@@ -1,4 +1,4 @@
-:page-title: Temporarily disable a test
+:page-title: Temporarily Disable a Test
 :page-description: Extends JUnit Jupiter with `@DisabledUntil` to temporarily disable a test.
 
 == Introduction
@@ -13,7 +13,7 @@ The only problem with this approach is remembering to activate the test again on
 The `@DisabledUntil` annotation may be used to disable a test only for a certain period of time.
 The test will be automatically executed again once the date supplied by the `untilDate` parameter is reached.
 
-=== Usage
+== Usage
 
 To mark a test to be temporarily disabled add the `@DisabledUntil` annotation like so:
 
@@ -25,6 +25,9 @@ void test() {
 	// Test will be skipped if it's 2021-12-31 or earlier
 }
 ----
+
+The `untilDate` parameter must be a string in the date format specified by https://en.m.wikipedia.org/wiki/ISO_8601[ISO 8601], e.g. "1985-10-26".
+If `untilDate` is today or in the past, the test will be executed normally but a warning entry will be published to the https://junit-pioneer.org/docs/report-entries[test report].
 
 The `@DisabledUntil annotation may optionally be declared with a reason to document why the annotated test class or test method is disabled:
 
@@ -52,9 +55,7 @@ class TestClass {
 
 The `@DisabledUntil` annotation can only be used once per class or method.
 
-=== Contract
+== Before and After
 
 The test will be skipped only if the date specified by `untilDate` is the future.
 If `untilDate` is today or in the past, the test will be executed normally but a warning entry will be published to the https://junit-pioneer.org/docs/report-entries[test report].
-The `untilDate` parameter must be a string in the date format specified by https://en.m.wikipedia.org/wiki/ISO_8601[ISO 8601], e.g. "1985-10-26".
-Invalid or unparseable date strings will be ignored and the test will be executed normally.
