@@ -335,19 +335,25 @@ public class CartesianTestExtensionTests {
 		@Test
 		@DisplayName("works with @CartesianTest.Factory")
 		void factorySource() {
-			ExecutionResults results = PioneerTestKit.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class, "veryBasicTest", String.class, String.class);
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class, "veryBasicTest",
+						String.class, String.class);
 
-			assertThat(results).hasNumberOfDynamicallyRegisteredTests(9).hasNumberOfSucceededTests(6).hasNumberOfFailedTests(3);
-			assertThat(results).hasNumberOfReportEntries(9)
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(9)
+					.hasNumberOfSucceededTests(6)
+					.hasNumberOfFailedTests(3);
+			assertThat(results)
+					.hasNumberOfReportEntries(9)
 					.withValues("And on the pedestal these words appear:Nothing beside remains. Round the decay",
-							"And on the pedestal these words appear:Of that colossal wreck, boundless and bare",
-							"And on the pedestal these words appear:The lone and level sands stretch far away.",
-							"My name is Ozymandias, king of kings;Nothing beside remains. Round the decay",
-							"My name is Ozymandias, king of kings;Of that colossal wreck, boundless and bare",
-							"My name is Ozymandias, king of kings;The lone and level sands stretch far away.",
-							"Look on my works, ye Mighty, and despair!Nothing beside remains. Round the decay",
-							"Look on my works, ye Mighty, and despair!Of that colossal wreck, boundless and bare",
-							"Look on my works, ye Mighty, and despair!The lone and level sands stretch far away.");
+						"And on the pedestal these words appear:Of that colossal wreck, boundless and bare",
+						"And on the pedestal these words appear:The lone and level sands stretch far away.",
+						"My name is Ozymandias, king of kings;Nothing beside remains. Round the decay",
+						"My name is Ozymandias, king of kings;Of that colossal wreck, boundless and bare",
+						"My name is Ozymandias, king of kings;The lone and level sands stretch far away.",
+						"Look on my works, ye Mighty, and despair!Nothing beside remains. Round the decay",
+						"Look on my works, ye Mighty, and despair!Of that colossal wreck, boundless and bare",
+						"Look on my works, ye Mighty, and despair!The lone and level sands stretch far away.");
 		}
 
 		@Nested
