@@ -271,6 +271,8 @@ public class PioneerAnnotationUtils {
 	private static List<Annotation> collectArgumentSources(Parameter parameter) {
 		List<Annotation> annotations = new ArrayList<>();
 		AnnotationSupport.findAnnotation(parameter, CartesianArgumentsSource.class).ifPresent(annotations::add);
+		// ArgumentSource meta-annotations are allowed on parameters for
+		// CartesianTest because there is no overlap with ParameterizedTest
 		annotations.addAll(AnnotationSupport.findRepeatableAnnotations(parameter, ArgumentsSource.class));
 		return annotations;
 	}

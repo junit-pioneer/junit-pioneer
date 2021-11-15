@@ -13,6 +13,10 @@ package org.junitpioneer.jupiter.cartesian;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -419,6 +423,18 @@ public class CartesianTestExtensionTests {
 	class BadConfigurationTests {
 
 		@Test
+		@DisplayName("it has no arguments sources")
+		void noArgumentsSources() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "noAnnotation", int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage("No arguments sources were found for @CartesianTest");
+		}
+
+		@Test
 		@DisplayName("the name is overwritten with empty string")
 		void throwsForEmptyName() {
 			ExecutionResults results = PioneerTestKit
@@ -666,6 +682,45 @@ public class CartesianTestExtensionTests {
 						"You must configure at least one set of arguments for this @ParameterizedTest");
 		}
 
+		@Test
+		@DisplayName("there are both method-level and parameter-level arguments sources")
+		void tooManyArgumentsSources() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "bothMethodAndParam",
+						String.class, String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage(
+						"Providing both method-level and parameter-level argument sources for @CartesianTest is not supported.");
+		}
+
+		@Test
+		@DisplayName("there are multiple method-level arguments sources")
+		void multipleMethodLevelArgumentsSources() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class,
+						"multipleMethodLevelAnnotations", String.class, String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage("Only one method-level arguments source can be used with @CartesianTest");
+		}
+
+		@Test
+		@DisplayName("provider throws an exception, wrapping in ExtensionConfigurationException")
+		void rethrowProviderException() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "empty", String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage("Could not provide arguments because of exception.");
+		}
+
 	}
 
 	static class BasicConfigurationTestCases {
@@ -699,6 +754,11 @@ public class CartesianTestExtensionTests {
 		void noAnnotation(int i) {
 		}
 
+		@CartesianTest
+		@CartesianTest.Factory("poem")
+		void bothMethodAndParam(@Values(strings = "A") String a, @Values(strings = "B") String b) {
+		}
+
 	}
 
 	static class CartesianValueSourceTestCases {
@@ -723,6 +783,10 @@ public class CartesianTestExtensionTests {
 
 		@CartesianTest
 		void missing(@CartesianTest.Values(ints = { 1 }) int i, int j) {
+		}
+
+		@CartesianTest
+		void empty(@CartesianTest.Values String s) {
 		}
 
 		@CartesianTest
@@ -874,6 +938,12 @@ public class CartesianTestExtensionTests {
 			assertThat(firstLine).contains("on");
 		}
 
+		@CartesianTest
+		@CartesianTest.Factory("poem")
+		@MethodLevelCartesianArgumentSource
+		void multipleMethodLevelAnnotations(String line, String otherLine) {
+		}
+
 		static Sets poem() {
 			return new Sets()
 					.add(Arrays
@@ -991,6 +1061,12 @@ public class CartesianTestExtensionTests {
 
 	private enum AnotherTestEnum {
 		ALPHA, BETA, GAMMA
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@CartesianArgumentsSource(FirstCustomCartesianArgumentsProvider.class)
+	@interface MethodLevelCartesianArgumentSource {
 	}
 
 	static class FirstCustomCartesianArgumentsProvider implements CartesianParameterArgumentsProvider<String> {
