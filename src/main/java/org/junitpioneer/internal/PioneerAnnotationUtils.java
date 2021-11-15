@@ -275,7 +275,7 @@ public class PioneerAnnotationUtils {
 		return annotations;
 	}
 
-	public static List<? extends Annotation> findMethodArgumentsSources(Method testMethod) {
+	public static List<Annotation> findMethodArgumentsSources(Method testMethod) {
 		return Arrays
 				.stream(testMethod.getAnnotations())
 				.filter(annotation -> AnnotationSupport

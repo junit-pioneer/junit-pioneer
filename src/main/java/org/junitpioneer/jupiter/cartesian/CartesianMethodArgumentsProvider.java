@@ -25,7 +25,7 @@ public interface CartesianMethodArgumentsProvider extends CartesianArgumentsProv
 
 	class Sets {
 
-		List<List<?>> sets = new ArrayList<>();
+		List<List<?>> sets = new ArrayList<>(); // NOSONAR
 
 		public Sets add(Collection<?> items) {
 			sets.add(new ArrayList<>(items));
