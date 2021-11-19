@@ -108,8 +108,7 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 			resource = store.getOrComputeIfAbsent(key(sharedAnnotation), __ -> {
 				try {
 					return new ResourceWithLock<>(
-						resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments())))
-					);
+						resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments()))));
 				}
 				catch (Exception e) {
 					throw new UncheckedParameterResolutionException(new ParameterResolutionException(
@@ -212,11 +211,6 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 	@Override
 	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
 			ExtensionContext extensionContext) throws Throwable {
-		// 1. use extension context to determine whether we're in charge (which is the case if there's at least one @Shared annotation)
-		// 2. get all locks for all shared resources that are involved
-		// 3. wait for all locks to become available
-		// 4. invoke `invocation.proceed()`
-
 		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
 		List<ReentrantLock> locks = findSharedOnInvocation(invocationContext)
 				// sort by @Shared's name to prevent deadlocks when locking later
