@@ -92,10 +92,7 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 		return keyGenerator.getAndIncrement();
 	}
 
-	// TODO: Extensions should be stateless! Make this a static field to work around this restriction.
-	//       Idea: Write a test for this that uses reflection or ArchUnit to enforce that there are
-	//       no instance fields.
-	private final AtomicLong keyGenerator = new AtomicLong(0);
+	private static final AtomicLong keyGenerator = new AtomicLong(0);
 
 	private Object resolve(Shared sharedAnnotation, ParameterContext parameterContext, ExtensionContext.Store store) {
 		throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
@@ -111,8 +108,8 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 			resource = store.getOrComputeIfAbsent(key(sharedAnnotation), __ -> {
 				try {
 					return new ResourceWithLock<>(
-						resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments()))),
-						new ReentrantLock());
+						resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments())))
+					);
 				}
 				catch (Exception e) {
 					throw new UncheckedParameterResolutionException(new ParameterResolutionException(
@@ -124,7 +121,7 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 			throw e.getCause();
 		}
 		try {
-			return resource.resource().get();
+			return resource.get();
 		}
 		catch (Exception e) {
 			throw new ParameterResolutionException(
@@ -261,22 +258,28 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 		}
 	}
 
-	private static class ResourceWithLock<T> {
+	private static class ResourceWithLock<T> implements Resource<T> {
 
 		private final Resource<T> resource;
 		private final ReentrantLock lock;
 
-		public ResourceWithLock(Resource<T> resource, ReentrantLock lock) {
+		public ResourceWithLock(Resource<T> resource) {
 			this.resource = requireNonNull(resource);
-			this.lock = requireNonNull(lock);
-		}
-
-		public Resource<T> resource() {
-			return resource;
+			this.lock = new ReentrantLock();
 		}
 
 		public ReentrantLock lock() {
 			return lock;
+		}
+
+		@Override
+		public T get() throws Exception {
+			return resource.get();
+		}
+
+		@Override
+		public void close() throws Exception {
+			resource.close();
 		}
 
 	}
