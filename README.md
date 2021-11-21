@@ -122,6 +122,7 @@ The least we can do is to thank them and list some of their accomplishments here
 * [Slawomir Jaranowski](https://github.com/slawekjaranowski) Migrate to new Shipkit plugins (#410 / #419)
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409 and #414 / #453)
 * [Jonathan Bluett-Duncan](https://github.com/jbduncan) contributed a fix to `buildSrc/build.gradle` which was failing when a `.idea` directory did not contain a `vcs.xml` file (#532)
+* [Marcono1234](https://github.com/Marcono1234) contributed the [`@NotWorking` extension](https://junit-pioneer.org/docs/not-working-tests/) (#546)
 
 #### 2020
 

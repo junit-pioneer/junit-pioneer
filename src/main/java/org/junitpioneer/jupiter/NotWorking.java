@@ -1,0 +1,70 @@
+/*
+ * Copyright 2016-2021 the original author or authors.
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v2.0 which
+ * accompanies this distribution and is available at
+ *
+ * http://www.eclipse.org/legal/epl-v20.html
+ */
+
+package org.junitpioneer.jupiter;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.extension.ExtendWith;
+
+/**
+ * {@code @NotWorking} is a JUnit Jupiter extension to mark test methods as 'not working'.
+ * Such test methods will still be executed but when they result in a test failure or error
+ * the test will be aborted.
+ * However, if the test method unexpectedly executes successfully, it is marked as failure
+ * to let the developer know that the test is now successful and that the {@code @NotWorking}
+ * annotation can be removed.
+ *
+ * <p>The big advantage over JUnit's {@link org.junit.jupiter.api.Disabled @Disabled} annotation
+ * is that the developer is informed as soon as a test is successful again.
+ * This helps avoiding writing duplicate tests by accident and counteracts the accumulation
+ * of disabled tests over time.
+ * It is therefore recommended to prefer using {@code @NotWorking} over {@code @Disabled}
+ * in most cases; exceptions for this are for example 'flaky' tests.
+ *
+ * <p><b>Important:</b> This annotation is <b>not</b> intended as a way to mark test methods
+ * which intentionally cause exceptions.
+ * Such test methods should use {@link org.junit.jupiter.api.Assertions#assertThrows(Class, org.junit.jupiter.api.function.Executable) assertThrows}
+ * or similar means to explicitly test for a specific exception class being thrown by a
+ * specific action.
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/not-working-tests/" target="_top">the documentation on <code>@NotWorking</code></a>.
+ * </p>
+ *
+ * @see org.junit.jupiter.api.Disabled
+ */
+/*
+ * Implementation note:
+ * Only supports METHOD as target but not test classes because there it is not clear
+ * what the 'correct' behavior would be when only a few test methods execute successfully.
+ * Would the developer then have to remove the @NotWorking annotation from the test
+ * class and annotate methods individually?
+ * Additionally it is rather unlikely that a complete test class is 'not working'.
+ */
+@Documented
+@Retention(RUNTIME)
+@Target(METHOD)
+@ExtendWith(NotWorkingExtension.class)
+public @interface NotWorking {
+
+	/**
+	 * Defines the message to show when a test is aborted because it is 'not working'.
+	 * This can be used for example to briefly explain why a test is not working.
+	 * An empty string (the default) causes a generic default message to be used.
+	 */
+	String value() default "";
+
+}

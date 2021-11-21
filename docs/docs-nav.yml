@@ -16,6 +16,8 @@
         url: /docs/disable-parameterized-tests/
       - title: "Issue information"
         url: /docs/issue/
+      - title: "Not Working Tests"
+        url: /docs/not-working-tests/
       - title: "Publishing Report Entries"
         url: /docs/report-entries/
       - title: "Range Sources"

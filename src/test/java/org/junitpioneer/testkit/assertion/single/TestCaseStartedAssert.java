@@ -23,8 +23,10 @@ public interface TestCaseStartedAssert {
 
 	/**
 	 * Asserts that the test/container was aborted.
+	 *
+	 * @return a {@link TestCaseAbortedAssert} for further assertions.
 	 */
-	void whichAborted();
+	TestCaseAbortedAssert whichAborted();
 
 	/**
 	 * Asserts that the test/container has failed.

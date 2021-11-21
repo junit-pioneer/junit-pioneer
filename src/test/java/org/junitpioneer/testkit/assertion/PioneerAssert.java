@@ -88,84 +88,108 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public TestCaseStartedAssert hasSingleStartedTest() {
-		return assertSingleTest(actual.testEvents().started().count());
+		Events testEvents = actual.testEvents();
+		assertSingleTest(testEvents.started().count());
+		// Retain all events for returned Assert because TestCaseStartedAssert allows further filtering
+		// (would otherwise erroneously filter twice)
+		return new TestCaseAssertBase(testEvents);
 	}
 
 	@Override
 	public TestCaseFailureAssert hasSingleFailedTest() {
-		return assertSingleTest(actual.testEvents().failed().count());
+		return assertSingleTest(actual.testEvents().failed());
 	}
 
 	@Override
 	public void hasSingleAbortedTest() {
-		assertSingleTest(actual.testEvents().aborted().count());
+		assertSingleTest(actual.testEvents().aborted());
 	}
 
 	@Override
 	public void hasSingleSucceededTest() {
-		assertSingleTest(actual.testEvents().succeeded().count());
+		assertSingleTest(actual.testEvents().succeeded());
 	}
 
 	@Override
 	public void hasSingleSkippedTest() {
-		assertSingleTest(actual.testEvents().skipped().count());
+		assertSingleTest(actual.testEvents().skipped());
 	}
 
 	@Override
 	public TestCaseStartedAssert hasSingleDynamicallyRegisteredTest() {
-		return assertSingleTest(actual.testEvents().dynamicallyRegistered().count());
+		Events testEvents = actual.testEvents();
+		assertSingleTest(testEvents.dynamicallyRegistered().count());
+		// Retain all events for returned Assert because TestCaseStartedAssert allows further filtering
+		// (would otherwise erroneously filter twice)
+		return new TestCaseAssertBase(testEvents);
 	}
 
-	private TestCaseAssertBase assertSingleTest(long numberOfTestsWithOutcome) {
+	private void assertSingleTest(long numberOfTestsWithOutcome) {
 		try {
 			Assertions.assertThat(numberOfTestsWithOutcome).isEqualTo(1);
-			return new TestCaseAssertBase(actual.testEvents());
 		}
 		catch (AssertionError error) {
 			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
 			throw error;
 		}
+	}
+
+	private TestCaseAssertBase assertSingleTest(Events events) {
+		assertSingleTest(events.count());
+		return new TestCaseAssertBase(events);
 	}
 
 	@Override
 	public TestCaseStartedAssert hasSingleStartedContainer() {
-		return assertSingleContainer(actual.containerEvents().started().count());
+		Events containerEvents = actual.containerEvents();
+		assertSingleContainer(containerEvents.started().count());
+		// Retain all events for returned Assert because TestCaseStartedAssert allows further filtering
+		// (would otherwise erroneously filter twice)
+		return new TestCaseAssertBase(containerEvents);
 	}
 
 	@Override
 	public TestCaseFailureAssert hasSingleFailedContainer() {
-		return assertSingleContainer(actual.containerEvents().failed().count());
+		return assertSingleContainer(actual.containerEvents().failed());
 	}
 
 	@Override
 	public void hasSingleAbortedContainer() {
-		assertSingleContainer(actual.containerEvents().aborted().count());
+		assertSingleContainer(actual.containerEvents().aborted());
 	}
 
 	@Override
 	public void hasSingleSucceededContainer() {
-		assertSingleContainer(actual.containerEvents().succeeded().count());
+		assertSingleContainer(actual.containerEvents().succeeded());
 	}
 
 	@Override
 	public void hasSingleSkippedContainer() {
-		assertSingleContainer(actual.containerEvents().skipped().count());
+		assertSingleContainer(actual.containerEvents().skipped());
 	}
 
 	@Override
 	public TestCaseStartedAssert hasSingleDynamicallyRegisteredContainer() {
-		return assertSingleContainer(actual.containerEvents().dynamicallyRegistered().count());
+		Events containerEvents = actual.containerEvents();
+		assertSingleContainer(containerEvents.dynamicallyRegistered().count());
+		// Retain all events for returned Assert because TestCaseStartedAssert allows further filtering
+		// (would otherwise erroneously filter twice)
+		return new TestCaseAssertBase(containerEvents);
 	}
 
-	private TestCaseAssertBase assertSingleContainer(long numberOfContainersWithOutcome) {
+	private void assertSingleContainer(long numberOfContainersWithOutcome) {
 		try {
 			Assertions.assertThat(numberOfContainersWithOutcome).isEqualTo(1);
-			return new TestCaseAssertBase(actual.containerEvents());
 		}
 		catch (AssertionError error) {
 			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
 			throw error;
 		}
+	}
+
+	private TestCaseAssertBase assertSingleContainer(Events events) {
+		assertSingleContainer(events.count());
+		return new TestCaseAssertBase(events);
 	}
 
 	@Override
