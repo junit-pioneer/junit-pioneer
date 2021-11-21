@@ -12,7 +12,6 @@ package org.junitpioneer.jupiter;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
-import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
@@ -22,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
 
@@ -42,13 +40,25 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		// TODO: if both annotations are present, throw an error instead of silently ignoring the test
-		return parameterContext.isAnnotated(New.class) ^ parameterContext.isAnnotated(Shared.class);
+		if (parameterContext.isAnnotated(New.class) && parameterContext.isAnnotated(Shared.class)) {
+			String message = String
+					.format( //
+						"Parameter [%s] in %s is annotated with both @New and @Shared", //
+						parameterContext.getParameter(), testMethodDescription(extensionContext));
+			throw new ParameterResolutionException(message);
+		}
+		return parameterContext.isAnnotated(New.class) || parameterContext.isAnnotated(Shared.class);
 	}
 
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
+		// TODO: Consider replacing the contents of this method with:
+		//       return OptionalUtils.or(
+		//               getIfNew(parameterContext, extensionContext),
+		//               () -> getIfShared(parameterContext, extensionContext))
+		//           .orElseThrow(() -> new ParameterResolutionException(notAnnotatedMessage());
+		//       where the implementation of OptionalUtils::or comes from https://stackoverflow.com/a/24600021/2252930
 		Optional<New> newAnnotation = parameterContext.findAnnotation(New.class);
 		if (newAnnotation.isPresent()) {
 			return resolve(newAnnotation.get(), extensionContext.getStore(NAMESPACE));
@@ -57,14 +67,11 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 		if (sharedAnnotation.isPresent()) {
 			return resolve(sharedAnnotation.get(), parameterContext, extensionContext.getRoot().getStore(NAMESPACE));
 		}
-		throw new ParameterResolutionException(String
+		String message = String
 				.format( //
-					"Parameter `%s` on %s is not annotated with @New or @Shared", //
-					parameterContext.getParameter(), //
-					extensionContext
-							.getTestMethod()
-							.map(method -> "method `" + method + '`')
-							.orElse("an unknown method")));
+					"Parameter [%s] in %s is not annotated with @New or @Shared", //
+					parameterContext.getParameter(), testMethodDescription(extensionContext));
+		throw new ParameterResolutionException(message);
 	}
 
 	private Object resolve(New newAnnotation, ExtensionContext.Store store) {
@@ -195,6 +202,10 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 
 	}
 
+	private static String testMethodDescription(ExtensionContext extensionContext) {
+		return extensionContext.getTestMethod().map(method -> "method [" + method + ']').orElse("an unknown method");
+	}
+
 	// TODO: Intercept not just test methods, but all kinds of lifecycle methods.
 
 	// TODO: What happens if a user requests a shared resource in a test constructor, and
@@ -214,10 +225,11 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
 		List<ReentrantLock> locks = findSharedOnInvocation(invocationContext)
 				// sort by @Shared's name to prevent deadlocks when locking later
-				.sorted(comparing(Shared::name))
+				// TODO: Uncomment this line when WhenTwoSharedResourcesAreUsedByTestsConcurrently#thenTheTestsDoNotRunInParallel
+				//       is finished.
+				//.sorted(comparing(Shared::name))
 				.map(shared -> findLockForShared(shared, store))
 				.collect(toList());
-		System.out.println(invocationContext.getExecutable().getName() + ": locks = " + locks);
 		invokeWithLocks(invocation, locks);
 	}
 
@@ -239,7 +251,7 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 
 	private static <T> void invokeWithLocks(Invocation<T> invocation, List<ReentrantLock> locks) throws Throwable {
 		// TODO handle `lock` throwing an exception?
-		locks.forEach(Lock::lock);
+		locks.forEach(ReentrantLock::lock);
 		try {
 			invocation.proceed();
 		}
