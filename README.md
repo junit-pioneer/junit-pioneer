@@ -119,6 +119,7 @@ The least we can do is to thank them and list some of their accomplishments here
 * [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more), revamped their annotation handling (#460 / #485), and improved the build process (#482 / #483) before becoming a maintainer
 * [Gabriel Diegel](https://github.com/gdiegel) contributed the `@DisabledUntil` extension in [Temporarily disable a test](https://junit-pioneer.org/docs/disabled-until/) (#366)
 * [John Lehne](https://github.com/johnlehne) resolved an issue with the latest build status not showing correctly in README.md (#530)
+* [Scott Leberknight](https://github.com/sleberknight) resolved a javadoc issue (#547 / #548)
 * [Slawomir Jaranowski](https://github.com/slawekjaranowski) Migrate to new Shipkit plugins (#410 / #419)
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409 and #414 / #453)
 * [Jonathan Bluett-Duncan](https://github.com/jbduncan) contributed a fix to `buildSrc/build.gradle` which was failing when a `.idea` directory did not contain a `vcs.xml` file (#532)
