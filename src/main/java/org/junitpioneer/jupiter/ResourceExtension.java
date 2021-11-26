@@ -16,6 +16,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.DynamicTestInvocationContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -216,7 +218,7 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
 			ExtensionContext extensionContext) throws Throwable {
 		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
-		List<ReentrantLock> locks = findSharedOnInvocation(invocationContext)
+		List<ReentrantLock> locks = findSharedOnExecutable(invocationContext.getExecutable())
 				// Sort by @Shared's name to prevent deadlocks when locking later.
 				// This is a well-known solution to the "dining philosophers problem".
 				// See ResourcesTests.ThrowIfTestsRunConcurrentlyTestCase for more info.
@@ -226,9 +228,53 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 		invokeWithLocks(invocation, locks);
 	}
 
-	private Stream<Shared> findSharedOnInvocation(ReflectiveInvocationContext<Method> invocationContext) {
+	@Override
+	public <T> T interceptTestFactoryMethod(Invocation<T> invocation,
+			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
+		List<ReentrantLock> locks = findSharedOnExecutable(invocationContext.getExecutable())
+				// See interceptTestMethod
+				.sorted(comparing(Shared::name))
+				.map(shared -> findLockForShared(shared, store))
+				.collect(toList());
+		return invokeWithLocks(invocation, locks);
+	}
+
+	@Override
+	public void interceptDynamicTest(Invocation<Void> invocation, DynamicTestInvocationContext invocationContext,
+			ExtensionContext extensionContext) throws Throwable {
+		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
+		List<ReentrantLock> locks = findSharedOnExecutable(testFactoryMethod(extensionContext))
+				// See interceptTestMethod
+				.sorted(comparing(Shared::name))
+				.map(shared -> findLockForShared(shared, store))
+				.collect(toList());
+		invokeWithLocks(invocation, locks);
+	}
+
+	private Method testFactoryMethod(ExtensionContext extensionContext) {
+		return extensionContext
+				.getParent()
+				.orElseThrow(() -> new IllegalStateException(
+					"The parent extension context of a DynamicTest was not a @TestFactory-annotated test method"))
+				.getRequiredTestMethod();
+	}
+
+	@Override
+	public void interceptTestTemplateMethod(Invocation<Void> invocation,
+			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
+		List<ReentrantLock> locks = findSharedOnExecutable(invocationContext.getExecutable())
+				// See interceptTestMethod
+				.sorted(comparing(Shared::name))
+				.map(shared -> findLockForShared(shared, store))
+				.collect(toList());
+		invokeWithLocks(invocation, locks);
+	}
+
+	private Stream<Shared> findSharedOnExecutable(Executable executable) {
 		return Arrays
-				.stream(invocationContext.getExecutable().getParameters())
+				.stream(executable.getParameters())
 				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
 				.filter(Optional::isPresent)
 				.map(Optional::get);
@@ -242,11 +288,11 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 				.lock();
 	}
 
-	private static <T> void invokeWithLocks(Invocation<T> invocation, List<ReentrantLock> locks) throws Throwable {
+	private static <T> T invokeWithLocks(Invocation<T> invocation, List<ReentrantLock> locks) throws Throwable {
 		// TODO handle `lock` throwing an exception?
 		locks.forEach(ReentrantLock::lock);
 		try {
-			invocation.proceed();
+			return invocation.proceed();
 		}
 		finally {
 			// unlock in reverse order because we have a hunch that otherwise there may be deadlocks

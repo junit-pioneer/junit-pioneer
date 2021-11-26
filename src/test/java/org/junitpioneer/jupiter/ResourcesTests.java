@@ -15,6 +15,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
@@ -33,11 +34,20 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -1005,30 +1015,48 @@ class ResourcesTests {
 	@Nested
 	class WhenANumberOfSharedResourcesAreUsedConcurrently {
 
-		@Test
-		void thenTheTestsDoNotRunInParallel() {
+		@Execution(SAME_THREAD)
+		@RepeatedTest(50)
+		void thenTestsDoNotRunInParallel() {
 			// TODO: Consider replacing with a test written with
 			//   JCStress [1] or kotlinx-lincheck [2], as this test
-			//   is not guaranteed to fail even after 25 tries.
-			//   Refer to [3] for an example with JCStress.
+			//   is not guaranteed to fail even after 50 tries.
+			//   Refer to [3] for an example written with JCStress.
 			//
 			// [1] https://github.com/openjdk/jcstress
 			// [2] https://github.com/Kotlin/kotlinx-lincheck
 			// [3] https://github.com/openjdk/jcstress/blob/master/jcstress-samples/src/main/java/org/openjdk/jcstress/samples/problems/classic/Classic_01_DiningPhilosophers.java
-			for (int i = 0; i < 25; i++) {
-				System.out.println("\nIteration " + i + ":");
-				ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
-					() -> PioneerTestKit.executeTestClass(ThrowIfTestsRunConcurrentlyTestCase.class),
-					"The tests in ThrowIfTestsRunConcurrentlyTestCase became deadlocked!");
-				assertThat(executionResults).hasNumberOfSucceededTests(3);
-			}
+			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
+				() -> PioneerTestKit.executeTestClass(ThrowIfTestsRunConcurrentlyTestCase.class),
+				"The tests in ThrowIfTestsRunConcurrentlyTestCase became deadlocked!");
+			assertThat(executionResults).hasNumberOfSucceededTests(3);
+		}
+
+		@Execution(SAME_THREAD)
+		@RepeatedTest(50)
+		void thenTestFactoriesDoNotRunInParallel() {
+			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
+				() -> PioneerTestKit.executeTestClass(ThrowIfTestFactoriesRunConcurrentlyTestCase.class),
+				"The tests in ThrowIfTestFactoriesRunConcurrentlyTestCase became deadlocked!");
+			assertThat(executionResults).hasNumberOfSucceededTests(9);
+		}
+
+		@Execution(SAME_THREAD)
+		@RepeatedTest(50)
+		void thenTestTemplatesDoNotRunInParallel() {
+			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
+				() -> PioneerTestKit.executeTestClass(ThrowIfTestTemplatesRunConcurrentlyTestCase.class),
+				"The tests in ThrowIfTestTemplatesRunConcurrentlyTestCase became deadlocked!");
+			assertThat(executionResults).hasNumberOfSucceededTests(9);
 		}
 
 	}
 
+	private static final AtomicInteger COUNTER = new AtomicInteger(0);
+	private static final int TIMEOUT_MILLIS = 100;
+
 	static class ThrowIfTestsRunConcurrentlyTestCase {
 
-		private static final AtomicInteger COUNTER = new AtomicInteger(0);
 		private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
 		private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
 		private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
@@ -1056,7 +1084,9 @@ class ResourcesTests {
 		//
 		// This is called a deadlock.
 		//
-		// The purpose of the tests below is to check that this scenario can never happen.
+		// The purpose of the tests below is to check two things:
+		// - The tests don't run in parallel.
+		// - Even if they don't run in parallel, that they don't deadlock.
 		//
 		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
 
@@ -1072,8 +1102,6 @@ class ResourcesTests {
 
 		@Test
 		void test2(
-				// we don't actually use the resources, we just have them injected to verify whether sharing the
-				// same resources prevent the tests from running in parallel
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC)
 				throws Exception {
@@ -1082,31 +1110,109 @@ class ResourcesTests {
 
 		@Test
 		void test3(
-				// we don't actually use the resources, we just have them injected to verify whether sharing the
-				// same resources prevent the tests from running in parallel
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC,
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA)
 				throws Exception {
 			failIfExecutedConcurrently("test3");
 		}
 
-		// this method is written to fail if it is executed at overlapping times in different threads
-		private static void failIfExecutedConcurrently(String testName) throws InterruptedException {
-			boolean wasZero = COUNTER.compareAndSet(0, 1);
-			System.out.println(testName + ": wasZero = " + wasZero);
-			assertThat(wasZero).isTrue();
-			// wait for the next test to catch up and potentially fail
-			Thread.sleep(1_000);
-			boolean wasOne = COUNTER.compareAndSet(1, 2);
-			System.out.println(testName + ": wasOne = " + wasOne);
-			assertThat(wasOne).isTrue();
-			// wait for the last test to catch up and potentially fail
-			Thread.sleep(1_000);
-			boolean wasTwo = COUNTER.compareAndSet(2, 0);
-			System.out.println(testName + ": wasTwo = " + wasTwo);
-			assertThat(wasTwo).isTrue();
+	}
+
+	static class ThrowIfTestFactoriesRunConcurrentlyTestCase {
+
+		private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
+		private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
+		private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
+
+		@TestFactory
+		Stream<DynamicTest> test1(
+				// we don't actually use the resources, we just have them injected to verify whether sharing the
+				// same resources prevent the tests from running in parallel
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB)
+				throws Exception {
+			failIfExecutedConcurrently("test1");
+			return DynamicTest
+					.stream(Stream.of("DynamicTest1", "DynamicTest2", "DynamicTest3"), name -> "test1" + name,
+						ResourcesTests::failIfExecutedConcurrently);
 		}
 
+		@TestFactory
+		Stream<DynamicTest> test2(
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC)
+				throws Exception {
+			failIfExecutedConcurrently("test2");
+			return DynamicTest
+					.stream(Stream.of("DynamicTest1", "DynamicTest2", "DynamicTest3"), name -> "test2" + name,
+						ResourcesTests::failIfExecutedConcurrently);
+		}
+
+		@TestFactory
+		Stream<DynamicTest> test3(
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA)
+				throws Exception {
+			failIfExecutedConcurrently("test3");
+			return DynamicTest
+					.stream(Stream.of("DynamicTest1", "DynamicTest2", "DynamicTest3"), name -> "test3" + name,
+						ResourcesTests::failIfExecutedConcurrently);
+		}
+
+	}
+
+	static class ThrowIfTestTemplatesRunConcurrentlyTestCase {
+
+		private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
+		private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
+		private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
+
+		@ParameterizedTest
+		@ValueSource(ints = { 1, 2, 3 })
+		void test1(@SuppressWarnings("unused") int iteration,
+				// we don't actually use the resources, we just have them injected to verify whether sharing the
+				// same resources prevent the tests from running in parallel
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB)
+				throws Exception {
+			failIfExecutedConcurrently("test1Iteration" + iteration);
+		}
+
+		@ParameterizedTest
+		@ValueSource(ints = { 1, 2, 3 })
+		void test2(@SuppressWarnings("unused") int iteration,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC)
+				throws Exception {
+			failIfExecutedConcurrently("test2Iteration" + iteration);
+		}
+
+		@ParameterizedTest
+		@ValueSource(ints = { 1, 2, 3 })
+		void test3(@SuppressWarnings("unused") int iteration,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA)
+				throws Exception {
+			failIfExecutedConcurrently("test3Iteration" + iteration);
+		}
+
+	}
+
+	// this method is written to fail if it is executed at overlapping times in different threads
+	private static void failIfExecutedConcurrently(String testName) throws InterruptedException {
+		boolean wasZero = COUNTER.compareAndSet(0, 1);
+		System.out.println(testName + ": wasZero = " + wasZero);
+		assertThat(wasZero).isTrue();
+		// wait for the next test to catch up and potentially fail
+		Thread.sleep(TIMEOUT_MILLIS);
+		boolean wasOne = COUNTER.compareAndSet(1, 2);
+		System.out.println(testName + ": wasOne = " + wasOne);
+		assertThat(wasOne).isTrue();
+		// wait for the last test to catch up and potentially fail
+		Thread.sleep(TIMEOUT_MILLIS);
+		boolean wasTwo = COUNTER.compareAndSet(2, 0);
+		System.out.println(testName + ": wasTwo = " + wasTwo);
+		assertThat(wasTwo).isTrue();
 	}
 
 	// ---
