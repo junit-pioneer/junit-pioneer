@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
@@ -53,19 +54,14 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
-		// TODO: Consider replacing the contents of this method with:
-		//       return OptionalUtils.or(
-		//               getIfNew(parameterContext, extensionContext),
-		//               () -> getIfShared(parameterContext, extensionContext))
-		//           .orElseThrow(() -> new ParameterResolutionException(notAnnotatedMessage());
-		//       where the implementation of OptionalUtils::or comes from https://stackoverflow.com/a/24600021/2252930
 		Optional<New> newAnnotation = parameterContext.findAnnotation(New.class);
 		if (newAnnotation.isPresent()) {
 			return resolve(newAnnotation.get(), extensionContext.getStore(NAMESPACE));
 		}
 		Optional<Shared> sharedAnnotation = parameterContext.findAnnotation(Shared.class);
 		if (sharedAnnotation.isPresent()) {
-			return resolve(sharedAnnotation.get(), parameterContext, extensionContext.getRoot().getStore(NAMESPACE));
+			return resolve(sharedAnnotation.get(), parameterContext.getDeclaringExecutable().getParameters(),
+				extensionContext.getRoot().getStore(NAMESPACE));
 		}
 		String message = String
 				.format( //
@@ -101,9 +97,9 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 
 	private static final AtomicLong keyGenerator = new AtomicLong(0);
 
-	private Object resolve(Shared sharedAnnotation, ParameterContext parameterContext, ExtensionContext.Store store) {
+	private Object resolve(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store store) {
 		throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
-		throwIfMultipleParametersHaveExactAnnotation(parameterContext, sharedAnnotation);
+		throwIfMultipleParametersHaveExactAnnotation(parameters, sharedAnnotation);
 
 		ResourceFactory<?> resourceFactory = store
 				.getOrComputeIfAbsent( //
@@ -156,12 +152,9 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 		}
 	}
 
-	private void throwIfMultipleParametersHaveExactAnnotation(ParameterContext parameterContext,
-			Shared sharedAnnotation) {
-		long parameterCount = Arrays
-				.stream(parameterContext.getDeclaringExecutable().getParameters())
-				.filter(parameter -> hasAnnotation(parameter, sharedAnnotation))
-				.count();
+	private void throwIfMultipleParametersHaveExactAnnotation(Parameter[] parameters, Shared sharedAnnotation) {
+		long parameterCount = //
+			Arrays.stream(parameters).filter(parameter -> hasAnnotation(parameter, sharedAnnotation)).count();
 		if (parameterCount > 1) {
 			throw new ParameterResolutionException(
 				"A test method has " + parameterCount + " parameters annotated with @Shared with the same "
