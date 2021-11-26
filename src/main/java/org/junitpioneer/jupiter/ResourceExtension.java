@@ -217,10 +217,10 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 			ExtensionContext extensionContext) throws Throwable {
 		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
 		List<ReentrantLock> locks = findSharedOnInvocation(invocationContext)
-				// sort by @Shared's name to prevent deadlocks when locking later
-				// TODO: Uncomment this line when WhenTwoSharedResourcesAreUsedByTestsConcurrently#thenTheTestsDoNotRunInParallel
-				//       is finished.
-				//.sorted(comparing(Shared::name))
+				// Sort by @Shared's name to prevent deadlocks when locking later.
+				// This is a well-known solution to the "dining philosophers problem".
+				// See ResourcesTests.ThrowIfTestsRunConcurrentlyTestCase for more info.
+				.sorted(comparing(Shared::name))
 				.map(shared -> findLockForShared(shared, store))
 				.collect(toList());
 		invokeWithLocks(invocation, locks);

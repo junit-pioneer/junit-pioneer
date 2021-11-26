@@ -1001,12 +1001,20 @@ class ResourcesTests {
 
 	// ---
 
-	@DisplayName("when two shared resources are used concurrently")
+	@DisplayName("when a number of shared resources are used concurrently")
 	@Nested
-	class WhenTwoSharedResourcesAreUsedByTestsConcurrently {
+	class WhenANumberOfSharedResourcesAreUsedConcurrently {
 
 		@Test
 		void thenTheTestsDoNotRunInParallel() {
+			// TODO: Consider replacing with a test written with
+			//   JCStress [1] or kotlinx-lincheck [2], as this test
+			//   is not guaranteed to fail even after 25 tries.
+			//   Refer to [3] for an example with JCStress.
+			//
+			// [1] https://github.com/openjdk/jcstress
+			// [2] https://github.com/Kotlin/kotlinx-lincheck
+			// [3] https://github.com/openjdk/jcstress/blob/master/jcstress-samples/src/main/java/org/openjdk/jcstress/samples/problems/classic/Classic_01_DiningPhilosophers.java
 			for (int i = 0; i < 25; i++) {
 				System.out.println("\nIteration " + i + ":");
 				ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
@@ -1048,7 +1056,7 @@ class ResourcesTests {
 		//
 		// This is called a deadlock.
 		//
-		// The purpose of the tests below is to check that this scenario cannot happen.
+		// The purpose of the tests below is to check that this scenario can never happen.
 		//
 		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
 
