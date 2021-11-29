@@ -203,16 +203,10 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 
 	// TODO: Intercept not just test methods, but all kinds of lifecycle methods.
 
-	// TODO: What happens if a user requests a shared resource in a test constructor, and
-	//       saves the resource in a field? That resource could then be used concurrently,
-	//       which could lead to deadlocks!
-	//       |
-	//       So we should consider preventing users from requesting resources in test constructors.
-	//       |
-	//       Regardless, we need to document that if a resource is saved outside its respective
-	//       lifecycle method, then if it's a @New resources then it will be closed when the
-	//       lifecycle method has finished, and if it's a @Shared resource then flaky behaviour
-	//       could occur since the resource can now be accessed concurrently.
+	// TODO: Document that if a resource is saved outside its respective lifecycle method, then:
+	//       - If it's a @New resource then it will be closed when the lifecycle method has finished
+	//       - If it's a @Shared resource then flaky behaviour could occur since the resource can now be accessed
+	//         concurrently.
 
 	@Override
 	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
