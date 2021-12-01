@@ -16,6 +16,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -264,6 +265,19 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 				.map(shared -> findLockForShared(shared, store))
 				.collect(toList());
 		invokeWithLocks(invocation, locks);
+	}
+
+	@Override
+	public <T> T interceptTestClassConstructor(Invocation<T> invocation,
+			ReflectiveInvocationContext<Constructor<T>> invocationContext, ExtensionContext extensionContext)
+			throws Throwable {
+		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
+		List<ReentrantLock> locks = findSharedOnExecutable(invocationContext.getExecutable())
+				// See interceptTestMethod
+				.sorted(comparing(Shared::name))
+				.map(shared -> findLockForShared(shared, store))
+				.collect(toList());
+		return invokeWithLocks(invocation, locks);
 	}
 
 	private Stream<Shared> findSharedOnExecutable(Executable executable) {

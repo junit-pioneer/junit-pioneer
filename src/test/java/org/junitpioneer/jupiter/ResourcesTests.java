@@ -1050,16 +1050,27 @@ class ResourcesTests {
 			assertThat(executionResults).hasNumberOfSucceededTests(9);
 		}
 
+		@Execution(SAME_THREAD)
+		@RepeatedTest(50)
+		void thenTestClassConstructorsDoNotRunInParallel() {
+			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
+				() -> PioneerTestKit
+						.executeTestClasses(asList(ThrowIfTestClassConstructorsRunConcurrentlyTestCase1.class,
+							ThrowIfTestClassConstructorsRunConcurrentlyTestCase2.class,
+							ThrowIfTestClassConstructorsRunConcurrentlyTestCase3.class)),
+				"The tests in ThrowIfTestTemplatesRunConcurrentlyTestCase became deadlocked!");
+			assertThat(executionResults).hasNumberOfSucceededTests(3);
+		}
+
 	}
 
 	private static final AtomicInteger COUNTER = new AtomicInteger(0);
 	private static final int TIMEOUT_MILLIS = 100;
+	private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
+	private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
+	private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
 
 	static class ThrowIfTestsRunConcurrentlyTestCase {
-
-		private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
-		private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
-		private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
 
 		// In ResourceExtension, we wrap shared resources in locks. This prevents them from being
 		// used concurrently, which in turn prevents race conditions.
@@ -1120,10 +1131,6 @@ class ResourcesTests {
 
 	static class ThrowIfTestFactoriesRunConcurrentlyTestCase {
 
-		private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
-		private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
-		private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
-
 		@TestFactory
 		Stream<DynamicTest> test1(
 				// we don't actually use the resources, we just have them injected to verify whether sharing the
@@ -1163,10 +1170,6 @@ class ResourcesTests {
 
 	static class ThrowIfTestTemplatesRunConcurrentlyTestCase {
 
-		private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
-		private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
-		private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
-
 		@ParameterizedTest
 		@ValueSource(ints = { 1, 2, 3 })
 		void test1(@SuppressWarnings("unused") int iteration,
@@ -1195,6 +1198,50 @@ class ResourcesTests {
 				throws Exception {
 			failIfExecutedConcurrently("test3Iteration" + iteration);
 		}
+
+	}
+
+	static class ThrowIfTestClassConstructorsRunConcurrentlyTestCase1 {
+
+		ThrowIfTestClassConstructorsRunConcurrentlyTestCase1(
+				// we don't actually use the resources, we just have them injected to verify whether sharing the
+				// same resources prevent the test constructors from running in parallel
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB)
+				throws Exception {
+			failIfExecutedConcurrently("testConstructor1");
+		}
+
+		@Test
+		void fakeTest() {}
+
+	}
+
+	static class ThrowIfTestClassConstructorsRunConcurrentlyTestCase2 {
+
+		ThrowIfTestClassConstructorsRunConcurrentlyTestCase2(
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC)
+				throws Exception {
+			failIfExecutedConcurrently("testConstructor2");
+		}
+
+		@Test
+		void fakeTest() {}
+
+	}
+
+	static class ThrowIfTestClassConstructorsRunConcurrentlyTestCase3 {
+
+		ThrowIfTestClassConstructorsRunConcurrentlyTestCase3(
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA)
+				throws Exception {
+			failIfExecutedConcurrently("testConstructor3");
+		}
+
+		@Test
+		void fakeTest() {}
 
 	}
 
