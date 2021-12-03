@@ -6,6 +6,7 @@ module org.junitpioneer {
 
 	exports org.junitpioneer.vintage;
 	exports org.junitpioneer.jupiter;
+	exports org.junitpioneer.jupiter.cartesian;
 	exports org.junitpioneer.jupiter.params;
 
 	provides org.junit.platform.launcher.TestExecutionListener
