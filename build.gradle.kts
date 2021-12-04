@@ -237,8 +237,8 @@ tasks {
 	jacocoTestReport {
 		enabled = !experimentalBuild
 		reports {
-			xml.isEnabled = true
-			xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+			xml.required.set(true)
+			xml.outputLocation.set(file("${buildDir}/reports/jacoco/report.xml"))
 		}
 	}
 
