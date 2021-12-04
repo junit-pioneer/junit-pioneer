@@ -30,7 +30,7 @@ val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 java {
 	if (experimentalBuild) {
 		toolchain {
-			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion))
+			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion!!))
 		}
 	} else {
 		if (modularBuild.toBoolean()) {
