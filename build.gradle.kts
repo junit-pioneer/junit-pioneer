@@ -33,10 +33,10 @@ java {
 			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion!!))
 		}
 	} else {
-		if (modularBuild.toBoolean()) {
-			sourceCompatibility = JavaVersion.VERSION_11
+		sourceCompatibility = if (modularBuild.toBoolean()) {
+			JavaVersion.VERSION_11
 		} else {
-			sourceCompatibility = JavaVersion.VERSION_1_8
+			JavaVersion.VERSION_1_8
 		}
 	}
 	withJavadocJar()
