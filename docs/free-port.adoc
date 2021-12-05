@@ -1,0 +1,28 @@
+:page-title: Free Port
+:page-description: Extends JUnit Jupiter with `@FreePort` to get a free port.
+
+== Introduction
+
+Sometimes we want a free port in our tests so that we can either start a server on it or
+to test a failure scenario when there is no service at given port.
+
+It's a JUnit Jupiter extension which provides a free port for above-mentioned use cases. Also, there is no guarantee that the port will still be available by the time you use it.
+
+NOTE: You can retry the test in such cases based on `FreePort.isFreeNow`
+
+== Usage
+
+To get the `FreePort` as an argument on a test just add the annotation to your test suite as shown in the following example:
+
+[source,java]
+----
+
+@ExtendWith(FreePortExtension.class)
+class ServerTest {
+
+    @Test
+    void test(FreePort port) {
+        // use port.number() or check before using port.isFreeNow()
+    }
+}
+----
