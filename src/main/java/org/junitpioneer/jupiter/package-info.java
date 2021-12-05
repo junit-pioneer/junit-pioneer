@@ -12,6 +12,7 @@
  *     <li>{@link org.junitpioneer.jupiter.RetryingTest}</li>
  *     <li>{@link org.junitpioneer.jupiter.StdIoExtension} and {@link org.junitpioneer.jupiter.StdIo}</li>
  *     <li>{@link org.junitpioneer.jupiter.Stopwatch}</li>
+ *     <li>{@link org.junitpioneer.jupiter.FreePortExtension}</li>
  * </ul>
  *
  * Also check the {@link org.junitpioneer.jupiter.params params} package.
