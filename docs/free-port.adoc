@@ -6,7 +6,8 @@
 Sometimes we want a free port in our tests so that we can either start a server on it or
 to test a failure scenario when there is no service at given port.
 
-It's a JUnit Jupiter extension which provides a free port for above-mentioned use cases. Also, there is no guarantee that the port will still be available by the time you use it.
+It's a JUnit Jupiter extension which provides a free port for above-mentioned use cases.
+Also, there is no guarantee that the port will still be available by the time you use it.
 
 NOTE: You can retry the test in such cases based on `FreePort.isFreeNow`
 
