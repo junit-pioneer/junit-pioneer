@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("Abstract entry-based extension")
+@WritesEnvironmentVariable
+@WritesSystemProperty
 class AbstractEntryBasedExtensionTests {
 
 	private static final String CLEAR_ENVVAR_KEY = "clear envvar";
