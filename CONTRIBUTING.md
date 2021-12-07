@@ -258,7 +258,7 @@ Lab branches should be deleted once they become obsolete - when that is the case
 
 While it is nice to have each individual commit pass the build, this is not a requirement - it is the contributor's branch to play on.
 
-See section [Commit Message](#commit-message) for how the commit message should look like.
+See section [_Commit Message_](#commit-message) for how the commit message should look like.
 
 ### Pull Requests
 
@@ -288,8 +288,6 @@ A pull request is accepted by squashing the commits and fast-forwarding `main`, 
 This can be achieved with GitHub's [_squash and merge_](https://help.github.com/articles/about-pull-request-merges/#squash-and-merge-your-pull-request-commits) feature.
 
 ### Commit Message
-
-Because of the noise it generates on the issue, please do _not_ mention the issue number in the message.
 
 To make the single commit expressive, its message must be detailed and [good]((https://chris.beams.io/posts/git-commit/)) (really, read that post!).
 Furthermore, it must follow this structure:
@@ -345,6 +343,7 @@ Closes: #30
 Closes: #31
 ```
 
+Finally, because of the noise it generates on the issue, please do _not_ mention the issue number in the message during development.
 
 ## Dependencies
 
