@@ -223,7 +223,7 @@ One aspect that's relevant to contributors is the list of contributions at the e
 
 #### Line Endings
 
-We [mind the end of our lines](http://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/) and have [instructed](.gitattributes) Git to replace all line endings with `LF` (the non-Windows variant) when writing files to the working directory.
+We [mind the end of our lines](https://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/) and have [instructed](.gitattributes) Git to replace all line endings with `LF` (the non-Windows variant) when writing files to the working directory.
 If you're on Windows and prefer `CRLF` line endings, consider setting `core.autocrlf` to `true`:
 
 ```bash
@@ -258,8 +258,7 @@ Lab branches should be deleted once they become obsolete - when that is the case
 
 While it is nice to have each individual commit pass the build, this is not a requirement - it is the contributor's branch to play on.
 
-As a general rule, the style and formatting of commit messages should follow the [guidelines for good Git commit messages](http://chris.beams.io/posts/git-commit/).
-Because of the noise it generates on the issue, please do _not_ mention the issue number in the message.
+See section [_Commit Message_](#commit-message) for how the commit message should look like.
 
 ### Pull Requests
 
@@ -290,7 +289,7 @@ This can be achieved with GitHub's [_squash and merge_](https://help.github.com/
 
 ### Commit Message
 
-To make the single commit expressive, its message must be detailed and [good]((http://chris.beams.io/posts/git-commit/)) (really, read that post!).
+To make the single commit expressive, its message must be detailed and [good]((https://chris.beams.io/posts/git-commit/)) (really, read that post!).
 Furthermore, it must follow this structure:
 
 ```
@@ -344,6 +343,7 @@ Closes: #30
 Closes: #31
 ```
 
+Finally, because of the noise it generates on the issue, please do _not_ mention the issue number in the message during development.
 
 ## Dependencies
 

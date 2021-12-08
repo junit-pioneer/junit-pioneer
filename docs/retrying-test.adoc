@@ -27,7 +27,7 @@ The default for `minSuccess` is 1. The value must be greater than or equal to 1.
 
 === onExceptions [optional]
 
-By default a test annotated with `@RetryingTest` will be retried on all exceptions except http://ota4j-team.github.io/opentest4j/docs/current/api/org/opentest4j/TestAbortedException.html[`TestAbortedException`] (which will abort the test entirely).
+By default a test annotated with `@RetryingTest` will be retried on all exceptions except https://ota4j-team.github.io/opentest4j/docs/current/api/org/opentest4j/TestAbortedException.html[`TestAbortedException`] (which will abort the test entirely).
 To only retry on specific exceptions, use `onExceptions`.
 
 == Basic Use
