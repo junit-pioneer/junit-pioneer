@@ -44,17 +44,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-
-// TODO: Some of the tests here fail when run concurrently, or repeatedly with IntelliJ's
-//       "run until failure" feature:
-//       https://intellij-support.jetbrains.com/hc/en-us/community/posts/206898845/comments/360000470940
-//       Figure out why.
 
 @DisplayName("Resources extension")
 class ResourcesTests {
@@ -1013,25 +1006,19 @@ class ResourcesTests {
 
 	@DisplayName("when a number of shared resources are used concurrently")
 	@Nested
-	class WhenANumberOfSharedResourcesAreUsedConcurrently {
+	class WhenANumberOfSharedResourcesAreUsedConcurrentlyTests {
 
+		@DisplayName("then the tests do not run in parallel")
 		@Execution(SAME_THREAD)
 		@RepeatedTest(50)
 		void thenTestsDoNotRunInParallel() {
-			// TODO: Consider replacing with a test written with
-			//   JCStress [1] or kotlinx-lincheck [2], as this test
-			//   is not guaranteed to fail even after 50 tries.
-			//   Refer to [3] for an example written with JCStress.
-			//
-			// [1] https://github.com/openjdk/jcstress
-			// [2] https://github.com/Kotlin/kotlinx-lincheck
-			// [3] https://github.com/openjdk/jcstress/blob/master/jcstress-samples/src/main/java/org/openjdk/jcstress/samples/problems/classic/Classic_01_DiningPhilosophers.java
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
 				() -> PioneerTestKit.executeTestClass(ThrowIfTestsRunConcurrentlyTestCase.class),
 				"The tests in ThrowIfTestsRunConcurrentlyTestCase became deadlocked!");
 			assertThat(executionResults).hasNumberOfSucceededTests(3);
 		}
 
+		@DisplayName("then the test factories do not run in parallel")
 		@Execution(SAME_THREAD)
 		@RepeatedTest(50)
 		void thenTestFactoriesDoNotRunInParallel() {
@@ -1041,6 +1028,7 @@ class ResourcesTests {
 			assertThat(executionResults).hasNumberOfSucceededTests(9);
 		}
 
+		@DisplayName("then the test templates do not run in parallel")
 		@Execution(SAME_THREAD)
 		@RepeatedTest(50)
 		void thenTestTemplatesDoNotRunInParallel() {
@@ -1050,6 +1038,7 @@ class ResourcesTests {
 			assertThat(executionResults).hasNumberOfSucceededTests(9);
 		}
 
+		@DisplayName("then the test class constructors do not run in parallel")
 		@Execution(SAME_THREAD)
 		@RepeatedTest(50)
 		void thenTestClassConstructorsDoNotRunInParallel() {
@@ -1058,7 +1047,7 @@ class ResourcesTests {
 						.executeTestClasses(asList(ThrowIfTestClassConstructorsRunConcurrentlyTestCase1.class,
 							ThrowIfTestClassConstructorsRunConcurrentlyTestCase2.class,
 							ThrowIfTestClassConstructorsRunConcurrentlyTestCase3.class)),
-				"The tests in ThrowIfTestTemplatesRunConcurrentlyTestCase became deadlocked!");
+				"The tests in ThrowIfTestTemplatesRunConcurrentlyTestCase(1|2|3) became deadlocked!");
 			assertThat(executionResults).hasNumberOfSucceededTests(3);
 		}
 
@@ -1213,7 +1202,8 @@ class ResourcesTests {
 		}
 
 		@Test
-		void fakeTest() {}
+		void fakeTest() {
+		}
 
 	}
 
@@ -1227,7 +1217,8 @@ class ResourcesTests {
 		}
 
 		@Test
-		void fakeTest() {}
+		void fakeTest() {
+		}
 
 	}
 
@@ -1241,7 +1232,8 @@ class ResourcesTests {
 		}
 
 		@Test
-		void fakeTest() {}
+		void fakeTest() {
+		}
 
 	}
 
