@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
@@ -23,9 +22,6 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -38,22 +34,6 @@ import org.junitpioneer.testkit.PioneerTestKit;
 @DisplayName("Resources extension")
 class ResourcesTests {
 
-	static class SingleTestMethodWithDirParameterTestCase {
-
-		static Path recordedPath;
-
-		@Test
-		void theTest(@Dir Path tempDir) {
-			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
-
-			recordedPath = tempDir;
-		}
-
-	}
-
-	// ---
-
 	@DisplayName("when a new resource factory is applied to a parameter")
 	@Nested
 	class WhenNewResourceFactoryAppliedToParameterTests {
@@ -65,7 +45,7 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is wrapped and propagated")
 			@Test
 			void thenThrownExceptionIsWrappedAndPropagated() {
-				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRFCreateTestCase.class);
+				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRFCreateTestCases.class);
 				executionResults
 						.allEvents()
 						.debug()
@@ -91,7 +71,7 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is propagated")
 			@Test
 			void thenThrownExceptionIsPropagated() {
-				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRFCloseTestCase.class);
+				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRFCloseTestCases.class);
 				executionResults
 						.allEvents()
 						.debug()
@@ -117,7 +97,7 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is wrapped and propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRGetTestCase.class);
+					ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRGetTestCases.class);
 					executionResults
 							.allEvents()
 							.debug()
@@ -143,7 +123,8 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRCloseTestCase.class);
+					ExecutionResults executionResults = PioneerTestKit
+							.executeTestClass(ThrowOnNewRCloseTestCases.class);
 					executionResults
 							.allEvents()
 							.debug()
@@ -162,7 +143,7 @@ class ResourcesTests {
 
 	}
 
-	static class ThrowOnNewRFCreateTestCase {
+	static class ThrowOnNewRFCreateTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
@@ -184,7 +165,7 @@ class ResourcesTests {
 	private static final Exception EXPECTED_THROW_ON_RF_CREATE_EXCEPTION = new IOException(
 		"failed to connect to the Matrix");
 
-	static class ThrowOnNewRFCloseTestCase {
+	static class ThrowOnNewRFCloseTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
@@ -211,7 +192,7 @@ class ResourcesTests {
 	private static final Exception EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION = new CloneNotSupportedException(
 		"failed to clone a homunculus");
 
-	static class ThrowOnNewRGetTestCase {
+	static class ThrowOnNewRGetTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
@@ -242,7 +223,7 @@ class ResourcesTests {
 	private static final Exception EXPECTED_THROW_ON_R_GET_EXCEPTION = new FileAlreadyExistsException(
 		"wait, what's that file doing there?");
 
-	static class ThrowOnNewRCloseTestCase {
+	static class ThrowOnNewRCloseTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
@@ -330,7 +311,7 @@ class ResourcesTests {
 		@Test
 		void thenItThrowsAnException() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithConflictingSharedTempDirParametersTestCase.class);
+					.executeTestClass(SingleTestMethodWithConflictingSharedTempDirParametersTestCases.class);
 			executionResults
 					.allEvents()
 					.debug()
@@ -349,7 +330,7 @@ class ResourcesTests {
 
 	}
 
-	static class SingleTestMethodWithConflictingSharedTempDirParametersTestCase {
+	static class SingleTestMethodWithConflictingSharedTempDirParametersTestCases {
 
 		@Test
 		void theTest(@Shared(factory = DummyResourceFactory.class, name = "some-name") Void first,
@@ -379,7 +360,7 @@ class ResourcesTests {
 		@Test
 		void thenItThrowsAnException() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(TestMethodWithTwoParamsWithSameSharedAnnotationTestCase.class);
+					.executeTestClass(TestMethodWithTwoParamsWithSameSharedAnnotationTestCases.class);
 			executionResults
 					.allEvents()
 					.debug()
@@ -395,7 +376,7 @@ class ResourcesTests {
 
 	}
 
-	static class TestMethodWithTwoParamsWithSameSharedAnnotationTestCase {
+	static class TestMethodWithTwoParamsWithSameSharedAnnotationTestCases {
 
 		@Test
 		void theTest(@Shared(factory = DummyResourceFactory.class, name = "some-name") Void first,
@@ -419,7 +400,7 @@ class ResourcesTests {
 			@Test
 			void thenThrownExceptionIsWrappedAndPropagated() {
 				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(ThrowOnSharedRFCreateTestCase.class);
+						.executeTestClass(ThrowOnSharedRFCreateTestCases.class);
 				executionResults
 						.allEvents()
 						.debug()
@@ -445,7 +426,8 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is propagated")
 			@Test
 			void thenThrownExceptionIsPropagated() {
-				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnSharedRFCloseTestCase.class);
+				ExecutionResults executionResults = PioneerTestKit
+						.executeTestClass(ThrowOnSharedRFCloseTestCases.class);
 				executionResults
 						.allEvents()
 						.debug()
@@ -472,7 +454,7 @@ class ResourcesTests {
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
 					ExecutionResults executionResults = PioneerTestKit
-							.executeTestClass(ThrowOnSharedRGetTestCase.class);
+							.executeTestClass(ThrowOnSharedRGetTestCases.class);
 					executionResults
 							.allEvents()
 							.debug()
@@ -499,7 +481,7 @@ class ResourcesTests {
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
 					ExecutionResults executionResults = PioneerTestKit
-							.executeTestClass(ThrowOnSharedRCloseTestCase.class);
+							.executeTestClass(ThrowOnSharedRCloseTestCases.class);
 					executionResults
 							.allEvents()
 							.debug()
@@ -518,7 +500,7 @@ class ResourcesTests {
 
 	}
 
-	static class ThrowOnSharedRFCreateTestCase {
+	static class ThrowOnSharedRFCreateTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
@@ -528,7 +510,7 @@ class ResourcesTests {
 
 	}
 
-	static class ThrowOnSharedRFCloseTestCase {
+	static class ThrowOnSharedRFCloseTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
@@ -538,7 +520,7 @@ class ResourcesTests {
 
 	}
 
-	static class ThrowOnSharedRGetTestCase {
+	static class ThrowOnSharedRGetTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
@@ -548,7 +530,7 @@ class ResourcesTests {
 
 	}
 
-	static class ThrowOnSharedRCloseTestCase {
+	static class ThrowOnSharedRCloseTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
@@ -565,24 +547,5 @@ class ResourcesTests {
 	void checkThatResourceExtensionIsFinal() {
 		assertThat(ResourceExtension.class).isFinal();
 	}
-
-	// ---
-
-	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
-		assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TMP_DIR).isReadable().isWritable();
-	}
-
-	private static void assertCanAddAndReadTextFile(Path tempDir) {
-		try {
-			Path testFile = Files.createTempFile(tempDir, "some-test-file", ".txt");
-			Files.write(testFile, singletonList("some-text"));
-			assertThat(Files.readAllLines(testFile)).containsExactly("some-text");
-		}
-		catch (IOException e) {
-			fail(e);
-		}
-	}
-
-	private static final Path ROOT_TMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
 }

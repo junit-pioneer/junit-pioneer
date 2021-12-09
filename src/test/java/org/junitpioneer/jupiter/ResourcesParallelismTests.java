@@ -43,8 +43,8 @@ class ResourcesParallelismTests {
 		@Test
 		void thenTestsDoNotRunInParallel() {
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
-				() -> PioneerTestKit.executeTestClass(ThrowIfTestsRunInParallelTestCase.class),
-				"The tests in ThrowIfTestsRunInParallelTestCase became deadlocked!");
+				() -> PioneerTestKit.executeTestClass(ThrowIfTestsRunInParallelTestCases.class),
+				"The tests in ThrowIfTestsRunInParallelTestCases became deadlocked!");
 			assertThat(executionResults).hasNumberOfSucceededTests(3);
 		}
 
@@ -53,8 +53,8 @@ class ResourcesParallelismTests {
 		@Test
 		void thenTestFactoriesDoNotRunInParallel() {
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
-				() -> PioneerTestKit.executeTestClass(ThrowIfTestFactoriesRunInParallelTestCase.class),
-				"The tests in ThrowIfTestFactoriesRunInParallelTestCase became deadlocked!");
+				() -> PioneerTestKit.executeTestClass(ThrowIfTestFactoriesRunInParallelTestCases.class),
+				"The tests in ThrowIfTestFactoriesRunInParallelTestCases became deadlocked!");
 			assertThat(executionResults).hasNumberOfSucceededTests(9);
 		}
 
@@ -63,8 +63,8 @@ class ResourcesParallelismTests {
 		@Test
 		void thenTestTemplatesDoNotRunInParallel() {
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
-				() -> PioneerTestKit.executeTestClass(ThrowIfTestTemplatesRunInParallelTestCase.class),
-				"The tests in ThrowIfTestTemplatesRunInParallelTestCase became deadlocked!");
+				() -> PioneerTestKit.executeTestClass(ThrowIfTestTemplatesRunInParallelTestCases.class),
+				"The tests in ThrowIfTestTemplatesRunInParallelTestCases became deadlocked!");
 			assertThat(executionResults).hasNumberOfSucceededTests(9);
 		}
 
@@ -74,10 +74,10 @@ class ResourcesParallelismTests {
 		void thenTestClassConstructorsDoNotRunInParallel() {
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
 				() -> PioneerTestKit
-						.executeTestClasses(asList(ThrowIfTestClassConstructorsRunInParallelTestCase1.class,
-							ThrowIfTestClassConstructorsRunInParallelTestCase2.class,
-							ThrowIfTestClassConstructorsRunInParallelTestCase3.class)),
-				"The tests in ThrowIfTestTemplatesRunInParallelTestCase(1|2|3) became deadlocked!");
+						.executeTestClasses(asList(ThrowIfTestClassConstructorsRunInParallelTestCases1.class,
+							ThrowIfTestClassConstructorsRunInParallelTestCases2.class,
+							ThrowIfTestClassConstructorsRunInParallelTestCases3.class)),
+				"The tests in ThrowIfTestTemplatesRunInParallelTestCases(1|2|3) became deadlocked!");
 			assertThat(executionResults).hasNumberOfSucceededTests(3);
 		}
 
@@ -89,7 +89,7 @@ class ResourcesParallelismTests {
 	private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
 	private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
 
-	static class ThrowIfTestsRunInParallelTestCase {
+	static class ThrowIfTestsRunInParallelTestCases {
 
 		// In ResourceExtension, we wrap shared resources in locks. This prevents them from being
 		// used concurrently, which in turn prevents race conditions.
@@ -148,7 +148,7 @@ class ResourcesParallelismTests {
 
 	}
 
-	static class ThrowIfTestFactoriesRunInParallelTestCase {
+	static class ThrowIfTestFactoriesRunInParallelTestCases {
 
 		@TestFactory
 		Stream<DynamicTest> test1(
@@ -187,7 +187,7 @@ class ResourcesParallelismTests {
 
 	}
 
-	static class ThrowIfTestTemplatesRunInParallelTestCase {
+	static class ThrowIfTestTemplatesRunInParallelTestCases {
 
 		@ParameterizedTest
 		@ValueSource(ints = { 1, 2, 3 })
@@ -220,9 +220,9 @@ class ResourcesParallelismTests {
 
 	}
 
-	static class ThrowIfTestClassConstructorsRunInParallelTestCase1 {
+	static class ThrowIfTestClassConstructorsRunInParallelTestCases1 {
 
-		ThrowIfTestClassConstructorsRunInParallelTestCase1(
+		ThrowIfTestClassConstructorsRunInParallelTestCases1(
 				// we don't actually use the resources, we just have them injected to verify whether sharing the
 				// same resources prevent the test constructors from running in parallel
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
@@ -237,9 +237,9 @@ class ResourcesParallelismTests {
 
 	}
 
-	static class ThrowIfTestClassConstructorsRunInParallelTestCase2 {
+	static class ThrowIfTestClassConstructorsRunInParallelTestCases2 {
 
-		ThrowIfTestClassConstructorsRunInParallelTestCase2(
+		ThrowIfTestClassConstructorsRunInParallelTestCases2(
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC)
 				throws Exception {
@@ -252,9 +252,9 @@ class ResourcesParallelismTests {
 
 	}
 
-	static class ThrowIfTestClassConstructorsRunInParallelTestCase3 {
+	static class ThrowIfTestClassConstructorsRunInParallelTestCases3 {
 
-		ThrowIfTestClassConstructorsRunInParallelTestCase3(
+		ThrowIfTestClassConstructorsRunInParallelTestCases3(
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC,
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA)
 				throws Exception {

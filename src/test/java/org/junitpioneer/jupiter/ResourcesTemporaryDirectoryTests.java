@@ -48,14 +48,14 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTest() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithNewTempDirParameterTestCase.class);
+					.executeTestClass(SingleTestMethodWithNewTempDirParameterTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestMethodWithNewTempDirParameterTestCase.recordedPath).doesNotExist();
+			assertThat(SingleTestMethodWithNewTempDirParameterTestCases.recordedPath).doesNotExist();
 		}
 
 	}
 
-	static class SingleTestMethodWithNewTempDirParameterTestCase {
+	static class SingleTestMethodWithNewTempDirParameterTestCases {
 
 		static Path recordedPath;
 
@@ -81,13 +81,13 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenParameterIsPopulatedWithNewTempDirWithSuffixEquallingArg() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithParameterWithNewTempDirAndArgTestCase.class);
+					.executeTestClass(SingleTestMethodWithParameterWithNewTempDirAndArgTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
 		}
 
 	}
 
-	static class SingleTestMethodWithParameterWithNewTempDirAndArgTestCase {
+	static class SingleTestMethodWithParameterWithNewTempDirAndArgTestCases {
 
 		@Test
 		void theTest(@New(value = TemporaryDirectory.class, arguments = { "tempDirPrefix" }) Path tempDir) {
@@ -107,9 +107,9 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenParametersArePopulatedWithNewReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(TwoTestMethodsWithNewTempDirParameterTestCase.class);
+					.executeTestClass(TwoTestMethodsWithNewTempDirParameterTestCases.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
-			assertThat(TwoTestMethodsWithNewTempDirParameterTestCase.recordedPaths)
+			assertThat(TwoTestMethodsWithNewTempDirParameterTestCases.recordedPaths)
 					.hasSize(2)
 					.doesNotHaveDuplicates()
 					.allSatisfy(path -> assertThat(path).doesNotExist());
@@ -117,7 +117,7 @@ class ResourcesTemporaryDirectoryTests {
 
 	}
 
-	static class TwoTestMethodsWithNewTempDirParameterTestCase {
+	static class TwoTestMethodsWithNewTempDirParameterTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
 
@@ -148,9 +148,9 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenParametersArePopulatedWithNewReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithTwoNewTempDirParametersTestCase.class);
+					.executeTestClass(SingleTestMethodWithTwoNewTempDirParametersTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestMethodWithTwoNewTempDirParametersTestCase.recordedPaths)
+			assertThat(SingleTestMethodWithTwoNewTempDirParametersTestCases.recordedPaths)
 					.hasSize(2)
 					.doesNotHaveDuplicates()
 					.allSatisfy(path -> assertThat(path).doesNotExist());
@@ -158,7 +158,7 @@ class ResourcesTemporaryDirectoryTests {
 
 	}
 
-	static class SingleTestMethodWithTwoNewTempDirParametersTestCase {
+	static class SingleTestMethodWithTwoNewTempDirParametersTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
 
@@ -186,9 +186,9 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenEachTestMethodHasAccessToNewReadableAndWriteableTempDirThatLastsAsLongAsTestInstance() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(TestConstructorWithNewTempDirParameterTestCase.class);
+					.executeTestClass(TestConstructorWithNewTempDirParameterTestCases.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
-			assertThat(TestConstructorWithNewTempDirParameterTestCase.recordedPathsFromConstructor)
+			assertThat(TestConstructorWithNewTempDirParameterTestCases.recordedPathsFromConstructor)
 					.hasSize(2)
 					.doesNotHaveDuplicates()
 					.allSatisfy(path -> assertThat(path).doesNotExist());
@@ -196,13 +196,13 @@ class ResourcesTemporaryDirectoryTests {
 
 	}
 
-	static class TestConstructorWithNewTempDirParameterTestCase {
+	static class TestConstructorWithNewTempDirParameterTestCases {
 
 		static List<Path> recordedPathsFromConstructor = new CopyOnWriteArrayList<>();
 
 		private final Path recordedPath;
 
-		TestConstructorWithNewTempDirParameterTestCase(@New(TemporaryDirectory.class) Path tempDir) {
+		TestConstructorWithNewTempDirParameterTestCases(@New(TemporaryDirectory.class) Path tempDir) {
 			recordedPathsFromConstructor.add(tempDir);
 			recordedPath = tempDir;
 		}
@@ -229,7 +229,7 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenExceptionMentioningNumberOfArgumentsIsThrown() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(NewTempDirWithWrongNumberOfArgumentsTestCase.class);
+					.executeTestClass(NewTempDirWithWrongNumberOfArgumentsTestCases.class);
 			executionResults
 					.allEvents()
 					.debug()
@@ -247,7 +247,7 @@ class ResourcesTemporaryDirectoryTests {
 
 	}
 
-	static class NewTempDirWithWrongNumberOfArgumentsTestCase {
+	static class NewTempDirWithWrongNumberOfArgumentsTestCases {
 
 		@Test
 		void theTest(@New(value = TemporaryDirectory.class, arguments = { "1", "2" }) Path tempDir) {
@@ -268,14 +268,14 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTestSuite() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithSharedTempDirParameterTestCase.class);
+					.executeTestClass(SingleTestMethodWithSharedTempDirParameterTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestMethodWithSharedTempDirParameterTestCase.recordedPath).doesNotExist();
+			assertThat(SingleTestMethodWithSharedTempDirParameterTestCases.recordedPath).doesNotExist();
 		}
 
 	}
 
-	static class SingleTestMethodWithSharedTempDirParameterTestCase {
+	static class SingleTestMethodWithSharedTempDirParameterTestCases {
 
 		static Path recordedPath;
 
@@ -301,13 +301,13 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenParameterIsPopulatedWithSharedTempDirWithSuffixEquallingArg() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithParameterWithSharedTempDirAndArgTestCase.class);
+					.executeTestClass(SingleTestMethodWithParameterWithSharedTempDirAndArgTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
 		}
 
 	}
 
-	static class SingleTestMethodWithParameterWithSharedTempDirAndArgTestCase {
+	static class SingleTestMethodWithParameterWithSharedTempDirAndArgTestCases {
 
 		@Test
 		void theTest( //
@@ -332,9 +332,9 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenParametersArePopulatedWithDifferentReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCase.class);
+					.executeTestClass(SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCase.recordedPaths)
+			assertThat(SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCases.recordedPaths)
 					.hasSize(2)
 					.doesNotHaveDuplicates()
 					.allSatisfy(path -> assertThat(path).doesNotExist());
@@ -342,7 +342,7 @@ class ResourcesTemporaryDirectoryTests {
 
 	}
 
-	static class SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCase {
+	static class SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
 
@@ -372,9 +372,9 @@ class ResourcesTemporaryDirectoryTests {
 		@Test
 		void thenParametersArePopulatedWithSharedReadableAndWriteableTempDirThatIsTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(TwoTestMethodsWithSharedSameNameTempDirParameterTestCase.class);
+					.executeTestClass(TwoTestMethodsWithSharedSameNameTempDirParameterTestCases.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
-			assertThat(TwoTestMethodsWithSharedSameNameTempDirParameterTestCase.recordedPaths)
+			assertThat(TwoTestMethodsWithSharedSameNameTempDirParameterTestCases.recordedPaths)
 					.hasSize(2)
 					.satisfies(allElementsAreEqual())
 					.allSatisfy(path -> assertThat(path).doesNotExist());
@@ -382,7 +382,7 @@ class ResourcesTemporaryDirectoryTests {
 
 	}
 
-	static class TwoTestMethodsWithSharedSameNameTempDirParameterTestCase {
+	static class TwoTestMethodsWithSharedSameNameTempDirParameterTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
 
@@ -418,20 +418,20 @@ class ResourcesTemporaryDirectoryTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClasses( //
 						asList( //
-							FirstSingleTestMethodWithSharedTempDirParameterTestCase.class,
-							SecondSingleTestMethodWithSharedTempDirParameterTestCase.class));
+							FirstSingleTestMethodWithSharedTempDirParameterTestCases.class,
+							SecondSingleTestMethodWithSharedTempDirParameterTestCases.class));
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
 			assertThat( //
 				asList( //
-					FirstSingleTestMethodWithSharedTempDirParameterTestCase.recordedPath,
-					SecondSingleTestMethodWithSharedTempDirParameterTestCase.recordedPath))
+					FirstSingleTestMethodWithSharedTempDirParameterTestCases.recordedPath,
+					SecondSingleTestMethodWithSharedTempDirParameterTestCases.recordedPath))
 							.satisfies(allElementsAreEqual())
 							.allSatisfy(path -> assertThat(path).doesNotExist());
 		}
 
 	}
 
-	static class FirstSingleTestMethodWithSharedTempDirParameterTestCase {
+	static class FirstSingleTestMethodWithSharedTempDirParameterTestCases {
 
 		static Path recordedPath;
 
@@ -445,7 +445,7 @@ class ResourcesTemporaryDirectoryTests {
 
 	}
 
-	static class SecondSingleTestMethodWithSharedTempDirParameterTestCase {
+	static class SecondSingleTestMethodWithSharedTempDirParameterTestCases {
 
 		static Path recordedPath;
 

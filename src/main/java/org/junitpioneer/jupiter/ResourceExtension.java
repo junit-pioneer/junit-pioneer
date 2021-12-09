@@ -264,7 +264,7 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 		List<ReentrantLock> locks = findSharedOnExecutable(invocationContext.getExecutable())
 				// Sort by @Shared's name to prevent deadlocks when locking later.
 				// This is a well-known solution to the "dining philosophers problem".
-				// See ResourcesParallelismTests.ThrowIfTestsRunInParallelTestCase for more info.
+				// See ResourcesParallelismTests.ThrowIfTestsRunInParallelTestCases for more info.
 				.sorted(comparing(Shared::name))
 				.map(shared -> findLockForShared(shared, store))
 				.collect(toList());
