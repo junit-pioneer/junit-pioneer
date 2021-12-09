@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -17,10 +17,18 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 import org.opentest4j.TestAbortedException;
@@ -324,6 +332,81 @@ public class ReportEntryExtensionTests {
 
 	}
 
+	@Nested
+	@DisplayName("with parameterized tests")
+	class ParameterEntriesTests {
+
+		@Test
+		@DisplayName("publishes the parameter")
+		void parameterized_publishes() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_basic", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results)
+					.hasNumberOfReportEntries(2)
+					.withValues("Open here I flung the shutter, when, with many a flirt and flutter,",
+						"In there stepped a stately Raven of the saintly days of yore;");
+		}
+
+		@Test
+		@DisplayName("throws if there are unresolved (too many) parameter variables")
+		void parameterized_unresolvedVars() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_unresolved",
+						String.class);
+
+			assertThat(results).hasNumberOfFailedTests(1);
+			assertThat(results).hasNoReportEntries();
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageStartingWith("Report entry contains unresolved variable(s)");
+		}
+
+		@Test
+		@DisplayName("throw if the key has a parameter variable")
+		void parameterized_keyCantBeParameterized() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_key_fail",
+						String.class);
+
+			assertThat(results).hasNoReportEntries();
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageStartingWith("Report entry can not have variables in the key");
+		}
+
+		@Test
+		@DisplayName("can publish multiple parameters")
+		void parameterized_multiple() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_multiple",
+						String.class, int.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results)
+					.hasNumberOfReportEntries(2)
+					.withValues("1 - 1: Perched, and sat, and nothing more.",
+						"2 - 2: Then this ebony bird beguiling my sad fancy into smiling,");
+		}
+
+		@Test
+		@DisplayName("can publish null arguments")
+		void parameterized_with_nulls() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_with_nulls",
+						String.class, String.class);
+
+			assertThat(results).hasSingleSucceededTest();
+			assertThat(results)
+					.hasNumberOfReportEntries(1)
+					.withValues("null,By the grave and stern decorum of the countenance it wore,");
+		}
+
+	}
+
 	static class ReportEntriesTest {
 
 		//tag::report_entry_basic[]
@@ -486,6 +569,42 @@ public class ReportEntryExtensionTests {
 		@ReportEntry(value = "and this mystery explore;—", when = ON_FAILURE)
 		@ReportEntry(value = "’Tis the wind and nothing more!”", when = ON_ABORTED)
 		void repeated_disabled() {
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "Open here I flung the shutter, when, with many a flirt and flutter,",
+				"In there stepped a stately Raven of the saintly days of yore;" })
+		@ReportEntry("{0}")
+		void parameterized_basic(String line) {
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "Not the least obeisance made he; not a minute stopped or stayed he;" })
+		@ReportEntry("{0}, {1}")
+		void parameterized_unresolved(String line) {
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "But, with mien of lord or lady, perched above my chamber door—" })
+		@ReportEntry(key = "{0}", value = "Perched upon a bust of Pallas just above my chamber door—")
+		void parameterized_key_fail(String line) {
+		}
+
+		@ParameterizedTest
+		@CsvSource(value = { "Perched, and sat, and nothing more.; 1",
+				"Then this ebony bird beguiling my sad fancy into smiling,; 2" }, delimiter = ';')
+		@ReportEntry("{1} - {1}: {0}")
+		void parameterized_multiple(String line, int number) {
+		}
+
+		@ParameterizedTest
+		@MethodSource("withNulls")
+		@ReportEntry("{1},{0}")
+		void parameterized_with_nulls(String line, String value) {
+		}
+
+		private static Stream<Arguments> withNulls() {
+			return Stream.of(Arguments.of("By the grave and stern decorum of the countenance it wore,", null));
 		}
 
 	}

@@ -4,20 +4,28 @@ The following guidelines were chosen very deliberately to make sure the project 
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
-* [If you're new to Open Source](#if-youre-new-to-open-source)
+* [If you're new...](#if-youre-new)
+	* [...to Open Source](#to-open-source)
+	* [...to JUnit Jupiter Extensions](#to-junit-jupiter-extensions)
+	* [...to JUnit Pioneer](#to-junit-pioneer)
 * [Writing Code](#writing-code)
 	* [Code Organization](#code-organization)
 	* [Code Style](#code-style)
 	* [Documentation](#documentation)
+	* [Git](#git)
 * [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
 	* [Branching Strategy](#branching-strategy)
 	* [Commits](#commits)
 	* [Pull Requests](#pull-requests)
 	* [Merging](#merging)
 	* [Commit Message](#commit-message)
-* [Updating Dependency on JUnit 5](#updating-dependency-on-junit-5)
-* [Publishing](#publishing)
+* [Dependencies](#dependencies)
+	* [JUnit 5](#junit-5)
+	* [Others](#others)
+* [Releases](#releases)
+	* [Publishing](#publishing)
 	* [Versioning](#versioning)
+	* [Background](#background)
 * [Pioneer Maintainers](#pioneer-maintainers)
 	* [What We Do](#what-we-do)
 	* [When We Do It](#when-we-do-it)
@@ -36,10 +44,13 @@ The guidelines apply to maintainers as well as contributors!
   This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
 * Whatever content you contribute will be provided under the project license(s).
 
-## If you're new to Open Source
+
+## If you're new...
 
 First of all, welcome!
 We really appreciate that you consider contributing to JUnit Pioneer.
+
+### ...to Open Source
 
 We know that this can be quite daunting at first:
 Everybody uses a vocabulary and techniques that appear quite cryptic to those not steeped in them.
@@ -61,6 +72,21 @@ For information on how to use it, see [GitHub's documentation](https://guides.gi
 * The [feature documentation](#documentation) is written in AsciiDoctor.
 For information on how to use it, check its [user manual](https://asciidoctor.org/docs/user-manual/) and [writer's guide](https://asciidoctor.org/docs/asciidoc-writers-guide/).
 
+### ...to JUnit Jupiter Extensions
+
+There are a couple of good guides to get you started on this:
+
+* first of all, the [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/#extensions)
+* then there's [Nicolai's article on the topic](https://nipafx.dev/junit-5-extension-model/)
+
+### ...to JUnit Pioneer
+
+If you want to get to know the project, we invite you to watch [our joint presentation on JUnit Pioneer](https://www.youtube.com/watch?v=6OBWn3_a0JQ) (~1 hour).
+It's good. 😃
+
+To get started, check [these good first issues](https://github.com/junit-pioneer/junit-pioneer/contribute).
+
+
 ## Writing Code
 
 We have a few guidelines on how to organize, style, and document extensions. 
@@ -69,6 +95,18 @@ Everything related to branches, commits, and more is described [further below](#
 ### Code Organization
 
 Where to put types and how to name them.
+
+#### Package Structure
+
+Classes usually belong into one of these packages:
+
+* `org.junitpioneer.internal` - code intended to be shared across various extensions
+* `org.junitpioneer.jupiter` - extensions to JUnit Jupiter
+	* `....issue` - implementation details of issue extension
+	* `....params` - extensions for Jupiter's `@ParameterizedTest`
+* `org.junitpioneer.vintage` - extensions to older JUnit versions
+
+If none of them is a good fit, we'll find one together.
 
 #### Annotations
 
@@ -102,14 +140,14 @@ How to write the code itself.
 
 #### `Optional`
 
-[There shall be no `null` - use `Optional` instead](https://blog.codefx.org/techniques/intention-revealing-code-java-8-optional/):
+[There shall be no `null` - use `Optional` instead](https://nipafx.dev/intention-revealing-code-java-8-optional/):
 
 * design code to avoid optionality wherever feasibly possible
 * in all remaining cases, prefer `Optional` over `null`
 
 #### Assertions
 
-All tests shall use [AssertJ](https://joel-costigliola.github.io/assertj/)'s assertions and not the ones build into Jupiter:
+All tests shall use [AssertJ](https://assertj.github.io/doc/)'s assertions and not the ones built into Jupiter:
 
 * more easily discoverable API
 * more detailed assertion failures
@@ -181,20 +219,26 @@ One aspect that's relevant to contributors is the list of contributions at the e
 	* for new features, link to the feature documentation on [junit-pioneer.org](https://junit-pioneer.org)
 	* include issue and pull request IDs in the form `(#123 / #125)`
 
-#### Release Notes
+### Git
 
-Do **not** update the `release-notes.md` file!
-This file is generated automatically.
+#### Line Endings
+
+We [mind the end of our lines](https://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/) and have [instructed](.gitattributes) Git to replace all line endings with `LF` (the non-Windows variant) when writing files to the working directory.
+If you're on Windows and prefer `CRLF` line endings, consider setting `core.autocrlf` to `true`:
+
+```bash
+git config --global core.autocrlf true
+```
 
 
 ## Fixing Bugs, Developing Features
 
 This section governs how features or bug fixes are developed.
-See [the section _Updating Dependency on JUnit 5_](#updating-dependency-on-junit-5) for how to adapt to upstream changes.
+See [the section _Updating Dependency on JUnit 5_](#junit-5) for how to adapt to upstream changes.
 
 ### Branching Strategy
 
-By default, development happens in branches, which are merged via pull requests (PRs from `master` will be closed).
+By default, development happens in branches, which are merged via pull requests (PRs from `main` will be closed).
 Special cases, like fixing problems with the CI pipeline, are of course exempt from this guideline.
 
 Please make sure to give branches a meaningful name!
@@ -214,8 +258,7 @@ Lab branches should be deleted once they become obsolete - when that is the case
 
 While it is nice to have each individual commit pass the build, this is not a requirement - it is the contributor's branch to play on.
 
-As a general rule, the style and formatting of commit messages should follow the [guidelines for good Git commit messages](http://chris.beams.io/posts/git-commit/).
-Because of the noise it generates on the issue, please do _not_ mention the issue number in the message.
+See section [_Commit Message_](#commit-message) for how the commit message should look like.
 
 ### Pull Requests
 
@@ -226,7 +269,12 @@ Please mention all issues in the request's body, possibly using [closing keyword
 
 The [pull requests template](.github/PULL_REQUEST_TEMPLATE.md) contains a footer that must not be edited or removed.
 
-To enforce the [branching strategy](#branching-strategy) pull requests from `master` will be closed.
+To enforce the [branching strategy](#branching-strategy) pull requests from `main` will be closed.
+
+### Full Testing
+
+In order to minimize the delay between a push and feedback, the default build is only run on a small subset of all possible builds (which include different operating system, Java versions and so on).
+Once a pull request is ready to be merged, a maintainer needs to apply the _merge-ready_ label to trigger a full build.
 
 ### Merging
 
@@ -236,18 +284,18 @@ Likewise, PRs opened by a maintainer should be reviewed and agreed to by at leas
 Going further, we should avoid merging PRs that one maintainer outright disagrees with and instead work towards a solution that is acceptable to everybody.
 Note all the _should_-s - exceptions can be made if justifiable (e.g. maintainers don't react or there is reason to hurry).
 
-A pull request is accepted by squashing the commits and fast-forwarding master, making each bug fix or feature appear atomically on master.
+A pull request is accepted by squashing the commits and fast-forwarding `main`, making each bug fix or feature appear atomically on `main`.
 This can be achieved with GitHub's [_squash and merge_](https://help.github.com/articles/about-pull-request-merges/#squash-and-merge-your-pull-request-commits) feature.
 
 ### Commit Message
 
-To make the single commit expressive, its message must be detailed and [good]((http://chris.beams.io/posts/git-commit/)) (really, read that post!).
+To make the single commit expressive, its message must be detailed and [good]((https://chris.beams.io/posts/git-commit/)) (really, read that post!).
 Furthermore, it must follow this structure:
 
 ```
-${action} (${issues} / ${pull-request})
+${action} (${issues} / ${pull-request}) [max 70 characters]
 
-${body}
+${body} [max 70 characters per line]
 
 ${references}: ${issues}
 PR: ${pull-request}
@@ -295,7 +343,11 @@ Closes: #30
 Closes: #31
 ```
 
-## Updating Dependency on JUnit 5
+Finally, because of the noise it generates on the issue, please do _not_ mention the issue number in the message during development.
+
+## Dependencies
+
+### JUnit 5
 
 JUnit Pioneer has an uncharacteristically strong relationship to the JUnit 5 project (often called _upstream_).
 It not only depends on it, it also uses its internal APIs, copies source code that is not released in any artifact, mimics code style, unit testing, build and CI setup, and more.
@@ -314,39 +366,61 @@ Follow these steps when updating JUnit 5:
 	* ... should be structured and worded as defined above
 	* ... should reference the upstream issue and pull request (if any)
 
+### Others
 
-## Publishing
+Pioneer does not take on run-time dependencies outside of JUnit 5.
+Of course test dependencies like AssertJ and build dependencies on Gradle plugins are fair game.
+To keep them updated, run `gradle dependencyUpdates`, which lists all dependencies for which a newer version exists.
+Updates still need to be done manually.
 
-JUnit Pioneer uses [Shipkit](http://shipkit.org/) and [GitHub Actions](https://github.com/features/actions/) to automate the release process, but unlike Shipkit's default we don't release on every commit to `master`.
-Instead, releases must be triggered manually:
+To keep the commit history clean, these should be done in bulk every few weeks.
 
-1. make sure that the file [`version-properties`](version.properties) defines the correct version (see next section)
-2. trigger the [`Release` GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions?query=workflow%3ARelease) manually for the master branch.
 
-GitHub Actions will then tell Shipkit to do its thing.
+## Releases
 
-Every new version is published to the `junit-pioneer/maven` Bintray repository as well as to Maven Central and JCenter.
+JUnit Pioneer uses [Shipkit](http://shipkit.org/) and [GitHub Actions](https://github.com/features/actions/) to automate the release process, but unlike Shipkit's default we don't release on every commit to `main`.
+Instead, we take into account...
+
+* whether a change demands a release (which is a low bar; basically anything that changes behavior does)
+* whether more changes are going to arrive soon (often the case when we work on stream and merge a few PRs within a couple of hours)
+
+The decision to publish a release and which version to pick can be made by any two maintainers.
+Before publishing, they must check whether any `@since` tags were added since the last release and whether they reference the correct (i.e. upcoming) version.
+(Ideally this happened when the PRs were merged, but this can be easily overlooked.)
+
+### Publishing
+
+Releases must be triggered manually with the [_Release build_ GitHub Action](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/release-build.yml):
+
+* select `main` branch
+* specify the version (see next section)
+
+GitHub Actions will then tell Gradle/Shipkit to do their thing.
+
+Every new version is published to Maven Central and a release is created on GitHub.
 This also triggers a website build - [see its `README.md`](https://github.com/junit-pioneer/junit-pioneer.github.io) for more information.
 
 ### Versioning
 
-Shipkit manages versions by reading from and writing to [`version-properties`](version.properties):
-On each build, it releases the version specified by the `version` field and then increases its patch level for the next release.
+JUnit Pioneer uses semantic versioning, i.e. _major.minor.patch_ as follows:
 
-This is how JUnit Pioneer handles versioning:
+* _major_: increases after team decision
+* _minor_: resets to 0 when _major_ changes and increases for each substantial change or non-trivial feature
+* _patch_: resets to 0 when _minor_ changes and increases otherwise
 
-* _patch_: automatically increased by Shipkit on each release
-* _minor_: manually increased for each substantial change/feature
-* _major_: stays at 0 for now
+The Javadoc `@since` tag can guide whether a change is non-trivial.
+If such a tag was added, _minor_ must increased - if not, it's up for debate (which is best held in a high-fidelity tool like Discord or Twitch chat).
 
-That means, for now, contributors only have to care about _minor_.
-Since each non-trivial change is developed in a PR, this is the place to discuss whether the minor version should be increased, i.e. whether a change or feature is "substantial".
-If it is, the PR needs to update `version-properties` to the next minor version.
-Note that the feature's Javadoc needs to reference the same version in its `@since` tag.
+For contributors that means that when they add members that require such a tag, they should generally put the next _minor_ version next to it.
+
+**A note on Shipkit**:
+[Shipkit's _auto-version_ plugin](https://github.com/shipkit/shipkit-auto-version) _can_ detect the version to be released on its own, but it increases the patch versions by number of commits since recent release (hence 1.3.0 ~> 1.3.8), which is not what we want.
+We hence don't use it.
+The other feature it provides is detecting the recent version (needed by [the _changelog_ plugin](https://github.com/shipkit/shipkit-changelog)), which we do by running `git describe --tags --abbrev=0`.
 
 ### Background
 
-Like [Mockito](http://mockito.org/), JUnit Pioneer used Shipkit for a continuous delivery model, where every change on the `master` branch (for example when merging a pull request) triggered a release build that published a new version if the following criteria were met:
+Like [Mockito](http://mockito.org/), JUnit Pioneer used Shipkit for a continuous delivery model, where every change on the `main` branch (for example when merging a pull request) triggered a release build that published a new version if the following criteria were met:
 
 - the commit message doesn't contain `[ci skip-release]`
 - all checks (e.g. tests) are successful

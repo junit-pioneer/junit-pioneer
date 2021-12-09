@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,11 +11,11 @@
 package org.junitpioneer.jupiter.params;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -23,7 +23,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.platform.commons.util.Preconditions;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 
 /**
  * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.
@@ -42,37 +44,59 @@ import org.junit.platform.commons.util.Preconditions;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
-class RangeSourceArgumentsProvider implements ArgumentsProvider {
+class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
+		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
+
+	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
+	private Annotation argumentsSource;
+
+	@Override
+	public Stream<N> provideArguments(ExtensionContext context, Parameter parameter) throws Exception {
+		initArgumentsSource(parameter);
+		return provideArguments(argumentsSource);
+	}
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-		// since it's a method annotation, the element will always be present
-		List<Annotation> argumentsSources = context
-				.getElement()
-				.map(method -> Arrays
-						.stream(method.getAnnotations())
-						.filter(annotations -> Arrays
-								.stream(annotations.annotationType().getAnnotationsByType(ArgumentsSource.class))
-								.anyMatch(annotation -> getClass().equals(annotation.value())))
-						.collect(Collectors.toList()))
-				.orElseThrow(IllegalStateException::new);
+		// argumentSource is present if fed through the CartesianAnnotationConsumer interface
+		if (argumentsSource == null)
+			// since it's a method annotation, the element will always be present
+			initArgumentsSource(context.getRequiredTestMethod());
 
-		Preconditions
-				.condition(argumentsSources.size() == 1,
-					() -> String
-							.format("Expected exactly one annotation to provide an ArgumentSource, found %d.",
-								argumentsSources.size()));
-		Annotation argumentsSource = argumentsSources.get(0);
+		return provideArguments(argumentsSource).map(Arguments::of);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Stream<N> provideArguments(Annotation argumentsSource) throws Exception {
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
 
-		Range<?> range = (Range) rangeClass.getConstructors()[0].newInstance(argumentsSource);
+		Range<N> range = (Range<N>) rangeClass.getConstructors()[0].newInstance(argumentsSource);
 		range.validate();
-		return asStream(range).map(Arguments::of);
+		return asStream(range);
 	}
 
-	private Stream<?> asStream(Range r) {
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(r, Spliterator.ORDERED), false);
+	private void initArgumentsSource(AnnotatedElement element) {
+		List<Annotation> argumentsSources = PioneerAnnotationUtils
+				.findAnnotatedAnnotations(element, ArgumentsSource.class);
+
+		if (argumentsSources.size() != 1) {
+			String message = String
+					.format("Expected exactly one annotation to provide an ArgumentSource, found %d.",
+						argumentsSources.size());
+			throw new IllegalArgumentException(message);
+		}
+
+		argumentsSource = argumentsSources.get(0);
+	}
+
+	private Stream<N> asStream(Range<N> range) {
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(range, Spliterator.ORDERED), false);
+	}
+
+	@Override
+	public void accept(Annotation argumentsSource) {
+		this.argumentsSource = argumentsSource;
 	}
 
 }

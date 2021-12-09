@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,34 +10,24 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.toMap;
+import java.util.function.Function;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-
-class SystemPropertyExtension extends AbstractEntryBasedExtension<String, String> {
+class SystemPropertyExtension
+		extends AbstractEntryBasedExtension<String, String, ClearSystemProperty, SetSystemProperty> {
 
 	@Override
-	protected boolean isAnnotationPresent(ExtensionContext context) {
-		return PioneerAnnotationUtils
-				.isAnyRepeatableAnnotationPresent(context, ClearSystemProperty.class, SetSystemProperty.class);
+	protected Function<ClearSystemProperty, String> clearKeyMapper() {
+		return ClearSystemProperty::key;
 	}
 
 	@Override
-	protected Set<String> entriesToClear(ExtensionContext context) {
-		return PioneerAnnotationUtils
-				.findClosestEnclosingRepeatableAnnotations(context, ClearSystemProperty.class)
-				.map(ClearSystemProperty::key)
-				.collect(PioneerUtils.distinctToSet());
+	protected Function<SetSystemProperty, String> setKeyMapper() {
+		return SetSystemProperty::key;
 	}
 
 	@Override
-	protected Map<String, String> entriesToSet(ExtensionContext context) {
-		return PioneerAnnotationUtils
-				.findClosestEnclosingRepeatableAnnotations(context, SetSystemProperty.class)
-				.collect(toMap(SetSystemProperty::key, SetSystemProperty::value));
+	protected Function<SetSystemProperty, String> setValueMapper() {
+		return SetSystemProperty::value;
 	}
 
 	@Override

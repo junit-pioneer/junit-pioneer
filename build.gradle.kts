@@ -3,39 +3,70 @@ plugins {
 	jacoco
 	checkstyle
 	`maven-publish`
-	id("com.diffplug.gradle.spotless") version "4.0.0"
-	id("org.shipkit.java") version "2.3.1"
+	signing
+	id("com.diffplug.spotless") version "5.14.3"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "3.0"
+	id("org.sonarqube") version "3.3"
+	id("org.moditect.gradleplugin") version "1.0.0-rc3"
+	id("org.shipkit.shipkit-changelog") version "1.1.15"
+	id("org.shipkit.shipkit-github-release") version "1.1.15"
+	id("com.github.ben-manes.versions") version "0.39.0"
+	id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+}
+
+plugins.withType<JavaPlugin>().configureEach {
+	configure<JavaPluginExtension> {
+		modularity.inferModulePath.set(true)
+	}
 }
 
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
+val modularBuild : String by project
+val experimentalJavaVersion : String? by project
+val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
+
 java {
-	sourceCompatibility = JavaVersion.VERSION_1_8
+	if (experimentalBuild) {
+		toolchain {
+			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion!!))
+		}
+	} else {
+		sourceCompatibility = if (modularBuild.toBoolean()) {
+			JavaVersion.VERSION_11
+		} else {
+			JavaVersion.VERSION_1_8
+		}
+	}
+	withJavadocJar()
+	withSourcesJar()
 }
 
 repositories {
 	mavenCentral()
 }
 
-val junitMinorVersion : String by project
+val junitVersion : String by project
 
 dependencies {
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.$junitMinorVersion")
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.$junitMinorVersion")
+	implementation(platform("org.junit:junit-bom:$junitVersion"))
 
-	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.$junitMinorVersion")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.$junitMinorVersion")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit", version = "1.$junitMinorVersion")
+	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
+	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
+	implementation(group = "org.junit.platform", name = "junit-platform-commons")
+	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
 
-	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.15.0")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.3.3")
-	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.1")
+	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
+	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.12.1")
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.12.1")
+	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.20.2")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.12.4")
+	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.7.1")
+
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.14.1")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.14.1")
 }
 
 spotless {
@@ -48,18 +79,6 @@ spotless {
 
 		trimTrailingWhitespace()
 		endWithNewline()
-		removeUnusedImports()
-	}
-
-	format("groovy") {
-		target("**/*.groovy")
-		indentWithTabs()
-		trimTrailingWhitespace()
-		endWithNewline()
-		licenseHeaderFile(headerFile, "package ")
-
-		replaceRegex("class-level Javadoc indentation fix", """^\*""", " *")
-		replaceRegex("nested Javadoc indentation fix", "\t\\*", "\t *")
 	}
 }
 
@@ -73,6 +92,10 @@ yamlValidator {
 	isSearchRecursive = true
 }
 
+jacoco {
+	toolVersion = "0.8.6"
+}
+
 sonarqube {
 	// If you want to use this logcally a sonarLogin has to be provide, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
@@ -84,7 +107,93 @@ sonarqube {
 	}
 }
 
+moditect {
+	addMainModuleInfo {
+		version = project.version
+		overwriteExistingFiles.set(true)
+		module {
+			moduleInfoFile = rootProject.file("src/main/module/module-info.java")
+		}
+	}
+}
+
+publishing {
+	publications {
+		create<MavenPublication>("maven") {
+			from(components["java"])
+
+			// additional pom content
+			pom {
+				name.set(project.name)
+				description.set(project.description)
+				url.set("https://junit-pioneer.org/")
+
+				licenses {
+					license {
+						name.set("Eclipse Public License v2.0")
+						url.set("https://www.eclipse.org/legal/epl-v20.html")
+					}
+				}
+
+				scm {
+					url.set("https://github.com/junit-pioneer/junit-pioneer.git")
+				}
+
+				issueManagement {
+					system.set("GitHub Issues")
+					url.set("https://github.com/junit-pioneer/junit-pioneer/issues")
+				}
+
+				ciManagement {
+					system.set("GitHub Actions")
+					url.set("https://github.com/junit-pioneer/junit-pioneer/actions")
+				}
+
+				developers {
+					mapOf(
+						"nipafx" to "Nicolai Parlog",
+						"smoyer64" to "Steve Moyer",
+						"Bukama" to "Matthias Bünger",
+						"aepfli" to "Simon Schrottner",
+						"Michael1993" to "Mihály Verhás",
+						"beatngu13" to "Daniel Kraus"
+					).forEach {
+						developer {
+							id.set(it.key)
+							name.set(it.value)
+							url.set("https://github.com/" + it.key)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+signing {
+	setRequired({
+		project.version != "unspecified" && gradle.taskGraph.hasTask("publishToSonatype")
+	})
+	val signingKey: String? by project
+	val signingPassword: String? by project
+	useInMemoryPgpKeys(signingKey, signingPassword)
+	sign(publishing.publications.findByName("maven"))
+}
+
+nexusPublishing {
+	repositories {
+		sonatype()
+	}
+}
+
 tasks {
+
+	sourceSets {
+		main {
+			if (modularBuild.toBoolean())
+				java.srcDir("src/main/module")
+		}
+	}
 
 	compileJava {
 		options.encoding = "UTF-8"
@@ -95,6 +204,10 @@ tasks {
 	}
 
 	test {
+		
+    	    	configure<JacocoTaskExtension> {
+       		isEnabled = !experimentalBuild
+		}
 		testLogging {
 			setExceptionFormat("full")
 		}
@@ -122,9 +235,10 @@ tasks {
 	}
 
 	jacocoTestReport {
+		enabled = !experimentalBuild
 		reports {
-			xml.isEnabled = true
-			xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+			xml.required.set(true)
+			xml.outputLocation.set(file("${buildDir}/reports/jacoco/report.xml"))
 		}
 	}
 
@@ -133,19 +247,27 @@ tasks {
 		dependsOn(javadoc, validateYaml)
 	}
 
-	// the manifest needs to declare the future module name
-	jar {
-		manifest {
-			attributes(
-					"Automatic-Module-Name" to "org.junitpioneer"
-			)
-		}
-	}
-
 	withType<Jar>().configureEach {
 		from(projectDir) {
 			include("LICENSE.md")
 			into("META-INF")
 		}
+	}
+
+	generateChangelog {
+		val gitFetchRecentTag = Runtime.getRuntime().exec("git describe --tags --abbrev=0")
+		val recentTag = gitFetchRecentTag.inputStream.bufferedReader().readText().trim()
+		previousRevision = recentTag
+		githubToken = System.getenv("GITHUB_TOKEN")
+		repository = "junit-pioneer/junit-pioneer"
+	}
+
+	githubRelease {
+		dependsOn(generateChangelog)
+		val generateChangelogTask = generateChangelog.get()
+		repository = generateChangelogTask.repository
+		changelog = generateChangelogTask.outputFile
+		githubToken = generateChangelogTask.githubToken
+		newTagRevision = System.getenv("GITHUB_SHA")
 	}
 }

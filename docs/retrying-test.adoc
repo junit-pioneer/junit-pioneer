@@ -5,52 +5,121 @@ Some tests, e.g. those depending on external systems, may fail through no fault 
 Such tests make a suite fragile and it makes sense to try and avoid them, but if that's infeasible, it may help to retry a number of times before eventually assuming actual failure.
 `RetryingTest` provides that functionality.
 
+== Attributes
+
+=== maxAttempts (alias: value) [required]
+
+The `maxAttempts` attribute specifies the maximum number of times to execute the test function.
+If the test function throws an exception, the test will be executed again, up to this limit.
+
+The `value` attribute is an alias for `maxAttempts`.
+The attribute can be set either with `@RetryingTest(N)` or `@RetryingTest(maxAttempts=N)`.
+
+This attribute is required and must be a value greater than `minSuccess`.
+Only one of `maxAttempts` or `value` can be set, but not both.
+
+=== minSuccess [optional]
+
+The `minSuccess` attribute specifies the number of times the test function must complete successfully (i.e. without throwing an exception).
+The test function will be executed, up to `maxAttempts`, until it completes successfully this number of times.
+
+The default for `minSuccess` is 1. The value must be greater than or equal to 1.
+
+=== onExceptions [optional]
+
+By default a test annotated with `@RetryingTest` will be retried on all exceptions except https://ota4j-team.github.io/opentest4j/docs/current/api/org/opentest4j/TestAbortedException.html[`TestAbortedException`] (which will abort the test entirely).
+To only retry on specific exceptions, use `onExceptions`.
+
 == Basic Use
 
 `@RetryingTest(n)` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
 The attribute `n` specifies how often the test is executed before giving up.
 
-```java
+[source,java]
+----
 @RetryingTest(3)
 void failsNever() {
 	// passing test code
 }
-```
+----
 
 The test `failsNever` is executed once (which succeeds) and marked as passed.
 
-```java
+[source,java]
+----
 @RetryingTest(3)
 void failsOnlyOnFirstInvocation() {
 	// test code that fails on first execution
 	// but passes on the second
 }
-```
+----
 
 The test `failsOnlyOnFirstInvocation` is executed once (which fails) and then once more (which succeeds).
 To allow the entire test suite to pass, the first execution is marked as ignored/aborted, which includes the underlying exception - the second is of course marked as passing.
 
-```java
+[source,java]
+----
 @RetryingTest(3)
 void failsAlways() {
 	// test code that always fails
 }
-```
+----
 
 The test `failsAlways` is executed three times (all of which fail).
 The first two executions are marked as ignored/aborted, while the last as failed - each contains the underlying exception.
 
-```java
+[source,java]
+----
 @RetryingTest(3)
 void aborted() {
-	// test code that is aborted e.g. because of an Assumption.
+	// test code that is aborted,
+	// e.g. because of an `Assumption`.
 }
-```
+----
 
-If a test is aborted (e.g.: because of a failed Assumption) `@RetryingTest` won't try again after that.
+If a test is aborted (e.g.: because of a failed assumption) `@RetryingTest` won't try again after that.
 The test `aborted` is aborted before (or during) its first execution.
 The first execution is marked as aborted/skipped, containing the underlying cause.
 The test suite as a whole is also marked as aborted/skipped.
+
+=== Configuring the Number of Successes
+
+[source,java]
+----
+@RetryingTest(maxAttempts = 4, minSuccess = 2)
+void requiresTwoSuccesses() {
+	// test code that must complete successfully twice
+}
+----
+
+The test `requiresTwoSuccesses` must run at least two times without raising an exception.
+However, it will not run more than four times.
+
+=== Configuring on which Exceptions to Retry
+
+Use `onExceptions` to only retry on the mentioned exception(s):
+
+[source,java]
+----
+private int EXECUTION_COUNT;
+
+@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
+void failsFirstWithExpectedThenWithUnexpectedException() {
+    EXECUTION_COUNT++;
+    if (EXECUTION_COUNT == 1) {
+        throw new IllegalArgumentException();
+    }
+    if (EXECUTION_COUNT == 2) {
+        throw new NullPointerException();
+    }
+}
+----
+
+This example test method will be executed twice.
+The first run yields an `IllegalArgumentException`, which is mentioned in `onExceptions`, so it is marked as aborted and a second run is launched.
+(This behavior would be the same without `onExceptions` because then the test is always retried.)
+The second run results in a `NullPointerException`, which was _not_ expected and so it is marked as failed and no third run is attempted.
+(This behavior is different from a test without `onExceptions`, which would try a third time.)
 
 == Combining `@RetryingTest` with `@Test` et al
 

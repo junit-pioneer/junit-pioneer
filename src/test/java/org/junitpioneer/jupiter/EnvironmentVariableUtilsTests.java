@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -23,7 +23,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
+@EnabledForJreRange(max = JRE.JAVA_16, disabledReason = "See: https://github.com/junit-pioneer/junit-pioneer/issues/509")
 @DisplayName("JUnitPioneer system environment utilities")
 @WritesEnvironmentVariable
 class EnvironmentVariableUtilsTests {

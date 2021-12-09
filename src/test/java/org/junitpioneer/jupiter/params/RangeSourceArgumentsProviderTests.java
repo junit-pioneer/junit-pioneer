@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -172,7 +171,7 @@ class RangeSourceArgumentsProviderTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.withExceptionInstanceOf(IllegalArgumentException.class)
 					.hasMessageContainingAll("Expected exactly one annotation to provide an ArgumentSource, found 2.");
 		}
 
@@ -182,7 +181,7 @@ class RangeSourceArgumentsProviderTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.withExceptionInstanceOf(IllegalArgumentException.class)
 					.hasMessageContainingAll("Illegal range. The step cannot be zero.");
 		}
 
@@ -192,7 +191,7 @@ class RangeSourceArgumentsProviderTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.withExceptionInstanceOf(IllegalArgumentException.class)
 					.hasMessageContainingAll("Illegal range. There's no way to get from 10 to 0 with a step of 1.");
 		}
 
@@ -202,7 +201,7 @@ class RangeSourceArgumentsProviderTests {
 
 			assertThat(results)
 					.hasSingleFailedContainer()
-					.withExceptionInstanceOf(PreconditionViolationException.class)
+					.withExceptionInstanceOf(IllegalArgumentException.class)
 					.hasMessageContainingAll("Illegal range. Equal from and to will produce an empty range.");
 		}
 

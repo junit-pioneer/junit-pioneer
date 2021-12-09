@@ -142,7 +142,8 @@ class ExampleConsoleReader {
 	private List<String> lines = new ArrayList<>();
 
 	public void readLines() {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		InputStreamReader is = new InputStreamReader(System.in);
+		BufferedReader reader = new BufferedReader(is);
 		for (int i = 0; i < 2; i++) {
 			String line = reader.readLine();
 			lines.add(line);
@@ -158,17 +159,22 @@ This is the unit test for this class, using `StdIoExtension`:
 
 [source, java]
 ----
-class ExampleConsoleReaderTest {
+class ConsoleReaderTest {
 
 	@Test
 	@StdIo({ "line1", "line2", "line3" })
 	void testReadLines(StdIn in) {
-		ExampleConsoleReader consoleReader = new ExampleConsoleReader();
+		ConsoleReader consoleReader = new ConsoleReader();
 
 		consoleReader.readLines();
 
-		// assertEquals(in.capturedLines(), "line1", "line2"); // This is failing
-		// assertEquals(in.capturedLines(), "line1", "line2", "line3"); // This is passing
+		String[] lines = in.capturedLines();
+
+		// This is failing
+		// assertEquals(lines, "line1", "line2");
+
+		// This is passing
+		// assertEquals(lines, "line1", "line2", "line3");
 	}
 
 }

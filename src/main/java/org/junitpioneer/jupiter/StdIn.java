@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -12,10 +12,8 @@ package org.junitpioneer.jupiter;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * <p>For details and examples, see
@@ -26,8 +24,8 @@ import java.io.Writer;
  */
 public class StdIn extends InputStream {
 
-	private final Reader reader;
-	private final Writer writer = new StringWriter();
+	private final StringReader reader;
+	private final StringWriter writer = new StringWriter();
 
 	public StdIn(String[] values) {
 		reader = new StringReader(String.join(StdIoExtension.SEPARATOR, values));
@@ -40,6 +38,11 @@ public class StdIn extends InputStream {
 			writer.write(reading);
 		}
 		return reading;
+	}
+
+	@Override
+	public int read(byte[] b, int off, int len) throws IOException { // NOSONAR - this is fine for a simple testing extension
+		return super.read(b, off, len);
 	}
 
 	/**

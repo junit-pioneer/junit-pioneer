@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,7 +11,7 @@
 package org.junitpioneer.vintage;
 
 import static java.lang.String.format;
-import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
+import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
 
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 
 	static final String EXPECTED_EXCEPTION_WAS_NOT_THROWN = "Expected exception %s was not thrown.";
 
-	private static final Namespace NAMESPACE = Namespace.create("org", "junit-pioneer", "ExpectedException");
+	private static final Namespace NAMESPACE = Namespace.create(ExpectedExceptionExtension.class);
 	private static final String KEY = "ExceptionWasThrown";
 
 	@Override

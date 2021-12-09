@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -17,8 +17,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -150,6 +153,20 @@ class SystemPropertyExtensionTests {
 			assertThat(System.getProperty("clear prop F")).isNull();
 		}
 
+		@Test
+		@Issue("473")
+		@DisplayName("method level should not clash (in terms of duplicate entries) with class level")
+		@SetSystemProperty(key = "set prop A", value = "new A")
+		void methodLevelShouldNotClashWithClassLevel() {
+			assertThat(System.getProperty("set prop A")).isEqualTo("new A");
+			assertThat(System.getProperty("set prop B")).isEqualTo("old B");
+			assertThat(System.getProperty("set prop C")).isEqualTo("old C");
+			assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
+
+			assertThat(System.getProperty("clear prop E")).isNull();
+			assertThat(System.getProperty("clear prop F")).isNull();
+		}
+
 	}
 
 	@DisplayName("with nested classes")
@@ -159,13 +176,25 @@ class SystemPropertyExtensionTests {
 	class NestedSystemPropertyTests {
 
 		@Nested
+		@TestMethodOrder(OrderAnnotation.class)
 		@DisplayName("without SystemProperty annotations")
 		class NestedClass {
 
 			@Test
+			@Order(1)
 			@ReadsSystemProperty
 			@DisplayName("system properties should be set from enclosed class when they are not provided in nested")
-			public void shouldSetSystemPropertyFromEnclosedClass() {
+			void shouldSetSystemPropertyFromEnclosedClass() {
+				assertThat(System.getProperty("set prop A")).isNull();
+				assertThat(System.getProperty("set prop B")).isEqualTo("new B");
+			}
+
+			@Test
+			@Issue("480")
+			@Order(2)
+			@ReadsSystemProperty
+			@DisplayName("system properties should be set from enclosed class after restore")
+			void shouldSetSystemPropertyFromEnclosedClassAfterRestore() {
 				assertThat(System.getProperty("set prop A")).isNull();
 				assertThat(System.getProperty("set prop B")).isEqualTo("new B");
 			}
@@ -180,14 +209,14 @@ class SystemPropertyExtensionTests {
 			@Test
 			@ReadsSystemProperty
 			@DisplayName("system property should be set from nested class when it is provided")
-			public void shouldSetSystemPropertyFromNestedClass() {
+			void shouldSetSystemPropertyFromNestedClass() {
 				assertThat(System.getProperty("set prop B")).isEqualTo("newer B");
 			}
 
 			@Test
 			@SetSystemProperty(key = "set prop B", value = "newest B")
 			@DisplayName("system property should be set from method when it is provided")
-			public void shouldSetSystemPropertyFromMethodOfNestedClass() {
+			void shouldSetSystemPropertyFromMethodOfNestedClass() {
 				assertThat(System.getProperty("set prop B")).isEqualTo("newest B");
 			}
 
@@ -203,7 +232,7 @@ class SystemPropertyExtensionTests {
 		@DisplayName("should fail when clear and set same system property")
 		void shouldFailWhenClearAndSetSameSystemProperty() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+					.executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 						"shouldFailWhenClearAndSetSameSystemProperty");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
@@ -216,7 +245,7 @@ class SystemPropertyExtensionTests {
 				+ "https://github.com/junit-team/junit5/issues/2131")
 		void shouldFailWhenClearSameSystemPropertyTwice() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+					.executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 						"shouldFailWhenClearSameSystemPropertyTwice");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
@@ -226,14 +255,14 @@ class SystemPropertyExtensionTests {
 		@DisplayName("should fail when set same system property twice")
 		void shouldFailWhenSetSameSystemPropertyTwice() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+					.executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 						"shouldFailWhenSetSameSystemPropertyTwice");
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
 	}
 
-	static class MethodLevelInitializationFailureTestCase {
+	static class MethodLevelInitializationFailureTestCases {
 
 		@Test
 		@DisplayName("clearing and setting the same property")
@@ -253,6 +282,30 @@ class SystemPropertyExtensionTests {
 		@SetSystemProperty(key = "set prop A", value = "new B")
 		void shouldFailWhenSetSameSystemPropertyTwice() {
 		}
+
+	}
+
+	@Nested
+	@DisplayName("used with inheritance")
+	class InheritanceTests extends InheritanceBaseTest {
+
+		@Test
+		@Issue("448")
+		@DisplayName("should inherit clear and set annotations")
+		void shouldInheritClearAndSetProperty() {
+			assertThat(System.getProperty("set prop A")).isNull();
+			assertThat(System.getProperty("set prop B")).isNull();
+			assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
+			assertThat(System.getProperty("clear prop E")).isEqualTo("new E");
+		}
+
+	}
+
+	@ClearSystemProperty(key = "set prop A")
+	@ClearSystemProperty(key = "set prop B")
+	@SetSystemProperty(key = "clear prop D", value = "new D")
+	@SetSystemProperty(key = "clear prop E", value = "new E")
+	static class InheritanceBaseTest {
 
 	}
 

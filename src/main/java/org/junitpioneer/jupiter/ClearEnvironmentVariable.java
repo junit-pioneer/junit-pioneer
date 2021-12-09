@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,9 +23,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@code @ClearEnvironmentVariable} is a JUnit Jupiter extension to clear the value
  * of a environment variable for a test execution.
  *
- * <p>The key of the environment variable to be cleared must be specified via
- * {@link #key()}. After the annotated element has been executed, After the
- * annotated method has been executed, the initial default value is restored.</p>
+ * <p>The key of the environment variable to be cleared must be specified via {@link #key()}.
+ * After the annotated element has been executed, the initial default value is restored.</p>
  *
  * <p>{@code ClearEnvironmentVariable} is repeatable and can be used on the method and
  * on the class level. If a class is annotated, the configured variable will be
@@ -52,6 +52,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
+@Inherited
 @Repeatable(ClearEnvironmentVariable.ClearEnvironmentVariables.class)
 @WritesEnvironmentVariable
 @ExtendWith(EnvironmentVariableExtension.class)
@@ -67,6 +68,7 @@ public @interface ClearEnvironmentVariable {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Inherited
 	@WritesEnvironmentVariable
 	@ExtendWith(EnvironmentVariableExtension.class)
 	@interface ClearEnvironmentVariables {

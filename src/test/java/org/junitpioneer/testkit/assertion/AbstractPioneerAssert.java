@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 the original author or authors.
+ * Copyright 2016-2021 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -23,7 +23,7 @@ import org.assertj.core.api.AbstractAssert;
  * <p>assertThat(results).hasNumberOfTests(3).thatStarted().andAllOfThemFailed()</p>
  *
  * @param <SELF> the "self" type of this assertion class. Please read
- *          &quot;<a href="http://web.archive.org/web/20130721224442/http:/passion.forco.de/content/emulating-self-types-using-java-generics-simplify-fluent-api-implementation" target="_blank">
+ *          &quot;<a href="https://web.archive.org/web/20130721224442/http:/passion.forco.de/content/emulating-self-types-using-java-generics-simplify-fluent-api-implementation" target="_blank">
  *          Emulating 'self types' using Java Generics to simplify fluent API implementation</a>&quot;
  *          for more details.
  * @param <ACTUAL> the type of the "actual" value.
