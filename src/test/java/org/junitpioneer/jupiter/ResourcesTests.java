@@ -38,22 +38,6 @@ import org.junitpioneer.testkit.PioneerTestKit;
 @DisplayName("Resources extension")
 class ResourcesTests {
 
-	@DisplayName("when a test class has a test method with a @Dir-annotated parameter")
-	@Nested
-	class WhenTestClassHasTestMethodWithDirParameterTests {
-
-		@DisplayName("then the parameter is populated with a new readable and writeable temporary directory "
-				+ "that lasts as long as the test")
-		@Test
-		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTest() {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithDirParameterTestCase.class);
-			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestMethodWithDirParameterTestCase.recordedPath).doesNotExist();
-		}
-
-	}
-
 	static class SingleTestMethodWithDirParameterTestCase {
 
 		static Path recordedPath;
