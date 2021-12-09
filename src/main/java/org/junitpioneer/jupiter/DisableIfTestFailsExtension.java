@@ -11,10 +11,12 @@
 package org.junitpioneer.jupiter;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
@@ -59,68 +61,84 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 		// correct extension context (i.e. the one belonging to the test class), get the parent
 		// (which should hence always exist!)
 		ExtensionContext testClassContext = context.getParent().orElseThrow(IllegalStateException::new);
-		findOnContextClass(testClassContext)
+		findConfigurations(testClassContext)
 				.filter(configuration -> configuration.shouldDisable(throwable))
-				.findFirst()
-				.ifPresent(
+				.forEach(
 					configuration -> configuration.context().getStore(NAMESPACE).put(DISABLED_KEY, DISABLED_VALUE));
 		throw throwable;
 	}
 
-	private static Stream<Configuration> findOnContextClass(ExtensionContext context) {
+	private static Stream<Configuration> findConfigurations(ExtensionContext context) {
 		Optional<Class<?>> type = context.getTestClass();
+		// type may not be present because of recursion to the parent context
 		if (!type.isPresent())
 			return Stream.empty();
 
-		List<Class<? extends Throwable>> onClassExceptions = findOnType(type.get())
+		List<DisableIfTestFails> annotations = findAnnotationOn(type.get()).collect(toList());
+		Stream<Configuration> onClassConfig = createConfigurationFor(context, annotations);
+		Stream<Configuration> onParentClassConfigs = context
+				.getParent()
+				.map(DisableIfTestFailsExtension::findConfigurations)
+				.orElse(Stream.empty());
+
+		List<Configuration> stream = Stream.concat(onClassConfig, onParentClassConfigs).collect(toList());
+		return stream.stream();
+	}
+
+	private static Stream<Configuration> createConfigurationFor(ExtensionContext context,
+			List<DisableIfTestFails> annotations) {
+		// annotations can be empty if a nested class isn't annotated itself (but an outer class is)
+		if (annotations.isEmpty())
+			return Stream.empty();
+
+		Set<Class<? extends Throwable>> onClassExceptions = annotations
+				.stream()
 				.map(DisableIfTestFails::with)
 				// If the exceptions array is empty, we later need to disable on all exceptions.
 				// The easiest way to achieve that is by replacing the empty array with a Throwable.class
 				// because all exceptions extend it.
 				.flatMap(exceptions -> exceptions.length == 0 ? Stream.of(Throwable.class) : Arrays.stream(exceptions))
-				.distinct()
-				.collect(toList());
-		//@formatter:off
-		Stream<Configuration> onClassConfig = onClassExceptions.isEmpty()
-				? Stream.empty()
-				: Stream.of(new Configuration(context, onClassExceptions));
-		//@formatter:on
-		Stream<Configuration> onParentClassConfigs = context
-				.getParent()
-				.map(DisableIfTestFailsExtension::findOnContextClass)
-				.orElse(Stream.empty());
+				.collect(toSet());
+		boolean disableOnAssertions = annotations.stream().anyMatch(DisableIfTestFails::onAssertion);
+		Configuration onClassConfig = new Configuration(context, onClassExceptions, disableOnAssertions);
 
-		return Stream.concat(onClassConfig, onParentClassConfigs);
+		return Stream.of(onClassConfig);
 	}
 
-	private static Stream<DisableIfTestFails> findOnType(Class<?> element) {
+	private static Stream<DisableIfTestFails> findAnnotationOn(Class<?> element) {
 		if (element == null || element == Object.class)
 			return Stream.empty();
 
 		Stream<DisableIfTestFails> onElement = AnnotationSupport
 				.findAnnotation(element, DisableIfTestFails.class)
+				// turn Optional into Stream
 				.map(Stream::of)
 				.orElse(Stream.empty());
 		Stream<DisableIfTestFails> onInterfaces = Arrays
 				.stream(element.getInterfaces())
-				.flatMap(DisableIfTestFailsExtension::findOnType);
-		Stream<DisableIfTestFails> onSuperclass = findOnType(element.getSuperclass());
+				.flatMap(DisableIfTestFailsExtension::findAnnotationOn);
+		Stream<DisableIfTestFails> onSuperclass = findAnnotationOn(element.getSuperclass());
 		return Stream.of(onElement, onInterfaces, onSuperclass).flatMap(s -> s);
 	}
 
 	private static class Configuration {
 
 		private final ExtensionContext context;
-		private final List<Class<? extends Throwable>> disableOnExceptions;
+		private final Set<Class<? extends Throwable>> disableOnExceptions;
+		private final boolean disableOnAssertions;
 
-		public Configuration(ExtensionContext context, List<Class<? extends Throwable>> disableOnExceptions) {
+		public Configuration(ExtensionContext context, Set<Class<? extends Throwable>> disableOnExceptions,
+				boolean disableOnAssertions) {
 			this.context = context;
 			this.disableOnExceptions = disableOnExceptions;
 			if (disableOnExceptions.isEmpty())
 				throw new IllegalArgumentException("List of exceptions to disable on must not be empty.");
+			this.disableOnAssertions = disableOnAssertions;
 		}
 
 		public boolean shouldDisable(Throwable exception) {
+			if (exception instanceof AssertionError)
+				return disableOnAssertions;
 			return disableOnExceptions.stream().anyMatch(type -> type.isInstance(exception));
 		}
 

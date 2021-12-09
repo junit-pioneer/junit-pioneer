@@ -28,4 +28,6 @@ public @interface DisableIfTestFails {
 
 	Class<? extends Throwable>[] with() default {};
 
+	boolean onAssertion() default true;
+
 }

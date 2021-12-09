@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
@@ -25,13 +26,12 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
-public class DisableIfTestFailsTests {
+class DisableIfTestFailsTests {
 
 	@Test
 	void threeTestsWithSecondFailing_thirdIsDisabled() {
 		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsWithSecondFailingTestCase.class);
 
-		// TODO assert that failed test ran after successful test
 		assertThat(results)
 				.hasNumberOfStartedTests(2)
 				.hasNumberOfSucceededTests(1)
@@ -40,10 +40,22 @@ public class DisableIfTestFailsTests {
 	}
 
 	@Test
-	void threeTestsWithSecondFailingWithConfiguredException_thirdIsDisabled() {
-		ExecutionResults results = PioneerTestKit.executeTestClass(ThreeTestsWithSecondThrowingConfiguredExceptionTestCase.class);
+	void threeTestsWithSecondFailingWithUnconfiguredAssertion_thirdIsEnabled() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestClass(ThreeTestsWithSecondFailingWithUnconfiguredAssertionTestCase.class);
 
-		// TODO assert that failed test ran after successful test
+		assertThat(results)
+				.hasNumberOfStartedTests(3)
+				.hasNumberOfSucceededTests(2)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSkippedTests(0);
+	}
+
+	@Test
+	void threeTestsWithSecondFailingWithConfiguredException_thirdIsDisabled() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestClass(ThreeTestsWithSecondThrowingConfiguredExceptionTestCase.class);
+
 		assertThat(results)
 				.hasNumberOfStartedTests(2)
 				.hasNumberOfSucceededTests(1)
@@ -62,6 +74,15 @@ public class DisableIfTestFailsTests {
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSkippedTests(1);
 		assertThat(results).hasNumberOfStartedContainers(3);
+	}
+
+	@Test
+	void annotationOnInnerAndOuterClass_innerTestFails_remainingInnerTestsDisabled() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestClass(InnerTestsFailOtherInnerTestsGetDisabledTestCase.class);
+
+		assertThat(results).hasNumberOfStartedTests(1).hasNumberOfFailedTests(1);
+		assertThat(results).hasNumberOfStartedContainers(3).hasNumberOfSkippedContainers(1);
 	}
 
 	@Test
@@ -115,7 +136,29 @@ public class DisableIfTestFailsTests {
 
 		@Test
 		@Order(2)
-		void test2()  {
+		void test2() {
+			fail();
+		}
+
+		@Test
+		@Order(3)
+		void test3() {
+		}
+
+	}
+
+	@DisableIfTestFails(onAssertion = false)
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	static class ThreeTestsWithSecondFailingWithUnconfiguredAssertionTestCase {
+
+		@Test
+		@Order(1)
+		void test1() {
+		}
+
+		@Test
+		@Order(2)
+		void test2() {
 			// fail test with assertion
 			assertTrue(false);
 		}
@@ -170,6 +213,34 @@ public class DisableIfTestFailsTests {
 			@Test
 			@Order(2)
 			void test2() {
+			}
+
+		}
+
+	}
+
+	@DisableIfTestFails
+	@Execution(SAME_THREAD)
+	static class InnerTestsFailOtherInnerTestsGetDisabledTestCase {
+
+		@DisableIfTestFails
+		@Nested
+		class SomeTestFailsTestCase {
+
+			@Test
+			void test() throws Exception {
+				throw new Exception();
+			}
+
+		}
+
+		@Nested
+		@DisableIfTestFails
+		class AnotherTestFailsTestCase {
+
+			@Test
+			void test() throws Exception {
+				throw new Exception();
 			}
 
 		}
