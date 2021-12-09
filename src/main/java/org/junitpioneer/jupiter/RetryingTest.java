@@ -58,12 +58,14 @@ import org.junit.jupiter.api.parallel.Execution;
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
- * all repetitions of a {@code @RepeatFailedTest} are executed sequentially to guarantee thread-safety.
+ * all repetitions of a {@code RetryingTest} are executed sequentially to guarantee thread-safety.
  * </p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/repeat-failed-test/" target="_top">the documentation on <code>@RepeatFailedTest</code></a>.
+ * <a href="https://junit-pioneer.org/docs/retrying-test/" target="_top">the documentation on <code>@RetryingTest</code></a>.
  * </p>
+ *
+ * <p>Before version 0.7.0 this annotation was called {@code @RepeatFailedTest}.
  *
  * @since 0.4
  */

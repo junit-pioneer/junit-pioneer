@@ -44,10 +44,17 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
-class RangeSourceArgumentsProvider
-		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider { //NOSONAR deprecated interface use will be removed in later release
+class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
+		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
 
+	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
+
+	@Override
+	public Stream<N> provideArguments(ExtensionContext context, Parameter parameter) throws Exception {
+		initArgumentsSource(parameter);
+		return provideArguments(argumentsSource);
+	}
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
@@ -55,12 +62,18 @@ class RangeSourceArgumentsProvider
 		if (argumentsSource == null)
 			// since it's a method annotation, the element will always be present
 			initArgumentsSource(context.getRequiredTestMethod());
+
+		return provideArguments(argumentsSource).map(Arguments::of);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Stream<N> provideArguments(Annotation argumentsSource) throws Exception {
 		Class<? extends Annotation> argumentsSourceClass = argumentsSource.annotationType();
 		Class<? extends Range> rangeClass = argumentsSourceClass.getAnnotation(RangeClass.class).value();
 
-		Range<?> range = (Range<?>) rangeClass.getConstructors()[0].newInstance(argumentsSource);
+		Range<N> range = (Range<N>) rangeClass.getConstructors()[0].newInstance(argumentsSource);
 		range.validate();
-		return asStream(range).map(Arguments::of);
+		return asStream(range);
 	}
 
 	private void initArgumentsSource(AnnotatedElement element) {
@@ -77,18 +90,13 @@ class RangeSourceArgumentsProvider
 		argumentsSource = argumentsSources.get(0);
 	}
 
-	private Stream<?> asStream(Range<?> r) {
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(r, Spliterator.ORDERED), false);
+	private Stream<N> asStream(Range<N> range) {
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(range, Spliterator.ORDERED), false);
 	}
 
 	@Override
 	public void accept(Annotation argumentsSource) {
 		this.argumentsSource = argumentsSource;
-	}
-
-	@Override
-	public void accept(Parameter parameter) {
-		initArgumentsSource(parameter);
 	}
 
 }

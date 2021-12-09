@@ -30,13 +30,13 @@ val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 java {
 	if (experimentalBuild) {
 		toolchain {
-			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion))
+			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion!!))
 		}
 	} else {
-		if (modularBuild.toBoolean()) {
-			sourceCompatibility = JavaVersion.VERSION_11
+		sourceCompatibility = if (modularBuild.toBoolean()) {
+			JavaVersion.VERSION_11
 		} else {
-			sourceCompatibility = JavaVersion.VERSION_1_8
+			JavaVersion.VERSION_1_8
 		}
 	}
 	withJavadocJar()
@@ -237,8 +237,8 @@ tasks {
 	jacocoTestReport {
 		enabled = !experimentalBuild
 		reports {
-			xml.isEnabled = true
-			xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+			xml.required.set(true)
+			xml.outputLocation.set(file("${buildDir}/reports/jacoco/report.xml"))
 		}
 	}
 

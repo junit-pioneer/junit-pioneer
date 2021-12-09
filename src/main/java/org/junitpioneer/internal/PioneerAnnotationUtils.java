@@ -16,6 +16,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 
 /**
  * Pioneer-internal utility class to handle annotations.
@@ -257,12 +259,19 @@ public class PioneerAnnotationUtils {
 	}
 
 	public static List<? extends Annotation> findParameterArgumentsSources(Method testMethod) {
-		return Arrays
-				.stream(testMethod.getParameters())
-				.map(parameter -> PioneerAnnotationUtils.findAnnotatedAnnotations(parameter, ArgumentsSource.class))
+		//@formatter:off
+		return Arrays.stream(testMethod.getParameters())
+				.map(parameter -> {
+					List<Annotation> annotations = new ArrayList<>();
+					AnnotationSupport.findAnnotation(parameter, CartesianArgumentsSource.class)
+							.ifPresent(annotations::add);
+					annotations.addAll(AnnotationSupport.findRepeatableAnnotations(parameter, ArgumentsSource.class));
+					return annotations;
+				})
 				.filter(list -> !list.isEmpty())
 				.map(annotations -> annotations.get(0))
 				.collect(Collectors.toList());
+		//@formatter:on
 	}
 
 }

@@ -13,12 +13,16 @@ package org.junitpioneer.jupiter.cartesian;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.reflect.Parameter;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.platform.commons.PreconditionViolationException;
@@ -353,6 +357,35 @@ public class CartesianTestExtensionTests {
 
 		}
 
+		@Nested
+		@DisplayName("use custom arguments provider")
+		class CartesianProductCustomArgumentsProviderTests {
+
+			@Test
+			@DisplayName("when configured on parameters")
+			void usesCustomCartesianArgumentsProviderOnParameters() {
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethodWithParameterTypes(CustomCartesianArgumentsProviderTestCases.class,
+							"twoCustomCartesianArgumentProviders", String.class, int.class);
+
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
+				assertThat(results)
+						.hasNumberOfReportEntries(6)
+						.withValues("first(1)", "first(2)", "second(1)", "second(2)", "third(1)", "third(2)");
+			}
+
+			@Test
+			@DisplayName("when configured with array parameters")
+			void usesCustomCartesianArgumentsProviderWithArrayArgumentOnParameters() {
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethodWithParameterTypes(CustomCartesianArgumentsProviderTestCases.class,
+							"singleArrayArgument", String[].class);
+
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			}
+
+		}
+
 	}
 
 	@Nested
@@ -405,7 +438,7 @@ public class CartesianTestExtensionTests {
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("Could not provide arguments")
-					.hasCauseExactlyInstanceOf(PreconditionViolationException.class);
+					.hasRootCauseExactlyInstanceOf(PreconditionViolationException.class);
 		}
 
 		@Test
@@ -887,12 +920,56 @@ public class CartesianTestExtensionTests {
 
 	}
 
+	static class CustomCartesianArgumentsProviderTestCases {
+
+		@CartesianTest
+		@ReportEntry("{0}({1})")
+		void twoCustomCartesianArgumentProviders(
+				@CartesianArgumentsSource(FirstCustomCartesianArgumentsProvider.class) String string,
+				@CartesianArgumentsSource(SecondCustomCartesianArgumentsProvider.class) int integer) {
+
+		}
+
+		@CartesianTest
+		void singleArrayArgument(@CartesianArgumentsSource(StringArrayArgumentsProvider.class) String[] source) {
+			assertThat(source).hasSize(2);
+		}
+
+	}
+
 	private enum TestEnum {
 		ONE, TWO, THREE
 	}
 
 	private enum AnotherTestEnum {
 		ALPHA, BETA, GAMMA
+	}
+
+	static class FirstCustomCartesianArgumentsProvider implements CartesianArgumentsProvider<String> {
+
+		@Override
+		public Stream<String> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of("first", "second", "third");
+		}
+
+	}
+
+	static class SecondCustomCartesianArgumentsProvider implements CartesianArgumentsProvider<Integer> {
+
+		@Override
+		public Stream<Integer> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of(1, 2);
+		}
+
+	}
+
+	static class StringArrayArgumentsProvider implements CartesianArgumentsProvider<String[]> {
+
+		@Override
+		public Stream<String[]> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of(new String[] { "1", "2" }, new String[] { "3", "4" });
+		}
+
 	}
 
 }
