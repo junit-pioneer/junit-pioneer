@@ -1010,7 +1010,7 @@ class ResourcesTests {
 
 		@DisplayName("then the tests do not run in parallel")
 		@Execution(SAME_THREAD)
-		@RepeatedTest(50)
+		@Test
 		void thenTestsDoNotRunInParallel() {
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
 				() -> PioneerTestKit.executeTestClass(ThrowIfTestsRunConcurrentlyTestCase.class),
@@ -1020,7 +1020,7 @@ class ResourcesTests {
 
 		@DisplayName("then the test factories do not run in parallel")
 		@Execution(SAME_THREAD)
-		@RepeatedTest(50)
+		@Test
 		void thenTestFactoriesDoNotRunInParallel() {
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
 				() -> PioneerTestKit.executeTestClass(ThrowIfTestFactoriesRunConcurrentlyTestCase.class),
@@ -1030,7 +1030,7 @@ class ResourcesTests {
 
 		@DisplayName("then the test templates do not run in parallel")
 		@Execution(SAME_THREAD)
-		@RepeatedTest(50)
+		@Test
 		void thenTestTemplatesDoNotRunInParallel() {
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
 				() -> PioneerTestKit.executeTestClass(ThrowIfTestTemplatesRunConcurrentlyTestCase.class),
@@ -1040,7 +1040,7 @@ class ResourcesTests {
 
 		@DisplayName("then the test class constructors do not run in parallel")
 		@Execution(SAME_THREAD)
-		@RepeatedTest(50)
+		@Test
 		void thenTestClassConstructorsDoNotRunInParallel() {
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
 				() -> PioneerTestKit
