@@ -16,5 +16,6 @@ package org.junitpioneer.jupiter;
  *
  * @see CartesianEnumSource#value()
  */
+@Deprecated
 public enum NullEnum {
 }
