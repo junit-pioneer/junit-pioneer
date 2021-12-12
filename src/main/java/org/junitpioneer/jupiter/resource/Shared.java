@@ -8,15 +8,24 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.resource;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@New(TemporaryDirectory.class)
+import org.junit.jupiter.api.extension.ExtendWith;
+
+@ExtendWith(ResourceExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-public @interface Dir {
+@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
+public @interface Shared {
+
+	Class<? extends ResourceFactory<?>> factory();
+
+	String name();
+
+	String[] arguments() default {};
+
 }

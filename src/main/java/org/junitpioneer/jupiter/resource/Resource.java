@@ -8,15 +8,13 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
-
-import java.util.List;
+package org.junitpioneer.jupiter.resource;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-public interface ResourceFactory<T> extends ExtensionContext.Store.CloseableResource {
+public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
 
-	Resource<T> create(List<String> arguments) throws Exception;
+	T get() throws Exception;
 
 	@Override
 	default void close() throws Exception {

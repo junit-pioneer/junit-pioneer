@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -275,7 +275,7 @@ class ResourcesTests {
 					.withExceptionInstanceOf(ParameterResolutionException.class)
 					.hasMessageStartingWith("Parameter [java.lang.Void ")
 					.hasMessageEndingWith("] in method "
-							+ "[void org.junitpioneer.jupiter.ResourcesTests$TestMethodWithParameterAnnotatedWithBothNewAndShared.theTest(java.lang.Void)] "
+							+ "[void org.junitpioneer.jupiter.resource.ResourcesTests$TestMethodWithParameterAnnotatedWithBothNewAndShared.theTest(java.lang.Void)] "
 							+ "is annotated with both @New and @Shared");
 		}
 
