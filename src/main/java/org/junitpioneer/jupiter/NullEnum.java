@@ -14,6 +14,8 @@ package org.junitpioneer.jupiter;
  * Dummy enum class used as default value for optional attributes of
  * annotations.
  *
+ * @deprecated for removal in favor for new {@link org.junitpioneer.jupiter.cartesian.CartesianTest CartesianTest}.
+ *
  * @see CartesianEnumSource#value()
  */
 @Deprecated

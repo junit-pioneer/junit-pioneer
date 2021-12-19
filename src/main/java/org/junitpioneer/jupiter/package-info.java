@@ -13,7 +13,7 @@
  *     <li>{@link org.junitpioneer.jupiter.Stopwatch}</li>
  * </ul>
  *
- * Also check the following subpackages:
+ * Also check the following packages:
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.cartesian cartesian} (successor of {@link org.junitpioneer.jupiter.CartesianProductTest})</li>
  *     <li>{@link org.junitpioneer.jupiter.issue issue}</li>
