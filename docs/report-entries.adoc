@@ -1,6 +1,6 @@
 :page-title: Publishing Report Entries
 :page-description: Extends JUnit Jupiter with `@ReportEntry`, which publishes report entries using `TestReporter`.
-:snippetsource: ../src/test/java/org/junitpioneer/jupiter/ReportEntryExtensionTests.java
+:snippetsource: ../demo/src/test/java/org/junitpioneer/jupiter/ReportEntryExtensionTests.java
 
 You can use `@ReportEntry` as a simple way to declaratively add metadata to test methods.
 
@@ -22,13 +22,9 @@ From the https://https://junit.org/junit5/docs/current/user-guide/#writing-tests
 
 So, you would use it like this:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-void reportingTest(TestReporter reporter) {
-	// YOUR TEST CODE HERE
-	reporter.publishEntry("Hello World!");
-}
+include::{snippetsource}[tag=no_report_entry]
 ----
 
 You can have a look at https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/TestReporter.html[the official documentation for more details].
@@ -103,14 +99,9 @@ This works just like arguments in https://docs.oracle.com/javase/8/docs/api/java
 Inside the report entry, the parameters can be referenced in any order and multiple times.
 For example, if you have a `@ParameterizedTest` like the following:
 
-[source, java]
+[source,java,indent=0]
 ----
-@ParameterizedTest
-@CsvSource({"Hello, 21", "World, 42"})
-@ReportEntry("{1} - {0} - {1}")
-void test(String line, int number) {
-    // YOUR TEST CODE HERE
-}
+include::{snippetsource}[tag=report_entry_for_params]
 ----
 Then the extension will publish `"21 - Hello - 21"` and `"42 - World - 42"`.
 
