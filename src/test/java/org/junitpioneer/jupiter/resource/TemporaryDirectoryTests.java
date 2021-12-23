@@ -37,7 +37,7 @@ import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("Resources extension")
-class ResourcesTemporaryDirectoryTests {
+class TemporaryDirectoryTests {
 
 	@DisplayName("when a test class has a test method with a @New(TemporaryDirectory.class)-annotated parameter")
 	@Nested

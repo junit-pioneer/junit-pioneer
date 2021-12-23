@@ -37,10 +37,12 @@ import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
 
-final class ResourceExtension implements ParameterResolver, InvocationInterceptor {
+class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private static final ExtensionContext.Namespace NAMESPACE = //
 		ExtensionContext.Namespace.create(ResourceExtension.class);
+
+	private static final AtomicLong KEY_GENERATOR = new AtomicLong(0);
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
@@ -59,48 +61,57 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 			throws ParameterResolutionException {
 		Optional<New> newAnnotation = parameterContext.findAnnotation(New.class);
 		if (newAnnotation.isPresent()) {
-			return resolve(newAnnotation.get(), extensionContext.getStore(NAMESPACE));
+			ExtensionContext.Store testStore = extensionContext.getStore(NAMESPACE);
+			Object resource = resolveNew(newAnnotation.get(), testStore);
+			return checkType(resource, parameterContext.getParameter().getType());
 		}
+
 		Optional<Shared> sharedAnnotation = parameterContext.findAnnotation(Shared.class);
 		if (sharedAnnotation.isPresent()) {
-			return resolve(sharedAnnotation.get(), parameterContext.getDeclaringExecutable().getParameters(),
-				extensionContext.getRoot().getStore(NAMESPACE));
+			Parameter[] parameters = parameterContext.getDeclaringExecutable().getParameters();
+			// TODO: Replace root store with store of next outer class
+			ExtensionContext.Store rootStore = extensionContext.getRoot().getStore(NAMESPACE);
+			Object resource = resolveShared(sharedAnnotation.get(), parameters, rootStore);
+			return checkType(resource, parameterContext.getParameter().getType());
 		}
-		String message = String
+
+		String errorMessage = String
 				.format( //
 					"Parameter [%s] in %s is not annotated with @New or @Shared", //
 					parameterContext.getParameter(), testMethodDescription(extensionContext));
-		throw new ParameterResolutionException(message);
+		throw new ParameterResolutionException(errorMessage);
 	}
 
-	private Object resolve(New newAnnotation, ExtensionContext.Store store) {
+	private <T> T checkType(Object resource, Class<T> type) {
+		if (!type.isInstance(resource)) {
+			String message = String.format("Parameter [%s] is not of the correct target type %s.", resource, type);
+			throw new ParameterResolutionException(message);
+		}
+		return type.cast(resource);
+	}
+
+	private Object resolveNew(New newAnnotation, ExtensionContext.Store store) {
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newAnnotation.value());
-		store.put(newKey(), resourceFactory);
+		store.put(uniqueKey(), resourceFactory);
 		Resource<?> resource;
 		try {
 			resource = resourceFactory.create(unmodifiableList(asList(newAnnotation.arguments())));
-			store.put(newKey(), resource);
+			store.put(uniqueKey(), resource);
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			throw new ParameterResolutionException(
-				"Unable to create a resource from `" + resourceFactory.getClass() + '`', e);
+				"Unable to create a resource from `" + resourceFactory.getClass() + '`', ex);
 		}
 		try {
 			return resource.get();
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			throw new ParameterResolutionException(
-				"Unable to get the contents of the resource created by `" + resourceFactory.getClass() + '`', e);
+				"Unable to get the contents of the resource created by `" + resourceFactory.getClass() + '`', ex);
 		}
 	}
 
-	private long newKey() {
-		return keyGenerator.getAndIncrement();
-	}
-
-	private static final AtomicLong keyGenerator = new AtomicLong(0);
-
-	private Object resolve(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store store) {
+	private Object resolveShared(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store store) {
 		throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
 		throwIfMultipleParametersHaveExactAnnotation(parameters, sharedAnnotation);
 
@@ -111,16 +122,11 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 					ResourceFactory.class);
 		ResourceWithLock<?> resource;
 		try {
-			resource = store.getOrComputeIfAbsent(key(sharedAnnotation), __ -> {
-				try {
-					return new ResourceWithLock<>(
-						resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments()))));
-				}
-				catch (Exception e) {
-					throw new UncheckedParameterResolutionException(new ParameterResolutionException(
-						"Unable to create a resource from `" + sharedAnnotation.factory() + "`", e));
-				}
-			}, ResourceWithLock.class);
+			resource = store
+					.getOrComputeIfAbsent( //
+						resourceKey(sharedAnnotation), //
+						__ -> createResource(sharedAnnotation, resourceFactory), //
+						ResourceWithLock.class);
 		}
 		catch (UncheckedParameterResolutionException e) {
 			throw e.getCause();
@@ -132,7 +138,17 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 			throw new ParameterResolutionException(
 				"Unable to get the contents of the resource created by `" + sharedAnnotation.factory() + '`', e);
 		}
+	}
 
+	private ResourceWithLock<?> createResource(Shared sharedAnnotation, ResourceFactory<?> resourceFactory) {
+		try {
+			return new ResourceWithLock<>(
+				resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments()))));
+		}
+		catch (Exception e) {
+			throw new UncheckedParameterResolutionException(new ParameterResolutionException(
+				"Unable to create a resource from `" + sharedAnnotation.factory() + "`", e));
+		}
 	}
 
 	private void throwIfHasAnnotationWithSameNameButDifferentType(ExtensionContext.Store store,
@@ -173,12 +189,16 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 				.isPresent();
 	}
 
-	private String key(Shared sharedAnnotation) {
-		return sharedAnnotation.name() + " resource";
+	private long uniqueKey() {
+		return KEY_GENERATOR.getAndIncrement();
 	}
 
 	private String factoryKey(Shared sharedAnnotation) {
 		return sharedAnnotation.name() + " resource factory";
+	}
+
+	private String resourceKey(Shared sharedAnnotation) {
+		return sharedAnnotation.name() + " resource";
 	}
 
 	private String keyOfFactoryKey(Shared sharedAnnotation) {
@@ -300,7 +320,7 @@ final class ResourceExtension implements ParameterResolver, InvocationIntercepto
 
 	private ReentrantLock findLockForShared(Shared shared, ExtensionContext.Store store) {
 		return Optional
-				.ofNullable(store.get(key(shared), ResourceWithLock.class))
+				.ofNullable(store.get(resourceKey(shared), ResourceWithLock.class))
 				.orElseThrow(
 					() -> new IllegalStateException("There should be a shared resource for the name " + shared.name()))
 				.lock();

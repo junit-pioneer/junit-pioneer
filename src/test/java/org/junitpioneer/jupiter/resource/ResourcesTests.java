@@ -540,12 +540,4 @@ class ResourcesTests {
 
 	}
 
-	// ---
-
-	@DisplayName("check that all ResourceExtension is final")
-	@Test
-	void checkThatResourceExtensionIsFinal() {
-		assertThat(ResourceExtension.class).isFinal();
-	}
-
 }

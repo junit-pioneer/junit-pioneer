@@ -24,15 +24,16 @@ public final class TemporaryDirectory implements ResourceFactory<Path> {
 		if (arguments.size() >= 2) {
 			throw new IllegalArgumentException("Expected 0 or 1 arguments, but got " + arguments.size());
 		}
-		String prefix = (arguments.size() == 1) ? arguments.get(0) : "";
-		return new InnerResource(Files.createTempDirectory(requireNonNull(prefix, "Argument 0 is null")));
+		String directoryPrefix = (arguments.size() == 1) ? arguments.get(0) : "";
+		requireNonNull(directoryPrefix, "Argument 0 can't be null");
+		return new TemporaryDirectoryResource(Files.createTempDirectory(directoryPrefix));
 	}
 
-	private static final class InnerResource implements Resource<Path> {
+	private static final class TemporaryDirectoryResource implements Resource<Path> {
 
 		private final Path tempDir;
 
-		InnerResource(Path tempDir) {
+		TemporaryDirectoryResource(Path tempDir) {
 			this.tempDir = tempDir;
 		}
 
