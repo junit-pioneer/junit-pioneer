@@ -17,10 +17,14 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-// Visible for testing purposes
+// visible for testing purposes
 class PathDeleter extends SimpleFileVisitor<Path> {
 
 	static final PathDeleter INSTANCE = new PathDeleter();
+
+	// prevent instantiation
+	private PathDeleter() {
+	}
 
 	@Override
 	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -32,10 +36,6 @@ class PathDeleter extends SimpleFileVisitor<Path> {
 	public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
 		Files.deleteIfExists(dir);
 		return FileVisitResult.CONTINUE;
-	}
-
-	// Prevent instantiation
-	private PathDeleter() {
 	}
 
 }
