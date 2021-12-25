@@ -34,7 +34,7 @@ public class NotWorkingExtensionTests {
 				.hasSingleStartedTest()
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
-				.hasMessage("Test marked as 'not working' failed");
+				.hasMessage("Test marked as 'not working' failed as expected");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class NotWorkingExtensionTests {
 				.hasSingleStartedTest()
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
-				.hasMessage("Test marked as 'not working' failed");
+				.hasMessage("Test marked as 'not working' failed as expected");
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class NotWorkingExtensionTests {
 				.hasSingleStartedTest()
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
-				.hasMessage("Test marked as 'not working' failed");
+				.hasMessage("Test marked as 'not working' failed as expected");
 	}
 
 	@Test
@@ -171,7 +171,7 @@ public class NotWorkingExtensionTests {
 	}
 
 	/**
-	 * {@link BeforeEach} should be considered by {@link NotWorking} because it
+	 * {@link AfterEach} should be considered by {@link NotWorking} because it
 	 * might fail due to changes made to the test instance by the test method.
 	 */
 	static class DummyTestClassFailureAfterEach {

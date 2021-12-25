@@ -22,8 +22,9 @@ in most cases; exceptions for this are for example 'flaky' tests.
 
 *Important*: This annotation is *not* intended as a way to mark test methods
 which intentionally cause exceptions.
-Such test methods should use JUnit's `assertThrows` or similar means to explicitly
-test for a specific exception class being thrown by a specific action.
+Such test methods should use https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html#assertThrows(java.lang.Class,org.junit.jupiter.api.function.Executable)[JUnit's `assertThrows`]
+or similar means to explicitly test for a specific exception class being thrown by a
+specific action.
 
 == Basic Use
 

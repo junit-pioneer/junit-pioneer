@@ -26,6 +26,18 @@ class NotWorkingExtension implements Extension, TestExecutionExceptionHandler, L
 		BeforeEachCallback, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(NotWorkingExtension.class);
+
+	/**
+	 * {@code Boolean} key indicating whether a 'not working' exception occurred:
+	 *
+	 * <ul>
+	 *   <li>{@code true}: A 'not working' exception occurred; the extension should cause
+	 *   the test to be skipped
+	 *   <li>{@code false}: No exception occurred; the extension should cause the test to fail
+	 *   <li>{@code null}: A regular test abort exception was thrown by user code; the
+	 *   extension should do nothing
+	 * </ul>
+	 */
 	private static final String EXCEPTION_OCCURRED_STORE_KEY = "exceptionOccurred";
 
 	public NotWorkingExtension() {
@@ -66,7 +78,7 @@ class NotWorkingExtension implements Extension, TestExecutionExceptionHandler, L
 		if (Boolean.TRUE.equals(didExceptionOccur)) {
 			String message = annotation.value();
 			if (message.isEmpty()) {
-				message = "Test marked as 'not working' failed";
+				message = "Test marked as 'not working' failed as expected";
 			}
 
 			throw new TestAbortedException(message);
@@ -82,7 +94,7 @@ class NotWorkingExtension implements Extension, TestExecutionExceptionHandler, L
 			store.remove(EXCEPTION_OCCURRED_STORE_KEY);
 			throw throwable;
 		} else {
-			getStore(context).put(EXCEPTION_OCCURRED_STORE_KEY, true);
+			store.put(EXCEPTION_OCCURRED_STORE_KEY, true);
 		}
 	}
 
@@ -94,7 +106,7 @@ class NotWorkingExtension implements Extension, TestExecutionExceptionHandler, L
 			store.remove(EXCEPTION_OCCURRED_STORE_KEY);
 			LifecycleMethodExecutionExceptionHandler.super.handleAfterEachMethodExecutionException(context, throwable);
 		} else {
-			getStore(context).put(EXCEPTION_OCCURRED_STORE_KEY, true);
+			store.put(EXCEPTION_OCCURRED_STORE_KEY, true);
 		}
 	}
 
