@@ -11,12 +11,12 @@
  * Argument providers for a range of numbers.
  * <p>Check out the following types for details on providing values for parameterized tests:
  * <ul>
- *     <li>{@link org.junitpioneer.jupiter.params.ByteRange}</li>
- *     <li>{@link org.junitpioneer.jupiter.params.ShortRange}</li>
- *     <li>{@link org.junitpioneer.jupiter.params.IntRange}</li>
- *     <li>{@link org.junitpioneer.jupiter.params.LongRange}</li>
- *     <li>{@link org.junitpioneer.jupiter.params.FloatRange}</li>
- *     <li>{@link org.junitpioneer.jupiter.params.DoubleRange}</li>
+ *     <li>{@link org.junitpioneer.jupiter.params.ByteRangeSource}</li>
+ *     <li>{@link org.junitpioneer.jupiter.params.ShortRangeSource}</li>
+ *     <li>{@link org.junitpioneer.jupiter.params.IntRangeSource}</li>
+ *     <li>{@link org.junitpioneer.jupiter.params.LongRangeSource}</li>
+ *     <li>{@link org.junitpioneer.jupiter.params.FloatRangeSource}</li>
+ *     <li>{@link org.junitpioneer.jupiter.params.DoubleRangeSource}</li>
  * </ul>
  */
 
