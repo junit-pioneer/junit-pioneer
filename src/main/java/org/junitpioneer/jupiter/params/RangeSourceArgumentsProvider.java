@@ -44,6 +44,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
+@SuppressWarnings("deprecation") // For CartesianAnnotationConsumer
 class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
 

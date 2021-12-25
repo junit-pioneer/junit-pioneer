@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface RangeClass {
 
+	@SuppressWarnings("rawtypes")
 	Class<? extends Range> value();
 
 }

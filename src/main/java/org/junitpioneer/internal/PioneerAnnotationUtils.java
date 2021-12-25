@@ -60,6 +60,7 @@ public class PioneerAnnotationUtils {
 	 * <em>enclosing-present</em> on the test element (method or class) belonging to the
 	 * specified {@code context}.
 	 */
+	@SafeVarargs
 	public static boolean isAnyAnnotationPresent(ExtensionContext context,
 			Class<? extends Annotation>... annotationTypes) {
 		return Stream
@@ -75,6 +76,7 @@ public class PioneerAnnotationUtils {
 	 * <em>enclosing-present</em> on the test element (method or class) belonging to the specified
 	 * {@code context}.
 	 */
+	@SafeVarargs
 	public static boolean isAnyRepeatableAnnotationPresent(ExtensionContext context,
 			Class<? extends Annotation>... annotationTypes) {
 		return Stream

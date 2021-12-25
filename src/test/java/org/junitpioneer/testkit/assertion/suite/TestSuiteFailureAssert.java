@@ -24,7 +24,12 @@ interface TestSuiteFailureAssert {
 	 * @param exceptionTypes the exception types you want to check
 	 * @return a {@link ListAssert} for asserting exception messages
 	 */
-	ListAssert<String> withExceptionInstancesOf(Class<? extends Throwable>... exceptionTypes);
+	/*
+	 * Note: Parameter type should be `Class<? extends Throwable>...`,
+	 * but @SafeVarargs is currently not permitted on abstract methods,
+	 * which causes annoying warnings on every usage of this method
+	 */
+	ListAssert<String> withExceptionInstancesOf(Class<?>... exceptionTypes);
 
 	/**
 	 * Asserts that all failed tests failed because of a Throwable.

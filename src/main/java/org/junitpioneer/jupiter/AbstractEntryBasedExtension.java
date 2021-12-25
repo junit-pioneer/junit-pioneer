@@ -107,6 +107,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		return getActualTypeArgumentAt(3);
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> Class<T> getActualTypeArgumentAt(int index) {
 		ParameterizedType abstractEntryBasedExtensionType = (ParameterizedType) getClass().getGenericSuperclass();
 		return (Class<T>) abstractEntryBasedExtensionType.getActualTypeArguments()[index];

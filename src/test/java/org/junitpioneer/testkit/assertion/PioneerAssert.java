@@ -266,9 +266,9 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@SafeVarargs
 	@Override
-	public final ListAssert<String> withExceptionInstancesOf(Class<? extends Throwable>... exceptionTypes) {
+	public final ListAssert<String> withExceptionInstancesOf(Class<?>... exceptionTypes) {
 		return assertExceptions(events -> {
-			Stream<Class<? extends Throwable>> classStream = getAllExceptions(events).map(Throwable::getClass);
+			Stream<Class<?>> classStream = getAllExceptions(events).map(Throwable::getClass);
 			Assertions.assertThat(classStream).containsOnly(exceptionTypes);
 		});
 	}

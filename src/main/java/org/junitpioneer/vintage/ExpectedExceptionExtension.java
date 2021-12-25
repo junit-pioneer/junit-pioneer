@@ -80,6 +80,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 		}
 	}
 
+	@SuppressWarnings("deprecation") // For @Test
 	private static Optional<? extends Class<? extends Throwable>> expectedException(ExtensionContext context) {
 		return findAnnotation(context.getElement(), Test.class)
 				.map(Test::expected)

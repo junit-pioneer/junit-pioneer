@@ -38,6 +38,7 @@ public @interface CartesianArgumentsSource {
 	/**
 	 * The type of {@link CartesianArgumentsProvider} to be used.
 	 */
+	@SuppressWarnings("rawtypes")
 	Class<? extends CartesianArgumentsProvider> value();
 
 }

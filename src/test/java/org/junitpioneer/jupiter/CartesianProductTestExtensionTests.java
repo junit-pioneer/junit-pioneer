@@ -29,7 +29,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.PreconditionViolationException;
-import org.junitpioneer.jupiter.CartesianEnumSource.Mode;
 import org.junitpioneer.jupiter.params.ByteRangeSource;
 import org.junitpioneer.jupiter.params.DoubleRangeSource;
 import org.junitpioneer.jupiter.params.FloatRangeSource;
@@ -491,6 +490,7 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static CartesianProductTest.Sets nFold() {
 		return new CartesianProductTest.Sets()
 				.add("Alpha", "Omega")
@@ -498,6 +498,7 @@ public class CartesianProductTestExtensionTests {
 				.add(TimeUnit.DAYS, TimeUnit.HOURS);
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static CartesianProductTest.Sets supplyValues() {
 		return new CartesianProductTest.Sets().add("War", "Peace").add(TimeUnit.SECONDS, TimeUnit.DAYS);
 	}
@@ -933,6 +934,7 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	@Nested
 	@DisplayName("sets")
 	class SetsTests {
@@ -970,6 +972,7 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class BasicConfigurationTestCases {
 
 		@CartesianProductTest({ "0", "1" })
@@ -1035,10 +1038,12 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	public static CartesianProductTest.Sets explicitFactory() {
 		return new CartesianProductTest.Sets().add(1, 2, 3).add("A", "B");
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	public static class NestedClass {
 
 		public static CartesianProductTest.Sets explicitFactory() {
@@ -1047,10 +1052,12 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static CartesianProductTest.Sets withNulls() {
 		return new CartesianProductTest.Sets().add(new Object[] { null }).add(1, 2);
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class BadConfigurationTestCases {
 
 		@CartesianProductTest(value = { "1", "2" }, name = "")
@@ -1137,6 +1144,7 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class CartesianValueSourceTestCases {
 
 		@CartesianProductTest
@@ -1183,6 +1191,7 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class CartesianEnumSourceTestCases {
 
 		@CartesianProductTest
@@ -1208,32 +1217,35 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" }, mode = Mode.INCLUDE)
-		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "BETA", "GAMMA" }, mode = Mode.EXCLUDE)
+		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" }, mode = CartesianEnumSource.Mode.INCLUDE)
+		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "BETA",
+				"GAMMA" }, mode = CartesianEnumSource.Mode.EXCLUDE)
 		@ReportEntry("{0} - {1}")
 		void someValues(TestEnum e1, AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "ONE", "TWO" }, mode = Mode.INCLUDE)
-		@CartesianEnumSource(names = { "BETA", "GAMMA" }, mode = Mode.EXCLUDE)
+		@CartesianEnumSource(names = { "ONE", "TWO" }, mode = CartesianEnumSource.Mode.INCLUDE)
+		@CartesianEnumSource(names = { "BETA", "GAMMA" }, mode = CartesianEnumSource.Mode.EXCLUDE)
 		@ReportEntry("{0} - {1}")
 		void someValuesWithOmittedTypes(TestEnum e1, AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "O.*", "TW.*" }, mode = Mode.MATCH_ANY)
-		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "AL.*", ".*PHA" }, mode = Mode.MATCH_ALL)
+		@CartesianEnumSource(value = TestEnum.class, names = { "O.*",
+				"TW.*" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
+		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "AL.*",
+				".*PHA" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
 		@ReportEntry("{0} - {1}")
 		void patternValues(TestEnum e1, AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "O.*", "TW.*" }, mode = Mode.MATCH_ANY)
-		@CartesianEnumSource(names = { "AL.*", ".*PHA" }, mode = Mode.MATCH_ALL)
+		@CartesianEnumSource(names = { "O.*", "TW.*" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
+		@CartesianEnumSource(names = { "AL.*", ".*PHA" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
 		@ReportEntry("{0} - {1}")
 		void patternValuesWithOmittedTypes(TestEnum e1, AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
@@ -1297,27 +1309,28 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = Mode.MATCH_ANY)
+		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
 		void wrongAnyPattern(TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ANY)
+		@CartesianEnumSource(names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
 		void wrongAnyPatternWithOmittedType(TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = Mode.MATCH_ALL)
+		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
 		void wrongAllPattern(TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ALL)
+		@CartesianEnumSource(names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
 		void wrongAllPatternWithOmittedType(TestEnum e1) {
 		}
 
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class RedundantInputSetTestCases {
 
 		@CartesianProductTest(value = { "1", "1", "2" })
@@ -1340,6 +1353,7 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static CartesianProductTest.Sets nonDistinctInputs() {
 		//@formatter:off
 		return new CartesianProductTest.Sets()
@@ -1348,6 +1362,7 @@ public class CartesianProductTestExtensionTests {
 		//@formatter:on
 	}
 
+	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class ArgumentsSourceTestCases {
 
 		@CartesianProductTest
@@ -1433,6 +1448,7 @@ public class CartesianProductTestExtensionTests {
 			this.testInfo = info;
 		}
 
+		@SuppressWarnings("deprecation") // For CartesianProductTest
 		@CartesianProductTest
 		@ReportEntry("{0}{1}")
 		@CartesianValueSource(ints = { 1, 2 })
