@@ -25,8 +25,7 @@ public class StopwatchExtensionTests {
 	@Test
 	void runClassLevelAnnotationTest() {
 
-		ExecutionResults results = PioneerTestKit
-				.executeTestClass(StopwatchExtensionTests.ClassLevelAnnotationTest.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(ClassLevelAnnotationTestCases.class);
 
 		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
 
@@ -40,8 +39,7 @@ public class StopwatchExtensionTests {
 	void runClassAndMethodLevelAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassAndMethodLevel";
 
-		ExecutionResults results = PioneerTestKit
-				.executeTestClass(StopwatchExtensionTests.ClassAndMethodLevelAnnotationTest.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(ClassAndMethodLevelAnnotationTestCases.class);
 		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
 
 		assertStringStartWithUnitAndContainsName(results, methodName);
@@ -52,8 +50,7 @@ public class StopwatchExtensionTests {
 	void runMethodLevelAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel";
 
-		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(StopwatchExtensionTests.MethodLevelAnnotationTest.class, methodName);
+		ExecutionResults results = PioneerTestKit.executeTestMethod(MethodLevelAnnotationTestCases.class, methodName);
 		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
 
 		assertStringStartWithUnitAndContainsName(results, methodName);
@@ -64,8 +61,7 @@ public class StopwatchExtensionTests {
 	void runAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldNotBeExecuted";
 
-		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(StopwatchExtensionTests.NonAnnotationTest.class, methodName);
+		ExecutionResults results = PioneerTestKit.executeTestMethod(NonAnnotationTestCases.class, methodName);
 		PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
 
 	}
@@ -82,7 +78,7 @@ public class StopwatchExtensionTests {
 	 * Inner test class for testing the class level annotation.
 	 */
 	@Stopwatch
-	static class ClassLevelAnnotationTest {
+	static class ClassLevelAnnotationTestCases {
 
 		@Test
 		void stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel() {
@@ -93,7 +89,7 @@ public class StopwatchExtensionTests {
 	/**
 	 * Inner test class for testing the method level annotation.
 	 */
-	static class MethodLevelAnnotationTest {
+	static class MethodLevelAnnotationTestCases {
 
 		@Stopwatch
 		@Test
@@ -106,7 +102,7 @@ public class StopwatchExtensionTests {
 	 * Inner test class for testing the class level annotation.
 	 */
 	@Stopwatch
-	static class ClassAndMethodLevelAnnotationTest {
+	static class ClassAndMethodLevelAnnotationTestCases {
 
 		@Stopwatch
 		@Test
@@ -118,7 +114,7 @@ public class StopwatchExtensionTests {
 	/**
 	 * Inner test class for testing a not annotated method / class annotation.
 	 */
-	static class NonAnnotationTest {
+	static class NonAnnotationTestCases {
 
 		@Test
 		void stopwatchExtensionShouldNotBeExecuted() {

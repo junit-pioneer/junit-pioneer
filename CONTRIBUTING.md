@@ -171,6 +171,7 @@ If they fail after "store", they will still "restore" and thus potentially creat
 ### Tests
 
 The name of test classes _must_ end with `Tests`, otherwise Gradle will ignore them.
+The name of nested classes which are used as test fixture for executing Jupiter should end with `TestCases`, even when they only contain a single test method.
 
 #### Assertions
 

@@ -163,11 +163,11 @@ class RangeSourceArgumentsProviderTests {
 	}
 
 	@Nested
-	class InvalidRangeTestCases {
+	class InvalidRangeTests {
 
 		@Test
 		void twoAnnotations() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "twoAnnotations");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRangeTestCases.class, "twoAnnotations");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -177,7 +177,7 @@ class RangeSourceArgumentsProviderTests {
 
 		@Test
 		void zeroStep() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "zeroStep");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRangeTestCases.class, "zeroStep");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -187,7 +187,7 @@ class RangeSourceArgumentsProviderTests {
 
 		@Test
 		void illegalStep() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "illegalStep");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRangeTestCases.class, "illegalStep");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -197,7 +197,7 @@ class RangeSourceArgumentsProviderTests {
 
 		@Test
 		void emptyRange() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "emptyRange");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRangeTestCases.class, "emptyRange");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -207,7 +207,7 @@ class RangeSourceArgumentsProviderTests {
 
 	}
 
-	static class InvalidRanges {
+	static class InvalidRangeTestCases {
 
 		@IntRangeSource(from = 1, to = 2)
 		@LongRangeSource(from = 1L, to = 2L)
