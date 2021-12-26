@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.LifecycleMethodExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
 
 class NotWorkingExtension implements Extension, TestExecutionExceptionHandler, LifecycleMethodExecutionExceptionHandler,
@@ -40,6 +41,9 @@ class NotWorkingExtension implements Extension, TestExecutionExceptionHandler, L
 	 */
 	private static final String EXCEPTION_OCCURRED_STORE_KEY = "exceptionOccurred";
 
+	/**
+	 * No-arg constructor for JUnit to be able to create an instance.
+	 */
 	public NotWorkingExtension() {
 	}
 
@@ -48,7 +52,10 @@ class NotWorkingExtension implements Extension, TestExecutionExceptionHandler, L
 	}
 
 	private static NotWorking getNotWorkingAnnotation(ExtensionContext context) {
-		return context.getRequiredTestMethod().getDeclaredAnnotation(NotWorking.class);
+		return AnnotationSupport
+				.findAnnotation(context.getRequiredTestMethod(), NotWorking.class)
+				.orElseThrow(() -> new IllegalStateException("@NotWorking is missing."));
+
 	}
 
 	/**

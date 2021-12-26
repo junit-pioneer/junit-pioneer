@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -27,12 +28,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * to let the developer know that the test is now successful and that the {@code @NotWorking}
  * annotation can be removed.
  *
- * <p>The big advantage over JUnit's {@link org.junit.jupiter.api.Disabled @Disabled} annotation
- * is that the developer is informed as soon as a test is successful again.
+ * <p>The big difference compared to JUnit's {@link org.junit.jupiter.api.Disabled @Disabled}
+ * annotation is that the developer is informed as soon as a test is successful again.
  * This helps avoiding writing duplicate tests by accident and counteracts the accumulation
  * of disabled tests over time.
- * It is therefore recommended to prefer using {@code @NotWorking} over {@code @Disabled}
- * in most cases; exceptions for this are for example 'flaky' tests.
+ *
+ * <p>The annotation can only be used on methods and as meta-annotation on other annotation types.
+ * Similar to {@code @Disabled}, it has to be used in addition to a "testable" annotation, such
+ * as {@link org.junit.jupiter.api.Test @Test}. Otherwise the annotation has no effect.
  *
  * <p><b>Important:</b> This annotation is <b>not</b> intended as a way to mark test methods
  * which intentionally cause exceptions.
@@ -48,15 +51,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 /*
  * Implementation note:
- * Only supports METHOD as target but not test classes because there it is not clear
- * what the 'correct' behavior would be when only a few test methods execute successfully.
- * Would the developer then have to remove the @NotWorking annotation from the test
- * class and annotate methods individually?
+ * Only supports METHOD and ANNOTATION_TYPE as targets but not test classes because there
+ * it is not clear what the 'correct' behavior would be when only a few test methods
+ * execute successfully. Would the developer then have to remove the @NotWorking annotation
+ * from the test class and annotate methods individually?
  * Additionally it is rather unlikely that a complete test class is 'not working'.
  */
 @Documented
 @Retention(RUNTIME)
-@Target(METHOD)
+@Target({ METHOD, ANNOTATION_TYPE })
 @ExtendWith(NotWorkingExtension.class)
 public @interface NotWorking {
 
