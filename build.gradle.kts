@@ -237,6 +237,7 @@ tasks {
 			links = listOf("https://junit.org/junit5/docs/current/api/")
 
 			// Set javadoc `--release` flag (affects which warnings and errors are reported)
+			// (Note: Gradle adds one leading '-' to the option on its own)
 			addStringOption("-release", targetJavaVersion.getMajorVersion())
 
 			// Enable doclint, but ignore warnings for missing tags, see
