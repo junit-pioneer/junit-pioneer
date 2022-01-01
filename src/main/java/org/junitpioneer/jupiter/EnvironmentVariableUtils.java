@@ -95,7 +95,19 @@ class EnvironmentVariableUtils {
 	private static Map<String, String> getFieldValue(Class<?> clazz, Object object, String name)
 			throws ReflectiveOperationException {
 		Field field = clazz.getDeclaredField(name);
-		field.setAccessible(true); //NOSONAR illegal access required to implement the extension
+		try {
+			field.setAccessible(true); //NOSONAR illegal access required to implement the extension
+		}
+		catch (RuntimeException ex) {
+			// Java 9 added InaccessibleObjectException (but this project compiles against Java 8 at the moment)
+			if (ex.getClass().getName().equals("java.lang.reflect.InaccessibleObjectException")) {
+				throw new ExtensionConfigurationException("Cannot access JDK internals to modify environment variables."
+						+ " Have a look at the Javadoc or the documentation for possible solutions.",
+					ex);
+			} else {
+				throw ex;
+			}
+		}
 		return (Map<String, String>) field.get(object);
 	}
 
