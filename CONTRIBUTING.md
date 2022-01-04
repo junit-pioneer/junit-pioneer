@@ -186,9 +186,9 @@ Pioneer now has its own assertions for asserting not directly executed tests.
 This means asserting `ExecutionResults`.
 We can divide those kinds of assertions into two categories: test case assertions and test suite assertions.
  - Test case assertions are the ones where you assert a single test, e.g.: it failed with an exception or succeeded.
- For those, use the assertions that being with `hasSingle...`, e.g.: `hasSingleSucceededTest()`.
+ For those, use the assertions that begin with `hasSingle...`, e.g.: `hasSingleSucceededTest()`.
  - Test suite assertions are the ones where you assert multiple tests and their outcomes, e.g.: three tests started, two failed, one succeeded.
- For those, use the assertions that being with `hasNumberOf...`, e.g.: `hasNumberOfFailedTests(1)`.
+ For those, use the assertions that begin with `hasNumberOf...`, e.g.: `hasNumberOfFailedTests(1)`.
 
 Do not mix the two - while technically correct (meaning you _can_ write `hasNumberOfFailedTests(3).hasSingleSucceededTest()`) it is better to handle them separately.
 
