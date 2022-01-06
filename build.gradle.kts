@@ -227,6 +227,11 @@ tasks {
 	}
 
 	javadoc {
+		javadocTool.set(project.javaToolchains.javadocToolFor {
+			// Create Javadoc with newer JDK to get the latest features, e.g. search bar
+			languageVersion.set(JavaLanguageVersion.of(17))
+		})
+
 		// Exclude internal implementation package from javadoc
 		exclude("org/junitpioneer/internal")
 
@@ -234,18 +239,18 @@ tasks {
 			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937
 			this as StandardJavadocDocletOptions
 
+			encoding = "UTF-8"
 			links = listOf("https://junit.org/junit5/docs/current/api/")
 
 			// Set javadoc `--release` flag (affects which warnings and errors are reported)
 			// (Note: Gradle adds one leading '-' to the option on its own)
-			addStringOption("-release", targetJavaVersion.getMajorVersion())
+			addStringOption("-release", targetJavaVersion.majorVersion)
 
 			// Enable doclint, but ignore warnings for missing tags, see
 			// https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#additional-options-provided-by-the-standard-doclet
 			// The Gradle option methods are rather misleading, but a boolean `true` value just makes sure the flag
 			// is passed to javadoc, see https://github.com/gradle/gradle/issues/2354
 			addBooleanOption("Xdoclint:all,-missing", true)
-			encoding = "UTF-8"
 		}
 
 		shouldRunAfter(test)
@@ -287,11 +292,4 @@ tasks {
 		githubToken = generateChangelogTask.githubToken
 		newTagRevision = System.getenv("GITHUB_SHA")
 	}
-}
-
-tasks.withType<Javadoc>().configureEach {
-	javadocTool.set(javaToolchains.javadocToolFor {
-		// Create Javadoc with newer JDK to get the latest features, e.g. search bar
-		languageVersion.set(JavaLanguageVersion.of(17))
-	})
 }
