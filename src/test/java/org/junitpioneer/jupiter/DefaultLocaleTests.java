@@ -99,7 +99,7 @@ class DefaultLocaleTests {
 		@WritesDefaultLocale
 		@DisplayName("should execute tests with configured Locale")
 		void shouldExecuteTestsWithConfiguredLocale() {
-			ExecutionResults results = executeTestClass(ClassLevelTestCase.class);
+			ExecutionResults results = executeTestClass(ClassLevelTestCases.class);
 
 			assertThat(results).hasNumberOfSucceededTests(2);
 		}
@@ -112,7 +112,7 @@ class DefaultLocaleTests {
 	}
 
 	@DefaultLocale(language = "fr", country = "FR")
-	static class ClassLevelTestCase {
+	static class ClassLevelTestCases {
 
 		@Test
 		@ReadsDefaultLocale
@@ -180,7 +180,7 @@ class DefaultLocaleTests {
 			@Test
 			@DisplayName("should fail when nothing is configured")
 			void shouldFailWhenNothingIsConfigured() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 					"shouldFailMissingConfiguration");
 
 				assertThat(results)
@@ -191,7 +191,7 @@ class DefaultLocaleTests {
 			@Test
 			@DisplayName("should fail when variant is set but country is not")
 			void shouldFailWhenVariantIsSetButCountryIsNot() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 					"shouldFailMissingCountry");
 
 				assertThat(results)
@@ -202,7 +202,7 @@ class DefaultLocaleTests {
 			@Test
 			@DisplayName("should fail when languageTag and language is set")
 			void shouldFailWhenLanguageTagAndLanguageIsSet() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 					"shouldFailLanguageTagAndLanguage");
 
 				assertThat(results)
@@ -213,7 +213,7 @@ class DefaultLocaleTests {
 			@Test
 			@DisplayName("should fail when languageTag and country is set")
 			void shouldFailWhenLanguageTagAndCountryIsSet() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 					"shouldFailLanguageTagAndCountry");
 
 				assertThat(results)
@@ -224,7 +224,7 @@ class DefaultLocaleTests {
 			@Test
 			@DisplayName("should fail when languageTag and variant is set")
 			void shouldFailWhenLanguageTagAndVariantIsSet() {
-				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCase.class,
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 					"shouldFailLanguageTagAndVariant");
 
 				assertThat(results)
@@ -241,7 +241,7 @@ class DefaultLocaleTests {
 			@Test
 			@DisplayName("should fail when variant is set but country is not")
 			void shouldFailWhenVariantIsSetButCountryIsNot() {
-				ExecutionResults results = executeTestClass(ClassLevelInitializationFailureTestCase.class);
+				ExecutionResults results = executeTestClass(ClassLevelInitializationFailureTestCases.class);
 
 				assertThat(results)
 						.hasSingleFailedTest()
@@ -252,7 +252,7 @@ class DefaultLocaleTests {
 
 	}
 
-	static class MethodLevelInitializationFailureTestCase {
+	static class MethodLevelInitializationFailureTestCases {
 
 		@Test
 		@DefaultLocale
@@ -282,7 +282,7 @@ class DefaultLocaleTests {
 	}
 
 	@DefaultLocale(language = "de", variant = "ch")
-	static class ClassLevelInitializationFailureTestCase {
+	static class ClassLevelInitializationFailureTestCases {
 
 		@Test
 		void shouldFail() {

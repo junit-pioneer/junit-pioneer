@@ -349,7 +349,7 @@ public class CartesianTestExtensionTests {
 			@Test
 			@DisplayName("when test class has a constructor with auto-injected values")
 			void testClassWithConstructor() {
-				ExecutionResults results = PioneerTestKit.executeTestClass(TestClassWithConstructor.class);
+				ExecutionResults results = PioneerTestKit.executeTestClass(TestClassWithConstructorTestCases.class);
 
 				assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
 				assertThat(results).hasNumberOfReportEntries(4).withValues("13", "14", "23", "24");
@@ -903,11 +903,11 @@ public class CartesianTestExtensionTests {
 
 	}
 
-	static class TestClassWithConstructor {
+	static class TestClassWithConstructorTestCases {
 
 		private final TestInfo testInfo;
 
-		TestClassWithConstructor(TestInfo info) {
+		TestClassWithConstructorTestCases(TestInfo info) {
 			this.testInfo = info;
 		}
 

@@ -29,7 +29,7 @@ class DisabledUntilExtensionTests {
 	@DisplayName("Should enable test without annotation")
 	void shouldEnableTestWithoutAnnotation() {
 		final ExecutionResults results = PioneerTestKit
-				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class, "testNoAnnotation");
+				.executeTestMethod(DisabledUntilTestCases.class, "testNoAnnotation");
 		assertThat(results).hasSingleStartedTest();
 		assertThat(results).hasSingleSucceededTest();
 		assertThat(results).hasNumberOfSkippedTests(0);
@@ -40,8 +40,7 @@ class DisabledUntilExtensionTests {
 	@DisplayName("Should enable test with unparsable `date`` string")
 	void shouldEnableTestWithUnparsableUntilDateString() {
 		final ExecutionResults results = PioneerTestKit
-				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class,
-					"testUnparsableUntilDateString");
+				.executeTestMethod(DisabledUntilTestCases.class, "testUnparsableUntilDateString");
 		assertThat(results).hasSingleStartedTest();
 		assertThat(results).hasSingleFailedTest();
 		assertThat(results).hasNumberOfSkippedTests(0);
@@ -52,8 +51,7 @@ class DisabledUntilExtensionTests {
 	@DisplayName("Should enable test with `date` in the past")
 	void shouldEnableTestWithUntilDateInThePast() {
 		final ExecutionResults results = PioneerTestKit
-				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class,
-					"testIsAnnotatedWithDateInThePast");
+				.executeTestMethod(DisabledUntilTestCases.class, "testIsAnnotatedWithDateInThePast");
 		assertThat(results).hasSingleStartedTest();
 		assertThat(results).hasSingleSucceededTest();
 		assertThat(results).hasNumberOfSkippedTests(0);
@@ -67,8 +65,7 @@ class DisabledUntilExtensionTests {
 	@DisplayName("Should disable test with `date` in the future")
 	void shouldDisableTestWithUntilDateInTheFuture() {
 		final ExecutionResults results = PioneerTestKit
-				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.class,
-					"testIsAnnotatedWithDateInTheFuture");
+				.executeTestMethod(DisabledUntilTestCases.class, "testIsAnnotatedWithDateInTheFuture");
 		assertThat(results).hasNumberOfStartedTests(0);
 		assertThat(results).hasSingleSkippedTest();
 		assertThat(results).hasNoReportEntries();
@@ -78,15 +75,14 @@ class DisabledUntilExtensionTests {
 	@DisplayName("Should disable nested test with `date` in the future when meta annotated by higher level container")
 	void shouldDisableNestedTestWithUntilDateInTheFutureWhenMetaAnnotated() {
 		final ExecutionResults results = PioneerTestKit
-				.executeTestMethod(DisabledUntilExtensionTests.DisabledUntilDummyTestClass.NestedDummyTestClass.class,
-					"shouldRetrieveFromClass");
+				.executeTestMethod(DisabledUntilTestCases.NestedTestCases.class, "shouldRetrieveFromClass");
 		assertThat(results).hasSingleSkippedContainer(); // NestedDummyTestClass is skipped as container
 		assertThat(results).hasNumberOfStartedTests(0);
 		assertThat(results).hasNumberOfSkippedTests(0);
 		assertThat(results).hasNoReportEntries();
 	}
 
-	static class DisabledUntilDummyTestClass {
+	static class DisabledUntilTestCases {
 
 		@Test
 		void testNoAnnotation() {
@@ -113,7 +109,7 @@ class DisabledUntilExtensionTests {
 
 		@Nested
 		@DisabledUntil(reason = "Yowza!", date = "2199-01-01")
-		class NestedDummyTestClass {
+		class NestedTestCases {
 
 			@Test
 			void shouldRetrieveFromClass() {

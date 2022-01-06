@@ -11,6 +11,7 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 * [Writing Code](#writing-code)
 	* [Code Organization](#code-organization)
 	* [Code Style](#code-style)
+	* [Tests](#tests)
 	* [Documentation](#documentation)
 	* [Git](#git)
 * [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
@@ -145,25 +146,6 @@ How to write the code itself.
 * design code to avoid optionality wherever feasibly possible
 * in all remaining cases, prefer `Optional` over `null`
 
-#### Assertions
-
-All tests shall use [AssertJ](https://assertj.github.io/doc/)'s assertions and not the ones built into Jupiter:
-
-* more easily discoverable API
-* more detailed assertion failures
-
-Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue(bool)` vs `assertThat(bool).isTrue()`) - that will spare us the discussion which assertion to use in a specific case.
-
-Pioneer now has its own assertions for asserting not directly executed tests.
-This means asserting `ExecutionResults`.
-We can divide those kinds of assertions into two categories: test case assertions and test suite assertions.
- - Test case assertions are the ones where you assert a single test, e.g.: it failed with an exception or succeeded.
- For those, use the assertions that being with `hasSingle...`, e.g.: `hasSingleSucceededTest()`.
- - Test suite assertions are the ones where you assert multiple tests and their outcomes, e.g.: three tests started, two failed, one succeeded.
- For those, use the assertions that being with `hasNumberOf...`, e.g.: `hasNumberOfFailedTests(1)`.
-
-Do not mix the two - while technically correct (meaning you _can_ write `hasNumberOfFailedTests(3).hasSingleSucceededTest()`) it is better to handle them separately.
-
 #### Thread-safety
 
 It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.
@@ -185,6 +167,30 @@ Most extensions verify their configuration at some point.
 It helps with writing parallel tests for them if they do not change global state until the configuration is verified.
 That particularly applies to "store in beforeEach - restore in afterEach"-extensions!
 If they fail after "store", they will still "restore" and thus potentially create a race condition with other tests.
+
+### Tests
+
+The name of test classes _must_ end with `Tests`, otherwise Gradle will ignore them.
+The name of nested classes which are used as test fixture for executing Jupiter should end with `TestCases`, even when they only contain a single test method.
+
+#### Assertions
+
+All tests shall use [AssertJ](https://assertj.github.io/doc/)'s assertions and not the ones built into Jupiter:
+
+* more easily discoverable API
+* more detailed assertion failures
+
+Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue(bool)` vs `assertThat(bool).isTrue()`) - that will spare us the discussion which assertion to use in a specific case.
+
+Pioneer now has its own assertions for asserting not directly executed tests.
+This means asserting `ExecutionResults`.
+We can divide those kinds of assertions into two categories: test case assertions and test suite assertions.
+ - Test case assertions are the ones where you assert a single test, e.g.: it failed with an exception or succeeded.
+ For those, use the assertions that begin with `hasSingle...`, e.g.: `hasSingleSucceededTest()`.
+ - Test suite assertions are the ones where you assert multiple tests and their outcomes, e.g.: three tests started, two failed, one succeeded.
+ For those, use the assertions that begin with `hasNumberOf...`, e.g.: `hasNumberOfFailedTests(1)`.
+
+Do not mix the two - while technically correct (meaning you _can_ write `hasNumberOfFailedTests(3).hasSingleSucceededTest()`) it is better to handle them separately.
 
 ### Documentation
 

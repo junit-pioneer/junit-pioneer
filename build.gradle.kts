@@ -204,9 +204,8 @@ tasks {
 	}
 
 	test {
-		
-    	    	configure<JacocoTaskExtension> {
-       		isEnabled = !experimentalBuild
+		configure<JacocoTaskExtension> {
+			isEnabled = !experimentalBuild
 		}
 		testLogging {
 			setExceptionFormat("full")
