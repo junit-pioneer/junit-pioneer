@@ -20,6 +20,7 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.th
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.UnknownHostException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.List;
@@ -267,16 +268,16 @@ class ResourcesTests {
 
 		@DisplayName("then an exception is thrown")
 		@Test
-		void thenExceptionIsThrown() {
+		void thenExceptionIsThrown() throws Exception {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndShared.class);
+			Method failingTest = TestMethodWithParameterAnnotatedWithBothNewAndShared.class
+					.getDeclaredMethod("theTest", String.class);
 			assertThat(executionResults)
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ParameterResolutionException.class)
-					.hasMessageStartingWith("Parameter [java.lang.Void ")
-					.hasMessageEndingWith("] in method "
-							+ "[void org.junitpioneer.jupiter.resource.ResourcesTests$TestMethodWithParameterAnnotatedWithBothNewAndShared.theTest(java.lang.Void)] "
-							+ "is annotated with both @New and @Shared");
+					.hasMessage("Parameter [%s] in method [%s] is annotated with both @New and @Shared",
+						failingTest.getParameters()[0], failingTest);
 		}
 
 	}
@@ -285,17 +286,17 @@ class ResourcesTests {
 
 		@Test
 		void theTest(
-				@New(DummyResourceFactory.class) @Shared(factory = DummyResourceFactory.class, name = "some-name") Void param) {
+				@New(DummyResourceFactory.class) @Shared(factory = DummyResourceFactory.class, name = "some-name") String param) {
 			fail("We should not get this far.");
 		}
 
 	}
 
-	static final class DummyResourceFactory implements ResourceFactory<Void> {
+	static final class DummyResourceFactory implements ResourceFactory<String> {
 
 		@Override
-		public Resource<Void> create(List<String> arguments) {
-			return () -> null;
+		public Resource<String> create(List<String> arguments) {
+			return () -> "dummy";
 		}
 
 	}
@@ -333,17 +334,17 @@ class ResourcesTests {
 	static class SingleTestMethodWithConflictingSharedTempDirParametersTestCases {
 
 		@Test
-		void theTest(@Shared(factory = DummyResourceFactory.class, name = "some-name") Void first,
-				@Shared(factory = OtherResourceFactory.class, name = "some-name") Void second) {
+		void theTest(@Shared(factory = DummyResourceFactory.class, name = "some-name") String first,
+				@Shared(factory = OtherResourceFactory.class, name = "some-name") String second) {
 
 		}
 
 	}
 
-	static final class OtherResourceFactory implements ResourceFactory<Void> {
+	static final class OtherResourceFactory implements ResourceFactory<String> {
 
 		@Override
-		public Resource<Void> create(List<String> arguments) {
+		public Resource<String> create(List<String> arguments) {
 			return () -> null;
 		}
 
@@ -379,8 +380,8 @@ class ResourcesTests {
 	static class TestMethodWithTwoParamsWithSameSharedAnnotationTestCases {
 
 		@Test
-		void theTest(@Shared(factory = DummyResourceFactory.class, name = "some-name") Void first,
-				@Shared(factory = DummyResourceFactory.class, name = "some-name") Void second) {
+		void theTest(@Shared(factory = DummyResourceFactory.class, name = "some-name") String first,
+				@Shared(factory = DummyResourceFactory.class, name = "some-name") String second) {
 
 		}
 
