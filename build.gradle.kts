@@ -99,7 +99,7 @@ jacoco {
 }
 
 sonarqube {
-	// If you want to use this logically a sonarLogin has to be provided, either via Username and Password
+	// If you want to use this locally a sonarLogin has to be provided, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
 	properties {
 		// Default properties if somebody wants to execute it locally
