@@ -77,6 +77,9 @@ public @interface LongRangeSource {
 	 */
 	boolean closed() default false;
 
+	/**
+	 * Containing annotation of repeatable {@code LongRangeSource}.
+	 */
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
