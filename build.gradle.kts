@@ -233,7 +233,11 @@ tasks {
 		})
 
 		// Exclude internal implementation package from javadoc
-		exclude("org/junitpioneer/internal")
+		/*
+		 * TODO: Currently disabled because modular Gradle build fails when this package is excluded
+		 * See https://stackoverflow.com/q/32785002 and slightly related Gradle issue https://github.com/gradle/gradle/issues/14066
+		*/
+		//exclude("org/junitpioneer/internal")
 
 		options {
 			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937
@@ -244,7 +248,8 @@ tasks {
 
 			// Set javadoc `--release` flag (affects which warnings and errors are reported)
 			// (Note: Gradle adds one leading '-' to the option on its own)
-			addStringOption("-release", targetJavaVersion.majorVersion)
+			// Have to use at least Java 9 to support modular build
+			addStringOption("-release", maxOf(9, targetJavaVersion.majorVersion.toInt()).toString())
 
 			// Enable doclint, but ignore warnings for missing tags, see
 			// https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#additional-options-provided-by-the-standard-doclet
