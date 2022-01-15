@@ -1,4 +1,6 @@
 /**
+ * Several extensions for working with {@code ParameterizedTest}s.
+ *
  * Disable {@code @ParameterizedTest} executions based on conditions.
  * <p>Check out the following types for details:
  * <ul>

@@ -73,6 +73,9 @@ public @interface DisableIfArgument {
 	 */
 	String[] matches() default {};
 
+	/**
+	 * Containing annotation of repeatable {@code DisableIfArgument}.
+	 */
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface DisableIfArguments {

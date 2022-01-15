@@ -97,7 +97,9 @@ public @interface CartesianProductTest {
 	 * Class for defining sets to a {@code CartesianProductTest} execution.
 	 *
 	 * @since 1.0
+	 * @deprecated CartesianProductTest has been superseded by CartesianTest
 	 */
+	@Deprecated
 	class Sets {
 
 		private final List<List<?>> sets = new ArrayList<>(); //NOSONAR
