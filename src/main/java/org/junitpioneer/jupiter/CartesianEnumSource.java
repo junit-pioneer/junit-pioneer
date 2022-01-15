@@ -184,7 +184,7 @@ public @interface CartesianEnumSource {
 	}
 
 	/**
-	 * Containing annotation of repeatable {@code CartesianEnumSource}
+	 * Containing annotation of repeatable {@code CartesianEnumSource}.
 	 *
 	 * @deprecated scheduled to be removed in 2.0
 	 */

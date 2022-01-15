@@ -45,7 +45,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface Test {
 
 	/**
-	 * Dummy default class for the `expected` parameter.
+	 * Dummy default class for the <code>expected</code> parameter.
 	 */
 	class None extends Throwable {
 
