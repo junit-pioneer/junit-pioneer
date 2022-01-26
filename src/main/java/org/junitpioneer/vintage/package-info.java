@@ -1,5 +1,5 @@
 /**
- * Contains extensions to JUnit Vintage, i.e. functionality that is concerned with older JUnit versions.
+ * {@summary Contains extensions to JUnit Vintage, i.e. functionality that is concerned with older JUnit versions.}
  *
  * <p>Check out the following types for details:
  * <ul>

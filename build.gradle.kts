@@ -27,6 +27,8 @@ val modularBuild : String by project
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 
+val targetJavaVersion = JavaVersion.VERSION_1_8
+
 java {
 	if (experimentalBuild) {
 		toolchain {
@@ -36,7 +38,7 @@ java {
 		sourceCompatibility = if (modularBuild.toBoolean()) {
 			JavaVersion.VERSION_11
 		} else {
-			JavaVersion.VERSION_1_8
+			targetJavaVersion
 		}
 	}
 	withJavadocJar()
@@ -93,11 +95,11 @@ yamlValidator {
 }
 
 jacoco {
-	toolVersion = "0.8.6"
+	toolVersion = "0.8.7"
 }
 
 sonarqube {
-	// If you want to use this logcally a sonarLogin has to be provide, either via Username and Password
+	// If you want to use this locally a sonarLogin has to be provided, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
 	properties {
 		// Default properties if somebody wants to execute it locally
@@ -224,12 +226,39 @@ tasks {
 	}
 
 	javadoc {
-		// of all the javadoc checks (accessibility, html, missing, reference, syntax; see
-		// https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html#BEJEFABE)
-		// disable the warning for missing comments and tags because they spam the output
-		// (it does often not make sense to comment every tag; e.g. the @return tag on annotations)
-		(options as CoreJavadocOptions).addStringOption("Xdoclint:accessibility,html,syntax,reference", "-quiet")
-		options.encoding = "UTF-8"
+		javadocTool.set(project.javaToolchains.javadocToolFor {
+			// Create Javadoc with newer JDK to get the latest features, e.g. search bar
+			languageVersion.set(JavaLanguageVersion.of(17))
+		})
+
+		// Exclude internal implementation package from javadoc
+		/*
+		 * Disabled for modular Gradle build because it fails when these source files are excluded
+		 * See https://stackoverflow.com/q/32785002 and slightly related Gradle issue https://github.com/gradle/gradle/issues/14066
+		 */
+		if (!modularBuild.toBoolean()) {
+			exclude("org/junitpioneer/internal")
+		}
+
+		options {
+			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937
+			this as StandardJavadocDocletOptions
+
+			encoding = "UTF-8"
+			links = listOf("https://junit.org/junit5/docs/current/api/")
+
+			// Set javadoc `--release` flag (affects which warnings and errors are reported)
+			// (Note: Gradle adds one leading '-' to the option on its own)
+			// Have to use at least Java 9 to support modular build
+			addStringOption("-release", maxOf(9, targetJavaVersion.majorVersion.toInt()).toString())
+
+			// Enable doclint, but ignore warnings for missing tags, see
+			// https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#additional-options-provided-by-the-standard-doclet
+			// The Gradle option methods are rather misleading, but a boolean `true` value just makes sure the flag
+			// is passed to javadoc, see https://github.com/gradle/gradle/issues/2354
+			addBooleanOption("Xdoclint:all,-missing", true)
+		}
+
 		shouldRunAfter(test)
 	}
 
