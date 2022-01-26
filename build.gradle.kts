@@ -234,10 +234,12 @@ tasks {
 
 		// Exclude internal implementation package from javadoc
 		/*
-		 * TODO: Currently disabled because modular Gradle build fails when this package is excluded
+		 * Disabled for modular Gradle build because it fails when these source files are excluded
 		 * See https://stackoverflow.com/q/32785002 and slightly related Gradle issue https://github.com/gradle/gradle/issues/14066
-		*/
-		//exclude("org/junitpioneer/internal")
+		 */
+		if (!modularBuild.toBoolean()) {
+			exclude("org/junitpioneer/internal")
+		}
 
 		options {
 			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937
