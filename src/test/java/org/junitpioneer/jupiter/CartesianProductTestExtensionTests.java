@@ -43,6 +43,8 @@ import org.junitpioneer.testkit.PioneerTestKit;
  * Robert Frost: The Road Not Taken is in the public domain
  */
 @DisplayName("CartesianProductTest")
+//CartesianProductTest and other classes are deprecated for removal
+@SuppressWarnings("deprecation")
 public class CartesianProductTestExtensionTests {
 
 	@Nested
@@ -490,7 +492,6 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static CartesianProductTest.Sets nFold() {
 		return new CartesianProductTest.Sets()
 				.add("Alpha", "Omega")
@@ -498,7 +499,6 @@ public class CartesianProductTestExtensionTests {
 				.add(TimeUnit.DAYS, TimeUnit.HOURS);
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static CartesianProductTest.Sets supplyValues() {
 		return new CartesianProductTest.Sets().add("War", "Peace").add(TimeUnit.SECONDS, TimeUnit.DAYS);
 	}
@@ -934,7 +934,6 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	@Nested
 	@DisplayName("sets")
 	class SetsTests {
@@ -972,7 +971,6 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class BasicConfigurationTestCases {
 
 		@CartesianProductTest({ "0", "1" })
@@ -1038,12 +1036,10 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	public static CartesianProductTest.Sets explicitFactory() {
 		return new CartesianProductTest.Sets().add(1, 2, 3).add("A", "B");
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	public static class NestedClass {
 
 		public static CartesianProductTest.Sets explicitFactory() {
@@ -1052,12 +1048,10 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static CartesianProductTest.Sets withNulls() {
 		return new CartesianProductTest.Sets().add(new Object[] { null }).add(1, 2);
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class BadConfigurationTestCases {
 
 		@CartesianProductTest(value = { "1", "2" }, name = "")
@@ -1144,7 +1138,6 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class CartesianValueSourceTestCases {
 
 		@CartesianProductTest
@@ -1191,7 +1184,6 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class CartesianEnumSourceTestCases {
 
 		@CartesianProductTest
@@ -1330,7 +1322,6 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class RedundantInputSetTestCases {
 
 		@CartesianProductTest(value = { "1", "1", "2" })
@@ -1353,7 +1344,6 @@ public class CartesianProductTestExtensionTests {
 
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static CartesianProductTest.Sets nonDistinctInputs() {
 		//@formatter:off
 		return new CartesianProductTest.Sets()
@@ -1362,7 +1352,6 @@ public class CartesianProductTestExtensionTests {
 		//@formatter:on
 	}
 
-	@SuppressWarnings("deprecation") // For CartesianProductTest
 	static class ArgumentsSourceTestCases {
 
 		@CartesianProductTest
@@ -1448,7 +1437,6 @@ public class CartesianProductTestExtensionTests {
 			this.testInfo = info;
 		}
 
-		@SuppressWarnings("deprecation") // For CartesianProductTest
 		@CartesianProductTest
 		@ReportEntry("{0}{1}")
 		@CartesianValueSource(ints = { 1, 2 })

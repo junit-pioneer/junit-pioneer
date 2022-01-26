@@ -14,6 +14,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,18 +100,19 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		return AnnotationSupport.findRepeatableAnnotations(context.getElement(), clazz).stream();
 	}
 
+	@SuppressWarnings("unchecked")
 	private Class<C> getClearAnnotationType() {
-		return getActualTypeArgumentAt(2);
-	}
-
-	private Class<S> getSetAnnotationType() {
-		return getActualTypeArgumentAt(3);
+		return (Class<C>) getActualTypeArgumentAt(2);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Class<T> getActualTypeArgumentAt(int index) {
+	private Class<S> getSetAnnotationType() {
+		return (Class<S>) getActualTypeArgumentAt(3);
+	}
+
+	private Type getActualTypeArgumentAt(int index) {
 		ParameterizedType abstractEntryBasedExtensionType = (ParameterizedType) getClass().getGenericSuperclass();
-		return (Class<T>) abstractEntryBasedExtensionType.getActualTypeArguments()[index];
+		return abstractEntryBasedExtensionType.getActualTypeArguments()[index];
 	}
 
 	private void preventClearAndSetSameEntries(Collection<K> entriesToClear, Collection<K> entriesToSet) {

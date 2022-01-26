@@ -24,7 +24,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
-import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 
 /**
@@ -46,8 +45,8 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
  */
 // CartesianAnnotationConsumer is deprecated for removal
 @SuppressWarnings("deprecation")
-class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
-		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
+class RangeSourceArgumentsProvider<N extends Number & Comparable<N>> implements ArgumentsProvider,
+		org.junitpioneer.jupiter.CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
 
 	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
