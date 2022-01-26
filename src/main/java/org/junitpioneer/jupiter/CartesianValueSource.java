@@ -99,9 +99,15 @@ public @interface CartesianValueSource {
 	 */
 	Class<?>[] classes() default {};
 
+	/**
+	 * Containing annotation of repeatable {@code CartesianValueSource}.
+	 *
+	 * @deprecated scheduled to be removed in 2.0
+	 */
 	@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
+	@Deprecated
 	@interface CartesianValueSources {
 
 		CartesianValueSource[] value();

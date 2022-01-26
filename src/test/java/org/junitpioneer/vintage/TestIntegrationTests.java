@@ -27,14 +27,14 @@ class TestIntegrationTests {
 
 	@org.junit.jupiter.api.Test
 	void test_successfulTest_passes() throws Exception {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_successfulTest");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCases.class, "test_successfulTest");
 
 		assertThat(results).hasSingleStartedTest().whichSucceeded();
 	}
 
 	@org.junit.jupiter.api.Test
 	void test_exceptionThrown_fails() throws Exception {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "test_exceptionThrown");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCases.class, "test_exceptionThrown");
 
 		assertThat(results).hasSingleStartedTest().whichFailed();
 	}
@@ -44,7 +44,7 @@ class TestIntegrationTests {
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_successfulTest_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(TestTestCase.class, "testWithExpectedException_successfulTest");
+				.executeTestMethod(TestTestCases.class, "testWithExpectedException_successfulTest");
 
 		assertThat(results)
 				.hasSingleStartedTest()
@@ -56,7 +56,7 @@ class TestIntegrationTests {
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_exceptionThrownOfRightType_passes() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfRightType");
+				.executeTestMethod(TestTestCases.class, "testWithExpectedException_exceptionThrownOfRightType");
 
 		assertThat(results).hasSingleStartedTest().whichSucceeded();
 	}
@@ -64,7 +64,7 @@ class TestIntegrationTests {
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_exceptionThrownOfSubtype_passes() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSubtype");
+				.executeTestMethod(TestTestCases.class, "testWithExpectedException_exceptionThrownOfSubtype");
 
 		assertThat(results).hasSingleStartedTest().whichSucceeded();
 	}
@@ -72,7 +72,7 @@ class TestIntegrationTests {
 	@org.junit.jupiter.api.Test
 	void testWithExpectedException_exceptionThrownOfSupertype_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(TestTestCase.class, "testWithExpectedException_exceptionThrownOfSupertype");
+				.executeTestMethod(TestTestCases.class, "testWithExpectedException_exceptionThrownOfSupertype");
 
 		assertThat(results).hasSingleStartedTest().whichFailed().withExceptionInstanceOf(RuntimeException.class);
 	}
@@ -81,14 +81,15 @@ class TestIntegrationTests {
 
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_belowZero_failsConfiguration() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowZero");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCases.class, "testWithTimeout_belowZero");
 
 		assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 	}
 
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_belowTimeout_passes() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(TestTestCase.class, "testWithTimeout_belowTimeout");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(TestTestCases.class, "testWithTimeout_belowTimeout");
 
 		assertThat(results).hasSingleStartedTest().whichSucceeded();
 	}
@@ -96,7 +97,7 @@ class TestIntegrationTests {
 	@org.junit.jupiter.api.Test
 	void testWithTimeout_exceedsTimeout_fails() throws Exception {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(TestTestCase.class, "testWithTimeout_exceedsTimeout");
+				.executeTestMethod(TestTestCases.class, "testWithTimeout_exceedsTimeout");
 		String expectedMessage = format(TimeoutExtension.TEST_RAN_TOO_LONG, "testWithTimeout_exceedsTimeout()", 1);
 		// the message contains the actual run time, which is unpredictable, so it has to be cut off for the assertion
 		String expectedKnownPrefix = expectedMessage.substring(0, expectedMessage.length() - 6);
@@ -112,7 +113,7 @@ class TestIntegrationTests {
 
 	// vintage @Test is deprecated (not for removal)
 	@SuppressWarnings("deprecation")
-	static class TestTestCase {
+	static class TestTestCases {
 
 		@Test
 		void test_successfulTest() {
