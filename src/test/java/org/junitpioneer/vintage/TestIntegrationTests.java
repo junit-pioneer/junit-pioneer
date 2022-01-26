@@ -110,7 +110,8 @@ class TestIntegrationTests {
 
 	// TEST CASES -------------------------------------------------------------------
 
-	@SuppressWarnings("deprecation") // For @Test
+	// vintage @Test is deprecated (not for removal)
+	@SuppressWarnings("deprecation")
 	static class TestTestCase {
 
 		@Test
