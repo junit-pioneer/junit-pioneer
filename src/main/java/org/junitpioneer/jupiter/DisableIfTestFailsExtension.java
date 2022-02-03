@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.opentest4j.TestAbortedException;
 
 class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, ExecutionCondition {
 
@@ -137,6 +138,9 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 		}
 
 		public boolean shouldDisable(Throwable exception) {
+			// don't disable on failed assumptions
+			if (exception instanceof TestAbortedException)
+				return false;
 			if (exception instanceof AssertionError)
 				return disableOnAssertions;
 			return disableOnExceptions.stream().anyMatch(type -> type.isInstance(exception));

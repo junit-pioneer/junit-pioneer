@@ -17,6 +17,7 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
@@ -69,6 +70,14 @@ class DisableIfTestFailsTests {
 				.executeTestClass(ThreeTestsWithSecondThrowingUnconfiguredExceptionTestCase.class);
 
 		assertThat(results).hasNumberOfStartedTests(3).hasNumberOfSucceededTests(2).hasNumberOfFailedTests(1);
+	}
+
+	@Test
+	void threeTestsWithSecondFailingWithAssumption_thirdIsEnabled() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestClass(ThreeTestsWithSecondFailingWithAssumptionTestCase.class);
+
+		assertThat(results).hasNumberOfStartedTests(3).hasNumberOfSucceededTests(2).hasNumberOfAbortedTests(1);
 	}
 
 	@Test
@@ -213,6 +222,28 @@ class DisableIfTestFailsTests {
 		@Order(2)
 		void test2() throws InterruptedException {
 			throw new InterruptedException();
+		}
+
+		@Test
+		@Order(3)
+		void test3() {
+		}
+
+	}
+
+	@DisableIfTestFails(onAssertion = false)
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	static class ThreeTestsWithSecondFailingWithAssumptionTestCase {
+
+		@Test
+		@Order(1)
+		void test1() {
+		}
+
+		@Test
+		@Order(2)
+		void test2() {
+			Assumptions.assumeFalse(true);
 		}
 
 		@Test
