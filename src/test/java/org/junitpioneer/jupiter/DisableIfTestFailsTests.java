@@ -64,6 +64,14 @@ class DisableIfTestFailsTests {
 	}
 
 	@Test
+	void threeTestsWithSecondFailingWithUnconfiguredException_thirdIsDisabled() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestClass(ThreeTestsWithSecondThrowingUnconfiguredExceptionTestCase.class);
+
+		assertThat(results).hasNumberOfStartedTests(3).hasNumberOfSucceededTests(2).hasNumberOfFailedTests(1);
+	}
+
+	@Test
 	void annotationOnOuterClass_innerTestFails_innerTestsDisabled() {
 		ExecutionResults results = PioneerTestKit.executeTestClass(InnerTestsFailTestCase.class);
 
@@ -193,6 +201,28 @@ class DisableIfTestFailsTests {
 	}
 
 	@DisableIfTestFails(with = IOException.class)
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	static class ThreeTestsWithSecondThrowingUnconfiguredExceptionTestCase {
+
+		@Test
+		@Order(1)
+		void test1() {
+		}
+
+		@Test
+		@Order(2)
+		void test2() throws InterruptedException {
+			throw new InterruptedException();
+		}
+
+		@Test
+		@Order(3)
+		void test3() {
+		}
+
+	}
+
+	@DisableIfTestFails(with = IOException.class)
 	@Execution(SAME_THREAD)
 	static class InnerTestsFailTestCase {
 
@@ -272,11 +302,13 @@ class DisableIfTestFailsTests {
 	static class OuterAndInnerTestsFailTestCase {
 
 		@Test
+		@Order(1)
 		void test1() throws InterruptedException {
 			throw new InterruptedException();
 		}
 
 		@Test
+		@Order(2)
 		void test2() {
 		}
 
@@ -286,11 +318,13 @@ class DisableIfTestFailsTests {
 		class ThreeTestsWithSecondFailingTestCase {
 
 			@Test
+			@Order(1)
 			void test1() throws IOException {
 				throw new IOException();
 			}
 
 			@Test
+			@Order(2)
 			void test2() {
 			}
 
