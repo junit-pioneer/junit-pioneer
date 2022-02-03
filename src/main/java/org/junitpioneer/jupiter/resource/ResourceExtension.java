@@ -295,7 +295,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			throws Throwable {
 		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
 		List<ReentrantLock> locks = findSharedOnExecutable(testFactoryMethod(extensionContext))
-				// See runSequentially
+				// see runSequentially
 				.sorted(comparing(Shared::name))
 				.map(shared -> findLockForShared(shared, store))
 				.collect(toList());
@@ -332,10 +332,9 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			return invocation.proceed();
 		}
 		finally {
-			// unlock in reverse order because we have a hunch that otherwise there may be deadlocks
-			for (int i = locks.size() - 1; i >= 0; i--) {
-				locks.get(i).unlock();
-			}
+			// for dining philosophers, "[t]he order in which each philosopher puts down the forks does not matter"
+			// (quote from Wikipedia)
+			locks.forEach(ReentrantLock::unlock);
 		}
 	}
 
