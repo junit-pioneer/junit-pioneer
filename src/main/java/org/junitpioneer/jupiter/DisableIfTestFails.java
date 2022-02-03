@@ -21,10 +21,11 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Disables all remaining tests in a container of one of them failed.
+ * Disables all remaining tests in a container if one of them failed.
  *
- * By default, all exceptions (including assertions) will be lead to disabling remaining tests.
- * To configure this in more detail, see {@link #with()} and {@link #onAssertion()}.
+ * By default, all exceptions (including assertions, but exempting failed assumptions) will lead to
+ * disabling the remaining tests. To configure this in more detail, see {@link #with()} and
+ * {@link #onAssertion()}.
  *
  * This annotation can be (meta-)present on classes that contain a nested class. In that case, a
  * failing test in the outer class will disable the nested class (if it runs later) and vice versa.
