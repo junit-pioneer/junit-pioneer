@@ -2,16 +2,17 @@
 :page-description: Disables all tests in a container once the first test failed
 
 There are situations where it doesn't make sense to run tests of a class once one test failed.
-In those situations applying `@DisableIfTestFails` to the class, disables all remaining tests.
+In those situations applying `@DisableIfTestFails` to the class, disables all tests after the first one failed.
 
 == `@DisableIfTestFails`
 
-When applied to a type `@DisableIfTestFails` will disable all tests that are launched after the first failing test in that class:
+When applied to a type, `@DisableIfTestFails` will disable all tests that are launched after the first failing test in that class:
 
 ```java
 @DisableIfTestFails
 // this annotation ensures that tests are run in the order of
-// the numbers passed to the `@Order` annotation below
+// the numbers passed to the `@Order` annotation below,
+// which happens to be the order in which they're written
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class Tests {
 
@@ -37,8 +38,7 @@ class Tests {
 In this example, `test1` will pass and `test2` will fail with or without the extension but due to `@DisableIfTestFails`, `test3` will be disabled (instead of being executed).
 
 The extension ignores aborted tests (e.g. due to failed assumptions) and won't disable tests because of that.
-By default, it will disable remaining tests on any exception, including failed assertions.
-Both of that can be configured.
+By default, it _will_ disable remaining tests on any exception, including failed assertions - both of that can be configured.
 
 == Not disabling on failed assertions
 
@@ -107,16 +107,16 @@ static class ThreeTestsWithSecondThrowingConfiguredExceptionTestCase {
 }
 ```
 
-The test `test2` fails, but because the `with` attribute doesn't include the exception type, tests will continue to be executed.
-Then `test3` fails with "correct" exception and so `test4` is disabled.
+The test `test2` fails, but because the `with` attribute doesn't include its exception's type `InterruptedException`, tests will continue to be executed.
+Then `test3` fails with the configured exception and so `test4` is disabled.
 
 == Inheritance
 
-The annotation can be applied to classes and interfaces that have further implementations, which means any specific test class might inherit/implement types that have `@DisableIfTestFails` annotations.
+The annotation can be applied to classes and interfaces that have further implementations, which means any specific test class might inherit/implement from multiple types that have `@DisableIfTestFails` annotations.
 In that case, the extension disables the maximum number of tests:
 
-* the exception types given to `with` are merged, i.e. tests are disabled of a test fails with _any_ of the configured exceptions
-* `onAssertion` is or'ed, i.e. only if _all_ configure to keep executing on a failed assertion, will that happen
+* the exception types given to `with` are merged, i.e. tests are disabled if a test fails with _any_ of the configured exceptions
+* `onAssertion` is or'ed, i.e. only if _all_ are configured to keep executing on a failed assertion, will that happen
 
 But if a test fails in a specific class, only other tests in the same class will be disabled.
 That means if...
