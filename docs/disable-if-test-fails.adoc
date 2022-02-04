@@ -1,8 +1,9 @@
 :page-title: Disable Tests if Others Fail
 :page-description: Disables all tests in a container once the first test failed
 
-There are situations where it doesn't make sense to run tests of a class once one test failed.
-In those situations applying `@DisableIfTestFails` to the class, disables all tests after the first one failed.
+There are situations where when one test in a class fails, the remaining tests in the class don't need to be executed because their results offer little additional insight.
+In those situations, disabling the remaining tests can be preferable in order to avoid larger build logs and/or reduce the test suite's overall run time.
+By applying `@DisableIfTestFails` to the test class, all tests after the first failed one are disabled.
 
 == `@DisableIfTestFails`
 
@@ -11,8 +12,7 @@ When applied to a type, `@DisableIfTestFails` will disable all tests that are la
 ```java
 @DisableIfTestFails
 // this annotation ensures that tests are run in the order of
-// the numbers passed to the `@Order` annotation below,
-// which happens to be the order in which they're written
+// the numbers passed to the `@Order` annotation below
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class Tests {
 
