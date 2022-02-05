@@ -12,6 +12,8 @@
         url: /docs/default-locale-timezone/
       - title: "Temporarily disable a test"
         url: /docs/disabled-until/
+      - title: "Disable If Test Fails"
+        url: /docs/disable-if-test-fails/
       - title: "Disable Parameterized Tests"
         url: /docs/disable-parameterized-tests/
       - title: "Issue information"

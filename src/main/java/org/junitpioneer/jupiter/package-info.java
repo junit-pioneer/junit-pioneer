@@ -7,6 +7,7 @@
  *     <li>{@link org.junitpioneer.jupiter.ClearSystemProperty} and {@link org.junitpioneer.jupiter.SetSystemProperty}</li>
  *     <li>{@link org.junitpioneer.jupiter.DefaultLocale} and {@link org.junitpioneer.jupiter.DefaultTimeZone}</li>
  *     <li>{@link org.junitpioneer.jupiter.DisabledUntil}</li>
+ *     <li>{@link org.junitpioneer.jupiter.DisableIfTestFails}</li>
  *     <li>{@link org.junitpioneer.jupiter.ReportEntry}</li>
  *     <li>{@link org.junitpioneer.jupiter.RetryingTest}</li>
  *     <li>{@link org.junitpioneer.jupiter.StdIo}</li>
