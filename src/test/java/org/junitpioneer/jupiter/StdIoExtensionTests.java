@@ -215,7 +215,7 @@ public class StdIoExtensionTests {
 		@WritesStdIo
 		@DisplayName("correctly, no exception is thrown")
 		void correctConfigurations() {
-			ExecutionResults results = executeTestClass(CorrectConfigurations.class);
+			ExecutionResults results = executeTestClass(CorrectConfigurationTestCases.class);
 
 			assertThat(results).hasNumberOfStartedTests(3).hasNumberOfSucceededTests(3);
 		}
@@ -223,7 +223,7 @@ public class StdIoExtensionTests {
 		@Test
 		@DisplayName("without input but StdIn parameter, an exception is thrown")
 		void withoutInputWithStdInParameter() {
-			ExecutionResults results = executeTestMethodWithParameterTypes(IllegalConfigurations.class,
+			ExecutionResults results = executeTestMethodWithParameterTypes(IllegalConfigurationTestCases.class,
 				"noInputButStdIn", StdIn.class);
 
 			assertThat(results).hasSingleFailedTest();
@@ -232,14 +232,14 @@ public class StdIoExtensionTests {
 		@Test
 		@DisplayName("without input and without parameters, an exception is thrown")
 		void withoutInputAndWithoutParameters() {
-			ExecutionResults results = executeTestMethod(IllegalConfigurations.class, "noParameterAndNoInput");
+			ExecutionResults results = executeTestMethod(IllegalConfigurationTestCases.class, "noParameterAndNoInput");
 
 			assertThat(results).hasSingleFailedTest();
 		}
 
 	}
 
-	static class CorrectConfigurations {
+	static class CorrectConfigurationTestCases {
 
 		@Test
 		@StdIo("Redirected output")
@@ -258,7 +258,7 @@ public class StdIoExtensionTests {
 
 	}
 
-	static class IllegalConfigurations {
+	static class IllegalConfigurationTestCases {
 
 		@Test
 		@StdIo

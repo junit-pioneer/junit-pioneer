@@ -210,6 +210,21 @@ public class PioneerAnnotationUtils {
 					.orElse(Collections.emptyList());
 	}
 
+	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
+			boolean findRepeated, boolean findAllEnclosing) {
+		if (!type.isPresent())
+			return Stream.empty();
+
+		List<A> onThisClass = Arrays.asList(type.get().getAnnotationsByType(annotationType));
+		if (!findAllEnclosing && !onThisClass.isEmpty())
+			return onThisClass.stream();
+
+		List<A> onClass = findOnType(type.get(), annotationType, findRepeated, findAllEnclosing);
+		Stream<A> onParentClass = findOnOuterClasses(type.map(Class::getEnclosingClass), annotationType, findRepeated,
+			findAllEnclosing);
+		return Stream.concat(onClass.stream(), onParentClass);
+	}
+
 	private static <A extends Annotation> List<A> findOnType(Class<?> element, Class<A> annotationType,
 			boolean findRepeated, boolean findAllEnclosing) {
 		if (element == null || element == Object.class)
@@ -241,21 +256,6 @@ public class PioneerAnnotationUtils {
 				.flatMap(Collection::stream)
 				.distinct()
 				.collect(Collectors.toList());
-	}
-
-	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
-			boolean findRepeated, boolean findAllEnclosing) {
-		if (!type.isPresent())
-			return Stream.empty();
-
-		List<A> onThisClass = Arrays.asList(type.get().getAnnotationsByType(annotationType));
-		if (!findAllEnclosing && !onThisClass.isEmpty())
-			return onThisClass.stream();
-
-		List<A> onClass = findOnType(type.get(), annotationType, findRepeated, findAllEnclosing);
-		Stream<A> onParentClass = findOnOuterClasses(type.map(Class::getEnclosingClass), annotationType, findRepeated,
-			findAllEnclosing);
-		return Stream.concat(onClass.stream(), onParentClass);
 	}
 
 	public static List<? extends Annotation> findParameterArgumentsSources(Method testMethod) {

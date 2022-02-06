@@ -31,7 +31,7 @@ import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
-public class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
+class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
 
 	private static final Namespace NAMESPACE = Namespace.create(RetryingTestExtension.class);
 

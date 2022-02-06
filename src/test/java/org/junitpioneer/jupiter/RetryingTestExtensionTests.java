@@ -31,7 +31,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void invalidConfigurationWithTest() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "invalidConfigurationWithTest");
+				.executeTestMethod(RetryingTestTestCases.class, "invalidConfigurationWithTest");
 
 		assertThat(results).hasSingleDynamicallyRegisteredTest();
 		assertThat(results).hasNumberOfStartedTests(2).hasNumberOfSucceededTests(2);
@@ -40,14 +40,14 @@ class RetryingTestExtensionTests {
 	@Test
 	void executedOneEvenWithTwoTestTemplatesTest() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "executedOneEvenWithTwoTestTemplates");
+				.executeTestMethod(RetryingTestTestCases.class, "executedOneEvenWithTwoTestTemplates");
 
 		assertThat(results).hasSingleDynamicallyRegisteredTest().whichSucceeded();
 	}
 
 	@Test
 	void failsNever_executedOnce_passes() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsNever");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "failsNever");
 
 		assertThat(results).hasSingleDynamicallyRegisteredTest().whichSucceeded();
 	}
@@ -55,7 +55,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void failsOnlyOnFirstInvocation_executedTwice_passes() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocation");
+				.executeTestMethod(RetryingTestTestCases.class, "failsOnlyOnFirstInvocation");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(2)
@@ -66,7 +66,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void failsOnlyOnFirstInvocationWithExpectedException_executedTwice_passes() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocationWithExpectedException");
+				.executeTestMethod(RetryingTestTestCases.class, "failsOnlyOnFirstInvocationWithExpectedException");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(2)
@@ -77,7 +77,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void failsOnlyOnFirstInvocationWithUnexpectedException_executedOnce_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocationWithUnexpectedException");
+				.executeTestMethod(RetryingTestTestCases.class, "failsOnlyOnFirstInvocationWithUnexpectedException");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(1).hasNumberOfFailedTests(1);
 	}
@@ -85,7 +85,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void failsOnlyOnFirstInvocationWithUnexpectedException_executedTwice_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "failsFirstWithExpectedThenWithUnexpectedException");
+				.executeTestMethod(RetryingTestTestCases.class, "failsFirstWithExpectedThenWithUnexpectedException");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(2)
@@ -95,7 +95,7 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void failsAlways_executedThreeTimes_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsAlways");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "failsAlways");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(3)
@@ -105,7 +105,7 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void skipByAssumption_executedOnce_skipped() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "skipByAssumption");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "skipByAssumption");
 
 		assertThat(results).hasSingleDynamicallyRegisteredTest();
 		assertThat(results).hasSingleAbortedTest();
@@ -114,7 +114,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void failsFirstWithExpectedExceptionThenSkippedByAssumption_executedTwice_skipped() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class,
+				.executeTestMethod(RetryingTestTestCases.class,
 					"failsFirstWithExpectedExceptionThenSkippedByAssumption");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfAbortedTests(2);
@@ -122,7 +122,7 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void executesTwice_succeeds() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "executesTwice");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "executesTwice");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(2)
@@ -134,7 +134,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void executesTwiceWithTwoFails_succeeds() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "executesTwiceWithTwoFails");
+				.executeTestMethod(RetryingTestTestCases.class, "executesTwiceWithTwoFails");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(4)
@@ -146,7 +146,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void executesOnceWithThreeFails_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "executesOnceWithThreeFails");
+				.executeTestMethod(RetryingTestTestCases.class, "executesOnceWithThreeFails");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(4)
@@ -157,7 +157,7 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void failsThreeTimes_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsThreeTimes");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "failsThreeTimes");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(3)
@@ -168,14 +168,14 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void missingMaxAttempts_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "missingMaxAttempts");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "missingMaxAttempts");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
 
 	@Test
 	void valueLessThanOne_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "valueLessThanOne");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "valueLessThanOne");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -183,7 +183,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void maxAttemptsLessThanOne_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsLessThanOne");
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsLessThanOne");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -191,7 +191,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void maxAttemptsAndValueSet_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsAndValueSet");
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsAndValueSet");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -199,7 +199,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void maxAttemptsEqualsMinSuccess_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsEqualsMinSuccess");
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsEqualsMinSuccess");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -207,7 +207,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void maxAttemptsLessThanMinSuccess_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsLessThanMinSuccess");
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsLessThanMinSuccess");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -215,7 +215,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void minSuccessLessThanOne_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "minSuccessLessThanOne");
+				.executeTestMethod(RetryingTestTestCases.class, "minSuccessLessThanOne");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -229,7 +229,7 @@ class RetryingTestExtensionTests {
 	// this lead to flaky tests under threading. Using a `PER_CLASS` lifecycle allows us to make it an
 	// instance field and that worked.
 	@TestInstance(PER_CLASS)
-	static class RetryingTestTestCase {
+	static class RetryingTestTestCases {
 
 		private int executionCount;
 
