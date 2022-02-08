@@ -106,6 +106,7 @@ sonarqube {
 		property("sonar.projectKey", "junit-pioneer_junit-pioneer") // needs to be changed
 		property("sonar.organization", "junit-pioneer-xp") // needs to be changed
 		property("sonar.host.url", "https://sonarcloud.io")
+		property("sonar.exclusions", "src/demo")
 	}
 }
 
