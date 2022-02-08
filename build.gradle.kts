@@ -202,7 +202,7 @@ tasks {
 			compileClasspath += sourceSets.main.get().output
 			runtimeClasspath += sourceSets.main.get().output
 			sonarqube {
-			    skipProject = true
+				isSkipProject = true
 			}
 		}
 	}
