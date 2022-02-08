@@ -195,7 +195,17 @@ tasks {
 			if (modularBuild.toBoolean())
 				java.srcDir("src/main/module")
 		}
+		create("demo") {
+			java {
+				srcDir("src/demo/java")
+			}
+			compileClasspath += sourceSets.main.get().output
+			runtimeClasspath += sourceSets.main.get().output
+		}
 	}
+
+	configurations["demoImplementation"].extendsFrom(configurations.implementation.get())
+	configurations["demoRuntimeOnly"].extendsFrom(configurations.testImplementation.get())
 
 	compileJava {
 		options.encoding = "UTF-8"
@@ -223,6 +233,21 @@ tasks {
 		jvmArgs(
 				"-XX:+IgnoreUnrecognizedVMOptions",
 				"--add-opens=java.base/java.util=ALL-UNNAMED")
+	}
+
+	val demoTests = task<Test>("demoTests") {
+		description = "Test documentation tests"
+		group = "verification"
+
+		testClassesDirs = sourceSets["demo"].output.classesDirs
+		classpath = sourceSets["demo"].runtimeClasspath
+
+		useJUnitPlatform()
+		filter {
+			includeTestsMatching("*Tests")
+		}
+
+		shouldRunAfter("test")
 	}
 
 	javadoc {
@@ -272,7 +297,7 @@ tasks {
 
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
-		dependsOn(javadoc, validateYaml)
+		dependsOn(javadoc, validateYaml, demoTests)
 	}
 
 	withType<Jar>().configureEach {

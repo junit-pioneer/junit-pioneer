@@ -1,6 +1,6 @@
 :page-title: Publishing Report Entries
 :page-description: Extends JUnit Jupiter with `@ReportEntry`, which publishes report entries using `TestReporter`.
-:snippetsource: ../demo/src/test/java/org/junitpioneer/jupiter/ReportEntryExtensionTests.java
+:snippetsource: ../src/demo/java/org/junitpioneer/jupiter/ReportEntryExtensionTests.java
 
 You can use `@ReportEntry` as a simple way to declaratively add metadata to test methods.
 
