@@ -106,8 +106,7 @@ sonarqube {
 		property("sonar.projectKey", "junit-pioneer_junit-pioneer") // needs to be changed
 		property("sonar.organization", "junit-pioneer-xp") // needs to be changed
 		property("sonar.host.url", "https://sonarcloud.io")
-		val sources = (properties["sonar.sources"] as Set<File>).toMutableSet()
-		sources -= sourceSets["demo"].allSource.srcDirs
+		property("sonar.sources", project.sourceSets.main.get().allJava.srcDirs)
 	}
 }
 
