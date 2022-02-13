@@ -759,6 +759,20 @@ public class CartesianTestExtensionTests {
 							.containsOnly("CartesianTest was supplied arguments but parameter is not supported."));
 		}
 
+		@Test
+		@DisplayName("parameter annotation arguments provider implements CartesianMethodArgumentsProvider")
+		void mismatchingInterface() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "mismatch",
+							Sets.class);
+
+			assertThat(results).hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message.matches("^.* does not implement CartesianParameterArgumentsProvider interface\\.$")));
+		}
 	}
 
 	static class BasicConfigurationTestCases {
@@ -797,6 +811,9 @@ public class CartesianTestExtensionTests {
 		void bothMethodAndParam(@Values(strings = "A") String a, @Values(strings = "B") String b) {
 		}
 
+		@CartesianTest
+		void mismatch(@Mismatch Sets s) {
+		}
 	}
 
 	static class CartesianValueSourceTestCases {
@@ -1145,4 +1162,17 @@ public class CartesianTestExtensionTests {
 
 	}
 
+	@Target(ElementType.PARAMETER)
+	@Retention(RetentionPolicy.RUNTIME)
+	@CartesianArgumentsSource(MismatchingProvider.class)
+	@interface Mismatch {
+	}
+
+	static class MismatchingProvider implements CartesianMethodArgumentsProvider {
+
+		@Override
+		public Sets provideArguments(ExtensionContext context) {
+			return new Sets().add("1", "2");
+		}
+	}
 }
