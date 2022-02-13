@@ -20,7 +20,7 @@ The extension takes the test data parameter values and runs the test for every p
 
 NOTE: The CartesianTest extension has undergone significant changes in 1.5.0.
 This included moving it into a new package.
-link:docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for December 2021).
+link:docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for 2022).
 
 == Basic Use
 
@@ -28,7 +28,7 @@ link:docs/cartesian-product-v1[The old variant] is deprecated and will be remove
 
 You can supply test parameters to `@CartesianTest` in two ways:
 
- - You can annotate your test method, providing all parameter values in a single annotation (Not yet implemented).
+ - You can annotate your test method, providing all parameter values in a single annotation.
  - The test parameters can be annotated with `@CartesianTest.Values`, `@CartesianTest.Enum`, or range source annotations (see <<Annotating your test parameters>>)
 
 Specifying more than one kind of parameter source (i.e.: annotating your test parameters and the test method itself) does not work and will throw an `ExtensionConfigurationException`.
@@ -300,13 +300,156 @@ To demonstrate with a table:
 
 For more information, please see the link:docs/range-sources[separate documentation about range sources].
 
+== Annotating your test method
+
+You can annotate your test method to supply arguments to all parameters simultaneously.
+
+=== `@CartesianTest.Factory`
+
+`@CartesianTest.Factory` can be used to name a static factory method that supplies your arguments.
+The `name` annotation parameter is mandatory.
+Just like with JUnit's `@MethodSource`, you can specify the factory method with its fully-qualified name (including the class), e.g. `com.example.Class#factory`.
+This method must return `CartesianMethodArgumentsProvider.Sets`.
+`Sets` is a helper class, specifically for creating sets for `@CartesianTest`.
+To create the test data, instantiate a `new Sets()` then use the `add()` method to register the values for the parameters.
+For convenience, all `add()` methods return with your `Sets` instance, so you can chain `add()` calls.
+
+Let's look at an example.
+
+[source,java]
+----
+
+class MyCartesianTestClass {
+	@CartesianTest
+	@CartesianTest.Factory("setFactory")
+	void testMethod(String string, Class<?> clazz, TimeUnit unit) {
+		// passing test code
+	}
+
+	static Sets setFactory() {
+		return new Sets()
+			.add("Alpha", "Omega")
+			.add(Runnable.class, Cloneable.class, Predicate.class)
+			.add(TimeUnit.DAYS, TimeUnit.HOURS);
+	}
+}
+----
+
+The test `testMethod` is executed exactly twelve times.
+The first parameter can have any of the two values `"Alpha"` or `"Omega"`.
+The second parameter can have any of the three values `Runnable.class`, `Cloneable.class` or `Predicate.class`.
+The third parameter can have any of the two values `TimeUnit.DAYS` or `TimeUnit.HOURS`.
+`@CartesianTest` tests for all input combinations, that's `2 × 3 × 2`, so twelve tests in total.
+
+To demonstrate with a table:
+
+|===
+| # of test  | value of `string` | value of `clazz` | value of `unit`
+| 1st test   | "Alpha"           | Runnable.class   | TimeUnit.DAYS
+| 2nd test   | "Alpha"           | Runnable.class   | TimeUnit.HOURS
+| 3rd test   | "Alpha"           | Cloneable.class  | TimeUnit.DAYS
+| 4th test   | "Alpha"           | Cloneable.class  | TimeUnit.HOURS
+| 5th test   | "Alpha"           | Predicate.class  | TimeUnit.DAYS
+| 6th test   | "Alpha"           | Predicate.class  | TimeUnit.HOURS
+| 7th test   | "Omega"           | Runnable.class   | TimeUnit.DAYS
+| 8th test   | "Omega"           | Runnable.class   | TimeUnit.HOURS
+| 9th test   | "Omega"           | Cloneable.class  | TimeUnit.DAYS
+| 10th test  | "Omega"           | Cloneable.class  | TimeUnit.HOURS
+| 11th test  | "Omega"           | Predicate.class  | TimeUnit.DAYS
+| 12th test  | "Omega"           | Predicate.class  | TimeUnit.HOURS
+|===
+
+You can reuse the same argument provider method multiple times.
+
+[source,java]
+----
+class MyCartesianTestClass {
+	@CartesianTest
+	@CartesianTest.Factory("provideArguments")
+	void testNeedingArguments(String string, int i) {
+		// passing test code
+	}
+
+	@CartesianTest
+	@CartesianTest.Factory("provideArguments")
+	void testNeedingSameArguments(String string, int i) {
+		// different passing test code
+	}
+
+	static CartesianProductTest.Sets provideArguments() {
+		return new CartesianProductTest.Sets()
+			.add("Mercury", "Earth", "Venus")
+			.add(1, 12, 144);
+	}
+}
+----
+
+==== Conditions for the static factory method
+
+There are multiple conditions the static factory method has to fulfill to qualify:
+
+- must have the same name as the test method (or its name must be specified via the `factory` attribute)
+- must be `static`
+- must have **no** parameters
+- must return `CartesianProductTest.Sets`
+- must register values for every parameter exactly once
+- must register values in order
+
+==== Returning wrong `Sets` in the static factory method
+
+If you register too few, too many, or conflicting parameters, you will get an https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/ParameterResolutionException.html[`ParameterResolutionException`].
+"Conflicting parameters" means your test method has a parameter that should be injected by JUnit (e.g.: `TestReporter`) but you also try to inject it.
+
+Examples of badly configured tests/static factory method:
+
+[source,java]
+----
+class BadExamples {
+	@CartesianTest
+	@CartesianTest.Factory("resolveParameters")
+	void tooFewParameters(String string, int i, boolean b) {
+		// fails because the boolean parameter is not resolved
+	}
+
+	@CartesianTest
+	@CartesianTest.Factory("resolveParameters")
+	void tooManyParameters(String string) {
+		// fails because we try to supply a non-existent integer parameter
+	}
+
+	@CartesianTest
+	@CartesianTest.Factory("resolveParameters")
+	void wrongOrderParameters(int i, String string) {
+		// fails because the static factory method declared parameter sets in the wrong order
+	}
+
+	@CartesianTest
+	@CartesianTest.Factory("resolveTestReporterParam")
+	void conflictingParameters(String string, TestReporter info) {
+		// fails because both the factory method and JUnit tries to inject TestReporter
+	}
+
+	static Sets resolveParameters() {
+		return new Sets()
+			.add("A", "B", "C")
+			.add(1, 2, 3);
+	}
+
+	static Sets resolveTestReporterParam() {
+		return new Sets()
+			.add("A", "B", "C")
+			.add(new MyTestReporter()); // in this case MyTestReporter implements TestReporter
+	}
+}
+----
+
 == Writing your own `@ArgumentsSource` for `@CartesianTest`
 
 You might find that the available annotations do not fit your need.
-For a `@ParameterizedTest`, you can write a custom https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsSource.html[`@ArgumentsSource`] and a corresponding https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsProvider.html[`ArgumentsProvider`].
+For a `@ParameterizedTest`, you can write a custom https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsSource.html::[`@ArgumentsSource`] and a corresponding https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsProvider.html::[`ArgumentsProvider`].
 You can do the same thing for `@CartesianTest`, with the following caveats:
 
- - Instead of `@ArgumentsSource`, you have to use https://javadoc.io/static/org.junit-pioneer/junit-pioneer/1.5.0/org/junitpioneer/jupiter/cartesian/CartesianArgumentsSource.html[`@CartesianArgumentsSource`]
+ - Instead of `@ArgumentsSource`, you have to use https://javadoc.io/static/org.junit-pioneer/junit-pioneer/1.5.0/org/junitpioneer/jupiter/cartesian/CartesianArgumentsSource.html::[`@CartesianArgumentsSource`]
  - Instead of `ArgumentsProvider`, you have to use one of two interfaces, each explored in their own section.
 
 === Implementing `CartesianParameterArgumentsProvider`
