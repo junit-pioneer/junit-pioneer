@@ -76,6 +76,17 @@ public class CartesianTestFactoryTests {
 			assertThat(results).hasNumberOfReportEntries(4).withValues("AC", "AD", "BC", "BD");
 		}
 
+		@Test
+		@DisplayName("works with null values for non-primitives")
+		void worksWithNull() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CorrectFactoryTestCases.class, "worksWithNull", String.class,
+						String.class);
+
+			assertThat(results).hasNumberOfSucceededTests(2);
+			assertThat(results).hasNumberOfReportEntries(2).withValues("A,null", "B,null");
+		}
+
 	}
 
 	@Nested
@@ -147,6 +158,22 @@ public class CartesianTestFactoryTests {
 										"^Method .* must register values for each parameter exactly once. Expected \\[[0-9]] parameter sets, but got \\[[0-9]].$")));
 		}
 
+		@Test
+		@DisplayName("when supplying null value to primitive parameter")
+		void noNullToPrimitive() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(WrongFactoryTestCases.class, "noNullToPrimitive", int.class,
+						int.class);
+
+			assertThat(results)
+					.hasNumberOfFailedTests(2)
+					.andThenCheckExceptions(exceptions -> assertThat(exceptions)
+							.hasOnlyElementsOfType(ParameterResolutionException.class)
+							.extracting(Throwable::getMessage)
+							.allMatch(
+								message -> message.matches("^No ParameterResolver registered for parameter .*$")));
+		}
+
 	}
 
 	static class WrongFactoryTestCases {
@@ -171,6 +198,11 @@ public class CartesianTestFactoryTests {
 		void tooManyArguments(String line) {
 		}
 
+		@CartesianTest
+		@CartesianTest.Factory("withNull")
+		void noNullToPrimitive(int num1, int num2) {
+		}
+
 		Sets nonStatic() {
 			return new Sets().add("A", "B").add("C", "D");
 		}
@@ -185,6 +217,10 @@ public class CartesianTestFactoryTests {
 
 		static Sets tooMany() {
 			return new Sets().add("A", "B").add("C", "D");
+		}
+
+		static Sets withNull() {
+			return new Sets().add(1, 2).add((Object) null);
 		}
 
 	}
@@ -215,12 +251,22 @@ public class CartesianTestFactoryTests {
 		void findsExactAgainAgain(String s1, String s2) {
 		}
 
+		@CartesianTest
+		@CartesianTest.Factory("withNull")
+		@ReportEntry("{0},{1}")
+		void worksWithNull(String s1, String s2) {
+		}
+
 		static Sets parentheses() {
 			return new Sets().add("A", "B").add("C", "D");
 		}
 
 		static Sets exact() {
 			throw new ParameterResolutionException("Shouldn't call this, ever.");
+		}
+
+		static Sets withNull() {
+			return new Sets().add("A", "B").add((Object) null);
 		}
 
 		static class Inner {
