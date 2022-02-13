@@ -23,15 +23,14 @@ import org.junit.jupiter.params.provider.Arguments;
  * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
  *
  * @see org.junit.jupiter.params.provider.ArgumentsProvider
- * @see CartesianTestExtension
  */
 public interface CartesianParameterArgumentsProvider<T> extends CartesianArgumentsProvider {
 
 	/**
-	 * Provider a {@link Stream} of {@link Arguments} that needs to be used for the {@code @CartesianTest}.
+	 * Provides a {@link Stream} of {@link Arguments} that needs to be used for the {@code @CartesianTest}.
 	 *
 	 * @param context the current extension context; never {@code null}
-	 * @param parameter the parameter for which the arguments needs to be provided
+	 * @param parameter the parameter for which the arguments have to be provided
 	 * @return a stream of arguments; never {@code null}
 	 */
 	Stream<T> provideArguments(ExtensionContext context, Parameter parameter) throws Exception;

@@ -18,9 +18,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
 
+/**
+ * If you are implementing an {@link org.junit.jupiter.params.provider.ArgumentsProvider ArgumentsProvider}
+ * for {@link CartesianTest}, it has to implement this interface <b>as well</b> to provide arguments simultaneously
+ * for all parameters in a test method. For more information, see
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
+ *
+ * @see org.junit.jupiter.params.provider.ArgumentsProvider
+ */
 public interface CartesianMethodArgumentsProvider extends CartesianArgumentsProvider {
 
+	/**
+	 * Provides a {@link Sets} object, containing the arguments for each parameter in order,
+	 * to be used for the {@code @CartesianTest}.
+	 * For more information, see
+	 * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
+	 *
+	 * @param context the current extension context; never {@code null}
+	 * @return a {@code Sets} object; never {@code null}
+	 */
 	Sets provideArguments(ExtensionContext context) throws Exception;
 
 	class Sets {
