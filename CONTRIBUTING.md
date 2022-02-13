@@ -11,6 +11,7 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 * [Writing Code](#writing-code)
 	* [Code Organization](#code-organization)
 	* [Code Style](#code-style)
+	* [Tests](#tests)
 	* [Documentation](#documentation)
 	* [Git](#git)
 * [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
@@ -145,25 +146,6 @@ How to write the code itself.
 * design code to avoid optionality wherever feasibly possible
 * in all remaining cases, prefer `Optional` over `null`
 
-#### Assertions
-
-All tests shall use [AssertJ](https://assertj.github.io/doc/)'s assertions and not the ones built into Jupiter:
-
-* more easily discoverable API
-* more detailed assertion failures
-
-Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue(bool)` vs `assertThat(bool).isTrue()`) - that will spare us the discussion which assertion to use in a specific case.
-
-Pioneer now has its own assertions for asserting not directly executed tests.
-This means asserting `ExecutionResults`.
-We can divide those kinds of assertions into two categories: test case assertions and test suite assertions.
- - Test case assertions are the ones where you assert a single test, e.g.: it failed with an exception or succeeded.
- For those, use the assertions that being with `hasSingle...`, e.g.: `hasSingleSucceededTest()`.
- - Test suite assertions are the ones where you assert multiple tests and their outcomes, e.g.: three tests started, two failed, one succeeded.
- For those, use the assertions that being with `hasNumberOf...`, e.g.: `hasNumberOfFailedTests(1)`.
-
-Do not mix the two - while technically correct (meaning you _can_ write `hasNumberOfFailedTests(3).hasSingleSucceededTest()`) it is better to handle them separately.
-
 #### Thread-safety
 
 It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.
@@ -185,6 +167,30 @@ Most extensions verify their configuration at some point.
 It helps with writing parallel tests for them if they do not change global state until the configuration is verified.
 That particularly applies to "store in beforeEach - restore in afterEach"-extensions!
 If they fail after "store", they will still "restore" and thus potentially create a race condition with other tests.
+
+### Tests
+
+The name of test classes _must_ end with `Tests`, otherwise Gradle will ignore them.
+The name of nested classes which are used as test fixture for executing Jupiter should end with `TestCases`, even when they only contain a single test method.
+
+#### Assertions
+
+All tests shall use [AssertJ](https://assertj.github.io/doc/)'s assertions and not the ones built into Jupiter:
+
+* more easily discoverable API
+* more detailed assertion failures
+
+Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue(bool)` vs `assertThat(bool).isTrue()`) - that will spare us the discussion which assertion to use in a specific case.
+
+Pioneer now has its own assertions for asserting not directly executed tests.
+This means asserting `ExecutionResults`.
+We can divide those kinds of assertions into two categories: test case assertions and test suite assertions.
+ - Test case assertions are the ones where you assert a single test, e.g.: it failed with an exception or succeeded.
+ For those, use the assertions that begin with `hasSingle...`, e.g.: `hasSingleSucceededTest()`.
+ - Test suite assertions are the ones where you assert multiple tests and their outcomes, e.g.: three tests started, two failed, one succeeded.
+ For those, use the assertions that begin with `hasNumberOf...`, e.g.: `hasNumberOfFailedTests(1)`.
+
+Do not mix the two - while technically correct (meaning you _can_ write `hasNumberOfFailedTests(3).hasSingleSucceededTest()`) it is better to handle them separately.
 
 ### Documentation
 
@@ -223,7 +229,7 @@ One aspect that's relevant to contributors is the list of contributions at the e
 
 #### Line Endings
 
-We [mind the end of our lines](http://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/) and have [instructed](.gitattributes) Git to replace all line endings with `LF` (the non-Windows variant) when writing files to the working directory.
+We [mind the end of our lines](https://adaptivepatchwork.com/2012/03/01/mind-the-end-of-your-line/) and have [instructed](.gitattributes) Git to replace all line endings with `LF` (the non-Windows variant) when writing files to the working directory.
 If you're on Windows and prefer `CRLF` line endings, consider setting `core.autocrlf` to `true`:
 
 ```bash
@@ -258,8 +264,7 @@ Lab branches should be deleted once they become obsolete - when that is the case
 
 While it is nice to have each individual commit pass the build, this is not a requirement - it is the contributor's branch to play on.
 
-As a general rule, the style and formatting of commit messages should follow the [guidelines for good Git commit messages](http://chris.beams.io/posts/git-commit/).
-Because of the noise it generates on the issue, please do _not_ mention the issue number in the message.
+See section [_Commit Message_](#commit-message) for how the commit message should look like.
 
 ### Pull Requests
 
@@ -290,7 +295,7 @@ This can be achieved with GitHub's [_squash and merge_](https://help.github.com/
 
 ### Commit Message
 
-To make the single commit expressive, its message must be detailed and [good]((http://chris.beams.io/posts/git-commit/)) (really, read that post!).
+To make the single commit expressive, its message must be detailed and [good]((https://chris.beams.io/posts/git-commit/)) (really, read that post!).
 Furthermore, it must follow this structure:
 
 ```
@@ -344,6 +349,7 @@ Closes: #30
 Closes: #31
 ```
 
+Finally, because of the noise it generates on the issue, please do _not_ mention the issue number in the message during development.
 
 ## Dependencies
 

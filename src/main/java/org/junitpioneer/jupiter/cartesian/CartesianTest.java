@@ -108,6 +108,9 @@ public @interface CartesianTest {
 	 */
 	String name() default "[{index}] {arguments}";
 
+	/**
+	 * Parameter annotation to be used with {@code CartesianTest} for providing simple values.
+	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 	@CartesianArgumentsSource(CartesianValueArgumentsProvider.class)
@@ -165,6 +168,9 @@ public @interface CartesianTest {
 
 	}
 
+	/**
+	 * Parameter annotation to be used with {@code CartesianTest} for providing enum values.
+	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 	@CartesianArgumentsSource(CartesianEnumArgumentsProvider.class)

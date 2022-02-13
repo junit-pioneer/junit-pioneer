@@ -32,9 +32,9 @@ import org.junit.jupiter.params.ParameterizedTest;
  * of dynamically registered parameterized tests.</p>
  *
  * <p>If neither {@link DisableIfDisplayName#contains() contains} nor
- * {@link DisableIfDisplayName#matches() matches} is configured, the extension will throw an exception.
- * It is possible to configure both, in which case the test gets disabled if at least one substring
- * was found <em>or</em> at least one regular expression matched.</p>
+ * {@link DisableIfDisplayName#matches() matches} is configured, or if both are present,
+ * the extension will throw an exception.
+ * </p>
  *
  * @since 0.7
  * @see DisableIfNameExtension

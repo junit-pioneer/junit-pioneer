@@ -23,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 
-public class DisableIfNameExtension implements ExecutionCondition {
+class DisableIfNameExtension implements ExecutionCondition {
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
