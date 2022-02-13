@@ -130,6 +130,23 @@ public class CartesianTestFactoryTests {
 							.matches(message -> message.matches("^Class .* not found, referenced in method .*$")));
 		}
 
+		@Test
+		@DisplayName("when factory explicitly should be inside a class that can't be found")
+		void tooManyArguments() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(WrongFactoryTestCases.class, "tooManyArguments", String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(ParameterResolutionException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message
+									.matches(
+										"^Method .* must register values for each parameter exactly once. Expected \\[[0-9]] parameter sets, but got \\[[0-9]].$")));
+		}
+
 	}
 
 	static class WrongFactoryTestCases {
@@ -149,6 +166,11 @@ public class CartesianTestFactoryTests {
 		void notThere(String s1, String s2) {
 		}
 
+		@CartesianTest
+		@CartesianTest.Factory("tooMany")
+		void tooManyArguments(String line) {
+		}
+
 		Sets nonStatic() {
 			return new Sets().add("A", "B").add("C", "D");
 		}
@@ -158,6 +180,10 @@ public class CartesianTestFactoryTests {
 		}
 
 		static Sets notThere() {
+			return new Sets().add("A", "B").add("C", "D");
+		}
+
+		static Sets tooMany() {
 			return new Sets().add("A", "B").add("C", "D");
 		}
 
