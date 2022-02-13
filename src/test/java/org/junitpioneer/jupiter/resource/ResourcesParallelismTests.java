@@ -12,20 +12,24 @@ package org.junitpioneer.jupiter.resource;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -284,4 +288,32 @@ class ResourcesParallelismTests {
 		assertThat(wasTwo).isTrue();
 	}
 
+	// At time of writing, we couldn't find a way to test that @{Before, After}{All, Each}-annotated methods are not
+	// executed at overlapping times, so we do the next-best thing: we ensure that all such methods are intercepted by
+	// ResourceExtension at all.
+
+	@Test
+	void checkThatBeforeAllMethodsAreIntercepted() {
+		assertOverrides("interceptBeforeAllMethod");
+	}
+
+	@Test
+	void checkThatAfterAllMethodsAreIntercepted() {
+		assertOverrides("interceptAfterAllMethod");
+	}
+
+	@Test
+	void checkThatBeforeEachMethodsAreIntercepted() {
+		assertOverrides("interceptBeforeEachMethod");
+	}
+
+	@Test
+	void checkThatAfterEachMethodsAreIntercepted() {
+		assertOverrides("interceptAfterEachMethod");
+	}
+
+	private void assertOverrides(String methodName) {
+		assertThat(InvocationInterceptor.class).isAssignableFrom(ResourceExtension.class);
+		assertThat(ResourceExtension.class.getDeclaredMethods()).haveExactly(1, new Condition<>((Method m) -> m.getName().equals(methodName), "declared method with name '%s'", methodName));
+	}
 }
