@@ -761,7 +761,7 @@ public class CartesianTestExtensionTests {
 
 		@Test
 		@DisplayName("parameter annotation arguments provider implements CartesianMethodArgumentsProvider")
-		void mismatchingInterface() {
+		void mismatchingInterfaceParam() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "mismatch", Sets.class);
 
@@ -774,6 +774,23 @@ public class CartesianTestExtensionTests {
 							.matches(message -> message
 									.matches(
 										"^.* does not implement CartesianParameterArgumentsProvider interface\\.$")));
+		}
+
+		@Test
+		@DisplayName("method annotation arguments provider implements CartesianParameterArgumentsProvider")
+		void mismatchingInterfaceMethod() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "otherMismatch",
+						String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message
+									.matches("^.* does not implement CartesianMethodArgumentsProvider interface\\.$")));
 		}
 
 	}
@@ -816,6 +833,11 @@ public class CartesianTestExtensionTests {
 
 		@CartesianTest
 		void mismatch(@Mismatch Sets s) {
+		}
+
+		@CartesianTest
+		@OtherMismatch
+		void otherMismatch(String s) {
 		}
 
 	}
@@ -1177,6 +1199,21 @@ public class CartesianTestExtensionTests {
 		@Override
 		public Sets provideArguments(ExtensionContext context) {
 			return new Sets().add("1", "2");
+		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@CartesianArgumentsSource(OtherMismatchingProvider.class)
+	@interface OtherMismatch {
+	}
+
+	static class OtherMismatchingProvider implements CartesianParameterArgumentsProvider<String> {
+
+		@Override
+		public Stream<String> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of("1", "2");
 		}
 
 	}
