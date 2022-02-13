@@ -274,17 +274,14 @@ class ResourcesParallelismTests {
 	// this method is written to fail if it is executed at overlapping times in different threads
 	private static void failIfExecutedInParallel(String testName) throws InterruptedException {
 		boolean wasZero = COUNTER.compareAndSet(0, 1);
-		System.out.println(testName + ": wasZero = " + wasZero);
 		assertThat(wasZero).isTrue();
 		// wait for the next test to catch up and potentially fail
 		Thread.sleep(TIMEOUT_MILLIS);
 		boolean wasOne = COUNTER.compareAndSet(1, 2);
-		System.out.println(testName + ": wasOne = " + wasOne);
 		assertThat(wasOne).isTrue();
 		// wait for the last test to catch up and potentially fail
 		Thread.sleep(TIMEOUT_MILLIS);
 		boolean wasTwo = COUNTER.compareAndSet(2, 0);
-		System.out.println(testName + ": wasTwo = " + wasTwo);
 		assertThat(wasTwo).isTrue();
 	}
 
