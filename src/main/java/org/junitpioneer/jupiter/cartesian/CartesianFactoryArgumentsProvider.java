@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.support.AnnotationConsumer;
+import org.junit.platform.commons.function.Try;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerUtils;
 
@@ -62,8 +63,15 @@ public class CartesianFactoryArgumentsProvider
 	private Class<?> getExplicitOrImplicitClass(Method testMethod, String factoryMethodName) {
 		if (factoryMethodName.contains("#")) {
 			String className = factoryMethodName.substring(0, factoryMethodName.indexOf('#'));
-			return ReflectionSupport
-					.tryToLoadClass(className)
+			Class<?> methodClass = testMethod.getDeclaringClass();
+			Try<Class<?>> tryToLoadClass = ReflectionSupport.tryToLoadClass(className);
+			while (methodClass != null) {
+				String enclosingName = methodClass.getName();
+				tryToLoadClass = tryToLoadClass
+						.orElse(() -> ReflectionSupport.tryToLoadClass(enclosingName + "$" + className));
+				methodClass = methodClass.getEnclosingClass();
+			}
+			return tryToLoadClass
 					.getOrThrow(ex -> new ExtensionConfigurationException(
 						format("Class %s not found, referenced in method %s", className, testMethod.getName()), ex));
 
