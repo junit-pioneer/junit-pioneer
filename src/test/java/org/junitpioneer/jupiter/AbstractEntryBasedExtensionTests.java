@@ -42,7 +42,6 @@ class AbstractEntryBasedExtensionTests {
 
 	@AfterEach
 	void tearDown() {
-		// Revert changes to not affect other tests
 		EnvironmentVariableUtils.clear(SET_ENVVAR_KEY);
 		System.clearProperty(SET_SYSPROP_KEY);
 	}
