@@ -84,6 +84,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 8
+          distribution: temurin
           cache: 'gradle'
       - name: Spotless check
         uses: gradle/gradle-build-action@v2
