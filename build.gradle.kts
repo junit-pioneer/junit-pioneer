@@ -231,6 +231,8 @@ tasks {
 		useJUnitPlatform()
 		filter {
 			includeTestsMatching("*Tests")
+			// included for documentation purposes
+			// includeTestsMatching("*Demo")
 		}
 		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
 		// `EnvironmentVariableExtension` uses reflection to change environment variables;
@@ -241,19 +243,23 @@ tasks {
 				"--add-opens=java.base/java.util=ALL-UNNAMED")
 	}
 
-	val demoTests = task<Test>("demoTests") {
-		description = "Test documentation tests"
-		group = "verification"
+	testing {
+		suites {
+			val test by getting(JvmTestSuite::class) {
+				useJUnitJupiter()
+			}
+			val demoTests by registering(JvmTestSuite::class) {
+				dependencies { implementation(project) }
 
-		testClassesDirs = sourceSets["demo"].output.classesDirs
-		classpath = sourceSets["demo"].runtimeClasspath
-
-		useJUnitPlatform()
-		filter {
-			includeTestsMatching("*Tests")
+				sources { java { srcDir("src/demo/java") } }
+				targets { all { testTask.configure {
+					shouldRunAfter(test)
+					filter {
+						includeTestsMatching("*Demo")
+					}
+				} } }
+			}
 		}
-
-		shouldRunAfter("test")
 	}
 
 	javadoc {
@@ -303,7 +309,7 @@ tasks {
 
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
-		dependsOn(javadoc, validateYaml, demoTests)
+		dependsOn(javadoc, validateYaml, testing.suites.named("demoTests"))
 	}
 
 	withType<Jar>().configureEach {

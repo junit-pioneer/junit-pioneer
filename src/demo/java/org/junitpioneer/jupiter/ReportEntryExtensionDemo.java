@@ -15,7 +15,7 @@ import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class ReportEntryExtensionTests {
+public class ReportEntryExtensionDemo {
 
 	// tag::no_report_entry[]
 	@Test
