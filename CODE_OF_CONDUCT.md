@@ -59,9 +59,11 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-[INSERT CONTACT METHOD].
-All complaints will be reviewed and investigated promptly and fairly.
+reported to Nicolai Parlog ([contact options](https://nipafx.dev/contact))
+or the other maintainers (via Discord DMs). All complaints will be reviewed and
+investigated fairly and as promptly as circumstances allow (as explained in
+[the contribution guide](CONTRIBUTING.md#pioneer-maintainers), there's no
+expectation of availability towards maintainers).
 
 All community leaders are obligated to respect the privacy and security of the
 reporter of any incident.
