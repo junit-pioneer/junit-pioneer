@@ -33,10 +33,8 @@ class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianPara
 	public Stream<E> provideArguments(ExtensionContext context, Parameter parameter) {
 		Class<?> parameterType = parameter.getType();
 		if (!Enum.class.isAssignableFrom(parameterType))
-			throw new PreconditionViolationException(String
-					.format(
-						"Parameter of type %s must reference an Enum type (alternatively, use the annotation's 'value' attribute to specify the type explicitly)",
-						parameterType));
+			throw new PreconditionViolationException(
+				String.format("Parameter of type %s must reference an Enum type", parameterType));
 		CartesianTest.Enum enumSource = AnnotationSupport
 				.findAnnotation(parameter, CartesianTest.Enum.class)
 				.orElseThrow(() -> new PreconditionViolationException(

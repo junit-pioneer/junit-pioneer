@@ -63,6 +63,7 @@ class CartesianFactoryArgumentsProvider
 	private Class<?> findExplicitOrImplicitClass(Method testMethod, String factoryMethodName) {
 		if (!factoryMethodName.contains("#"))
 			return testMethod.getDeclaringClass();
+
 		String className = factoryMethodName.substring(0, factoryMethodName.indexOf('#'));
 		Try<Class<?>> tryToLoadClass = ReflectionSupport.tryToLoadClass(className);
 		// step (outwards) through all enclosing classes, trying to load the factory class by appending
