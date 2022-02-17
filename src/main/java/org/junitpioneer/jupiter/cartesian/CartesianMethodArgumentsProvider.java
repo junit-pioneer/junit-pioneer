@@ -40,19 +40,48 @@ public interface CartesianMethodArgumentsProvider extends CartesianArgumentsProv
 	 */
 	Sets provideArguments(ExtensionContext context) throws Exception;
 
+	/**
+	 * Class for defining sets to a {@code CartesianTest} execution.
+	 */
 	class Sets {
 
 		List<List<?>> sets = new ArrayList<>(); // NOSONAR
 
+		/**
+		 * Creates a single set of distinct objects (according to
+		 * {@link Object#equals(Object)}) for a CartesianProductTest
+		 * from the elements of the passed {@link java.util.Collection}.
+		 *
+		 * The passed argument does not have to be an instance of {@link java.util.Set}.
+		 *
+		 * @param items the objects we want to include in a single set
+		 * @return the {@code Sets} object, for fluent set definitions
+		 */
 		public Sets add(Collection<?> items) {
 			sets.add(new ArrayList<>(items));
 			return this;
 		}
 
+		/**
+		 * Creates a single set of distinct objects (according to
+		 * {@link Object#equals(Object)}) for a CartesianProductTest
+		 * from the passed objects.
+		 *
+		 * @param items the objects we want to include in a single set
+		 * @return the {@code Sets} object, for fluent set definitions
+		 */
 		public Sets add(Object... items) {
 			return add(Arrays.asList(items));
 		}
 
+		/**
+		 * Creates a single set of distinct objects (according to
+		 * {@link Object#equals(Object)}) for a CartesianProductTest
+		 * from the elements of the passed {@link java.util.stream.Stream}.
+		 *
+		 * @param items the objects we want to include in a single set
+		 * @return the {@code Sets} object, for fluent set definitions
+		 */
 		public Sets add(Stream<?> items) {
 			return add(items.collect(Collectors.toList()));
 		}

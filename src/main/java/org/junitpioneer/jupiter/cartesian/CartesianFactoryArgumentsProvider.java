@@ -24,7 +24,7 @@ import org.junit.platform.commons.function.Try;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerUtils;
 
-public class CartesianFactoryArgumentsProvider
+class CartesianFactoryArgumentsProvider
 		implements CartesianMethodArgumentsProvider, AnnotationConsumer<CartesianTest.Factory> {
 
 	private String factoryMethodName;
@@ -37,8 +37,8 @@ public class CartesianFactoryArgumentsProvider
 	}
 
 	private Method findFactoryMethod(Method testMethod, String factoryMethodName) {
-		String factoryName = getFactoryMethodName(factoryMethodName);
-		Class<?> declaringClass = getExplicitOrImplicitClass(testMethod, factoryMethodName);
+		String factoryName = extractFactoryMethodName(factoryMethodName);
+		Class<?> declaringClass = findExplicitOrImplicitClass(testMethod, factoryMethodName);
 		Method factory = PioneerUtils
 				.findMethodCurrentOrEnclosing(declaringClass, factoryName)
 				.orElseThrow(() -> new ExtensionConfigurationException("Method `Stream<? extends Arguments> "
@@ -52,7 +52,7 @@ public class CartesianFactoryArgumentsProvider
 		return factory;
 	}
 
-	private String getFactoryMethodName(String factoryMethodName) {
+	private String extractFactoryMethodName(String factoryMethodName) {
 		if (factoryMethodName.contains("("))
 			factoryMethodName = factoryMethodName.substring(0, factoryMethodName.indexOf('('));
 		if (factoryMethodName.contains("#"))
@@ -60,23 +60,23 @@ public class CartesianFactoryArgumentsProvider
 		return factoryMethodName;
 	}
 
-	private Class<?> getExplicitOrImplicitClass(Method testMethod, String factoryMethodName) {
-		if (factoryMethodName.contains("#")) {
-			String className = factoryMethodName.substring(0, factoryMethodName.indexOf('#'));
-			Class<?> methodClass = testMethod.getDeclaringClass();
-			Try<Class<?>> tryToLoadClass = ReflectionSupport.tryToLoadClass(className);
-			while (methodClass != null) {
-				String enclosingName = methodClass.getName();
-				tryToLoadClass = tryToLoadClass
-						.orElse(() -> ReflectionSupport.tryToLoadClass(enclosingName + "$" + className));
-				methodClass = methodClass.getEnclosingClass();
-			}
-			return tryToLoadClass
-					.getOrThrow(ex -> new ExtensionConfigurationException(
-						format("Class %s not found, referenced in method %s", className, testMethod.getName()), ex));
-
+	private Class<?> findExplicitOrImplicitClass(Method testMethod, String factoryMethodName) {
+		if (!factoryMethodName.contains("#"))
+			return testMethod.getDeclaringClass();
+		String className = factoryMethodName.substring(0, factoryMethodName.indexOf('#'));
+		Try<Class<?>> tryToLoadClass = ReflectionSupport.tryToLoadClass(className);
+		// step (outwards) through all enclosing classes, trying to load the factory class by appending
+		// its name to the enclosing class' name (if a previous load didn't already succeed
+		Class<?> methodClass = testMethod.getDeclaringClass();
+		while (methodClass != null) {
+			String enclosingName = methodClass.getName();
+			tryToLoadClass = tryToLoadClass
+					.orElse(() -> ReflectionSupport.tryToLoadClass(enclosingName + "$" + className));
+			methodClass = methodClass.getEnclosingClass();
 		}
-		return testMethod.getDeclaringClass();
+		return tryToLoadClass
+				.getOrThrow(ex -> new ExtensionConfigurationException(
+					format("Class %s not found, referenced in method %s", className, testMethod.getName()), ex));
 	}
 
 	private Sets invokeFactoryMethod(Method testMethod, Method factory) {

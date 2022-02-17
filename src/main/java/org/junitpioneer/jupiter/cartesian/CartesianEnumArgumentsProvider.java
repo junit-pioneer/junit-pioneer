@@ -24,11 +24,8 @@ import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
  * This is basically an enhanced copy of Jupiter's {@code EnumArgumentsProvider},
- * except it does NOT support {@code @ParameterizedTest} and implements {@link CartesianArgumentsProvider}
- * for use with {@code @CartesianTest}.
- *
- * @implNote This class does not implement {@code ArgumentsProvider} since the Jupiter's {@code EnumSource}
- * should be used for that.
+ * except it does NOT support {@code @ParameterizedTest} and implements
+ * {@link CartesianParameterArgumentsProvider} for use with {@code @CartesianTest}.
  */
 class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianParameterArgumentsProvider<E> {
 

@@ -14,6 +14,6 @@ package org.junitpioneer.jupiter.cartesian;
  * This is a marker interface. Users of {@code CartesianTest} must implement either
  * {@link CartesianMethodArgumentsProvider} or {@link CartesianParameterArgumentsProvider}.
  */
-public interface CartesianArgumentsProvider {
+interface CartesianArgumentsProvider {
 
 }

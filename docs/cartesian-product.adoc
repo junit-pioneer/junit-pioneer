@@ -307,11 +307,12 @@ You can annotate your test method to supply arguments to all parameters simultan
 === `@CartesianTest.Factory`
 
 `@CartesianTest.Factory` can be used to name a static factory method that supplies your arguments.
-The `name` annotation parameter is mandatory.
+The `value` annotation parameter is mandatory.
 Just like with JUnit's `@MethodSource`, you can specify the factory method with its fully-qualified name (including the class), e.g. `com.example.Class#factory`.
 This method must return `CartesianMethodArgumentsProvider.Sets`.
 `Sets` is a helper class, specifically for creating sets for `@CartesianTest`.
 To create the test data, instantiate a `new Sets()` then use the `add()` method to register the values for the parameters.
+When calling `add`, you have to pass in all the arguments you need for the corresponding parameter.
 For convenience, all `add()` methods return with your `Sets` instance, so you can chain `add()` calls.
 
 Let's look at an example.
@@ -384,9 +385,9 @@ class MyCartesianTestClass {
 }
 ----
 
-==== Conditions for the static factory method
+==== Requirements for the static factory method
 
-There are multiple conditions the static factory method has to fulfill to qualify:
+There are multiple requirements the static factory method has to fulfill to qualify:
 
 - must have the same name as the test method (or its name must be specified via the `factory` attribute)
 - must be `static`

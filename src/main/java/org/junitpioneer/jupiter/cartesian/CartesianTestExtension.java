@@ -86,9 +86,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		try {
 			CartesianMethodArgumentsProvider provider = initializeMethodArgumentsProvider(argumentsSource,
 				context.getRequiredTestMethod());
-			// @formatter:off
 			return provider.provideArguments(context).get();
-			// @formatter:on
 		}
 		catch (Exception ex) {
 			throw new ExtensionConfigurationException("Could not provide arguments because of exception.", ex);
@@ -119,7 +117,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		CartesianArgumentsSource providerAnnotation = AnnotationSupport
 				.findAnnotation(method, CartesianArgumentsSource.class)
 				// never happens, we already know these annotations are annotated with @ArgumentsSource
-				.orElseThrow(() -> new PreconditionViolationException(format(
+				.orElseThrow(() -> new IllegalStateException(format(
 					"%s was not annotated with @CartesianArgumentsSource or @ArgumentsSource but should have been.",
 					source.annotationType())));
 		CartesianArgumentsProvider provider = ReflectionSupport.newInstance(providerAnnotation.value());
@@ -139,7 +137,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		} else {
 			ArgumentsSource providerAnnotation = AnnotationSupport
 					.findAnnotation(parameter, ArgumentsSource.class)
-					.orElseThrow(() -> new PreconditionViolationException(
+					.orElseThrow(() -> new IllegalStateException(
 						format("%s was not annotated with %s or %s but should have been.", source.annotationType(),
 							CartesianArgumentsSource.class.getName(), ArgumentsSource.class.getName())));
 			providerClass = providerAnnotation.value();
