@@ -16,21 +16,19 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * If you are implementing an {@link org.junit.jupiter.params.provider.ArgumentsProvider ArgumentsProvider}
- * for {@link CartesianTest}, it has to implement this interface <b>as well</b> to know which parameter it provides
- * arguments to. For more information, see
- * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
+ * Provides arguments for a single parameter of a {@link CartesianTest} method.
  *
- * @see org.junit.jupiter.params.provider.ArgumentsProvider
+ * For more information, see
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
  */
 public interface CartesianParameterArgumentsProvider<T> extends CartesianArgumentsProvider {
 
 	/**
-	 * Provides a {@link Stream} of arguments that needs to be used for the {@code @CartesianTest}.
+	 * Provides a {@link Stream} of arguments that needs to be used for a {@link CartesianTest} parameter.
 	 *
-	 * @param context the current extension context; never {@code null}
+	 * @param context the current extension context
 	 * @param parameter the parameter for which the arguments have to be provided
-	 * @return a stream of arguments; never {@code null}
+	 * @return a stream of arguments
 	 */
 	Stream<T> provideArguments(ExtensionContext context, Parameter parameter) throws Exception;
 

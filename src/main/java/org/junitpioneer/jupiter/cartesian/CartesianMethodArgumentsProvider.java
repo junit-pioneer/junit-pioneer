@@ -13,23 +13,19 @@ package org.junitpioneer.jupiter.cartesian;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * If you are implementing an {@link org.junit.jupiter.params.provider.ArgumentsProvider ArgumentsProvider}
- * for {@link CartesianTest}, it has to implement this interface <b>as well</b> to provide arguments simultaneously
- * for all parameters in a test method. For more information, see
- * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
+ * Provides arguments for all parameters of a {@link CartesianTest} method.
  *
- * @see org.junit.jupiter.params.provider.ArgumentsProvider
+ * For more information, see
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
  */
 public interface CartesianMethodArgumentsProvider extends CartesianArgumentsProvider {
 
 	/**
-	 * Provides a {@link ArgumentSets} object, containing the arguments for each parameter in order,
-	 * to be used for the {@code @CartesianTest}.
-	 * For more information, see
-	 * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
+	 * Provides an {@link ArgumentSets} object, containing the arguments for each parameter in order,
+	 * to be used for the {@link CartesianTest}.
 	 *
-	 * @param context the current extension context; never {@code null}
-	 * @return a {@link ArgumentSets} object; never {@code null}
+	 * @param context the current extension context
+	 * @return a {@link ArgumentSets} object
 	 */
 	ArgumentSets provideArguments(ExtensionContext context) throws Exception;
 
