@@ -304,16 +304,18 @@ For more information, please see the link:docs/range-sources[separate documentat
 
 You can annotate your test method to supply arguments to all parameters simultaneously.
 
-=== `@CartesianTest.Factory`
+=== `@CartesianTest.MethodFactory`
 
-`@CartesianTest.Factory` can be used to name a static factory method that supplies your arguments.
+`@CartesianTest.MethodFactory` can be used to name a static factory method that supplies your arguments.
 The `value` annotation parameter is mandatory.
 Just like with JUnit's `@MethodSource`, you can specify the factory method with its fully-qualified name (including the class), e.g. `com.example.Class#factory`.
-This method must return `CartesianMethodArgumentsProvider.Sets`.
-`Sets` is a helper class, specifically for creating sets for `@CartesianTest`.
-To create the test data, instantiate a `new Sets()` then use the `add()` method to register the values for the parameters.
-When calling `add`, you have to pass in all the arguments you need for the corresponding parameter.
-For convenience, all `add()` methods return with your `Sets` instance, so you can chain `add()` calls.
+This method must return `ArgumentSets`.
+
+`ArgumentSets` is a helper class, specifically for creating sets for `@CartesianTest`.
+To create the test data, instantiate with the static factory method `argumentsForFirstParameter`, then call the `addValuesForNextParameter` method once per additional parameter in the order in which the they appear in the test method.
+In each call, pass in all values for the corresponding parameter.
+For convenience, all methods return with your `ArgumentSets` instance, so you can chain `add()` calls.
+If you want to create an initially-empty `ArgumentSets`, call the static factory method `create()`.
 
 Let's look at an example.
 
@@ -322,16 +324,16 @@ Let's look at an example.
 
 class MyCartesianTestClass {
 	@CartesianTest
-	@CartesianTest.Factory("setFactory")
+	@CartesianTest.MethodFactory("setFactory")
 	void testMethod(String string, Class<?> clazz, TimeUnit unit) {
 		// passing test code
 	}
 
-	static Sets setFactory() {
-		return new Sets()
-			.add("Alpha", "Omega")
-			.add(Runnable.class, Cloneable.class, Predicate.class)
-			.add(TimeUnit.DAYS, TimeUnit.HOURS);
+	static ArgumentSets setFactory() {
+		return ArgumentSets
+				.argumentsForFirstParameter("Alpha", "Omega")
+				.argumentsForNextParameter(Runnable.class, Cloneable.class, Predicate.class)
+				.argumentsForNextParameter(TimeUnit.DAYS, TimeUnit.HOURS);
 	}
 }
 ----
@@ -366,21 +368,21 @@ You can reuse the same argument provider method multiple times.
 ----
 class MyCartesianTestClass {
 	@CartesianTest
-	@CartesianTest.Factory("provideArguments")
+	@CartesianTest.MethodFactory("provideArguments")
 	void testNeedingArguments(String string, int i) {
 		// passing test code
 	}
 
 	@CartesianTest
-	@CartesianTest.Factory("provideArguments")
+	@CartesianTest.MethodFactory("provideArguments")
 	void testNeedingSameArguments(String string, int i) {
 		// different passing test code
 	}
 
-	static CartesianProductTest.Sets provideArguments() {
-		return new CartesianProductTest.Sets()
-			.add("Mercury", "Earth", "Venus")
-			.add(1, 12, 144);
+	static ArgumentSets provideArguments() {
+		return ArgumentSets
+			.argumentsForFirstParameter("Mercury", "Earth", "Venus")
+			.argumentsForNextParameter(1, 12, 144);
 	}
 }
 ----
@@ -392,11 +394,11 @@ There are multiple requirements the static factory method has to fulfill to qual
 - must have the same name as the test method (or its name must be specified via the `factory` attribute)
 - must be `static`
 - must have **no** parameters
-- must return `CartesianProductTest.Sets`
+- must return `ArgumentSets`
 - must register values for every parameter exactly once
 - must register values in order
 
-==== Returning wrong `Sets` in the static factory method
+==== Returning wrong `ArgumentSets` in the static factory method
 
 If you register too few, too many, or conflicting parameters, you will get an https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/ParameterResolutionException.html[`ParameterResolutionException`].
 "Conflicting parameters" means your test method has a parameter that should be injected by JUnit (e.g.: `TestReporter`) but you also try to inject it.
@@ -407,39 +409,40 @@ Examples of badly configured tests/static factory method:
 ----
 class BadExamples {
 	@CartesianTest
-	@CartesianTest.Factory("resolveParameters")
+	@CartesianTest.MethodFactory("resolveParameters")
 	void tooFewParameters(String string, int i, boolean b) {
 		// fails because the boolean parameter is not resolved
 	}
 
 	@CartesianTest
-	@CartesianTest.Factory("resolveParameters")
+	@CartesianTest.MethodFactory("resolveParameters")
 	void tooManyParameters(String string) {
 		// fails because we try to supply a non-existent integer parameter
 	}
 
 	@CartesianTest
-	@CartesianTest.Factory("resolveParameters")
+	@CartesianTest.MethodFactory("resolveParameters")
 	void wrongOrderParameters(int i, String string) {
 		// fails because the static factory method declared parameter sets in the wrong order
 	}
 
 	@CartesianTest
-	@CartesianTest.Factory("resolveTestReporterParam")
+	@CartesianTest.MethodFactory("resolveTestReporterParam")
 	void conflictingParameters(String string, TestReporter info) {
 		// fails because both the factory method and JUnit tries to inject TestReporter
 	}
 
-	static Sets resolveParameters() {
-		return new Sets()
-			.add("A", "B", "C")
-			.add(1, 2, 3);
+	static ArgumentSets resolveParameters() {
+		return ArgumentSets
+			.argumentsForFirstParameter("A", "B", "C")
+			.argumentsForNextParameter(1, 2, 3);
 	}
 
-	static Sets resolveTestReporterParam() {
-		return new Sets()
-			.add("A", "B", "C")
-			.add(new MyTestReporter()); // in this case MyTestReporter implements TestReporter
+	static ArgumentSets resolveTestReporterParam() {
+		return ArgumentSets
+			.argumentsForFirstParameter("A", "B", "C")
+			// in this case MyTestReporter implements TestReporter
+			.argumentsForNextParameter(new MyTestReporter());
 	}
 }
 ----
@@ -631,11 +634,11 @@ import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
 class BitArgumentsProvider implements CartesianMethodArgumentsProvider {
 
 	@Override
-	public Sets provideArguments(ExtensionContext context) {
+	public ArgumentSets provideArguments(ExtensionContext context) {
 		int paramCount = context.getRequiredTestMethod().getParameters().length;
-		Sets sets = new Sets();
+		ArgumentSets sets = ArgumentSets.create();
 		for (int i = 0; i < paramCount; i++) {
-			sets.add(0, 1);
+			sets.argumentsForNextParameter(0, 1);
 		}
 		return sets;
 	}
@@ -645,7 +648,7 @@ class BitArgumentsProvider implements CartesianMethodArgumentsProvider {
 The class has to implement `CartesianMethodArgumentsProvider`.
 Note that an implementation of `CartesianMethodArgumentsProvider` must be declared as either a top-level class or as a static nested class.
 It must also provide a default (no argument) constructor.
-The method `provideArguments` returns a `CartesianMethodArgumentsProvider.Sets` object.
+The method `provideArguments` returns an `ArgumentSets` object.
 This object should contain the arguments list for every parameter, except if an argument is supplied by JUnit (e.g.: a `TestInfo`).
 
 WARNING: This example does not work with parameters that are supplied by JUnit, you have to add custom logic for that scenario.
@@ -677,11 +680,11 @@ class NumberArgumentsProvider implements CartesianMethodArgumentsProvider, Annot
 	private int[] numbers;
 
 	@Override
-	public Sets provideArguments(ExtensionContext context) {
+	public ArgumentSets provideArguments(ExtensionContext context) {
 		int paramCount = context.getRequiredTestMethod().getParameters().length;
-		Sets sets = new Sets();
+		ArgumentSets sets = ArgumentSets.create();
 		for (int i = 0; i < paramCount; i++) {
-			sets.add(Arrays.stream(numbers).boxed());
+			sets.argumentsForNextParameter(Arrays.stream(numbers).boxed());
 		}
 		return sets;
 	}

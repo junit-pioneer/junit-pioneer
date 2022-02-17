@@ -32,7 +32,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.ReportEntry;
-import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider.Sets;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.junitpioneer.jupiter.params.ByteRangeSource;
@@ -763,7 +762,8 @@ public class CartesianTestExtensionTests {
 		@DisplayName("parameter annotation arguments provider implements CartesianMethodArgumentsProvider")
 		void mismatchingInterfaceParam() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "mismatch", Sets.class);
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "mismatch",
+						ArgumentSets.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -827,12 +827,12 @@ public class CartesianTestExtensionTests {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("poem")
+		@CartesianTest.MethodFactory("poem")
 		void bothMethodAndParam(@Values(strings = "A") String a, @Values(strings = "B") String b) {
 		}
 
 		@CartesianTest
-		void mismatch(@Mismatch Sets s) {
+		void mismatch(@Mismatch ArgumentSets s) {
 		}
 
 		@CartesianTest
@@ -1013,35 +1013,36 @@ public class CartesianTestExtensionTests {
 	static class CartesianFactorySourceTestCases {
 
 		@CartesianTest
-		@CartesianTest.Factory("poem")
+		@CartesianTest.MethodFactory("poem")
 		@ReportEntry("{0}{1}")
 		void veryBasicTest(String firstLine, String secondLine) {
 			assertThat(firstLine).contains("on");
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("poem")
+		@CartesianTest.MethodFactory("poem")
 		@MethodLevelCartesianArgumentSource
 		void multipleMethodLevelAnnotations(String line, String otherLine) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("poem")
+		@CartesianTest.MethodFactory("poem")
 		@ReportEntry("{0}{1}")
 		void autoInjectedParam(String line, String otherLine, TestReporter reporter) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("poem")
+		@CartesianTest.MethodFactory("poem")
 		void competingInject(String line, TestReporter reporter) {
 		}
 
-		static Sets poem() {
-			return new Sets()
-					.add(Arrays
+		static ArgumentSets poem() {
+			// use `Arrays.asList` to call those method overloads during tests as well
+			return ArgumentSets
+					.argumentsForFirstParameter(Arrays
 							.asList("And on the pedestal these words appear:", "My name is Ozymandias, king of kings;",
 								"Look on my works, ye Mighty, and despair!"))
-					.add(Arrays
+					.argumentsForNextParameter(Arrays
 							.asList("Nothing beside remains. Round the decay",
 								"Of that colossal wreck, boundless and bare",
 								"The lone and level sands stretch far away."));
@@ -1197,8 +1198,8 @@ public class CartesianTestExtensionTests {
 	static class MismatchingProvider implements CartesianMethodArgumentsProvider {
 
 		@Override
-		public Sets provideArguments(ExtensionContext context) {
-			return new Sets().add("1", "2");
+		public ArgumentSets provideArguments(ExtensionContext context) {
+			return ArgumentSets.argumentsForFirstParameter("1", "2");
 		}
 
 	}

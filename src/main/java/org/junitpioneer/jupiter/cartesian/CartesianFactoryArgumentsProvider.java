@@ -25,20 +25,20 @@ import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerUtils;
 
 class CartesianFactoryArgumentsProvider
-		implements CartesianMethodArgumentsProvider, AnnotationConsumer<CartesianTest.Factory> {
+		implements CartesianMethodArgumentsProvider, AnnotationConsumer<CartesianTest.MethodFactory> {
 
-	private String factoryMethodName;
+	private String methodFactoryName;
 
 	@Override
-	public Sets provideArguments(ExtensionContext context) throws Exception {
+	public ArgumentSets provideArguments(ExtensionContext context) throws Exception {
 		Method testMethod = context.getRequiredTestMethod();
-		Method factory = findFactoryMethod(testMethod, factoryMethodName);
-		return invokeFactoryMethod(testMethod, factory);
+		Method factory = findMethodFactory(testMethod, methodFactoryName);
+		return invokeMethodFactory(testMethod, factory);
 	}
 
-	private Method findFactoryMethod(Method testMethod, String factoryMethodName) {
-		String factoryName = extractFactoryMethodName(factoryMethodName);
-		Class<?> declaringClass = findExplicitOrImplicitClass(testMethod, factoryMethodName);
+	private static Method findMethodFactory(Method testMethod, String methodFactoryName) {
+		String factoryName = extractMethodFactoryName(methodFactoryName);
+		Class<?> declaringClass = findExplicitOrImplicitClass(testMethod, methodFactoryName);
 		Method factory = PioneerUtils
 				.findMethodCurrentOrEnclosing(declaringClass, factoryName)
 				.orElseThrow(() -> new ExtensionConfigurationException("Method `Stream<? extends Arguments> "
@@ -46,25 +46,25 @@ class CartesianFactoryArgumentsProvider
 		String method = "Method `" + factory + "`";
 		if (!Modifier.isStatic(factory.getModifiers()))
 			throw new ExtensionConfigurationException(method + " must be static.");
-		if (!Sets.class.isAssignableFrom(factory.getReturnType()))
+		if (!ArgumentSets.class.isAssignableFrom(factory.getReturnType()))
 			throw new ExtensionConfigurationException(
-				format("%s must return a `%s` object", method, Sets.class.getName()));
+				format("%s must return a `%s` object", method, ArgumentSets.class.getName()));
 		return factory;
 	}
 
-	private String extractFactoryMethodName(String factoryMethodName) {
-		if (factoryMethodName.contains("("))
-			factoryMethodName = factoryMethodName.substring(0, factoryMethodName.indexOf('('));
-		if (factoryMethodName.contains("#"))
-			return factoryMethodName.substring(factoryMethodName.indexOf('#') + 1);
-		return factoryMethodName;
+	private static String extractMethodFactoryName(String methodFactoryName) {
+		if (methodFactoryName.contains("("))
+			methodFactoryName = methodFactoryName.substring(0, methodFactoryName.indexOf('('));
+		if (methodFactoryName.contains("#"))
+			return methodFactoryName.substring(methodFactoryName.indexOf('#') + 1);
+		return methodFactoryName;
 	}
 
-	private Class<?> findExplicitOrImplicitClass(Method testMethod, String factoryMethodName) {
-		if (!factoryMethodName.contains("#"))
+	private static Class<?> findExplicitOrImplicitClass(Method testMethod, String methodFactoryName) {
+		if (!methodFactoryName.contains("#"))
 			return testMethod.getDeclaringClass();
 
-		String className = factoryMethodName.substring(0, factoryMethodName.indexOf('#'));
+		String className = methodFactoryName.substring(0, methodFactoryName.indexOf('#'));
 		Try<Class<?>> tryToLoadClass = ReflectionSupport.tryToLoadClass(className);
 		// step (outwards) through all enclosing classes, trying to load the factory class by appending
 		// its name to the enclosing class' name (if a previous load didn't already succeed
@@ -80,9 +80,9 @@ class CartesianFactoryArgumentsProvider
 					format("Class %s not found, referenced in method %s", className, testMethod.getName()), ex));
 	}
 
-	private Sets invokeFactoryMethod(Method testMethod, Method factory) {
-		Sets argumentSets = (Sets) invokeMethod(factory, null);
-		long count = argumentSets.get().size();
+	private ArgumentSets invokeMethodFactory(Method testMethod, Method factory) {
+		ArgumentSets argumentSets = (ArgumentSets) invokeMethod(factory, null);
+		long count = argumentSets.getArguments().size();
 		if (count > testMethod.getParameterCount()) {
 			// If arguments count == parameters but one of the parameters should be auto-injected by JUnit
 			// JUnit will throw a ParameterResolutionException for competing resolvers before we could get to this line
@@ -94,8 +94,8 @@ class CartesianFactoryArgumentsProvider
 	}
 
 	@Override
-	public void accept(CartesianTest.Factory factory) {
-		this.factoryMethodName = factory.value();
+	public void accept(CartesianTest.MethodFactory factory) {
+		this.methodFactoryName = factory.value();
 	}
 
 }

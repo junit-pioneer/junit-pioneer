@@ -86,7 +86,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 		try {
 			CartesianMethodArgumentsProvider provider = initializeMethodArgumentsProvider(argumentsSource,
 				context.getRequiredTestMethod());
-			return provider.provideArguments(context).get();
+			return provider.provideArguments(context).getArguments();
 		}
 		catch (Exception ex) {
 			throw new ExtensionConfigurationException("Could not provide arguments because of exception.", ex);

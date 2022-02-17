@@ -15,6 +15,7 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junitpioneer.jupiter.ReportEntry;
-import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider.Sets;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -179,48 +179,51 @@ public class CartesianTestFactoryTests {
 	static class WrongFactoryTestCases {
 
 		@CartesianTest
-		@CartesianTest.Factory("nonStatic")
+		@CartesianTest.MethodFactory("nonStatic")
 		void nonStatic(String s1, String s2) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("nonSetsReturn")
+		@CartesianTest.MethodFactory("nonSetsReturn")
 		void nonSetsReturn(String s1, String s2) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("NoClass#notThere")
+		@CartesianTest.MethodFactory("NoClass#notThere")
 		void notThere(String s1, String s2) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("tooMany")
+		@CartesianTest.MethodFactory("tooMany")
 		void tooManyArguments(String line) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("withNull")
+		@CartesianTest.MethodFactory("withNull")
 		void noNullToPrimitive(int num1, int num2) {
 		}
 
-		Sets nonStatic() {
-			return new Sets().add("A", "B").add("C", "D");
+		ArgumentSets nonStatic() {
+			return ArgumentSets.argumentsForFirstParameter("A", "B").argumentsForNextParameter("C", "D");
 		}
 
 		static List<?> nonSetsReturn() {
 			return Arrays.asList("A", "B");
 		}
 
-		static Sets notThere() {
-			return new Sets().add("A", "B").add("C", "D");
+		static ArgumentSets notThere() {
+			return ArgumentSets.argumentsForFirstParameter("A", "B").argumentsForNextParameter("C", "D");
 		}
 
-		static Sets tooMany() {
-			return new Sets().add("A", "B").add("C", "D");
+		static ArgumentSets tooMany() {
+			// use `Stream.ofList` to call those method overloads during tests as well
+			return ArgumentSets
+					.argumentsForFirstParameter(Stream.of("A", "B"))
+					.argumentsForNextParameter(Stream.of("C", "D"));
 		}
 
-		static Sets withNull() {
-			return new Sets().add(1, 2).add((Object) null);
+		static ArgumentSets withNull() {
+			return ArgumentSets.argumentsForFirstParameter(1, 2).argumentsForNextParameter((Object) null);
 		}
 
 	}
@@ -228,51 +231,51 @@ public class CartesianTestFactoryTests {
 	static class CorrectFactoryTestCases {
 
 		@CartesianTest
-		@CartesianTest.Factory("parentheses()")
+		@CartesianTest.MethodFactory("parentheses()")
 		@ReportEntry("{0}{1}")
 		void parenthesesDoNotCount(String s1, String s2) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("org.junitpioneer.jupiter.cartesian.CartesianTestFactoryTests$CorrectFactoryTestCases$Inner#exact")
+		@CartesianTest.MethodFactory("org.junitpioneer.jupiter.cartesian.CartesianTestFactoryTests$CorrectFactoryTestCases$Inner#exact")
 		@ReportEntry("{0}{1}")
 		void findsExact(String s1, String s2) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("CorrectFactoryTestCases$Inner#exact")
+		@CartesianTest.MethodFactory("CorrectFactoryTestCases$Inner#exact")
 		@ReportEntry("{0}{1}")
 		void findsExactAgain(String s1, String s2) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("Inner#exact")
+		@CartesianTest.MethodFactory("Inner#exact")
 		@ReportEntry("{0}{1}")
 		void findsExactAgainAgain(String s1, String s2) {
 		}
 
 		@CartesianTest
-		@CartesianTest.Factory("withNull")
+		@CartesianTest.MethodFactory("withNull")
 		@ReportEntry("{0},{1}")
 		void worksWithNull(String s1, String s2) {
 		}
 
-		static Sets parentheses() {
-			return new Sets().add("A", "B").add("C", "D");
+		static ArgumentSets parentheses() {
+			return ArgumentSets.argumentsForFirstParameter("A", "B").argumentsForNextParameter("C", "D");
 		}
 
-		static Sets exact() {
+		static ArgumentSets exact() {
 			throw new ParameterResolutionException("Shouldn't call this, ever.");
 		}
 
-		static Sets withNull() {
-			return new Sets().add("A", "B").add((Object) null);
+		static ArgumentSets withNull() {
+			return ArgumentSets.argumentsForFirstParameter("A", "B").argumentsForNextParameter((Object) null);
 		}
 
 		static class Inner {
 
-			static Sets exact() {
-				return new Sets().add("A", "B").add("C", "D");
+			static ArgumentSets exact() {
+				return ArgumentSets.argumentsForFirstParameter("A", "B").argumentsForNextParameter("C", "D");
 			}
 
 		}
