@@ -3,6 +3,7 @@
 The following guidelines were chosen very deliberately to make sure the project benefits from contributions.
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
+* [Code of Conduct](#code-of-conduct)
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
 * [If you're new...](#if-youre-new)
 	* [...to Open Source](#to-open-source)
@@ -35,6 +36,16 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 
 The guidelines apply to maintainers as well as contributors!
 
+## Code of Conduct
+
+JUnit Pioneer uses a slightly adapted version of [the Contributor Covenant code of conduct](https://www.contributor-covenant.org/):
+
+> We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
+>
+> We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
+
+Please read on in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for standards, scope, and enforcement.
+The CoC binds maintainers, contributors, and other community members alike; in community spaces and in cases of stark violations also outside of them.
 
 ## JUnit Pioneer Contributor License Agreement
 
