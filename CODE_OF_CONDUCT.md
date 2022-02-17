@@ -57,6 +57,9 @@ public spaces. Examples of representing our community include using an official
 e-mail address, posting via an official social media account, or acting as an
 appointed representative at an online or offline event.
 
+Stark violations outside of immediate community spaces (for example on Twitter,
+even if not directed at community members) are also in scope of this Code of Conduct.
+
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
@@ -79,9 +82,9 @@ the consequences for any action they deem in violation of this Code of Conduct:
 **Community Impact**: Use of inappropriate language or other behavior deemed
 unprofessional or unwelcome in the community.
 
-**Consequence**: A private, written warning from community leaders, providing
-clarity around the nature of the violation and an explanation of why the
-behavior was inappropriate. A public apology may be requested.
+**Consequence**: A private (if possible), written warning from community leaders,
+providing clarity around the nature of the violation and an explanation of why
+the behavior was inappropriate. A public apology may be requested.
 
 ### 2. Warning
 
@@ -133,4 +136,3 @@ For answers to common questions about this code of conduct, see the FAQ at
 [Mozilla CoC]: https://github.com/mozilla/diversity
 [FAQ]: https://www.contributor-covenant.org/faq
 [translations]: https://www.contributor-covenant.org/translations
-

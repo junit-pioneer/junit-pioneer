@@ -66,6 +66,7 @@ For our own infrastructure, we rely on the following compile and test dependenci
 * Log4J (to configure logging during test runs)
 * Jimfs (as an in-memory file system for our test)
 
+
 ## Contributing
 
 We welcome contributions of all shapes and forms! 🌞
@@ -74,7 +75,7 @@ We welcome contributions of all shapes and forms! 🌞
 * If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly [unassigned ones](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee) and those [marked as up for grabs](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs).
 * If you want to have a chat about JUnit Pioneer, [join our discord](https://discord.gg/rHfJeCF) - we have a _#junit-pioneer_ channel. 😊
 
-Before contributing, please read the [contribution guide](CONTRIBUTING.md).
+Before contributing, please read the [contribution guide](CONTRIBUTING.md) as well as [the code of conduct](CODE_OF_CONDUCT.md).
 
 ### Maintainers
 
