@@ -8,9 +8,9 @@ on:
   # except when Shipkit creates a new version tag
   push:
     branches: 'main'
-    tags-ignore: 
+    tags-ignore:
       - 'v**'
-  # Each pull request is important to us, doesnt matter from which branch.
+  # Each pull request is important to us, doesn't matter from which branch.
   # Furthermore, we do not want to build on just the default GitHub Action
   # events, we also want to react onto `labeled` events for our extended
   # build execution
@@ -18,7 +18,7 @@ on:
     branches: '*'
     types: [labeled, opened, synchronize, reopened]
   # We also utilize this pipeline for releasing. By providing a `version`
-  # and setting releasing to `true`, we can trigger a release.
+  # and setting `releasing` to `true`, we can trigger a release.
   workflow_dispatch:
     inputs:
       version:
@@ -46,7 +46,7 @@ jobs:
   # Our basic build step as we want contributors to have a nice developer
   # experience with little build time and sufficient feedback. Therefore, we
   # only build this on our default Java version but for all operating systems
-  # we are supporting. This allows for a fast execution and fast feedback, the
+  # we are supporting. This allows for a fast execution and fast feedback. The
   # extended tests will run later under certain conditions.
   basic:
     runs-on: ${{ matrix.os }}-latest
@@ -71,7 +71,7 @@ jobs:
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
 
-  # SonarCloud analysis does not support Java 8, hence, we need to execute the
+  # SonarCloud analysis does not support Java 8, hence we need to execute the
   # analysis separately with Java 11. This is fine because we are done with the basic
   # builds for the contributors.
   sonarcloud:
@@ -107,7 +107,7 @@ jobs:
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
 
   # Our full integration job, which will build for a matrix out of our supported
-  # Java versions, operating systems, modular or not, and of course JUnit versions.
+  # Java versions, operating systems, modular or not, and various JUnit versions.
   # This build is executed on all tags and the default branch. Furthermore, we will
   # also execute this for pull requests with the label `merge-ready`.
   full-featured:
@@ -179,15 +179,15 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: release-candidate
-          arguments: -Porg.gradle.java.installations.auto-download=false javaToolchains 
+          arguments: -Porg.gradle.java.installations.auto-download=false javaToolchains
       - name: Gradle build
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: release-candidate
           arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
 
-  # Releasing will be only done, if there is a version defined and `releasing` is set to true.
-  # If not this stage will be ignored.
+  # A release will be created if there is a `version` defined and `releasing` is set to `true`.
+  # If not, this stage will be ignored.
   release:
     if: github.event.inputs.version != '' && github.event.inputs.releasing == 'true'
     runs-on: ubuntu-latest
