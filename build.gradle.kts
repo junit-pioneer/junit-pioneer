@@ -231,8 +231,6 @@ tasks {
 		useJUnitPlatform()
 		filter {
 			includeTestsMatching("*Tests")
-			// included for documentation purposes
-			// includeTestsMatching("*Demo")
 		}
 		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
 		// `EnvironmentVariableExtension` uses reflection to change environment variables;
