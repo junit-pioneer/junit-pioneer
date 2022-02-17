@@ -71,6 +71,25 @@ jobs:
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
 
+  # Code format check
+  code-format-check:
+    runs-on: ubuntu-latest
+    needs: validation
+    timeout-minutes: 15
+    name: Code format check
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: 8
+          cache: 'gradle'
+      - name: Spotless check
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: --scan spotlessCheck
+
   # SonarCloud analysis does not support Java 8, hence we need to execute the
   # analysis separately with Java 11. This is fine because we are done with the basic
   # builds for the contributors.
