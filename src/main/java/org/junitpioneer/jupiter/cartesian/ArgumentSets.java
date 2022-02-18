@@ -22,12 +22,15 @@ import java.util.stream.Stream;
  * Class for defining sets to a {@code CartesianTest} execution with arguments for each parameter
  * in the order in which they appear in the test method.
  *
- * <p>Use the static factory methods
- * {@link ArgumentSets#create() create} or
+ * <p>Use the static factory method
  * {@link ArgumentSets#argumentsForFirstParameter(Object[]) argumentsForFirstParameter}
- * to create instances and call
+ * to create an instance and call
  * {@link ArgumentSets#argumentsForNextParameter(Object[]) argumentsForNextParameter}
  * for each parameter after the first.
+ * Alternatively, call the static factory method
+ * {@link ArgumentSets#create() create}
+ * to create an instance call {@code argumentsForNextParameter}
+ * for each parameter.
  * </p>
  */
 public class ArgumentSets {
@@ -38,12 +41,12 @@ public class ArgumentSets {
 		this.argumentSets = new ArrayList<>();
 	}
 
-	private ArgumentSets(List<?> arguments) {
+	private ArgumentSets(Collection<?> arguments) {
 		this();
 		add(arguments);
 	}
 
-	private ArgumentSets add(List<?> arguments) {
+	private ArgumentSets add(Collection<?> arguments) {
 		argumentSets.add(new ArrayList<>(arguments));
 		return this;
 	}
@@ -67,7 +70,7 @@ public class ArgumentSets {
 	 * @return a new {@link ArgumentSets} object
 	 */
 	public static <T> ArgumentSets argumentsForFirstParameter(Collection<T> arguments) {
-		return new ArgumentSets(new ArrayList<>(arguments));
+		return new ArgumentSets(arguments);
 	}
 
 	/**
@@ -99,7 +102,7 @@ public class ArgumentSets {
 
 	/**
 	 * Creates a single set of distinct objects (according to their
-	 * {@link Object#equals(Object) equals}) for the first parameter of
+	 * {@link Object#equals(Object) equals}) for the next parameter of
 	 * a {@code CartesianTest} from the elements of the passed
 	 * {@link Collection Collection}.
 	 * <p>
@@ -109,12 +112,12 @@ public class ArgumentSets {
 	 * @return this {@link ArgumentSets} object, for fluent set definitions
 	 */
 	public final <T> ArgumentSets argumentsForNextParameter(Collection<T> arguments) {
-		return add(new ArrayList<>(arguments));
+		return add(arguments);
 	}
 
 	/**
 	 * Creates a single set of distinct objects (according to their
-	 * {@link Object#equals(Object) equals}) for the first parameter of
+	 * {@link Object#equals(Object) equals}) for the next parameter of
 	 * a {@code CartesianTest} from the elements of the passed
 	 * objects.
 	 *
@@ -128,7 +131,7 @@ public class ArgumentSets {
 
 	/**
 	 * Creates a single set of distinct objects (according to their
-	 * {@link Object#equals(Object) equals}) for the first parameter of
+	 * {@link Object#equals(Object) equals}) for the next parameter of
 	 * a {@code CartesianTest} from the elements of the passed
 	 * {@link Stream Stream}.
 	 *
