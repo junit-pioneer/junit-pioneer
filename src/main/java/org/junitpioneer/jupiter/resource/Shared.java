@@ -17,6 +17,8 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
+// TODO: JavaDoc
+
 @ExtendWith(ResourceExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
@@ -27,5 +29,7 @@ public @interface Shared {
 	String name();
 
 	String[] arguments() default {};
+
+	Scope scope() default Scope.SOURCE_FILE;
 
 }

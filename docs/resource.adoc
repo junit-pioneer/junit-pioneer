@@ -1,1 +1,4 @@
 TODO: Refer to https://www.writethedocs.org/guide/writing/beginners-guide-to-docs/
+
+TODO: Write about:
+- This extension solves https://stackoverflow.com/a/51556718/2252930

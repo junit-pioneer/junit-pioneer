@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+// TODO: JavaDoc
 public interface ResourceFactory<T> extends ExtensionContext.Store.CloseableResource {
 
 	Resource<T> create(List<String> arguments) throws Exception;

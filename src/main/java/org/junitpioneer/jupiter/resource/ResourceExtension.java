@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.DynamicTestInvocationContext;
@@ -69,9 +70,9 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		Optional<Shared> sharedAnnotation = parameterContext.findAnnotation(Shared.class);
 		if (sharedAnnotation.isPresent()) {
 			Parameter[] parameters = parameterContext.getDeclaringExecutable().getParameters();
-			// TODO: Replace root store with store of next outer class
-			ExtensionContext.Store rootStore = extensionContext.getRoot().getStore(NAMESPACE);
-			Object resource = resolveShared(sharedAnnotation.get(), parameters, rootStore);
+			ExtensionContext scopedContext = scopedContext(extensionContext, sharedAnnotation.get().scope());
+			ExtensionContext.Store scopedStore = scopedContext.getStore(NAMESPACE);
+			Object resource = resolveShared(sharedAnnotation.get(), parameters, scopedStore);
 			return checkType(resource, parameterContext.getParameter().getType());
 		}
 
@@ -280,26 +281,34 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	private <T> T runSequentially(Invocation<T> invocation,
 			ReflectiveInvocationContext<? extends Executable> invocationContext, ExtensionContext extensionContext)
 			throws Throwable {
-		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
-		List<ReentrantLock> locks = findSharedOnExecutable(invocationContext.getExecutable())
-				// Sort by @Shared's name to prevent deadlocks when locking later.
-				// This is a well-known solution to the "dining philosophers problem".
-				// See ResourcesParallelismTests.ThrowIfTestsRunInParallelTestCases for more info.
-				.sorted(comparing(Shared::name))
-				.map(shared -> findLockForShared(shared, store))
-				.collect(toList());
+		List<ReentrantLock> locks = //
+			sortedLocks(findShared(invocationContext.getExecutable()), extensionContext);
 		return invokeWithLocks(invocation, locks);
 	}
 
 	private void runDynamicTestSequentially(Invocation<Void> invocation, ExtensionContext extensionContext)
 			throws Throwable {
-		ExtensionContext.Store store = extensionContext.getRoot().getStore(NAMESPACE);
-		List<ReentrantLock> locks = findSharedOnExecutable(testFactoryMethod(extensionContext))
-				// see runSequentially
-				.sorted(comparing(Shared::name))
-				.map(shared -> findLockForShared(shared, store))
-				.collect(toList());
+		List<ReentrantLock> locks = //
+			sortedLocks(findShared(testFactoryMethod(extensionContext)), extensionContext);
 		invokeWithLocks(invocation, locks);
+	}
+
+	private List<ReentrantLock> sortedLocks(Stream<Shared> sharedAnnotations, ExtensionContext extensionContext) {
+		// Sort by @Shared's name to implicitly sort the locks returned by this method, to prevent deadlocks when
+		// locking later.
+		// This is a well-known solution to the "dining philosophers problem".
+		// See ResourcesParallelismTests.ThrowIfTestsRunInParallelTestCases for more info.
+		List<Shared> sortedAnnotations = sharedAnnotations.sorted(comparing(Shared::name)).collect(toList());
+		List<ExtensionContext.Store> stores = //
+			sortedAnnotations
+					.stream() //
+					.map(shared -> scopedContext(extensionContext, shared.scope()))
+					.map(scopedContext -> extensionContext.getStore(NAMESPACE))
+					.collect(toList());
+		return IntStream
+				.range(0, sortedAnnotations.size()) //
+				.mapToObj(i -> findLockForShared(sortedAnnotations.get(i), stores.get(i)))
+				.collect(toList());
 	}
 
 	private Method testFactoryMethod(ExtensionContext extensionContext) {
@@ -310,7 +319,23 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.getRequiredTestMethod();
 	}
 
-	private Stream<Shared> findSharedOnExecutable(Executable executable) {
+	private ExtensionContext scopedContext(ExtensionContext extensionContext, Scope scope) {
+		if (scope == Scope.SOURCE_FILE) {
+			ExtensionContext currentContext = extensionContext;
+			Optional<ExtensionContext> parentContext = extensionContext.getParent();
+
+			while (parentContext.isPresent() && parentContext.get() != currentContext.getRoot()) {
+				currentContext = parentContext.get();
+				parentContext = currentContext.getParent();
+			}
+
+			return currentContext;
+		}
+
+		return extensionContext.getRoot();
+	}
+
+	private Stream<Shared> findShared(Executable executable) {
 		return Arrays
 				.stream(executable.getParameters())
 				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))

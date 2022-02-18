@@ -12,9 +12,9 @@ package org.junitpioneer.jupiter.resource;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+import static org.junitpioneer.jupiter.resource.Scope.GLOBAL;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.reflect.Method;
@@ -118,9 +118,7 @@ class ResourcesParallelismTests {
 		//
 		// This is called a deadlock.
 		//
-		// The purpose of the tests below is to check two things:
-		// - The tests don't run in parallel.
-		// - Even if they don't run in parallel, that they don't deadlock.
+		// The purpose of the tests below is to check that the tests don't run in parallel or deadlock.
 		//
 		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
 
@@ -229,8 +227,8 @@ class ResourcesParallelismTests {
 		ThrowIfTestClassConstructorsRunInParallelTestCases1(
 				// we don't actually use the resources, we just have them injected to verify whether sharing the
 				// same resources prevent the test constructors from running in parallel
-				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
-				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB)
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME, scope = GLOBAL) Path directoryA,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME, scope = GLOBAL) Path directoryB)
 				throws Exception {
 			failIfExecutedInParallel("testConstructor1");
 		}
@@ -244,8 +242,8 @@ class ResourcesParallelismTests {
 	static class ThrowIfTestClassConstructorsRunInParallelTestCases2 {
 
 		ThrowIfTestClassConstructorsRunInParallelTestCases2(
-				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
-				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC)
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME, scope = GLOBAL) Path directoryB,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME, scope = GLOBAL) Path directoryC)
 				throws Exception {
 			failIfExecutedInParallel("testConstructor2");
 		}
@@ -259,8 +257,8 @@ class ResourcesParallelismTests {
 	static class ThrowIfTestClassConstructorsRunInParallelTestCases3 {
 
 		ThrowIfTestClassConstructorsRunInParallelTestCases3(
-				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC,
-				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA)
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME, scope = GLOBAL) Path directoryC,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME, scope = GLOBAL) Path directoryA)
 				throws Exception {
 			failIfExecutedInParallel("testConstructor3");
 		}
@@ -311,6 +309,9 @@ class ResourcesParallelismTests {
 
 	private void assertOverrides(String methodName) {
 		assertThat(InvocationInterceptor.class).isAssignableFrom(ResourceExtension.class);
-		assertThat(ResourceExtension.class.getDeclaredMethods()).haveExactly(1, new Condition<>((Method m) -> m.getName().equals(methodName), "declared method with name '%s'", methodName));
+		assertThat(ResourceExtension.class.getDeclaredMethods())
+				.haveExactly(1, new Condition<>((Method m) -> m.getName().equals(methodName),
+					"declared method with name '%s'", methodName));
 	}
+
 }

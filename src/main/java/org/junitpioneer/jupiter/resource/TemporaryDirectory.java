@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+// TODO: JavaDoc
 public final class TemporaryDirectory implements ResourceFactory<Path> {
 
 	@Override

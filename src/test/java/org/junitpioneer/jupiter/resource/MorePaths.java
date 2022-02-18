@@ -10,16 +10,16 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-// TODO: JavaDoc
-public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
+final class MorePaths {
 
-	T get() throws Exception;
+	static Path rootTempDir() {
+		return Paths.get(System.getProperty("java.io.tmpdir"));
+	}
 
-	@Override
-	default void close() throws Exception {
-		// no op by default
+	private MorePaths() {
 	}
 
 }

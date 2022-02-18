@@ -10,15 +10,12 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junitpioneer.jupiter.resource.Assertions.assertCanAddAndReadTextFile;
+import static org.junitpioneer.jupiter.resource.Assertions.assertEmptyReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -57,22 +54,5 @@ class DirTests {
 		}
 
 	}
-
-	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
-		assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TMP_DIR).isReadable().isWritable();
-	}
-
-	private static void assertCanAddAndReadTextFile(Path tempDir) {
-		try {
-			Path testFile = Files.createTempFile(tempDir, "some-test-file", ".txt");
-			Files.write(testFile, singletonList("some-text"));
-			assertThat(Files.readAllLines(testFile)).containsExactly("some-text");
-		}
-		catch (IOException e) {
-			fail(e);
-		}
-	}
-
-	private static final Path ROOT_TMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
 }

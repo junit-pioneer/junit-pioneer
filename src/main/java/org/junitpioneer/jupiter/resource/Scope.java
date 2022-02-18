@@ -10,16 +10,7 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
-
 // TODO: JavaDoc
-public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
-
-	T get() throws Exception;
-
-	@Override
-	default void close() throws Exception {
-		// no op by default
-	}
-
+public enum Scope {
+	GLOBAL, SOURCE_FILE
 }

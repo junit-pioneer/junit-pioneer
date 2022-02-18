@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter.resource;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
@@ -20,12 +19,14 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.in
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
 import static org.junitpioneer.internal.AllElementsAreEqual.allElementsAreEqual;
+import static org.junitpioneer.jupiter.resource.Assertions.assertCanAddAndReadTextFile;
+import static org.junitpioneer.jupiter.resource.Assertions.assertEmptyReadableWriteableTemporaryDirectory;
+import static org.junitpioneer.jupiter.resource.Assertions.assertReadableWriteableTemporaryDirectory;
+import static org.junitpioneer.jupiter.resource.MorePaths.rootTempDir;
+import static org.junitpioneer.jupiter.resource.Scope.GLOBAL;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -91,7 +92,7 @@ class TemporaryDirectoryTests {
 
 		@Test
 		void theTest(@New(value = TemporaryDirectory.class, arguments = { "tempDirPrefix" }) Path tempDir) {
-			assertThat(ROOT_TMP_DIR.relativize(tempDir)).asString().startsWith("tempDirPrefix");
+			assertThat(rootTempDir().relativize(tempDir)).asString().startsWith("tempDirPrefix");
 		}
 
 	}
@@ -316,7 +317,7 @@ class TemporaryDirectoryTests {
 						name = "some-name", //
 						arguments = { "tempDirPrefix" }) //
 				Path tempDir) {
-			assertThat(ROOT_TMP_DIR.relativize(tempDir)).asString().startsWith("tempDirPrefix");
+			assertThat(rootTempDir().relativize(tempDir)).asString().startsWith("tempDirPrefix");
 		}
 
 	}
@@ -407,9 +408,9 @@ class TemporaryDirectoryTests {
 	// ---
 
 	@DisplayName("when two test classes have a test method with a "
-			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\")-annotated parameter")
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\", scope = GLOBAL)-annotated parameter")
 	@Nested
-	class WhenTwoTestClassesHaveATestMethodWithParameterWithSameNamedSharedTempDirTests {
+	class WhenTwoTestClassesHaveATestMethodWithParameterWithSameNamedAndGloballyScopedSharedTempDirTests {
 
 		@DisplayName("then the parameters are populated with a shared readable and writeable "
 				+ "temporary directory that is torn down afterwards")
@@ -418,25 +419,23 @@ class TemporaryDirectoryTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClasses( //
 						asList( //
-							FirstSingleTestMethodWithSharedTempDirParameterTestCases.class,
-							SecondSingleTestMethodWithSharedTempDirParameterTestCases.class));
+							FirstSingleTestMethodWithGlobalTempDirParameterTestCases.class,
+							SecondSingleTestMethodWithGlobalTempDirParameterTestCases.class));
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
-			assertThat( //
-				asList( //
-					FirstSingleTestMethodWithSharedTempDirParameterTestCases.recordedPath,
-					SecondSingleTestMethodWithSharedTempDirParameterTestCases.recordedPath))
-							.satisfies(allElementsAreEqual())
-							.allSatisfy(path -> assertThat(path).doesNotExist());
+			assertThat(FirstSingleTestMethodWithGlobalTempDirParameterTestCases.recordedPath)
+					.isEqualTo(SecondSingleTestMethodWithGlobalTempDirParameterTestCases.recordedPath);
+			assertThat(FirstSingleTestMethodWithGlobalTempDirParameterTestCases.recordedPath).doesNotExist();
+			assertThat(SecondSingleTestMethodWithGlobalTempDirParameterTestCases.recordedPath).doesNotExist();
 		}
 
 	}
 
-	static class FirstSingleTestMethodWithSharedTempDirParameterTestCases {
+	static class FirstSingleTestMethodWithGlobalTempDirParameterTestCases {
 
 		static Path recordedPath;
 
 		@Test
-		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
+		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = GLOBAL) Path tempDir) {
 			assertReadableWriteableTemporaryDirectory(tempDir);
 			assertCanAddAndReadTextFile(tempDir);
 
@@ -445,16 +444,68 @@ class TemporaryDirectoryTests {
 
 	}
 
-	static class SecondSingleTestMethodWithSharedTempDirParameterTestCases {
+	static class SecondSingleTestMethodWithGlobalTempDirParameterTestCases {
 
 		static Path recordedPath;
 
 		@Test
-		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
+		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = GLOBAL) Path tempDir) {
 			assertReadableWriteableTemporaryDirectory(tempDir);
 			assertCanAddAndReadTextFile(tempDir);
 
 			recordedPath = tempDir;
+		}
+
+	}
+
+	// ---
+
+	@DisplayName("when two test classes in the same file have a test method with a "
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\", scope = SOURCE_FILE)-annotated "
+			+ "parameter")
+	@Nested
+	class WhenTwoTestClassesInSameFileHaveTestMethodWithParameterWithSameNamedAndSourceFileScopedSharedTempDirTests {
+
+		@DisplayName("then the parameters are populated with a shared readable and writeable "
+				+ "temporary directory that is torn down afterwards")
+		@Test
+		void thenParametersArePopulatedWithSharedReadableAndWriteableTempDirsThatIsTornDownAfterwards() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(SingleTestMethodWithSourceFileScopedTempDirParameter.TestCases.class);
+			assertThat(executionResults).hasNumberOfSucceededTests(2);
+			assertThat(SingleTestMethodWithSourceFileScopedTempDirParameter.recordedPathForImplicit)
+					.isEqualTo(SingleTestMethodWithSourceFileScopedTempDirParameter.recordedPathForExplicit);
+			assertThat(SingleTestMethodWithSourceFileScopedTempDirParameter.recordedPathForImplicit).doesNotExist();
+			assertThat(SingleTestMethodWithSourceFileScopedTempDirParameter.recordedPathForExplicit).doesNotExist();
+		}
+
+	}
+
+	// ---
+
+	@DisplayName("when two test classes in different files have a test method with a "
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\", scope = SOURCE_FILE)-annotated "
+			+ "parameter")
+	@Nested
+	class WhenTwoTestClassesInDiffFilesHaveTestMethodWithParameterWithSameNamedAndSourceFileScopedSharedTempDirTests {
+
+		@DisplayName("then the parameters are populated with unique readable and writeable "
+				+ "temporary directories that that torn down afterwards")
+		@Test
+		void thenParametersArePopulatedWithUniqueReadableAndWriteableTempDirsThatAreTornDownAfterwards() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClasses( //
+						asList( //
+							FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.class,
+							SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.class));
+			assertThat(executionResults).hasNumberOfSucceededTests(2);
+			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.recordedPath)
+					.isNotEqualTo(
+						SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.recordedPath);
+			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.recordedPath)
+					.doesNotExist();
+			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.recordedPath)
+					.doesNotExist();
 		}
 
 	}
@@ -466,28 +517,5 @@ class TemporaryDirectoryTests {
 	void checkThatTemporaryDirectoryIsFinal() {
 		assertThat(TemporaryDirectory.class).isFinal();
 	}
-
-	// ---
-
-	private static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
-		assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TMP_DIR).isReadable().isWritable();
-	}
-
-	private static void assertReadableWriteableTemporaryDirectory(Path tempDir) {
-		assertThat(tempDir).startsWith(ROOT_TMP_DIR).isReadable().isWritable();
-	}
-
-	private static void assertCanAddAndReadTextFile(Path tempDir) {
-		try {
-			Path testFile = Files.createTempFile(tempDir, "some-test-file", ".txt");
-			Files.write(testFile, singletonList("some-text"));
-			assertThat(Files.readAllLines(testFile)).containsExactly("some-text");
-		}
-		catch (IOException e) {
-			fail(e);
-		}
-	}
-
-	private static final Path ROOT_TMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
 }
