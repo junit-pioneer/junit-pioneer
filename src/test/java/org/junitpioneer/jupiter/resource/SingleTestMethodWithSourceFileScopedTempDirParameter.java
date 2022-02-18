@@ -55,33 +55,4 @@ class SingleTestMethodWithSourceFileScopedTempDirParameter {
 
 	}
 
-	//	static class ImplicitTestCases {
-	//
-	//		static Path recordedPath;
-	//
-	//		@Test
-	//		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
-	//			assertReadableWriteableTemporaryDirectory(tempDir);
-	//			assertCanAddAndReadTextFile(tempDir);
-	//
-	//			recordedPath = tempDir;
-	//		}
-	//
-	//	}
-	//
-	//	static class ExplicitTestCases {
-	//
-	//		static Path recordedPath;
-	//
-	//		@Test
-	//		void theTest(
-	//				@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
-	//			assertReadableWriteableTemporaryDirectory(tempDir);
-	//			assertCanAddAndReadTextFile(tempDir);
-	//
-	//			recordedPath = tempDir;
-	//		}
-	//
-	//	}
-
 }
