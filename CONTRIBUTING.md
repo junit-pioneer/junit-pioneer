@@ -216,10 +216,60 @@ Some project-specific requirements apply to all non-`.java` files:
 Each feature is documented on [the project website](https://junit-pioneer.org/docs/), which is pulled from the files in the `docs/` folder, where each feature has:
 
 * an entry in `docs-nav.yml` (lexicographically ordered)
-* it's own `.adoc` file
+* its own `.adoc` file
 
 Add these entries when implementing a new feature and update them when changing an existing one.
 The Javadoc on an extension's annotations should link back to the documentation on the website "for more information".
+
+Code blocks in these files should not just be text.
+Instead, in the `src/demo/java` source tree, create/update a `...Demo` class that is dedicated to a feature and place code snippets in `@Test`-annotated methods in `...Demo`.
+Write each snippet as needed for the documentation and bracket it with tags:
+
+```java
+// tagging the entire test method:
+
+// tag::$TAG_NAME[]
+@Test
+@SomePioneerExtension
+void simple() {
+	// demonstrate extension
+}
+// end::$TAG_NAME[]
+
+
+// tagging a few lines from the test:
+
+@Test
+void simple() {
+	// tag::$TAG_NAME[]
+	SomePioneerExtension ex = // ...
+	// demonstrate extension
+	// end::$TAG_NAME[]
+	assertThat(ex). // ...
+}
+```
+
+Where feasible, include or follow up with assertions that ensure correct behavior.
+Thus `...Demo` classes guarantee that snippets compile and (roughly) behave as explained.
+
+In the documentation file, include these two attributes pointing at the demo source file:
+
+```adoc
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/...Demo.java
+```
+
+It is **critically important** that the first attribute is called `xp-demo-dir` and that the second attribute references it.
+Without this exact structure, the snippets will not show up on the website (even if they appear correctly in an IDE).
+
+To include these snippets, use a block like the following:
+
+```adoc
+[source,java,indent=0]
+----
+include::{demo}[tag=$TAG_NAME]
+----
+```
 
 #### README.md and CONTRIBUTING.md
 
