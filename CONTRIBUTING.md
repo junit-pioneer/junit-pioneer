@@ -241,18 +241,22 @@ void simple() {
 Where feasible, include or follow up with assertions that ensure correct behavior.
 Thus `...Demo` classes guarantee that snippets compile and (roughly) behave as explained.
 
-In the documentation file, include an attribute pointing at the demo source file:
+In the documentation file, include these two attributes pointing at the demo source file:
 
 ```adoc
-:snippetsource: ../src/demo/java/org/junitpioneer/jupiter/...Demo.java
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/...Demo.java
 ```
+
+It is **critically important** that the first attribute is called `xp-demo-dir` and that the second attribute references it.
+Without this exact structure, the snippets will not show up on the website (even if they appear correctly in an IDE).
 
 To include these snippets, use a block like the following:
 
 ```adoc
 [source,java,indent=0]
 ----
-include::{snippetsource}[tag=$TAG_NAME]
+include::{demo}[tag=$TAG_NAME]
 ----
 ```
 
