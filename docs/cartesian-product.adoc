@@ -18,9 +18,9 @@ Normally, this results in a lot of written test data parameters.
 For a more comfortable way you may use the `@CartesianTest` extension.
 The extension takes the test data parameter values and runs the test for every possible combination of them.
 
-NOTE: The CartesianTest extension has undergone significant changes in 1.5.0.
+NOTE: The CartesianTest extension has undergone significant changes in 1.6.0.
 This included moving it into a new package.
-link:docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for 2022).
+link:/docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for 2022).
 
 == Basic Use
 
