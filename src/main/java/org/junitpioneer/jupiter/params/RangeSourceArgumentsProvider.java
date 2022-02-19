@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
+import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
 /**
  * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.
@@ -45,7 +45,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
  * @see FloatRangeSource
  */
 class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
-		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
+		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianParameterArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
 
 	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;

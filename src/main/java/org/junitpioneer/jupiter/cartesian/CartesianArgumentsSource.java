@@ -18,15 +18,15 @@ import java.lang.annotation.Target;
 
 /**
  * {@code @CartesianArgumentsSource} is an annotation
- * that is used to register {@linkplain CartesianArgumentsProvider cartesian argument providers}
- * for the annotated test parameter.
+ * that is used to register cartesian argument providers
+ * for the annotated test parameter in case of {@link CartesianParameterArgumentsProvider}
+ * or for all the test parameters in case of {@link CartesianMethodArgumentsProvider}.
  *
  * <p>{@code @CartesianArgumentsSource} may also be used as a meta-annotation in order to
  * create a custom <em>composed annotation</em> that inherits the semantics
  * of {@code @CartesianArgumentsSource}.
  *
- * This is similar to {@link org.junit.jupiter.params.provider.ArgumentsSource ArgumentsSource} and is used
- * to provide arguments for {@link CartesianTest}.
+ * This annotation is used to provide arguments for a {@link CartesianTest}.
  *
  * @see CartesianTest
  */

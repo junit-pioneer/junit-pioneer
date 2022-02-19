@@ -20,7 +20,7 @@ The extension takes the test data parameter values and runs the test for every p
 
 NOTE: The CartesianTest extension has undergone significant changes in 1.5.0.
 This included moving it into a new package.
-link:docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for December 2021).
+link:docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for 2022).
 
 == Basic Use
 
@@ -28,7 +28,7 @@ link:docs/cartesian-product-v1[The old variant] is deprecated and will be remove
 
 You can supply test parameters to `@CartesianTest` in two ways:
 
- - You can annotate your test method, providing all parameter values in a single annotation (Not yet implemented).
+ - You can annotate your test method, providing all parameter values in a single annotation.
  - The test parameters can be annotated with `@CartesianTest.Values`, `@CartesianTest.Enum`, or range source annotations (see <<Annotating your test parameters>>)
 
 Specifying more than one kind of parameter source (i.e.: annotating your test parameters and the test method itself) does not work and will throw an `ExtensionConfigurationException`.
@@ -300,26 +300,182 @@ To demonstrate with a table:
 
 For more information, please see the link:docs/range-sources[separate documentation about range sources].
 
+== Annotating your test method
+
+You can annotate your test method to supply arguments to all parameters simultaneously.
+
+=== `@CartesianTest.MethodFactory`
+
+`@CartesianTest.MethodFactory` can be used to name a static factory method that supplies your arguments.
+The `value` annotation parameter is mandatory.
+Just like with JUnit's `@MethodSource`, you can specify the factory method with its fully-qualified name (including the class), e.g. `com.example.Class#factory`.
+This method must return `ArgumentSets`.
+
+`ArgumentSets` is a helper class, specifically for creating sets for `@CartesianTest`.
+To create the test data, instantiate with the static factory method `argumentsForFirstParameter`, then call the `addValuesForNextParameter` method once per additional parameter in the order in which the they appear in the test method.
+In each call, pass in all values for the corresponding parameter.
+For convenience, all methods return with your `ArgumentSets` instance, so you can chain `add()` calls.
+If you want to create an initially-empty `ArgumentSets`, call the static factory method `create()`.
+
+Let's look at an example.
+
+[source,java]
+----
+
+class MyCartesianTestClass {
+	@CartesianTest
+	@CartesianTest.MethodFactory("setFactory")
+	void testMethod(String string, Class<?> clazz, TimeUnit unit) {
+		// passing test code
+	}
+
+	static ArgumentSets setFactory() {
+		return ArgumentSets
+				.argumentsForFirstParameter("Alpha", "Omega")
+				.argumentsForNextParameter(Runnable.class, Cloneable.class, Predicate.class)
+				.argumentsForNextParameter(TimeUnit.DAYS, TimeUnit.HOURS);
+	}
+}
+----
+
+The test `testMethod` is executed exactly twelve times.
+The first parameter can have any of the two values `"Alpha"` or `"Omega"`.
+The second parameter can have any of the three values `Runnable.class`, `Cloneable.class` or `Predicate.class`.
+The third parameter can have any of the two values `TimeUnit.DAYS` or `TimeUnit.HOURS`.
+`@CartesianTest` tests for all input combinations, that's `2 × 3 × 2`, so twelve tests in total.
+
+To demonstrate with a table:
+
+|===
+| # of test  | value of `string` | value of `clazz` | value of `unit`
+| 1st test   | "Alpha"           | Runnable.class   | TimeUnit.DAYS
+| 2nd test   | "Alpha"           | Runnable.class   | TimeUnit.HOURS
+| 3rd test   | "Alpha"           | Cloneable.class  | TimeUnit.DAYS
+| 4th test   | "Alpha"           | Cloneable.class  | TimeUnit.HOURS
+| 5th test   | "Alpha"           | Predicate.class  | TimeUnit.DAYS
+| 6th test   | "Alpha"           | Predicate.class  | TimeUnit.HOURS
+| 7th test   | "Omega"           | Runnable.class   | TimeUnit.DAYS
+| 8th test   | "Omega"           | Runnable.class   | TimeUnit.HOURS
+| 9th test   | "Omega"           | Cloneable.class  | TimeUnit.DAYS
+| 10th test  | "Omega"           | Cloneable.class  | TimeUnit.HOURS
+| 11th test  | "Omega"           | Predicate.class  | TimeUnit.DAYS
+| 12th test  | "Omega"           | Predicate.class  | TimeUnit.HOURS
+|===
+
+You can reuse the same argument provider method multiple times.
+
+[source,java]
+----
+class MyCartesianTestClass {
+	@CartesianTest
+	@CartesianTest.MethodFactory("provideArguments")
+	void testNeedingArguments(String string, int i) {
+		// passing test code
+	}
+
+	@CartesianTest
+	@CartesianTest.MethodFactory("provideArguments")
+	void testNeedingSameArguments(String string, int i) {
+		// different passing test code
+	}
+
+	static ArgumentSets provideArguments() {
+		return ArgumentSets
+			.argumentsForFirstParameter("Mercury", "Earth", "Venus")
+			.argumentsForNextParameter(1, 12, 144);
+	}
+}
+----
+
+==== Requirements for the static factory method
+
+There are multiple requirements the static factory method has to fulfill to qualify:
+
+- must have the same name as the test method (or its name must be specified via the `factory` attribute)
+- must be `static`
+- must have **no** parameters
+- must return `ArgumentSets`
+- must register values for every parameter exactly once
+- must register values in order
+
+==== Returning wrong `ArgumentSets` in the static factory method
+
+If you register too few, too many, or conflicting parameters, you will get an https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/ParameterResolutionException.html[`ParameterResolutionException`].
+"Conflicting parameters" means your test method has a parameter that should be injected by JUnit (e.g.: `TestReporter`) but you also try to inject it.
+
+Examples of badly configured tests/static factory method:
+
+[source,java]
+----
+class BadExamples {
+	@CartesianTest
+	@CartesianTest.MethodFactory("resolveParameters")
+	void tooFewParameters(String string, int i, boolean b) {
+		// fails because the boolean parameter is not resolved
+	}
+
+	@CartesianTest
+	@CartesianTest.MethodFactory("resolveParameters")
+	void tooManyParameters(String string) {
+		// fails because we try to supply a non-existent integer parameter
+	}
+
+	@CartesianTest
+	@CartesianTest.MethodFactory("resolveParameters")
+	void wrongOrderParameters(int i, String string) {
+		// fails because the static factory method declared parameter sets in the wrong order
+	}
+
+	@CartesianTest
+	@CartesianTest.MethodFactory("resolveTestReporterParam")
+	void conflictingParameters(String string, TestReporter info) {
+		// fails because both the factory method and JUnit tries to inject TestReporter
+	}
+
+	static ArgumentSets resolveParameters() {
+		return ArgumentSets
+			.argumentsForFirstParameter("A", "B", "C")
+			.argumentsForNextParameter(1, 2, 3);
+	}
+
+	static ArgumentSets resolveTestReporterParam() {
+		return ArgumentSets
+			.argumentsForFirstParameter("A", "B", "C")
+			// in this case MyTestReporter implements TestReporter
+			.argumentsForNextParameter(new MyTestReporter());
+	}
+}
+----
+
 == Writing your own `@ArgumentsSource` for `@CartesianTest`
 
-You might find that the available `@ArgumentsSource` annotations do not fit your need.
-In that case, you can write a custom https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsSource.html[`@ArgumentsSource`] and a corresponding https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsProvider.html[`ArgumentsProvider`] for `@CartesianTest`.
-Because `CartesianTest` works with parameters, you will have to use `CartesianArgumentsProvider` instead of `ArgumentsProvider`.
-This will let you initialize your argument source with it's corresponding parameter.
+You might find that the available annotations do not fit your need.
+For a `@ParameterizedTest`, you can write a custom https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsSource.html::[`@ArgumentsSource`] and a corresponding https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsProvider.html::[`ArgumentsProvider`].
+You can do the same thing for `@CartesianTest`, with the following caveats:
+
+ - Instead of `@ArgumentsSource`, you have to use https://javadoc.io/static/org.junit-pioneer/junit-pioneer/1.5.0/org/junitpioneer/jupiter/cartesian/CartesianArgumentsSource.html::[`@CartesianArgumentsSource`]
+ - Instead of `ArgumentsProvider`, you have to use one of two interfaces, each explored in their own section.
+
+=== Implementing `CartesianParameterArgumentsProvider`
+
+Let's see how you can provide arguments to a single parameter with a custom annotation and provider.
+You will have to use `CartesianParameterArgumentsProvider` instead of `ArgumentsProvider`.
+This will let you initialize your argument source with its corresponding parameter.
 
 Let's demonstrate with an example.
 
 For the sake of simplicity, let's imagine that `@CartesianTest.Values` does not exist.
-We would like to have an `@ArgumentsSource`, where we can specify integers.
+We would like to have an argument source, where we can specify integers.
 Let's create an annotation for it.
 
 [source,java]
 ----
 import java.lang.annotation.*;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@ArgumentsSource(IntArgumentsProvider.class)
+@CartesianArgumentsSource(IntArgumentsProvider.class)
 public @interface Ints {
 
 	int[] value();
@@ -327,10 +483,11 @@ public @interface Ints {
 }
 ----
 
-The annotation has to have `RUNTIME` retention, so JUnit (and Pioneer) can discover it on your test via reflection.
-It has to be annotated with `@ArgumentsSource`, so Pioneer knows which `CartesianArgumentsProvider` it should invoke.
+The annotation targets parameters because we want to use it directly on a parameter.
+The annotation has `RUNTIME` retention, so JUnit (and Pioneer) can discover it on your test via reflection.
+It is annotated with `@CartesianArgumentsSource`, so Pioneer knows which `CartesianParameterArgumentsProvider` it should invoke.
 
-Next, we need to have a class that takes these values and passes them to our test.
+Next, we need to implement `IntArgumentsProvider`, that takes these values and passes them to our test.
 
 [source,java]
 ----
@@ -340,10 +497,9 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
+import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
-class IntArgumentsProvider implements CartesianArgumentsProvider {
+class IntArgumentsProvider implements CartesianParameterArgumentsProvider {
 
 	@Override
 	public Stream<Integer> provideArguments(ExtensionContext context, Parameter parameter) {
@@ -354,13 +510,13 @@ class IntArgumentsProvider implements CartesianArgumentsProvider {
 }
 ----
 
-The class has to implement `CartesianArgumentsProvider`.
-Note that an implementation of `CartesianArgumentsProvider` must be declared as either a top-level class or as a static nested class.
+The class has to implement `CartesianParameterArgumentsProvider`.
+Note that an implementation of `CartesianParameterArgumentsProvider` must be declared as either a top-level class or as a static nested class.
 It must also provide a default (no argument) constructor.
-The `IntArgumentsProvider` class first initializes itself via the `accept` method, then provides the arguments to JUnit via the `provideArguments` method.
-The order of these operations is guaranteed, so `accept` is always first and `provideArguments` is always second.
+The second parameter of the `provideArguments` method is the `Parameter` object that represents the parameter for which you are supplying arguments.
 
-In our case, we don't have to process the values from our annotation, so we just return the values as is, but you could do additional processing, for example:
+In our case, we don't have to process the values from our annotation, so we just return the values as is.
+You could do additional processing, for example:
 
 [source,java]
 ----
@@ -369,12 +525,12 @@ import java.util.*;
 import java.lang.reflect.Parameter;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
+import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@ArgumentsSource(PeopleProvider.class)
+@CartesianArgumentsSource(PeopleProvider.class)
 @interface People {
 
 	String[] names();
@@ -383,15 +539,163 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
 
 }
 
-class PeopleProvider implements CartesianArgumentsProvider {
+class PeopleProvider implements CartesianParameterArgumentsProvider {
 
 	@Override
-public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
+	public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
 		People source = Objects.requireNonNull(parameter.getAnnotation(People.class));
-	return IntStream.range(0, source.names().length)
-		.mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
+		return IntStream.range(0, source.names().length)
+			.mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
 	}
 }
+----
+
+Alternatively, `@CartesianTest` supports it if you want to implement the https://junit.org/junit5/docs/5.5.0/api/org/junit/jupiter/params/support/AnnotationConsumer.html[`AnnotationConsumer`] interface.
+The previous example would look like the following:
+
+[source,java]
+----
+import java.lang.annotation.*;
+import java.util.*;
+import java.lang.reflect.Parameter;
+
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.support.AnnotationConsumer;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
+import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
+
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@CartesianArgumentsSource(PeopleProvider.class)
+@interface People {
+
+	String[] names();
+
+	int ages();
+
+}
+
+class PeopleProvider implements CartesianParameterArgumentsProvider, AnnotationConsumer<People> {
+
+	private People source;
+
+	@Override
+	public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
+		return IntStream.range(0, source.names().length)
+			.mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
+	}
+
+	@Override
+	public void accept(People source) {
+		this.source = source;
+	}
+
+}
+----
+
+=== Implementing `CartesianMethodArgumentsProvider`
+
+Let's see how you can provide arguments to every parameter with a custom annotation and provider.
+You will have to use `CartesianMethodArgumentsProvider` instead of `ArgumentsProvider`.
+
+Let's demonstrate with an example.
+
+We would like to have an argument that supplies 'bits' to every parameter.
+Let's create an annotation for it.
+
+[source,java]
+----
+import java.lang.annotation.*;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@CartesianArgumentsSource(BitArgumentsProvider.class)
+public @interface BitSource {
+}
+----
+
+The annotation targets methods because we want to use it on the test method itself.
+The annotation has `RUNTIME` retention, so JUnit (and Pioneer) can discover it on your test via reflection.
+It is annotated with `@CartesianArgumentsSource`, so Pioneer knows which `CartesianMethodArgumentsProvider` it should invoke.
+
+Next, we need to implement `BitArgumentsProvider`.
+
+[source,java]
+----
+import java.lang.reflect.Parameter;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
+
+class BitArgumentsProvider implements CartesianMethodArgumentsProvider {
+
+	@Override
+	public ArgumentSets provideArguments(ExtensionContext context) {
+		int paramCount = context.getRequiredTestMethod().getParameters().length;
+		ArgumentSets sets = ArgumentSets.create();
+		for (int i = 0; i < paramCount; i++) {
+			sets.argumentsForNextParameter(0, 1);
+		}
+		return sets;
+	}
+}
+----
+
+The class has to implement `CartesianMethodArgumentsProvider`.
+Note that an implementation of `CartesianMethodArgumentsProvider` must be declared as either a top-level class or as a static nested class.
+It must also provide a default (no argument) constructor.
+The method `provideArguments` returns an `ArgumentSets` object.
+This object should contain the arguments list for every parameter, except if an argument is supplied by JUnit (e.g.: a `TestInfo`).
+
+WARNING: This example does not work with parameters that are supplied by JUnit, you have to add custom logic for that scenario.
+
+`@CartesianTest` supports it if you want to implement the https://junit.org/junit5/docs/5.5.0/api/org/junit/jupiter/params/support/AnnotationConsumer.html[`AnnotationConsumer`] interface.
+For example:
+
+[source,java]
+----
+import java.lang.annotation.*;
+import java.lang.reflect.Parameter;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
+import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@CartesianArgumentsSource(NumberArgumentsProvider.class)
+public @interface NumberSource {
+	int[] value();
+}
+
+class NumberArgumentsProvider implements CartesianMethodArgumentsProvider, AnnotationConsumer<NumberSource> {
+
+	private int[] numbers;
+
+	@Override
+	public ArgumentSets provideArguments(ExtensionContext context) {
+		int paramCount = context.getRequiredTestMethod().getParameters().length;
+		ArgumentSets sets = ArgumentSets.create();
+		for (int i = 0; i < paramCount; i++) {
+			sets.argumentsForNextParameter(Arrays.stream(numbers).boxed());
+		}
+		return sets;
+	}
+
+	@Override
+	public void accept(NumberSource source) {
+		this.numbers = source.value();
+	}
+
+}
+
 ----
 
 == Customizing Display Names

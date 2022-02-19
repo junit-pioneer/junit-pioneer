@@ -310,4 +310,19 @@ public @interface CartesianTest {
 
 	}
 
+	/**
+	 * Points to a method to provide parameter values for a {@link CartesianTest}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+	@CartesianArgumentsSource(CartesianFactoryArgumentsProvider.class)
+	@interface MethodFactory {
+
+		/**
+		 * The name of the method that returns an {@link ArgumentSets} instance.
+		 */
+		String value();
+
+	}
+
 }
