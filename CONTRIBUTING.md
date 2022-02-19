@@ -210,12 +210,8 @@ Each feature is documented on [the project website](https://junit-pioneer.org/do
 Add these entries when implementing a new feature and update them when changing an existing one.
 The Javadoc on an extension's annotations should link back to the documentation on the website "for more information".
 
-Code blocks in these files should not be pure text.
-Instead, in the `src/demo/java` source tree, create/update a `...Demo` class that is dedicated to this feature and place code snippets in `@Test`-annotated methods in `...Demo`.
-Write each snippet as needed for the documentation and bracket it with tags:
-
-Code blocks in these files should not be pure text.
-Instead, in the `src/demo/java` source tree, create/update a `...Demo` class that is dedicated to this feature and place code snippets in `@Test`-annotated methods.
+Code blocks in these files should not just be text.
+Instead, in the `src/demo/java` source tree, create/update a `...Demo` class that is dedicated to a feature and place code snippets in `@Test`-annotated methods in `...Demo`.
 Write each snippet as needed for the documentation and bracket it with tags:
 
 ```java
