@@ -9,6 +9,7 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.cartesian;
 	exports org.junitpioneer.jupiter.params;
 
+	opens org.junitpioneer.vintage to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.cartesian to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.params to org.junit.platform.commons;
