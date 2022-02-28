@@ -104,6 +104,13 @@ public @interface RetryingTest {
 	int minSuccess() default 1;
 
 	/**
+	 * Specifies a pause (in milliseconds) between executions.
+	 *
+	 * Value must be greater than or equal to 0.
+	 */
+	int suspendForMs() default 0;
+
+	/**
 	 * Specifies on which exceptions a failed test is retried.
 	 *
 	 * If no exceptions are specified, tests will always be retried; otherwise only when it throws

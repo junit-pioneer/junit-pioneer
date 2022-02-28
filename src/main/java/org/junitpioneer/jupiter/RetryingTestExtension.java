@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -71,6 +72,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 
 		private final int maxRetries;
 		private final int minSuccess;
+		private final int suspendForMs;
 		private final Class<? extends Throwable>[] expectedExceptions;
 
 		private int retriesSoFar;
@@ -78,9 +80,11 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		private boolean seenFailedAssumption;
 		private boolean seenUnexpectedException;
 
-		private FailedTestRetrier(int maxRetries, int minSuccess, Class<? extends Throwable>[] expectedExceptions) {
+		private FailedTestRetrier(int maxRetries, int minSuccess, int suspendForMs,
+				Class<? extends Throwable>[] expectedExceptions) {
 			this.maxRetries = maxRetries;
 			this.minSuccess = minSuccess;
+			this.suspendForMs = suspendForMs;
 			this.expectedExceptions = expectedExceptions;
 			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
@@ -112,7 +116,13 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
 
-			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.onExceptions());
+			if (retryingTest.suspendForMs() < 0) {
+				throw new IllegalStateException(
+					"@RetryingTest requires that `suspendForMs` be greater than or equal to 0.");
+			}
+
+			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.suspendForMs(),
+				retryingTest.onExceptions());
 		}
 
 		void failed(Throwable exception) throws Throwable {
@@ -131,7 +141,8 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 
 			if (hasNext())
 				throw new TestAbortedException(
-					format("Test execution #%d (of up to %d) failed ~> will retry...", retriesSoFar, maxRetries),
+					format("Test execution #%d (of up to %d) failed ~> will retry in %d ms...", retriesSoFar,
+						maxRetries, suspendForMs),
 					exception);
 			else
 				throw new AssertionFailedError(format(
@@ -145,6 +156,20 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				return true;
 
 			return Arrays.stream(expectedExceptions).anyMatch(type -> type.isInstance(exception));
+		}
+
+		private void suspendFor(int millis) {
+			if (millis < 1) {
+				return;
+			}
+
+			try {
+				TimeUnit.MILLISECONDS.sleep(millis);
+			}
+			catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Cannot suspend execution after retry", e);
+			}
 		}
 
 		@Override
@@ -167,6 +192,9 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			if (!hasNext())
 				throw new NoSuchElementException();
 			retriesSoFar++;
+
+			suspendFor(suspendForMs);
+
 			return new RetryingTestInvocationContext();
 		}
 
