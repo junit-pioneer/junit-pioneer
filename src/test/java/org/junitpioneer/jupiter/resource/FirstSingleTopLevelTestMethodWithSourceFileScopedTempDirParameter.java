@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 
 class FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter {
 
-	static class OnlyTestCases {
+	static Path recordedPath;
 
-		static Path recordedPath;
+	static class OnlyTestCases {
 
 		@Test
 		void theTest(

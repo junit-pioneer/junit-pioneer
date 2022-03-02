@@ -497,14 +497,21 @@ class TemporaryDirectoryTests {
 					.executeTestClasses( //
 						asList( //
 							FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.class,
-							SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.class));
-			assertThat(executionResults).hasNumberOfSucceededTests(2);
-			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.recordedPath)
-					.isNotEqualTo(
-						SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.recordedPath);
-			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.recordedPath)
+							SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OuterTestCases.class));
+
+			assertThat(executionResults).hasNumberOfSucceededTests(3);
+
+			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedPath)
+					.isNotEqualTo(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedOuterPath);
+			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedPath)
+					.isNotEqualTo(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedInnerPath);
+			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedOuterPath)
+					.isEqualTo(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedInnerPath);
+
+			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedPath).doesNotExist();
+			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedOuterPath)
 					.doesNotExist();
-			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.recordedPath)
+			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedInnerPath)
 					.doesNotExist();
 		}
 

@@ -16,13 +16,15 @@ import static org.junitpioneer.jupiter.resource.Scope.SOURCE_FILE;
 
 import java.nio.file.Path;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter {
 
-	static class OnlyTestCases {
+	static Path recordedOuterPath;
+	static Path recordedInnerPath;
 
-		static Path recordedPath;
+	static class OuterTestCases {
 
 		@Test
 		void theTest(
@@ -30,7 +32,21 @@ class SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter {
 			assertReadableWriteableTemporaryDirectory(tempDir);
 			assertCanAddAndReadTextFile(tempDir);
 
-			recordedPath = tempDir;
+			recordedOuterPath = tempDir;
+		}
+
+		@Nested
+		class InnerTestCases {
+
+			@Test
+			void theTest(
+					@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
+				assertReadableWriteableTemporaryDirectory(tempDir);
+				assertCanAddAndReadTextFile(tempDir);
+
+				recordedInnerPath = tempDir;
+			}
+
 		}
 
 	}
