@@ -82,6 +82,14 @@ class RetryingTestExtensionTests {
 	}
 
 	@Test
+	void hasNoName_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "hasNoName");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
 	void failsOnlyOnFirstInvocationWithExpectedException_executedTwice_passes() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCases.class, "failsOnlyOnFirstInvocationWithExpectedException");
@@ -223,6 +231,14 @@ class RetryingTestExtensionTests {
 	}
 
 	@Test
+	void maxAttemptsEqualsOne_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsEqualsOne");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
 	void maxAttemptsLessThanMinSuccess_fails() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsLessThanMinSuccess");
@@ -272,6 +288,11 @@ class RetryingTestExtensionTests {
 			if (executionCount == 1) {
 				throw new IllegalArgumentException();
 			}
+		}
+
+		@RetryingTest(value = 3, name = "")
+		void hasNoName() {
+			// Do nothing
 		}
 
 		@RetryingTest(3)
@@ -375,8 +396,13 @@ class RetryingTestExtensionTests {
 			// Do nothing
 		}
 
-		@RetryingTest(maxAttempts = 1, minSuccess = 1)
+		@RetryingTest(maxAttempts = 2, minSuccess = 2)
 		void maxAttemptsEqualsMinSuccess() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 1, minSuccess = 1)
+		void maxAttemptsEqualsOne() {
 			// Do nothing
 		}
 
