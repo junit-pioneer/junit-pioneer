@@ -83,8 +83,7 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void hasNoName_fails() {
-		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCases.class, "hasNoName");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "hasNoName");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}

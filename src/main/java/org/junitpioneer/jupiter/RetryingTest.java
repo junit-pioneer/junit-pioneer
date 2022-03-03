@@ -118,7 +118,7 @@ public @interface RetryingTest {
 	 * @see java.text.MessageFormat
 	 * @see org.junit.jupiter.params.ParameterizedTest#name()
 	 */
-	String name() default "[{index}] {arguments}";
+	String name() default "[{index}]";
 
 	/**
 	 * Specifies how often the test is executed at most.
