@@ -35,6 +35,7 @@ To only retry on specific exceptions, use `onExceptions`.
 The `name` attribute specifies the display name for the individual test invocations.
 To give a custom name to your container, use `@DisplayName`.
 The `name` attribute supports `{index}`, it will get replaced by the current invocation index.
+The `name` attribute supports `{displayName}`, it will get replaced by the test container display name.
 
 The default for `name` is `[{index}]`.
 
