@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,12 +20,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 
 @DisplayName("The DisplayName formatter for CartesianProductTest")
-public class CartesianProductTestNameFormatterTests {
+public class TestNameFormatterTests {
 
 	@Test
 	@DisplayName("throws an exception for not properly closed parameters")
 	void propagatesException() {
-		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter("{index", "");
+		TestNameFormatter formatter = new TestNameFormatter("{index", "");
 
 		assertThatThrownBy(() -> formatter.format(1))
 				.isInstanceOf(ExtensionConfigurationException.class)
@@ -36,7 +36,7 @@ public class CartesianProductTestNameFormatterTests {
 	@Test
 	@DisplayName("replaces {index} with the invocation index")
 	void replacesIndex() {
-		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter("Index is {index}", "");
+		TestNameFormatter formatter = new TestNameFormatter("Index is {index}", "");
 
 		assertThat(formatter.format(3)).isEqualTo("Index is 3");
 	}
@@ -44,8 +44,7 @@ public class CartesianProductTestNameFormatterTests {
 	@Test
 	@DisplayName("replaces {displayName} with the given display name")
 	void replacesDisplayName() {
-		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter("Name is {displayName}",
-			"Bond. James Bond.");
+		TestNameFormatter formatter = new TestNameFormatter("Name is {displayName}", "Bond. James Bond.");
 
 		assertThat(formatter.format(3)).isEqualTo("Name is Bond. James Bond.");
 	}
@@ -53,8 +52,7 @@ public class CartesianProductTestNameFormatterTests {
 	@Test
 	@DisplayName("replaces {arguments} with comma-separated list of arguments")
 	void replacesArguments() {
-		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter("Arguments are {arguments}",
-			"");
+		TestNameFormatter formatter = new TestNameFormatter("Arguments are {arguments}", "");
 
 		assertThat(formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 				.isEqualTo("Arguments are class java.lang.Boolean, [1, 2, 3], enigma");
@@ -63,8 +61,7 @@ public class CartesianProductTestNameFormatterTests {
 	@Test
 	@DisplayName("replaces indexed arguments with the corresponding argument")
 	void replacesIndexedArguments() {
-		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter(
-			"Second {1} and before that {0}", "");
+		TestNameFormatter formatter = new TestNameFormatter("Second {1} and before that {0}", "");
 
 		assertThat(formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 				.isEqualTo("Second [1, 2, 3] and before that class java.lang.Boolean");
@@ -73,8 +70,7 @@ public class CartesianProductTestNameFormatterTests {
 	@Test
 	@DisplayName("does nothing with over-indexed arguments")
 	void overIndexedArguments() {
-		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter(
-			"Second {6} and before that {0}", "");
+		TestNameFormatter formatter = new TestNameFormatter("Second {6} and before that {0}", "");
 
 		assertThat(formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 				.isEqualTo("Second {6} and before that class java.lang.Boolean");
@@ -83,8 +79,7 @@ public class CartesianProductTestNameFormatterTests {
 	@Test
 	@DisplayName("throws exception for negative indexed arguments")
 	void negativeIndexedArguments() {
-		CartesianProductTestNameFormatter formatter = new CartesianProductTestNameFormatter(
-			"Second {-1} and before that {0}", "");
+		TestNameFormatter formatter = new TestNameFormatter("Second {-1} and before that {0}", "");
 
 		assertThatThrownBy(
 			() -> formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
