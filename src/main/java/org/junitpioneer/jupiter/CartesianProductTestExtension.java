@@ -67,7 +67,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 		if (pattern.isEmpty())
 			throw new ExtensionConfigurationException("CartesianProductTest can not have a non-empty display name.");
 		String displayName = context.getDisplayName();
-		return new TestNameFormatter(pattern, displayName);
+		return new TestNameFormatter(pattern, displayName, CartesianProductTest.class);
 	}
 
 	private List<List<?>> computeSets(ExtensionContext context) {

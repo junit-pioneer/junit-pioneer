@@ -19,24 +19,25 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 
-@DisplayName("The DisplayName formatter for CartesianProductTest")
+@DisplayName("The generic internal-only DisplayName formatter")
 public class TestNameFormatterTests {
 
 	@Test
 	@DisplayName("throws an exception for not properly closed parameters")
 	void propagatesException() {
-		TestNameFormatter formatter = new TestNameFormatter("{index", "");
+		TestNameFormatter formatter = new TestNameFormatter("{index", "", TestNameFormatter.class);
 
 		assertThatThrownBy(() -> formatter.format(1))
 				.isInstanceOf(ExtensionConfigurationException.class)
 				.hasCauseExactlyInstanceOf(IllegalArgumentException.class)
-				.hasMessageContaining("The display name pattern defined for the CartesianProductTest is invalid");
+				.hasMessageContaining(
+					"The display name pattern defined for the " + TestNameFormatter.class.getName() + " is invalid");
 	}
 
 	@Test
 	@DisplayName("replaces {index} with the invocation index")
 	void replacesIndex() {
-		TestNameFormatter formatter = new TestNameFormatter("Index is {index}", "");
+		TestNameFormatter formatter = new TestNameFormatter("Index is {index}", "", TestNameFormatter.class);
 
 		assertThat(formatter.format(3)).isEqualTo("Index is 3");
 	}
@@ -44,7 +45,8 @@ public class TestNameFormatterTests {
 	@Test
 	@DisplayName("replaces {displayName} with the given display name")
 	void replacesDisplayName() {
-		TestNameFormatter formatter = new TestNameFormatter("Name is {displayName}", "Bond. James Bond.");
+		TestNameFormatter formatter = new TestNameFormatter("Name is {displayName}", "Bond. James Bond.",
+			TestNameFormatter.class);
 
 		assertThat(formatter.format(3)).isEqualTo("Name is Bond. James Bond.");
 	}
@@ -52,7 +54,7 @@ public class TestNameFormatterTests {
 	@Test
 	@DisplayName("replaces {arguments} with comma-separated list of arguments")
 	void replacesArguments() {
-		TestNameFormatter formatter = new TestNameFormatter("Arguments are {arguments}", "");
+		TestNameFormatter formatter = new TestNameFormatter("Arguments are {arguments}", "", TestNameFormatter.class);
 
 		assertThat(formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 				.isEqualTo("Arguments are class java.lang.Boolean, [1, 2, 3], enigma");
@@ -61,7 +63,8 @@ public class TestNameFormatterTests {
 	@Test
 	@DisplayName("replaces indexed arguments with the corresponding argument")
 	void replacesIndexedArguments() {
-		TestNameFormatter formatter = new TestNameFormatter("Second {1} and before that {0}", "");
+		TestNameFormatter formatter = new TestNameFormatter("Second {1} and before that {0}", "",
+			TestNameFormatter.class);
 
 		assertThat(formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 				.isEqualTo("Second [1, 2, 3] and before that class java.lang.Boolean");
@@ -70,7 +73,8 @@ public class TestNameFormatterTests {
 	@Test
 	@DisplayName("does nothing with over-indexed arguments")
 	void overIndexedArguments() {
-		TestNameFormatter formatter = new TestNameFormatter("Second {6} and before that {0}", "");
+		TestNameFormatter formatter = new TestNameFormatter("Second {6} and before that {0}", "",
+			TestNameFormatter.class);
 
 		assertThat(formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 				.isEqualTo("Second {6} and before that class java.lang.Boolean");
@@ -79,13 +83,15 @@ public class TestNameFormatterTests {
 	@Test
 	@DisplayName("throws exception for negative indexed arguments")
 	void negativeIndexedArguments() {
-		TestNameFormatter formatter = new TestNameFormatter("Second {-1} and before that {0}", "");
+		TestNameFormatter formatter = new TestNameFormatter("Second {-1} and before that {0}", "",
+			TestNameFormatter.class);
 
 		assertThatThrownBy(
 			() -> formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
 					.isInstanceOf(ExtensionConfigurationException.class)
 					.hasCauseExactlyInstanceOf(IllegalArgumentException.class)
-					.hasMessageContaining("The display name pattern defined for the CartesianProductTest is invalid.");
+					.hasMessageContaining("The display name pattern defined for the "
+							+ TestNameFormatter.class.getName() + " is invalid.");
 	}
 
 }

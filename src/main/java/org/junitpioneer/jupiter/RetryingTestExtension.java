@@ -118,9 +118,9 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
 			if (pattern.isEmpty())
-				throw new ExtensionConfigurationException("CartesianTest can not have an empty display name.");
+				throw new ExtensionConfigurationException("RetryingTest can not have an empty display name.");
 			String displayName = context.getDisplayName();
-			TestNameFormatter formatter = new TestNameFormatter(pattern, displayName);
+			TestNameFormatter formatter = new TestNameFormatter(pattern, displayName, RetryingTest.class);
 
 			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.onExceptions(), formatter);
 		}

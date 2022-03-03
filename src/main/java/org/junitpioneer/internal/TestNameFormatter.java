@@ -22,14 +22,16 @@ public class TestNameFormatter {
 
 	private final String pattern;
 	private final String displayName;
+	private final Class<?> forClass;
 
 	public static final String DISPLAY_NAME_PLACEHOLDER = "{displayName}";
 	public static final String INDEX_PLACEHOLDER = "{index}";
 	public static final String ARGUMENTS_PLACEHOLDER = "{arguments}";
 
-	public TestNameFormatter(String pattern, String displayName) {
+	public TestNameFormatter(String pattern, String displayName, Class<?> forClass) {
 		this.pattern = pattern;
 		this.displayName = displayName;
+		this.forClass = forClass;
 	}
 
 	public String format(int invocationIndex, Object... arguments) {
@@ -37,7 +39,7 @@ public class TestNameFormatter {
 			return formatSafely(invocationIndex, arguments);
 		}
 		catch (Exception ex) {
-			String message = "The display name pattern defined for the CartesianProductTest is invalid. "
+			String message = "The display name pattern defined for the " + forClass.getName() + " is invalid. "
 					+ "See nested exception for further details.";
 			throw new ExtensionConfigurationException(message, ex);
 		}
