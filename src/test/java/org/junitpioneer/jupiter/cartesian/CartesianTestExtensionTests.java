@@ -13,7 +13,12 @@ package org.junitpioneer.jupiter.cartesian;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
@@ -330,6 +335,51 @@ public class CartesianTestExtensionTests {
 						"d:1.7,l:1,s:5", "d:1.2,l:2,s:5", "d:1.7,l:2,s:5");
 		}
 
+		@Test
+		@DisplayName("works with @CartesianTest.Factory")
+		void factorySource() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class, "veryBasicTest",
+						String.class, String.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(9)
+					.hasNumberOfSucceededTests(6)
+					.hasNumberOfFailedTests(3);
+			assertThat(results)
+					.hasNumberOfReportEntries(9)
+					.withValues("And on the pedestal these words appear:Nothing beside remains. Round the decay",
+						"And on the pedestal these words appear:Of that colossal wreck, boundless and bare",
+						"And on the pedestal these words appear:The lone and level sands stretch far away.",
+						"My name is Ozymandias, king of kings;Nothing beside remains. Round the decay",
+						"My name is Ozymandias, king of kings;Of that colossal wreck, boundless and bare",
+						"My name is Ozymandias, king of kings;The lone and level sands stretch far away.",
+						"Look on my works, ye Mighty, and despair!Nothing beside remains. Round the decay",
+						"Look on my works, ye Mighty, and despair!Of that colossal wreck, boundless and bare",
+						"Look on my works, ye Mighty, and despair!The lone and level sands stretch far away.");
+		}
+
+		@Test
+		@DisplayName("works with @CartesianTest.Factory and auto-injected params")
+		void factorySourceWithTestReporter() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class, "autoInjectedParam",
+						String.class, String.class, TestReporter.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(9).hasNumberOfSucceededTests(9);
+			assertThat(results)
+					.hasNumberOfReportEntries(9)
+					.withValues("And on the pedestal these words appear:Nothing beside remains. Round the decay",
+						"And on the pedestal these words appear:Of that colossal wreck, boundless and bare",
+						"And on the pedestal these words appear:The lone and level sands stretch far away.",
+						"My name is Ozymandias, king of kings;Nothing beside remains. Round the decay",
+						"My name is Ozymandias, king of kings;Of that colossal wreck, boundless and bare",
+						"My name is Ozymandias, king of kings;The lone and level sands stretch far away.",
+						"Look on my works, ye Mighty, and despair!Nothing beside remains. Round the decay",
+						"Look on my works, ye Mighty, and despair!Of that colossal wreck, boundless and bare",
+						"Look on my works, ye Mighty, and despair!The lone and level sands stretch far away.");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -391,6 +441,18 @@ public class CartesianTestExtensionTests {
 	@Nested
 	@DisplayName("fails when")
 	class BadConfigurationTests {
+
+		@Test
+		@DisplayName("it has no arguments sources")
+		void noArgumentsSources() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "noAnnotation", int.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage("No arguments sources were found for @CartesianTest");
+		}
 
 		@Test
 		@DisplayName("the name is overwritten with empty string")
@@ -640,6 +702,97 @@ public class CartesianTestExtensionTests {
 						"You must configure at least one set of arguments for this @ParameterizedTest");
 		}
 
+		@Test
+		@DisplayName("there are both method-level and parameter-level arguments sources")
+		void tooManyArgumentsSources() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "bothMethodAndParam",
+						String.class, String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage(
+						"Providing both method-level and parameter-level argument sources for @CartesianTest is not supported.");
+		}
+
+		@Test
+		@DisplayName("there are multiple method-level arguments sources")
+		void multipleMethodLevelArgumentsSources() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class,
+						"multipleMethodLevelAnnotations", String.class, String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage("Only one method-level arguments source can be used with @CartesianTest");
+		}
+
+		@Test
+		@DisplayName("provider throws an exception, wrapping in ExtensionConfigurationException")
+		void rethrowProviderException() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianValueSourceTestCases.class, "empty", String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessage("Could not provide arguments because of exception.");
+		}
+
+		@Test
+		@DisplayName("there is an auto-injected param but arguments were supplied")
+		void factorySourceWithTestReporter() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class, "competingInject",
+						String.class, TestReporter.class);
+
+			assertThat(results)
+					.hasNumberOfDynamicallyRegisteredTests(9)
+					.hasNumberOfFailedTests(9)
+					.andThenCheckExceptions(exceptions -> assertThat(exceptions)
+							.extracting(Throwable::getCause)
+							.hasOnlyElementsOfType(ExtensionConfigurationException.class)
+							.extracting(Throwable::getMessage)
+							.containsOnly("CartesianTest was supplied arguments but parameter is not supported."));
+		}
+
+		@Test
+		@DisplayName("parameter annotation arguments provider implements CartesianMethodArgumentsProvider")
+		void mismatchingInterfaceParam() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "mismatch",
+						ArgumentSets.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message
+									.matches(
+										"^.* does not implement CartesianParameterArgumentsProvider interface\\.$")));
+		}
+
+		@Test
+		@DisplayName("method annotation arguments provider implements CartesianParameterArgumentsProvider")
+		void mismatchingInterfaceMethod() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(BadConfigurationTestCases.class, "otherMismatch",
+						String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message
+									.matches("^.* does not implement CartesianMethodArgumentsProvider interface\\.$")));
+		}
+
 	}
 
 	static class BasicConfigurationTestCases {
@@ -673,6 +826,20 @@ public class CartesianTestExtensionTests {
 		void noAnnotation(int i) {
 		}
 
+		@CartesianTest
+		@CartesianTest.MethodFactory("poem")
+		void bothMethodAndParam(@Values(strings = "A") String a, @Values(strings = "B") String b) {
+		}
+
+		@CartesianTest
+		void mismatch(@Mismatch ArgumentSets s) {
+		}
+
+		@CartesianTest
+		@OtherMismatch
+		void otherMismatch(String s) {
+		}
+
 	}
 
 	static class CartesianValueSourceTestCases {
@@ -697,6 +864,10 @@ public class CartesianTestExtensionTests {
 
 		@CartesianTest
 		void missing(@CartesianTest.Values(ints = { 1 }) int i, int j) {
+		}
+
+		@CartesianTest
+		void empty(@CartesianTest.Values String s) {
 		}
 
 		@CartesianTest
@@ -839,6 +1010,46 @@ public class CartesianTestExtensionTests {
 
 	}
 
+	static class CartesianFactorySourceTestCases {
+
+		@CartesianTest
+		@CartesianTest.MethodFactory("poem")
+		@ReportEntry("{0}{1}")
+		void veryBasicTest(String firstLine, String secondLine) {
+			assertThat(firstLine).contains("on");
+		}
+
+		@CartesianTest
+		@CartesianTest.MethodFactory("poem")
+		@MethodLevelCartesianArgumentSource
+		void multipleMethodLevelAnnotations(String line, String otherLine) {
+		}
+
+		@CartesianTest
+		@CartesianTest.MethodFactory("poem")
+		@ReportEntry("{0}{1}")
+		void autoInjectedParam(String line, String otherLine, TestReporter reporter) {
+		}
+
+		@CartesianTest
+		@CartesianTest.MethodFactory("poem")
+		void competingInject(String line, TestReporter reporter) {
+		}
+
+		static ArgumentSets poem() {
+			// use `Arrays.asList` to call those method overloads during tests as well
+			return ArgumentSets
+					.argumentsForFirstParameter(Arrays
+							.asList("And on the pedestal these words appear:", "My name is Ozymandias, king of kings;",
+								"Look on my works, ye Mighty, and despair!"))
+					.argumentsForNextParameter(Arrays
+							.asList("Nothing beside remains. Round the decay",
+								"Of that colossal wreck, boundless and bare",
+								"The lone and level sands stretch far away."));
+		}
+
+	}
+
 	static class RedundantInputSetTestCases {
 
 		@CartesianTest
@@ -945,7 +1156,13 @@ public class CartesianTestExtensionTests {
 		ALPHA, BETA, GAMMA
 	}
 
-	static class FirstCustomCartesianArgumentsProvider implements CartesianArgumentsProvider<String> {
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@CartesianArgumentsSource(FirstCustomCartesianArgumentsProvider.class)
+	@interface MethodLevelCartesianArgumentSource {
+	}
+
+	static class FirstCustomCartesianArgumentsProvider implements CartesianParameterArgumentsProvider<String> {
 
 		@Override
 		public Stream<String> provideArguments(ExtensionContext context, Parameter parameter) {
@@ -954,7 +1171,7 @@ public class CartesianTestExtensionTests {
 
 	}
 
-	static class SecondCustomCartesianArgumentsProvider implements CartesianArgumentsProvider<Integer> {
+	static class SecondCustomCartesianArgumentsProvider implements CartesianParameterArgumentsProvider<Integer> {
 
 		@Override
 		public Stream<Integer> provideArguments(ExtensionContext context, Parameter parameter) {
@@ -963,11 +1180,41 @@ public class CartesianTestExtensionTests {
 
 	}
 
-	static class StringArrayArgumentsProvider implements CartesianArgumentsProvider<String[]> {
+	static class StringArrayArgumentsProvider implements CartesianParameterArgumentsProvider<String[]> {
 
 		@Override
 		public Stream<String[]> provideArguments(ExtensionContext context, Parameter parameter) {
 			return Stream.of(new String[] { "1", "2" }, new String[] { "3", "4" });
+		}
+
+	}
+
+	@Target(ElementType.PARAMETER)
+	@Retention(RetentionPolicy.RUNTIME)
+	@CartesianArgumentsSource(MismatchingProvider.class)
+	@interface Mismatch {
+	}
+
+	static class MismatchingProvider implements CartesianMethodArgumentsProvider {
+
+		@Override
+		public ArgumentSets provideArguments(ExtensionContext context) {
+			return ArgumentSets.argumentsForFirstParameter("1", "2");
+		}
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@CartesianArgumentsSource(OtherMismatchingProvider.class)
+	@interface OtherMismatch {
+	}
+
+	static class OtherMismatchingProvider implements CartesianParameterArgumentsProvider<String> {
+
+		@Override
+		public Stream<String> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of("1", "2");
 		}
 
 	}

@@ -3,6 +3,7 @@
 The following guidelines were chosen very deliberately to make sure the project benefits from contributions.
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
+* [Code of Conduct](#code-of-conduct)
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
 * [If you're new...](#if-youre-new)
 	* [...to Open Source](#to-open-source)
@@ -35,6 +36,16 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 
 The guidelines apply to maintainers as well as contributors!
 
+## Code of Conduct
+
+JUnit Pioneer uses a slightly adapted version of [the Contributor Covenant code of conduct](https://www.contributor-covenant.org/):
+
+> We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
+>
+> We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
+
+Please read on in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for standards, scope, and enforcement.
+The CoC binds maintainers, contributors, and other community members alike; in community spaces and in cases of stark violations also outside of them.
 
 ## JUnit Pioneer Contributor License Agreement
 
@@ -90,7 +101,7 @@ To get started, check [these good first issues](https://github.com/junit-pioneer
 
 ## Writing Code
 
-We have a few guidelines on how to organize, style, and document extensions. 
+We have a few guidelines on how to organize, style, and document extensions.
 Everything related to branches, commits, and more is described [further below](#fixing-bugs-developing-features).
 
 ### Code Organization
@@ -205,10 +216,60 @@ Some project-specific requirements apply to all non-`.java` files:
 Each feature is documented on [the project website](https://junit-pioneer.org/docs/), which is pulled from the files in the `docs/` folder, where each feature has:
 
 * an entry in `docs-nav.yml` (lexicographically ordered)
-* it's own `.adoc` file
+* its own `.adoc` file
 
 Add these entries when implementing a new feature and update them when changing an existing one.
 The Javadoc on an extension's annotations should link back to the documentation on the website "for more information".
+
+Code blocks in these files should not just be text.
+Instead, in the `src/demo/java` source tree, create/update a `...Demo` class that is dedicated to a feature and place code snippets in `@Test`-annotated methods in `...Demo`.
+Write each snippet as needed for the documentation and bracket it with tags:
+
+```java
+// tagging the entire test method:
+
+// tag::$TAG_NAME[]
+@Test
+@SomePioneerExtension
+void simple() {
+	// demonstrate extension
+}
+// end::$TAG_NAME[]
+
+
+// tagging a few lines from the test:
+
+@Test
+void simple() {
+	// tag::$TAG_NAME[]
+	SomePioneerExtension ex = // ...
+	// demonstrate extension
+	// end::$TAG_NAME[]
+	assertThat(ex). // ...
+}
+```
+
+Where feasible, include or follow up with assertions that ensure correct behavior.
+Thus `...Demo` classes guarantee that snippets compile and (roughly) behave as explained.
+
+In the documentation file, include these two attributes pointing at the demo source file:
+
+```adoc
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/...Demo.java
+```
+
+It is **critically important** that the first attribute is called `xp-demo-dir` and that the second attribute references it.
+Without this exact structure, the snippets will not show up on the website (even if they appear correctly in an IDE).
+
+To include these snippets, use a block like the following:
+
+```adoc
+[source,java,indent=0]
+----
+include::{demo}[tag=$TAG_NAME]
+----
+```
 
 #### README.md and CONTRIBUTING.md
 
@@ -374,11 +435,38 @@ Follow these steps when updating JUnit 5:
 
 ### Others
 
-Pioneer does not take on run-time dependencies outside of JUnit 5.
-Of course test dependencies like AssertJ and build dependencies on Gradle plugins are fair game.
-To keep them updated, run `gradle dependencyUpdates`, which lists all dependencies for which a newer version exists.
-Updates still need to be done manually.
+JUnit Pioneer handles dependencies beyond JUnit 5 differently depending on how they impact its users.
 
+#### For Execution
+
+Pioneer avoids adding to users' dependency hell and hence doesn't take on dependencies beyond JUnit 5 that are _required_ at run time.
+_Optional_ dependencies are acceptable if they are needed to provide specific features, particularly:
+
+* to _integrate_ with other tools, frameworks, and libraries by offering features that directly interact with them (a hypothetical example is [Playwright](https://playwright.dev) for E2E testing)
+* for _ease of use_ when recreating functionality would be too complex or otherwise out of scope for Pioneer (a hypothetical example is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing)
+
+Unless we see reports of optional dependencies causing unexpected problems for users, there is no particularly high hurdle for taking them on, given each provides more than marginal value.
+They should only be used by specifically chosen features that require them, though, and care needs to be taken to prevent them from creeping into the rest of the code base - CheckStyle rules need to be configured for each that fail the build on accidental use of these dependencies.
+
+Optional dependencies are implemented with [Gradle's feature variants](https://docs.gradle.org/current/userguide/feature_variants.html).
+Pioneer's module declaration must be extended with a matching `requires static` clause, which limits optional dependencies to those that have at least an explicit automatic module name.
+Note that `requires static` does not suffice to pull in the optional dependency's module if no user code depends on it as well.
+
+Each Pioneer feature that depends on them must profusely document that:
+
+* in the feature documentation with configuration examples for Maven and Gradle (Kotlin suffices), including for the case where Pioneer is used on the module path and no other module depends on the optional dependency (i.e. explain how to configure `--add-modules`)
+* in the Javadoc with a mention of the needed dependencies and the potential `--add-modules` directive (but no detailed guide how to accomplish either - link to website instead)
+* in the case that the dependency is missing, with a clear error message that echoes the Javadoc
+
+#### For Test and Build
+
+Test dependencies like AssertJ and build dependencies on Gradle plugins do not impact users and are fair game.
+Of course, we want to avoid our own dependency hell, so each dependency should still be carefully considered.
+
+#### Updates
+
+To keep dependencies up to date, run `gradle dependencyUpdates`, which lists all dependencies for which a newer version exists.
+Updates then need to be done manually.
 To keep the commit history clean, these should be done in bulk every few weeks.
 
 
@@ -457,7 +545,7 @@ While maintainers will naturally gravitate towards tasks they prefer working on,
 
 We all have a soft spot for the project, but we also have jobs, families, hobbies, and other human afflictions.
 There's no expectation of availability!
-This applies to users opening issues, contributors providing PRs, and other maintainers - none of them can _expect_ a maintainer to have time to reply to their request. 
+This applies to users opening issues, contributors providing PRs, and other maintainers - none of them can _expect_ a maintainer to have time to reply to their request.
 
 ### Communication
 
@@ -478,7 +566,7 @@ A few examples:
 * when we discover a problem or possible feature on stream, a new GitHub issue will be created
 * when a team call or Discord discussion shapes our opinion on an issue or PR, the discussion (not just the conclusion!) is summarized in the issue or PR (see [the comments on the ShipKit evaluation](https://github.com/junit-pioneer/junit-pioneer/issues/193#issuecomment-611620554) for an example)
 * when a PR is merged, the commit message summarizes what it is about (see [_Commit Message_](#commit-message) above)
-* when a decision regarding the project structure or the development processes is made, it is reflected in `README.md`, `CONTRIBUTING.md`, or another suitable file or even the website  
+* when a decision regarding the project structure or the development processes is made, it is reflected in `README.md`, `CONTRIBUTING.md`, or another suitable file or even the website
 * when a new feature is merged, documentation is added to the website
 
 ### Where The Buck Stops

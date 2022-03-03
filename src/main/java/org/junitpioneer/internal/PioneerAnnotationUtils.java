@@ -16,6 +16,7 @@ import java.lang.annotation.Repeatable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -212,6 +213,21 @@ public class PioneerAnnotationUtils {
 					.orElse(Collections.emptyList());
 	}
 
+	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
+			boolean findRepeated, boolean findAllEnclosing) {
+		if (!type.isPresent())
+			return Stream.empty();
+
+		List<A> onThisClass = Arrays.asList(type.get().getAnnotationsByType(annotationType));
+		if (!findAllEnclosing && !onThisClass.isEmpty())
+			return onThisClass.stream();
+
+		List<A> onClass = findOnType(type.get(), annotationType, findRepeated, findAllEnclosing);
+		Stream<A> onParentClass = findOnOuterClasses(type.map(Class::getEnclosingClass), annotationType, findRepeated,
+			findAllEnclosing);
+		return Stream.concat(onClass.stream(), onParentClass);
+	}
+
 	private static <A extends Annotation> List<A> findOnType(Class<?> element, Class<A> annotationType,
 			boolean findRepeated, boolean findAllEnclosing) {
 		if (element == null || element == Object.class)
@@ -245,35 +261,31 @@ public class PioneerAnnotationUtils {
 				.collect(Collectors.toList());
 	}
 
-	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
-			boolean findRepeated, boolean findAllEnclosing) {
-		if (!type.isPresent())
-			return Stream.empty();
-
-		List<A> onThisClass = Arrays.asList(type.get().getAnnotationsByType(annotationType));
-		if (!findAllEnclosing && !onThisClass.isEmpty())
-			return onThisClass.stream();
-
-		List<A> onClass = findOnType(type.get(), annotationType, findRepeated, findAllEnclosing);
-		Stream<A> onParentClass = findOnOuterClasses(type.map(Class::getEnclosingClass), annotationType, findRepeated,
-			findAllEnclosing);
-		return Stream.concat(onClass.stream(), onParentClass);
-	}
-
 	public static List<? extends Annotation> findParameterArgumentsSources(Method testMethod) {
-		//@formatter:off
-		return Arrays.stream(testMethod.getParameters())
-				.map(parameter -> {
-					List<Annotation> annotations = new ArrayList<>();
-					AnnotationSupport.findAnnotation(parameter, CartesianArgumentsSource.class)
-							.ifPresent(annotations::add);
-					annotations.addAll(AnnotationSupport.findRepeatableAnnotations(parameter, ArgumentsSource.class));
-					return annotations;
-				})
+		return Arrays
+				.stream(testMethod.getParameters())
+				.map(PioneerAnnotationUtils::collectArgumentSources)
 				.filter(list -> !list.isEmpty())
 				.map(annotations -> annotations.get(0))
 				.collect(Collectors.toList());
-		//@formatter:on
+	}
+
+	private static List<Annotation> collectArgumentSources(Parameter parameter) {
+		List<Annotation> annotations = new ArrayList<>();
+		AnnotationSupport.findAnnotation(parameter, CartesianArgumentsSource.class).ifPresent(annotations::add);
+		// ArgumentSource meta-annotations are allowed on parameters for
+		// CartesianTest because there is no overlap with ParameterizedTest
+		annotations.addAll(AnnotationSupport.findRepeatableAnnotations(parameter, ArgumentsSource.class));
+		return annotations;
+	}
+
+	public static List<Annotation> findMethodArgumentsSources(Method testMethod) {
+		return Arrays
+				.stream(testMethod.getAnnotations())
+				.filter(annotation -> AnnotationSupport
+						.findAnnotation(annotation.annotationType(), CartesianArgumentsSource.class)
+						.isPresent())
+				.collect(Collectors.toList());
 	}
 
 }

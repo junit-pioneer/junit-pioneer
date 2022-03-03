@@ -1,10 +1,11 @@
-:page-title: Cartesian product of all test parameters (deprecated in 1.5.0)
+:page-title: Old Cartesian product of all test parameters (deprecated in 1.6.0)
 :page-description: Extends JUnit Jupiter with `@CartesianProductTest`, a variant of parameterized tests that tests all combinations of its input
+:page-unlist: true
 
-NOTE: The CartesianTest extension has undergone significant changes in 1.5.0.
+NOTE: The CartesianTest extension has undergone significant changes in 1.6.0.
 This included moving it into a new package.
-This here is the old variant, which is deprecated and will be removed in the 2.0 release (tentatively scheduled for December 2021).
-link:docs/cartesian-product[For the new version, see here.]
+This here is the old variant, which is deprecated and will be removed in the 2.0 release (tentatively scheduled for 2022).
+link:/docs/cartesian-product[For the new version, see here.]
 
 From Wikipedia:
 

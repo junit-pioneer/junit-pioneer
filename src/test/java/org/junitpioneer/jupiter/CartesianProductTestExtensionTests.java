@@ -936,7 +936,7 @@ public class CartesianProductTestExtensionTests {
 
 	@Nested
 	@DisplayName("sets")
-	class SetsTests {
+	class ArgumentSetsTests {
 
 		CartesianProductTest.Sets sets;
 
