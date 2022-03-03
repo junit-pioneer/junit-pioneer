@@ -20,7 +20,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.TestTemplate;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -61,6 +63,22 @@ class RetryingTestExtensionTests {
 				.hasNumberOfDynamicallyRegisteredTests(2)
 				.hasNumberOfAbortedTests(1)
 				.hasNumberOfSucceededTests(1);
+	}
+
+	@Test
+	void hasAName_executedTwice_passes_publishesCustomName() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RetryingTestTestCases.class, "hasAName", TestInfo.class,
+					TestReporter.class);
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(2)
+				.hasNumberOfAbortedTests(1)
+				.hasNumberOfSucceededTests(1);
+		assertThat(results)
+				.hasNumberOfReportEntries(2)
+				.withValues("[1] retrying test invocation with custom name",
+					"[2] retrying test invocation with custom name");
 	}
 
 	@Test
@@ -245,6 +263,15 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void failsNever() {
+		}
+
+		@RetryingTest(value = 3, name = "[{index}] retrying test invocation with custom name")
+		void hasAName(TestInfo info, TestReporter reporter) {
+			reporter.publishEntry(info.getDisplayName());
+			executionCount++;
+			if (executionCount == 1) {
+				throw new IllegalArgumentException();
+			}
 		}
 
 		@RetryingTest(3)

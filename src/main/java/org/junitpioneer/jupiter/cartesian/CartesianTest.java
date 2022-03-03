@@ -25,6 +25,7 @@ import java.util.regex.PatternSyntaxException;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.PreconditionViolationException;
+import org.junitpioneer.internal.TestNameFormatter;
 import org.junitpioneer.jupiter.cartesian.CartesianEnumArgumentsProvider.NullEnum;
 
 /**
@@ -58,12 +59,13 @@ import org.junitpioneer.jupiter.cartesian.CartesianEnumArgumentsProvider.NullEnu
 public @interface CartesianTest {
 
 	/**
-	 * Placeholder for the display name of a {@code @CartesianTest}
+	 * Placeholder for the display name of a {@code @CartesianTest}:
+	 * <code>{displayName}</code>
 	 *
 	 * @since 1.5
 	 * @see #name
 	 */
-	String DISPLAY_NAME_PLACEHOLDER = "{displayName}";
+	String DISPLAY_NAME_PLACEHOLDER = TestNameFormatter.DISPLAY_NAME_PLACEHOLDER;
 
 	/**
 	 * Placeholder for the current invocation index of a {@code @CartesianTest}
@@ -72,7 +74,7 @@ public @interface CartesianTest {
 	 * @since 1.5
 	 * @see #name
 	 */
-	String INDEX_PLACEHOLDER = "{index}";
+	String INDEX_PLACEHOLDER = TestNameFormatter.INDEX_PLACEHOLDER;
 
 	/**
 	 * Placeholder for the complete, comma-separated arguments list of the
@@ -82,27 +84,28 @@ public @interface CartesianTest {
 	 * @since 1.5
 	 * @see #name
 	 */
-	String ARGUMENTS_PLACEHOLDER = "{arguments}";
+	String ARGUMENTS_PLACEHOLDER = TestNameFormatter.ARGUMENTS_PLACEHOLDER;
 
 	/**
 	 * <p>The display name to be used for individual invocations of the
 	 * parameterized test; never blank or consisting solely of whitespace.
 	 * </p>
 	 *
-	 * <p>Defaults to {@link org.junit.jupiter.params.ParameterizedTest#DEFAULT_DISPLAY_NAME}.
+	 * <p>Defaults to [{index}] {arguments}.
 	 * </p>
 	 * <p>
 	 * Supported placeholders:
 	 * <p>
-	 * - {@link org.junit.jupiter.params.ParameterizedTest#DISPLAY_NAME_PLACEHOLDER}
-	 * - {@link org.junit.jupiter.params.ParameterizedTest#INDEX_PLACEHOLDER}
-	 * - {@link org.junit.jupiter.params.ParameterizedTest#ARGUMENTS_PLACEHOLDER}
+	 * - {@link org.junitpioneer.jupiter.cartesian.CartesianTest#DISPLAY_NAME_PLACEHOLDER}
+	 * - {@link org.junitpioneer.jupiter.cartesian.CartesianTest#INDEX_PLACEHOLDER}
+	 * - {@link org.junitpioneer.jupiter.cartesian.CartesianTest#ARGUMENTS_PLACEHOLDER}
 	 * - <code>{0}</code>, <code>{1}</code>, etc.: an individual argument (0-based)
 	 *
 	 * <p>For the latter, you may use {@link java.text.MessageFormat} patterns
 	 * to customize formatting.
 	 * </p>
 	 *
+	 * @since 1.5
 	 * @see java.text.MessageFormat
 	 * @see org.junit.jupiter.params.ParameterizedTest#name()
 	 */

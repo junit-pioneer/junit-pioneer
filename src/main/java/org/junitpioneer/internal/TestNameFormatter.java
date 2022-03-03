@@ -8,31 +8,31 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.cartesian;
+package org.junitpioneer.internal;
 
 import static java.util.stream.Collectors.joining;
-import static org.junitpioneer.jupiter.cartesian.CartesianTest.ARGUMENTS_PLACEHOLDER;
-import static org.junitpioneer.jupiter.cartesian.CartesianTest.DISPLAY_NAME_PLACEHOLDER;
-import static org.junitpioneer.jupiter.cartesian.CartesianTest.INDEX_PLACEHOLDER;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junitpioneer.internal.PioneerUtils;
 
-class CartesianTestNameFormatter {
+public class TestNameFormatter {
 
 	private final String pattern;
 	private final String displayName;
 
-	CartesianTestNameFormatter(String pattern, String displayName) {
+	public static final String DISPLAY_NAME_PLACEHOLDER = "{displayName}";
+	public static final String INDEX_PLACEHOLDER = "{index}";
+	public static final String ARGUMENTS_PLACEHOLDER = "{arguments}";
+
+	public TestNameFormatter(String pattern, String displayName) {
 		this.pattern = pattern;
 		this.displayName = displayName;
 	}
 
-	String format(int invocationIndex, Object... arguments) {
+	public String format(int invocationIndex, Object... arguments) {
 		try {
 			return formatSafely(invocationIndex, arguments);
 		}

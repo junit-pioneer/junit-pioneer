@@ -21,6 +21,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
+import org.junitpioneer.internal.TestNameFormatter;
 
 /**
  * {@code @RetryingTest} is a JUnit Jupiter extension that retries
@@ -77,6 +78,47 @@ import org.junit.jupiter.api.parallel.Execution;
 @ExtendWith(RetryingTestExtension.class)
 @TestTemplate
 public @interface RetryingTest {
+
+	/**
+	 * Placeholder for the display name of a {@code @RetryingTest}:
+	 * <code>{displayName}</code>
+	 *
+	 * @since ?
+	 * @see #name
+	 */
+	String DISPLAY_NAME_PLACEHOLDER = TestNameFormatter.DISPLAY_NAME_PLACEHOLDER;
+
+	/**
+	 * Placeholder for the current invocation index of a {@code @RetryingTest}
+	 * method (1-based): <code>{index}</code>
+	 *
+	 * @since ?
+	 * @see #name
+	 */
+	String INDEX_PLACEHOLDER = TestNameFormatter.INDEX_PLACEHOLDER;
+
+	/**
+	 * <p>The display name to be used for individual invocations of the
+	 * parameterized test; never blank or consisting solely of whitespace.
+	 * </p>
+	 *
+	 * <p>Defaults to [{index}] {arguments}.
+	 * </p>
+	 * <p>
+	 * Supported placeholders:
+	 * <p>
+	 * - {@link org.junitpioneer.jupiter.RetryingTest#DISPLAY_NAME_PLACEHOLDER}
+	 * - {@link org.junitpioneer.jupiter.RetryingTest#INDEX_PLACEHOLDER}
+	 *
+	 * <p>You may use {@link java.text.MessageFormat} patterns
+	 * to customize formatting.
+	 * </p>
+	 *
+	 * @since ?
+	 * @see java.text.MessageFormat
+	 * @see org.junit.jupiter.params.ParameterizedTest#name()
+	 */
+	String name() default "[{index}] {arguments}";
 
 	/**
 	 * Specifies how often the test is executed at most.
