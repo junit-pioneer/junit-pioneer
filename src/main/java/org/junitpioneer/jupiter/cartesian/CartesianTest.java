@@ -89,14 +89,14 @@ public @interface CartesianTest {
 	 * parameterized test; never blank or consisting solely of whitespace.
 	 * </p>
 	 *
-	 * <p>Defaults to {@link org.junit.jupiter.params.ParameterizedTest#DEFAULT_DISPLAY_NAME}.
+	 * <p>Defaults to [{index}] {arguments}.
 	 * </p>
 	 * <p>
 	 * Supported placeholders:
 	 * <p>
-	 * - {@link org.junit.jupiter.params.ParameterizedTest#DISPLAY_NAME_PLACEHOLDER}
-	 * - {@link org.junit.jupiter.params.ParameterizedTest#INDEX_PLACEHOLDER}
-	 * - {@link org.junit.jupiter.params.ParameterizedTest#ARGUMENTS_PLACEHOLDER}
+	 * - {@link org.junitpioneer.jupiter.cartesian.CartesianTest#DISPLAY_NAME_PLACEHOLDER}
+	 * - {@link org.junitpioneer.jupiter.cartesian.CartesianTest#INDEX_PLACEHOLDER}
+	 * - {@link org.junitpioneer.jupiter.cartesian.CartesianTest#ARGUMENTS_PLACEHOLDER}
 	 * - <code>{0}</code>, <code>{1}</code>, etc.: an individual argument (0-based)
 	 *
 	 * <p>For the latter, you may use {@link java.text.MessageFormat} patterns

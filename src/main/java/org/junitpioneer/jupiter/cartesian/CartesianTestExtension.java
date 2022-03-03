@@ -54,7 +54,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianTest not found."));
 		String pattern = annotation.name();
 		if (pattern.isEmpty())
-			throw new ExtensionConfigurationException("CartesianTest can not have a non-empty display name.");
+			throw new ExtensionConfigurationException("CartesianTest can not have an empty display name.");
 		String displayName = context.getDisplayName();
 		return new CartesianTestNameFormatter(pattern, displayName);
 	}
