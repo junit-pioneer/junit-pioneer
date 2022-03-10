@@ -34,6 +34,7 @@ import org.junit.platform.commons.PreconditionViolationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.TestNameFormatter;
 
 class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
@@ -45,18 +46,18 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		List<List<?>> sets = computeSets(context);
-		CartesianTestNameFormatter formatter = createNameFormatter(context);
+		TestNameFormatter formatter = createNameFormatter(context);
 		return cartesianProduct(sets).stream().map(params -> new CartesianTestInvocationContext(params, formatter));
 	}
 
-	private CartesianTestNameFormatter createNameFormatter(ExtensionContext context) {
+	private TestNameFormatter createNameFormatter(ExtensionContext context) {
 		CartesianTest annotation = findAnnotation(context.getRequiredTestMethod(), CartesianTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianTest not found."));
 		String pattern = annotation.name();
 		if (pattern.isEmpty())
-			throw new ExtensionConfigurationException("CartesianTest can not have a non-empty display name.");
+			throw new ExtensionConfigurationException("CartesianTest can not have an empty display name.");
 		String displayName = context.getDisplayName();
-		return new CartesianTestNameFormatter(pattern, displayName);
+		return new TestNameFormatter(pattern, displayName, CartesianTest.class);
 	}
 
 	private List<List<?>> computeSets(ExtensionContext context) {

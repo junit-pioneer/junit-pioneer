@@ -37,6 +37,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
+import org.junitpioneer.internal.TestNameFormatter;
 
 /**
  * @deprecated Replaced by `org.junitpioneer.jupiter.cartesian.CartesianTestExtension`.
@@ -53,20 +54,20 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		List<List<?>> sets = computeSets(context);
-		CartesianProductTestNameFormatter formatter = createNameFormatter(context);
+		TestNameFormatter formatter = createNameFormatter(context);
 		return cartesianProduct(sets)
 				.stream()
 				.map(params -> new CartesianProductTestInvocationContext(params, formatter));
 	}
 
-	private CartesianProductTestNameFormatter createNameFormatter(ExtensionContext context) {
+	private TestNameFormatter createNameFormatter(ExtensionContext context) {
 		CartesianProductTest annotation = findAnnotation(context.getRequiredTestMethod(), CartesianProductTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianProductTest not found."));
 		String pattern = annotation.name();
 		if (pattern.isEmpty())
 			throw new ExtensionConfigurationException("CartesianProductTest can not have a non-empty display name.");
 		String displayName = context.getDisplayName();
-		return new CartesianProductTestNameFormatter(pattern, displayName);
+		return new TestNameFormatter(pattern, displayName, CartesianProductTest.class);
 	}
 
 	private List<List<?>> computeSets(ExtensionContext context) {

@@ -8,36 +8,41 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.cartesian;
+package org.junitpioneer.internal;
 
 import static java.util.stream.Collectors.joining;
-import static org.junitpioneer.jupiter.cartesian.CartesianTest.ARGUMENTS_PLACEHOLDER;
-import static org.junitpioneer.jupiter.cartesian.CartesianTest.DISPLAY_NAME_PLACEHOLDER;
-import static org.junitpioneer.jupiter.cartesian.CartesianTest.INDEX_PLACEHOLDER;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junitpioneer.internal.PioneerUtils;
 
-class CartesianTestNameFormatter {
+public final class TestNameFormatter {
+
+	// This code is a slightly refactored variant of the JUnit Jupiter class
+	// `org.junit.jupiter.params.ParameterizedTestNameFormatter` (from v5.8.2).
+
+	public static final String DISPLAY_NAME_PLACEHOLDER = "{displayName}";
+	public static final String INDEX_PLACEHOLDER = "{index}";
+	public static final String ARGUMENTS_PLACEHOLDER = "{arguments}";
 
 	private final String pattern;
 	private final String displayName;
+	private final Class<?> forClass;
 
-	CartesianTestNameFormatter(String pattern, String displayName) {
+	public TestNameFormatter(String pattern, String displayName, Class<?> forClass) {
 		this.pattern = pattern;
 		this.displayName = displayName;
+		this.forClass = forClass;
 	}
 
-	String format(int invocationIndex, Object... arguments) {
+	public String format(int invocationIndex, Object... arguments) {
 		try {
 			return formatSafely(invocationIndex, arguments);
 		}
 		catch (Exception ex) {
-			String message = "The display name pattern defined for the CartesianProductTest is invalid. "
+			String message = "The display name pattern defined for the " + forClass.getName() + " is invalid. "
 					+ "See nested exception for further details.";
 			throw new ExtensionConfigurationException(message, ex);
 		}

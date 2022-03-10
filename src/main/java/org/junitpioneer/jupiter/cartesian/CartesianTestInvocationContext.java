@@ -15,13 +15,14 @@ import java.util.List;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
+import org.junitpioneer.internal.TestNameFormatter;
 
 class CartesianTestInvocationContext implements TestTemplateInvocationContext {
 
 	private final List<?> parameters;
-	private final CartesianTestNameFormatter formatter;
+	private final TestNameFormatter formatter;
 
-	CartesianTestInvocationContext(List<?> parameters, CartesianTestNameFormatter formatter) {
+	CartesianTestInvocationContext(List<?> parameters, TestNameFormatter formatter) {
 		this.parameters = parameters;
 		this.formatter = formatter;
 	}

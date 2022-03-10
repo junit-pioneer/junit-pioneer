@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.TestNameFormatter;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
@@ -63,7 +65,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		Method test = context.getRequiredTestMethod();
 		return context
 				.getStore(NAMESPACE)
-				.getOrComputeIfAbsent(test.toString(), __ -> FailedTestRetrier.createFor(test),
+				.getOrComputeIfAbsent(test.toString(), __ -> FailedTestRetrier.createFor(test, context),
 					FailedTestRetrier.class);
 	}
 
@@ -72,27 +74,31 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		private final int maxRetries;
 		private final int minSuccess;
 		private final Class<? extends Throwable>[] expectedExceptions;
+		private final TestNameFormatter formatter;
 
 		private int retriesSoFar;
 		private int exceptionsSoFar;
 		private boolean seenFailedAssumption;
 		private boolean seenUnexpectedException;
 
-		private FailedTestRetrier(int maxRetries, int minSuccess, Class<? extends Throwable>[] expectedExceptions) {
+		private FailedTestRetrier(int maxRetries, int minSuccess, Class<? extends Throwable>[] expectedExceptions,
+				TestNameFormatter formatter) {
 			this.maxRetries = maxRetries;
 			this.minSuccess = minSuccess;
 			this.expectedExceptions = expectedExceptions;
 			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
+			this.formatter = formatter;
 		}
 
-		static FailedTestRetrier createFor(Method test) {
+		static FailedTestRetrier createFor(Method test, ExtensionContext context) {
 			RetryingTest retryingTest = AnnotationSupport
 					.findAnnotation(test, RetryingTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."));
 
 			int maxAttempts = retryingTest.maxAttempts() != 0 ? retryingTest.maxAttempts() : retryingTest.value();
 			int minSuccess = retryingTest.minSuccess();
+			String pattern = retryingTest.name();
 
 			if (maxAttempts == 0)
 				throw new IllegalStateException("@RetryingTest requires that one of `value` or `maxAttempts` be set.");
@@ -111,8 +117,12 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 					format("@RetryingTest requires that `maxAttempts` be greater than %s.%s",
 						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
+			if (pattern.isEmpty())
+				throw new ExtensionConfigurationException("RetryingTest can not have an empty display name.");
+			String displayName = context.getDisplayName();
+			TestNameFormatter formatter = new TestNameFormatter(pattern, displayName, RetryingTest.class);
 
-			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.onExceptions());
+			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.onExceptions(), formatter);
 		}
 
 		void failed(Throwable exception) throws Throwable {
@@ -167,7 +177,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			if (!hasNext())
 				throw new NoSuchElementException();
 			retriesSoFar++;
-			return new RetryingTestInvocationContext();
+			return new RetryingTestInvocationContext(formatter);
 		}
 
 	}

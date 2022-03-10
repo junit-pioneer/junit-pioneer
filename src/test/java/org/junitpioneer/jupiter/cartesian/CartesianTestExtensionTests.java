@@ -464,7 +464,7 @@ public class CartesianTestExtensionTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageContaining("CartesianTest can not have a non-empty display name");
+					.hasMessageContaining("CartesianTest can not have an empty display name");
 		}
 
 		@Test
