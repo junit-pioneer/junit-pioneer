@@ -31,9 +31,9 @@ import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 /**
- * Tests for {@link JsonFileArgumentsProvider}
+ * Tests for {@link JsonClasspathSourceArgumentsProvider}
  */
-class JsonFileSourceArgumentsProviderTests {
+class JsonClasspathSourceArgumentsProviderTests {
 
 	public static final String JEDIS = "org/junitpioneer/jupiter/json/jedis.json";
 	public static final String YODA = "org/junitpioneer/jupiter/json/yoda.json";
@@ -41,13 +41,13 @@ class JsonFileSourceArgumentsProviderTests {
 
 	@Test
 	void assertAllValuesSupplied() {
-		ExecutionResults results = PioneerTestKit.executeTestClass(JsonFileSourceTests.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(JsonClasspathSourceTests.class);
 
 		Map<String, List<String>> displayNames = results
 				.dynamicallyRegisteredEvents()
 				.map(Event::getTestDescriptor)
 				.collect(Collectors
-						.groupingBy(JsonFileSourceArgumentsProviderTests::testSourceMethodName,
+						.groupingBy(JsonClasspathSourceArgumentsProviderTests::testSourceMethodName,
 							Collectors.mapping(TestDescriptor::getDisplayName, Collectors.toList())));
 
 		assertThat(displayNames)
@@ -74,13 +74,13 @@ class JsonFileSourceArgumentsProviderTests {
 
 	@Test
 	void assertAllCartesianValuesSupplied() {
-		ExecutionResults results = PioneerTestKit.executeTestClass(JsonFileSourceCartesianTests.class);
+		ExecutionResults results = PioneerTestKit.executeTestClass(JsonClasspathSourceCartesianTests.class);
 
 		Map<String, List<String>> displayNames = results
 				.dynamicallyRegisteredEvents()
 				.map(Event::getTestDescriptor)
 				.collect(Collectors
-						.groupingBy(JsonFileSourceArgumentsProviderTests::testSourceMethodName,
+						.groupingBy(JsonClasspathSourceArgumentsProviderTests::testSourceMethodName,
 							Collectors.mapping(TestDescriptor::getDisplayName, Collectors.toList())));
 
 		assertThat(displayNames)
@@ -118,42 +118,42 @@ class JsonFileSourceArgumentsProviderTests {
 	}
 
 	@Nested
-	class JsonFileSourceTests {
+	class JsonClasspathSourceTests {
 
 		@ParameterizedTest
-		@JsonFileSource(resources = JEDIS)
+		@JsonClasspathSource(JEDIS)
 		void singleObject(Jedi jedi) {
 			assertThat(Collections.singleton(tuple(jedi.getName(), jedi.getHeight())))
 					.containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 		@ParameterizedTest
-		@JsonFileSource(resources = JEDIS)
+		@JsonClasspathSource(JEDIS)
 		void singleObjectAttribute(@Property("name") String name) {
 			assertThat(name).isIn("Luke", "Yoda");
 		}
 
 		@ParameterizedTest
-		@JsonFileSource(resources = JEDIS)
+		@JsonClasspathSource(JEDIS)
 		void deconstructObjectsFromArray(@Property("name") String name, @Property("height") int height) {
 			assertThat(Collections.singleton(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 		@ParameterizedTest
-		@JsonFileSource(resources = LUKE, data = "vehicles")
+		@JsonClasspathSource(value = LUKE, data = "vehicles")
 		void customDataLocation(@Property("name") String name, @Property("length") double length) {
 			assertThat(Collections.singleton(tuple(name, length)))
 					.containsAnyOf(tuple("Snowspeeder", 4.5), tuple("Imperial Speeder Bike", 3d));
 		}
 
 		@ParameterizedTest
-		@JsonFileSource(resources = { YODA, LUKE, })
+		@JsonClasspathSource({ YODA, LUKE, })
 		void deconstructObjectsFromMultipleFiles(@Property("height") int height, @Property("name") String name) {
 			assertThat(Collections.singleton(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 		@ParameterizedTest
-		@JsonFileSource(resources = { YODA, LUKE })
+		@JsonClasspathSource({ YODA, LUKE })
 		void deconstructObjectsFromMultipleFilesIntoComplexType(@Property("name") String name,
 				@Property("location") Location location) {
 			assertThat(Collections.singleton(tuple(name, location.getName())))
@@ -163,39 +163,38 @@ class JsonFileSourceArgumentsProviderTests {
 	}
 
 	@Nested
-	class JsonFileSourceCartesianTests {
+	class JsonClasspathSourceCartesianTests {
 
 		@CartesianTest
-		void singleObject(@JsonFileSource(resources = JEDIS) Jedi jedi) {
+		void singleObject(@JsonClasspathSource(JEDIS) Jedi jedi) {
 			assertThat(Collections.singleton(tuple(jedi.getName(), jedi.getHeight())))
 					.containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 		@CartesianTest
-		void singleObjectProperty(@JsonFileSource(resources = JEDIS) @Property("name") String name) {
+		void singleObjectProperty(@JsonClasspathSource(JEDIS) @Property("name") String name) {
 			assertThat(name).isIn("Luke", "Yoda");
 		}
 
 		@CartesianTest
-		void deconstructObjectsFromArray(@JsonFileSource(resources = JEDIS) @Property("name") String name,
-				@JsonFileSource(resources = JEDIS) @Property("height") int height) {
+		void deconstructObjectsFromArray(@JsonClasspathSource(JEDIS) @Property("name") String name,
+				@JsonClasspathSource(JEDIS) @Property("height") int height) {
 		}
 
 		@CartesianTest
-		void customDataLocation(@JsonFileSource(resources = LUKE, data = "vehicles") @Property("name") String name,
-				@JsonFileSource(resources = LUKE, data = "vehicles") @Property("length") double length) {
+		void customDataLocation(@JsonClasspathSource(value = LUKE, data = "vehicles") @Property("name") String name,
+				@JsonClasspathSource(value = LUKE, data = "vehicles") @Property("length") double length) {
 		}
 
 		@CartesianTest
-		void deconstructObjectsFromMultipleFiles(
-				@JsonFileSource(resources = { YODA, LUKE, }) @Property("height") int height,
-				@JsonFileSource(resources = { YODA, LUKE, }) @Property("name") String name) {
+		void deconstructObjectsFromMultipleFiles(@JsonClasspathSource({ YODA, LUKE, }) @Property("height") int height,
+				@JsonClasspathSource({ YODA, LUKE, }) @Property("name") String name) {
 		}
 
 		@CartesianTest
 		void deconstructObjectsFromMultipleFilesIntoComplexType(
-				@JsonFileSource(resources = { YODA, LUKE }) @Property("name") String name,
-				@JsonFileSource(resources = { YODA, LUKE }) @Property("location") Location location) {
+				@JsonClasspathSource({ YODA, LUKE }) @Property("name") String name,
+				@JsonClasspathSource({ YODA, LUKE }) @Property("location") Location location) {
 		}
 
 	}
@@ -204,13 +203,13 @@ class JsonFileSourceArgumentsProviderTests {
 	class InvalidJsonSourceTests {
 
 		@Test
-		void noFilesOrResources() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "noFilesOrResources");
+		void noResources() {
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "noResources");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(PreconditionViolationException.class)
-					.hasMessage("Resources or files must not be empty");
+					.hasMessage("Value must not be empty");
 		}
 
 		@Test
@@ -249,25 +248,25 @@ class JsonFileSourceArgumentsProviderTests {
 
 	static class InvalidJsonSource {
 
-		@JsonFileSource
+		@JsonClasspathSource
 		@ParameterizedTest
-		void noFilesOrResources() {
+		void noResources() {
 
 		}
 
-		@JsonFileSource(resources = { YODA, "" })
+		@JsonClasspathSource({ YODA, "" })
 		@ParameterizedTest
 		void emptyClasspathResource() {
 
 		}
 
-		@JsonFileSource(resources = "dummy-jedi.json")
+		@JsonClasspathSource("dummy-jedi.json")
 		@ParameterizedTest
 		void missingClasspathResource() {
 
 		}
 
-		@JsonFileSource(resources = { YODA }, data = "dummy")
+		@JsonClasspathSource(value = { YODA }, data = "dummy")
 		@ParameterizedTest
 		void dataLocationMissing() {
 

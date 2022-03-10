@@ -19,7 +19,8 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 /**
- * {@code @JsonFileSource} is an {@link ArgumentsSource} that parses the json and passes arguments to the parametrized test.
+ * {@code @JsonFileSource} is an {@link ArgumentsSource} that parses the json and
+ * passes arguments to the parametrized test. The json is loaded from a files.
  *
  * <p>This annotation can be used on a method parameter, to make it usable with
  * {@link org.junitpioneer.jupiter.cartesian.CartesianTest}.
@@ -37,25 +38,19 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * @see org.junitpioneer.jupiter.cartesian.CartesianTest
  * @see Property
  * @see JsonSource
+ * @see JsonClasspathSource
  * @since TBD
  */
 @Target({ ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ArgumentsSource(JsonFileArgumentsProvider.class)
+@ArgumentsSource(JsonFileSourceArgumentsProvider.class)
 public @interface JsonFileSource {
 
 	/**
-	 * The JSON classpath resources to use as the sources of arguments; must not
-	 * be empty unless {@link #files} is non-empty.
+	 * The JSON files to use as the sources of arguments; must not be empty.
 	 */
-	String[] resources() default {};
-
-	/**
-	 * The JSON files to use as the sources of arguments; must not be empty
-	 * unless {@link #resources} is non-empty.
-	 */
-	String[] files() default {};
+	String[] value() default {};
 
 	/**
 	 * The name of the element from which the data should be extracted from.

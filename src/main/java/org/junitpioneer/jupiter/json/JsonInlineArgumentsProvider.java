@@ -10,27 +10,17 @@
 
 package org.junitpioneer.jupiter.json;
 
-import static org.junitpioneer.jupiter.json.JsonFileArgumentsProvider.createArgumentForCartesianProvider;
-import static org.junitpioneer.jupiter.json.JsonFileArgumentsProvider.createArguments;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.support.AnnotationConsumer;
 import org.junitpioneer.internal.PioneerPreconditions;
-import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
 /**
  * Provides arguments from inline JSON specified with {@link JsonSource}.
  */
-class JsonInlineArgumentsProvider
-		implements ArgumentsProvider, AnnotationConsumer<JsonSource>, CartesianParameterArgumentsProvider<Object> {
+class JsonInlineArgumentsProvider extends AbstractJsonArgumentsProvider<JsonSource> {
 
 	private List<String> jsonValues;
 
@@ -40,18 +30,7 @@ class JsonInlineArgumentsProvider
 	}
 
 	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-		Method method = context.getRequiredTestMethod();
-		return provideNodes(context).map(node -> createArguments(method, node));
-	}
-
-	@Override
-	public Stream<Object> provideArguments(ExtensionContext context, Parameter parameter) throws Exception {
-		return provideNodes(context).map(node -> createArgumentForCartesianProvider(parameter, node));
-	}
-
-	private Stream<Node> provideNodes(ExtensionContext context) {
-		JsonConverter jsonConverter = JsonConverterProvider.getJsonConverter(context);
+	protected Stream<Node> provideNodes(ExtensionContext context, JsonConverter jsonConverter) {
 		return PioneerPreconditions
 				.notEmpty(this.jsonValues, "value must not be empty")
 				.stream()

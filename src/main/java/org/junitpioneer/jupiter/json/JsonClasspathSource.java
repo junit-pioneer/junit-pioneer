@@ -19,13 +19,15 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 /**
- * {@code @JsonSource} is an {@link ArgumentsSource} that parses the inline json and passes arguments to the parametrized test.
+ * {@code @JsonClasspathSource} is an {@link ArgumentsSource} that parses the json and
+ * passes arguments to the parametrized test. The json is loaded from a classpath resource.
  *
  * <p>This annotation can be used on a method parameter, to make it usable with
  * {@link org.junitpioneer.jupiter.cartesian.CartesianTest}.
  * If used with {@link org.junit.jupiter.params.ParameterizedTest},
  * the annotation has to be on the method itself as any other {@link ArgumentsSource}.
  * </p>
+ *
  * <p>
  * For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/json/" target="_top">the documentation on <code>JSON tests</code></a>
@@ -35,21 +37,25 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * @see org.junit.jupiter.params.ParameterizedTest
  * @see org.junitpioneer.jupiter.cartesian.CartesianTest
  * @see Property
+ * @see JsonSource
  * @see JsonFileSource
- * @see JsonClasspathSource
  * @since TBD
  */
 @Target({ ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ArgumentsSource(JsonInlineArgumentsProvider.class)
-public @interface JsonSource {
+@ArgumentsSource(JsonClasspathSourceArgumentsProvider.class)
+public @interface JsonClasspathSource {
 
 	/**
-	 * The JSON values to use as the source of arguments; must not be empty.
-	 * <p>
-	 * Each value can represent a single object, or a collection of objects.
+	 * The JSON classpath resources to use as the sources of arguments; must not be empty.
 	 */
-	String[] value();
+	String[] value() default {};
+
+	/**
+	 * The name of the element from which the data should be extracted from.
+	 * If not set the root element will be used.
+	 */
+	String data() default "";
 
 }
