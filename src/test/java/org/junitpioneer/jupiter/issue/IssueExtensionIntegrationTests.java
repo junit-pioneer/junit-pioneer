@@ -39,7 +39,7 @@ public class IssueExtensionIntegrationTests {
 				.create()
 				.execute(LauncherDiscoveryRequestBuilder
 						.request()
-						.selectors(DiscoverySelectors.selectClass(IssueIntegrationCases.class))
+						.selectors(DiscoverySelectors.selectClass(IssueIntegrationTestCase.class))
 						.build());
 
 		List<IssueTestSuite> issueTestSuites = StoringIssueProcessor.ISSUE_TEST_SUITES;
@@ -62,7 +62,7 @@ public class IssueExtensionIntegrationTests {
 			assertThat(testCase.result()).isEqualTo(Status.FAILED);
 	}
 
-	static class IssueIntegrationCases {
+	static class IssueIntegrationTestCase {
 
 		@Test
 		@Issue("Poem #1")
