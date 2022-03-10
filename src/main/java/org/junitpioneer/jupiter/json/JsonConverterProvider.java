@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter.json;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.commons.PreconditionViolationException;
 
 class JsonConverterProvider {
 
@@ -32,7 +31,7 @@ class JsonConverterProvider {
 			return JacksonJsonConverter.getConverter();
 		}
 
-		throw new PreconditionViolationException("There is no available Json parsing library. Currently supported library is Jackson");
+		throw new NoJsonParserConfiguredException();
 	}
 
 }
