@@ -18,15 +18,18 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 
-public class TestNameFormatter {
+public final class TestNameFormatter {
 
-	private final String pattern;
-	private final String displayName;
-	private final Class<?> forClass;
+	// This code is a slightly refactored variant of the JUnit Jupiter class
+	// `org.junit.jupiter.params.ParameterizedTestNameFormatter` (from v5.8.2).
 
 	public static final String DISPLAY_NAME_PLACEHOLDER = "{displayName}";
 	public static final String INDEX_PLACEHOLDER = "{index}";
 	public static final String ARGUMENTS_PLACEHOLDER = "{arguments}";
+
+	private final String pattern;
+	private final String displayName;
+	private final Class<?> forClass;
 
 	public TestNameFormatter(String pattern, String displayName, Class<?> forClass) {
 		this.pattern = pattern;
