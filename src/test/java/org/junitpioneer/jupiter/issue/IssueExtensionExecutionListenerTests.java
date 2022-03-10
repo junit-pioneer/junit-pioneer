@@ -52,7 +52,6 @@ public class IssueExtensionExecutionListenerTests {
 	void issueTestCasesCreated() {
 		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
 		TestIdentifier successfulTest = createTestIdentifier("successful-test");
-		testPlan.add(successfulTest);
 
 		executionListener.testPlanExecutionStarted(testPlan);
 		executionListener.reportingEntryPublished(successfulTest, issueEntry);
@@ -76,7 +75,6 @@ public class IssueExtensionExecutionListenerTests {
 	void abortedIssueTestCaseCreated() {
 		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
 		TestIdentifier abortedTest = createTestIdentifier("aborted-test");
-		testPlan.add(abortedTest);
 
 		executionListener.testPlanExecutionStarted(testPlan);
 		executionListener.reportingEntryPublished(abortedTest, issueEntry);
@@ -99,9 +97,7 @@ public class IssueExtensionExecutionListenerTests {
 	void multipleIssueTestCasesCreated() {
 		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
 		TestIdentifier successfulTest = createTestIdentifier("successful-test");
-		testPlan.add(successfulTest);
 		TestIdentifier abortedTest = createTestIdentifier("aborted-test");
-		testPlan.add(abortedTest);
 
 		executionListener.testPlanExecutionStarted(testPlan);
 		executionListener.reportingEntryPublished(successfulTest, issueEntry);
