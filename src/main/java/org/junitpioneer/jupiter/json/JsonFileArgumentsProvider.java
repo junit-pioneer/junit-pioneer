@@ -28,13 +28,13 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.internal.PioneerPreconditions;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
+import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
 /**
  * Provides arguments from JSON files specified with {@link JsonFileSource}.
  */
 class JsonFileArgumentsProvider
-		implements ArgumentsProvider, AnnotationConsumer<JsonFileSource>, CartesianArgumentsProvider<Object> {
+		implements ArgumentsProvider, AnnotationConsumer<JsonFileSource>, CartesianParameterArgumentsProvider<Object> {
 
 	// the reading of the resources / files is heavily inspired by Jupiter's CsvFileArgumentsProvider
 

@@ -24,13 +24,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 import org.junitpioneer.internal.PioneerPreconditions;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
+import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
 /**
  * Provides arguments from inline JSON specified with {@link JsonSource}.
  */
 class JsonInlineArgumentsProvider
-		implements ArgumentsProvider, AnnotationConsumer<JsonSource>, CartesianArgumentsProvider<Object> {
+		implements ArgumentsProvider, AnnotationConsumer<JsonSource>, CartesianParameterArgumentsProvider<Object> {
 
 	private List<String> jsonValues;
 
