@@ -168,6 +168,12 @@ It helps with writing parallel tests for them if they do not change global state
 That particularly applies to "store in beforeEach - restore in afterEach"-extensions!
 If they fail after "store", they will still "restore" and thus potentially create a race condition with other tests.
 
+#### Compiler Warnings
+
+The build is configured to treat all compiler warnings as errors.
+If code that triggers a warning can't be refactored to avoid that, `@SuppressWarning` may be added, but we don't want to do that liberally.
+Developers and reviewers should minimize its use.
+
 ### Tests
 
 The name of test classes _must_ end with `Tests`, otherwise Gradle will ignore them.
