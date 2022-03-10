@@ -32,7 +32,7 @@ class JsonConverterProvider {
 			return JacksonJsonConverter.getConverter();
 		}
 
-		throw new PreconditionViolationException("There is no available Json parsing library");
+		throw new PreconditionViolationException("There is no available Json parsing library. Currently supported library is Jackson");
 	}
 
 }
