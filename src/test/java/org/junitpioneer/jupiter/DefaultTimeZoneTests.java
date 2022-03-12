@@ -89,7 +89,7 @@ class DefaultTimeZoneTests {
 	@Nested
 	@DefaultTimeZone("GMT-8:00")
 	@DisplayName("when applied on the class level")
-	class ClassLevelTestCase {
+	class ClassLevelTestCases {
 
 		@Test
 		@ReadsDefaultTimeZone
@@ -110,7 +110,7 @@ class DefaultTimeZoneTests {
 	@Nested
 	@DefaultTimeZone("GMT")
 	@DisplayName("when explicitly set to GMT on the class level")
-	class ExplicitGmtClassLevelTestCase {
+	class ExplicitGmtClassLevelTestCases {
 
 		@Test
 		@DisplayName("does not throw and sets to GMT ")
@@ -203,7 +203,8 @@ class DefaultTimeZoneTests {
 		@ReadsDefaultTimeZone
 		@DisplayName("on method level, throws exception")
 		void throwsWhenConfigurationIsBad() {
-			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCase.class, "badConfiguration");
+			ExecutionResults results = executeTestMethod(BadMethodLevelConfigurationTestCases.class,
+				"badConfiguration");
 
 			assertThat(results)
 					.hasSingleFailedTest()
@@ -216,7 +217,7 @@ class DefaultTimeZoneTests {
 		@ReadsDefaultTimeZone
 		@DisplayName("on class level, throws exception")
 		void shouldThrowWithBadConfiguration() {
-			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCase.class);
+			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCases.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -231,7 +232,7 @@ class DefaultTimeZoneTests {
 
 	}
 
-	static class BadMethodLevelConfigurationTestCase {
+	static class BadMethodLevelConfigurationTestCases {
 
 		@Test
 		@DefaultTimeZone("Gibberish")
@@ -241,7 +242,7 @@ class DefaultTimeZoneTests {
 	}
 
 	@DefaultTimeZone("Gibberish")
-	static class BadClassLevelConfigurationTestCase {
+	static class BadClassLevelConfigurationTestCases {
 
 		@Test
 		void badConfiguration() {

@@ -100,7 +100,7 @@ The next best thing is to allow access to that specific package with `--add-open
 These command line options need to be added to the JVM that executes the tests:
 
 * https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html[Gradle]
-* http://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#argLine[Maven basics] and https://nipafx.dev/maven-on-java-9/[advanced]
+* https://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#argLine[Maven basics] and https://nipafx.dev/maven-on-java-9/[advanced]
 
 == Thread-Safety
 

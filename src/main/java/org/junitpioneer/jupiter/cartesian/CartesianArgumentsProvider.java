@@ -10,21 +10,10 @@
 
 package org.junitpioneer.jupiter.cartesian;
 
-import java.lang.reflect.Parameter;
-
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-
 /**
- * If you are implementing an {@link org.junit.jupiter.params.provider.ArgumentsProvider ArgumentsProvider}
- * for {@link CartesianTest}, it has to implement this interface <b>instead</b> to know which parameter it provides
- * arguments to. For more information, see
- * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
- *
- * @see org.junit.jupiter.params.provider.ArgumentsProvider
- * @see CartesianTestExtension
+ * This is a marker interface. Users of {@code CartesianTest} must implement either
+ * {@link CartesianMethodArgumentsProvider} or {@link CartesianParameterArgumentsProvider}.
  */
-public interface CartesianArgumentsProvider extends ArgumentsProvider {
-
-	void accept(Parameter parameter);
+interface CartesianArgumentsProvider {
 
 }

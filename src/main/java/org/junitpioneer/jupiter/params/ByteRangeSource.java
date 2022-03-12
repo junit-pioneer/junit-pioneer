@@ -78,6 +78,9 @@ public @interface ByteRangeSource {
 	 */
 	boolean closed() default false;
 
+	/**
+	 * Containing annotation of repeatable {@code ByteRangeSource}.
+	 */
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented

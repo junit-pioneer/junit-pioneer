@@ -44,8 +44,11 @@ class SystemPropertyExtensionTests {
 	@AfterAll
 	static void globalTearDown() {
 		assertThat(System.getProperty("A")).isEqualTo("old A");
+		System.clearProperty("A");
 		assertThat(System.getProperty("B")).isEqualTo("old B");
+		System.clearProperty("B");
 		assertThat(System.getProperty("C")).isEqualTo("old C");
+		System.clearProperty("C");
 
 		assertThat(System.getProperty("clear prop D")).isNull();
 		assertThat(System.getProperty("clear prop E")).isNull();

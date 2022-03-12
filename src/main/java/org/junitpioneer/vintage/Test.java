@@ -44,6 +44,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @org.junit.jupiter.api.Test
 public @interface Test {
 
+	/**
+	 * Dummy default class for the <code>expected</code> parameter.
+	 */
 	class None extends Throwable {
 
 		private static final long serialVersionUID = 1L;

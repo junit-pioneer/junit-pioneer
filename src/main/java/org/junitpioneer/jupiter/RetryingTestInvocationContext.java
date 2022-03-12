@@ -11,7 +11,19 @@
 package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
+import org.junitpioneer.internal.TestNameFormatter;
 
 class RetryingTestInvocationContext implements TestTemplateInvocationContext {
+
+	private final TestNameFormatter formatter;
+
+	RetryingTestInvocationContext(TestNameFormatter formatter) {
+		this.formatter = formatter;
+	}
+
+	@Override
+	public String getDisplayName(int invocationIndex) {
+		return formatter.format(invocationIndex);
+	}
 
 }

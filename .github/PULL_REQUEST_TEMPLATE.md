@@ -21,6 +21,7 @@ Documentation (general)
 * [ ] There is documentation (Javadoc and site documentation; added or updated)
 * [ ] There is implementation information to describe _why_ a non-obvious source code / solution got implemented
 * [ ] Site documentation has its own `.adoc` file in the `docs` folder, e.g. `docs/report-entries.adoc`
+* [ ] Site documentation in `.adoc` file references demo in `src/demo/java` instead of containing code blocks as text
 * [ ] Only one sentence per line (especially in `.adoc` files)
 * [ ] Javadoc uses formal style, while sites documentation may use informal style
 

@@ -183,9 +183,15 @@ public @interface CartesianEnumSource {
 
 	}
 
+	/**
+	 * Containing annotation of repeatable {@code CartesianEnumSource}.
+	 *
+	 * @deprecated scheduled to be removed in 2.0
+	 */
 	@Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
+	@Deprecated
 	@interface CartesianEnumSources {
 
 		CartesianEnumSource[] value();

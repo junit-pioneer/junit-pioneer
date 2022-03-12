@@ -77,6 +77,9 @@ public @interface IntRangeSource {
 	 */
 	boolean closed() default false;
 
+	/**
+	 * Containing annotation of repeatable {@code IntRangeSource}.
+	 */
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented

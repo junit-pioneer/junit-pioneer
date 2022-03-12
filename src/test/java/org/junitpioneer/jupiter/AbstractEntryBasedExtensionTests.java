@@ -12,13 +12,16 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("Abstract entry-based extension")
-class AbstractEntryBasedExtensionTest {
+@WritesEnvironmentVariable
+@WritesSystemProperty
+class AbstractEntryBasedExtensionTests {
 
 	private static final String CLEAR_ENVVAR_KEY = "clear envvar";
 	private static final String SET_ENVVAR_KEY = "set envvar";
@@ -35,6 +38,12 @@ class AbstractEntryBasedExtensionTest {
 
 		System.clearProperty(CLEAR_SYSPROP_KEY);
 		System.setProperty(SET_SYSPROP_KEY, SET_SYSPROP_ORIGINAL_VALUE);
+	}
+
+	@AfterEach
+	void tearDown() {
+		EnvironmentVariableUtils.clear(SET_ENVVAR_KEY);
+		System.clearProperty(SET_SYSPROP_KEY);
 	}
 
 	@Test

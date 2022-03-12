@@ -3,12 +3,14 @@
 <img src="docs/project-logo.jpg" align="right" width="150px"/>
 
 [![Latest Junit Pioneer on Maven Central](https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat)](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer)
-[![JUnit Pioneer build status](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/main-build.yml/badge.svg?branch=main)](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/main-build.yml?branch=main)
+[![Latest JUnit Pioneer Javadoc on javadoc.io](https://javadoc.io/badge2/org.junit-pioneer/junit-pioneer/javadoc.svg)](https://javadoc.io/doc/org.junit-pioneer/junit-pioneer)
+[![JUnit Pioneer build status](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml?branch=main)
+[![Contributor Covenant Code of Conduct](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 
 A melting pot for all kinds of extensions to
 [JUnit 5](https://github.com/junit-team/junit5), particular to its Jupiter API.
 
-Check out [junit-pioneer.org](http://junit-pioneer.org), particularly [the documentation section](http://junit-pioneer.org/docs).
+Check out [junit-pioneer.org](https://junit-pioneer.org/), particularly [the documentation section](https://junit-pioneer.org/docs/).
 
 
 ## A Pioneer's Mission
@@ -22,7 +24,7 @@ To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its i
 
 ## Getting on Board
 
-JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases) and [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.junit-pioneer%22%20a%3A%22junit-pioneer%22). Coordinates:
+JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases) and [Maven Central](https://search.maven.org/artifact/org.junit-pioneer/junit-pioneer). Coordinates:
 
 * group ID: `org.junit-pioneer`
 * artifact ID: `junit-pioneer`
@@ -65,6 +67,7 @@ For our own infrastructure, we rely on the following compile and test dependenci
 * Log4J (to configure logging during test runs)
 * Jimfs (as an in-memory file system for our test)
 
+
 ## Contributing
 
 We welcome contributions of all shapes and forms! 🌞
@@ -73,7 +76,7 @@ We welcome contributions of all shapes and forms! 🌞
 * If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly [unassigned ones](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee) and those [marked as up for grabs](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs).
 * If you want to have a chat about JUnit Pioneer, [join our discord](https://discord.gg/rHfJeCF) - we have a _#junit-pioneer_ channel. 😊
 
-Before contributing, please read the [contribution guide](CONTRIBUTING.md).
+Before contributing, please read the [contribution guide](CONTRIBUTING.md) as well as [the code of conduct](CODE_OF_CONDUCT.md).
 
 ### Maintainers
 
@@ -117,8 +120,12 @@ The least we can do is to thank them and list some of their accomplishments here
 
 * [Cory Thomas](https://github.com/dump247) contributed the `minSuccess` attribute in [retrying tests](https://junit-pioneer.org/docs/retrying-test/) (#408 / #430)
 * [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more), revamped their annotation handling (#460 / #485), and improved the build process (#482 / #483) before becoming a maintainer
+* [Gabriel Diegel](https://github.com/gdiegel) contributed the `@DisabledUntil` extension in [Temporarily disable a test](https://junit-pioneer.org/docs/disabled-until/) (#366)
+* [John Lehne](https://github.com/johnlehne) resolved an issue with the latest build status not showing correctly in README.md (#530)
+* [Scott Leberknight](https://github.com/sleberknight) resolved a javadoc issue (#547 / #548)
 * [Slawomir Jaranowski](https://github.com/slawekjaranowski) Migrate to new Shipkit plugins (#410 / #419)
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409 and #414 / #453)
+* [Jonathan Bluett-Duncan](https://github.com/jbduncan) contributed a fix to `buildSrc/build.gradle` which was failing when a `.idea` directory did not contain a `vcs.xml` file (#532)
 
 #### 2020
 
