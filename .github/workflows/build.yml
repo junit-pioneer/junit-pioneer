@@ -56,7 +56,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-    name: with Java ${{ matrix.java }} on ${{ matrix.os }}
+    name: with Java 11 on ${{ matrix.os }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
