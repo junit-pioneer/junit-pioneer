@@ -164,12 +164,12 @@ class DefaultTimeZoneTests {
 	@Nested
 	@DefaultTimeZone("GMT-12:00")
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-	class ResettingDefaultLocaleTests {
+	class ResettingDefaultTimeZoneTests {
 
 		@Nested
 		@DefaultTimeZone("GMT-3:00")
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-		class ResettingDefaultNestedLocaleTests {
+		class ResettingDefaultTimeZoneNestedTests {
 
 			@Test
 			@DefaultTimeZone("GMT+6:00")

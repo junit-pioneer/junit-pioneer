@@ -159,7 +159,7 @@ class DefaultLocaleTests {
 		@Nested
 		@DefaultLocale(language = "de")
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-		class ResettingDefaultNestedLocaleTests {
+		class ResettingDefaultLocaleNestedTests {
 
 			@Test
 			@DefaultLocale(language = "en")
