@@ -71,7 +71,7 @@ jobs:
           distribution: temurin
           cache: 'gradle'
       - name: Cache SonarCloud results
-        if: ${{ matrix.os == ubuntu }}
+        if: ${{ matrix.os == 'ubuntu' }}
         uses: actions/cache@v2
         with:
           path: ~/.sonar/cache/
