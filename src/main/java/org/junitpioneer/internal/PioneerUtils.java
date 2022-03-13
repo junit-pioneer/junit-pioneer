@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.extension.ExtensionContext;
+
 /**
  * Pioneer-internal utility class.
  * DO NOT USE THIS CLASS - IT MAY CHANGE SIGNIFICANTLY IN ANY MINOR UPDATE.
@@ -80,6 +82,22 @@ public class PioneerUtils {
 			current = current.getEnclosingClass();
 		} while (!method.isPresent() && current != null);
 		return method;
+	}
+
+	/**
+	 * Find all (parent) {@code ExtensionContext}s via {@link ExtensionContext#getParent()}.
+	 *
+	 * @param context the context for which to find all (parent) contexts; never {@code null}
+	 * @return a list of all contexts, including the given context; never {@code null} or empty
+	 */
+	public static List<ExtensionContext> findAllContexts(ExtensionContext context) {
+		List<ExtensionContext> contexts = new ArrayList<>();
+		Optional<ExtensionContext> currentContext = Optional.of(context);
+		do {
+			currentContext.ifPresent(contexts::add);
+			currentContext = currentContext.flatMap(ExtensionContext::getParent);
+		} while (currentContext.isPresent());
+		return contexts;
 	}
 
 	public static String nullSafeToString(Object object) {
