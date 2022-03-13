@@ -47,15 +47,14 @@ jobs:
   # experience with little build time and sufficient feedback. Therefore, we
   # only build this on our default Java version but for all operating systems
   # we are supporting. This allows for a fast execution and fast feedback. The
-  # extended tests will run later under certain conditions.
-  # If the OS is ubuntu, we also run the SonarCloud analysis.
+  # extended tests will run later under certain conditions. If the OS is
+  # Ubuntu, we also run the SonarCloud analysis.
   basic:
     runs-on: ${{ matrix.os }}-latest
     needs: validation
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 11 ]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }} on ${{ matrix.os }}
     steps:
@@ -67,7 +66,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          java-version: ${{ matrix.java }}
+          java-version: 11
           distribution: temurin
           cache: 'gradle'
       - name: Cache SonarCloud results
