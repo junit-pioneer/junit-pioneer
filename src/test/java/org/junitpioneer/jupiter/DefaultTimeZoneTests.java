@@ -182,7 +182,7 @@ class DefaultTimeZoneTests {
 			@AfterAll
 			@ReadsDefaultTimeZone
 			void resetAfterTestMethodExecution() {
-				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-3:00"));
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("UTC"));
 			}
 
 		}
@@ -190,7 +190,7 @@ class DefaultTimeZoneTests {
 		@AfterAll
 		@ReadsDefaultTimeZone
 		void resetAfterTestMethodExecution() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-12:00"));
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("UTC"));
 		}
 
 	}
@@ -220,7 +220,7 @@ class DefaultTimeZoneTests {
 			ExecutionResults results = executeTestClass(BadClassLevelConfigurationTestCases.class);
 
 			assertThat(results)
-					.hasSingleFailedContainer()
+					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("@DefaultTimeZone not configured correctly.");
 		}

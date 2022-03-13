@@ -18,9 +18,7 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import java.util.Locale;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -158,38 +156,31 @@ class DefaultLocaleTests {
 	@DisplayName("correctly sets/resets before/after each/all extension points")
 	class ResettingDefaultLocaleTests {
 
-		@BeforeAll
-		void setsBeforeBeforeAllMethod() {
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
-		}
+		@Nested
+		@DefaultLocale(language = "de")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingDefaultNestedLocaleTests {
 
-		@BeforeEach
-		void setsBeforeBeforeEachMethod() {
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
-		}
+			@Test
+			@DefaultLocale(language = "en")
+			void setForTestMethod() {
+				// only here to set the locale, so another test can verify whether it was reset;
+				// still, better to assert the value was actually set
+				assertThat(Locale.getDefault().getLanguage()).isEqualTo("en");
+			}
 
-		@Test
-		@DisplayName("correctly sets before test")
-		void setsBeforeTestExecution() {
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
-		}
+			@AfterAll
+			@ReadsDefaultTimeZone
+			void resetAfterTestMethodExecution() {
+				assertThat(Locale.getDefault().getLanguage()).isEqualTo("custom");
+			}
 
-		@Test
-		@DisplayName("correctly resets after test class")
-		void resetsAfterTestClassExecution() {
-			ExecutionResults results = executeTestClass(ClassLevelResetCase.class);
-			assertThat(results).hasSingleSucceededTest();
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
-		}
-
-		@AfterEach
-		void doesNotResetBeforeAfterEachMethod() {
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
 		}
 
 		@AfterAll
-		void doesNotResetBeforeAfterAllMethod() {
-			assertThat(Locale.getDefault().getLanguage()).isEqualTo("fi");
+		@ReadsDefaultTimeZone
+		void resetAfterTestMethodExecution() {
+			assertThat(Locale.getDefault().getLanguage()).isEqualTo("custom");
 		}
 
 	}
@@ -281,7 +272,7 @@ class DefaultLocaleTests {
 				ExecutionResults results = executeTestClass(ClassLevelInitializationFailureTestCases.class);
 
 				assertThat(results)
-						.hasSingleFailedContainer()
+						.hasSingleFailedTest()
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
 			}
 
