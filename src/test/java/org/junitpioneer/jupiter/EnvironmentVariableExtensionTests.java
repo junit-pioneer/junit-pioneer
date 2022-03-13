@@ -240,25 +240,25 @@ class EnvironmentVariableExtensionTests {
 	}
 
 	@Nested
-	@SetEnvironmentVariable(key = "A", value = "new A")
+	@SetEnvironmentVariable(key = "set envvar A", value = "new A")
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	class ResettingEnvironmentVariableTests {
 
 		@Nested
-		@SetEnvironmentVariable(key = "A", value = "newer A")
+		@SetEnvironmentVariable(key = "set envvar A", value = "newer A")
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 		class ResettingEnvironmentVariableNestedTests {
 
 			@Test
-			@SetEnvironmentVariable(key = "A", value = "newest A")
+			@SetEnvironmentVariable(key = "set envvar A", value = "newest A")
 			void setForTestMethod() {
-				assertThat(System.getenv("A")).isEqualTo("newest A");
+				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
 			}
 
 			@AfterAll
 			@ReadsEnvironmentVariable
 			void resetAfterTestMethodExecution() {
-				assertThat(System.getenv("A")).isEqualTo("newer A");
+				assertThat(System.getenv("set envvar A")).isEqualTo("newer A");
 			}
 
 		}
@@ -266,7 +266,7 @@ class EnvironmentVariableExtensionTests {
 		@AfterAll
 		@ReadsEnvironmentVariable
 		void resetAfterTestContainerExecution() {
-			assertThat(System.getenv("A")).isEqualTo("new A");
+			assertThat(System.getenv("set envvar A")).isEqualTo("new A");
 		}
 
 	}
