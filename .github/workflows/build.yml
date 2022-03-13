@@ -81,7 +81,7 @@ jobs:
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
       - name: SonarCloud analysis
-        if: ${{ matrix.os == ubuntu }}
+        if: ${{ matrix.os == 'ubuntu' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
