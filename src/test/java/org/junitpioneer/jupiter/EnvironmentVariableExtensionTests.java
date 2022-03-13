@@ -258,7 +258,7 @@ class EnvironmentVariableExtensionTests {
 			@AfterAll
 			@ReadsEnvironmentVariable
 			void resetAfterTestMethodExecution() {
-				assertThat(System.getenv("set envvar A")).isEqualTo("newer A");
+				assertThat(System.getenv("set envvar A")).isEqualTo("old A");
 			}
 
 		}
@@ -266,7 +266,7 @@ class EnvironmentVariableExtensionTests {
 		@AfterAll
 		@ReadsEnvironmentVariable
 		void resetAfterTestContainerExecution() {
-			assertThat(System.getenv("set envvar A")).isEqualTo("new A");
+			assertThat(System.getenv("set envvar A")).isEqualTo("old A");
 		}
 
 	}

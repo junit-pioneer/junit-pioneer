@@ -247,7 +247,7 @@ class SystemPropertyExtensionTests {
 			@AfterAll
 			@ReadsSystemProperty
 			void resetAfterTestMethodExecution() {
-				assertThat(System.getProperty("A")).isEqualTo("newer A");
+				assertThat(System.getProperty("A")).isEqualTo("old A");
 			}
 
 		}
@@ -255,7 +255,7 @@ class SystemPropertyExtensionTests {
 		@AfterAll
 		@ReadsSystemProperty
 		void resetAfterTestContainerExecution() {
-			assertThat(System.getProperty("A")).isEqualTo("new A");
+			assertThat(System.getProperty("A")).isEqualTo("old A");
 		}
 
 	}
