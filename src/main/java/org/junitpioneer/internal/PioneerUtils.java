@@ -88,7 +88,7 @@ public class PioneerUtils {
 	 * Find all (parent) {@code ExtensionContext}s via {@link ExtensionContext#getParent()}.
 	 *
 	 * @param context the context for which to find all (parent) contexts; never {@code null}
-	 * @return a list of all contexts, including the given context; never {@code null} or empty
+	 * @return a list of all contexts, beginning with the given context; never {@code null} or empty
 	 */
 	public static List<ExtensionContext> findAllContexts(ExtensionContext context) {
 		List<ExtensionContext> contexts = new ArrayList<>();
