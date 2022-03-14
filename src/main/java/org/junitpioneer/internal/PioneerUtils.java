@@ -91,13 +91,14 @@ public class PioneerUtils {
 	 * @return a list of all contexts, beginning with the given context; never {@code null} or empty
 	 */
 	public static List<ExtensionContext> findAllContexts(ExtensionContext context) {
-		List<ExtensionContext> contexts = new ArrayList<>();
-		Optional<ExtensionContext> currentContext = Optional.of(context);
-		do {
-			currentContext.ifPresent(contexts::add);
-			currentContext = currentContext.flatMap(ExtensionContext::getParent);
-		} while (currentContext.isPresent());
-		return contexts;
+		List<ExtensionContext> allContexts = new ArrayList<>();
+		allContexts.add(context);
+		List<ExtensionContext> parentContexts = context
+				.getParent()
+				.map(PioneerUtils::findAllContexts)
+				.orElse(Collections.emptyList());
+		allContexts.addAll(parentContexts);
+		return allContexts;
 	}
 
 	public static String nullSafeToString(Object object) {
