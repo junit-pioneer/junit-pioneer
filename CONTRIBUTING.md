@@ -137,11 +137,32 @@ Note _should_, not _must_ - there can be exceptions if well argued.
 
 #### Extension Scopes
 
-If your extension changes state that is observable at least in the same class (or globally, like default locales) implement `BeforeAllCallback`/`AfterAllCallback` in combination with `BeforeEachCallback`/`AfterEachCallback`.
-While it is also possible to achieve the same without `BeforeAllCallback`/`AfterAllCallback`, it allows the state change to be observable in `@BeforeAll` and `@AfterAll` methods.
-Furthermore, we want to guarantee consistent behavior across different extensions.
+Consider the following:
 
-Examples are e.g. `DefaultLocaleExtension` or `DefaultTimezoneExtension`.
+```java
+@YourExtension
+class MyTests {
+
+	@Test
+	void testFoo() { /* ... */ }
+
+	@Test
+	void testBar() { /* ... */ }
+
+}
+```
+
+You might ask yourself: does `@YourExtension` run
+
+1. once before/after all tests (meaning it "brackets" the test class) or
+2. once before/after each test (meaning it "brackets" each test method)?
+
+We decided to _default_ to option 2 as we believe this is less error-prone and covers more common use cases.
+Furthermore, we want to guarantee consistent behavior across different extensions.
+(Examples are e.g. `DefaultLocaleExtension` or `DefaultTimezoneExtension`.)
+
+This, however, is just a default.
+`@YourExtension` is free to diverge if it makes sense.
 
 #### Namespaces
 
