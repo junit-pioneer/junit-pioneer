@@ -182,7 +182,7 @@ class DefaultTimeZoneTests {
 			@AfterAll
 			@ReadsDefaultTimeZone
 			void resetAfterTestMethodExecution() {
-				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("UTC"));
+				assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
 			}
 
 		}
@@ -190,7 +190,7 @@ class DefaultTimeZoneTests {
 		@AfterAll
 		@ReadsDefaultTimeZone
 		void resetAfterTestMethodExecution() {
-			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("UTC"));
+			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
 		}
 
 	}
