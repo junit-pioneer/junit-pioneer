@@ -28,8 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>{@code ClearEnvironmentVariable} is repeatable and can be used on the method and
  * on the class level. If a class is annotated, the configured variable will be
- * cleared once before all tests inside that class are executed (i.e. it won't be
- * cleared before each individual test).</p>
+ * cleared before every test inside that class.</p>
  *
  * <p>WARNING: Java considers environment variables to be immutable, so this extension
  * uses reflection to change them. This requires that the {@link SecurityManager}

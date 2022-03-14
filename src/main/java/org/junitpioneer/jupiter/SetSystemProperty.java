@@ -29,9 +29,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>{@code SetSystemProperty} is repeatable and can be used on the method and on
  * the class level. If a class is annotated, the configured property will be set
- * once before all tests inside that class are executed (i.e. it won't be set before
- * each individual test). Any method level configurations will override the class
- * class level configurations.</p>
+ * before every test inside that class. Any method level configurations will
+ * override the class level configurations.</p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,

@@ -29,9 +29,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>{@code SetEnvironmentVariable} is repeatable and can be used on the method and on
  * the class level. If a class is annotated, the configured variable will be set
- * once before all tests inside that class are executed (i.e. it won't be set before
- * each individual test). Any method level configurations will override the class
- * class level configurations.</p>
+ * before every test inside that class. Any method level configurations will
+ * override the class level configurations.</p>
  *
  * <p>WARNING: Java considers environment variables to be immutable, so this extension
  * uses reflection to change them. This requires that the {@link SecurityManager}
