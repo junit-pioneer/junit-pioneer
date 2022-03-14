@@ -72,6 +72,8 @@ class MyEnvironmentVariableTest {
 }
 ----
 
+Also note that class level configurations mean that the corresponding environment variables are cleared/set before every test inside the annotated class.
+
 == Warnings for Reflective Access
 
 As explained above, this extension uses reflective access to change the otherwise immutable environment variables.

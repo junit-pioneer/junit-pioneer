@@ -66,6 +66,8 @@ class MySystemPropertyTest {
 }
 ----
 
+Also note that class level configurations mean that the corresponding system properties are cleared/set before every test inside the annotated class.
+
 Sometimes, you might also need to set a system property to a value that is not a constant expression, which is required for annotation values.
 In this case, you can still leverage the restore mechanism:
 

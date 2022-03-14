@@ -78,6 +78,8 @@ class MyLocaleTests {
 }
 ----
 
+Note that class level configurations mean that the corresponding locale is set before every test inside the annotated class.
+
 == `@DefaultTimeZone`
 
 The default `TimeZone` is specified according to the https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html#getTimeZone(java.lang.String)[TimeZone.getTimeZone(String)] method.
@@ -120,6 +122,8 @@ class MyTimeZoneTests {
 	}
 }
 ----
+
+Note that class level configurations mean that the corresponding time zone is set before every test inside the annotated class.
 
 == Thread-Safety
 
