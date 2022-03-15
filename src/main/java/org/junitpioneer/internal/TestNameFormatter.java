@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.platform.commons.util.StringUtils;
 
 public final class TestNameFormatter {
 
@@ -74,7 +75,7 @@ public final class TestNameFormatter {
 	private Object[] makeReadable(Object[] arguments) {
 		Object[] result = Arrays.copyOf(arguments, arguments.length, Object[].class);
 		for (int i = 0; i < result.length; i++) {
-			result[i] = PioneerUtils.nullSafeToString(arguments[i]);
+			result[i] = StringUtils.nullSafeToString(arguments[i]);
 		}
 		return result;
 	}

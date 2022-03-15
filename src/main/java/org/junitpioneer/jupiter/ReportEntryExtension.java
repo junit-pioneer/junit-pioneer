@@ -30,8 +30,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.jupiter.api.extension.TestWatcher;
+import org.junit.platform.commons.util.StringUtils;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
-import org.junitpioneer.internal.PioneerUtils;
 
 class ReportEntryExtension implements TestWatcher, BeforeEachCallback, InvocationInterceptor {
 
@@ -128,7 +128,7 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 		String parsed = value;
 		List<?> list = context.getStore(NAMESPACE).get(KEY, List.class);
 		for (int i = 0; i < list.size(); i++) {
-			parsed = parsed.replaceAll("\\{" + i + "}", PioneerUtils.nullSafeToString(list.get(i)));
+			parsed = parsed.replaceAll("\\{" + i + "}", StringUtils.nullSafeToString(list.get(i)));
 		}
 
 		return parsed;
