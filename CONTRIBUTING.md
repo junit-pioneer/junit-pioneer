@@ -154,8 +154,8 @@ class MyTests {
 
 You might ask yourself: does `@YourExtension` run
 
-1. once before/after all tests (meaning it "brackets" the test class) or
-2. once before/after each test (meaning it "brackets" each test method)?
+1. once before/after all tests (meaning it "brackets" the test class, typically via [`BeforeAllCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeAllCallback.html) / [`AfterAllCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterAllCallback.html)) or
+2. once before/after each test (meaning it "brackets" each test method, typically via [`BeforeEachCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeEachCallback.html) / [`AfterEachCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterEachCallback.html))?
 
 We decided to _default_ to option 2 as we believe this is less error-prone and covers more common use cases.
 Furthermore, we want to guarantee consistent behavior across different extensions.
