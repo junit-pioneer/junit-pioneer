@@ -1,5 +1,5 @@
 module org.junitpioneer {
-	requires org.junit.jupiter.api;
+	requires transitive org.junit.jupiter.api;
 	requires org.junit.jupiter.params;
 	requires org.junit.platform.commons;
 	requires org.junit.platform.launcher;
