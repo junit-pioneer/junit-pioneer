@@ -215,10 +215,14 @@ tasks {
 
 	compileJava {
 		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		options.compilerArgs.add("-Xlint:all")
 	}
 
 	compileTestJava {
 		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		options.compilerArgs.add("-Xlint:all")
 	}
 
 	test {

@@ -43,8 +43,8 @@ import org.junitpioneer.testkit.PioneerTestKit;
  * Robert Frost: The Road Not Taken is in the public domain
  */
 @DisplayName("CartesianProductTest")
-//CartesianProductTest and other classes are deprecated for removal
-@SuppressWarnings("deprecation")
+// remove together with `CartesianProductTest`
+@Deprecated
 public class CartesianProductTestExtensionTests {
 
 	@Nested

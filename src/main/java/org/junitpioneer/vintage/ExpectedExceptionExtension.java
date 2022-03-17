@@ -66,6 +66,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 						.ifPresent(error -> {
 							throw error;
 						});
+				break;
 			case WAS_THROWN_AS_EXPECTED:
 				// the exception was thrown as expected so there is nothing to do
 				break;

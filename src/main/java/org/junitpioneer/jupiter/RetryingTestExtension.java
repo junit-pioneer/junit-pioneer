@@ -41,7 +41,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 	public boolean supportsTestTemplate(ExtensionContext context) {
 		// the annotation only applies to methods (see its `@Target`),
 		// so it doesn't matter that this method checks meta-annotations
-		return PioneerAnnotationUtils.isAnyAnnotationPresent(context, RetryingTest.class);
+		return PioneerAnnotationUtils.isAnnotationPresent(context, RetryingTest.class);
 	}
 
 	@Override
