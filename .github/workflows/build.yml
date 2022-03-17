@@ -47,38 +47,16 @@ jobs:
   # experience with little build time and sufficient feedback. Therefore, we
   # only build this on our default Java version but for all operating systems
   # we are supporting. This allows for a fast execution and fast feedback. The
-  # extended tests will run later under certain conditions.
+  # extended tests will run later under certain conditions. If the OS is
+  # Ubuntu, we also run the SonarCloud analysis.
   basic:
     runs-on: ${{ matrix.os }}-latest
     needs: validation
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 8 ]
         os: [ubuntu, macos, windows]
-    name: with Java ${{ matrix.java }} on ${{ matrix.os }}
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v2
-      - name: Set up Java
-        uses: actions/setup-java@v2
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: temurin
-          cache: 'gradle'
-      - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build
-
-  # SonarCloud analysis does not support Java 8, hence we need to execute the
-  # analysis separately with Java 11. This is fine because we are done with the basic
-  # builds for the contributors.
-  sonarcloud:
-    runs-on: ubuntu-latest
-    needs: validation
-    timeout-minutes: 15
-    name: SonarCloud analysis
+    name: with Java 11 on ${{ matrix.os }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
@@ -92,6 +70,7 @@ jobs:
           distribution: temurin
           cache: 'gradle'
       - name: Cache SonarCloud results
+        if: ${{ matrix.os == 'ubuntu' }}
         uses: actions/cache@v2
         with:
           path: ~/.sonar/cache/
@@ -101,6 +80,7 @@ jobs:
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build
       - name: SonarCloud analysis
+        if: ${{ matrix.os == 'ubuntu' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
@@ -117,13 +97,10 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 8, 11, 17 ]
+        java: [ 11, 17 ]
         junit-version: [ '5.7.2', '5.8.2' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
-        exclude:
-          - java: 8
-            modular: true
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }}, Modular ${{ matrix.modular }} on ${{ matrix.os }}
     steps:
       - name: Check out repo
@@ -139,7 +116,7 @@ jobs:
         with:
           arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build
 
-  # We want to be up to date and know issues with future Java versions as soon as possible.
+  # We want to be up-to-date and know issues with future Java versions as soon as possible.
   # Furthermore, we also would love to see our build working with the latest Gradle version.
   # As those builds might fail, they are allowed to fail, and should not prevent merges.
   experimental:

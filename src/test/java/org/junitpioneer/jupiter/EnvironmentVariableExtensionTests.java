@@ -50,8 +50,11 @@ class EnvironmentVariableExtensionTests {
 	@AfterAll
 	static void globalTearDown() {
 		assertThat(systemEnvironmentVariable("set envvar A")).isEqualTo("old A");
+		EnvironmentVariableUtils.clear("set envvar A");
 		assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("old B");
+		EnvironmentVariableUtils.clear("set envvar B");
 		assertThat(systemEnvironmentVariable("set envvar C")).isEqualTo("old C");
+		EnvironmentVariableUtils.clear("set envvar C");
 
 		assertThat(systemEnvironmentVariable("clear envvar D")).isNull();
 		assertThat(systemEnvironmentVariable("clear envvar E")).isNull();
