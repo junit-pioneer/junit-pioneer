@@ -49,8 +49,12 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
+		/*
+		 * We cannot use PioneerAnnotationUtils#findAllEnclosingRepeatableAnnotations(ExtensionContext, Class) or the
+		 * like as clearing and setting might interfere. Therefore, we have to apply the extension from the outermost
+		 * to the innermost ExtensionContext.
+		 */
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
-		// apply from outermost to innermost
 		Collections.reverse(contexts);
 		contexts.forEach(this::clearAndSetEntries);
 	}
