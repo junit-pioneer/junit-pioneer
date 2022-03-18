@@ -70,10 +70,11 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
-      - name: Test report with Java ${{ matrix.java }} on ${{ matrix.os }}
+      - name: Test report
         uses: mikepenz/action-junit-report@v2
         if: always() # always run even if the previous step fails
         with:
+          check_name: "Test report for Java ${{ matrix.java }} on ${{ matrix.os }}"
           report_paths: '**/build/test-results/test/TEST-*.xml'
 
   # Code format check
