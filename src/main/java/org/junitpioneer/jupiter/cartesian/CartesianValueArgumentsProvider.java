@@ -27,12 +27,9 @@ import org.junit.platform.commons.PreconditionViolationException;
  * This is a slightly modified copy of Jupiter's {@code ValueArgumentsProvider},
  * except it does NOT support {@code @ParameterizedTest} and implements {@link CartesianArgumentsProvider}
  * for use with {@code @CartesianTest}.
- *
- * @implNote This class does not implement {@code ArgumentsProvider} since the Jupiter's {@code ValueSource}
- * should be used for that.
  */
 class CartesianValueArgumentsProvider
-		implements CartesianArgumentsProvider<Object>, AnnotationConsumer<CartesianTest.Values> {
+		implements CartesianParameterArgumentsProvider<Object>, AnnotationConsumer<CartesianTest.Values> {
 
 	private Object[] arguments;
 

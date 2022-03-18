@@ -3,6 +3,7 @@
 The following guidelines were chosen very deliberately to make sure the project benefits from contributions.
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
+* [Code of Conduct](#code-of-conduct)
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
 * [If you're new...](#if-youre-new)
 	* [...to Open Source](#to-open-source)
@@ -35,6 +36,16 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 
 The guidelines apply to maintainers as well as contributors!
 
+## Code of Conduct
+
+JUnit Pioneer uses a slightly adapted version of [the Contributor Covenant code of conduct](https://www.contributor-covenant.org/):
+
+> We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
+>
+> We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
+
+Please read on in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for standards, scope, and enforcement.
+The CoC binds maintainers, contributors, and other community members alike; in community spaces and in cases of stark violations also outside of them.
 
 ## JUnit Pioneer Contributor License Agreement
 
@@ -205,10 +216,60 @@ Some project-specific requirements apply to all non-`.java` files:
 Each feature is documented on [the project website](https://junit-pioneer.org/docs/), which is pulled from the files in the `docs/` folder, where each feature has:
 
 * an entry in `docs-nav.yml` (lexicographically ordered)
-* it's own `.adoc` file
+* its own `.adoc` file
 
 Add these entries when implementing a new feature and update them when changing an existing one.
 The Javadoc on an extension's annotations should link back to the documentation on the website "for more information".
+
+Code blocks in these files should not just be text.
+Instead, in the `src/demo/java` source tree, create/update a `...Demo` class that is dedicated to a feature and place code snippets in `@Test`-annotated methods in `...Demo`.
+Write each snippet as needed for the documentation and bracket it with tags:
+
+```java
+// tagging the entire test method:
+
+// tag::$TAG_NAME[]
+@Test
+@SomePioneerExtension
+void simple() {
+	// demonstrate extension
+}
+// end::$TAG_NAME[]
+
+
+// tagging a few lines from the test:
+
+@Test
+void simple() {
+	// tag::$TAG_NAME[]
+	SomePioneerExtension ex = // ...
+	// demonstrate extension
+	// end::$TAG_NAME[]
+	assertThat(ex). // ...
+}
+```
+
+Where feasible, include or follow up with assertions that ensure correct behavior.
+Thus `...Demo` classes guarantee that snippets compile and (roughly) behave as explained.
+
+In the documentation file, include these two attributes pointing at the demo source file:
+
+```adoc
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/...Demo.java
+```
+
+It is **critically important** that the first attribute is called `xp-demo-dir` and that the second attribute references it.
+Without this exact structure, the snippets will not show up on the website (even if they appear correctly in an IDE).
+
+To include these snippets, use a block like the following:
+
+```adoc
+[source,java,indent=0]
+----
+include::{demo}[tag=$TAG_NAME]
+----
+```
 
 #### README.md and CONTRIBUTING.md
 

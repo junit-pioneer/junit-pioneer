@@ -195,7 +195,23 @@ tasks {
 			if (modularBuild.toBoolean())
 				java.srcDir("src/main/module")
 		}
+		create("demo") {
+			java {
+				srcDir("src/demo/java")
+			}
+			compileClasspath += sourceSets.main.get().output
+			runtimeClasspath += sourceSets.main.get().output
+		}
 	}
+	project(":demo") {
+		sonarqube {
+			isSkipProject = true
+		}
+	}
+	// Adds all dependencies of main to demo sourceSet
+	configurations["demoImplementation"].extendsFrom(configurations.implementation.get())
+	// Ensures JUnit 5 engine is available to demo at runtime
+	configurations["demoRuntimeOnly"].extendsFrom(configurations.testImplementation.get())
 
 	compileJava {
 		options.encoding = "UTF-8"
@@ -223,6 +239,25 @@ tasks {
 		jvmArgs(
 				"-XX:+IgnoreUnrecognizedVMOptions",
 				"--add-opens=java.base/java.util=ALL-UNNAMED")
+	}
+
+	testing {
+		suites {
+			val test by getting(JvmTestSuite::class) {
+				useJUnitJupiter()
+			}
+			val demoTests by registering(JvmTestSuite::class) {
+				dependencies { implementation(project) }
+
+				sources { java { srcDir("src/demo/java") } }
+				targets { all { testTask.configure {
+					shouldRunAfter(test)
+					filter {
+						includeTestsMatching("*Demo")
+					}
+				} } }
+			}
+		}
 	}
 
 	javadoc {
@@ -272,7 +307,7 @@ tasks {
 
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
-		dependsOn(javadoc, validateYaml)
+		dependsOn(javadoc, validateYaml, testing.suites.named("demoTests"))
 	}
 
 	withType<Jar>().configureEach {

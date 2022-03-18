@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
+import org.junitpioneer.internal.TestNameFormatter;
 
 /**
  * @deprecated scheduled to be removed in 2.0
@@ -23,9 +24,9 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 class CartesianProductTestInvocationContext implements TestTemplateInvocationContext {
 
 	private final List<?> parameters;
-	private final CartesianProductTestNameFormatter formatter;
+	private final TestNameFormatter formatter;
 
-	CartesianProductTestInvocationContext(List<?> parameters, CartesianProductTestNameFormatter formatter) {
+	CartesianProductTestInvocationContext(List<?> parameters, TestNameFormatter formatter) {
 		this.parameters = parameters;
 		this.formatter = formatter;
 	}
