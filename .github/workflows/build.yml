@@ -86,10 +86,10 @@ jobs:
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
       - name: Test report
-        uses: mikepenz/action-junit-report@v2
-        if: always() # always run even if the previous step fails
+        uses: mikepenz/action-junit-report@v3
+        if: always() # always report JUnit test result
         with:
-          check_name: "Test report for Java ${{ matrix.java }} on ${{ matrix.os }}"
+          annotate_only: true
           report_paths: '**/build/test-results/test/TEST-*.xml'
 
   # Code format check
@@ -104,7 +104,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          java-version: 8
+          java-version: 11
           distribution: temurin
           cache: 'gradle'
       - name: Spotless check
