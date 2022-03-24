@@ -72,7 +72,8 @@ class MyEnvironmentVariableTest {
 }
 ----
 
-NOTE: Since v1.7.0, class-level configurations mean that the corresponding environment variables are cleared/set before and reset after each individual test in the annotated class.
+NOTE: Since v1.7.0, a class-level configuration means that the specified environment variables are cleared/set before and reset after each individual test in the annotated class.
+As a consequence, the changes can't be observed in `@BeforeEach`/`@AfterEach`-lifecycle methods.
 
 == Warnings for Reflective Access
 
