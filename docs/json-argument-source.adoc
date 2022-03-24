@@ -1,8 +1,12 @@
-:page-title: JSON
+:page-title: JSON Argument Source
 :page-description: Extends JUnit Jupiter with `@JsonFileSource`, a parametrized test that creates test based on a JSON Source
 
-The `@JsonFileSource` annotation lets you use JSON files from the classpath or local file system to create parametrized tests.
-The `@JsonSource` annotation lets you use lenient JSON values to create parametrized tests.
+The JSON argument sources let you provide arguments for parameterized tests from JSON.
+There are three annotations:
+
+* `@JsonSource` for lenient inline JSON
+* `@JsonFileSource` for JSON files from the local file system
+* `JsonClasspathSource` for JSON files from the classpath
 
 There are various ways how the method arguments for a single parametrized test are provided.
 By default the root of the source will be treated as candidate for the test arguments.
@@ -17,7 +21,7 @@ Depending on the test method parameters, the extraction of the values might diff
 
 === Single Argument Methods
 
-If the method has a single argument, the json object argument will be converted to that type.
+If the method has a single argument, the JSON object argument will be converted to that type.
 
 .Argument type
 [source,java]
@@ -33,7 +37,7 @@ public class Jedi {
 }
 ----
 
-.JSON Source
+.JSON Source File
 [source,json]
 ----
 [
@@ -104,8 +108,8 @@ This parametrized test will generate the following tests:
 
 === Multiple Argument Methods
 
-If the method has multiple arguments, each json object argument will be deconstructed to each of the method arguments.
-By default, the method argument name will be used for locating the element that needs to be taken from the json object.
+If the method has multiple arguments, each JSON object argument will be deconstructed to each of the method arguments.
+By default, the method argument name will be used for locating the element that needs to be taken from the JSON object.
 You can also use `@Property` to give the name of the element that needs to be extracted.
 
 [IMPORTANT]
