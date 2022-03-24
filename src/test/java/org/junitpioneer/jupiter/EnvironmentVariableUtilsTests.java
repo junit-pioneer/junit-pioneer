@@ -52,6 +52,8 @@ class EnvironmentVariableUtilsTests {
 	 * give access to the internals we need to change environment variables. These tests confirm that.
 	 */
 	@Nested
+	// classes related to `SecurityManager` will eventually be removed and so will these tests be
+	@SuppressWarnings("removal")
 	class With_SecurityManager {
 
 		@Test
