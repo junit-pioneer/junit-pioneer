@@ -78,7 +78,7 @@ class MyLocaleTests {
 }
 ----
 
-Note that class level configurations mean that the corresponding locale is set before every test inside the annotated class.
+NOTE: Class-level configurations mean that the corresponding locale is set before and reset after each individual test in the annotated class.
 
 == `@DefaultTimeZone`
 
@@ -123,7 +123,7 @@ class MyTimeZoneTests {
 }
 ----
 
-Note that class level configurations mean that the corresponding time zone is set before every test inside the annotated class.
+NOTE: Class-level configurations mean that the corresponding time zone is set before and reset after each individual test in the annotated class.
 
 == Thread-Safety
 

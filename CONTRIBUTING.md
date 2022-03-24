@@ -152,14 +152,13 @@ class MyTests {
 }
 ```
 
-You might ask yourself: does `@YourExtension` run
+You might ask yourself: should `@YourExtension` run
 
 1. once before/after all tests (meaning it "brackets" the test class, typically via [`BeforeAllCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeAllCallback.html) / [`AfterAllCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterAllCallback.html)) or
 2. once before/after each test (meaning it "brackets" each test method, typically via [`BeforeEachCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeEachCallback.html) / [`AfterEachCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterEachCallback.html))?
 
-We decided to _default_ to option 2 as we believe this is less error-prone and covers more common use cases.
+We decided to _default_ to option 2, particularly for extensions that set and reset state (often global state like `DefaultLocaleExtension` and `DefaultTimezoneExtension`), as we believe this is less error-prone and covers more common use cases.
 Furthermore, we want to guarantee consistent behavior across different extensions.
-(Examples are e.g. `DefaultLocaleExtension` or `DefaultTimezoneExtension`.)
 
 This, however, is just a default.
 `@YourExtension` is free to diverge if it makes sense.
