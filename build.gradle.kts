@@ -215,18 +215,15 @@ tasks {
 
 	compileJava {
 		options.encoding = "UTF-8"
-		if (!modularBuild.toBoolean()) {
-			options.compilerArgs.add("-Werror")
-			options.compilerArgs.add("-Xlint:all")
-		}
+		options.compilerArgs.add("-Werror")
+		// do not break the build on "exports" warnings - see CONTRIBUTING.md for details
+		options.compilerArgs.add("-Xlint:all,-exports")
 	}
 
 	compileTestJava {
 		options.encoding = "UTF-8"
-		if (!modularBuild.toBoolean()) {
-			options.compilerArgs.add("-Werror")
-			options.compilerArgs.add("-Xlint:all")
-		}
+		options.compilerArgs.add("-Werror")
+		options.compilerArgs.add("-Xlint:all")
 	}
 
 	test {
