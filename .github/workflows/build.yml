@@ -118,10 +118,9 @@ jobs:
     strategy:
       matrix:
         java: [ 11, 17 ]
-        junit-version: [ '5.9.0' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
-    name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }}, Modular ${{ matrix.modular }} on ${{ matrix.os }}
+    name: with Java ${{ matrix.java }}, Modular ${{ matrix.modular }} on ${{ matrix.os }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
@@ -134,7 +133,7 @@ jobs:
       - name: Gradle build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build -x spotlessCheck
+          arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} --stacktrace --scan clean build -x spotlessCheck
 
   # We want to be up-to-date and know issues with future Java versions as soon as possible.
   # Furthermore, we also would love to see our build working with the latest Gradle version.
@@ -147,7 +146,6 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        junit-version: [ '5.9.0' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
@@ -181,7 +179,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: release-candidate
-          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build -x spotlessCheck
+          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
 
   # A release will be created if there is a `version` defined and `releasing` is set to `true`.
   # If not, this stage will be ignored.

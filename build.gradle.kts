@@ -4,10 +4,10 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
+	`jvm-test-suite`
 	id("com.diffplug.spotless") version "6.4.2"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.3"
-	id("org.moditect.gradleplugin") version "1.0.0-rc3"
 	id("org.shipkit.shipkit-changelog") version "1.1.15"
 	id("org.shipkit.shipkit-github-release") version "1.1.15"
 	id("com.github.ben-manes.versions") version "0.42.0"
@@ -23,23 +23,15 @@ plugins.withType<JavaPlugin>().configureEach {
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
-val modularBuild : String by project
-val experimentalJavaVersion : String? by project
+val experimentalJavaVersion: String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 
-val targetJavaVersion = JavaVersion.VERSION_1_8
+val supportedJUnitVersions: String by project
+val targetJavaVersion = JavaVersion.VERSION_11
 
 java {
-	if (experimentalBuild) {
-		toolchain {
-			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion!!))
-		}
-	} else {
-		sourceCompatibility = if (modularBuild.toBoolean()) {
-			JavaVersion.VERSION_11
-		} else {
-			targetJavaVersion
-		}
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(targetJavaVersion.toString()))
 	}
 	withJavadocJar()
 	withSourcesJar()
@@ -52,24 +44,33 @@ repositories {
 	mavenCentral()
 }
 
-val junitVersion : String by project
+val junitVersion: String by project
 val jacksonVersion: String = "2.13.2.2"
+
+val pioneerImplementation: List<Dependency> = listOf(
+		project.dependencies.create(group = "org.junit.jupiter", name = "junit-jupiter-api"),
+		project.dependencies.create(group = "org.junit.jupiter", name = "junit-jupiter-params"),
+		project.dependencies.create(group = "org.junit.platform", name = "junit-platform-commons"),
+		project.dependencies.create(group = "org.junit.platform", name = "junit-platform-launcher"),
+)
+val pioneerTestImplementation: List<Dependency> = listOf(
+		project.dependencies.create(group = "org.junit.jupiter", name = "junit-jupiter-engine"),
+		project.dependencies.create(group = "org.junit.platform", name = "junit-platform-testkit"),
+		project.dependencies.create(group = "org.assertj", name = "assertj-core", version = "3.22.0"),
+		project.dependencies.create(group = "org.mockito", name = "mockito-core", version = "4.4.0"),
+		project.dependencies.create(group = "com.google.jimfs", name = "jimfs", version = "1.2"),
+		project.dependencies.create(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.10"),
+)
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
-
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
-	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
 	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
-
-	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
-
-	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.22.0")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.4.0")
-	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.10")
+	pioneerImplementation.forEach {
+		implementation(it)
+	}
+	pioneerTestImplementation.forEach {
+		testImplementation(it)
+	}
 
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.2")
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.17.2")
@@ -98,10 +99,6 @@ yamlValidator {
 	isSearchRecursive = true
 }
 
-jacoco {
-	toolVersion = "0.8.8"
-}
-
 sonarqube {
 	// If you want to use this locally a sonarLogin has to be provided, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
@@ -110,16 +107,6 @@ sonarqube {
 		property("sonar.projectKey", "junit-pioneer_junit-pioneer") // needs to be changed
 		property("sonar.organization", "junit-pioneer-xp") // needs to be changed
 		property("sonar.host.url", "https://sonarcloud.io")
-	}
-}
-
-moditect {
-	addMainModuleInfo {
-		version = project.version
-		overwriteExistingFiles.set(true)
-		module {
-			moduleInfoFile = rootProject.file("src/main/module/module-info.java")
-		}
 	}
 }
 
@@ -191,104 +178,126 @@ nexusPublishing {
 	}
 }
 
-tasks {
+// Our Task to call all our versionTests
+val versionTest by tasks.creating
 
-	sourceSets {
-		main {
-			if (modularBuild.toBoolean())
-				java.srcDir("src/main/module")
-		}
-		create("demo") {
-			java {
-				srcDir("src/demo/java")
+testing {
+	suites {
+		val test by getting(JvmTestSuite::class) {
+			useJUnitJupiter()
+
+			targets {
+				all {
+					testTask.configure {
+						configure<JacocoTaskExtension> {
+							isEnabled = !experimentalBuild
+						}
+						testLogging {
+							setExceptionFormat("full")
+						}
+						useJUnitPlatform()
+						filter {
+							includeTestsMatching("*Tests")
+						}
+						systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
+						// `EnvironmentVariableExtension` uses reflection to change environment variables;
+						// this prevents the corresponding warning (and keeps working on Java 8)
+						// IF YOU ADD MORE OPTIONS; CONSIDER REPLACING `-XX:+IgnoreUnrecognizedVMOptions WITH A CONDITIONAL
+						jvmArgs(
+								"-XX:+IgnoreUnrecognizedVMOptions",
+								"--add-opens=java.base/java.util=ALL-UNNAMED")
+
+					}
+				}
 			}
-			compileClasspath += sourceSets.main.get().output
-			runtimeClasspath += sourceSets.main.get().output
 		}
-	}
-	project(":demo") {
-		sonarqube {
-			isSkipProject = true
-		}
-	}
-	// Adds all dependencies of main to demo sourceSet
-	configurations["demoImplementation"].extendsFrom(configurations.testImplementation.get())
-	// Ensures JUnit 5 engine is available to demo at runtime
-	configurations["demoRuntimeOnly"].extendsFrom(configurations.testImplementation.get())
 
-	compileJava {
-		options.encoding = "UTF-8"
-		options.compilerArgs.add("-Werror")
-		// do not break the build on "exports" warnings - see CONTRIBUTING.md for details
-		options.compilerArgs.add("-Xlint:all,-exports")
-	}
+		val demoTests by registering(JvmTestSuite::class) {
+			dependencies {
+				implementation(project)
 
-	compileTestJava {
-		options.encoding = "UTF-8"
-		options.compilerArgs.add("-Werror")
-		options.compilerArgs.add("-Xlint:all")
-	}
+				pioneerTestImplementation.forEach {dependency ->
+					implementation(dependency)
+				}
+				implementation(project.dependencies.create(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion))
 
-	test {
-		configure<JacocoTaskExtension> {
-			isEnabled = !experimentalBuild
-		}
-		testLogging {
-			setExceptionFormat("full")
-		}
-		useJUnitPlatform()
-		filter {
-			includeTestsMatching("*Tests")
-		}
-		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
-		// `EnvironmentVariableExtension` uses reflection to change environment variables;
-		// this prevents the corresponding warning (and keeps working on Java 8)
-		// IF YOU ADD MORE OPTIONS; CONSIDER REPLACING `-XX:+IgnoreUnrecognizedVMOptions WITH A CONDITIONAL
-		jvmArgs(
-				"-XX:+IgnoreUnrecognizedVMOptions",
-				"--add-opens=java.base/java.util=ALL-UNNAMED")
-	}
+			}
 
-	testing {
-		suites {
-			val test by getting(JvmTestSuite::class) {
+			sources {
+				java {
+					srcDir("src/demo/java")
+				}
+				resources {
+					srcDir("src/demo/resources")
+				}
+			}
+			targets {
+				all {
+					testTask.configure {
+						shouldRunAfter(test)
+						filter {
+							includeTestsMatching("*Demo")
+						}
+					}
+				}
+			}
+		}
+
+		supportedJUnitVersions.split(",").filter { it != junitVersion }.forEach {
+			val testSuite = register("testWithJUnit$it", JvmTestSuite::class) {
 				useJUnitJupiter()
-			}
-			val demoTests by registering(JvmTestSuite::class) {
+
 				dependencies {
 					implementation(project)
-					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-					implementation("org.assertj:assertj-core:3.22.0")
+					pioneerImplementation.forEach { dependency ->
+						implementation(dependency)
+					}
+					pioneerTestImplementation.forEach {dependency ->
+						implementation(dependency)
+					}
+					implementation(project.dependencies.platform("org.junit:junit-bom:$it"))
 				}
 
 				sources {
-					java { srcDir("src/demo/java") }
-					resources { srcDir("src/demo/resources") }
-				}
-				targets { all { testTask.configure {
-					shouldRunAfter(test)
-					filter {
-						includeTestsMatching("*Demo")
+					java {
+						srcDir("src/test/java")
 					}
-				} } }
+					resources {
+						srcDir("src/test/resources")
+					}
+				}
+
+				targets {
+					all {
+						testTask.configure {
+							shouldRunAfter(test)
+
+							filter {
+								includeTestsMatching("*Tests")
+							}
+						}
+					}
+				}
 			}
+
+			versionTest.dependsOn(testSuite)
 		}
 	}
+}
+
+tasks {
+
+	// All compile Tasks should now use UTF-8 not just JavaCompile
+	withType<JavaCompile>().configureEach {
+		options.encoding = "UTF-8"
+	}
+
 
 	javadoc {
 		javadocTool.set(project.javaToolchains.javadocToolFor {
 			// Create Javadoc with newer JDK to get the latest features, e.g. search bar
 			languageVersion.set(JavaLanguageVersion.of(17))
 		})
-
-		// Exclude internal implementation package from javadoc
-		/*
-		 * Disabled for modular Gradle build because it fails when these source files are excluded
-		 * See https://stackoverflow.com/q/32785002 and slightly related Gradle issue https://github.com/gradle/gradle/issues/14066
-		 */
-		if (!modularBuild.toBoolean()) {
-			exclude("org/junitpioneer/internal")
-		}
 
 		options {
 			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937
