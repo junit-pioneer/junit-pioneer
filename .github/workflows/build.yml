@@ -120,6 +120,9 @@ jobs:
         java: [ 11, 17 ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
+        exclude:
+          - modular: false # this was run already in the previous stage, no need for a duplicated run
+            java: 11
     name: with Java ${{ matrix.java }}, Modular ${{ matrix.modular }} on ${{ matrix.os }}
     steps:
       - name: Check out repo
