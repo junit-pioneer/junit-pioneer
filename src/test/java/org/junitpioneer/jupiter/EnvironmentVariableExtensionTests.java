@@ -26,6 +26,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -234,6 +235,38 @@ class EnvironmentVariableExtensionTests {
 				assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("newest B");
 			}
 
+		}
+
+	}
+
+	@Nested
+	@SetEnvironmentVariable(key = "set envvar A", value = "new A")
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	class ResettingEnvironmentVariableTests {
+
+		@Nested
+		@SetEnvironmentVariable(key = "set envvar A", value = "newer A")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingEnvironmentVariableNestedTests {
+
+			@Test
+			@SetEnvironmentVariable(key = "set envvar A", value = "newest A")
+			void setForTestMethod() {
+				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
+			}
+
+			@AfterAll
+			@ReadsEnvironmentVariable
+			void resetAfterTestMethodExecution() {
+				assertThat(System.getenv("set envvar A")).isEqualTo("old A");
+			}
+
+		}
+
+		@AfterAll
+		@ReadsEnvironmentVariable
+		void resetAfterTestContainerExecution() {
+			assertThat(System.getenv("set envvar A")).isEqualTo("old A");
 		}
 
 	}

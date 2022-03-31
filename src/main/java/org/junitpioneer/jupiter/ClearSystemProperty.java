@@ -28,7 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>{@code ClearSystemProperty} is repeatable and can be used on the method and
  * on the class level. If a class is annotated, the configured property will be
- * cleared for all tests inside that class.</p>
+ * cleared before every test inside that class.</p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,

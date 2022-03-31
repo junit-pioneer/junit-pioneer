@@ -10,21 +10,23 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -43,60 +45,56 @@ import org.junitpioneer.internal.PioneerUtils;
  * @param <S> The set annotation type.
  */
 abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation>
-		implements BeforeAllCallback, BeforeEachCallback, AfterAllCallback, AfterEachCallback {
-
-	@Override
-	public void beforeAll(ExtensionContext context) {
-		clearAndSetEntries(context);
-	}
+		implements BeforeEachCallback, AfterEachCallback {
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
-		clearAndSetEntries(context);
+		/*
+		 * We cannot use PioneerAnnotationUtils#findAllEnclosingRepeatableAnnotations(ExtensionContext, Class) or the
+		 * like as clearing and setting might interfere. Therefore, we have to apply the extension from the outermost
+		 * to the innermost ExtensionContext.
+		 */
+		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
+		Collections.reverse(contexts);
+		contexts.forEach(this::clearAndSetEntries);
 	}
 
 	private void clearAndSetEntries(ExtensionContext context) {
-		Set<K> entriesToClear;
-		Map<K, V> entriesToSet;
+		context.getElement().ifPresent(element -> {
+			Set<K> entriesToClear;
+			Map<K, V> entriesToSet;
 
-		try {
-			entriesToClear = findEntriesToClear(context);
-			entriesToSet = findEntriesToSet(context);
-			preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
-		}
-		catch (IllegalStateException ex) {
-			throw new ExtensionConfigurationException("Don't clear/set the same entry more than once.", ex);
-		}
+			try {
+				entriesToClear = findEntriesToClear(element);
+				entriesToSet = findEntriesToSet(element);
+				preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
+			}
+			catch (IllegalStateException ex) {
+				throw new ExtensionConfigurationException("Don't clear/set the same entry more than once.", ex);
+			}
 
-		if (entriesToClear.isEmpty() && entriesToSet.isEmpty())
-			return;
+			if (entriesToClear.isEmpty() && entriesToSet.isEmpty())
+				return;
 
-		reportWarning(context);
-		storeOriginalEntries(context, entriesToClear, entriesToSet.keySet());
-		clearEntries(entriesToClear);
-		setEntries(entriesToSet);
+			reportWarning(context);
+			storeOriginalEntries(context, entriesToClear, entriesToSet.keySet());
+			clearEntries(entriesToClear);
+			setEntries(entriesToSet);
+		});
 	}
 
-	private Set<K> findEntriesToClear(ExtensionContext context) {
-		return findAnnotations(context, getClearAnnotationType())
+	private Set<K> findEntriesToClear(AnnotatedElement element) {
+		return findAnnotations(element, getClearAnnotationType())
 				.map(clearKeyMapper())
 				.collect(PioneerUtils.distinctToSet());
 	}
 
-	private Map<K, V> findEntriesToSet(ExtensionContext context) {
-		return findAnnotations(context, getSetAnnotationType()).collect(toMap(setKeyMapper(), setValueMapper()));
+	private Map<K, V> findEntriesToSet(AnnotatedElement element) {
+		return findAnnotations(element, getSetAnnotationType()).collect(toMap(setKeyMapper(), setValueMapper()));
 	}
 
-	private <A extends Annotation> Stream<A> findAnnotations(ExtensionContext context, Class<A> clazz) {
-		/*
-		 * Implementation notes:
-		 *
-		 * This extension implements `BeforeAllCallback` and `BeforeEachCallback` and so if an outer class (i.e. a
-		 * class that the test class is @Nested within) uses this extension, this method will be called on those
-		 * extension points and discover the variables to set/clear. That means we don't need to search for
-		 * enclosing annotations here.
-		 */
-		return AnnotationSupport.findRepeatableAnnotations(context.getElement(), clazz).stream();
+	private <A extends Annotation> Stream<A> findAnnotations(AnnotatedElement element, Class<A> clazz) {
+		return AnnotationSupport.findRepeatableAnnotations(element, clazz).stream();
 	}
 
 	private Class<C> getClearAnnotationType() {
@@ -113,15 +111,14 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void preventClearAndSetSameEntries(Collection<K> entriesToClear, Collection<K> entriesToSet) {
-		entriesToClear
+		String duplicateEntries = entriesToClear
 				.stream()
 				.filter(entriesToSet::contains)
 				.map(Object::toString)
-				.reduce((e0, e1) -> e0 + ", " + e1)
-				.ifPresent(duplicateEntries -> {
-					throw new IllegalStateException(
-						"Cannot clear and set the following entries at the same time: " + duplicateEntries);
-				});
+				.collect(joining(", "));
+		if (!duplicateEntries.isEmpty())
+			throw new IllegalStateException(
+				"Cannot clear and set the following entries at the same time: " + duplicateEntries);
 	}
 
 	private void storeOriginalEntries(ExtensionContext context, Collection<K> entriesToClear,
@@ -139,12 +136,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
-		restoreOriginalEntries(context);
-	}
-
-	@Override
-	public void afterAll(ExtensionContext context) throws Exception {
-		restoreOriginalEntries(context);
+		// apply from innermost to outermost
+		PioneerUtils.findAllContexts(context).forEach(this::restoreOriginalEntries);
 	}
 
 	private void restoreOriginalEntries(ExtensionContext context) {
