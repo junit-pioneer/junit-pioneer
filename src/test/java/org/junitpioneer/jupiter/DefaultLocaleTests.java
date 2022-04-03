@@ -318,4 +318,21 @@ class DefaultLocaleTests {
 
 	}
 
+	@Nested
+	@DisplayName("used with inheritance")
+	class InheritanceTests extends InheritanceBaseTest {
+
+		@Test
+		@DisplayName("should inherit default locale annotation")
+		void shouldInheritClearAndSetProperty() {
+			assertThat(Locale.getDefault()).isEqualTo(new Locale("fr", "FR"));
+		}
+
+	}
+
+	@DefaultLocale(language = "fr", country = "FR")
+	static class InheritanceBaseTest {
+
+	}
+
 }
