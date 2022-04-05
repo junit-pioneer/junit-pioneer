@@ -49,13 +49,11 @@ The CoC binds maintainers, contributors, and other community members alike; in c
 
 ## JUnit Pioneer Contributor License Agreement
 
-**Project License:** [Eclipse Public License v2.0](LICENSE.md)
+We don't have a dedicated contributor license agreement (CLA), but please consider [GitHub's terms of service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#6-contributions-under-repository-license):
 
-* You will only submit contributions where you have authored 100% of the content.
-* You will only submit contributions to which you have the necessary rights.
-  This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
-* Whatever content you contribute will be provided under the project license(s).
+> Whenever you add Content to a repository containing notice of a license, you license that Content under the same terms, and you agree that you have the right to license that Content under those terms.
 
+JUnit Pioneer uses the [Eclipse Public License v2.0](https:/eclipse.org/legal/epl-2.0/), which you can also find [here](https://github.com/junit-pioneer/junit-pioneer/blob/main/LICENSE.md) in this repository.
 
 ## If you're new...
 

@@ -38,7 +38,3 @@ Code
 Contributing
 * [ ] A prepared commit message exists
 * [ ] The list of contributions inside `README.md` mentions the new contribution (real name optional) 
-
----
-
-I hereby agree to the terms of the [JUnit Pioneer Contributor License Agreement](https://github.com/junit-pioneer/junit-pioneer/blob/main/CONTRIBUTING.md#junit-pioneer-contributor-license-agreement).
