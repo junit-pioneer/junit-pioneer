@@ -29,8 +29,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * original value.</p>
  *
  * <p>{@code @DefaultTimeZone} can be used on the method and on the class
- * level. It can only be used once per method or class, but is inherited from
- * higher-level containers. If a class is annotated, the configured
+ * level. It is inherited from higher-level containers, but can only be used
+ * once per method or class. If a class is annotated, the configured
  * {@code TimeZone} will be the default {@code TimeZone} for all tests inside
  * that class. Any method level configurations will override the class level
  * default {@code TimeZone}.</p>
