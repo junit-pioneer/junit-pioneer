@@ -26,9 +26,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>The key of the environment variable to be cleared must be specified via {@link #key()}.
  * After the annotated element has been executed, the initial default value is restored.</p>
  *
- * <p>{@code ClearEnvironmentVariable} is repeatable and can be used on the method and
- * on the class level. If a class is annotated, the configured variable will be
- * cleared before every test inside that class.</p>
+ * <p>{@code ClearEnvironmentVariable} can be used on the method and on the class level.
+ * It is repeatable and inherited from higher-level containers. If a class is
+ * annotated, the configured property will be cleared before every test inside that
+ * class.</p>
  *
  * <p>WARNING: Java considers environment variables to be immutable, so this extension
  * uses reflection to change them. This requires that the {@link SecurityManager}

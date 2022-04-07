@@ -26,9 +26,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>The key of the system property to be cleared must be specified via {@link #key()}.
  * After the annotated element has been executed, the initial default value is restored.</p>
  *
- * <p>{@code ClearSystemProperty} is repeatable and can be used on the method and
- * on the class level. If a class is annotated, the configured property will be
- * cleared before every test inside that class.</p>
+ * <p>{@code ClearSystemProperty} can be used on the method and on the class level.
+ * It is repeatable and inherited from higher-level containers. If a class is
+ * annotated, the configured property will be cleared before every test inside that
+ * class.</p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,

@@ -27,10 +27,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@link #key()} and {@link #value()}. After the annotated method has been
  * executed, the initial default value is restored.</p>
  *
- * <p>{@code SetSystemProperty} is repeatable and can be used on the method and on
- * the class level. If a class is annotated, the configured property will be set
- * before every test inside that class. Any method level configurations will
- * override the class level configurations.</p>
+ * <p>{@code SetSystemProperty} can be used on the method and on the class level.
+ * It is repeatable and inherited from higher-level containers. If a class is
+ * annotated, the configured property will be set before every test inside that
+ * class. Any method level configurations will override the class level
+ * configurations.</p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,

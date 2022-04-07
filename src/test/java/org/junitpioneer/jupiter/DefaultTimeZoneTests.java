@@ -250,4 +250,21 @@ class DefaultTimeZoneTests {
 
 	}
 
+	@Nested
+	@DisplayName("used with inheritance")
+	class InheritanceTests extends InheritanceBaseTest {
+
+		@Test
+		@DisplayName("should inherit default time zone annotation")
+		void shouldInheritClearAndSetProperty() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
+		}
+
+	}
+
+	@DefaultTimeZone("GMT-8:00")
+	static class InheritanceBaseTest {
+
+	}
+
 }
