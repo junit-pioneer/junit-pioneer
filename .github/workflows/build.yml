@@ -88,8 +88,10 @@ jobs:
       - name: Test report
         uses: mikepenz/action-junit-report@v3
         if: always() # always report JUnit test result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          annotate_only: true
+          check_name: Test report for ${{ matrix.os }}
           report_paths: '**/build/test-results/test/TEST-*.xml'
 
   # Code format check
