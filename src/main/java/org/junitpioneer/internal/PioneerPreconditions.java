@@ -28,6 +28,20 @@ public class PioneerPreconditions {
 	/**
 	 * Assert that the supplied string is not blank.
 	 * @param str the string to check
+	 * @param message the precondition violation message
+	 * @return the supplied string
+	 */
+	public static String notBlank(String str, String message) {
+		if (str == null || str.trim().isEmpty()) {
+			throw new PreconditionViolationException(message);
+		}
+
+		return str;
+	}
+
+	/**
+	 * Assert that the supplied string is not blank.
+	 * @param str the string to check
 	 * @param messageSupplier the precondition violation message supplier
 	 * @return the supplied string
 	 */

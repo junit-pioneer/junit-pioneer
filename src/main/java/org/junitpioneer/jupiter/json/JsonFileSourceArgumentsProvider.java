@@ -13,11 +13,13 @@ package org.junitpioneer.jupiter.json;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.internal.PioneerPreconditions;
 
 /**
@@ -35,9 +37,12 @@ class JsonFileSourceArgumentsProvider extends AbstractJsonSourceBasedArgumentsPr
 
 	private static Source fileResource(String file) {
 		return context -> {
-			PioneerPreconditions.notBlank(file, () -> "File must not be null or blank");
+			PioneerPreconditions.notBlank(file, "File must not be null or blank");
+			Path filePath = Paths.get(file);
+			if (!Files.exists(filePath))
+				throw new PreconditionViolationException("File does not exist: " + file);
 			try {
-				return Files.newInputStream(Paths.get(file));
+				return Files.newInputStream(filePath);
 			}
 			catch (IOException e) {
 				throw new UncheckedIOException("Failed to read file " + file, e);
