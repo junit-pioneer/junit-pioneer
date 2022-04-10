@@ -104,6 +104,10 @@ public @interface CartesianProductTest {
 
 		private final List<List<?>> sets = new ArrayList<>(); //NOSONAR
 
+		// recreate default constructor to prevent compiler warning
+		public Sets() {
+		}
+
 		/**
 		 * Creates a single set of distinct objects (according to
 		 * {@link Object#equals(Object)}) for a CartesianProductTest

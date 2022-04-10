@@ -205,6 +205,17 @@ It helps with writing parallel tests for them if they do not change global state
 That particularly applies to "store in beforeEach - restore in afterEach"-extensions!
 If they fail after "store", they will still "restore" and thus potentially create a race condition with other tests.
 
+#### Compiler Warnings
+
+The build is configured to treat almost all compiler warnings as errors (see below for exceptions).
+If code that triggers a warning can't be refactored to avoid that, `@SuppressWarning` may be added, but we don't want to do that liberally.
+Developers and reviewers should minimize its use.
+
+Exceptions:
+* `exports` - Pioneer's public API mentions a lot of Jupiter classes (e.g. all custom annotations use Jupiter's annotations), which leads to warnings that recommend to transitively require the corresponding Jupiter modules.
+  Doing that would mean that Pioneer users wouldn't have to require Jupiter's modules, which is backwards - we're the appendix, here.
+  Since we don't want to pepper `@SuppressWarning("exports")` everywhere, the warning is disabled.
+
 ### Tests
 
 The name of test classes _must_ end with `Tests`, otherwise Gradle will ignore them.

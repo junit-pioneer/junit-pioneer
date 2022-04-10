@@ -53,6 +53,8 @@ class TimeoutExtension implements InvocationInterceptor {
 			format(TEST_RAN_TOO_LONG, extensionContext.getDisplayName(), timeout));
 	}
 
+	// vintage @Test is deprecated (not for removal)
+	@SuppressWarnings("deprecation")
 	private Optional<Long> annotatedTimeout(ExtensionContext context) {
 		return findAnnotation(context.getElement(), Test.class).map(Test::timeout).filter(timeout -> timeout != 0L);
 	}

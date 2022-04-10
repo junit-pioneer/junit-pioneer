@@ -136,7 +136,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	private List<Object> provideArguments(ExtensionContext context, Annotation source, ArgumentsProvider provider)
 			throws Exception {
 		if (provider instanceof CartesianAnnotationConsumer) {
-			((CartesianAnnotationConsumer) provider).accept(source);
+			((CartesianAnnotationConsumer<Annotation>) provider).accept(source);
 			return provider
 					.provideArguments(context)
 					.map(Arguments::get)

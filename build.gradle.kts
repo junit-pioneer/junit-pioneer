@@ -215,10 +215,15 @@ tasks {
 
 	compileJava {
 		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		// do not break the build on "exports" warnings - see CONTRIBUTING.md for details
+		options.compilerArgs.add("-Xlint:all,-exports")
 	}
 
 	compileTestJava {
 		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		options.compilerArgs.add("-Xlint:all")
 	}
 
 	test {
@@ -285,7 +290,7 @@ tasks {
 			// Set javadoc `--release` flag (affects which warnings and errors are reported)
 			// (Note: Gradle adds one leading '-' to the option on its own)
 			// Have to use at least Java 9 to support modular build
-			addStringOption("-release", maxOf(9, targetJavaVersion.majorVersion.toInt()).toString())
+			addStringOption("-release", maxOf(11, targetJavaVersion.majorVersion.toInt()).toString())
 
 			// Enable doclint, but ignore warnings for missing tags, see
 			// https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#additional-options-provided-by-the-standard-doclet
