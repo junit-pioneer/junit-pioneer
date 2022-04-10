@@ -1,0 +1,70 @@
+:page-title: Creating and Sharing Resourced
+:page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject resources like temporary directories or a port.
+
+Some tests need "resources" which need to be cleaned up when finished and sometimes, these resources might be needed to be accessed by many tests.
+Furthermore, you may be running your JUnit Jupiter tests in parallel, which makes sharing these resources flaky.
+
+// TODO: temp dir as example
+
+This extension separates parsing annotations, injecting new or shared resources, and registering them for getting cleaned up (which is needed for all of them) from actually creating and closing them (which is specific to each kind of resource).
+
+[NOTE]
+====
+This article describes the general mechanisms shared by different resource extensions but not their specifics.
+Check the individual documentations for that:
+
+* link:docs/temp-directory[temporary directory]
+====
+
+The first part of this article describes how to use a resource with this extension, the second part describes how to integrate your own kind of resource with this mechanism.
+In both cases, the temporary directory extension will be used as an example, but what's described applies to other resources as well.
+
+== Using Resources
+
+There are two different approaches to using a resource:
+
+* creating a new one for a given test
+* sharing one between several tests
+
+=== Creating a New Resource
+
+////
+TODO
+* new = new instance every time
+* closing resources
+* arguments
+////
+
+=== Sharing a Resource
+
+////
+TODO
+* sharing = getting the same instance injected
+* by name and scope
+* thread safety
+* no arguments (still under discussion)
+////
+
+== Integrating Resources
+
+This extension allows you to integrate your own kind of resource with the mechanisms described above.
+To do that, you need to implement `Resource<T>` and `ResourceFactory<T>`, where `T` is the type of resource you want to provide (e.g. `Path` for temporary directories).
+Then you can just reference the factory type in the `@New` and `@Shared` annotations.
+
+////
+TODO
+* factory
+    * create resources
+    * if resources need to be handled as a bundle
+    * parameterless constructor
+    * e.g. set up and clean-up of in-memory filesystem
+* resource
+    * wraps a single resource
+    * code handling cleaning up resources individually
+    * e.g. delete on disk folder
+////
+
+TODO: Refer to https://www.writethedocs.org/guide/writing/beginners-guide-to-docs/
+
+TODO: Write about:
+- This extension solves https://stackoverflow.com/a/51556718/2252930
