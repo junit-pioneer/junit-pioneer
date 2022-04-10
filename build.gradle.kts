@@ -251,9 +251,15 @@ tasks {
 				useJUnitJupiter()
 			}
 			val demoTests by registering(JvmTestSuite::class) {
-				dependencies { implementation(project) }
+				dependencies {
+					implementation(project)
+					implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
+				}
 
-				sources { java { srcDir("src/demo/java") } }
+				sources {
+					java { srcDir("src/demo/java") }
+					resources { srcDir("src/demo/resources") }
+				}
 				targets { all { testTask.configure {
 					shouldRunAfter(test)
 					filter {

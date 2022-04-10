@@ -1,12 +1,16 @@
 :page-title: JSON Argument Source
 :page-description: Extends JUnit Jupiter with `@JsonFileSource`, a parametrized test that creates test based on a JSON Source
+:xp-demo-dir: ../src/demo
+:json-demo-java: {xp-demo-dir}/java/org/junitpioneer/jupiter/json
+:json-demo-resources: {xp-demo-dir}/resources
+:json-demo: {json-demo-java}/JsonArgumentSourceExtensionDemo.java
 
 The JSON argument sources let you provide arguments for parameterized tests from JSON.
 There are three annotations:
 
 * `@JsonSource` for lenient inline JSON
 * `@JsonFileSource` for JSON files from the local file system
-* `JsonClasspathSource` for JSON files from the classpath
+* `@JsonClasspathSource` for JSON files from the classpath
 
 There are various ways how the method arguments for a single parametrized test are provided.
 By default the root of the source will be treated as candidate for the test arguments.
@@ -26,15 +30,7 @@ If the method has a single argument, the JSON object argument will be converted 
 .Argument type
 [source,java]
 ----
-public class Jedi {
-	public String name;
-	public String height;
-
-	@Override
-    public String toString() {
-        return "Jedi {" + "name='" + name + '\'' + ", height=" + height + '}';
-    }
-}
+include::{json-demo-java}/Jedi.java[tag=class]
 ----
 
 .JSON Source File
@@ -54,23 +50,12 @@ public class Jedi {
 
 [source,java]
 ----
-@ParametrizedTest
-@JsonFileSource(resources = "/jedis.json")
-void singleJedi(Jedi jedi) {
-    // Assertions
-}
+include::{json-demo}[tag=classpath_source,indent=0]
 ----
 
 [source,java]
 ----
-@ParametrizedTest
-@JsonSource("["
-        + "  { name: 'Luke', height: 172  },"
-        + "  { name: 'Yoda', height: 66 }"
-        + "]")
-void singleJedi(Jedi jedi) {
-    // Assertions
-}
+include::{json-demo}[tag=inline_source,indent=0]
 ----
 
 This parametrized test will generate the following test executions:
@@ -82,23 +67,12 @@ It is also possible to extract only a single element from each argument object b
 
 [source,java]
 ----
-@ParametrizedTest
-@JsonFileSource(resources = "/jedis.json")
-void singleJedi(@Property("name") String jediName) {
-    // Assertions
-}
+include::{json-demo}/[tag=classpath_source_with_property,indent=0]
 ----
 
 [source,java]
 ----
-@ParametrizedTest
-@JsonSource({
-            "{ name: 'Luke', height: 172  }",
-            "{ name: 'Yoda', height: 66 }"
-        })
-void singleJedi(@Property("name") String jediName) {
-    // Assertions
-}
+include::{json-demo}[tag=inline_source_with_property,indent=0]
 ----
 
 This parametrized test will generate the following tests:
@@ -122,23 +96,12 @@ Using the same `jedis.json` and the following test
 
 [source,java]
 ----
-@ParametrizedTest
-@JsonFileSource(resources = "/jedis.json")
-void deconstructFromArray(@Property("name") String name, @Property("height") int height) {
-    // Assertions
-}
+include::{json-demo}[tag=classpath_source_deconstruct_from_array,indent=0]
 ----
 
 [source,java]
 ----
-@ParametrizedTest
-@JsonSource({
-            "{ name: 'Yoda', height: 66 }",
-            "{ name: 'Luke', height: 172 }",
-        })
-void deconstructFromArray(@Property("name") String name, @Property("height") int height) {
-    // Assertions
-}
+include::{json-demo}[tag=inline_source_deconstruct_from_array,indent=0]
 ----
 
 This parametrized test will generate the following tests:
@@ -149,7 +112,7 @@ This parametrized test will generate the following tests:
 == Extracting nested array
 
 Sometimes we want to extract a nested array instead of the root element.
-For this purpose `JsonFileSource#data` can be used.
+For this purpose `JsonClasspathSource#data` can be used.
 
 .Jedi with nested array
 [source,json]
@@ -175,11 +138,7 @@ The test for this will look like:
 
 [source,java]
 ----
-@ParameterizedTest
-@JsonFileSource(resources = "luke.json", data = "vehicles")
-void lukeVehicles(@Property("name") String name, @Property("length") double length) {
-    // Assertions
-}
+include::{json-demo}[tag=classpath_source_nested_data,indent=0]
 ----
 
 This parametrized test will generate the following tests:
