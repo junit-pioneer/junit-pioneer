@@ -33,14 +33,14 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * <a href="https://junit-pioneer.org/docs/json/" target="_top">the documentation on <code>JSON tests</code></a>
  * </p>
  *
+ * @since 1.7.0
+ *
  * @see ArgumentsSource
  * @see org.junit.jupiter.params.ParameterizedTest ParameterizedTest
  * @see org.junitpioneer.jupiter.cartesian.CartesianTest CartesianTest
  * @see Property
  * @see JsonSource
  * @see JsonFileSource
- *
- * @since 1.7.0
  */
 @Target({ ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)

@@ -41,10 +41,10 @@ import org.junit.platform.commons.PreconditionViolationException;
  * {@code @CartesianEnumSource} per parameter.
  * </p>
  *
- * @see CartesianProductTest
- *
  * @since 1.3.0
  * @deprecated scheduled to be removed in 2.0, use {@link org.junitpioneer.jupiter.cartesian.CartesianTest.Enum} instead.
+ *
+ * @see CartesianProductTest
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
