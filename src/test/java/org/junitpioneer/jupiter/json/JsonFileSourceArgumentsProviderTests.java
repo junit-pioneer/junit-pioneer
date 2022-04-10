@@ -10,6 +10,15 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,15 +30,6 @@ import org.junit.platform.testkit.engine.Event;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 /**
  * Tests for {@link JsonFileSourceArgumentsProvider}
@@ -216,8 +216,7 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void emptyFilePath() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(InvalidJsonSource.class, "emptyFilePath");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "emptyFilePath");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -227,8 +226,7 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void nonExistentFile() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(InvalidJsonSource.class, "nonExistentFile");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "nonExistentFile");
 
 			assertThat(results)
 					.hasSingleFailedContainer()

@@ -56,8 +56,7 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should return string if it is not blank")
 		void validInput() {
-			assertThat(PioneerPreconditions.notBlank("testValue", "Value must be provided"))
-					.isEqualTo("testValue");
+			assertThat(PioneerPreconditions.notBlank("testValue", "Value must be provided")).isEqualTo("testValue");
 		}
 
 	}
@@ -77,8 +76,7 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should return object if it is not null")
 		void validInput() {
-			assertThat(PioneerPreconditions.notNull("testValue", "Value must be provided"))
-					.isEqualTo("testValue");
+			assertThat(PioneerPreconditions.notNull("testValue", "Value must be provided")).isEqualTo("testValue");
 		}
 
 	}
@@ -98,10 +96,9 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should throw violation exception if collection is empty")
 		void emptyInput() {
-			assertThatThrownBy(
-				() -> PioneerPreconditions.notEmpty(Collections.emptySet(), "Value must be provided"))
-						.isInstanceOf(PreconditionViolationException.class)
-						.hasMessage("Value must be provided");
+			assertThatThrownBy(() -> PioneerPreconditions.notEmpty(Collections.emptySet(), "Value must be provided"))
+					.isInstanceOf(PreconditionViolationException.class)
+					.hasMessage("Value must be provided");
 		}
 
 		@Test
