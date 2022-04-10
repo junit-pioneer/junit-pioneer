@@ -19,6 +19,8 @@ import org.junit.platform.commons.JUnitException;
  */
 public class NoJsonParserConfiguredException extends JUnitException {
 
+	static final long serialVersionUID = 5399969575022498446L;
+
 	NoJsonParserConfiguredException() {
 		super("There is no available JSON parsing library. Currently supported library is Jackson");
 	}
