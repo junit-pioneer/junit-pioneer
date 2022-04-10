@@ -1,9 +1,8 @@
 :page-title: JSON Argument Source
 :page-description: Extends JUnit Jupiter with `@JsonFileSource`, a parametrized test that creates test based on a JSON Source
-:xp-demo-dir: ../src/demo
-:json-demo-java: {xp-demo-dir}/java/org/junitpioneer/jupiter/json
-:json-demo-resources: {xp-demo-dir}/resources
-:json-demo: {json-demo-java}/JsonArgumentSourceExtensionDemo.java
+:xp-demo-dir: ../src/demo/java
+:json-demo: {xp-demo-dir}/org/junitpioneer/jupiter/json/JsonArgumentSourceExtensionDemo.java
+:jedi: {xp-demo-dir}/org/junitpioneer/jupiter/json/Jedi.java
 
 The JSON argument sources let you provide arguments for parameterized tests from JSON.
 There are three annotations:
@@ -30,7 +29,7 @@ If the method has a single argument, the JSON object argument will be converted 
 .Argument type
 [source,java]
 ----
-include::{json-demo-java}/Jedi.java[tag=class]
+include::{jedi}[tag=class]
 ----
 
 .JSON Source File
