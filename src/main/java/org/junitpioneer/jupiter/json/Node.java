@@ -16,10 +16,8 @@ import java.util.stream.Stream;
 /**
  * A node representing a JSON structure.
  * This class is a Pioneer abstraction which allows using different JSON parsers.
- *
- * @since TBD
  */
-public interface Node {
+interface Node {
 
 	/**
 	 * @return {@code true} if the node represents an array of other nodes

@@ -14,8 +14,10 @@ import org.junit.platform.commons.JUnitException;
 
 /**
  * Indicates that no supported JSON parsing library was found at run time.
+ *
+ * @since 1.7.0
  */
-class NoJsonParserConfiguredException extends JUnitException {
+public class NoJsonParserConfiguredException extends JUnitException {
 
 	NoJsonParserConfiguredException() {
 		super("There is no available JSON parsing library. Currently supported library is Jackson");
