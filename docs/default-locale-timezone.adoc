@@ -2,7 +2,7 @@
 :page-description: Extends JUnit Jupiter with `@DefaultLocale`, `@DefaultTimeZone`, which change the values returned from Locale.getDefault() and TimeZone.getDefault()
 
 The `@DefaultLocale` and `@DefaultTimeZone` annotations can be used to change the values returned from `Locale.getDefault()` and `TimeZone.getDefault()`.
-Both annotations work on the test class level and on the test method level.
+Both annotations work on the test class level and on the test method level, and are inherited from higher-level containers.
 After the annotated element has been executed the initial default value is restored.
 
 == `@DefaultLocale`
@@ -78,6 +78,8 @@ class MyLocaleTests {
 }
 ----
 
+NOTE: A class-level configuration means that the specified locale is set before and reset after each individual test in the annotated class.
+
 == `@DefaultTimeZone`
 
 The default `TimeZone` is specified according to the https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html#getTimeZone(java.lang.String)[TimeZone.getTimeZone(String)] method.
@@ -120,6 +122,8 @@ class MyTimeZoneTests {
 	}
 }
 ----
+
+NOTE: A class-level configuration means that the specified time zone is set before and reset after each individual test in the annotated class.
 
 == Thread-Safety
 

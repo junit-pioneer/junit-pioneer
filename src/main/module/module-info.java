@@ -1,4 +1,16 @@
+/**
+ * JUnit Pioneer provides extensions for <a href="https://github.com/junit-team/junit5/">JUnit 5</a>
+ * and its Jupiter API.
+ *
+ * <p>Pioneer does not limit itself to proven ideas with wide application but is purposely open to
+ * experiments. It aims to spin off successful and cohesive portions into sibling projects or back
+ * into the JUnit 5 code base.
+ *
+ * <p>The dependencies on Jupiter modules could be marked as <code>transitive</code> but that would
+ * allow users who depend on this module to not `require` org.junit.*, which would be backwards.
+ */
 module org.junitpioneer {
+	// see Javadoc for why these aren't transitive
 	requires org.junit.jupiter.api;
 	requires org.junit.jupiter.params;
 	requires org.junit.platform.commons;

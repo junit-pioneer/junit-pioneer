@@ -19,12 +19,17 @@ import org.assertj.core.api.ListAssert;
 interface TestSuiteFailureAssert {
 
 	/**
-	 * Asserts that all thrown exceptions are of certain types.
+	 * Asserts that all thrown exceptions are of a certain type.
 	 *
-	 * @param exceptionTypes the exception types you want to check
+	 * @param exceptionType the exception type you want to check
 	 * @return a {@link ListAssert} for asserting exception messages
 	 */
-	ListAssert<String> withExceptionInstancesOf(Class<? extends Throwable>... exceptionTypes);
+	/*
+	 * Note: We avoid a varargs-variant of this method to prevent heap-pollution warnings.
+	 * If you need a method with n exception types, create n-1 `withExceptionInstancesOf`
+	 * (note the plural) overloads with [2, n] parameters.
+	 */
+	ListAssert<String> withExceptionInstancesOf(Class<? extends Throwable> exceptionType);
 
 	/**
 	 * Asserts that all failed tests failed because of a Throwable.

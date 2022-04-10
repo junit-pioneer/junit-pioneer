@@ -48,7 +48,7 @@ public class PioneerAnnotationUtilsTests {
 				AnnotationCluster.class.getMethod("notAnnotated"));
 
 			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
+					.isAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
 
 			assertThat(result).isTrue();
 		}
@@ -60,7 +60,7 @@ public class PioneerAnnotationUtilsTests {
 				Extender.class.getMethod("notAnnotated"));
 
 			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
+					.isAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
 
 			assertThat(result).isFalse();
 		}
@@ -71,8 +71,7 @@ public class PioneerAnnotationUtilsTests {
 			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
 				AnnotationCheck.class.getMethod("direct"));
 
-			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
+			boolean result = PioneerAnnotationUtils.isAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
 			assertThat(result).isTrue();
 		}
@@ -83,8 +82,7 @@ public class PioneerAnnotationUtilsTests {
 			TestExtensionContext testContext = new TestExtensionContext(Child.class,
 				Child.class.getMethod("notAnnotated"));
 
-			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
+			boolean result = PioneerAnnotationUtils.isAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
 			assertThat(result).isTrue();
 		}
@@ -95,8 +93,7 @@ public class PioneerAnnotationUtilsTests {
 			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
 				AnnotationCheck.class.getMethod("meta"));
 
-			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
+			boolean result = PioneerAnnotationUtils.isAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
 			assertThat(result).isTrue();
 		}
@@ -107,8 +104,7 @@ public class PioneerAnnotationUtilsTests {
 			TestExtensionContext testContext = new TestExtensionContext(Enclosing.class,
 				Enclosing.class.getMethod("notAnnotated"));
 
-			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
+			boolean result = PioneerAnnotationUtils.isAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
 			assertThat(result).isTrue();
 		}

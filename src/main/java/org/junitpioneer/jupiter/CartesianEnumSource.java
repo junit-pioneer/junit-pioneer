@@ -26,7 +26,6 @@ import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
-import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
 
 /**
  * {@code @CartesianEnumSource} is an argument source for constants of a
@@ -50,7 +49,7 @@ import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Repeatable(CartesianEnumSources.class)
+@Repeatable(CartesianEnumSource.CartesianEnumSources.class)
 @ArgumentsSource(CartesianEnumArgumentsProvider.class)
 @Deprecated
 public @interface CartesianEnumSource {
