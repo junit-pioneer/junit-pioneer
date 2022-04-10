@@ -4,13 +4,13 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "5.14.3"
+	id("com.diffplug.spotless") version "6.4.2"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.3"
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
 	id("org.shipkit.shipkit-changelog") version "1.1.15"
 	id("org.shipkit.shipkit-github-release") version "1.1.15"
-	id("com.github.ben-manes.versions") version "0.39.0"
+	id("com.github.ben-manes.versions") version "0.42.0"
 	id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
@@ -53,6 +53,7 @@ repositories {
 }
 
 val junitVersion : String by project
+val jacksonVersion: String = "2.13.2.2"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
@@ -61,18 +62,18 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-commons")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
-	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = "2.13.2")
+	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.20.2")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.12.4")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.4.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.7.1")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.10")
 
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.0")
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.17.0")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.2")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.17.2")
 }
 
 spotless {
@@ -258,7 +259,7 @@ tasks {
 			val demoTests by registering(JvmTestSuite::class) {
 				dependencies {
 					implementation(project)
-					implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
+					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 				}
 
 				sources {
