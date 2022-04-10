@@ -17,12 +17,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation indicating the name of the JSON property that should be extracted into the method.
+ * An annotation indicating the name of the JSON property that should be extracted into the method parameter.
  *
  * If the test code is compiled with the {@code -parameters} flag, and the test method parameter's name
  * matches the JSON property's name, this annotation is not needed.
  *
- * @since TBD
+ * @since 1.7.0
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

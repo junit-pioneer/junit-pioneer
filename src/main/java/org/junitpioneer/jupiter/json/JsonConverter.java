@@ -15,8 +15,6 @@ import java.io.InputStream;
 /**
  * A JSON Converter which parses an input stream into a Node.
  * This class is a Pioneer abstraction which allows using different JSON parsers.
- *
- * @since tbd
  */
 interface JsonConverter {
 

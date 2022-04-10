@@ -13,12 +13,12 @@ package org.junitpioneer.jupiter.json;
 import org.junit.platform.commons.JUnitException;
 
 /**
- * @author Filip Hrisafov
+ * Indicates that no supported JSON parsing library was found at run time.
  */
 class NoJsonParserConfiguredException extends JUnitException {
 
 	NoJsonParserConfiguredException() {
-		super("There is no available Json parsing library. Currently supported library is Jackson");
+		super("There is no available JSON parsing library. Currently supported library is Jackson");
 	}
 
 }

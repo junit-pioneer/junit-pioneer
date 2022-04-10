@@ -18,6 +18,7 @@
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.cartesian cartesian} (successor of {@link org.junitpioneer.jupiter.CartesianProductTest})</li>
  *     <li>{@link org.junitpioneer.jupiter.issue issue}</li>
+ *     <li>{@link org.junitpioneer.jupiter.json json}</li>
  *     <li>{@link org.junitpioneer.jupiter.params params}</li>
  * </ul>
  *

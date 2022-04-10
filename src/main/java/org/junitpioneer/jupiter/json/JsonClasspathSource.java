@@ -19,8 +19,8 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 /**
- * {@code @JsonClasspathSource} is an {@link ArgumentsSource} that parses the json and
- * passes arguments to the parametrized test. The json is loaded from a classpath resource.
+ * {@code @JsonClasspathSource} is an {@link ArgumentsSource} that loads JSON from a
+ * classpath resource, parses it, and passes it as arguments to a parametrized test.
  *
  * <p>This annotation can be used on a method parameter, to make it usable with
  * {@link org.junitpioneer.jupiter.cartesian.CartesianTest}.
@@ -34,12 +34,13 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * </p>
  *
  * @see ArgumentsSource
- * @see org.junit.jupiter.params.ParameterizedTest
- * @see org.junitpioneer.jupiter.cartesian.CartesianTest
+ * @see org.junit.jupiter.params.ParameterizedTest ParameterizedTest
+ * @see org.junitpioneer.jupiter.cartesian.CartesianTest CartesianTest
  * @see Property
  * @see JsonSource
  * @see JsonFileSource
- * @since TBD
+ *
+ * @since 1.7.0
  */
 @Target({ ElementType.METHOD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
