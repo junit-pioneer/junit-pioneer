@@ -32,7 +32,7 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should throw violation exception if string is null")
 		void nullInput() {
-			assertThatThrownBy(() -> PioneerPreconditions.notBlank(null, () -> "Value must not be null"))
+			assertThatThrownBy(() -> PioneerPreconditions.notBlank(null, "Value must not be null"))
 					.isInstanceOf(PreconditionViolationException.class)
 					.hasMessage("Value must not be null");
 		}
@@ -40,7 +40,7 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should throw violation exception if string is empty")
 		void emptyInput() {
-			assertThatThrownBy(() -> PioneerPreconditions.notBlank("", () -> "Value must be provided"))
+			assertThatThrownBy(() -> PioneerPreconditions.notBlank("", "Value must be provided"))
 					.isInstanceOf(PreconditionViolationException.class)
 					.hasMessage("Value must be provided");
 		}
@@ -48,7 +48,7 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should throw violation exception if string is blank")
 		void blankInput() {
-			assertThatThrownBy(() -> PioneerPreconditions.notBlank("     ", () -> "Value must be provided"))
+			assertThatThrownBy(() -> PioneerPreconditions.notBlank("     ", "Value must be provided"))
 					.isInstanceOf(PreconditionViolationException.class)
 					.hasMessage("Value must be provided");
 		}
@@ -56,7 +56,7 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should return string if it is not blank")
 		void validInput() {
-			assertThat(PioneerPreconditions.notBlank("testValue", () -> "Value must be provided"))
+			assertThat(PioneerPreconditions.notBlank("testValue", "Value must be provided"))
 					.isEqualTo("testValue");
 		}
 
@@ -69,7 +69,7 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should throw violation exception if object is null")
 		void nullInput() {
-			assertThatThrownBy(() -> PioneerPreconditions.notNull(null, () -> "Input must not be null"))
+			assertThatThrownBy(() -> PioneerPreconditions.notNull(null, "Input must not be null"))
 					.isInstanceOf(PreconditionViolationException.class)
 					.hasMessage("Input must not be null");
 		}
@@ -77,7 +77,7 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should return object if it is not null")
 		void validInput() {
-			assertThat(PioneerPreconditions.notNull("testValue", () -> "Value must be provided"))
+			assertThat(PioneerPreconditions.notNull("testValue", "Value must be provided"))
 					.isEqualTo("testValue");
 		}
 
@@ -90,7 +90,7 @@ class PioneerPreconditionsTest {
 		@Test
 		@DisplayName("should throw violation exception if collection is null")
 		void nullCollectionInput() {
-			assertThatThrownBy(() -> PioneerPreconditions.notEmpty(null, () -> "Value must not be null"))
+			assertThatThrownBy(() -> PioneerPreconditions.notEmpty(null, "Value must not be null"))
 					.isInstanceOf(PreconditionViolationException.class)
 					.hasMessage("Value must not be null");
 		}
@@ -99,7 +99,7 @@ class PioneerPreconditionsTest {
 		@DisplayName("should throw violation exception if collection is empty")
 		void emptyInput() {
 			assertThatThrownBy(
-				() -> PioneerPreconditions.notEmpty(Collections.emptySet(), () -> "Value must be provided"))
+				() -> PioneerPreconditions.notEmpty(Collections.emptySet(), "Value must be provided"))
 						.isInstanceOf(PreconditionViolationException.class)
 						.hasMessage("Value must be provided");
 		}
@@ -109,7 +109,7 @@ class PioneerPreconditionsTest {
 		void validInput() {
 			List<String> collection = new ArrayList<>();
 			collection.add("testValue");
-			assertThat(PioneerPreconditions.notEmpty(collection, () -> "Value must be provided")).isSameAs(collection);
+			assertThat(PioneerPreconditions.notEmpty(collection, "Value must be provided")).isSameAs(collection);
 		}
 
 	}

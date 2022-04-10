@@ -26,7 +26,7 @@ public class PioneerPreconditions {
 	}
 
 	/**
-	 * Assert that the supplied string is not blank.
+	 * Asserts that the supplied string is not blank.
 	 * @param str the string to check
 	 * @param message the precondition violation message
 	 * @return the supplied string
@@ -40,7 +40,7 @@ public class PioneerPreconditions {
 	}
 
 	/**
-	 * Assert that the supplied string is not blank.
+	 * Asserts that the supplied string is not blank.
 	 * @param str the string to check
 	 * @param messageSupplier the precondition violation message supplier
 	 * @return the supplied string
@@ -54,7 +54,20 @@ public class PioneerPreconditions {
 	}
 
 	/**
-	 * Assert that the supplied object is not null.
+	 * Asserts that the supplied object is not null.
+	 * @param object the object to check
+	 * @param message the precondition violation message
+	 * @return the supplied object
+	 */
+	public static <T> T notNull(T object, String message) {
+		if (object == null) {
+			throw new PreconditionViolationException(message);
+		}
+		return object;
+	}
+
+	/**
+	 * Asserts that the supplied object is not null.
 	 * @param object the object to check
 	 * @param messageSupplier the precondition violation message supplier
 	 * @return the supplied object
@@ -67,7 +80,20 @@ public class PioneerPreconditions {
 	}
 
 	/**
-	 * Assert that the supplied collection is not empty.
+	 * Asserts that the supplied collection is not empty.
+	 * @param collection the collection to check
+	 * @param message the precondition violation message
+	 * @return the supplied string
+	 */
+	public static <T extends Collection<?>> T notEmpty(T collection, String message) {
+		if (collection == null || collection.isEmpty()) {
+			throw new PreconditionViolationException(message);
+		}
+		return collection;
+	}
+
+	/**
+	 * Asserts that the supplied collection is not empty.
 	 * @param collection the collection to check
 	 * @param messageSupplier the precondition violation message supplier
 	 * @return the supplied string
@@ -75,19 +101,6 @@ public class PioneerPreconditions {
 	public static <T extends Collection<?>> T notEmpty(T collection, Supplier<String> messageSupplier) {
 		if (collection == null || collection.isEmpty()) {
 			throw new PreconditionViolationException(messageSupplier.get());
-		}
-		return collection;
-	}
-
-	/**
-	 * Assert that the supplied collection is not empty.
-	 * @param collection the collection to check
-	 * @param message the precondition violation message supplier
-	 * @return the supplied string
-	 */
-	public static <T extends Collection<?>> T notEmpty(T collection, String message) {
-		if (collection == null || collection.isEmpty()) {
-			throw new PreconditionViolationException(message);
 		}
 		return collection;
 	}

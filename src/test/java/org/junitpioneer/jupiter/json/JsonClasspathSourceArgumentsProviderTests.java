@@ -36,9 +36,9 @@ import org.junitpioneer.testkit.PioneerTestKit;
  */
 class JsonClasspathSourceArgumentsProviderTests {
 
-	public static final String JEDIS = "org/junitpioneer/jupiter/json/jedis.json";
-	public static final String YODA = "org/junitpioneer/jupiter/json/yoda.json";
-	public static final String LUKE = "org/junitpioneer/jupiter/json/luke.json";
+	private static final String JEDIS = "org/junitpioneer/jupiter/json/jedis.json";
+	private static final String YODA = "org/junitpioneer/jupiter/json/yoda.json";
+	private static final String LUKE = "org/junitpioneer/jupiter/json/luke.json";
 
 	@Test
 	void assertAllValuesSupplied() {

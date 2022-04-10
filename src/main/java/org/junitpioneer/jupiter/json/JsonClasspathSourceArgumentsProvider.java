@@ -35,9 +35,9 @@ class JsonClasspathSourceArgumentsProvider extends AbstractJsonSourceBasedArgume
 
 	private static Source classpathResource(String resource) {
 		return context -> {
-			PioneerPreconditions.notBlank(resource, () -> "Classpath resource must not be null or blank");
+			PioneerPreconditions.notBlank(resource, "Classpath resource must not be null or blank");
 			InputStream stream = context.getRequiredTestClass().getClassLoader().getResourceAsStream(resource);
-			PioneerPreconditions.notNull(stream, () -> "Classpath resource [" + resource + "] does not exist");
+			PioneerPreconditions.notNull(stream, "Classpath resource [" + resource + "] does not exist");
 			return stream;
 		};
 	}
