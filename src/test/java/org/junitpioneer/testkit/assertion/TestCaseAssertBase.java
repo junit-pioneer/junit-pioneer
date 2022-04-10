@@ -35,13 +35,13 @@ class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Event
 			Class<? extends Throwable> exceptionType) {
 		Throwable thrown = getRequiredThrowable();
 		assertThat(thrown).isInstanceOf(exceptionType);
-		return new ThrowableAssert(thrown);
+		return new ThrowableAssert<>(thrown);
 	}
 
 	@Override
 	public AbstractThrowableAssert<?, ? extends Throwable> withException() {
 		Throwable thrown = getRequiredThrowable();
-		return new ThrowableAssert(thrown);
+		return new ThrowableAssert<>(thrown);
 	}
 
 	@Override
