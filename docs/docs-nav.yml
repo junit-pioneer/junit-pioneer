@@ -18,6 +18,8 @@
         url: /docs/disable-parameterized-tests/
       - title: "Issue information"
         url: /docs/issue/
+      - title: "JSON Argument Source"
+        url: /docs/json-argument-source
       - title: "Publishing Report Entries"
         url: /docs/report-entries/
       - title: "Range Sources"

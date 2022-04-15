@@ -1,0 +1,150 @@
+:page-title: JSON Argument Source
+:page-description: Extends JUnit Jupiter with `@JsonFileSource`, a parametrized test that creates test based on a JSON Source
+:xp-demo-dir: ../src/demo/java
+:json-demo: {xp-demo-dir}/org/junitpioneer/jupiter/json/JsonArgumentSourceExtensionDemo.java
+:jedi: {xp-demo-dir}/org/junitpioneer/jupiter/json/Jedi.java
+
+The JSON argument sources let you provide arguments for parameterized tests from JSON.
+There are three annotations:
+
+* `@JsonSource` for lenient inline JSON
+* `@JsonFileSource` for JSON files from the local file system
+* `@JsonClasspathSource` for JSON files from the classpath
+
+There are various ways how the method arguments for a single parametrized test are provided.
+By default the root of the source will be treated as candidate for the test arguments.
+If the root is an object then the entire object will be one argument, if the root is an array then every element of the array will be one argument.
+
+It is also possible to use a nested array from the provided JSON to access the source for the test arguments.
+The `JsonFileSource#data` can be used to tell the extraction mechanism to use the element with that name to look for the source of the data.
+
+Depending on the test method parameters, the extraction of the values might differ.
+
+== Method Arguments
+
+=== Single Argument Methods
+
+If the method has a single argument, the JSON object argument will be converted to that type.
+
+.Argument type
+[source,java]
+----
+include::{jedi}[tag=class]
+----
+
+.JSON Source File
+[source,json]
+----
+[
+  {
+    "name": "Luke",
+    "height": 172
+  },
+  {
+    "name": "Yoda",
+    "height": 66
+  }
+]
+----
+
+[source,java]
+----
+include::{json-demo}[tag=classpath_source,indent=0]
+----
+
+[source,java]
+----
+include::{json-demo}[tag=inline_source,indent=0]
+----
+
+This parametrized test will generate the following test executions:
+
+* [1] Jedi {name='Luke', height=172}
+* [2] Jedi {name='Yoda', height=66}
+
+It is also possible to extract only a single element from each argument object by using the `@Property` annotation.
+
+[source,java]
+----
+include::{json-demo}/[tag=classpath_source_with_property,indent=0]
+----
+
+[source,java]
+----
+include::{json-demo}[tag=inline_source_with_property,indent=0]
+----
+
+This parametrized test will generate the following tests:
+
+* [1] Luke
+* [2] Yoda
+
+=== Multiple Argument Methods
+
+If the method has multiple arguments, each JSON object argument will be deconstructed to each of the method arguments.
+By default, the method argument name will be used for locating the element that needs to be taken from the JSON object.
+You can also use `@Property` to give the name of the element that needs to be extracted.
+
+[IMPORTANT]
+====
+If your test sources are not compiled using the `--parameters` flag then the names of the arguments will not be like they are written in the source code.
+In that the situation you need to use `@Property` instead.
+====
+
+Using the same `jedis.json` and the following test
+
+[source,java]
+----
+include::{json-demo}[tag=classpath_source_deconstruct_from_array,indent=0]
+----
+
+[source,java]
+----
+include::{json-demo}[tag=inline_source_deconstruct_from_array,indent=0]
+----
+
+This parametrized test will generate the following tests:
+
+* [1] Luke, 172
+* [2] Yoda, 66
+
+== Extracting nested array
+
+Sometimes we want to extract a nested array instead of the root element.
+For this purpose `JsonClasspathSource#data` can be used.
+
+.Jedi with nested array
+[source,json]
+----
+{
+  "name": "Luke",
+  "height": 172,
+  "vehicles": [
+    {
+      "name": "Snowspeeder",
+      "length": 4.5
+    },
+    {
+      "name": "Imperial Speeder Bike",
+      "length": 3
+    }
+  ]
+}
+----
+
+Here we want to test the vehicles.
+The test for this will look like:
+
+[source,java]
+----
+include::{json-demo}[tag=classpath_source_nested_data,indent=0]
+----
+
+This parametrized test will generate the following tests:
+
+* [1] Snowspeeder, 4.5
+* [2] Imperial Speeder Bike, 3
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

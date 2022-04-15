@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -28,9 +29,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * original value.</p>
  *
  * <p>{@code @DefaultTimeZone} can be used on the method and on the class
- * level. If a class is annotated, the configured {@code TimeZone} will be the
- * default {@code TimeZone} for all tests inside that class. Any method level
- * configurations will override the class level default {@code TimeZone}.</p>
+ * level. It is inherited from higher-level containers, but can only be used
+ * once per method or class. If a class is annotated, the configured
+ * {@code TimeZone} will be the default {@code TimeZone} for all tests inside
+ * that class. Any method level configurations will override the class level
+ * default {@code TimeZone}.</p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
@@ -48,6 +51,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Inherited
 @WritesDefaultTimeZone
 @ExtendWith(DefaultTimeZoneExtension.class)
 public @interface DefaultTimeZone {

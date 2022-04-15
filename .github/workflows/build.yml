@@ -126,7 +126,7 @@ jobs:
     strategy:
       matrix:
         java: [ 11, 17 ]
-        junit-version: [ '5.7.2', '5.8.2' ]
+        junit-version: [ '5.8.2' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }}, Modular ${{ matrix.modular }} on ${{ matrix.os }}
@@ -155,7 +155,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        junit-version: [ '5.7.2', '5.8.1' ]
+        junit-version: [ '5.8.2' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
@@ -208,7 +208,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
-          java-version: 8
+          java-version: 11
           distribution: temurin
       - name: Perform release
         uses: gradle/gradle-build-action@v2

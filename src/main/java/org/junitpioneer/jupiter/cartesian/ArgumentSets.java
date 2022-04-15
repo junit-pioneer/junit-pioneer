@@ -83,6 +83,9 @@ public class ArgumentSets {
 	 * @return a new {@link ArgumentSets} object
 	 */
 	@SafeVarargs
+	// passing varargs on to another varargs method causes a warning
+	// that can't be fixed; only suppressed
+	@SuppressWarnings("varargs")
 	public static <T> ArgumentSets argumentsForFirstParameter(T... arguments) {
 		return new ArgumentSets(Arrays.asList(arguments));
 	}
@@ -125,6 +128,9 @@ public class ArgumentSets {
 	 * @return this {@link ArgumentSets} object, for fluent set definitions
 	 */
 	@SafeVarargs
+	// passing varargs on to another varargs method causes a warning
+	// that can't be fixed; only suppressed
+	@SuppressWarnings("varargs")
 	public final <T> ArgumentSets argumentsForNextParameter(T... arguments) {
 		return add(Arrays.asList(arguments));
 	}

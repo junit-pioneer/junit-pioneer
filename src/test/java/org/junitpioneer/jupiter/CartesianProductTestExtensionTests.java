@@ -29,7 +29,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.PreconditionViolationException;
-import org.junitpioneer.jupiter.CartesianEnumSource.Mode;
 import org.junitpioneer.jupiter.params.ByteRangeSource;
 import org.junitpioneer.jupiter.params.DoubleRangeSource;
 import org.junitpioneer.jupiter.params.FloatRangeSource;
@@ -44,6 +43,8 @@ import org.junitpioneer.testkit.PioneerTestKit;
  * Robert Frost: The Road Not Taken is in the public domain
  */
 @DisplayName("CartesianProductTest")
+// remove together with `CartesianProductTest`
+@Deprecated
 public class CartesianProductTestExtensionTests {
 
 	@Nested
@@ -1208,32 +1209,35 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" }, mode = Mode.INCLUDE)
-		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "BETA", "GAMMA" }, mode = Mode.EXCLUDE)
+		@CartesianEnumSource(value = TestEnum.class, names = { "ONE", "TWO" }, mode = CartesianEnumSource.Mode.INCLUDE)
+		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "BETA",
+				"GAMMA" }, mode = CartesianEnumSource.Mode.EXCLUDE)
 		@ReportEntry("{0} - {1}")
 		void someValues(TestEnum e1, AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "ONE", "TWO" }, mode = Mode.INCLUDE)
-		@CartesianEnumSource(names = { "BETA", "GAMMA" }, mode = Mode.EXCLUDE)
+		@CartesianEnumSource(names = { "ONE", "TWO" }, mode = CartesianEnumSource.Mode.INCLUDE)
+		@CartesianEnumSource(names = { "BETA", "GAMMA" }, mode = CartesianEnumSource.Mode.EXCLUDE)
 		@ReportEntry("{0} - {1}")
 		void someValuesWithOmittedTypes(TestEnum e1, AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "O.*", "TW.*" }, mode = Mode.MATCH_ANY)
-		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "AL.*", ".*PHA" }, mode = Mode.MATCH_ALL)
+		@CartesianEnumSource(value = TestEnum.class, names = { "O.*",
+				"TW.*" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
+		@CartesianEnumSource(value = AnotherTestEnum.class, names = { "AL.*",
+				".*PHA" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
 		@ReportEntry("{0} - {1}")
 		void patternValues(TestEnum e1, AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "O.*", "TW.*" }, mode = Mode.MATCH_ANY)
-		@CartesianEnumSource(names = { "AL.*", ".*PHA" }, mode = Mode.MATCH_ALL)
+		@CartesianEnumSource(names = { "O.*", "TW.*" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
+		@CartesianEnumSource(names = { "AL.*", ".*PHA" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
 		@ReportEntry("{0} - {1}")
 		void patternValuesWithOmittedTypes(TestEnum e1, AnotherTestEnum e2) {
 			assertThat(e1).isEqualTo(TestEnum.ONE);
@@ -1297,22 +1301,22 @@ public class CartesianProductTestExtensionTests {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = Mode.MATCH_ANY)
+		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
 		void wrongAnyPattern(TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ANY)
+		@CartesianEnumSource(names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ANY)
 		void wrongAnyPatternWithOmittedType(TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = Mode.MATCH_ALL)
+		@CartesianEnumSource(value = TestEnum.class, names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
 		void wrongAllPattern(TestEnum e1) {
 		}
 
 		@CartesianProductTest
-		@CartesianEnumSource(names = { "T.*", "[" }, mode = Mode.MATCH_ALL)
+		@CartesianEnumSource(names = { "T.*", "[" }, mode = CartesianEnumSource.Mode.MATCH_ALL)
 		void wrongAllPatternWithOmittedType(TestEnum e1) {
 		}
 

@@ -81,7 +81,8 @@ public @interface RetryingTest {
 	 * Placeholder for the display name of a {@code @RetryingTest}:
 	 * <code>{displayName}</code>
 	 *
-	 * @since ?
+	 * @since 1.7.0
+	 *
 	 * @see #name
 	 */
 	String DISPLAY_NAME_PLACEHOLDER = TestNameFormatter.DISPLAY_NAME_PLACEHOLDER;
@@ -90,7 +91,8 @@ public @interface RetryingTest {
 	 * Placeholder for the current invocation index of a {@code @RetryingTest}
 	 * method (1-based): <code>{index}</code>
 	 *
-	 * @since ?
+	 * @since 1.7.0
+	 *
 	 * @see #name
 	 */
 	String INDEX_PLACEHOLDER = TestNameFormatter.INDEX_PLACEHOLDER;
@@ -109,7 +111,8 @@ public @interface RetryingTest {
 	 * <p>You may use {@link java.text.MessageFormat} patterns
 	 * to customize formatting.</p>
 	 *
-	 * @since ?
+	 * @since 1.7.0
+	 *
 	 * @see java.text.MessageFormat
 	 * @see org.junit.jupiter.params.ParameterizedTest#name()
 	 */

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * method is disabled.
  *
  * <p>{@code @DisabledUntil} can be used on the method and class level. It can only be used once per method or class,
- * but is inherited from higher level containers.</p>
+ * but is inherited from higher-level containers.</p>
  *
  * @see org.junit.jupiter.api.Disabled
  */

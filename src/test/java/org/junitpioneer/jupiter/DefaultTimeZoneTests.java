@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
@@ -161,6 +162,40 @@ class DefaultTimeZoneTests {
 	}
 
 	@Nested
+	@DefaultTimeZone("GMT-12:00")
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	class ResettingDefaultTimeZoneTests {
+
+		@Nested
+		@DefaultTimeZone("GMT-3:00")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingDefaultTimeZoneNestedTests {
+
+			@Test
+			@DefaultTimeZone("GMT+6:00")
+			void setForTestMethod() {
+				// only here to set the time zone, so another test can verify whether it was reset;
+				// still, better to assert the value was actually set
+				assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT+6:00"));
+			}
+
+			@AfterAll
+			@ReadsDefaultTimeZone
+			void resetAfterTestMethodExecution() {
+				assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
+			}
+
+		}
+
+		@AfterAll
+		@ReadsDefaultTimeZone
+		void resetAfterTestMethodExecution() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TEST_DEFAULT_TIMEZONE);
+		}
+
+	}
+
+	@Nested
 	@DisplayName("when misconfigured")
 	class ConfigurationTests {
 
@@ -212,6 +247,23 @@ class DefaultTimeZoneTests {
 		@Test
 		void badConfiguration() {
 		}
+
+	}
+
+	@Nested
+	@DisplayName("used with inheritance")
+	class InheritanceTests extends InheritanceBaseTest {
+
+		@Test
+		@DisplayName("should inherit default time zone annotation")
+		void shouldInheritClearAndSetProperty() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT-8:00"));
+		}
+
+	}
+
+	@DefaultTimeZone("GMT-8:00")
+	static class InheritanceBaseTest {
 
 	}
 

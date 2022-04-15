@@ -52,7 +52,6 @@ public class IssueExtensionExecutionListenerTests {
 	void issueTestCasesCreated() {
 		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
 		TestIdentifier successfulTest = createTestIdentifier("successful-test");
-		testPlan.add(successfulTest);
 
 		executionListener.testPlanExecutionStarted(testPlan);
 		executionListener.reportingEntryPublished(successfulTest, issueEntry);
@@ -76,7 +75,6 @@ public class IssueExtensionExecutionListenerTests {
 	void abortedIssueTestCaseCreated() {
 		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
 		TestIdentifier abortedTest = createTestIdentifier("aborted-test");
-		testPlan.add(abortedTest);
 
 		executionListener.testPlanExecutionStarted(testPlan);
 		executionListener.reportingEntryPublished(abortedTest, issueEntry);
@@ -92,8 +90,6 @@ public class IssueExtensionExecutionListenerTests {
 		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("#123"),
 			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(1));
 
-		IssueTestCase testCase = issueTestSuite.tests().get(0);
-
 		assertThat(issueTestSuite.tests()).containsExactly(new IssueTestCase("[test:aborted-test]", Status.ABORTED));
 	}
 
@@ -101,9 +97,7 @@ public class IssueExtensionExecutionListenerTests {
 	void multipleIssueTestCasesCreated() {
 		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
 		TestIdentifier successfulTest = createTestIdentifier("successful-test");
-		testPlan.add(successfulTest);
 		TestIdentifier abortedTest = createTestIdentifier("aborted-test");
-		testPlan.add(abortedTest);
 
 		executionListener.testPlanExecutionStarted(testPlan);
 		executionListener.reportingEntryPublished(successfulTest, issueEntry);

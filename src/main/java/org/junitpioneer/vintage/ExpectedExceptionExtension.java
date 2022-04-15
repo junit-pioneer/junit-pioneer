@@ -66,6 +66,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 						.ifPresent(error -> {
 							throw error;
 						});
+				break;
 			case WAS_THROWN_AS_EXPECTED:
 				// the exception was thrown as expected so there is nothing to do
 				break;
@@ -80,6 +81,8 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 		}
 	}
 
+	// vintage @Test is deprecated (not for removal)
+	@SuppressWarnings("deprecation")
 	private static Optional<? extends Class<? extends Throwable>> expectedException(ExtensionContext context) {
 		return findAnnotation(context.getElement(), Test.class)
 				.map(Test::expected)

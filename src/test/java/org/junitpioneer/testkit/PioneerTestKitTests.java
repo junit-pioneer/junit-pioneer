@@ -46,7 +46,7 @@ class PioneerTestKitTests {
 		@DisplayName(" where parameter is a single class")
 		void executeTestMethodWithParameterTypes_singleParameterType() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", String.class);
+					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", String.class);
 
 			assertThat(results).hasNumberOfStartedTests(1);
 		}
@@ -57,7 +57,7 @@ class PioneerTestKitTests {
 			Class<?>[] classes = { String.class };
 
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", classes);
+					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", classes);
 
 			assertThat(results).hasNumberOfStartedTests(1);
 		}
@@ -66,7 +66,7 @@ class PioneerTestKitTests {
 		@DisplayName("without parameter results in IllegalArgumentException")
 		void executeTestMethodWithParameterTypes_parameterArrayIsNull_NullPointerException() {
 			assertThatThrownBy(() -> PioneerTestKit
-					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", (Class<?>) null))
+					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", (Class<?>) null))
 							.isInstanceOf(NullPointerException.class);
 		}
 
@@ -74,14 +74,14 @@ class PioneerTestKitTests {
 		@DisplayName("without parameter results in IllegalArgumentException")
 		void executeTestMethodWithParameterTypes_singleParameterIsNull_IllegalArgumentException() {
 			assertThatThrownBy(() -> PioneerTestKit
-					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", (Class<?>[]) null))
+					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", (Class<?>[]) null))
 							.isInstanceOf(IllegalArgumentException.class)
 							.hasMessage("methodParameterTypes must not be null");
 		}
 
 	}
 
-	static class DummyParameterClass {
+	static class DummyPropertyClass {
 
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(strings = { "parameter" })

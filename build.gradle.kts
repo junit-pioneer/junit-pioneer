@@ -4,13 +4,13 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "5.14.3"
+	id("com.diffplug.spotless") version "6.4.2"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.3"
 	id("org.moditect.gradleplugin") version "1.0.0-rc3"
 	id("org.shipkit.shipkit-changelog") version "1.1.15"
 	id("org.shipkit.shipkit-github-release") version "1.1.15"
-	id("com.github.ben-manes.versions") version "0.39.0"
+	id("com.github.ben-manes.versions") version "0.42.0"
 	id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
 }
 
@@ -43,6 +43,9 @@ java {
 	}
 	withJavadocJar()
 	withSourcesJar()
+	registerFeature("jackson") {
+		usingSourceSet(sourceSets["main"])
+	}
 }
 
 repositories {
@@ -50,6 +53,7 @@ repositories {
 }
 
 val junitVersion : String by project
+val jacksonVersion: String = "2.13.2.2"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
@@ -58,17 +62,18 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-commons")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
+	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.20.2")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.12.4")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.4.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.7.1")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.10")
 
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.0")
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.17.0")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.2")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.17.2")
 }
 
 spotless {
@@ -215,10 +220,15 @@ tasks {
 
 	compileJava {
 		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		// do not break the build on "exports" warnings - see CONTRIBUTING.md for details
+		options.compilerArgs.add("-Xlint:all,-exports")
 	}
 
 	compileTestJava {
 		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		options.compilerArgs.add("-Xlint:all")
 	}
 
 	test {
@@ -247,9 +257,15 @@ tasks {
 				useJUnitJupiter()
 			}
 			val demoTests by registering(JvmTestSuite::class) {
-				dependencies { implementation(project) }
+				dependencies {
+					implementation(project)
+					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+				}
 
-				sources { java { srcDir("src/demo/java") } }
+				sources {
+					java { srcDir("src/demo/java") }
+					resources { srcDir("src/demo/resources") }
+				}
 				targets { all { testTask.configure {
 					shouldRunAfter(test)
 					filter {
@@ -285,7 +301,7 @@ tasks {
 			// Set javadoc `--release` flag (affects which warnings and errors are reported)
 			// (Note: Gradle adds one leading '-' to the option on its own)
 			// Have to use at least Java 9 to support modular build
-			addStringOption("-release", maxOf(9, targetJavaVersion.majorVersion.toInt()).toString())
+			addStringOption("-release", maxOf(11, targetJavaVersion.majorVersion.toInt()).toString())
 
 			// Enable doclint, but ignore warnings for missing tags, see
 			// https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#additional-options-provided-by-the-standard-doclet

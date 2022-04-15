@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -39,9 +40,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * element has been executed, the default {@code Locale} will be restored to
  * its original value.</p>
  *
- * <p>{@code @DefaultLocale} can be used on the method and on the class level.
- * If a class is annotated, the configured {@code Locale} will be the default
- * {@code Locale} for all tests inside that class. Any method level
+ * <p>{@code @DefaultLocale} can be used on the method and on the class level. It
+ * is inherited from higher-level containers, but can only be used once per method
+ * or class. If a class is annotated, the configured {@code Locale} will be the
+ * default {@code Locale} for all tests inside that class. Any method level
  * configurations will override the class level default {@code Locale}.</p>
  *
  * <p>During
@@ -60,6 +62,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Inherited
 @WritesDefaultLocale
 @ExtendWith(DefaultLocaleExtension.class)
 public @interface DefaultLocale {
