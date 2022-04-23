@@ -1,30 +1,31 @@
 :page-title: Creating and Sharing Resourced
 :page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject resources like temporary directories or a port.
 
-Some tests need "resources" which need to be cleaned up when finished and sometimes, these resources might be needed to be accessed by many tests.
+Some tests need "resources" which need to be cleaned up when finished, and sometimes, these resources might be needed to be accessed by many tests.
 Furthermore, you may be running your JUnit Jupiter tests in parallel, which makes sharing these resources flaky.
 
-// TODO: temp dir as example
+For example, you might want to share a temporary directory.
+This can be a problem if the directory isn't deleted after your tests, or your tests try to read and write files at the same time.
 
-This extension separates parsing annotations, injecting new or shared resources, and registering them for getting cleaned up (which is needed for all of them) from actually creating and closing them (which is specific to each kind of resource).
+This extension separates parsing annotations, injecting new or shared resources, and registering them for getting cleaned up (which is needed for all kinds of resources) from actually creating and closing them (which is specific to each kind of resource).
 
 [NOTE]
 ====
 This article describes the general mechanisms shared by different resource extensions but not their specifics.
 Check the individual documentations for that:
 
-* link:docs/temp-directory[temporary directory]
+* link:docs/temp-directory[Temporary directory]
 ====
 
 The first part of this article describes how to use a resource with this extension, the second part describes how to integrate your own kind of resource with this mechanism.
-In both cases, the temporary directory extension will be used as an example, but what's described applies to other resources as well.
+In both cases, the temporary directory extension will be used as an example, but what's described here applies to other resources as well.
 
 == Using Resources
 
 There are two different approaches to using a resource:
 
-* creating a new one for a given test
-* sharing one between several tests
+* Creating a new one for a given test.
+* Sharing one between several tests.
 
 === Creating a New Resource
 
