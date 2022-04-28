@@ -10,13 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.junitpioneer.testkit.assertion.PioneerAssert;
+import org.junitpioneer.testkit.assertion.reportentry.ReportEntryContentAssert;
 
 @DisplayName("Stopwatch extension ")
 public class StopwatchExtensionTests {
@@ -27,7 +27,7 @@ public class StopwatchExtensionTests {
 
 		ExecutionResults results = PioneerTestKit.executeTestClass(ClassLevelAnnotationTestCases.class);
 
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
+		assertThat(results).hasNumberOfReportEntries(1);
 
 		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel";
 		assertStringStartWithUnitAndContainsName(results, methodName);
@@ -40,7 +40,7 @@ public class StopwatchExtensionTests {
 		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassAndMethodLevel";
 
 		ExecutionResults results = PioneerTestKit.executeTestClass(ClassAndMethodLevelAnnotationTestCases.class);
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
+		assertThat(results).hasNumberOfReportEntries(1);
 
 		assertStringStartWithUnitAndContainsName(results, methodName);
 	}
@@ -51,7 +51,7 @@ public class StopwatchExtensionTests {
 		String methodName = "stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel";
 
 		ExecutionResults results = PioneerTestKit.executeTestMethod(MethodLevelAnnotationTestCases.class, methodName);
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1);
+		assertThat(results).hasNumberOfReportEntries(1);
 
 		assertStringStartWithUnitAndContainsName(results, methodName);
 	}
@@ -62,16 +62,14 @@ public class StopwatchExtensionTests {
 		String methodName = "stopwatchExtensionShouldNotBeExecuted";
 
 		ExecutionResults results = PioneerTestKit.executeTestMethod(NonAnnotationTestCases.class, methodName);
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(0);
+		assertThat(results).hasNumberOfReportEntries(0);
 
 	}
 
 	private void assertStringStartWithUnitAndContainsName(ExecutionResults results, String methodName) {
-		PioneerAssert.assertThat(results).hasNumberOfReportEntries(1).andThen(entry -> {
-			assertThat(entry.getKey()).isEqualTo(StopwatchExtension.STORE_KEY);
-			assertThat(entry.getValue())
-					.matches(String.format("Execution of '%s\\(\\)' took \\[[0-9]*\\] ms.", methodName));
-		});
+		ReportEntryContentAssert reportEntry = assertThat(results).hasNumberOfReportEntries(1);
+		reportEntry.firstValue().matches(String.format("Execution of '%s\\(\\)' took \\[[0-9]*\\] ms.", methodName));
+		reportEntry.firstKey().isEqualTo(StopwatchExtension.STORE_KEY);
 	}
 
 	/**

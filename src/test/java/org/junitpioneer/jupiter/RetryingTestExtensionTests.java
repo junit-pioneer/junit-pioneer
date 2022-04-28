@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.METHOD;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.annotation.Retention;
@@ -26,7 +27,6 @@ import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.TestTemplate;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtensionTests {
 
@@ -336,7 +336,7 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void skipByAssumption() {
-			throw new TestAbortedException();
+			abort();
 		}
 
 		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
@@ -346,7 +346,7 @@ class RetryingTestExtensionTests {
 				throw new IllegalArgumentException();
 			}
 			if (executionCount == 2) {
-				throw new TestAbortedException();
+				abort();
 			}
 		}
 

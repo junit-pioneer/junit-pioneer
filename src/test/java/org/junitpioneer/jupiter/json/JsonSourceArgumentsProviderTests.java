@@ -197,7 +197,7 @@ class JsonSourceArgumentsProviderTests {
 
 		@Test
 		void noValues() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "noValues");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSourceTestCases.class, "noValues");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -208,7 +208,8 @@ class JsonSourceArgumentsProviderTests {
 		@Test
 		void noValuesCartesian() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(InvalidJsonSource.class, "noValuesCartesian", Customer.class);
+					.executeTestMethodWithParameterTypes(InvalidJsonSourceTestCases.class, "noValuesCartesian",
+						Customer.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -220,7 +221,7 @@ class JsonSourceArgumentsProviderTests {
 
 	}
 
-	static class InvalidJsonSource {
+	static class InvalidJsonSourceTestCases {
 
 		@JsonSource({})
 		@ParameterizedTest

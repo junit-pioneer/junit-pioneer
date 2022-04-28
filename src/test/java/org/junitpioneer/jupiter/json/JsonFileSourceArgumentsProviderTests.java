@@ -206,7 +206,7 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void noPaths() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "noPaths");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSourceTestCases.class, "noPaths");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -216,7 +216,8 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void emptyFilePath() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "emptyFilePath");
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethod(InvalidJsonSourceTestCases.class, "emptyFilePath");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -226,7 +227,8 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void nonExistentFile() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "nonExistentFile");
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethod(InvalidJsonSourceTestCases.class, "nonExistentFile");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -236,7 +238,8 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void dataLocationMissing() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "dataLocationMissing");
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethod(InvalidJsonSourceTestCases.class, "dataLocationMissing");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -246,7 +249,7 @@ class JsonFileSourceArgumentsProviderTests {
 
 	}
 
-	static class InvalidJsonSource {
+	static class InvalidJsonSourceTestCases {
 
 		@JsonFileSource
 		@ParameterizedTest

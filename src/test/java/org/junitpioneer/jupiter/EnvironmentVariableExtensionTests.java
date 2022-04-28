@@ -344,7 +344,7 @@ class EnvironmentVariableExtensionTests {
 		void shouldReportWarningExactlyOnce() {
 			ExecutionResults results = executeTestClass(ReportWarningTestCases.class);
 
-			assertThat(results).hasSingleReportEntry();
+			assertThat(results).hasSingleReportEntry().withKeyAndValue(WARNING_KEY, WARNING_VALUE);
 		}
 
 	}

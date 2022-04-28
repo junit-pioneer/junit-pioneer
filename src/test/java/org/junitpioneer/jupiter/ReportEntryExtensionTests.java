@@ -15,6 +15,7 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_ABORTED;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
+import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.util.stream.Stream;
@@ -31,7 +32,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.opentest4j.TestAbortedException;
 
 /**
  * Edgar Allan Poe: The Raven is in the public domain.
@@ -96,7 +96,7 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to 'ALWAYS'")
-		class LogAlways {
+		class LogAlwaysTests {
 
 			@Test
 			@DisplayName("logs for successful test")
@@ -142,7 +142,7 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to 'ON_SUCCESS'")
-		class LogOnSuccess {
+		class LogOnSuccessTests {
 
 			@Test
 			@DisplayName("logs for successful test")
@@ -188,7 +188,7 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to 'ON_FAILURE'")
-		class LogOnFailure {
+		class LogOnFailureTests {
 
 			@Test
 			@DisplayName("does not log for successful test")
@@ -234,7 +234,7 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to 'ON_ABORTED'")
-		class LogOnAborted {
+		class LogOnAbortedTests {
 
 			@Test
 			@DisplayName("does not log for successful test")
@@ -281,7 +281,7 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to multiple conditions")
-		class LogOnMultipleConditions {
+		class LogOnMultipleConditionsTests {
 
 			@Test
 			@DisplayName("logs entries independently on success, based on publish condition")
@@ -604,10 +604,6 @@ public class ReportEntryExtensionTests {
 			return Stream.of(Arguments.of("By the grave and stern decorum of the countenance it wore,", null));
 		}
 
-	}
-
-	private static void abort() {
-		throw new TestAbortedException();
 	}
 
 }

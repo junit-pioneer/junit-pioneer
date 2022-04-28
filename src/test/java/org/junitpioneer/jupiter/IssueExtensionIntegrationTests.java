@@ -24,8 +24,8 @@ public class IssueExtensionIntegrationTests {
 	 * (not even adapted as `EngineExecutionListener`) and so it wouldn't gather the report
 	 * entries nor get called when the test kit run finished.
 	 *
-	 * Hence, we're not able to write a proper integration test for this extensions.
-	 * Instead we have to rely on the occasional visual verification that it works - the
+	 * Hence, we're not able to write a proper integration test for this extension.
+	 * Instead, we have to rely on the occasional visual verification that it works - the
 	 * `StoringIssueProcessor` prints the gathered information to System.out.
 	 *
 	 * https://github.com/junit-pioneer/junit-pioneer/issues/375
