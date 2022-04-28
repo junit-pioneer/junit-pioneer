@@ -16,17 +16,21 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junitpioneer.testkit.assertion.reportentry.ReportEntryValueAssert;
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.ListAssert;
+import org.junitpioneer.testkit.assertion.reportentry.ReportEntryContentAssert;
 
 /**
  * Used to assert a report entries.
  */
 class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase, List<Map.Entry<String, String>>>
-		implements ReportEntryValueAssert {
+		implements ReportEntryContentAssert {
 
 	ReportEntryAssertBase(List<Map.Entry<String, String>> entries, int expected) {
 		super(entries, ReportEntryAssertBase.class, expected);
@@ -66,8 +70,68 @@ class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase,
 	}
 
 	@Override
-	public void andThen(Consumer<Map.Entry<String, String>> testFunction) {
-		this.actual.forEach(testFunction);
+	public void andThen(BiConsumer<String, String> testFunction) {
+		this.actual.forEach(entry -> testFunction.accept(entry.getKey(), entry.getValue()));
+	}
+
+	private List<String> getValues() {
+		return this.actual.stream().map(Map.Entry::getValue).collect(Collectors.toList());
+	}
+
+	private List<String> getKeys() {
+		return this.actual.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+	}
+
+	@Override
+	public ListAssert<String> values() {
+		return assertThat(getValues());
+	}
+
+	@Override
+	public AbstractStringAssert<?> firstValue() {
+		Optional<String> first = getValues().stream().findFirst();
+		assertThat(first).isPresent();
+		return assertThat(first.get());
+	}
+
+	@Override
+	public AbstractStringAssert<?> anyValue() {
+		Optional<String> any = getValues().stream().findAny();
+		assertThat(any).isPresent();
+		return assertThat(any.get());
+	}
+
+	@Override
+	public AbstractStringAssert<?> value(int index) {
+		List<String> elements = getValues();
+		assertThat(elements).hasSize(index + 1);
+		return assertThat(elements.get(index));
+	}
+
+	@Override
+	public ListAssert<String> keys() {
+		return assertThat(getKeys());
+	}
+
+	@Override
+	public AbstractStringAssert<?> firstKey() {
+		Optional<String> first = getKeys().stream().findFirst();
+		assertThat(first).isPresent();
+		return assertThat(first.get());
+	}
+
+	@Override
+	public AbstractStringAssert<?> anyKey() {
+		Optional<String> any = getKeys().stream().findAny();
+		assertThat(any).isPresent();
+		return assertThat(any.get());
+	}
+
+	@Override
+	public AbstractStringAssert<?> key(int index) {
+		List<String> elements = getKeys();
+		assertThat(elements).hasSize(index + 1);
+		return assertThat(elements.get(index));
 	}
 
 }

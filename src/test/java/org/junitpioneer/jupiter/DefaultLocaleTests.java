@@ -186,7 +186,7 @@ class DefaultLocaleTests {
 	}
 
 	@DefaultLocale(language = "en")
-	static class ClassLevelResetCase {
+	static class ClassLevelResetTestCase {
 
 		@Test
 		void setForTestMethod() {

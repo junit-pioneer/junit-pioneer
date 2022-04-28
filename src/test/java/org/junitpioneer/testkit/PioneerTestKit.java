@@ -10,6 +10,9 @@
 
 package org.junitpioneer.testkit;
 
+import org.junit.jupiter.api.Assertions;
+import org.opentest4j.TestAbortedException;
+
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 
@@ -60,6 +63,15 @@ public class PioneerTestKit {
 		String allTypeNames = stream(methodParameterTypes).map(Class::getName).collect(joining(","));
 
 		return new ExecutionResults(testClass, testMethodName, allTypeNames);
+	}
+
+	/**
+	 * Aborts the test execution. Makes the test code a little nicer.
+	 *
+	 * @throws TestAbortedException always throws this
+	 */
+	public static void abort() {
+		throw new TestAbortedException();
 	}
 
 }

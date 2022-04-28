@@ -36,13 +36,13 @@ class PioneerUtilsTests {
 		Collector<Object, Set<Object>, Set<Object>> collector;
 
 		@BeforeEach
-		void setUp() throws Exception {
+		void setUp() {
 			collector = PioneerUtils.distinctToSet();
 		}
 
 		@Test
 		@DisplayName("should add new elements")
-		void accumulatorShouldAddNewElements() throws Exception {
+		void accumulatorShouldAddNewElements() {
 			Set<Object> set = new HashSet<>();
 			Object element = new Object();
 
@@ -55,7 +55,7 @@ class PioneerUtilsTests {
 
 		@Test
 		@DisplayName("should not add duplicate elements")
-		void accumulatorShouldNotAddDuplicateElements() throws Exception {
+		void accumulatorShouldNotAddDuplicateElements() {
 			Set<Object> set = new HashSet<>();
 			Object element = new Object();
 			set.add(element);
@@ -67,7 +67,7 @@ class PioneerUtilsTests {
 
 		@Test
 		@DisplayName("should combine sets with new elements")
-		void combinerShouldCombineSetsWithNewElements() throws Exception {
+		void combinerShouldCombineSetsWithNewElements() {
 			Set<Object> left = new HashSet<>();
 			Object leftElement = new Object();
 			left.add(leftElement);
@@ -83,7 +83,7 @@ class PioneerUtilsTests {
 
 		@Test
 		@DisplayName("should not combine sets with duplicate elements")
-		void combinerShouldNotCombineSetsWithDuplicates() throws Exception {
+		void combinerShouldNotCombineSetsWithDuplicates() {
 			Object element = new Object();
 
 			Set<Object> left = new HashSet<>();
@@ -298,6 +298,7 @@ class PioneerUtilsTests {
 
 	static class MethodFinderTestCases {
 
+		@SuppressWarnings("unused")
 		void baseMethod() {
 		}
 
@@ -305,6 +306,7 @@ class PioneerUtilsTests {
 
 			static class MethodFinderTestCasesGrandChild {
 
+				@SuppressWarnings("unused")
 				void grandchildrenMethod() {
 				}
 

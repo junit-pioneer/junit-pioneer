@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.time.LocalDate;
@@ -57,8 +56,8 @@ class DisabledUntilExtensionTests {
 		assertThat(results).hasNumberOfSkippedTests(0);
 		assertThat(results)
 				.hasSingleReportEntry()
-				.andThen(entry -> assertThat(entry.getValue())
-						.contains("1993-01-01", LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
+				.firstValue()
+				.contains("1993-01-01", LocalDate.now().format(DateTimeFormatter.ISO_DATE));
 	}
 
 	@Test

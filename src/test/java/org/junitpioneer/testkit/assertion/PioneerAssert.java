@@ -28,7 +28,7 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.testkit.engine.Events;
 import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.assertion.reportentry.ReportEntryValueAssert;
+import org.junitpioneer.testkit.assertion.reportentry.ReportEntryContentAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseFailureAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseStartedAssert;
 import org.junitpioneer.testkit.assertion.suite.TestSuiteAssert;
@@ -50,7 +50,7 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public ReportEntryValueAssert hasNumberOfReportEntries(int expected) {
+	public ReportEntryContentAssert hasNumberOfReportEntries(int expected) {
 		try {
 			List<Map<String, String>> entries = reportEntries();
 			Assertions.assertThat(entries).hasSize(expected);
@@ -71,7 +71,7 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public ReportEntryValueAssert hasSingleReportEntry() {
+	public ReportEntryContentAssert hasSingleReportEntry() {
 		return hasNumberOfReportEntries(1);
 	}
 

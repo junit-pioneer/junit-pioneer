@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.PreconditionViolationException;
 
 @DisplayName("Pioneer precondition utilities")
-class PioneerPreconditionsTest {
+class PioneerPreconditionsTests {
 
 	@Nested
 	@DisplayName("not blank")

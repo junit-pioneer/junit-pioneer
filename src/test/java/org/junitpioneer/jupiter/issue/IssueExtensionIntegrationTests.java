@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter.issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junitpioneer.testkit.PioneerTestKit.abort;
 
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class IssueExtensionIntegrationTests {
 		@Issue("Poem #2")
 		@DisplayName("I am the sunlight on ripened grain. I am the gentle autumn rain.")
 		void abortedTest() {
-			throw new TestAbortedException();
+			abort();
 		}
 
 		@Test

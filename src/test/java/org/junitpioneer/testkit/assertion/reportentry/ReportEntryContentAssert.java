@@ -11,13 +11,17 @@
 package org.junitpioneer.testkit.assertion.reportentry;
 
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+
+import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.ListAssert;
+import org.assertj.core.api.ObjectAssert;
 
 /**
  * Assertions for asserting the content of the published report entries.
  */
-public interface ReportEntryValueAssert {
+public interface ReportEntryContentAssert {
 
 	/**
 	 * Asserts that the report entry has a specified key and value.
@@ -55,6 +59,46 @@ public interface ReportEntryValueAssert {
 	 *
 	 * @param testFunction a consumer, for writing more flexible tests
 	 */
-	void andThen(Consumer<Map.Entry<String, String>> testFunction);
+	void andThen(BiConsumer<String, String> testFunction);
+
+	/**
+	 * Returns a {@link ListAssert} to assert all report entry values.
+	 */
+	ListAssert<String> values();
+
+	/**
+	 * Returns an {@link ObjectAssert} to assert the first value from all report entries.
+	 */
+	AbstractStringAssert<?> firstValue();
+
+	/**
+	 * Returns an {@link ObjectAssert} to assert a random value from all report entries.
+	 */
+	AbstractStringAssert<?> anyValue();
+
+	/**
+	 * Returns an {@link ObjectAssert} to assert the value of the chosen report entry.
+	 */
+	AbstractStringAssert<?> value(int index);
+
+	/**
+	 * Returns a {@link ListAssert} to assert all report entry keys.
+	 */
+	ListAssert<String> keys();
+
+	/**
+	 * Returns an {@link ObjectAssert} to assert the first key from all report entries.
+	 */
+	AbstractStringAssert<?> firstKey();
+
+	/**
+	 * Returns an {@link ObjectAssert} to assert a random key from all report entries.
+	 */
+	AbstractStringAssert<?> anyKey();
+
+	/**
+	 * Returns an {@link ObjectAssert} to assert the key of the chosen report entry.
+	 */
+	AbstractStringAssert<?> key(int index);
 
 }

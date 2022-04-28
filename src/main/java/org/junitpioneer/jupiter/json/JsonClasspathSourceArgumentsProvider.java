@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.platform.commons.util.Preconditions;
 import org.junitpioneer.internal.PioneerPreconditions;
 
 /**
