@@ -572,33 +572,32 @@ public class ReportEntryExtensionTests {
 		@ValueSource(strings = { "Open here I flung the shutter, when, with many a flirt and flutter,",
 				"In there stepped a stately Raven of the saintly days of yore;" })
 		@ReportEntry("{0}")
-		void parameterized_basic(@SuppressWarnings("unused") String line) {
+		void parameterized_basic(String line) {
 		}
 
 		@ParameterizedTest
 		@ValueSource(strings = { "Not the least obeisance made he; not a minute stopped or stayed he;" })
 		@ReportEntry("{0}, {1}")
-		void parameterized_unresolved(@SuppressWarnings("unused") String line) {
+		void parameterized_unresolved(String line) {
 		}
 
 		@ParameterizedTest
 		@ValueSource(strings = { "But, with mien of lord or lady, perched above my chamber door—" })
 		@ReportEntry(key = "{0}", value = "Perched upon a bust of Pallas just above my chamber door—")
-		void parameterized_key_fail(@SuppressWarnings("unused") String line) {
+		void parameterized_key_fail(String line) {
 		}
 
 		@ParameterizedTest
 		@CsvSource(value = { "Perched, and sat, and nothing more.; 1",
 				"Then this ebony bird beguiling my sad fancy into smiling,; 2" }, delimiter = ';')
 		@ReportEntry("{1} - {1}: {0}")
-		void parameterized_multiple(@SuppressWarnings("unused") String line, @SuppressWarnings("unused") int number) {
+		void parameterized_multiple(String line, int number) {
 		}
 
 		@ParameterizedTest
 		@MethodSource("withNulls")
 		@ReportEntry("{1},{0}")
-		void parameterized_with_nulls(@SuppressWarnings("unused") String line,
-				@SuppressWarnings("unused") String value) {
+		void parameterized_with_nulls(String line, String value) {
 		}
 
 		private static Stream<Arguments> withNulls() {
