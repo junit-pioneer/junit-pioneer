@@ -27,7 +27,6 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junitpioneer.jupiter.Issue;
 import org.junitpioneer.jupiter.IssueTestCase;
 import org.junitpioneer.jupiter.IssueTestSuite;
-import org.opentest4j.TestAbortedException;
 
 /**
  * Mary Elizabeth Fyre: Do Not Stand at My Grave and Weep is in the public domain.

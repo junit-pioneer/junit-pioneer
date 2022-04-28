@@ -32,7 +32,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.opentest4j.TestAbortedException;
 
 /**
  * Edgar Allan Poe: The Raven is in the public domain.

@@ -13,7 +13,6 @@ package org.junitpioneer.testkit;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 
-import org.junit.jupiter.api.Assertions;
 import org.opentest4j.TestAbortedException;
 
 public class PioneerTestKit {
