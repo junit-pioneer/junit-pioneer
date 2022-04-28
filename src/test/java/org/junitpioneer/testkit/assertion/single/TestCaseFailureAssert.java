@@ -26,7 +26,7 @@ public interface TestCaseFailureAssert {
 	 * @param exceptionType the expected type of the thrown exception
 	 * @return an {@link AbstractThrowableAssert} for further assertions
 	 */
-	AbstractThrowableAssert<?, ? extends Throwable> withExceptionInstanceOf(Class<? extends Throwable> exceptionType);
+	<T extends Throwable> AbstractThrowableAssert<?, T> withExceptionInstanceOf(Class<T> exceptionType);
 
 	/**
 	 * Asserts that the test/container failed because an exception was thrown.
