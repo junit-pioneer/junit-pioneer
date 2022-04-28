@@ -208,7 +208,8 @@ class JsonSourceArgumentsProviderTests {
 		@Test
 		void noValuesCartesian() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(InvalidJsonSourceTestCases.class, "noValuesCartesian", Customer.class);
+					.executeTestMethodWithParameterTypes(InvalidJsonSourceTestCases.class, "noValuesCartesian",
+						Customer.class);
 
 			assertThat(results)
 					.hasSingleFailedContainer()
