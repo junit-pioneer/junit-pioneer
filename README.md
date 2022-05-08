@@ -120,6 +120,7 @@ The least we can do is to thank them and list some of their accomplishments here
 
 * [Pankaj Kumar](https://github.com/p1729) contributed towards improving GitHub actions (#587 / #611)
 * [Filip Hrisafov](https://github.com/filiphr) contributed the [JSON Argument Source](https://junit-pioneer.org/docs/json-argument-source/) support (#101 / #492)
+* [Rob Spoor](https://github.com/robtimus) made it possible to use non-static factory methods for `@CartesianTest.MethodFactory`, as long as the test class is annotated with `@TestInstance(Lifecycle.PER_CLASS)` (#628)
 
 #### 2021
 

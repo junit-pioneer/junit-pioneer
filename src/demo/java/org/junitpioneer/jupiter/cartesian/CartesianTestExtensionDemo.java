@@ -11,10 +11,8 @@
 package org.junitpioneer.jupiter.cartesian;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 import static org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode.EXCLUDE;
 import static org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode.MATCH_ALL;
-import static org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,6 +31,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.junitpioneer.jupiter.params.LongRangeSource;
 import org.junitpioneer.jupiter.params.ShortRangeSource;
 
@@ -220,7 +220,7 @@ public class CartesianTestExtensionDemo {
 		@CartesianTest
 		@CartesianTest.MethodFactory("resolveParameters")
 		void wrongOrderParameters(int i, String string) {
-			// fails because the static factory method declared parameter sets in the wrong order
+			// fails because the factory method declared parameter sets in the wrong order
 		}
 
 		@CartesianTest
