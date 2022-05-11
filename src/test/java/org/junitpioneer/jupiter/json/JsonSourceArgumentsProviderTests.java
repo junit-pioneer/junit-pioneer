@@ -14,6 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +52,8 @@ class JsonSourceArgumentsProviderTests {
 
 		assertThat(displayNames)
 				.containsOnlyKeys("deconstructCustomerFromArray", "deconstructCustomerMultipleValues",
-					"deconstructCustomerMultipleLinesComplexType", "singleCustomer", "singleCustomerName");
+					"deconstructCustomerMultipleLinesComplexType", "singleCustomer", "singleCustomerName", "javaTime",
+					"pojoWithJavaTime");
 
 		assertThat(displayNames.get("deconstructCustomerFromArray")).containsExactly("[1] Luke, 172", "[2] Yoda, 66");
 
@@ -64,6 +67,13 @@ class JsonSourceArgumentsProviderTests {
 				.containsExactly("[1] Customer{name='Luke', height=172}", "[2] Customer{name='Yoda', height=66}");
 
 		assertThat(displayNames.get("singleCustomerName")).containsExactly("[1] Luke", "[2] Yoda");
+
+		assertThat(displayNames.get("javaTime")).containsExactly("[1] 2022-05-11", "[2] 1970-01-01");
+
+		// LocalDateTime.toString() cuts off the seconds if they're 0
+		assertThat(displayNames.get("pojoWithJavaTime"))
+				.containsExactly("[1] 2022-05-11T21:17:13: Test created", "[2] 1970-01-01T00:00: Epoch");
+
 	}
 
 	@Test
@@ -143,6 +153,21 @@ class JsonSourceArgumentsProviderTests {
 		@JsonSource({ "{ name: 'Luke', height: 172 }", "{ name: 'Yoda', height: 66 }", })
 		void singleCustomerName(@Property("name") String customerName) {
 			assertThat(customerName).isIn("Luke", "Yoda");
+		}
+
+		@ParameterizedTest
+		@JsonSource({ "{ testDate: '2022-05-11' }", "{ testDate: '1970-01-01' }" })
+		void javaTime(@Property("testDate") LocalDate date) {
+			assertThat(date).isIn(LocalDate.of(2022, 5, 11), LocalDate.of(1970, 1, 1));
+		}
+
+		@ParameterizedTest
+		@JsonSource({ "{ timestamp: '2022-05-11T21:17:13', message: 'Test created' }",
+				"{ timestamp: '1970-01-01T00:00:00', message: 'Epoch' }" })
+		void pojoWithJavaTime(LogEntry logEntry) {
+			assertThat(Collections.singleton(tuple(logEntry.getTimestamp(), logEntry.getMessage())))
+					.containsAnyOf(tuple(LocalDateTime.parse("2022-05-11T21:17:13"), "Test created"),
+						tuple(LocalDateTime.parse("1970-01-01T00:00:00"), "Epoch"));
 		}
 
 	}
@@ -281,6 +306,34 @@ class JsonSourceArgumentsProviderTests {
 		@Override
 		public String toString() {
 			return "Location{" + "name='" + name + '\'' + '}';
+		}
+
+	}
+
+	static class LogEntry {
+
+		private LocalDateTime timestamp;
+		private String message;
+
+		public LocalDateTime getTimestamp() {
+			return timestamp;
+		}
+
+		public void setTimestamp(LocalDateTime timestamp) {
+			this.timestamp = timestamp;
+		}
+
+		public String getMessage() {
+			return message;
+		}
+
+		public void setMessage(String message) {
+			this.message = message;
+		}
+
+		@Override
+		public String toString() {
+			return timestamp + ": " + message;
 		}
 
 	}

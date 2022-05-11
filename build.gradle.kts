@@ -53,7 +53,8 @@ repositories {
 }
 
 val junitVersion : String by project
-val jacksonVersion: String = "2.13.2.2"
+val jacksonVersion: String = "2.13.2"
+val jacksonDatabindVersion: String = "2.13.2.2"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
@@ -62,7 +63,7 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-commons")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
-	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
+	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonDatabindVersion)
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
@@ -71,6 +72,7 @@ dependencies {
 	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.4.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
 	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.10")
+	testImplementation(group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = jacksonVersion)
 
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.2")
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.17.2")

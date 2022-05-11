@@ -119,6 +119,7 @@ The least we can do is to thank them and list some of their accomplishments here
 #### 2022
 
 * [Filip Hrisafov](https://github.com/filiphr) contributed the [JSON Argument Source](https://junit-pioneer.org/docs/json-argument-source/) support (#101 / #492)
+* [Rob Spoor](https://github.com/robtimus) added registration of Jackson modules (e.g. `JavaTimeModule`) for JSON sources (#624 / #629)
 
 #### 2021
 

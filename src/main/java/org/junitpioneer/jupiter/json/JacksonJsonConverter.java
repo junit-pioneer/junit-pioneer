@@ -23,7 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 class JacksonJsonConverter implements JsonConverter {
 
-	private static final JacksonJsonConverter INSTANCE = new JacksonJsonConverter(new ObjectMapper());
+	private static final JacksonJsonConverter INSTANCE = new JacksonJsonConverter(
+		new ObjectMapper().findAndRegisterModules());
 
 	private final ObjectMapper objectMapper;
 	private final ObjectMapper lenientObjectMapper;
