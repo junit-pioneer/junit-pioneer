@@ -20,6 +20,5 @@ public class StopwatchExtensionDemo {
 	void test() {
 		// Some test
 	}
-
 	// end::stopwatch_demo[]
 }
