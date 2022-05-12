@@ -260,6 +260,7 @@ tasks {
 				dependencies {
 					implementation(project)
 					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+					implementation("org.assertj:assertj-core:3.22.0")
 				}
 
 				sources {
