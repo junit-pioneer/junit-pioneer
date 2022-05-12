@@ -16,7 +16,7 @@ Check out [junit-pioneer.org](https://junit-pioneer.org/), particularly [the doc
 ## A Pioneer's Mission
 
 JUnit Pioneer provides extensions for [JUnit 5](https://github.com/junit-team/junit5/) and its Jupiter API.
-It does not limit itself to proven ideas with wide application but is purposely open to experiment.
+It does not limit itself to proven ideas with wide application but is purposely open to experimentation.
 It aims to spin off successful and cohesive portions into sibling projects or back into the JUnit 5 code base.
 
 To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its infrastructure, from code style to build tool and configuration to continuous integration.
