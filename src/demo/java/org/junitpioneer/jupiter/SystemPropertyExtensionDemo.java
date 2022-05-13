@@ -4,12 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class SystemPropertyExtensionDemo {
 
     // tag::systemproperty_clear_simple[]
     @Test
     @ClearSystemProperty(key = "some property")
-    void test() {
+    void testClearingProperty() {
         assertThat(System.getProperty("some property"))
                 .isNull();
     }
@@ -19,7 +21,7 @@ public class SystemPropertyExtensionDemo {
     @Test
     @SetSystemProperty(key = "some property",
             value = "new value")
-    void test() {
+    void testSettingProperty() {
         assertThat(System.getProperty("some property"))
                 .isEqualTo("new value");
     }
@@ -31,7 +33,7 @@ public class SystemPropertyExtensionDemo {
     @ClearSystemProperty(key = "2nd property")
     @SetSystemProperty(key = "3rd property",
             value = "new value")
-    void test() {
+    void testClearingAndSettingProperty() {
         assertThat(System.getProperty("1st property")).isNull();
         assertThat(System.getProperty("2nd property")).isNull();
         assertThat(System.getProperty("3rd property"))
@@ -46,7 +48,7 @@ public class SystemPropertyExtensionDemo {
         @Test
         @SetSystemProperty(key = "some property",
                 value = "new value")
-        void test() {
+        void clearedAtClasslevel() {
             assertThat(System.getProperty("some property"))
                     .isEqualTo("new value");
         }
@@ -58,7 +60,7 @@ public class SystemPropertyExtensionDemo {
     @ParameterizedTest
     @ValueSource(strings = { "foo", "bar" })
     @ClearSystemProperty(key = "some property")
-    void test(String value) {
+    void parameterizedTest(String value) {
         System.setProperty("some property", value);
     }
     // end::systemproperty_parameter[]
