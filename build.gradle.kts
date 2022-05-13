@@ -53,6 +53,9 @@ repositories {
 }
 
 val junitVersion : String by project
+// IMPORTANT:
+// This version is mentioned in json-argument-source.adoc
+// and needs to be updated there if changed here!
 val jacksonVersion: String = "2.13.2.2"
 
 dependencies {

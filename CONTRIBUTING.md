@@ -480,7 +480,7 @@ Pioneer avoids adding to users' dependency hell and hence doesn't take on depend
 _Optional_ dependencies are acceptable if they are needed to provide specific features, particularly:
 
 * to _integrate_ with other tools, frameworks, and libraries by offering features that directly interact with them (a hypothetical example is [Playwright](https://playwright.dev) for E2E testing)
-* for _ease of use_ when recreating functionality would be too complex or otherwise out of scope for Pioneer (a hypothetical example is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing)
+* for _ease of use_ when recreating functionality would be too complex or otherwise out of scope for Pioneer (an example is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing)
 
 Unless we see reports of optional dependencies causing unexpected problems for users, there is no particularly high hurdle for taking them on, given each provides more than marginal value.
 They should only be used by specifically chosen features that require them, though, and care needs to be taken to prevent them from creeping into the rest of the code base - CheckStyle rules need to be configured for each that fail the build on accidental use of these dependencies.
