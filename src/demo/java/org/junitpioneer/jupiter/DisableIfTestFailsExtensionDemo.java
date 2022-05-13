@@ -10,7 +10,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class DisableIfExtensionDemo {
+public class DisableIfTestFailsExtensionDemo {
 
     // tag::disable_if_test_fails[]
     @DisableIfTestFails

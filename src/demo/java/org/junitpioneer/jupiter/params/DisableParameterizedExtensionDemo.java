@@ -1,12 +1,8 @@
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.params;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junitpioneer.jupiter.params.DisableIfAllArguments;
-import org.junitpioneer.jupiter.params.DisableIfAnyArgument;
-import org.junitpioneer.jupiter.params.DisableIfArgument;
-import org.junitpioneer.jupiter.params.DisableIfDisplayName;
 
 import static org.junit.jupiter.api.Assertions.fail;
 

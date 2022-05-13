@@ -1,15 +1,15 @@
 package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnvironmentVariablesExtensionDemo {
 
     // tag::environment_clear_simple[]
     @Test
     @ClearEnvironmentVariable(key = "some variable")
-    void test() {
+    void testClear() {
         assertThat(System.getenv("some variable")).isNull();
     }
     // end::environment_clear_simple[]
@@ -19,7 +19,7 @@ public class EnvironmentVariablesExtensionDemo {
     @SetEnvironmentVariable(
             key = "some variable",
             value = "new value")
-    void test() {
+    void testSet() {
         assertThat(System.getenv("some variable")).
                 isEqualTo("new value");
     }
@@ -32,7 +32,7 @@ public class EnvironmentVariablesExtensionDemo {
     @SetEnvironmentVariable(
             key = "3rd variable",
             value = "new value")
-    void test() {
+    void testClearAndSet() {
         assertThat(System.getenv("1st variable")).isNull();
         assertThat(System.getenv("2nd variable")).isNull();
         assertThat(System.getenv("3rd variable"))
@@ -47,7 +47,7 @@ public class EnvironmentVariablesExtensionDemo {
         @Test
         @SetEnvironmentVariable(key = "some variable",
                 value = "new value")
-        void test() {
+        void clearedAtClasslevel() {
             assertThat(System.getenv("some variable"))
                     .isEqualTo("new value");
         }
