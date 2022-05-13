@@ -1,5 +1,10 @@
 :page-title: Cartesian product of all test parameters
 :page-description: Extends JUnit Jupiter with `@CartesianTest`, a variant of parameterized tests that tests all combinations of its input
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/cartesian/CartesianTestExtensionDemo.java
+:people: {xp-demo-dir}/org/junitpioneer/jupiter/cartesian/PeopleProviderSources.java
+:bit: {xp-demo-dir}/org/junitpioneer/jupiter/cartesian/BitArgumentProvider.java
+:number: {xp-demo-dir}/org/junitpioneer/jupiter/cartesian/NumberArgumentProvider.java
 
 From Wikipedia:
 
@@ -39,14 +44,7 @@ Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
 ----
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 
-class MyCartesianTestClass {
-	@CartesianTest
-	void myCartesianTestMethod(
-			@Values(ints = { 1, 2 }) int x,
-			@Values(ints = { 3, 4 }) int y) {
-		// passing test code
-	}
-}
+include::{demo}[tag=cartesian_simple_demo]
 ----
 
 `@CartesianTest` works with parameters injected by JUnit automatically (e.g.: `TestReporter`).
@@ -73,15 +71,7 @@ import org.junitpioneer.jupiter.params.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-class MyCartesianTestClass {
-	@CartesianTest
-	void testIntChars(
-			@ShortRangeSource(from = 1, to = 3, step = 1) short s,
-			@Values(strings = { "A", "B" }) String character,
-			@Enum ChronoUnit unit) {
-		// passing test code
-	}
-}
+include::{demo}[tag=cartesian_annotating_parameters]
 ----
 
 === `@CartesianTest.Values`
@@ -94,14 +84,7 @@ The test will try every combination those values can have.
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 
-class MyCartesianTestClass {
-	@CartesianTest
-	void testIntChars(
-			@Values(ints = { 1, 2, 4 }) int number,
-			@Values(strings = { "A", "B" }) String character) {
-		// passing test code
-	}
-}
+include::{demo}[tag=cartesian_combining_values]
 ----
 
 This annotation might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-ValueSource::[JUnit's `@ValueSource`], except `@CartesianTest.Values` must be put on the parameter.
@@ -135,12 +118,7 @@ import java.time.temporal.ChronoUnit;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-class MyCartesianTestClass {
-	@CartesianTest
-	void testWithEnum(@Enum ChronoUnit unit) {
-		assertThat(unit).isNotNull();
-	}
-}
+include::{demo}[tag=cartesian_with_enum]
 ----
 
 Like `@CartesianTest.Values`, `@CartesianTest.Enum` is an annotation that might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-EnumSource::[JUnit's `@EnumSource`], except `@CartesianTest.Enum` must be put on the parameter.
@@ -158,12 +136,7 @@ import java.time.temporal.*;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-class MyCartesianTestClass {
-	@CartesianTest
-	void testExplicitEnum(@Enum(ChronoUnit.class) TemporalUnit unit) {
-		assertThat(unit).isNotNull();
-	}
-}
+include::{demo}[tag=cartesian_enum_with_type]
 ----
 
 The annotation provides an optional `names` attribute that lets you specify which constants shall be used, like in the following example.
@@ -176,13 +149,7 @@ import java.time.temporal.*;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-class MyCartesianTestClass {
-	@CartesianTest
-	void testEnumNames(
-			@Enum(names = { "DAYS", "HOURS" }) ChronoUnit unit) {
-		assertThat(EnumSet.of(ChronoUnit.DAYS, ChronoUnit.HOURS)).contains(unit);
-	}
-}
+include::{demo}[tag=cartesian_enum_with_type_and_names]
 ----
 
 The annotation also provides an optional `mode` attribute that enables fine-grained control over which constants are passed to the test method.
@@ -195,13 +162,7 @@ import java.time.temporal.*;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-class MyCartesianTestClass {
-	@CartesianTest
-	void testWithEnumModes(
-			@Enum(mode = EXCLUDE, names = { "ERAS", "FOREVER" }) ChronoUnit unit) {
-		assertThat(EnumSet.of(ChronoUnit.ERAS, ChronoUnit.FOREVER)).doesNotContain(unit);
-	}
-}
+include::{demo}[tag=cartesian_enum_with_mode]
 ----
 
 [source,java]
@@ -211,13 +172,7 @@ import java.time.temporal.*;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-class MyCartesianTestClass {
-	@CartesianTest
-	void testWithEnumRegex(
-			@Enum(mode = MATCH_ALL, names = "^.*DAYS$") ChronoUnit unit) {
-		assertThat(unit.name()).endsWith("DAYS");
-	}
-}
+include::{demo}[tag=cartesian_enum_with_regex]
 ----
 
 The example below shows how to use `@CartesianTest.Enum` with two `Enum` types.
@@ -227,22 +182,7 @@ The example below shows how to use `@CartesianTest.Enum` with two `Enum` types.
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-enum MyEnum {
-	ONE, TWO, THREE
-}
-
-enum AnotherEnum {
-	ALPHA, BETA, GAMMA, DELTA
-}
-
-class MyCartesianTestClass {
-	@CartesianTest
-	void testEnumValues(
-			@Enum MyEnum myEnum,
-		@Enum(names = { "ALPHA", "DELTA" }, mode = Mode.EXCLUDE) AnotherEnum anotherEnum) {
-		// passing test code
-	}
-}
+include::{demo}[tag=cartesian_enum_with_enums]
 ----
 
 The test `testEnumValues` is executed exactly six times.
@@ -272,14 +212,7 @@ For _this purpose only_, range sources can be used on parameters.
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.params.*;
 
-class MyCartesianTestClass {
-	@CartesianTest
-	void testShortAndLong(
-			@ShortRangeSource(from = 1, to = 3, step = 1) short s,
-			@LongRangeSource(from = 0L, to = 2L, step = 1, closed = true) long l) {
-		// passing test code
-	}
-}
+include::{demo}[tag=cartesian_enum_with_range_sources]
 ----
 
 The test `testShortAndLong` is executed exactly six times.
@@ -321,21 +254,7 @@ Let's look at an example.
 
 [source,java]
 ----
-
-class MyCartesianTestClass {
-	@CartesianTest
-	@CartesianTest.MethodFactory("setFactory")
-	void testMethod(String string, Class<?> clazz, TimeUnit unit) {
-		// passing test code
-	}
-
-	static ArgumentSets setFactory() {
-		return ArgumentSets
-				.argumentsForFirstParameter("Alpha", "Omega")
-				.argumentsForNextParameter(Runnable.class, Cloneable.class, Predicate.class)
-				.argumentsForNextParameter(TimeUnit.DAYS, TimeUnit.HOURS);
-	}
-}
+include::{demo}[tag=cartesian_argument_sets]
 ----
 
 The test `testMethod` is executed exactly twelve times.
@@ -366,25 +285,7 @@ You can reuse the same argument provider method multiple times.
 
 [source,java]
 ----
-class MyCartesianTestClass {
-	@CartesianTest
-	@CartesianTest.MethodFactory("provideArguments")
-	void testNeedingArguments(String string, int i) {
-		// passing test code
-	}
-
-	@CartesianTest
-	@CartesianTest.MethodFactory("provideArguments")
-	void testNeedingSameArguments(String string, int i) {
-		// different passing test code
-	}
-
-	static ArgumentSets provideArguments() {
-		return ArgumentSets
-			.argumentsForFirstParameter("Mercury", "Earth", "Venus")
-			.argumentsForNextParameter(1, 12, 144);
-	}
-}
+include::{demo}[tag=cartesian_argument_sets_reuse]
 ----
 
 ==== Requirements for the static factory method
@@ -407,44 +308,7 @@ Examples of badly configured tests/static factory method:
 
 [source,java]
 ----
-class BadExamples {
-	@CartesianTest
-	@CartesianTest.MethodFactory("resolveParameters")
-	void tooFewParameters(String string, int i, boolean b) {
-		// fails because the boolean parameter is not resolved
-	}
-
-	@CartesianTest
-	@CartesianTest.MethodFactory("resolveParameters")
-	void tooManyParameters(String string) {
-		// fails because we try to supply a non-existent integer parameter
-	}
-
-	@CartesianTest
-	@CartesianTest.MethodFactory("resolveParameters")
-	void wrongOrderParameters(int i, String string) {
-		// fails because the static factory method declared parameter sets in the wrong order
-	}
-
-	@CartesianTest
-	@CartesianTest.MethodFactory("resolveTestReporterParam")
-	void conflictingParameters(String string, TestReporter info) {
-		// fails because both the factory method and JUnit tries to inject TestReporter
-	}
-
-	static ArgumentSets resolveParameters() {
-		return ArgumentSets
-			.argumentsForFirstParameter("A", "B", "C")
-			.argumentsForNextParameter(1, 2, 3);
-	}
-
-	static ArgumentSets resolveTestReporterParam() {
-		return ArgumentSets
-			.argumentsForFirstParameter("A", "B", "C")
-			// in this case MyTestReporter implements TestReporter
-			.argumentsForNextParameter(new MyTestReporter());
-	}
-}
+include::{demo}[tag=cartesian_bad_examples]
 ----
 
 == Writing your own `@ArgumentsSource` for `@CartesianTest`
@@ -473,14 +337,7 @@ Let's create an annotation for it.
 import java.lang.annotation.*;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.RUNTIME)
-@CartesianArgumentsSource(IntArgumentsProvider.class)
-public @interface Ints {
-
-	int[] value();
-
-}
+include::{demo}[tag=cartesian_argument_sets_int_argument_provider]
 ----
 
 The annotation targets parameters because we want to use it directly on a parameter.
@@ -499,15 +356,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
-class IntArgumentsProvider implements CartesianParameterArgumentsProvider {
-
-	@Override
-	public Stream<Integer> provideArguments(ExtensionContext context, Parameter parameter) {
-		Ints source = Objects.requireNonNull(parameter.getAnnotation(Ints.class));
-		return Arrays.stream(source.value());
-	}
-
-}
+include::{demo}[tag=cartesian_argument_sets_ints_annotation]
 ----
 
 The class has to implement `CartesianParameterArgumentsProvider`.
@@ -528,26 +377,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.RUNTIME)
-@CartesianArgumentsSource(PeopleProvider.class)
-@interface People {
-
-	String[] names();
-
-	int ages();
-
-}
-
-class PeopleProvider implements CartesianParameterArgumentsProvider {
-
-	@Override
-	public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
-		People source = Objects.requireNonNull(parameter.getAnnotation(People.class));
-		return IntStream.range(0, source.names().length)
-			.mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
-	}
-}
+include::{people}[tag=cartesian_people_provider_with_CartesianParameterArgumentsProvider]
 ----
 
 Alternatively, `@CartesianTest` supports it if you want to implement the https://junit.org/junit5/docs/5.5.0/api/org/junit/jupiter/params/support/AnnotationConsumer.html[`AnnotationConsumer`] interface.
@@ -564,33 +394,7 @@ import org.junit.jupiter.params.support.AnnotationConsumer;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
-@Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.RUNTIME)
-@CartesianArgumentsSource(PeopleProvider.class)
-@interface People {
-
-	String[] names();
-
-	int ages();
-
-}
-
-class PeopleProvider implements CartesianParameterArgumentsProvider, AnnotationConsumer<People> {
-
-	private People source;
-
-	@Override
-	public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
-		return IntStream.range(0, source.names().length)
-			.mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
-	}
-
-	@Override
-	public void accept(People source) {
-		this.source = source;
-	}
-
-}
+include::{people}[tag=cartesian_people_provider_with_AnnotationConsumer]
 ----
 
 === Implementing `CartesianMethodArgumentsProvider`
@@ -608,11 +412,7 @@ Let's create an annotation for it.
 import java.lang.annotation.*;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@CartesianArgumentsSource(BitArgumentsProvider.class)
-public @interface BitSource {
-}
+include::{bit}[tag=cartesian_bit_source_annotation]
 ----
 
 The annotation targets methods because we want to use it on the test method itself.
@@ -631,18 +431,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
 
-class BitArgumentsProvider implements CartesianMethodArgumentsProvider {
-
-	@Override
-	public ArgumentSets provideArguments(ExtensionContext context) {
-		int paramCount = context.getRequiredTestMethod().getParameters().length;
-		ArgumentSets sets = ArgumentSets.create();
-		for (int i = 0; i < paramCount; i++) {
-			sets.argumentsForNextParameter(0, 1);
-		}
-		return sets;
-	}
-}
+include::{bit}[tag=cartesian_bit_argument_provider]
 ----
 
 The class has to implement `CartesianMethodArgumentsProvider`.
@@ -668,34 +457,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@CartesianArgumentsSource(NumberArgumentsProvider.class)
-public @interface NumberSource {
-	int[] value();
-}
-
-class NumberArgumentsProvider implements CartesianMethodArgumentsProvider, AnnotationConsumer<NumberSource> {
-
-	private int[] numbers;
-
-	@Override
-	public ArgumentSets provideArguments(ExtensionContext context) {
-		int paramCount = context.getRequiredTestMethod().getParameters().length;
-		ArgumentSets sets = ArgumentSets.create();
-		for (int i = 0; i < paramCount; i++) {
-			sets.argumentsForNextParameter(Arrays.stream(numbers).boxed());
-		}
-		return sets;
-	}
-
-	@Override
-	public void accept(NumberSource source) {
-		this.numbers = source.value();
-	}
-
-}
-
+include::{number}[tag=cartesian_number_argument_provider]
 ----
 
 == Customizing Display Names
@@ -709,15 +471,7 @@ For example:
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 
-class MyCartesianTest {
-
-	@CartesianTest(name = "{index} => first bit: {0} second bit: {1}")
-	@DisplayName("Basic bit test")
-	void testWithCustomDisplayName(
-			@Values({"0", "1"}) String a, @Values({"0", "1"}) String b) {
-		// passing test code
-	}
-}
+include::{demo}[tag=cartesian_testWithCustomDisplayName]
 ----
 
 When executing the above test, you should see output similar to the following:
