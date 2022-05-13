@@ -1,6 +1,5 @@
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -11,7 +10,7 @@ import org.junitpioneer.jupiter.params.DisableIfDisplayName;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class DisableParameterizedDemo {
+public class DisableParameterizedExtensionDemo {
 
     // tag::disable_parameterized_name_contains[]
     // disable invocations whose display name contains "disable"

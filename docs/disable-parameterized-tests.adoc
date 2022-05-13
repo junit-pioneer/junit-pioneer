@@ -1,7 +1,7 @@
 :page-title: Disable Parameterized Test
 :page-description: Extends JUnit Jupiter with multiple extensions, which selectively disables parameterized tests
 :xp-demo-dir: ../src/demo/java
-:demo: {xp-demo-dir}/org/junitpioneer/jupiter/DisableParameterizedDemo.java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/DisableParameterizedExtensionDemo.java
 
 JUnit Pioneer offers multiple extensions for selectively disabling parameterized tests.
 These are as follows:

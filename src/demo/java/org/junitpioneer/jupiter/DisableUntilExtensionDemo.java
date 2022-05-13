@@ -2,7 +2,7 @@ package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.Test;
 
-public class DisableUntilDemo {
+public class DisableUntilExtensionDemo {
 
     // tag::disable_until_simple[]
     @DisabledUntil(date = "2022-01-01")
