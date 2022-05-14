@@ -288,12 +288,19 @@ You can reuse the same argument provider method multiple times.
 include::{demo}[tag=cartesian_argument_sets_reuse]
 ----
 
+You can use an argument provider method in nested classes, as long as these are annotated with `@TestInstance(Lifecycle.PER_CLASS)`.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=cartesian_argument_sets_with_nested_classes]
+----
+
 ==== Requirements for the factory method
 
 There are multiple requirements the factory method has to fulfill to qualify:
 
 - must have the same name as the test method (or its name must be specified via the `factory` attribute)
-- must be `static` (unless the test class is annotated with `@TestInstance(Lifecycle.PER_CLASS)`)
+- must be `static` (unless the test class is annotated with `@TestInstance(Lifecycle.PER_CLASS)` and the factory method is defined in the test class)
 - must have **no** parameters
 - must return `ArgumentSets`
 - must register values for every parameter exactly once

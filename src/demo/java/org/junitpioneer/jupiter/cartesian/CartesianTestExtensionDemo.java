@@ -29,6 +29,9 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
@@ -278,5 +281,31 @@ public class CartesianTestExtensionDemo {
 
 	}
 	// end::cartesian_testWithCustomDisplayName[]
+
+	// tag::cartesian_argument_sets_with_nested_classes[]
+	class MyCartesianTestClassWithNestedClasses {
+
+		@Nested
+		// the next annotation is required to allow a non-static factory method
+		@TestInstance(Lifecycle.PER_CLASS)
+		class MyNestedCartesianTestClass {
+
+			@CartesianTest
+			@CartesianTest.MethodFactory("provideArguments")
+			void testNeedingArguments(String string, int i) {
+				// passing test code
+			}
+
+			// this provider method doesn't have to be static
+			ArgumentSets provideArguments() {
+				return ArgumentSets
+						.argumentsForFirstParameter("Mercury", "Earth", "Venus")
+						.argumentsForNextParameter(1, 12, 144);
+			}
+
+		}
+
+	}
+	// end::cartesian_argument_sets_with_nested_classes[]
 
 }

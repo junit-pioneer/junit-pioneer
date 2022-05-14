@@ -13,6 +13,8 @@ package org.junitpioneer.testkit;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 
+import java.util.List;
+
 import org.opentest4j.TestAbortedException;
 
 public class PioneerTestKit {
@@ -52,6 +54,56 @@ public class PioneerTestKit {
 	public static ExecutionResults executeTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
 			Class<?>... methodParameterTypes) {
 
+		String allTypeNames = toMethodParameterTypesString(methodParameterTypes);
+
+		return new ExecutionResults(testClass, testMethodName, allTypeNames);
+	}
+
+	/**
+	 * Returns the execution results of the given nested test class.
+	 *
+	 * @param enclosingClasses List of the enclosing classes
+	 * @param testClass Name of the test class, the results should be returned
+	 * @return The execution results
+	 */
+	public static ExecutionResults executeNestedTestClass(List<Class<?>> enclosingClasses, Class<?> testClass) {
+		return new ExecutionResults(enclosingClasses, testClass);
+	}
+
+	/**
+	 * Returns the execution results of the given method of a given nested test class.
+	 *
+	 * @param enclosingClasses List of the enclosing classes
+	 * @param testClass Name of the test class
+	 * @param testMethodName Name of the test method (of the given class)
+	 * @return The execution results
+	 */
+	public static ExecutionResults executeNestedTestMethod(List<Class<?>> enclosingClasses, Class<?> testClass,
+			String testMethodName) {
+		return new ExecutionResults(enclosingClasses, testClass, testMethodName);
+	}
+
+	/**
+	 * Returns the execution results of the given method of a given nested test class.
+	 *
+	 * @param enclosingClasses List of the enclosing classes
+	 * @param testClass Name of the test class
+	 * @param testMethodName Name of the test method (of the given class)
+	 * @param methodParameterTypes Class type(s) of the parameter(s)
+	 * @return The execution results
+	 * @throws IllegalArgumentException when methodParameterTypes is null
+	 *			This method only checks parameters which are not part of the underlying
+	 *			Jupiter TestKit. The Jupiter TestKit may throw other exceptions!
+	 */
+	public static ExecutionResults executeNestedTestMethodWithParameterTypes(List<Class<?>> enclosingClasses,
+			Class<?> testClass, String testMethodName, Class<?>... methodParameterTypes) {
+
+		String allTypeNames = toMethodParameterTypesString(methodParameterTypes);
+
+		return new ExecutionResults(enclosingClasses, testClass, testMethodName, allTypeNames);
+	}
+
+	private static String toMethodParameterTypesString(Class<?>... methodParameterTypes) {
 		// throw IllegalArgumentException for a `null` array instead of NPE
 		// (hence no use of `Objects::requireNonNull`)
 		if (methodParameterTypes == null) {
@@ -59,9 +111,7 @@ public class PioneerTestKit {
 		}
 
 		// Concatenating all type names, because DiscoverySelectors.selectMethod only takes String as a parameter.
-		String allTypeNames = stream(methodParameterTypes).map(Class::getName).collect(joining(","));
-
-		return new ExecutionResults(testClass, testMethodName, allTypeNames);
+		return stream(methodParameterTypes).map(Class::getName).collect(joining(","));
 	}
 
 	/**
