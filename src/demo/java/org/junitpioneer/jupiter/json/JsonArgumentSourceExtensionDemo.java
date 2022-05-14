@@ -26,6 +26,7 @@ class JsonArgumentSourceExtensionDemo {
 		}
 		// end::classpath_source[]
 
+		// @formatter:off
 		// tag::classpath_source_with_property[]
 		@ParameterizedTest
 		@JsonClasspathSource("jedis.json")
@@ -34,7 +35,9 @@ class JsonArgumentSourceExtensionDemo {
 			// YOUR TEST CODE HERE
 		}
 		// end::classpath_source_with_property[]
+		// @formatter:on
 
+		// @formatter:off
 		// tag::classpath_source_deconstruct_from_array[]
 		@ParameterizedTest
 		@JsonClasspathSource("jedis.json")
@@ -44,7 +47,9 @@ class JsonArgumentSourceExtensionDemo {
 			// YOUR TEST CODE HERE
 		}
 		// end::classpath_source_deconstruct_from_array[]
+		// @formatter:on
 
+		// @formatter:off
 		// tag::classpath_source_nested_data[]
 		@ParameterizedTest
 		@JsonClasspathSource(
@@ -55,6 +60,7 @@ class JsonArgumentSourceExtensionDemo {
 			// YOUR TEST CODE HERE
 		}
 		// end::classpath_source_nested_data[]
+		// @formatter:on
 
 	}
 
