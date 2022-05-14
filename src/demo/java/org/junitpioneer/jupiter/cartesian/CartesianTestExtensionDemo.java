@@ -239,7 +239,7 @@ public class CartesianTestExtensionDemo {
         @Override
         public Stream<Integer> provideArguments(ExtensionContext context, Parameter parameter) {
             Ints source = Objects.requireNonNull(parameter.getAnnotation(Ints.class));
-            return (Stream<Integer>) Arrays.stream(source.value());
+            return Arrays.stream(source.value()).boxed();
         }
 
     }
