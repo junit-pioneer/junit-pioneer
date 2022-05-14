@@ -149,7 +149,7 @@ This parametrized test will generate the following tests:
 
 To not make users' dependency management more complex, JUnit Pioneer has no run-time dependencies.
 At the same time, it's not parsing JSON itself and relies on third-party libraries for that.
-For this extensions that means that projects who want to use it need to pull in a JSON parser themselves.
+For this extension that means that projects who want to use it need to pull in a JSON parser themselves.
 This is the list of supported parsers (with the version used when building Pioneer although compatible versions should work as well):
 
 * Jackson: com.fasterxml.jackson.core:jackson-databind:2.13.2.2
