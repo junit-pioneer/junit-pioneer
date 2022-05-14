@@ -10,12 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.METHOD;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -417,7 +416,7 @@ class RetryingTestExtensionTests {
 
 	}
 
-	@Target({ METHOD, ANNOTATION_TYPE })
+	@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@TestTemplate
 	public @interface DummyTestTemplate {

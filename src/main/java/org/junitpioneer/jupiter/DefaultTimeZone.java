@@ -49,8 +49,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @see java.util.TimeZone#getDefault()
  * @see DefaultLocale
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Inherited
 @WritesDefaultTimeZone
 @ExtendWith(DefaultTimeZoneExtension.class)
