@@ -45,8 +45,8 @@ import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
  */
 // CartesianAnnotationConsumer is deprecated for removal
 @SuppressWarnings("deprecation")
-class RangeSourceArgumentsProvider<N extends Number & Comparable<N>> implements ArgumentsProvider,
-		org.junitpioneer.jupiter.CartesianAnnotationConsumer<Annotation>, CartesianParameterArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
+class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
+		implements ArgumentsProvider, CartesianParameterArgumentsProvider<N>, java.util.function.Consumer<Annotation> { //NOSONAR deprecated interface use will be removed in later release
 
 	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
