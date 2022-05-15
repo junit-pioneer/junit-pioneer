@@ -28,26 +28,30 @@ public class VintageTestDemo {
 	}
 	// end::vintage_test_runtime_exception[]
 
-	// tag::vintage_test_iae_exception[]
-	@Test(expected = IllegalArgumentException.class)
-	public void outOfBounds_fails() {
-		new ArrayList<Object>().get(1);
-	}
-	// end::vintage_test_iae_exception[]
+	class TheseTestsWillFailIntentionally {
 
-	// tag::vintage_test_timeout[]
-	@Test(timeout = 100)
-	public void slow_fail() throws InterruptedException {
-		Thread.sleep(1_000);
-	}
-	// end::vintage_test_timeout[]
+		// tag::vintage_test_iae_exception[]
+		@Test(expected = IllegalArgumentException.class)
+		public void outOfBounds_fails() {
+			new ArrayList<Object>().get(1);
+		}
+		// end::vintage_test_iae_exception[]
 
-	// tag::vintage_test_timeout_loop[]
-	@Test(timeout = 100)
-	public void indefinitely() {
-		while (true)
-			;
+		// tag::vintage_test_timeout[]
+		@Test(timeout = 100)
+		public void slow_fail() throws InterruptedException {
+			Thread.sleep(1_000);
+		}
+		// end::vintage_test_timeout[]
+
+		// tag::vintage_test_timeout_loop[]
+		@Test(timeout = 100)
+		public void indefinitely() {
+			while (true)
+				;
+		}
+		// end::vintage_test_timeout_loop[]
+
 	}
-	// end::vintage_test_timeout_loop[]
 
 }

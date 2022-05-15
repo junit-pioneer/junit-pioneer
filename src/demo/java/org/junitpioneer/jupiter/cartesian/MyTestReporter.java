@@ -1,12 +1,24 @@
-package org.junitpioneer.jupiter.cartesian;
+/*
+ * Copyright 2016-2022 the original author or authors.
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v2.0 which
+ * accompanies this distribution and is available at
+ *
+ * http://www.eclipse.org/legal/epl-v20.html
+ */
 
-import org.junit.jupiter.api.TestReporter;
+package org.junitpioneer.jupiter.cartesian;
 
 import java.util.Map;
 
-public class MyTestReporter implements TestReporter {
-    @Override
-    public void publishEntry(Map<String, String> map) {
+import org.junit.jupiter.api.TestReporter;
 
-    }
+public class MyTestReporter implements TestReporter {
+
+	@Override
+	public void publishEntry(Map<String, String> map) {
+
+	}
+
 }

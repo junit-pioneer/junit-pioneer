@@ -1,7 +1,14 @@
-package org.junitpioneer.jupiter.cartesian;
+/*
+ * Copyright 2016-2022 the original author or authors.
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v2.0 which
+ * accompanies this distribution and is available at
+ *
+ * http://www.eclipse.org/legal/epl-v20.html
+ */
 
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.support.AnnotationConsumer;
+package org.junitpioneer.jupiter.cartesian;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,59 +19,67 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.support.AnnotationConsumer;
+
 public class PeopleProviderSources {
 
-    // tag::cartesian_people_provider_with_CartesianParameterArgumentsProvider[]
-    @Target(ElementType.PARAMETER)
-    @Retention(RetentionPolicy.RUNTIME)
-    @CartesianArgumentsSource(PeopleProvider.class)
-    @interface People {
+	// tag::cartesian_people_provider_with_CartesianParameterArgumentsProvider[]
+	@Target(ElementType.PARAMETER)
+	@Retention(RetentionPolicy.RUNTIME)
+	@CartesianArgumentsSource(PeopleProvider.class)
+	@interface People {
 
-        String[] names();
+		String[] names();
 
-        int[] ages();
+		int[] ages();
 
-    }
+	}
 
-    class PeopleProvider implements CartesianParameterArgumentsProvider {
+	class PeopleProvider implements CartesianParameterArgumentsProvider {
 
-        @Override
-        public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
-            People source = Objects.requireNonNull(parameter.getAnnotation(People.class));
-            return IntStream.range(0, source.names().length)
-                    .mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
-        }
-    }
-    // end::cartesian_people_provider_with_CartesianParameterArgumentsProvider[]
+		@Override
+		public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
+			People source = Objects.requireNonNull(parameter.getAnnotation(People.class));
+			return IntStream
+					.range(0, source.names().length)
+					.mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
+		}
 
-    class Person {
-        String name;
-        int age;
+	}
+	// end::cartesian_people_provider_with_CartesianParameterArgumentsProvider[]
 
-        public Person(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-    }
+	class Person {
 
-    // tag::cartesian_people_provider_with_AnnotationConsumer[]
-    class PeopleProviderWithAnnotationConsumer implements CartesianParameterArgumentsProvider, AnnotationConsumer<People> {
+		String name;
+		int age;
 
-        private People source;
+		public Person(String name, int age) {
+			this.name = name;
+			this.age = age;
+		}
 
-        @Override
-        public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
-            return IntStream.range(0, source.names().length)
-                    .mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
-        }
+	}
 
-        @Override
-        public void accept(People source) {
-            this.source = source;
-        }
+	// tag::cartesian_people_provider_with_AnnotationConsumer[]
+	class PeopleProviderWithAnnotationConsumer
+			implements CartesianParameterArgumentsProvider, AnnotationConsumer<People> {
 
-    }
-    // end::cartesian_people_provider_with_AnnotationConsumer[]
+		private People source;
 
+		@Override
+		public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
+			return IntStream
+					.range(0, source.names().length)
+					.mapToObj(i -> new Person(source.names()[i], source.ages()[i]));
+		}
+
+		@Override
+		public void accept(People source) {
+			this.source = source;
+		}
+
+	}
+	// end::cartesian_people_provider_with_AnnotationConsumer[]
 
 }
