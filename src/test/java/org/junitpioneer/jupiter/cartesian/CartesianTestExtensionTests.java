@@ -380,6 +380,22 @@ public class CartesianTestExtensionTests {
 						"Look on my works, ye Mighty, and despair!The lone and level sands stretch far away.");
 		}
 
+		@Test
+		@DisplayName("ignores 'oversupplied' parameters")
+		void factorySourceWithTestReporterNoSecondParam() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class, "ignoredParam",
+						String.class, TestReporter.class);
+
+			assertThat(results)
+					.hasNumberOfReportEntries(9)
+					.withValues("And on the pedestal these words appear:", "My name is Ozymandias, king of kings;",
+						"Look on my works, ye Mighty, and despair!", "And on the pedestal these words appear:",
+						"My name is Ozymandias, king of kings;", "Look on my works, ye Mighty, and despair!",
+						"And on the pedestal these words appear:", "My name is Ozymandias, king of kings;",
+						"Look on my works, ye Mighty, and despair!");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -742,23 +758,6 @@ public class CartesianTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("there is an auto-injected param but arguments were supplied")
-		void factorySourceWithTestReporter() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class, "competingInject",
-						String.class, TestReporter.class);
-
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(9)
-					.hasNumberOfFailedTests(9)
-					.andThenCheckExceptions(exceptions -> assertThat(exceptions)
-							.extracting(Throwable::getCause)
-							.hasOnlyElementsOfType(ExtensionConfigurationException.class)
-							.extracting(Throwable::getMessage)
-							.containsOnly("CartesianTest was supplied arguments but parameter is not supported."));
-		}
-
-		@Test
 		@DisplayName("parameter annotation arguments provider implements CartesianMethodArgumentsProvider")
 		void mismatchingInterfaceParam() {
 			ExecutionResults results = PioneerTestKit
@@ -1033,7 +1032,8 @@ public class CartesianTestExtensionTests {
 
 		@CartesianTest
 		@CartesianTest.MethodFactory("poem")
-		void competingInject(String line, TestReporter reporter) {
+		void ignoredParam(String line, TestReporter reporter) {
+			reporter.publishEntry(line);
 		}
 
 		static ArgumentSets poem() {
