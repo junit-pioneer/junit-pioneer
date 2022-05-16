@@ -150,9 +150,9 @@ This parametrized test will generate the following tests:
 To not make users' dependency management more complex, JUnit Pioneer has no run-time dependencies.
 At the same time, it's not parsing JSON itself and relies on third-party libraries for that.
 For this extension that means that projects who want to use it need to pull in a JSON parser themselves.
-This is the list of supported parsers (with the version used when building Pioneer although compatible versions should work as well):
+This is the list of supported parsers:
 
-* Jackson: com.fasterxml.jackson.core:jackson-databind:2.13.2.2
+* https://search.maven.org/artifact/com.fasterxml.jackson.core/jackson-databind[Jackson]
 
 If you need support for another parser, please https://github.com/junit-pioneer/junit-pioneer/issues/new/choose[open an issue].
 If your project does not already depend on a supported JSON parser, you can add it as follows.
@@ -173,7 +173,7 @@ testRuntimeOnly("org.junit-pioneer:junit-pioneer") {
 Alternatively, the dependency can be added directly:
 
 ```kotlin
-testImplementation("com.fasterxml.jackson.core:jackson-databind:$VERSION")
+testImplementation("com.fasterxml.jackson.core:jackson-databind:$CURRENT_VERSION")
 ```
 
 === Maven
@@ -184,7 +184,7 @@ In Maven, add the parser as a test dependency:
 <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-databind</artifactId>
-    <version>$VERSION</version>
+    <version>$CURRENT_VERSION</version>
     <scope>test</scope>
 </dependency>
 ```
