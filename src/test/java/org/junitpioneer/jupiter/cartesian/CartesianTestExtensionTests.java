@@ -21,6 +21,7 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -380,6 +381,40 @@ public class CartesianTestExtensionTests {
 						"Look on my works, ye Mighty, and despair!The lone and level sands stretch far away.");
 		}
 
+		@Test
+		@DisplayName("ignores 'oversupplied' parameters")
+		void factorySourceWithTestReporterNoSecondParam() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class, "ignoredParam",
+						String.class, TestReporter.class);
+
+			assertThat(results)
+					.hasNumberOfReportEntries(9)
+					.withValues("And on the pedestal these words appear:", "My name is Ozymandias, king of kings;",
+						"Look on my works, ye Mighty, and despair!", "And on the pedestal these words appear:",
+						"My name is Ozymandias, king of kings;", "Look on my works, ye Mighty, and despair!",
+						"And on the pedestal these words appear:", "My name is Ozymandias, king of kings;",
+						"Look on my works, ye Mighty, and despair!");
+		}
+
+		@Test
+		@DisplayName("works when test class has a constructor with auto-injected values")
+		void testClassWithConstructor() {
+			ExecutionResults results = PioneerTestKit.executeTestClass(TestClassWithConstructorTestCases.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
+			assertThat(results).hasNumberOfReportEntries(4).withValues("13", "14", "23", "24");
+		}
+
+		@Test
+		@DisplayName("works when test class has @BeforeEach with auto-injected values")
+		void testClassWithBeforeEach() {
+			ExecutionResults results = PioneerTestKit.executeTestClass(TestClassWithBeforeEachTestCases.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
+			assertThat(results).hasNumberOfReportEntries(4).withValues("13", "14", "23", "24");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -394,15 +429,6 @@ public class CartesianTestExtensionTests {
 				assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
 				assertThat(results).hasNumberOfReportEntries(6).withValues("1A", "1B", "1C", "4A", "4B", "4C");
 
-			}
-
-			@Test
-			@DisplayName("when test class has a constructor with auto-injected values")
-			void testClassWithConstructor() {
-				ExecutionResults results = PioneerTestKit.executeTestClass(TestClassWithConstructorTestCases.class);
-
-				assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
-				assertThat(results).hasNumberOfReportEntries(4).withValues("13", "14", "23", "24");
 			}
 
 		}
@@ -742,23 +768,6 @@ public class CartesianTestExtensionTests {
 		}
 
 		@Test
-		@DisplayName("there is an auto-injected param but arguments were supplied")
-		void factorySourceWithTestReporter() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CartesianFactorySourceTestCases.class, "competingInject",
-						String.class, TestReporter.class);
-
-			assertThat(results)
-					.hasNumberOfDynamicallyRegisteredTests(9)
-					.hasNumberOfFailedTests(9)
-					.andThenCheckExceptions(exceptions -> assertThat(exceptions)
-							.extracting(Throwable::getCause)
-							.hasOnlyElementsOfType(ExtensionConfigurationException.class)
-							.extracting(Throwable::getMessage)
-							.containsOnly("CartesianTest was supplied arguments but parameter is not supported."));
-		}
-
-		@Test
 		@DisplayName("parameter annotation arguments provider implements CartesianMethodArgumentsProvider")
 		void mismatchingInterfaceParam() {
 			ExecutionResults results = PioneerTestKit
@@ -1033,7 +1042,8 @@ public class CartesianTestExtensionTests {
 
 		@CartesianTest
 		@CartesianTest.MethodFactory("poem")
-		void competingInject(String line, TestReporter reporter) {
+		void ignoredParam(String line, TestReporter reporter) {
+			reporter.publishEntry(line);
 		}
 
 		static ArgumentSets poem() {
@@ -1127,6 +1137,24 @@ public class CartesianTestExtensionTests {
 		void shouldHaveTestInfo(@CartesianTest.Values(ints = { 1, 2 }) int i,
 				@CartesianTest.Values(ints = { 3, 4 }) int j) {
 			assertThat(testInfo).isNotNull();
+		}
+
+	}
+
+	static class TestClassWithBeforeEachTestCases {
+
+		private TestInfo info;
+
+		@BeforeEach
+		void setUp(TestInfo info) {
+			this.info = info;
+		}
+
+		@CartesianTest
+		@ReportEntry("{0}{1}")
+		void shouldHaveTestInfo(@CartesianTest.Values(ints = { 1, 2 }) int i,
+				@CartesianTest.Values(ints = { 3, 4 }) int j) {
+			assertThat(info).isNotNull();
 		}
 
 	}

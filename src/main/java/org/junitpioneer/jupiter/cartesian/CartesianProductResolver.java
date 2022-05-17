@@ -14,7 +14,6 @@ import static org.junitpioneer.internal.PioneerUtils.wrap;
 
 import java.util.List;
 
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -48,10 +47,7 @@ class CartesianProductResolver implements ParameterResolver {
 		// parameter with correct type (or `null`)
 		if (parameter == null)
 			return true;
-		if (parameterClass.isAssignableFrom(parameter.getClass()))
-			return true;
-		throw new ExtensionConfigurationException(
-			"CartesianTest was supplied arguments but parameter is not supported.");
+		return parameterClass.isAssignableFrom(parameter.getClass());
 	}
 
 	@Override
