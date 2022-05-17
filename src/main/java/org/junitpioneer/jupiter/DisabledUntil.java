@@ -30,8 +30,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * @see org.junit.jupiter.api.Disabled
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Inherited
 @ExtendWith(DisabledUntilExtension.class)
 public @interface DisabledUntil {

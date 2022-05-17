@@ -60,8 +60,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @see java.util.Locale#getDefault()
  * @see DefaultTimeZone
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Inherited
 @WritesDefaultLocale
 @ExtendWith(DefaultLocaleExtension.class)

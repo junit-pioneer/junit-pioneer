@@ -10,9 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.TYPE;
-
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -46,9 +44,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * ... then, only remaining tests in {@code SpecificTests} are disabled and other implementations
  * of {@code Tests} remain unaffected, i.e. their tests are not disabled.
  */
-@Target({ TYPE, ANNOTATION_TYPE })
-@Inherited
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE })
+@Inherited
 @ExtendWith(DisableIfTestFailsExtension.class)
 public @interface DisableIfTestFails {
 

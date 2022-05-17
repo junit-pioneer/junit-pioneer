@@ -183,6 +183,19 @@ How to write the code itself.
 * design code to avoid optionality wherever feasibly possible
 * in all remaining cases, prefer `Optional` over `null`
 
+#### Reusability
+
+We strive to make our extensions reusable and extensible.
+
+A key ingredient in that is making sure that annotations work as meta-annotations (i.e. users can apply _our_ annotations to _their_ annotations and our extensions still work).
+To achieve this, apply `@Target({ ElementType.ANNOTATION_TYPE })` to annotations and prefer `org.junitpioneer.internal.PioneerAnnotationUtils` and `org.junit.platform.commons.support.AnnotationSupport` when searching for annotations.
+
+Another aspect is that annotations that apply to classes (i.e. those marked with `@Target({ ElementType.TYPE })`) should be inherited by subclasses.
+For that, also add the annotation `@Inherited`.
+
+**NOTE**:
+`ElementType.TYPE` includes annotations, so there's no need to apply it _and_ `ElementType.ANNOTATION_TYPE`.
+
 #### Thread-safety
 
 It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.

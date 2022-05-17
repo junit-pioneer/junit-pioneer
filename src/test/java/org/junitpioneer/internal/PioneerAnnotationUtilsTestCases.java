@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 public class PioneerAnnotationUtilsTestCases {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+	@Target({ ElementType.TYPE, ElementType.METHOD })
 	@Inherited
 	public @interface NonRepeatableTestAnnotation {
 
@@ -29,7 +29,7 @@ public class PioneerAnnotationUtilsTestCases {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+	@Target({ ElementType.TYPE, ElementType.METHOD })
 	@Inherited
 	@Repeatable(PioneerAnnotationUtilsTestCases.RepeatableTestAnnotation.Container.class)
 	public @interface RepeatableTestAnnotation {
@@ -37,7 +37,7 @@ public class PioneerAnnotationUtilsTestCases {
 		String value() default "";
 
 		@Retention(RetentionPolicy.RUNTIME)
-		@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+		@Target({ ElementType.TYPE, ElementType.METHOD })
 		@Inherited
 		@interface Container {
 
