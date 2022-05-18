@@ -3,7 +3,7 @@
 
 <module name="Checker">
 	<module name="SuppressionFilter">
-		<property name="file" value="${config_loc}/suppressions.xml"/>
+		<property name="file" value="${config_loc}/suppressions.xml" />
 	</module>
 	<property name="severity" value="error" />
 	<module name="TreeWalker">
@@ -25,12 +25,12 @@
 		</module>
 		<module name="AvoidStarImport" />
 		<module name="ImportControl">
-			<property name="file" value="${config_loc}/import-control.xml"/>
+			<property name="file" value="${config_loc}/import-control.xml" />
 		</module>
 	</module>
 	<module name="JavadocPackage" />
 	<module name="SuppressWarningsFilter" />
 	<module name="BeforeExecutionExclusionFileFilter">
-		<property name="fileNamePattern" value="module\-info\.java$"/>
+		<property name="fileNamePattern" value="module\-info\.java$" />
 	</module>
 </module>
