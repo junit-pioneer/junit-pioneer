@@ -9,7 +9,6 @@
 	<module name="TreeWalker">
 		<module name="SuppressWarningsHolder" />
 		<module name="JavadocMethod">
-			<property name="allowMissingJavadoc" value="true" />
 			<property name="allowMissingParamTags" value="true" />
 			<property name="allowMissingReturnTag" value="true" />
 			<property name="validateThrows" value="true" />
