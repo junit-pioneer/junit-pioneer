@@ -15,6 +15,6 @@ To measure elapsed time just add the `@Stopwatch` annotation to a class or, like
 
 [source,java]
 ----
-include::{demo}[tag=stopwatch_demo]
+include::{demo}[indent=0, tag=stopwatch_demo]
 ----
 

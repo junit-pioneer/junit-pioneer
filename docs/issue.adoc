@@ -25,7 +25,7 @@ To show that a test relates to an issue just add the annotation and provide a va
 
 [source,java]
 ----
-include::{demo}[tag=issue_simple]
+include::{demo}[indent=0, tag=issue_simple]
 ----
 
 The `@Issue` annotation can be used on the class and method level.
@@ -46,7 +46,7 @@ The following snippet shows a simple implementation of the interface that just p
 
 [source,java]
 ----
-include::{demo}[tag=issue_processor_sample]
+include::{demo}[indent=0, tag=issue_processor_sample]
 ----
 
 NOTE: The implementing class must be registered to the Java ecosystem as a service.

@@ -12,7 +12,7 @@ In the basic use case, using any range source with just the `from` and `to` para
 
 [source,java]
 ----
-include::{demo}[tag=rangesources_int_valid_digit]
+include::{demo}[indent=0, tag=rangesources_int_valid_digit]
 ----
 
 == Defining the step
@@ -22,7 +22,7 @@ It can be positive or negative:
 
 [source,java]
 ----
-include::{demo}[tag=rangesources_double_with_step]
+include::{demo}[indent=0, tag=rangesources_double_with_step]
 ----
 
 == Open and closed range sources
@@ -32,7 +32,7 @@ This behavior can be controlled by specifying the `closed` argument:
 
 [source,java]
 ----
-include::{demo}[tag=rangesources_ranges]
+include::{demo}[indent=0, tag=rangesources_ranges]
 ----
 
 == Empty ranges

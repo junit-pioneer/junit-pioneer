@@ -27,21 +27,21 @@ For example, the following test succeeds because the thrown exception is of the 
 
 [source,java]
 ----
-include::{demo}[tag=vintage_test_indexoutofbound_exception]
+include::{demo}[indent=0, tag=vintage_test_indexoutofbound_exception]
 ----
 
 This test succeeds because the thrown exception is a subtype of the specified one:
 
 [source,java]
 ----
-include::{demo}[tag=vintage_test_runtime_exception]
+include::{demo}[indent=0, tag=vintage_test_runtime_exception]
 ----
 
 Finally, this test fails because the thrown exception is neither of the specified type nor a subtype:
 
 [source,java]
 ----
-include::{demo}[tag=vintage_test_iae_exception]
+include::{demo}[indent=0, tag=vintage_test_iae_exception]
 ----
 
 == Fail long-running tests
@@ -51,7 +51,7 @@ The following test fails:
 
 [source,java]
 ----
-include::{demo}[tag=vintage_test_timeout]
+include::{demo}[indent=0, tag=vintage_test_timeout]
 ----
 
 Like in JUnit 4, `timeout` aborts long-running tests.
@@ -59,7 +59,7 @@ The following tests does not run indefinitely--it failes after 100 milliseconds:
 
 [source,java]
 ----
-include::{demo}[tag=vintage_test_timeout_loop]
+include::{demo}[indent=0, tag=vintage_test_timeout_loop]
 ----
 
 == Thread-Safety

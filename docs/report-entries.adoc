@@ -25,7 +25,7 @@ So, you would use it like this:
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=no_report_entry]
+include::{demo}[indent=0, tag=no_report_entry]
 ----
 
 You can have a look at https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/TestReporter.html[the official documentation for more details].
@@ -42,7 +42,7 @@ You can write...
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=report_entry_basic]
+include::{demo}[indent=0, tag=report_entry_basic]
 ----
 
 ...and the extension will publish your report entry for you after the test was executed!
@@ -53,14 +53,14 @@ You can declare multiple report entries on the same test (the annotation is repe
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=report_entry_multiple]
+include::{demo}[indent=0, tag=report_entry_multiple]
 ----
 
 Just like `TestReporter::publishEntry` accepts a single string as value or a key/value pair, `@ReportEntry` accepts either a single string as value or a key/value pair:
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=report_entry_with_key]
+include::{demo}[indent=0, tag=report_entry_with_key]
 ----
 
 Again, just like `TestReporter::publishEntry`, if no key is given it defaults to `"value"` (yes, that's not a mixup).
@@ -72,7 +72,7 @@ Just so:
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=report_entry_publish_condition]
+include::{demo}[indent=0, tag=report_entry_publish_condition]
 ----
 
 The publish condition must be a value of the `ReportEntry.PublishCondition` enum, which has the following values:
@@ -102,7 +102,7 @@ For example, if you have a `@ParameterizedTest` like the following:
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=report_entry_for_params]
+include::{demo}[indent=0, tag=report_entry_for_params]
 ----
 Then the extension will publish `"21 - Hello - 21"` and `"42 - World - 42"`.
 

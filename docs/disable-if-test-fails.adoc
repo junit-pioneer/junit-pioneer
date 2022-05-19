@@ -13,7 +13,7 @@ When applied to a type, `@DisableIfTestFails` will disable all tests that are la
 
 [source,java]
 ----
-include::{demo}[tag=disable_if_test_fails]
+include::{demo}[indent=0, tag=disable_if_test_fails]
 ----
 
 In this example, `test1` will pass and `test2` will fail with or without the extension but due to `@DisableIfTestFails`, `test3` will be disabled (instead of being executed).
@@ -28,7 +28,7 @@ If instead, failed assertions are acceptable and only other test failures should
 
 [source,java]
 ----
-include::{demo}[tag=disable_if_test_not_on_assertions]
+include::{demo}[indent=0, tag=disable_if_test_not_on_assertions]
 ----
 
 The test `test2` fails because of an assertion but due to `onAssertion = false`, `test3` isn't disabled and will execute.
@@ -40,7 +40,7 @@ If instead, only specific exceptions should lead to disabling, define them with 
 
 [source,java]
 ----
-include::{demo}[tag=disable_if_test_with_given_exception]
+include::{demo}[indent=0, tag=disable_if_test_with_given_exception]
 ----
 
 The test `test2` fails, but because the `with` attribute doesn't include its exception's type `InterruptedException`, tests will continue to be executed.

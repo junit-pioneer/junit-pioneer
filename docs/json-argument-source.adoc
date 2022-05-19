@@ -29,7 +29,7 @@ If the method has a single argument, the JSON object argument will be converted 
 .Argument type
 [source,java]
 ----
-include::{jedi}[tag=class]
+include::{jedi}[indent=0, tag=class]
 ----
 
 .JSON Source File
@@ -49,12 +49,12 @@ include::{jedi}[tag=class]
 
 [source,java]
 ----
-include::{json-demo}[tag=classpath_source,indent=0]
+include::{json-demo}[indent=0, tag=classpath_source,indent=0]
 ----
 
 [source,java]
 ----
-include::{json-demo}[tag=inline_source,indent=0]
+include::{json-demo}[indent=0, tag=inline_source,indent=0]
 ----
 
 This parametrized test will generate the following test executions:
@@ -66,12 +66,12 @@ It is also possible to extract only a single element from each argument object b
 
 [source,java]
 ----
-include::{json-demo}/[tag=classpath_source_with_property,indent=0]
+include::{json-demo}/[indent=0, tag=classpath_source_with_property,indent=0]
 ----
 
 [source,java]
 ----
-include::{json-demo}[tag=inline_source_with_property,indent=0]
+include::{json-demo}[indent=0, tag=inline_source_with_property,indent=0]
 ----
 
 This parametrized test will generate the following tests:
@@ -95,12 +95,12 @@ Using the same `jedis.json` and the following test
 
 [source,java]
 ----
-include::{json-demo}[tag=classpath_source_deconstruct_from_array,indent=0]
+include::{json-demo}[indent=0, tag=classpath_source_deconstruct_from_array,indent=0]
 ----
 
 [source,java]
 ----
-include::{json-demo}[tag=inline_source_deconstruct_from_array,indent=0]
+include::{json-demo}[indent=0, tag=inline_source_deconstruct_from_array,indent=0]
 ----
 
 This parametrized test will generate the following tests:
@@ -137,7 +137,7 @@ The test for this will look like:
 
 [source,java]
 ----
-include::{json-demo}[tag=classpath_source_nested_data,indent=0]
+include::{json-demo}[indent=0, tag=classpath_source_nested_data,indent=0]
 ----
 
 This parametrized test will generate the following tests:

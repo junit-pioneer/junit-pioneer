@@ -13,7 +13,7 @@ The default `Locale` can be specified using an https://docs.oracle.com/javase/8/
 
 [source,java]
 ----
-include::{demo}[tag=default_locale_language]
+include::{demo}[indent=0, tag=default_locale_language]
 ----
 
 Alternatively the default `Locale` can be specified according to https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#constructor.summary[its constructors] - it needs either:
@@ -24,7 +24,7 @@ Alternatively the default `Locale` can be specified according to https://docs.or
 
 [source,java]
 ----
-include::{demo}[tag=default_locale_language_alternatives]
+include::{demo}[indent=0, tag=default_locale_language_alternatives]
 ----
 
 Note that mixing language tag configuration and constructor based configuration will cause an `ExtensionConfigurationException` to be thrown.
@@ -35,7 +35,7 @@ Any method level `@DefaultLocale` configurations will override class level confi
 
 [source,java]
 ----
-include::{demo}[tag=default_locale_class_level]
+include::{demo}[indent=0, tag=default_locale_class_level]
 ----
 
 NOTE: A class-level configuration means that the specified locale is set before and reset after each individual test in the annotated class.
@@ -46,14 +46,14 @@ The default `TimeZone` is specified according to the https://docs.oracle.com/jav
 
 [source,java]
 ----
-include::{demo}[tag=default_timezone_zone]
+include::{demo}[indent=0, tag=default_timezone_zone]
 ----
 
 Any method level `@DefaultTimeZone` configurations will override class level configurations:
 
 [source,java]
 ----
-include::{demo}[tag=default_timezone_class_level]
+include::{demo}[indent=0, tag=default_timezone_class_level]
 ----
 
 NOTE: A class-level configuration means that the specified time zone is set before and reset after each individual test in the annotated class.

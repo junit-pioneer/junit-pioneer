@@ -44,7 +44,7 @@ Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
 ----
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 
-include::{demo}[tag=cartesian_simple_demo]
+include::{demo}[indent=0, tag=cartesian_simple_demo]
 ----
 
 `@CartesianTest` works with parameters injected by JUnit automatically (e.g.: `TestReporter`).
@@ -71,7 +71,7 @@ import org.junitpioneer.jupiter.params.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-include::{demo}[tag=cartesian_annotating_parameters]
+include::{demo}[indent=0, tag=cartesian_annotating_parameters]
 ----
 
 === `@CartesianTest.Values`
@@ -84,7 +84,7 @@ The test will try every combination those values can have.
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 
-include::{demo}[tag=cartesian_combining_values]
+include::{demo}[indent=0, tag=cartesian_combining_values]
 ----
 
 This annotation might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-ValueSource::[JUnit's `@ValueSource`], except `@CartesianTest.Values` must be put on the parameter.
@@ -118,7 +118,7 @@ import java.time.temporal.ChronoUnit;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-include::{demo}[tag=cartesian_with_enum]
+include::{demo}[indent=0, tag=cartesian_with_enum]
 ----
 
 Like `@CartesianTest.Values`, `@CartesianTest.Enum` is an annotation that might look familiar - it mimics https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-EnumSource::[JUnit's `@EnumSource`], except `@CartesianTest.Enum` must be put on the parameter.
@@ -136,7 +136,7 @@ import java.time.temporal.*;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-include::{demo}[tag=cartesian_enum_with_type]
+include::{demo}[indent=0, tag=cartesian_enum_with_type]
 ----
 
 The annotation provides an optional `names` attribute that lets you specify which constants shall be used, like in the following example.
@@ -149,7 +149,7 @@ import java.time.temporal.*;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-include::{demo}[tag=cartesian_enum_with_type_and_names]
+include::{demo}[indent=0, tag=cartesian_enum_with_type_and_names]
 ----
 
 The annotation also provides an optional `mode` attribute that enables fine-grained control over which constants are passed to the test method.
@@ -162,7 +162,7 @@ import java.time.temporal.*;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-include::{demo}[tag=cartesian_enum_with_mode]
+include::{demo}[indent=0, tag=cartesian_enum_with_mode]
 ----
 
 [source,java]
@@ -172,7 +172,7 @@ import java.time.temporal.*;
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-include::{demo}[tag=cartesian_enum_with_regex]
+include::{demo}[indent=0, tag=cartesian_enum_with_regex]
 ----
 
 The example below shows how to use `@CartesianTest.Enum` with two `Enum` types.
@@ -182,7 +182,7 @@ The example below shows how to use `@CartesianTest.Enum` with two `Enum` types.
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
 
-include::{demo}[tag=cartesian_enum_with_enums]
+include::{demo}[indent=0, tag=cartesian_enum_with_enums]
 ----
 
 The test `testEnumValues` is executed exactly six times.
@@ -212,7 +212,7 @@ For _this purpose only_, range sources can be used on parameters.
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.params.*;
 
-include::{demo}[tag=cartesian_enum_with_range_sources]
+include::{demo}[indent=0, tag=cartesian_enum_with_range_sources]
 ----
 
 The test `testShortAndLong` is executed exactly six times.
@@ -254,7 +254,7 @@ Let's look at an example.
 
 [source,java]
 ----
-include::{demo}[tag=cartesian_argument_sets]
+include::{demo}[indent=0, tag=cartesian_argument_sets]
 ----
 
 The test `testMethod` is executed exactly twelve times.
@@ -285,7 +285,7 @@ You can reuse the same argument provider method multiple times.
 
 [source,java]
 ----
-include::{demo}[tag=cartesian_argument_sets_reuse]
+include::{demo}[indent=0, tag=cartesian_argument_sets_reuse]
 ----
 
 ==== Requirements for the static factory method
@@ -308,7 +308,7 @@ Examples of badly configured tests/static factory method:
 
 [source,java]
 ----
-include::{demo}[tag=cartesian_bad_examples]
+include::{demo}[indent=0, tag=cartesian_bad_examples]
 ----
 
 == Writing your own `@ArgumentsSource` for `@CartesianTest`
@@ -337,7 +337,7 @@ Let's create an annotation for it.
 import java.lang.annotation.*;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 
-include::{demo}[tag=cartesian_argument_sets_int_argument_provider]
+include::{demo}[indent=0, tag=cartesian_argument_sets_int_argument_provider]
 ----
 
 The annotation targets parameters because we want to use it directly on a parameter.
@@ -356,7 +356,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
-include::{demo}[tag=cartesian_argument_sets_ints_annotation]
+include::{demo}[indent=0, tag=cartesian_argument_sets_ints_annotation]
 ----
 
 The class has to implement `CartesianParameterArgumentsProvider`.
@@ -377,7 +377,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
-include::{people}[tag=cartesian_people_provider_with_CartesianParameterArgumentsProvider]
+include::{people}[indent=0, tag=cartesian_people_provider_with_CartesianParameterArgumentsProvider]
 ----
 
 Alternatively, `@CartesianTest` supports it if you want to implement the https://junit.org/junit5/docs/5.5.0/api/org/junit/jupiter/params/support/AnnotationConsumer.html[`AnnotationConsumer`] interface.
@@ -394,7 +394,7 @@ import org.junit.jupiter.params.support.AnnotationConsumer;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
-include::{people}[tag=cartesian_people_provider_with_AnnotationConsumer]
+include::{people}[indent=0, tag=cartesian_people_provider_with_AnnotationConsumer]
 ----
 
 === Implementing `CartesianMethodArgumentsProvider`
@@ -412,7 +412,7 @@ Let's create an annotation for it.
 import java.lang.annotation.*;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 
-include::{bit}[tag=cartesian_bit_source_annotation]
+include::{bit}[indent=0, tag=cartesian_bit_source_annotation]
 ----
 
 The annotation targets methods because we want to use it on the test method itself.
@@ -431,7 +431,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
 
-include::{bit}[tag=cartesian_bit_argument_provider]
+include::{bit}[indent=0, tag=cartesian_bit_argument_provider]
 ----
 
 The class has to implement `CartesianMethodArgumentsProvider`.
@@ -457,7 +457,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
 
-include::{number}[tag=cartesian_number_argument_provider]
+include::{number}[indent=0, tag=cartesian_number_argument_provider]
 ----
 
 == Customizing Display Names
@@ -471,7 +471,7 @@ For example:
 import org.junitpioneer.jupiter.cartesian.*;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 
-include::{demo}[tag=cartesian_testWithCustomDisplayName]
+include::{demo}[indent=0, tag=cartesian_testWithCustomDisplayName]
 ----
 
 When executing the above test, you should see output similar to the following:

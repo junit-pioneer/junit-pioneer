@@ -50,14 +50,14 @@ The attribute `n` specifies how often the test is executed before giving up.
 
 [source,java]
 ----
-include::{demo}[tag=retrying_failsNever]
+include::{demo}[indent=0, tag=retrying_failsNever]
 ----
 
 The test `failsNever` is executed once (which succeeds) and marked as passed.
 
 [source,java]
 ----
-include::{demo}[tag=retrying_fails_on_first_but_passes_on_second]
+include::{demo}[indent=0, tag=retrying_fails_on_first_but_passes_on_second]
 ----
 
 The test `failsOnlyOnFirstInvocation` is executed once (which fails) and then once more (which succeeds).
@@ -65,7 +65,7 @@ To allow the entire test suite to pass, the first execution is marked as ignored
 
 [source,java]
 ----
-include::{demo}[tag=retrying_fails_always]
+include::{demo}[indent=0, tag=retrying_fails_always]
 ----
 
 The test `failsAlways` is executed three times (all of which fail).
@@ -73,7 +73,7 @@ The first two executions are marked as ignored/aborted, while the last as failed
 
 [source,java]
 ----
-include::{demo}[tag=retrying_aborted]
+include::{demo}[indent=0, tag=retrying_aborted]
 ----
 
 If a test is aborted (e.g.: because of a failed assumption) `@RetryingTest` won't try again after that.
@@ -85,7 +85,7 @@ The test suite as a whole is also marked as aborted/skipped.
 
 [source,java]
 ----
-include::{demo}[tag=retrying_configure_numbers_of_success]
+include::{demo}[indent=0, tag=retrying_configure_numbers_of_success]
 ----
 
 The test `requiresTwoSuccesses` must run at least two times without raising an exception.
@@ -97,7 +97,7 @@ Use `onExceptions` to only retry on the mentioned exception(s):
 
 [source,java]
 ----
-include::{demo}[tag=retrying_configure_exception_for_retry]
+include::{demo}[indent=0, tag=retrying_configure_exception_for_retry]
 ----
 
 This example test method will be executed twice.

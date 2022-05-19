@@ -17,28 +17,28 @@ For example, clearing a environment variable for a test execution can be done as
 
 [source,java]
 ----
-include::{demo}[tag=environment_clear_simple]
+include::{demo}[indent=0, tag=environment_clear_simple]
 ----
 
 And setting a environment variable for a test execution:
 
 [source,java]
 ----
-include::{demo}[tag=environment_set_simple]
+include::{demo}[indent=0, tag=environment_set_simple]
 ----
 
 As mentioned before, both annotations are repeatable and they can also be combined:
 
 [source,java]
 ----
-include::{demo}[tag=environment_using_set_and_clear]
+include::{demo}[indent=0, tag=environment_using_set_and_clear]
 ----
 
 Note that class level configurations are overwritten by method level configurations:
 
 [source,java]
 ----
-include::{demo}[tag=environment_using_at_class_level]
+include::{demo}[indent=0, tag=environment_using_at_class_level]
 ----
 
 NOTE: Since v1.7.0, a class-level configuration means that the specified environment variables are cleared/set before and reset after each individual test in the annotated class.
