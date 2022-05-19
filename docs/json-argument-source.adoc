@@ -12,7 +12,7 @@ There are three annotations:
 * `@JsonClasspathSource` for JSON files from the classpath
 
 There are various ways how the method arguments for a single parametrized test are provided.
-By default the root of the source will be treated as candidate for the test arguments.
+By default, the root of the source will be treated as candidate for the test arguments.
 If the root is an object then the entire object will be one argument, if the root is an array then every element of the array will be one argument.
 
 It is also possible to use a nested array from the provided JSON to access the source for the test arguments.
@@ -27,7 +27,7 @@ Depending on the test method parameters, the extraction of the values might diff
 If the method has a single argument, the JSON object argument will be converted to that type.
 
 .Argument type
-[source,java]
+[source,java,indent=0]
 ----
 include::{jedi}[tag=class]
 ----
@@ -47,14 +47,14 @@ include::{jedi}[tag=class]
 ]
 ----
 
-[source,java]
+[source,java,indent=0]
 ----
-include::{json-demo}[tag=classpath_source,indent=0]
+include::{json-demo}[tag=classpath_source]
 ----
 
-[source,java]
+[source,java,indent=0]
 ----
-include::{json-demo}[tag=inline_source,indent=0]
+include::{json-demo}[tag=inline_source]
 ----
 
 This parametrized test will generate the following test executions:
@@ -64,14 +64,14 @@ This parametrized test will generate the following test executions:
 
 It is also possible to extract only a single element from each argument object by using the `@Property` annotation.
 
-[source,java]
+[source,java,indent=0]
 ----
-include::{json-demo}/[tag=classpath_source_with_property,indent=0]
+include::{json-demo}/[tag=classpath_source_with_property]
 ----
 
-[source,java]
+[source,java,indent=0]
 ----
-include::{json-demo}[tag=inline_source_with_property,indent=0]
+include::{json-demo}[tag=inline_source_with_property]
 ----
 
 This parametrized test will generate the following tests:
@@ -93,14 +93,14 @@ In that the situation you need to use `@Property` instead.
 
 Using the same `jedis.json` and the following test
 
-[source,java]
+[source,java,indent=0]
 ----
-include::{json-demo}[tag=classpath_source_deconstruct_from_array,indent=0]
+include::{json-demo}[tag=classpath_source_deconstruct_from_array]
 ----
 
-[source,java]
+[source,java,indent=0]
 ----
-include::{json-demo}[tag=inline_source_deconstruct_from_array,indent=0]
+include::{json-demo}[tag=inline_source_deconstruct_from_array]
 ----
 
 This parametrized test will generate the following tests:
@@ -135,9 +135,9 @@ For this purpose `JsonClasspathSource#data` can be used.
 Here we want to test the vehicles.
 The test for this will look like:
 
-[source,java]
+[source,java,indent=0]
 ----
-include::{json-demo}[tag=classpath_source_nested_data,indent=0]
+include::{json-demo}[tag=classpath_source_nested_data]
 ----
 
 This parametrized test will generate the following tests:

@@ -1,5 +1,7 @@
 :page-title: Temporarily Disable a Test
 :page-description: Extends JUnit Jupiter with `@DisabledUntil` to temporarily disable a test.
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/DisableUntilExtensionDemo.java
 
 == Introduction
 
@@ -17,13 +19,9 @@ The test will be automatically executed again once the date supplied by the `dat
 
 To mark a test to be temporarily disabled add the `@DisabledUntil` annotation like so:
 
-[source,java]
+[source,java,indent=0]
 ----
-@DisabledUntil(date = "2022-01-01")
-@Test
-void test() {
-	// Test will be skipped if it's 2021-12-31 or earlier
-}
+include::{demo}[tag=disable_until_simple]
 ----
 
 The `date` parameter must be a string in the date format specified by https://en.m.wikipedia.org/wiki/ISO_8601[ISO 8601], e.g. "1985-10-26".
@@ -31,26 +29,16 @@ Invalid or unparsable date strings lead to an `ExtensionConfigurationException`.
 
 The `@DisabledUntil annotation may optionally be declared with a reason to document why the annotated test class or test method is disabled:
 
-[source,java]
+[source,java,indent=0]
 ----
-@DisabledUntil(reason = "The remote server won't be ready until next year", date = "2022-01-01")
-@Test
-void test() {
-    // Test will be skipped if it's 2021-12-31 or earlier
-}
+include::{demo}[tag=disable_until_with_reason]
 ----
 
 The `@DisabledUntil` annotation can be used on the class and method level, it will be inherited from higher level containers:
 
-[source,java]
+[source,java,indent=0]
 ----
-@DisabledUntil(date = "2022-01-01")
-class TestClass {
-    @Test
-    void test() {
-        // Test will be skipped if it's 2021-12-31 or earlier
-    }
-}
+include::{demo}[tag=disable_until_at_class_level]
 ----
 
 The `@DisabledUntil` annotation can only be used once per class or method.

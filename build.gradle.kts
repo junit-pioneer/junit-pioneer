@@ -214,7 +214,7 @@ tasks {
 		}
 	}
 	// Adds all dependencies of main to demo sourceSet
-	configurations["demoImplementation"].extendsFrom(configurations.implementation.get())
+	configurations["demoImplementation"].extendsFrom(configurations.testImplementation.get())
 	// Ensures JUnit 5 engine is available to demo at runtime
 	configurations["demoRuntimeOnly"].extendsFrom(configurations.testImplementation.get())
 
@@ -260,6 +260,7 @@ tasks {
 				dependencies {
 					implementation(project)
 					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+					implementation("org.assertj:assertj-core:3.22.0")
 				}
 
 				sources {

@@ -1,5 +1,7 @@
 :page-title: Default Locale and TimeZone
 :page-description: Extends JUnit Jupiter with `@DefaultLocale`, `@DefaultTimeZone`, which change the values returned from Locale.getDefault() and TimeZone.getDefault()
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/DefaultLocaleTimezoneExtensionDemo.java
 
 The `@DefaultLocale` and `@DefaultTimeZone` annotations can be used to change the values returned from `Locale.getDefault()` and `TimeZone.getDefault()`.
 Both annotations work on the test class level and on the test method level, and are inherited from higher-level containers.
@@ -9,14 +11,9 @@ After the annotated element has been executed the initial default value is resto
 
 The default `Locale` can be specified using an https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#forLanguageTag-java.lang.String-[IETF BCP 47 language tag string]
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@DefaultLocale("zh-Hant-TW")
-void test_with_lanuage() {
-	assertThat(Locale.getDefault())
-		.isEqualTo(Locale.forLanguageTag("zh-Hant-TW"));
-}
+include::{demo}[tag=default_locale_language]
 ----
 
 Alternatively the default `Locale` can be specified according to https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#constructor.summary[its constructors] - it needs either:
@@ -25,31 +22,9 @@ Alternatively the default `Locale` can be specified according to https://docs.or
 * `language` and `country` or
 * `language`, `country`, and `variant`
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@DefaultLocale(language = "en")
-void test_with_lanuage() {
-	assertThat(Locale.getDefault())
-		.isEqualTo(new Locale("en"));
-}
-
-@Test
-@DefaultLocale(language = "en", country = "EN")
-void test_with_lanuage_and_country() {
-	assertThat(Locale.getDefault())
-		.isEqualTo(new Locale("en", "EN"));
-}
-
-@Test
-@DefaultLocale(
-	language = "en",
-	country = "EN",
-	variant = "gb")
-void test_with_lanuage_and_country_and_vairant() {
-	assertThat(Locale.getDefault())
-		.isEqualTo(new Locale("en", "EN", "gb"));
-}
+include::{demo}[tag=default_locale_language_alternatives]
 ----
 
 Note that mixing language tag configuration and constructor based configuration will cause an `ExtensionConfigurationException` to be thrown.
@@ -58,24 +33,9 @@ If `variant` is specified without `country`, an `ExtensionConfigurationException
 
 Any method level `@DefaultLocale` configurations will override class level configurations.
 
-[source,java]
+[source,java,indent=0]
 ----
-@DefaultLocale(language = "fr")
-class MyLocaleTests {
-
-	@Test
-	void test_with_class_level_configuration() {
-		assertThat(Locale.getDefault())
-			.isEqualTo(new Locale("fr"));
-	}
-
-	@Test
-	@DefaultLocale(language = "en")
-	void test_with_method_level_configuration() {
-		assertThat(Locale.getDefault())
-			.isEqualTo(new Locale("en"));
-	}
-}
+include::{demo}[tag=default_locale_class_level]
 ----
 
 NOTE: A class-level configuration means that the specified locale is set before and reset after each individual test in the annotated class.
@@ -84,43 +44,16 @@ NOTE: A class-level configuration means that the specified locale is set before 
 
 The default `TimeZone` is specified according to the https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html#getTimeZone(java.lang.String)[TimeZone.getTimeZone(String)] method.
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@DefaulTimeZone("CET")
-void test_with_short_zone_id() {
-	assertThat(TimeZone.getDefault()).
-		isEqualTo(TimeZone.getTimeZone("CET"));
-}
-
-@Test
-@DefaultTimeZone("Africa/Juba")
-void test_with_long_zone_id() {
-	assertThat(TimeZone.getDefault()).
-		isEqualTo(TimeZone.getTimeZone("Africa/Juba"));
-}
+include::{demo}[tag=default_timezone_zone]
 ----
 
 Any method level `@DefaultTimeZone` configurations will override class level configurations:
 
-[source,java]
+[source,java,indent=0]
 ----
-@DefaultTimeZone("CET")
-class MyTimeZoneTests {
-
-	@Test
-	void test_with_class_level_configuration() {
-		assertThat(TimeZone.getDefault()).
-			isEqualTo(TimeZone.getTimeZone("CET"));
-	}
-
-	@Test
-	@DefaultTimeZone("Africa/Juba")
-	void test_with_method_level_configuration() {
-		assertThat(TimeZone.getDefault()).
-			isEqualTo(TimeZone.getTimeZone("Africa/Juba"));
-	}
-}
+include::{demo}[tag=default_timezone_class_level]
 ----
 
 NOTE: A class-level configuration means that the specified time zone is set before and reset after each individual test in the annotated class.

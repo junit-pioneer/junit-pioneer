@@ -1,5 +1,7 @@
 :page-title: Disable Tests if Others Fail
 :page-description: Disables all tests in a container once the first test failed
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/DisableIfTestFailsExtensionDemo.java
 
 There are situations where when one test in a class fails, the remaining tests in the class don't need to be executed because their results offer little additional insight.
 In those situations, disabling the remaining tests can be preferable in order to avoid larger build logs and/or reduce the test suite's overall run time.
@@ -9,31 +11,10 @@ By applying `@DisableIfTestFails` to the test class, all tests after the first f
 
 When applied to a type, `@DisableIfTestFails` will disable all tests that are launched after the first failing test in that class:
 
-```java
-@DisableIfTestFails
-// this annotation ensures that tests are run in the order of
-// the numbers passed to the `@Order` annotation below
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class Tests {
-
-    @Test
-    @Order(1)
-    void test1() {
-    }
-
-    @Test
-    @Order(2)
-    void test2() {
-        fail();
-    }
-
-    @Test
-    @Order(3)
-    void test3() {
-    }
-
-}
-```
+[source,java,indent=0]
+----
+include::{demo}[tag=disable_if_test_fails]
+----
 
 In this example, `test1` will pass and `test2` will fail with or without the extension but due to `@DisableIfTestFails`, `test3` will be disabled (instead of being executed).
 
@@ -45,30 +26,10 @@ By default, it _will_ disable remaining tests on any exception, including failed
 By default, `@DisableIfTestFails` will disable remaining tests on failed assertions.
 If instead, failed assertions are acceptable and only other test failures should lead to disabling, set `onAssertion = false`:
 
-```java
-@DisableIfTestFails(onAssertion = false)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-static class ThreeTestsWithSecondFailingWithUnconfiguredAssertionTestCase {
-
-    @Test
-    @Order(1)
-    void test1() {
-    }
-
-    @Test
-    @Order(2)
-    void test2() {
-        // fails test with assertion
-        assertTrue(false);
-    }
-
-    @Test
-    @Order(3)
-    void test3() {
-    }
-
-}
-```
+[source,java,indent=0]
+----
+include::{demo}[tag=disable_if_test_not_on_assertions]
+----
 
 The test `test2` fails because of an assertion but due to `onAssertion = false`, `test3` isn't disabled and will execute.
 
@@ -77,35 +38,10 @@ The test `test2` fails because of an assertion but due to `onAssertion = false`,
 By default, `@DisableIfTestFails` will disable remaining tests on any exception.
 If instead, only specific exceptions should lead to disabling, define them with `with`:
 
-```java
-@DisableIfTestFails(with = IOException.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-static class ThreeTestsWithSecondThrowingConfiguredExceptionTestCase {
-
-	@Test
-	@Order(1)
-	void test1() {
-	}
-
-	@Test
-	@Order(2)
-	void test2() throws InterruptedException {
-		throw new InterruptedException();
-	}
-
-	@Test
-	@Order(3)
-	void test3() throws IOException {
-		throw new IOException();
-	}
-
-	@Test
-	@Order(4)
-	void test4() {
-	}
-
-}
-```
+[source,java,indent=0]
+----
+include::{demo}[tag=disable_if_test_with_given_exception]
+----
 
 The test `test2` fails, but because the `with` attribute doesn't include its exception's type `InterruptedException`, tests will continue to be executed.
 Then `test3` fails with the configured exception and so `test4` is disabled.

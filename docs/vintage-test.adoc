@@ -1,12 +1,14 @@
 :page-title: Vintage @Test
 :page-description: Extends JUnit Jupiter with a drop-in replacement for JUnit 4's @Test annotation, including expected and timeout
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/vintage/VintageTestDemo.java
 
 The annotation `org.junitpioneer.vintage.@Test` is a drop-in replacement for https://junit.org/junit4/javadoc/4.12/org/junit/Test.html[JUnit 4's `org.junit.@Test` annotation], but marks the method as a regular JUnit Jupiter test.
 
 You can make use of it when migrating tests from JUnit 4 to Jupiter by doing a fulltext search/replace of `import org.junit.Test` with `import org.junitpioneer.vintage.Test`.
 That means you do not need to run JUnit 5's Vintage engine to execute such tests--Jupiter suffices.
 
-This should be seen as an intermediate step towards a full migration and should be followed up by gradual/manual replacement of of `org.junitpioneer.vintage.Test` with Jupiter's `org.junit.jupiter.api.Test`.
+This should be seen as an intermediate step towards a full migration and should be followed up by gradual/manual replacement of `org.junitpioneer.vintage.Test` with Jupiter's `org.junit.jupiter.api.Test`.
 To emphasize its character as a temporary solution and to reduce https://github.com/junit-pioneer/junit-pioneer/issues/137[risk of accidental use], it's marked as deprecated.
 
 Since the test is run by Jupiter, *JUnit 4 runners and rules will have no effect* and you will still have to replace them with JUnit 5 extensions.
@@ -23,32 +25,23 @@ If it doesn't throw an exception or if it throws an exception whose type is not 
 
 For example, the following test succeeds because the thrown exception is of the specified type:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test(expected=IndexOutOfBoundsException.class)
-public void outOfBounds_passes() {
-	new ArrayList<Object>().get(1);
-}
+include::{demo}[tag=vintage_test_indexoutofbound_exception]
 ----
 
 This test succeeds because the thrown exception is a subtype of the specified one:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test(expected=RuntimeException.class)
-public void outOfBounds_passes() {
-	new ArrayList<Object>().get(1);
-}
+include::{demo}[tag=vintage_test_runtime_exception]
 ----
 
 Finally, this test fails because the thrown exception is neither of the specified type nor a subtype:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test(expected=IllegalArgumentException.class)
-public void outOfBounds_fails() {
-	new ArrayList<Object>().get(1);
-}
+include::{demo}[tag=vintage_test_iae_exception]
 ----
 
 == Fail long-running tests
@@ -56,23 +49,17 @@ public void outOfBounds_fails() {
 The optional parameter `timeout` causes a test to fail if it takes longer than a specified amount of clock time, measured in milliseconds.
 The following test fails:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test(timeout=100)
-public void slow_fail() {
-	Thread.sleep(1_000);
-}
+include::{demo}[tag=vintage_test_timeout]
 ----
 
 Like in JUnit 4, `timeout` aborts long-running tests.
 The following tests does not run indefinitely--it failes after 100 milliseconds:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test(timeout=100)
-public void indefinitely() {
-	while(true);
-}
+include::{demo}[tag=vintage_test_timeout_loop]
 ----
 
 == Thread-Safety

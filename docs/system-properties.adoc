@@ -1,5 +1,7 @@
 :page-title: Clearing or Setting System Properties
 :page-description: Extends JUnit Jupiter with `@ClearSystemProperty`, `@SetSystemProperty`, which clear and set the values of system properties
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/SystemPropertyExtensionDemo.java
 
 The `@ClearSystemProperty` and `@SetSystemProperty` annotations can be used to clear, respectively, set the values of system properties for a test execution.
 Both annotations work on the test method and class level, are repeatable, combinable, and inherited from higher-level containers.
@@ -8,62 +10,31 @@ Other system properties that are changed during the test, are *not* restored.
 
 For example, clearing a system property for a test execution can be done as follows:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ClearSystemProperty(key = "some property")
-void test() {
-	assertThat(System.getProperty("some property"))
-		.isNull();
-}
+include::{demo}[tag=systemproperty_clear_simple]
 ----
 
 And setting a system property for a test execution:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@SetSystemProperty(key = "some property",
-		value = "new value")
-void test() {
-	assertThat(System.getProperty("some property"))
-		.isEqualTo("new value");
-}
+include::{demo}[tag=systemproperty_set_simple]
 ----
 
 As mentioned before, both annotations are repeatable and they can also be combined:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ClearSystemProperty(key = "1st property")
-@ClearSystemProperty(key = "2nd property")
-@SetSystemProperty(key = "3rd property",
-		value = "new value")
-void test() {
-	assertThat(System.getProperty("1st property")).isNull();
-	assertThat(System.getProperty("2nd property")).isNull();
-	assertThat(System.getProperty("3rd property"))
-		.isEqualTo("new value");
-}
+include::{demo}[tag=systemproperty_using_set_and_clear]
+
 ----
 
 Note that class level configurations are overwritten by method level configurations:
 
-[source,java]
+[source,java,indent=0]
 ----
-@ClearSystemProperty(key = "some property")
-class MySystemPropertyTest {
-
-	@Test
-	@SetSystemProperty(key = "some property",
-			value = "new value")
-	void test() {
-		assertThat(System.getProperty("some property"))
-			.isEqualTo("new value");
-	}
-
-}
+include::{demo}[tag=systemproperty_using_at_class_level]
 ----
 
 NOTE: Since v1.7.0, a class-level configuration means that the specified system properties are cleared/set before and reset after each individual test in the annotated class.
@@ -71,14 +42,9 @@ NOTE: Since v1.7.0, a class-level configuration means that the specified system 
 Sometimes, you might also need to set a system property to a value that is not a constant expression, which is required for annotation values.
 In this case, you can still leverage the restore mechanism:
 
-[source,java]
+[source,java,indent=0]
 ----
-@ParameterizedTest
-@ValueSource(strings = { "foo", "bar" })
-@ClearSystemProperty(key = "some property")
-void test(String value) {
-	System.setProperty("some property", value);
-}
+include::{demo}[tag=systemproperty_parameter]
 ----
 
 == Thread-Safety

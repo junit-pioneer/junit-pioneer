@@ -1,5 +1,7 @@
 :page-title: Retrying Failing Tests
 :page-description: Extends JUnit Jupiter with `@RetryingTest`, which retries a failing test a certain number of times; only marking it failed if none of them pass
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/RetryingTestExtensionDemo.java
 
 Some tests, e.g. those depending on external systems, may fail through no fault of the code under test.
 Such tests make a suite fragile and it makes sense to try and avoid them, but if that's infeasible, it may help to retry a number of times before eventually assuming actual failure.
@@ -46,46 +48,32 @@ The default for `name` is `[{index}]`.
 `@RetryingTest(n)` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
 The attribute `n` specifies how often the test is executed before giving up.
 
-[source,java]
+[source,java,indent=0]
 ----
-@RetryingTest(3)
-void failsNever() {
-	// passing test code
-}
+include::{demo}[tag=retrying_failsNever]
 ----
 
 The test `failsNever` is executed once (which succeeds) and marked as passed.
 
-[source,java]
+[source,java,indent=0]
 ----
-@RetryingTest(3)
-void failsOnlyOnFirstInvocation() {
-	// test code that fails on first execution
-	// but passes on the second
-}
+include::{demo}[tag=retrying_fails_on_first_but_passes_on_second]
 ----
 
 The test `failsOnlyOnFirstInvocation` is executed once (which fails) and then once more (which succeeds).
 To allow the entire test suite to pass, the first execution is marked as ignored/aborted, which includes the underlying exception - the second is of course marked as passing.
 
-[source,java]
+[source,java,indent=0]
 ----
-@RetryingTest(3)
-void failsAlways() {
-	// test code that always fails
-}
+include::{demo}[tag=retrying_fails_always]
 ----
 
 The test `failsAlways` is executed three times (all of which fail).
 The first two executions are marked as ignored/aborted, while the last as failed - each contains the underlying exception.
 
-[source,java]
+[source,java,indent=0]
 ----
-@RetryingTest(3)
-void aborted() {
-	// test code that is aborted,
-	// e.g. because of an `Assumption`.
-}
+include::{demo}[tag=retrying_aborted]
 ----
 
 If a test is aborted (e.g.: because of a failed assumption) `@RetryingTest` won't try again after that.
@@ -95,12 +83,9 @@ The test suite as a whole is also marked as aborted/skipped.
 
 === Configuring the Number of Successes
 
-[source,java]
+[source,java,indent=0]
 ----
-@RetryingTest(maxAttempts = 4, minSuccess = 2)
-void requiresTwoSuccesses() {
-	// test code that must complete successfully twice
-}
+include::{demo}[tag=retrying_configure_numbers_of_success]
 ----
 
 The test `requiresTwoSuccesses` must run at least two times without raising an exception.
@@ -110,20 +95,9 @@ However, it will not run more than four times.
 
 Use `onExceptions` to only retry on the mentioned exception(s):
 
-[source,java]
+[source,java,indent=0]
 ----
-private int EXECUTION_COUNT;
-
-@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
-void failsFirstWithExpectedThenWithUnexpectedException() {
-    EXECUTION_COUNT++;
-    if (EXECUTION_COUNT == 1) {
-        throw new IllegalArgumentException();
-    }
-    if (EXECUTION_COUNT == 2) {
-        throw new NullPointerException();
-    }
-}
+include::{demo}[tag=retrying_configure_exception_for_retry]
 ----
 
 This example test method will be executed twice.
