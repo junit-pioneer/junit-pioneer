@@ -183,6 +183,19 @@ How to write the code itself.
 * design code to avoid optionality wherever feasibly possible
 * in all remaining cases, prefer `Optional` over `null`
 
+#### Reusability
+
+We strive to make our extensions reusable and extensible.
+
+A key ingredient in that is making sure that annotations work as meta-annotations (i.e. users can apply _our_ annotations to _their_ annotations and our extensions still work).
+To achieve this, apply `@Target({ ElementType.ANNOTATION_TYPE })` to annotations and prefer `org.junitpioneer.internal.PioneerAnnotationUtils` and `org.junit.platform.commons.support.AnnotationSupport` when searching for annotations.
+
+Another aspect is that annotations that apply to classes (i.e. those marked with `@Target({ ElementType.TYPE })`) should be inherited by subclasses.
+For that, also add the annotation `@Inherited`.
+
+**NOTE**:
+`ElementType.TYPE` includes annotations, so there's no need to apply it _and_ `ElementType.ANNOTATION_TYPE`.
+
 #### Thread-safety
 
 It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.
@@ -480,7 +493,7 @@ Pioneer avoids adding to users' dependency hell and hence doesn't take on depend
 _Optional_ dependencies are acceptable if they are needed to provide specific features, particularly:
 
 * to _integrate_ with other tools, frameworks, and libraries by offering features that directly interact with them (a hypothetical example is [Playwright](https://playwright.dev) for E2E testing)
-* for _ease of use_ when recreating functionality would be too complex or otherwise out of scope for Pioneer (a hypothetical example is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing)
+* for _ease of use_ when recreating functionality would be too complex or otherwise out of scope for Pioneer (an example is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing)
 
 Unless we see reports of optional dependencies causing unexpected problems for users, there is no particularly high hurdle for taking them on, given each provides more than marginal value.
 They should only be used by specifically chosen features that require them, though, and care needs to be taken to prevent them from creeping into the rest of the code base - CheckStyle rules need to be configured for each that fail the build on accidental use of these dependencies.

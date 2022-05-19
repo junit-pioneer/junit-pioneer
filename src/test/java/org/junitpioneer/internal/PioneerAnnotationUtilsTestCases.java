@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 public class PioneerAnnotationUtilsTestCases {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+	@Target({ ElementType.TYPE, ElementType.METHOD })
 	@Inherited
 	public @interface NonRepeatableTestAnnotation {
 
@@ -29,7 +29,7 @@ public class PioneerAnnotationUtilsTestCases {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+	@Target({ ElementType.TYPE, ElementType.METHOD })
 	@Inherited
 	@Repeatable(PioneerAnnotationUtilsTestCases.RepeatableTestAnnotation.Container.class)
 	public @interface RepeatableTestAnnotation {
@@ -37,7 +37,7 @@ public class PioneerAnnotationUtilsTestCases {
 		String value() default "";
 
 		@Retention(RetentionPolicy.RUNTIME)
-		@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+		@Target({ ElementType.TYPE, ElementType.METHOD })
 		@Inherited
 		@interface Container {
 

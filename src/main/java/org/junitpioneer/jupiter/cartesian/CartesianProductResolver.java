@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -14,7 +14,6 @@ import static org.junitpioneer.internal.PioneerUtils.wrap;
 
 import java.util.List;
 
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -48,10 +47,7 @@ class CartesianProductResolver implements ParameterResolver {
 		// parameter with correct type (or `null`)
 		if (parameter == null)
 			return true;
-		if (parameterClass.isAssignableFrom(parameter.getClass()))
-			return true;
-		throw new ExtensionConfigurationException(
-			"CartesianTest was supplied arguments but parameter is not supported.");
+		return parameterClass.isAssignableFrom(parameter.getClass());
 	}
 
 	@Override

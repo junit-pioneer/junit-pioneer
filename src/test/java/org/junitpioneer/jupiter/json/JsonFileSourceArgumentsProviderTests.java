@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -206,7 +206,7 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void noPaths() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "noPaths");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSourceTestCases.class, "noPaths");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -216,7 +216,8 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void emptyFilePath() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "emptyFilePath");
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethod(InvalidJsonSourceTestCases.class, "emptyFilePath");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -226,7 +227,8 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void nonExistentFile() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "nonExistentFile");
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethod(InvalidJsonSourceTestCases.class, "nonExistentFile");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -236,7 +238,8 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@Test
 		void dataLocationMissing() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidJsonSource.class, "dataLocationMissing");
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethod(InvalidJsonSourceTestCases.class, "dataLocationMissing");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -246,7 +249,7 @@ class JsonFileSourceArgumentsProviderTests {
 
 	}
 
-	static class InvalidJsonSource {
+	static class InvalidJsonSourceTestCases {
 
 		@JsonFileSource
 		@ParameterizedTest

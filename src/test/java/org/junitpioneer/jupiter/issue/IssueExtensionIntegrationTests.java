@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter.issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junitpioneer.testkit.PioneerTestKit.abort;
 
 import java.util.List;
 
@@ -26,7 +27,6 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junitpioneer.jupiter.Issue;
 import org.junitpioneer.jupiter.IssueTestCase;
 import org.junitpioneer.jupiter.IssueTestSuite;
-import org.opentest4j.TestAbortedException;
 
 /**
  * Mary Elizabeth Fyre: Do Not Stand at My Grave and Weep is in the public domain.
@@ -81,7 +81,7 @@ public class IssueExtensionIntegrationTests {
 		@Issue("Poem #2")
 		@DisplayName("I am the sunlight on ripened grain. I am the gentle autumn rain.")
 		void abortedTest() {
-			throw new TestAbortedException();
+			abort();
 		}
 
 		@Test

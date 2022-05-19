@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,11 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.METHOD;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -26,7 +26,6 @@ import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.TestTemplate;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtensionTests {
 
@@ -336,7 +335,7 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void skipByAssumption() {
-			throw new TestAbortedException();
+			abort();
 		}
 
 		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
@@ -346,7 +345,7 @@ class RetryingTestExtensionTests {
 				throw new IllegalArgumentException();
 			}
 			if (executionCount == 2) {
-				throw new TestAbortedException();
+				abort();
 			}
 		}
 
@@ -417,7 +416,7 @@ class RetryingTestExtensionTests {
 
 	}
 
-	@Target({ METHOD, ANNOTATION_TYPE })
+	@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@TestTemplate
 	public @interface DummyTestTemplate {

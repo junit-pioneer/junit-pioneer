@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -26,29 +26,41 @@ class JsonArgumentSourceExtensionDemo {
 		}
 		// end::classpath_source[]
 
+		// @formatter:off
 		// tag::classpath_source_with_property[]
 		@ParameterizedTest
 		@JsonClasspathSource("jedis.json")
-		void singleJediProperty(@Property("name") String jediName) {
+		void singleJediProperty(
+				@Property("name") String jediName) {
 			// YOUR TEST CODE HERE
 		}
 		// end::classpath_source_with_property[]
+		// @formatter:on
 
+		// @formatter:off
 		// tag::classpath_source_deconstruct_from_array[]
 		@ParameterizedTest
 		@JsonClasspathSource("jedis.json")
-		void deconstructFromArray(@Property("name") String name, @Property("height") int height) {
+		void deconstructFromArray(
+				@Property("name") String name,
+				@Property("height") int height) {
 			// YOUR TEST CODE HERE
 		}
 		// end::classpath_source_deconstruct_from_array[]
+		// @formatter:on
 
+		// @formatter:off
 		// tag::classpath_source_nested_data[]
 		@ParameterizedTest
-		@JsonClasspathSource(value = "luke.json", data = "vehicles")
-		void lukeVehicles(@Property("name") String name, @Property("length") double length) {
+		@JsonClasspathSource(
+				value = "luke.json", data = "vehicles")
+		void lukeVehicles(
+				@Property("name") String name,
+				@Property("length") double length) {
 			// YOUR TEST CODE HERE
 		}
 		// end::classpath_source_nested_data[]
+		// @formatter:on
 
 	}
 
@@ -75,7 +87,8 @@ class JsonArgumentSourceExtensionDemo {
 				"{ name: 'Luke', height: 172  }",
 				"{ name: 'Yoda', height: 66 }"
 		})
-		void singleJediProperty(@Property("name") String jediName) {
+		void singleJediProperty(
+				@Property("name") String jediName) {
 			// YOUR TEST CODE HERE
 		}
 		// end::inline_source_with_property[]
@@ -88,7 +101,9 @@ class JsonArgumentSourceExtensionDemo {
 				"{ name: 'Yoda', height: 66 }",
 				"{ name: 'Luke', height: 172 }",
 		})
-		void deconstructFromArray(@Property("name") String name, @Property("height") int height) {
+		void deconstructFromArray(
+				@Property("name") String name,
+				@Property("height") int height) {
 			// YOUR TEST CODE HERE
 		}
 		// @formatter:on

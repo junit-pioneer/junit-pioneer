@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -19,10 +19,11 @@ import org.junit.platform.commons.JUnitException;
  */
 public class NoJsonParserConfiguredException extends JUnitException {
 
-	static final long serialVersionUID = 5399969575022498446L;
+	private static final long serialVersionUID = 5399969575022498446L;
+	private static final String ERROR_MESSAGE = "No JSON parsing library found. Make sure a supported JSON parser (currently only Jackson) is on your test class/module path. For more information, see https://junit-pioneer.org/docs/json-argument-source/";
 
 	NoJsonParserConfiguredException() {
-		super("There is no available JSON parsing library. Currently supported library is Jackson");
+		super(ERROR_MESSAGE);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -49,8 +49,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @see java.util.TimeZone#getDefault()
  * @see DefaultLocale
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Inherited
 @WritesDefaultTimeZone
 @ExtendWith(DefaultTimeZoneExtension.class)
