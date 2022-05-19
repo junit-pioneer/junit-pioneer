@@ -90,7 +90,7 @@ spotless {
 }
 
 checkstyle {
-	toolVersion = "7.8.2"
+	toolVersion = "10.2"
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
@@ -100,7 +100,7 @@ yamlValidator {
 }
 
 jacoco {
-	toolVersion = "0.8.7"
+	toolVersion = "0.8.8"
 }
 
 sonarqube {

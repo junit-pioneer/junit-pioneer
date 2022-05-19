@@ -7,7 +7,7 @@
 The JSON argument sources let you provide arguments for parameterized tests from JSON.
 There are three annotations:
 
-* `@JsonSource` for lenient inline JSON
+* `@JsonSource` for lenient inline JSON, works with regular string literals and text blocks
 * `@JsonFileSource` for JSON files from the local file system
 * `@JsonClasspathSource` for JSON files from the classpath
 
@@ -144,6 +144,59 @@ This parametrized test will generate the following tests:
 
 * [1] Snowspeeder, 4.5
 * [2] Imperial Speeder Bike, 3
+
+== JSON Parser Integration
+
+To not make users' dependency management more complex, JUnit Pioneer has no run-time dependencies.
+At the same time, it's not parsing JSON itself and relies on third-party libraries for that.
+For this extension that means that projects who want to use it need to pull in a JSON parser themselves.
+This is the list of supported parsers:
+
+* https://search.maven.org/artifact/com.fasterxml.jackson.core/jackson-databind[Jackson]
+
+If you need support for another parser, please https://github.com/junit-pioneer/junit-pioneer/issues/new/choose[open an issue].
+If your project does not already depend on a supported JSON parser, you can add it as follows.
+
+=== Gradle
+
+Gradle offers two ways to pull in a parser.
+The recommended one is to use https://docs.gradle.org/current/userguide/feature_variants.html[feature variants]:
+
+```kotlin
+testRuntimeOnly("org.junit-pioneer:junit-pioneer") {
+    capabilities {
+        requireCapability("org.junit-pioneer:junit-pioneer-jackson")
+    }
+}
+```
+
+Alternatively, the dependency can be added directly:
+
+```kotlin
+testImplementation("com.fasterxml.jackson.core:jackson-databind:$CURRENT_VERSION")
+```
+
+=== Maven
+
+In Maven, add the parser as a test dependency:
+
+```xml
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>$CURRENT_VERSION</version>
+    <scope>test</scope>
+</dependency>
+```
+
+=== Java Modules
+
+If your test code runs as a module, the JSON parser must make it into the module graph.
+That means (1) it must be on the module path and (2) it must be resolved.
+
+The steps above ensure that your build tool knows about the parser and should accomplish (1), but if no other module depends on the parser (directly or indirectly), (2) requires additional work.
+In that case, you need to manually resolve the module by applying the command line option `--add-modules=com.fasterxml.jackson.databind` to the Java process that executes the tests.
+
 
 == Thread-Safety
 

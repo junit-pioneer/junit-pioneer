@@ -10,10 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.METHOD;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -68,7 +67,7 @@ import org.junitpioneer.internal.TestNameFormatter;
  *
  * @since 0.4
  */
-@Target({ METHOD, ANNOTATION_TYPE })
+@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 // the extension is inherently thread-unsafe (has to wait for one execution before starting the next),
 // so it forces execution of all retries onto the same thread
