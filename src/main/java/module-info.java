@@ -10,8 +10,6 @@
  * allow users who depend on this module to not `require` org.junit.*, which would be backwards.
  */
 module org.junitpioneer {
-	requires java.se;
-
 	// see Javadoc for why these aren't transitive
 	requires org.junit.jupiter.api;
 	requires org.junit.jupiter.params;
