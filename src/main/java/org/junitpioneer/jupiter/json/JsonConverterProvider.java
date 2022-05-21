@@ -18,7 +18,8 @@ class JsonConverterProvider {
 		try {
 			JsonConverterProvider.class.getClassLoader().loadClass("com.fasterxml.jackson.databind.ObjectMapper");
 			return true;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return false;
 		}
 	}
