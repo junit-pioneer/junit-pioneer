@@ -35,10 +35,10 @@ import java.util.stream.Stream;
  */
 public class ArgumentSets {
 
-	private final List<List<?>> argumentSets;
+	private final List<List<?>> parameterSets;
 
 	private ArgumentSets() {
-		this.argumentSets = new ArrayList<>();
+		this.parameterSets = new ArrayList<>();
 	}
 
 	private ArgumentSets(Collection<?> arguments) {
@@ -47,7 +47,7 @@ public class ArgumentSets {
 	}
 
 	private ArgumentSets add(Collection<?> arguments) {
-		argumentSets.add(new ArrayList<>(arguments));
+		this.parameterSets.add(new ArrayList<>(arguments));
 		return this;
 	}
 
@@ -149,7 +149,7 @@ public class ArgumentSets {
 	}
 
 	List<List<?>> getArguments() {
-		return argumentSets;
+		return parameterSets;
 	}
 
 }

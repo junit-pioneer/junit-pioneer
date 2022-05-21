@@ -125,7 +125,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.onExceptions(), formatter);
 		}
 
-		void failed(Throwable exception) throws Throwable {
+		<E extends Throwable> void failed(E exception) throws E {
 			exceptionsSoFar++;
 
 			if (exception instanceof TestAbortedException) {

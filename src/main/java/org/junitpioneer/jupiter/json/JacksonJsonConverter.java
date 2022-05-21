@@ -39,7 +39,6 @@ class JacksonJsonConverter implements JsonConverter {
 	@Override
 	public Node toNode(InputStream stream) {
 		try {
-			ObjectMapper objectMapper = getObjectMapper(false);
 			JsonNode jsonNode = objectMapper.readTree(stream);
 			return new JacksonNode(objectMapper, jsonNode);
 		}
