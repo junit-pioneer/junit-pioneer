@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -22,6 +23,16 @@ class EnvironmentVariableExtension
 	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
 	static final String WARNING_KEY = EnvironmentVariableExtension.class.getSimpleName();
 	static final String WARNING_VALUE = "This extension uses reflection to mutate JDK-internal state, which is fragile. Check the Javadoc or documentation for more details.";
+
+	@Override
+	protected Predicate<ClearEnvironmentVariable> filterClearAnnotationsByMode(ApplyMode mode) {
+		return annotation -> annotation.mode().equals(mode);
+	}
+
+	@Override
+	protected Predicate<SetEnvironmentVariable> filterSetAnnotationsByMode(ApplyMode mode) {
+		return annotation -> annotation.mode().equals(mode);
+	}
 
 	@Override
 	protected Function<ClearEnvironmentVariable, String> clearKeyMapper() {

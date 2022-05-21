@@ -25,9 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -46,7 +49,14 @@ import org.junitpioneer.internal.PioneerUtils;
  * @param <S> The set annotation type.
  */
 abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation>
-		implements BeforeEachCallback, AfterEachCallback {
+		implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
+
+	@Override
+	public void beforeAll(ExtensionContext context) {
+		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
+		Collections.reverse(contexts);
+		contexts.forEach(c -> clearAndSetEntries(c, ApplyMode.CLASS));
+	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
@@ -57,17 +67,17 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		 */
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
 		Collections.reverse(contexts);
-		contexts.forEach(this::clearAndSetEntries);
+		contexts.forEach(c -> clearAndSetEntries(c, ApplyMode.TEST));
 	}
 
-	private void clearAndSetEntries(ExtensionContext context) {
+	private void clearAndSetEntries(ExtensionContext context, ApplyMode mode) {
 		context.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
 
 			try {
-				entriesToClear = findEntriesToClear(element);
-				entriesToSet = findEntriesToSet(element);
+				entriesToClear = findEntriesToClear(element, mode);
+				entriesToSet = findEntriesToSet(element, mode);
 				preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
 			}
 			catch (IllegalStateException ex) {
@@ -78,20 +88,23 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 				return;
 
 			reportWarning(context);
-			storeOriginalEntries(context, entriesToClear, entriesToSet.keySet());
+			storeOriginalEntries(context, entriesToClear, entriesToSet.keySet(), mode);
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
 		});
 	}
 
-	private Set<K> findEntriesToClear(AnnotatedElement element) {
+	private Set<K> findEntriesToClear(AnnotatedElement element, ApplyMode mode) {
 		return findAnnotations(element, getClearAnnotationType())
+				.filter(filterClearAnnotationsByMode(mode))
 				.map(clearKeyMapper())
 				.collect(PioneerUtils.distinctToSet());
 	}
 
-	private Map<K, V> findEntriesToSet(AnnotatedElement element) {
-		return findAnnotations(element, getSetAnnotationType()).collect(toMap(setKeyMapper(), setValueMapper()));
+	private Map<K, V> findEntriesToSet(AnnotatedElement element, ApplyMode mode) {
+		return findAnnotations(element, getSetAnnotationType())
+				.filter(filterSetAnnotationsByMode(mode))
+				.collect(toMap(setKeyMapper(), setValueMapper()));
 	}
 
 	private <A extends Annotation> Stream<A> findAnnotations(AnnotatedElement element, Class<A> clazz) {
@@ -125,8 +138,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void storeOriginalEntries(ExtensionContext context, Collection<K> entriesToClear,
-			Collection<K> entriesToSet) {
-		getStore(context).put(getStoreKey(context), new EntriesBackup(entriesToClear, entriesToSet));
+			Collection<K> entriesToSet, ApplyMode mode) {
+		getStore(context).put(getStoreKey(context, mode), new EntriesBackup(entriesToClear, entriesToSet));
 	}
 
 	private void clearEntries(Collection<K> entriesToClear) {
@@ -138,21 +151,28 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	@Override
-	public void afterEach(ExtensionContext context) throws Exception {
+	public void afterEach(ExtensionContext context) {
 		// apply from innermost to outermost
-		PioneerUtils.findAllContexts(context).forEach(this::restoreOriginalEntries);
+		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, ApplyMode.TEST));
 	}
 
-	private void restoreOriginalEntries(ExtensionContext context) {
-		getStore(context).getOrDefault(getStoreKey(context), EntriesBackup.class, new EntriesBackup()).restoreBackup();
+	@Override
+	public void afterAll(ExtensionContext context) {
+		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, ApplyMode.CLASS));
+	}
+
+	private void restoreOriginalEntries(ExtensionContext context, ApplyMode mode) {
+		getStore(context)
+				.getOrDefault(getStoreKey(context, mode), EntriesBackup.class, new EntriesBackup())
+				.restoreBackup();
 	}
 
 	private Store getStore(ExtensionContext context) {
 		return context.getStore(Namespace.create(getClass()));
 	}
 
-	private Object getStoreKey(ExtensionContext context) {
-		return context.getUniqueId();
+	private Object getStoreKey(ExtensionContext context, ApplyMode mode) {
+		return context.getUniqueId() + mode.name();
 	}
 
 	private class EntriesBackup {
@@ -180,6 +200,16 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		}
 
 	}
+
+	/**
+	 * @return Filter function based on the actual {@link ApplyMode} for clear annotations.
+	 */
+	protected abstract Predicate<C> filterClearAnnotationsByMode(ApplyMode mode);
+
+	/**
+	 * @return Filter function based on the actual {@link ApplyMode} for clear annotations.
+	 */
+	protected abstract Predicate<S> filterSetAnnotationsByMode(ApplyMode mode);
 
 	/**
 	 * @return Mapper function to get the key from a clear annotation.

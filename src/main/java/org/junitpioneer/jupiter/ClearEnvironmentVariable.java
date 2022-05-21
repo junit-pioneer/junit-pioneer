@@ -65,6 +65,11 @@ public @interface ClearEnvironmentVariable {
 	String key();
 
 	/**
+	 * Optional configuration option when to apply the extension.
+	 */
+	ApplyMode mode() default ApplyMode.TEST;
+
+	/**
 	 * Containing annotation of repeatable {@code @ClearEnvironmentVariable}.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)

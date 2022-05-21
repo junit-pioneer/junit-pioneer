@@ -236,7 +236,12 @@ class SystemPropertyExtensionTests {
 		@Nested
 		@SetSystemProperty(key = "A", value = "newer A")
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-		class ResettingSystemPropertyNestedTests {
+		class ResettingSystemPropertyAfterEachNestedTests {
+
+			@BeforeAll
+			void changeShouldNotBeVisible() {
+				assertThat(System.getProperty("A")).isEqualTo("old A");
+			}
 
 			@Test
 			@SetSystemProperty(key = "A", value = "newest A")
@@ -248,6 +253,30 @@ class SystemPropertyExtensionTests {
 			@ReadsSystemProperty
 			void resetAfterTestMethodExecution() {
 				assertThat(System.getProperty("A")).isEqualTo("old A");
+			}
+
+		}
+
+		@Nested
+		@SetSystemProperty(key = "A", value = "newer A", mode = ApplyMode.CLASS)
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingSystemPropertyAfterAllNestedTests {
+
+			@BeforeAll
+			void changeShouldBeVisible() {
+				assertThat(System.getProperty("A")).isEqualTo("newer A");
+			}
+
+			@Test
+			@SetSystemProperty(key = "A", value = "newest A")
+			void setForTestMethod() {
+				assertThat(System.getProperty("A")).isEqualTo("newest A");
+			}
+
+			@AfterAll
+			@ReadsSystemProperty
+			void resetAfterTestMethodExecution() {
+				assertThat(System.getProperty("A")).isEqualTo("newer A");
 			}
 
 		}
