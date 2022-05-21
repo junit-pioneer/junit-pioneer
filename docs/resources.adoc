@@ -1,5 +1,7 @@
 :page-title: Creating and Sharing Resourced
 :page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject resources like temporary directories or a port.
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourcesExtensionDemo.java
 
 Some tests need "resources" which need to be cleaned up when finished, and sometimes, these resources might be needed to be accessed by many tests.
 Furthermore, you may be running your JUnit Jupiter tests in parallel, which makes sharing these resources flaky.
@@ -29,12 +31,29 @@ There are two different approaches to using a resource:
 
 === Creating a New Resource
 
-////
-TODO
-* new = new instance every time
-* closing resources
-* arguments
-////
+==== Creation
+
+To create a new resource for a given test:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_new_resource_demo]
+----
+
+...where `TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].
+
+This will create a brand-new resource which will be "closed" at the end of the test. (So in this case, a new temporary directory will be created, which will be deleted right after the test.)
+
+==== Creation with arguments
+
+Some resources accept string arguments to control their behaviour.
+
+For example, `TemporaryDirectory` may accept a String argument to set the name of the temporary directory that is created:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_new_resource_with_arg_demo]
+----
 
 === Sharing a Resource
 
