@@ -336,6 +336,15 @@ class EnvironmentVariableExtensionTests {
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
+		@Test
+		@DisplayName("should fail when configuring test-level annotation with ApplyMode.CLASS")
+		void shouldFailWhenTestAnnotationIsAppliedOnClassLevel() {
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
+				"shouldFailWhenTestAnnotationIsAppliedOnClassLevel");
+
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
+		}
+
 	}
 
 	@Nested
@@ -417,6 +426,11 @@ class EnvironmentVariableExtensionTests {
 		@SetEnvironmentVariable(key = "set envvar A", value = "new A")
 		@SetEnvironmentVariable(key = "set envvar A", value = "new B")
 		void shouldFailWhenSetSameEnvironmentVariableTwice() {
+		}
+
+		@Test
+		@SetEnvironmentVariable(key = "set envvar A", value = "new A", mode = ApplyMode.CLASS)
+		void shouldFailWhenTestAnnotationIsAppliedOnClassLevel() {
 		}
 
 	}

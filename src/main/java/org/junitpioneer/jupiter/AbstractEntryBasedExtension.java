@@ -15,6 +15,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -71,6 +72,10 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void clearAndSetEntries(ExtensionContext context, ApplyMode mode) {
+		if (context.getTestMethod().isPresent() && classApplyModeAnnotationsOnMethod(context.getRequiredTestMethod())) {
+			throw new ExtensionConfigurationException("Test-level annotations can not have ApplyMode.CLASS");
+		}
+
 		context.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
@@ -92,6 +97,11 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
 		});
+	}
+
+	private boolean classApplyModeAnnotationsOnMethod(Method method) {
+		return !(findEntriesToClear(method, ApplyMode.CLASS).isEmpty()
+				&& findEntriesToSet(method, ApplyMode.CLASS).isEmpty());
 	}
 
 	private Set<K> findEntriesToClear(AnnotatedElement element, ApplyMode mode) {
