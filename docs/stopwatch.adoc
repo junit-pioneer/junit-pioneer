@@ -1,5 +1,7 @@
 :page-title: Measuring time with a Stopwatch
 :page-description: Extends JUnit Jupiter with `@Stopwatch` to measure elapsed time of a test method
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/StopwatchExtensionDemo.java
 
 == Introduction
 
@@ -11,12 +13,8 @@ It will measure elapsed time and pass the result to the `https://junit.org/junit
 
 To measure elapsed time just add the `@Stopwatch` annotation to a class or, like in the following example, to a method:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Stopwatch
-@Test
-void test() {
-	// Some test
-}
+include::{demo}[tag=stopwatch_demo]
 ----
 

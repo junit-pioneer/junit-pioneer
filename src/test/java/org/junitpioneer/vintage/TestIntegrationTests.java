@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,7 +11,6 @@
 package org.junitpioneer.vintage;
 
 import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import static org.junitpioneer.vintage.ExpectedExceptionExtension.EXPECTED_EXCEPTION_WAS_NOT_THROWN;
 
@@ -112,6 +111,8 @@ class TestIntegrationTests {
 
 	// TEST CASES -------------------------------------------------------------------
 
+	// vintage @Test is deprecated (not for removal)
+	@SuppressWarnings("deprecation")
 	static class TestTestCases {
 
 		@Test

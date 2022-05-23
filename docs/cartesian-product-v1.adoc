@@ -300,7 +300,7 @@ To demonstrate with a table:
 For more information, please see the link:docs/range-sources[separate documentation about range sources].
 You can combine range sources with `@CartesianValueSource`, it works as you'd expect:
 
-[source, java]
+[source,java]
 ----
 @CartesianProductTest
 @ShortRangeSource(from = 1, to = 3)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,11 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.METHOD;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -24,12 +24,13 @@ import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.platform.testkit.engine.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtensionTests {
 
@@ -69,6 +70,29 @@ class RetryingTestExtensionTests {
 				.hasNumberOfDynamicallyRegisteredTests(2)
 				.hasNumberOfAbortedTests(1)
 				.hasNumberOfSucceededTests(1);
+	}
+
+	@Test
+	void hasAName_executedTwice_passes_publishesCustomName() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RetryingTestTestCases.class, "hasAName", TestInfo.class,
+					TestReporter.class);
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(2)
+				.hasNumberOfAbortedTests(1)
+				.hasNumberOfSucceededTests(1);
+		assertThat(results)
+				.hasNumberOfReportEntries(2)
+				.withValues("[1] retrying test invocation with custom name",
+					"[2] retrying test invocation with custom name");
+	}
+
+	@Test
+	void hasNoName_fails() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "hasNoName");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
 
 	@Test
@@ -213,6 +237,14 @@ class RetryingTestExtensionTests {
 	}
 
 	@Test
+	void maxAttemptsEqualsOne_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsEqualsOne");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
 	void maxAttemptsLessThanMinSuccess_fails() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsLessThanMinSuccess");
@@ -312,6 +344,20 @@ class RetryingTestExtensionTests {
 		void failsNever() {
 		}
 
+		@RetryingTest(value = 3, name = "[{index}] retrying test invocation with custom name")
+		void hasAName(TestInfo info, TestReporter reporter) {
+			reporter.publishEntry(info.getDisplayName());
+			executionCount++;
+			if (executionCount == 1) {
+				throw new IllegalArgumentException();
+			}
+		}
+
+		@RetryingTest(value = 3, name = "")
+		void hasNoName() {
+			// Do nothing
+		}
+
 		@RetryingTest(3)
 		void failsOnlyOnFirstInvocation() {
 			executionCount++;
@@ -354,7 +400,7 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void skipByAssumption() {
-			throw new TestAbortedException();
+			abort();
 		}
 
 		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
@@ -364,7 +410,7 @@ class RetryingTestExtensionTests {
 				throw new IllegalArgumentException();
 			}
 			if (executionCount == 2) {
-				throw new TestAbortedException();
+				abort();
 			}
 		}
 
@@ -413,8 +459,13 @@ class RetryingTestExtensionTests {
 			// Do nothing
 		}
 
-		@RetryingTest(maxAttempts = 1, minSuccess = 1)
+		@RetryingTest(maxAttempts = 2, minSuccess = 2)
 		void maxAttemptsEqualsMinSuccess() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 1, minSuccess = 1)
+		void maxAttemptsEqualsOne() {
 			// Do nothing
 		}
 
@@ -445,7 +496,7 @@ class RetryingTestExtensionTests {
 
 	}
 
-	@Target({ METHOD, ANNOTATION_TYPE })
+	@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@TestTemplate
 	public @interface DummyTestTemplate {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -26,7 +26,6 @@ import java.util.regex.PatternSyntaxException;
 
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.PreconditionViolationException;
-import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
 
 /**
  * {@code @CartesianEnumSource} is an argument source for constants of a
@@ -42,15 +41,15 @@ import org.junitpioneer.jupiter.CartesianEnumSource.CartesianEnumSources;
  * {@code @CartesianEnumSource} per parameter.
  * </p>
  *
- * @see CartesianProductTest
- *
  * @since 1.3.0
  * @deprecated scheduled to be removed in 2.0, use {@link org.junitpioneer.jupiter.cartesian.CartesianTest.Enum} instead.
+ *
+ * @see CartesianProductTest
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Repeatable(CartesianEnumSources.class)
+@Repeatable(CartesianEnumSource.CartesianEnumSources.class)
 @ArgumentsSource(CartesianEnumArgumentsProvider.class)
 @Deprecated
 public @interface CartesianEnumSource {

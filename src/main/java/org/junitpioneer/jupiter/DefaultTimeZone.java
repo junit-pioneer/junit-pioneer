@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -28,9 +29,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * original value.</p>
  *
  * <p>{@code @DefaultTimeZone} can be used on the method and on the class
- * level. If a class is annotated, the configured {@code TimeZone} will be the
- * default {@code TimeZone} for all tests inside that class. Any method level
- * configurations will override the class level default {@code TimeZone}.</p>
+ * level. It is inherited from higher-level containers, but can only be used
+ * once per method or class. If a class is annotated, the configured
+ * {@code TimeZone} will be the default {@code TimeZone} for all tests inside
+ * that class. Any method level configurations will override the class level
+ * default {@code TimeZone}.</p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
@@ -46,8 +49,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @see java.util.TimeZone#getDefault()
  * @see DefaultLocale
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE })
+@Inherited
 @WritesDefaultTimeZone
 @ExtendWith(DefaultTimeZoneExtension.class)
 public @interface DefaultTimeZone {

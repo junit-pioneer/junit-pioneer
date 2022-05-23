@@ -1,5 +1,7 @@
 :page-title: Disable Parameterized Test
 :page-description: Extends JUnit Jupiter with multiple extensions, which selectively disables parameterized tests
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/params/DisableParameterizedExtensionDemo.java
 
 JUnit Pioneer offers multiple extensions for selectively disabling parameterized tests.
 These are as follows:
@@ -15,65 +17,23 @@ The annotation is only supported on test method level for parameterized tests.
 Unlike the `@Disabled` API provided in JUnit Jupiter, which disables the test on first encounter of the annotation, `@DisableIfDisplayName` is validated before each parameterized test execution.
 As a consequence, instead of disabling the entire set of parameterized tests, each test (name) can be evaluated and possibly disabled individually.
 
-[source,java]
+[source,java,indent=0]
 ----
-// disable invocations whose display name contains "disable"
-@DisableIfDisplayName(contains = "disable")
-@ParameterizedTest(name = "See if enabled with {0}")
-@ValueSource(
-	// Disabled: 1,2,3,4,5
-	// Not disabled: 6
-	strings = {
-		"disable who", // 1
-		"you, disable you", // 2
-		"why am I disabled", // 3
-		"what has been disabled must stay disabled", // 4
-		"fine disable me all you want", // 5
-		"not those one, though!" // 6
-	}
-)
-void testExecutionDisabled(String reason) {
-	if (reason.contains("disable"))
-		fail("Test should've been disabled " + reason);
-}
+include::{demo}[tag=disable_parameterized_name_contains]
 ----
 
 You can also specify more than one substring at a time:
 
-[source,java]
+[source,java,indent=0]
 ----
-@DisableIfDisplayName(contains = {"1", "2"})
-@ParameterizedTest(name = "See if enabled with {0}")
-@ValueSource(ints = { 1, 2, 3, 4, 5 })
-void testDisplayNameString(int num) {
-	if (num == 1 || num == 2)
-		fail("Test should've been disabled for " + num);
-}
+include::{demo}[tag=disable_parameterized_name_contains_one_or_two]
 ----
 
 If substrings are not powerful enough, you can also use regular expressions:
 
-[source,java]
+[source,java,indent=0]
 ----
-// disable invocations whose display name
-// contains "disable " or "disabled "
-@DisableIfDisplayName(matches = ".*disabled?\\s.*")
-@ParameterizedTest(name = "See if enabled with {0}")
-@ValueSource(
-	// Disabled: 1,2,4,5
-	// Not disabled: 3,6
-	strings = {
-		"disable who", // 1
-		"you, disable you", // 2
-		"why am I disabled", // 3
-		"what has been disabled must stay disabled", // 4
-		"fine disable me all you want", // 5
-		"not those one, though!" // 6
-	}
-)
-void single(String reason) {
-	// ...
-}
+include::{demo}[tag=disable_parameterized_regex]
 ----
 
 NOTE: Since JUnit Pioneer 1.5.0, using both `matches` and `contains` in a single annotation is no longer permitted.
@@ -108,37 +68,17 @@ Both annotations accept `contains` or `matches` attributes, where using both att
 
 ==== Using `contains`
 
-[source,java]
+[source,java,indent=0]
 ----
-@DisableIfAllArguments(contains = "the")
-@ParameterizedTest
-@CsvSource(value = {
-		"If the swift moment I entreat:;Tarry a while! You are so fair!",
-		"Then forge the shackles to my feet,;Then I will gladly perish there!",
-		"Then let them toll the passing-bell,;Then of your servitude be free,",
-		"The clock may stop, its hands fall still,;And time be over then for me!"
-}, delimiter = ';')
-void disableAllContains(String line, String line2) {
-	// ...
-}
+include::{demo}[tag=disable_parameterized_contains_in_all_tokens]
 ----
 
 The test `disableAllContains` ordinarily would run four times, but the second execution gets disabled because both arguments contain "the" (the second argument as part of "there").
 Using the same test with a different annotation would look like this:
 
-[source,java]
+[source,java,indent=0]
 ----
-@DisableIfAnyArgument(contains = "Then")
-@ParameterizedTest
-@CsvSource(value = {
-		"If the swift moment I entreat:;Tarry a while! You are so fair!",
-		"Then forge the shackles to my feet,;Then I will gladly perish there!",
-		"Then let them toll the passing-bell,;Then of your servitude be free,",
-		"The clock may stop, its hands fall still,;And time be over then for me!"
-}, delimiter = ';')
-void disableAnyContains(String line, String line2) {
-	// ...
-}
+include::{demo}[tag=disable_parameterized_contains_in_any_token]
 ----
 
 The test `disableAnyContains` ordinarily would run four times, but the second and third executions get disabled because an argument contains "Then".
@@ -146,19 +86,9 @@ The last execution does not get disabled, because the extension is case-sensitiv
 
 You can specify more than one substring at a time:
 
-[source, java]
+[source,java,indent=0]
 ----
-@DisableIfAnyArgument(contains = { "Then", "then" })
-@ParameterizedTest
-@CsvSource(value = {
-		"If the swift moment I entreat:;Tarry a while! You are so fair!",
-		"Then forge the shackles to my feet,;Then I will gladly perish there!",
-		"Then let them toll the passing-bell,;Then of your servitude be free,",
-		"The clock may stop, its hands fall still,;And time be over then for me!"
-}, delimiter = ';')
-void disableAnyContains(String line, String line2) {
-    // [...]
-}
+include::{demo}[tag=disable_parameterized_contains_multiple_arguments]
 ----
 
 The extension disables the second, third and fourth executions because an argument contains either "Then" or "then".
@@ -167,19 +97,9 @@ The extension disables the second, third and fourth executions because an argume
 
 If substrings are not powerful enough, you can also use regular expressions, with the `matches` value.
 
-[source,java]
+[source,java,indent=0]
 ----
-@DisableIfAllArguments(matches = ".*\\s[a-z]{3}\\s.*")
-@ParameterizedTest
-@CsvSource(value = {
-		"If the swift moment I entreat:;Tarry a while! You are so fair!",
-		"Then forge the shackles to my feet,;Then I will gladly perish there!",
-		"Then let them toll the passing-bell,;Then of your servitude be free,",
-		"The clock may stop, its hands fall still,;And time be over then for me!"
-}, delimiter = ';')
-void interceptMatchesAny(String line, String line2) {
-	// [...]
-}
+include::{demo}[tag=disable_parameterized_matches_all_arguments]
 ----
 
 The extension disables the first and fourth executions because in each case both arguments contain a three-letter word surrounded by a whitespace.
@@ -201,17 +121,9 @@ Using both `name` and `index` in a single `@DisableIfArgument` annotation is not
 
 If naming information is included during compilation, you can target parameters by their name.
 
-[source, java]
+[source,java,indent=0]
 ----
-@DisableIfArgument(name = "line2", contains = "swift")
-@ParameterizedTest
-@CsvSource({
-		"If the swift moment I entreat:;Tarry a while! You are so fair!",
-		"Then forge the shackles to my feet,;Then I will gladly perish there!"
-})
-void targetName(String line, String line2) {
-	// [...]
-}
+include::{demo}[tag=disable_parameterized_named_parameter_contains]
 ----
 
 The test gets executed two times because we explicitly targeted `line2`, which never contains the word "swift".
@@ -220,17 +132,9 @@ The test gets executed two times because we explicitly targeted `line2`, which n
 
 You can target your parameters with their index, starting from 0 (zero).
 
-[source, java]
+[source,java,indent=0]
 ----
-@DisableIfArgument(index = 1, contains = "swift")
-@ParameterizedTest
-@CsvSource({
-		"If the swift moment I entreat:;Tarry a while! You are so fair!",
-		"Then forge the shackles to my feet,;Then I will gladly perish there!"
-})
-void targetIndex(String line, String line2) {
-	// [...]
-}
+include::{demo}[tag=disable_parameterized_indexed_parameter_contains]
 ----
 
 Again, the test gets executed two times, because we targeted the second parameter.
@@ -240,17 +144,9 @@ Again, the test gets executed two times, because we targeted the second paramete
 You can opt to not specify `index` or `name` and use annotation order instead, to specify what parameter to target.
 In this case the first `@DisableIfArgument` targets the first parameter, the second annotation the second parameter, etc.
 
-[source, java]
+[source,java,indent=0]
 ----
-@DisableIfArgument(contains = "gibberish")
-@DisableIfArgument(contains = "gladly")
-@ParameterizedTest
-@CsvSource({
-		"If the swift moment I entreat:;Tarry a while! You are so fair!",
-		"Then forge the shackles to my feet,;Then I will gladly perish there!"
-})
-void targetByOrder(String line, String line2) {
-}
+include::{demo}[tag=disable_parameterized_different_rules_for_different_parameters_contains]
 ----
 
 The test gets executed once.
@@ -266,19 +162,9 @@ Using this method to target parameters when your test has multiple parameters is
 
 As with the other two annotations, you can also use regular expressions with the `matches` value in `@DisableIfArgument`.
 
-[source,java]
+[source,java,indent=0]
 ----
-// disable invocations whose argument ends with 'knew' or 'grew'
-@DisableIfArgument(matches = { ".*knew", ".*grew" })
-@ParameterizedTest
-@ValueSource(strings = {
-		"Lily-like, white as snow,",
-		"She hardly knew",
-		"She was a woman, so",
-		"Sweetly she grew"
-})
-void interceptMatches(String value) {
-}
+include::{demo}[tag=disable_parameterized_different_rules_for_different_parameters_matches]
 ----
 
 These test invocations get disabled:

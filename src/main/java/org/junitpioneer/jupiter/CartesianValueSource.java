@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -36,10 +36,10 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * {@code @CartesianValueSource} per parameter.
  * </p>
  *
- * @see CartesianProductTest
- *
  * @since 1.0
  * @deprecated scheduled to be removed in 2.0, use {@link org.junitpioneer.jupiter.cartesian.CartesianTest.Values} instead.
+ *
+ * @see CartesianProductTest
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -12,6 +12,8 @@ package org.junitpioneer.testkit;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
+
+import org.opentest4j.TestAbortedException;
 
 public class PioneerTestKit {
 
@@ -60,6 +62,15 @@ public class PioneerTestKit {
 		String allTypeNames = stream(methodParameterTypes).map(Class::getName).collect(joining(","));
 
 		return new ExecutionResults(testClass, testMethodName, allTypeNames);
+	}
+
+	/**
+	 * Aborts the test execution. Makes the test code a little nicer.
+	 *
+	 * @throws TestAbortedException always throws this
+	 */
+	public static void abort() {
+		throw new TestAbortedException();
 	}
 
 }

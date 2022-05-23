@@ -1,5 +1,7 @@
 :page-title: Standard Input and Output
 :page-description: Extends JUnit Jupiter with `@StdIo`, which simulates standard input or catches standard output.
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/StdInOutExtensionDemo.java
 
 The standard IO extension adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out`).
 
@@ -21,88 +23,41 @@ Here's which combinations of this annotation (with or without values for the rea
 `@StdIo("...")`::
 In this case `System.in` gets replaced and the code under test will read the specified lines (in the snippet, that's just the line `"..."`).
 +
-[source,java]
+[source,java,indent=0]
 ----
-public class StandardInputOutputTests {
-
-	@Test
-	@StdIo({"Hello", "World"})
-	void test() {
-		// `System.in` is replaced and the code under
-		// test reads lines "Hello" and "World"
-	}
-
-}
+include::{demo}[tag=stdio_stdin_replace_input]
 ----
 
 `@StdIo("...")` and `StdIn`::
 Like before, but the lines read by the code under test can be verified with the `StdIn` parameter.
 +
-[source,java]
+[source,java,indent=0]
 ----
-public class StandardInputOutputTests {
-
-	@Test
-	@StdIo({"Hello", "World"})
-	void test(StdIn in) {
-		// `System.in` is replaced, the code under
-		// test reads lines "Hello" and "World",
-		// and `StdIn` can be used to verify that
-	}
-
-}
+include::{demo}[tag=stdio_stdin_replace__and_verify_input]
 ----
 
 `@StdIo` and `StdOut`::
 `System.in` is _not_ replaced (because no input lines are defined), but `System.out` is, so the written lines can be verified with the `StdOut` parameter.
 +
-[source,java]
+[source,java,indent=0]
 ----
-public class StandardInputOutputTests {
-
-	@Test
-	@StdIo
-	void test(StdOut out) {
-		// `System.out` is replaced, so the written lines
-		// are captured and can be verified with `StdOut`
-	}
+include::{demo}[tag=stdio_stdin_not_replaced_but_stdout]
 ----
 
 `@StdIo("...")` and `StdOut`::
 `System.in` is replaced, so the code can read the input lines and `System.out` is replaced, so the written lines can be verified with the `StdOut` parameter.
 +
-[source,java]
+[source,java,indent=0]
 ----
-public class StandardInputOutputTests {
-
-	@Test
-	@StdIo()
-	void test(StdOut out) {
-		// `System.in` and `System.out` are replaced
-		// and written lines can be verified with `StdOut`
-	}
-
-}
+include::{demo}[tag=stdio_both_replaced]
 ----
 
 `@StdIo("...")`, `StdIn`, and `StdOut`::
 A combination of the two previous cases - `System.in` and `System.out` get replaced.
 +
-[source,java]
+[source,java,indent=0]
 ----
-public class StandardInputOutputTests {
-
-	@Test
-	@StdIo({"Hello", "World"})
-	void test(StdIn in, StdOut out) {
-		// `System.in` is replaced, the code under
-		// test reads lines "Hello" and "World",
-		// and `StdIn` can be used to verify that;
-		// `System.out` is also replaced, so the
-		// written lines can be verified with `StdOut`
-	}
-
-}
+include::{demo}[tag=stdio_both_replaced_and_verify]
 ----
 
 The remaining combinations of the annotation, its values, and `StdIn`/`StdOut` are considered misconfigurations and lead to exceptions.
@@ -135,49 +90,18 @@ To have the code under test read empty input and/or use `StdIn` to verify that, 
 Some readers read all lines from `StdIo` eagerly (e.g.: `BufferedReader`) which can lead to unexpected behavior.
 Take the following example:
 
-[source,java]
+[source,java,indent=0]
 ----
-class ExampleConsoleReader {
-
-	private List<String> lines = new ArrayList<>();
-
-	public void readLines() {
-		InputStreamReader is = new InputStreamReader(System.in);
-		BufferedReader reader = new BufferedReader(is);
-		for (int i = 0; i < 2; i++) {
-			String line = reader.readLine();
-			lines.add(line);
-		}
-	}
-
-}
+include::{demo}[tag=stdio_edge_cases_ExampleConsoleReader]
 ----
 
 This is a straightforward example class.
 It reads two lines from `System.in`, using a `BufferedReader`.
 This is the unit test for this class, using `StdIoExtension`:
 
-[source, java]
+[source,java,indent=0]
 ----
-class ConsoleReaderTest {
-
-	@Test
-	@StdIo({ "line1", "line2", "line3" })
-	void testReadLines(StdIn in) {
-		ConsoleReader consoleReader = new ConsoleReader();
-
-		consoleReader.readLines();
-
-		String[] lines = in.capturedLines();
-
-		// This is failing
-		// assertEquals(lines, "line1", "line2");
-
-		// This is passing
-		// assertEquals(lines, "line1", "line2", "line3");
-	}
-
-}
+include::{demo}[tag=stdio_edge_cases_ConsoleReaderTest]
 ----
 
 The underlying `BufferedReader` eagerly reads all three supplied lines during the first `readLine` call in the loop (that's why it's called _buffered_ reader).

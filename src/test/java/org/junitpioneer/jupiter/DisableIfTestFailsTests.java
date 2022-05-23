@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,14 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
@@ -177,7 +176,7 @@ class DisableIfTestFailsTests {
 		@Order(2)
 		void test2() {
 			// fail test with assertion
-			assertTrue(false);
+			fail();
 		}
 
 		@Test
@@ -243,7 +242,7 @@ class DisableIfTestFailsTests {
 		@Test
 		@Order(2)
 		void test2() {
-			Assumptions.assumeFalse(true);
+			abort();
 		}
 
 		@Test

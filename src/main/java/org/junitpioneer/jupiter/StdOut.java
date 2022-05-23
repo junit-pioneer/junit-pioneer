@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -24,6 +24,10 @@ import java.nio.charset.Charset;
 public class StdOut extends OutputStream {
 
 	private final StringWriter writer = new StringWriter();
+
+	// recreate default constructor to prevent compiler warning
+	public StdOut() {
+	}
 
 	@Override
 	public void write(int i) {

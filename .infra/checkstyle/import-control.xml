@@ -4,5 +4,15 @@
 <import-control pkg="org.junitpioneer">
 
 	<allow pkg=".*" regex="true" />
+	<disallow pkg="com.fasterxml.jackson.*" regex="true"/>
+
+	<subpackage name="jupiter.json">
+		<file name="JacksonNode.java">
+			<allow pkg="com.fasterxml.jackson.*" regex="true" />
+		</file>
+		<file name="JacksonJsonConverter.java">
+			<allow pkg="com.fasterxml.jackson.*" regex="true" />
+		</file>
+	</subpackage>
 
 </import-control>

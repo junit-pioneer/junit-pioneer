@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -34,6 +34,7 @@ import org.junit.platform.commons.PreconditionViolationException;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.TestNameFormatter;
 
 class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 
@@ -45,18 +46,18 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		List<List<?>> sets = computeSets(context);
-		CartesianTestNameFormatter formatter = createNameFormatter(context);
+		TestNameFormatter formatter = createNameFormatter(context);
 		return cartesianProduct(sets).stream().map(params -> new CartesianTestInvocationContext(params, formatter));
 	}
 
-	private CartesianTestNameFormatter createNameFormatter(ExtensionContext context) {
+	private TestNameFormatter createNameFormatter(ExtensionContext context) {
 		CartesianTest annotation = findAnnotation(context.getRequiredTestMethod(), CartesianTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianTest not found."));
 		String pattern = annotation.name();
 		if (pattern.isEmpty())
-			throw new ExtensionConfigurationException("CartesianTest can not have a non-empty display name.");
+			throw new ExtensionConfigurationException("CartesianTest can not have an empty display name.");
 		String displayName = context.getDisplayName();
-		return new CartesianTestNameFormatter(pattern, displayName);
+		return new TestNameFormatter(pattern, displayName, CartesianTest.class);
 	}
 
 	private List<List<?>> computeSets(ExtensionContext context) {

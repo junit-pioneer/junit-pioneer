@@ -49,13 +49,11 @@ The CoC binds maintainers, contributors, and other community members alike; in c
 
 ## JUnit Pioneer Contributor License Agreement
 
-**Project License:** [Eclipse Public License v2.0](LICENSE.md)
+We don't have a dedicated contributor license agreement (CLA), but please consider [GitHub's terms of service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#6-contributions-under-repository-license):
 
-* You will only submit contributions where you have authored 100% of the content.
-* You will only submit contributions to which you have the necessary rights.
-  This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
-* Whatever content you contribute will be provided under the project license(s).
+> Whenever you add Content to a repository containing notice of a license, you license that Content under the same terms, and you agree that you have the right to license that Content under those terms.
 
+JUnit Pioneer uses the [Eclipse Public License v2.0](https:/eclipse.org/legal/epl-2.0/), which you can also find [here](https://github.com/junit-pioneer/junit-pioneer/blob/main/LICENSE.md) in this repository.
 
 ## If you're new...
 
@@ -135,6 +133,34 @@ Classes implementing an extension's functionality should reflect that in their n
 
 Note _should_, not _must_ - there can be exceptions if well argued.
 
+#### Extension Scopes
+
+Consider the following:
+
+```java
+@YourExtension
+class MyTests {
+
+	@Test
+	void testFoo() { /* ... */ }
+
+	@Test
+	void testBar() { /* ... */ }
+
+}
+```
+
+You might ask yourself: should `@YourExtension` run
+
+1. once before/after all tests (meaning it "brackets" the test class, typically via [`BeforeAllCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeAllCallback.html) / [`AfterAllCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterAllCallback.html)) or
+2. once before/after each test (meaning it "brackets" each test method, typically via [`BeforeEachCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeEachCallback.html) / [`AfterEachCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterEachCallback.html))?
+
+We decided to _default_ to option 2, particularly for extensions that set and reset state (often global state like `DefaultLocaleExtension` and `DefaultTimezoneExtension`), as we believe this is less error-prone and covers more common use cases.
+Furthermore, we want to guarantee consistent behavior across different extensions.
+
+This, however, is just a default.
+`@YourExtension` is free to diverge if it makes sense.
+
 #### Namespaces
 
 Interacting with [Jupiter's extension `Store`](https://junit.org/junit5/docs/current/user-guide/#extensions-keeping-state) requires a `Namespace` instance.
@@ -157,6 +183,19 @@ How to write the code itself.
 * design code to avoid optionality wherever feasibly possible
 * in all remaining cases, prefer `Optional` over `null`
 
+#### Reusability
+
+We strive to make our extensions reusable and extensible.
+
+A key ingredient in that is making sure that annotations work as meta-annotations (i.e. users can apply _our_ annotations to _their_ annotations and our extensions still work).
+To achieve this, apply `@Target({ ElementType.ANNOTATION_TYPE })` to annotations and prefer `org.junitpioneer.internal.PioneerAnnotationUtils` and `org.junit.platform.commons.support.AnnotationSupport` when searching for annotations.
+
+Another aspect is that annotations that apply to classes (i.e. those marked with `@Target({ ElementType.TYPE })`) should be inherited by subclasses.
+For that, also add the annotation `@Inherited`.
+
+**NOTE**:
+`ElementType.TYPE` includes annotations, so there's no need to apply it _and_ `ElementType.ANNOTATION_TYPE`.
+
 #### Thread-safety
 
 It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.
@@ -178,6 +217,17 @@ Most extensions verify their configuration at some point.
 It helps with writing parallel tests for them if they do not change global state until the configuration is verified.
 That particularly applies to "store in beforeEach - restore in afterEach"-extensions!
 If they fail after "store", they will still "restore" and thus potentially create a race condition with other tests.
+
+#### Compiler Warnings
+
+The build is configured to treat almost all compiler warnings as errors (see below for exceptions).
+If code that triggers a warning can't be refactored to avoid that, `@SuppressWarning` may be added, but we don't want to do that liberally.
+Developers and reviewers should minimize its use.
+
+Exceptions:
+* `exports` - Pioneer's public API mentions a lot of Jupiter classes (e.g. all custom annotations use Jupiter's annotations), which leads to warnings that recommend to transitively require the corresponding Jupiter modules.
+  Doing that would mean that Pioneer users wouldn't have to require Jupiter's modules, which is backwards - we're the appendix, here.
+  Since we don't want to pepper `@SuppressWarning("exports")` everywhere, the warning is disabled.
 
 ### Tests
 
@@ -443,7 +493,7 @@ Pioneer avoids adding to users' dependency hell and hence doesn't take on depend
 _Optional_ dependencies are acceptable if they are needed to provide specific features, particularly:
 
 * to _integrate_ with other tools, frameworks, and libraries by offering features that directly interact with them (a hypothetical example is [Playwright](https://playwright.dev) for E2E testing)
-* for _ease of use_ when recreating functionality would be too complex or otherwise out of scope for Pioneer (a hypothetical example is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing)
+* for _ease of use_ when recreating functionality would be too complex or otherwise out of scope for Pioneer (an example is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing)
 
 Unless we see reports of optional dependencies causing unexpected problems for users, there is no particularly high hurdle for taking them on, given each provides more than marginal value.
 They should only be used by specifically chosen features that require them, though, and care needs to be taken to prevent them from creeping into the rest of the code base - CheckStyle rules need to be configured for each that fail the build on accidental use of these dependencies.

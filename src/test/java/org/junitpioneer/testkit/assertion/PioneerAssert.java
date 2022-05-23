@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -28,7 +28,7 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.testkit.engine.Events;
 import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.assertion.reportentry.ReportEntryValueAssert;
+import org.junitpioneer.testkit.assertion.reportentry.ReportEntryContentAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseFailureAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseStartedAssert;
 import org.junitpioneer.testkit.assertion.suite.TestSuiteAssert;
@@ -50,7 +50,7 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public ReportEntryValueAssert hasNumberOfReportEntries(int expected) {
+	public ReportEntryContentAssert hasNumberOfReportEntries(int expected) {
 		try {
 			List<Map<String, String>> entries = reportEntries();
 			Assertions.assertThat(entries).hasSize(expected);
@@ -71,7 +71,7 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 	}
 
 	@Override
-	public ReportEntryValueAssert hasSingleReportEntry() {
+	public ReportEntryContentAssert hasSingleReportEntry() {
 		return hasNumberOfReportEntries(1);
 	}
 
@@ -264,12 +264,11 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 				.collect(toList());
 	}
 
-	@SafeVarargs
 	@Override
-	public final ListAssert<String> withExceptionInstancesOf(Class<? extends Throwable>... exceptionTypes) {
+	public final ListAssert<String> withExceptionInstancesOf(Class<? extends Throwable> exceptionType) {
 		return assertExceptions(events -> {
 			Stream<Class<? extends Throwable>> classStream = getAllExceptions(events).map(Throwable::getClass);
-			Assertions.assertThat(classStream).containsOnly(exceptionTypes);
+			Assertions.assertThat(classStream).containsOnly(exceptionType);
 		});
 	}
 
@@ -283,7 +282,7 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 		try {
 			Events events = getProperEvents();
 			assertion.accept(events);
-			return new ListAssert<>(getAllExceptions(getProperEvents()).map(Throwable::getMessage));
+			return new ListAssert<>(getAllExceptions(events).map(Throwable::getMessage));
 		}
 		catch (AssertionError error) {
 			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);

@@ -50,7 +50,7 @@ testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
 
 ## Dependencies
 
-JUnit Pioneer is built against Java 8, but comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
+JUnit Pioneer is compiled against Java 8 (built with JDK 11), but comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
 That means it can be used on all Java versions 8 and higher on class path and module path.
 
 Pioneer does not only use JUnit 5's API, but also other artifacts from its ecosystem such as [`junit-platform-commons`](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons).
@@ -115,6 +115,11 @@ JUnit Pioneer, as small as it is, would be much smaller without kind souls contr
 Thank you for your efforts! 🙏
 
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
+
+#### 2022
+
+* [Pankaj Kumar](https://github.com/p1729) contributed towards improving GitHub actions (#587 / #611)
+* [Filip Hrisafov](https://github.com/filiphr) contributed the [JSON Argument Source](https://junit-pioneer.org/docs/json-argument-source/) support (#101 / #492)
 
 #### 2021
 

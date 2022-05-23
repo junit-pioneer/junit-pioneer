@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,8 +40,16 @@ class AbstractEntryBasedExtensionTests {
 		System.setProperty(SET_SYSPROP_KEY, SET_SYSPROP_ORIGINAL_VALUE);
 	}
 
+	@AfterEach
+	void tearDown() {
+		EnvironmentVariableUtils.clear(SET_ENVVAR_KEY);
+		System.clearProperty(SET_SYSPROP_KEY);
+	}
+
 	@Test
 	@Issue("432")
+	@WritesSystemProperty
+	@WritesEnvironmentVariable
 	@DisplayName("should not mix backups of different extensions on clear environment variable and clear system property")
 	void shouldNotMixBackupsOfDifferentExtensionsOnClearEnvironmentVariableAndClearSystemProperty() {
 		PioneerTestKit.executeTestMethod(MixBackupsTestCases.class, "clearEnvironmentVariableAndClearSystemProperty");
@@ -51,6 +60,8 @@ class AbstractEntryBasedExtensionTests {
 
 	@Test
 	@Issue("432")
+	@WritesSystemProperty
+	@WritesEnvironmentVariable
 	@DisplayName("should not mix backups of different extensions on set environment variable and set system property")
 	void shouldNotMixBackupsOfDifferentExtensionsOnSetEnvironmentVariableAndSetSystemProperty() {
 		PioneerTestKit.executeTestMethod(MixBackupsTestCases.class, "setEnvironmentVariableAndSetSystemProperty");
@@ -61,6 +72,8 @@ class AbstractEntryBasedExtensionTests {
 
 	@Test
 	@Issue("432")
+	@WritesSystemProperty
+	@WritesEnvironmentVariable
 	@DisplayName("should not mix backups of different extensions on clear environment variable and set system property")
 	void shouldNotMixBackupsOfDifferentExtensionsOnClearEnvironmentVariableAndSetSystemProperty() {
 		PioneerTestKit.executeTestMethod(MixBackupsTestCases.class, "clearEnvironmentVariableAndSetSystemProperty");
@@ -71,6 +84,8 @@ class AbstractEntryBasedExtensionTests {
 
 	@Test
 	@Issue("432")
+	@WritesSystemProperty
+	@WritesEnvironmentVariable
 	@DisplayName("should not mix backups of different extensions on set environment variable and clear system property")
 	void shouldNotMixBackupsOfDifferentExtensionsOnSetEnvironmentVariableAndClearSystemProperty() {
 		PioneerTestKit.executeTestMethod(MixBackupsTestCases.class, "setEnvironmentVariableAndClearSystemProperty");
