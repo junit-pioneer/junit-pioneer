@@ -34,8 +34,7 @@ import org.junitpioneer.testkit.PioneerTestKit;
 
 class RetryingTestExtensionTests {
 
-	private static final int SUSPEND_FOR = 200;
-	private static final long SUSPEND_FOR_ERROR_MARGIN = 30L;
+	private static final int SUSPEND_FOR = 10;
 
 	@Test
 	void invalidConfigurationWithTest() {
@@ -279,7 +278,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(0);
 
-		assertSuspendedForCloseTo(results, SUSPEND_FOR);
+		assertSuspendedFor(results, SUSPEND_FOR);
 	}
 
 	@Test
@@ -293,16 +292,16 @@ class RetryingTestExtensionTests {
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(0);
 
-		assertSuspendedForCloseTo(results, 0);
+		assertSuspendedFor(results, 0);
 	}
 
-	private void assertSuspendedForCloseTo(ExecutionResults results, long closeTo) {
+	private void assertSuspendedFor(ExecutionResults results, long greaterThanOrEqualTo) {
 		List<Execution> finishedExecutions = results.testEvents().executions().finished().list();
 		List<Execution> startedExecutions = results.testEvents().executions().started().list();
 
 		// Compare 'finished' execution timestamp with follow-up 'started' execution,
 		// skipping the 1st 'started' and final 'finished'.
-		// This duration should be close to 'suspendFor'.
+		// This duration should be equals to or greater than 'suspendFor'.
 		for (int i = 0; i < finishedExecutions.size() - 1; i++) {
 			Execution finished = finishedExecutions.get(i);
 			Execution nextStarted = startedExecutions.get(i + 1);
@@ -312,8 +311,7 @@ class RetryingTestExtensionTests {
 
 			long suspendedFor = Duration.between(finishedAt, nextStartedAt).toMillis();
 
-			// We allow an error margin since testing timings is not an exact science.
-			Assertions.assertThat(suspendedFor).isCloseTo(closeTo, Assertions.within(SUSPEND_FOR_ERROR_MARGIN));
+			Assertions.assertThat(suspendedFor).isGreaterThanOrEqualTo(greaterThanOrEqualTo);
 		}
 	}
 

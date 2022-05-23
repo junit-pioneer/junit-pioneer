@@ -145,7 +145,10 @@ public @interface RetryingTest {
 	/**
 	 * Specifies a pause (in milliseconds) between executions.
 	 *
-	 * Value must be greater than or equal to 0.
+	 * <p>The thread executing this test is sleeping during that time
+	 * and won't execute other tests, so long suspensions are discouraged.</p>
+	 *
+	 * <p>Value must be greater than or equal to 0.</p>
 	 */
 	int suspendForMs() default 0;
 

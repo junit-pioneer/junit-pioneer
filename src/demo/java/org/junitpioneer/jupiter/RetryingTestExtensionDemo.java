@@ -49,6 +49,13 @@ public class RetryingTestExtensionDemo {
 	}
 	// end::retrying_configure_numbers_of_success[]
 
+	// tag::suspending_between_each_retry[]
+	@RetryingTest(maxAttempts = 3, suspendForMs = 100)
+	void suspendsBetweenRetries() {
+		// test code that will suspend/wait for 100 ms between retries
+	}
+	// end::suspending_between_each_retry[]
+
 	class TheseTestsWillFailIntentionally {
 
 		// tag::retrying_configure_exception_for_retry[]

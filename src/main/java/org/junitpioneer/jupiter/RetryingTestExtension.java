@@ -175,16 +175,20 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			try {
 				TimeUnit.MILLISECONDS.sleep(millis);
 			}
-			catch (InterruptedException e) {
+			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
-				throw new IllegalStateException("Cannot suspend execution after retry", e);
+				throw new IllegalStateException("Thread interrupted during retry suspension.", ex);
 			}
+		}
+
+		private boolean isFirstExecution() {
+			return retriesSoFar == 0;
 		}
 
 		@Override
 		public boolean hasNext() {
 			// there's always at least one execution
-			if (retriesSoFar == 0)
+			if (isFirstExecution())
 				return true;
 			if (seenFailedAssumption || seenUnexpectedException)
 				return false;
@@ -200,9 +204,12 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		public RetryingTestInvocationContext next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			retriesSoFar++;
 
-			suspendFor(suspendForMs);
+			if (!isFirstExecution()) {
+				suspendFor(suspendForMs);
+			}
+
+			retriesSoFar++;
 
 			return new RetryingTestInvocationContext(formatter);
 		}
