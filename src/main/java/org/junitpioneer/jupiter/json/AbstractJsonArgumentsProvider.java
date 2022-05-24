@@ -40,7 +40,7 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 	}
 
 	private Stream<Node> provideNodes(ExtensionContext context) {
-		return provideNodes(context, JsonConverterProvider.getJsonConverter(context));
+		return provideNodes(context, JsonConverterProvider.getJsonConverter());
 	}
 
 	protected abstract Stream<Node> provideNodes(ExtensionContext context, JsonConverter jsonConverter);

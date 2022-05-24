@@ -250,7 +250,7 @@ public class PioneerAnnotationUtils {
 				.collect(Collectors.toList());
 	}
 
-	public static List<? extends Annotation> findParameterArgumentsSources(Method testMethod) {
+	public static List<Annotation> findParameterArgumentsSources(Method testMethod) {
 		return Arrays
 				.stream(testMethod.getParameters())
 				.map(PioneerAnnotationUtils::collectArgumentSources)

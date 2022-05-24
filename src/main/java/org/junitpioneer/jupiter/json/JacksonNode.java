@@ -39,7 +39,7 @@ class JacksonNode implements Node {
 
 	@Override
 	public Stream<Node> elements() {
-		return StreamSupport.stream(node.spliterator(), false).map(node -> new JacksonNode(objectMapper, node));
+		return StreamSupport.stream(node.spliterator(), false).map(element -> new JacksonNode(objectMapper, element));
 	}
 
 	@Override
