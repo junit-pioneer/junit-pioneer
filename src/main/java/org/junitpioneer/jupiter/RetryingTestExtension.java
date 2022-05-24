@@ -104,19 +104,20 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			String pattern = retryingTest.name();
 
 			if (maxAttempts == 0)
-				throw new IllegalStateException("@RetryingTest requires that one of `value` or `maxAttempts` be set.");
+				throw new ExtensionConfigurationException(
+					"@RetryingTest requires that one of `value` or `maxAttempts` be set.");
 			if (retryingTest.value() != 0 && retryingTest.maxAttempts() != 0)
-				throw new IllegalStateException(
+				throw new ExtensionConfigurationException(
 					"@RetryingTest requires that one of `value` or `maxAttempts` be set, but not both.");
 
 			if (minSuccess < 1)
-				throw new IllegalStateException(
+				throw new ExtensionConfigurationException(
 					"@RetryingTest requires that `minSuccess` be greater than or equal to 1.");
 			else if (maxAttempts <= minSuccess) {
 				String additionalMessage = maxAttempts == minSuccess
 						? " Using @RepeatedTest is recommended as a replacement."
 						: "";
-				throw new IllegalStateException(
+				throw new ExtensionConfigurationException(
 					format("@RetryingTest requires that `maxAttempts` be greater than %s.%s",
 						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
@@ -126,7 +127,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			TestNameFormatter formatter = new TestNameFormatter(pattern, displayName, RetryingTest.class);
 
 			if (retryingTest.suspendForMs() < 0) {
-				throw new IllegalStateException(
+				throw new ExtensionConfigurationException(
 					"@RetryingTest requires that `suspendForMs` be greater than or equal to 0.");
 			}
 
