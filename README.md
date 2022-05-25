@@ -118,8 +118,9 @@ The least we can do is to thank them and list some of their accomplishments here
 
 #### 2022
 
-* [Pankaj Kumar](https://github.com/p1729) contributed towards improving GitHub actions (#587 / #611)
 * [Filip Hrisafov](https://github.com/filiphr) contributed the [JSON Argument Source](https://junit-pioneer.org/docs/json-argument-source/) support (#101 / #492)
+* [Mathieu Fortin](https://github.com/mathieufortin01) contributed the `suspendForMs` attribute in [retrying tests](https://junit-pioneer.org/docs/retrying-test/) (#407 / #604)
+* [Pankaj Kumar](https://github.com/p1729) contributed towards improving GitHub actions (#587 / #611)
 
 #### 2021
 
