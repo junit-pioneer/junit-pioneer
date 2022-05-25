@@ -483,6 +483,12 @@ Follow these steps when updating JUnit 5:
 	* ... should be structured and worded as defined above
 	* ... should reference the upstream issue and pull request (if any)
 
+JUnit Jupiter has few external dependencies, but occasionally uses them in its own API and thus has the `requires transitive` directive in [its module declaration](https://github.com/junit-team/junit5/blob/main/junit-jupiter-api/src/module/org.junit.jupiter.api/module-info.java) (for example, `requires transitive org.opentest4j_`).
+That means, while JUnit Pioneer _could_ list these dependencies in its build configuration and require these modules in its module declaration, it doesn't _have to_.
+It is generally recommended not to rely on transitive dependencies when they're used directly and instead manage them yourself, but this does not apply very well to Pioneer and Jupiter:
+We can't choose a different dependency version than Jupiter and if Jupiter stops using one of these dependencies, there is no point for us to keep using it as we only need them to integrate with Jupiter.
+We hence stick to only depending on / requiring the specific Jupiter artifacts / modules we need but not their dependencies.
+
 ### Others
 
 JUnit Pioneer handles dependencies beyond JUnit 5 differently depending on how they impact its users.
