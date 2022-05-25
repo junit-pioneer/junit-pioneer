@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -73,6 +74,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 
 		private final int maxRetries;
 		private final int minSuccess;
+		private final int suspendForMs;
 		private final Class<? extends Throwable>[] expectedExceptions;
 		private final TestNameFormatter formatter;
 
@@ -81,10 +83,11 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		private boolean seenFailedAssumption;
 		private boolean seenUnexpectedException;
 
-		private FailedTestRetrier(int maxRetries, int minSuccess, Class<? extends Throwable>[] expectedExceptions,
-				TestNameFormatter formatter) {
+		private FailedTestRetrier(int maxRetries, int minSuccess, int suspendForMs,
+				Class<? extends Throwable>[] expectedExceptions, TestNameFormatter formatter) {
 			this.maxRetries = maxRetries;
 			this.minSuccess = minSuccess;
+			this.suspendForMs = suspendForMs;
 			this.expectedExceptions = expectedExceptions;
 			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
@@ -101,19 +104,20 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			String pattern = retryingTest.name();
 
 			if (maxAttempts == 0)
-				throw new IllegalStateException("@RetryingTest requires that one of `value` or `maxAttempts` be set.");
+				throw new ExtensionConfigurationException(
+					"@RetryingTest requires that one of `value` or `maxAttempts` be set.");
 			if (retryingTest.value() != 0 && retryingTest.maxAttempts() != 0)
-				throw new IllegalStateException(
+				throw new ExtensionConfigurationException(
 					"@RetryingTest requires that one of `value` or `maxAttempts` be set, but not both.");
 
 			if (minSuccess < 1)
-				throw new IllegalStateException(
+				throw new ExtensionConfigurationException(
 					"@RetryingTest requires that `minSuccess` be greater than or equal to 1.");
 			else if (maxAttempts <= minSuccess) {
 				String additionalMessage = maxAttempts == minSuccess
 						? " Using @RepeatedTest is recommended as a replacement."
 						: "";
-				throw new IllegalStateException(
+				throw new ExtensionConfigurationException(
 					format("@RetryingTest requires that `maxAttempts` be greater than %s.%s",
 						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
@@ -122,7 +126,13 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			String displayName = context.getDisplayName();
 			TestNameFormatter formatter = new TestNameFormatter(pattern, displayName, RetryingTest.class);
 
-			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.onExceptions(), formatter);
+			if (retryingTest.suspendForMs() < 0) {
+				throw new ExtensionConfigurationException(
+					"@RetryingTest requires that `suspendForMs` be greater than or equal to 0.");
+			}
+
+			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.suspendForMs(),
+				retryingTest.onExceptions(), formatter);
 		}
 
 		<E extends Throwable> void failed(E exception) throws E {
@@ -141,7 +151,8 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 
 			if (hasNext())
 				throw new TestAbortedException(
-					format("Test execution #%d (of up to %d) failed ~> will retry...", retriesSoFar, maxRetries),
+					format("Test execution #%d (of up to %d) failed ~> will retry in %d ms...", retriesSoFar,
+						maxRetries, suspendForMs),
 					exception);
 			else
 				throw new AssertionFailedError(format(
@@ -157,10 +168,28 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			return Arrays.stream(expectedExceptions).anyMatch(type -> type.isInstance(exception));
 		}
 
+		private void suspendFor(int millis) {
+			if (millis < 1) {
+				return;
+			}
+
+			try {
+				TimeUnit.MILLISECONDS.sleep(millis);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException("Thread interrupted during retry suspension.", ex);
+			}
+		}
+
+		private boolean isFirstExecution() {
+			return retriesSoFar == 0;
+		}
+
 		@Override
 		public boolean hasNext() {
 			// there's always at least one execution
-			if (retriesSoFar == 0)
+			if (isFirstExecution())
 				return true;
 			if (seenFailedAssumption || seenUnexpectedException)
 				return false;
@@ -176,7 +205,13 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		public RetryingTestInvocationContext next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
+
+			if (!isFirstExecution()) {
+				suspendFor(suspendForMs);
+			}
+
 			retriesSoFar++;
+
 			return new RetryingTestInvocationContext(formatter);
 		}
 

@@ -27,6 +27,14 @@ The test function will be executed, up to `maxAttempts`, until it completes succ
 
 The default for `minSuccess` is 1. The value must be greater than or equal to 1.
 
+=== suspendForMs [optional]
+
+The `suspendForMs` attribute specifies the amount of time to pause between retries, in milliseconds.
+
+The thread executing this test is sleeping during that time and won't execute other tests, so long suspensions are discouraged.
+
+The default for `suspendForMs` is 0 (no pause). The value must be greater than or equal to 0.
+
 === onExceptions [optional]
 
 By default, a test annotated with `@RetryingTest` will be retried on all exceptions except https://ota4j-team.github.io/opentest4j/docs/current/api/org/opentest4j/TestAbortedException.html[`TestAbortedException`] (which will abort the test entirely).
@@ -90,6 +98,17 @@ include::{demo}[tag=retrying_configure_numbers_of_success]
 
 The test `requiresTwoSuccesses` must run at least two times without raising an exception.
 However, it will not run more than four times.
+
+=== Suspending between each Retry
+
+[source,java,indent=0]
+----
+include::{demo}[tag=suspending_between_each_retry]
+----
+
+Use `suspendForMs` to specify the number of milliseconds to wait between each retry.
+
+After failure, the test `suspendBetweenRetries` will wait for 100ms before retrying.
 
 === Configuring on which Exceptions to Retry
 
