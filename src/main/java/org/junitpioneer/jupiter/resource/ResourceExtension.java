@@ -208,6 +208,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private static final class UncheckedParameterResolutionException extends RuntimeException {
 
+		private static final long serialVersionUID = -8656995841157868666L;
+
 		public UncheckedParameterResolutionException(ParameterResolutionException cause) {
 			super(cause);
 		}
