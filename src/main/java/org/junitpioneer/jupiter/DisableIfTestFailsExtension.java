@@ -82,8 +82,8 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 				.map(DisableIfTestFailsExtension::findConfigurations)
 				.orElse(Stream.empty());
 
-		List<Configuration> stream = Stream.concat(onClassConfig, onParentClassConfigs).collect(toList());
-		return stream.stream();
+		List<Configuration> configurations = Stream.concat(onClassConfig, onParentClassConfigs).collect(toList());
+		return configurations.stream();
 	}
 
 	private static Stream<Configuration> createConfigurationFor(ExtensionContext context,

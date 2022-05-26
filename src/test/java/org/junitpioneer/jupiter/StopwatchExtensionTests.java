@@ -24,21 +24,18 @@ public class StopwatchExtensionTests {
 	@Test
 	@DisplayName("should be executed with annotation on class level and report an entry for test method")
 	void runClassLevelAnnotationTest() {
-
+		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel";
 		ExecutionResults results = PioneerTestKit.executeTestClass(ClassLevelAnnotationTestCases.class);
 
 		assertThat(results).hasNumberOfReportEntries(1);
 
-		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassLevel";
 		assertStringStartWithUnitAndContainsName(results, methodName);
-
 	}
 
 	@Test
 	@DisplayName("should be executed with annotation on class level and test method and report an entry for test method")
 	void runClassAndMethodLevelAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassAndMethodLevel";
-
 		ExecutionResults results = PioneerTestKit.executeTestClass(ClassAndMethodLevelAnnotationTestCases.class);
 		assertThat(results).hasNumberOfReportEntries(1);
 
@@ -49,7 +46,6 @@ public class StopwatchExtensionTests {
 	@DisplayName("should be executed with annotation on test method and report an entry for test method")
 	void runMethodLevelAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel";
-
 		ExecutionResults results = PioneerTestKit.executeTestMethod(MethodLevelAnnotationTestCases.class, methodName);
 		assertThat(results).hasNumberOfReportEntries(1);
 
@@ -60,10 +56,9 @@ public class StopwatchExtensionTests {
 	@DisplayName("should not be executed and therefore no entry should be published")
 	void runAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldNotBeExecuted";
-
 		ExecutionResults results = PioneerTestKit.executeTestMethod(NonAnnotationTestCases.class, methodName);
-		assertThat(results).hasNumberOfReportEntries(0);
 
+		assertThat(results).hasNumberOfReportEntries(0);
 	}
 
 	private void assertStringStartWithUnitAndContainsName(ExecutionResults results, String methodName) {
