@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -59,6 +60,14 @@ public class StopwatchExtensionTests {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(NonAnnotationTestCases.class, methodName);
 
 		assertThat(results).hasNumberOfReportEntries(0);
+	}
+
+	@Test
+	@DisplayName("should not change the report entry key")
+	void verifyReportEntryKey() {
+		// the store key is mentioned in the documentation and changing it would break
+		// `TestExecutionListener` implementations that use it to filter stopwatch report entries
+		Assertions.assertThat(StopwatchExtension.STORE_KEY).startsWith("StopwatchExtension");
 	}
 
 	private void assertStringStartWithUnitAndContainsName(ExecutionResults results, String methodName) {
