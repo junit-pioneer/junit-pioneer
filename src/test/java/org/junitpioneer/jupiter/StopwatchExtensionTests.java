@@ -21,8 +21,8 @@ import org.junitpioneer.testkit.assertion.reportentry.ReportEntryContentAssert;
 @DisplayName("Stopwatch extension ")
 public class StopwatchExtensionTests {
 
-	@DisplayName("should be executed with annotation on class level and report an entry for test method")
 	@Test
+	@DisplayName("should be executed with annotation on class level and report an entry for test method")
 	void runClassLevelAnnotationTest() {
 
 		ExecutionResults results = PioneerTestKit.executeTestClass(ClassLevelAnnotationTestCases.class);
@@ -34,8 +34,8 @@ public class StopwatchExtensionTests {
 
 	}
 
-	@DisplayName("should be executed with annotation on class level and test method and report an entry for test method")
 	@Test
+	@DisplayName("should be executed with annotation on class level and test method and report an entry for test method")
 	void runClassAndMethodLevelAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldBeExecutedWithAnnotationOnClassAndMethodLevel";
 
@@ -45,8 +45,8 @@ public class StopwatchExtensionTests {
 		assertStringStartWithUnitAndContainsName(results, methodName);
 	}
 
-	@DisplayName("should be executed with annotation on test method and report an entry for test method")
 	@Test
+	@DisplayName("should be executed with annotation on test method and report an entry for test method")
 	void runMethodLevelAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel";
 
@@ -56,8 +56,8 @@ public class StopwatchExtensionTests {
 		assertStringStartWithUnitAndContainsName(results, methodName);
 	}
 
-	@DisplayName("should not be executed and therefore no entry should be published")
 	@Test
+	@DisplayName("should not be executed and therefore no entry should be published")
 	void runAnnotationTest() {
 		String methodName = "stopwatchExtensionShouldNotBeExecuted";
 
@@ -89,8 +89,8 @@ public class StopwatchExtensionTests {
 	 */
 	static class MethodLevelAnnotationTestCases {
 
-		@Stopwatch
 		@Test
+		@Stopwatch
 		void stopwatchExtensionShouldBeExecutedOnWithAnnotationOnMethodLevel() {
 		}
 
@@ -102,8 +102,8 @@ public class StopwatchExtensionTests {
 	@Stopwatch
 	static class ClassAndMethodLevelAnnotationTestCases {
 
-		@Stopwatch
 		@Test
+		@Stopwatch
 		void stopwatchExtensionShouldBeExecutedWithAnnotationOnClassAndMethodLevel() {
 		}
 

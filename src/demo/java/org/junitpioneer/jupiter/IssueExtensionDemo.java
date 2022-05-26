@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Test;
 public class IssueExtensionDemo {
 
 	// tag::issue_simple[]
-	@Issue("REQ-123")
 	@Test
+	@Issue("REQ-123")
 	void test() {
 		// One of the tests for the issue with the id "REQ-123"
 	}
