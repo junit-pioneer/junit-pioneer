@@ -62,3 +62,7 @@ That means if...
 * a test in `SpecificTests` fails
 
 ... then, only remaining tests in `SpecificTests` are disabled and other implementations of `Tests` remain unaffected, i.e. their tests are not disabled.
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution], but no guarantee can be given how soon after a failed test, other tests will be disabled, i.e. how soon other threads observe that "their" tests are supposed to be disabled.

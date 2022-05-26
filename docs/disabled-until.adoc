@@ -3,8 +3,6 @@
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/DisableUntilExtensionDemo.java
 
-== Introduction
-
 It's sometimes useful to disable a test.
 One can imagine many reasons for doing so, maybe a remote dependency of the test is broken or not yet deployed.
 Maybe the test is still in development and unstable.
@@ -47,3 +45,7 @@ The `@DisabledUntil` annotation can only be used once per class or method.
 
 The test will be skipped only if the date specified by `date` is the future.
 If `date` is today or in the past, the test will be executed normally but a warning entry will be published to the https://junit-pioneer.org/docs/report-entries[test report].
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

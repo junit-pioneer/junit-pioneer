@@ -9,7 +9,6 @@ excerpt: 'JUnit 5 extension pack, pushing the frontiers on Jupiter.<br/> <small>
 JUnit Pioneer is an https://nipafx.dev/junit-5-extension-model/[extension pack] for https://junit.org/junit5/[JUnit 5] or, https://nipafx.dev/junit-5-architecture-jupiter/[to be more precise], for the Jupiter engine.
 It offers https://junit-pioneer.org/docs/[a wide variety of extensions] and is continuously released with more.
 
-
 == Quick start
 
 Determine the latest version (e.g. on https://search.maven.org/artifact/org.junit-pioneer/junit-pioneer[Maven Central]) and add Pioneer as a test dependency.
@@ -34,7 +33,6 @@ testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /* ... *
 ----
 
 Done, you're good to go! 👍
-
 
 == Contributing
 
