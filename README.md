@@ -64,7 +64,6 @@ You can read a bit more about our approach to dependencies in the [contribution 
 
 For our own infrastructure, we rely on the following compile and test dependencies:
 
-* JSR-305 (for static analysis)
 * AssertJ (assertions for our tests)
 * Mockito (mocking for our tests)
 * Log4J (to configure logging during test runs)
