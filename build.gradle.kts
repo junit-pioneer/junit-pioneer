@@ -159,7 +159,6 @@ publishing {
 				developers {
 					mapOf(
 						"nipafx" to "Nicolai Parlog",
-						"smoyer64" to "Steve Moyer",
 						"Bukama" to "Matthias Bünger",
 						"aepfli" to "Simon Schrottner",
 						"Michael1993" to "Mihály Verhás",
