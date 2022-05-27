@@ -55,7 +55,7 @@ include::{demo}[tag=vintage_test_timeout]
 ----
 
 Like in JUnit 4, `timeout` aborts long-running tests.
-The following tests does not run indefinitely - it fails after 100 milliseconds:
+The following test does not run indefinitely - it fails after 100 milliseconds:
 
 [source,java,indent=0]
 ----
