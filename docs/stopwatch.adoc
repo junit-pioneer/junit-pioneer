@@ -34,7 +34,7 @@ timestamp = 2022-05-26T12:16:14.021646, StopwatchExtension = Execution of 'test(
 
 Other tools may or may not print report entries.
 
-The most reliable way to gather entries is to create a https://junit.org/junit5/docs/current/api/org.junit.platform.launcher/org/junit/platform/launcher/TestExecutionListener.html[`TestExecutionListener`] and register it with the launcher.
+The most reliable way to gather entries is to create a https://junit.org/junit5/docs/current/user-guide/#launcher-api-listeners-custom[`TestExecutionListener`] and register it with the launcher.
 https://junit.org/junit5/docs/current/api/org.junit.platform.engine/org/junit/platform/engine/reporting/ReportEntry.html[Report entries] from the stopwatch extension can be identified by checking their https://junit.org/junit5/docs/current/api/org.junit.platform.engine/org/junit/platform/engine/reporting/ReportEntry.html#getKeyValuePairs()[key-value pairs] - at least one key will start with the string `"StopwatchExtension"`.
 
 == Thread-Safety
