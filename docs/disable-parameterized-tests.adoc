@@ -109,7 +109,7 @@ The `matches` attribute works analogous for `@DisableIfAnyArgument`.
 `@DisableIfArgument` requires you to target a specific parameter.
 You can do this in three ways:
 
-- By a `name` https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Parameter.html#isNamePresent - [if parameter naming information is present].
+- By a `name` https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Parameter.html#isNamePresent--[if parameter naming information is present].
 - By an explicit `index`, starting from 0.
 - By an implicit index.
 
