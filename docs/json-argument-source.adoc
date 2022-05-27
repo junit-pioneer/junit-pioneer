@@ -197,7 +197,6 @@ That means (1) it must be on the module path and (2) it must be resolved.
 The steps above ensure that your build tool knows about the parser and should accomplish (1), but if no other module depends on the parser (directly or indirectly), (2) requires additional work.
 In that case, you need to manually resolve the module by applying the command line option `--add-modules=com.fasterxml.jackson.databind` to the Java process that executes the tests.
 
-
 == Thread-Safety
 
 This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].
