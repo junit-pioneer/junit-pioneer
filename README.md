@@ -59,13 +59,16 @@ To avoid dependency issues (e.g. in [junit-pioneer#343](https://github.com/junit
 To not add to user's [JAR hell](https://nipafx.dev/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
 Pioneer always depends on the lowest JUnit 5 version that supports its feature set, but that should not keep you from using 5's latest and greatest.
 
+Since 1.7.0 we also have an **optional** runtime dependency on [Jackson](https://github.com/FasterXML/jackson), for our JSON-based extensions.
+You can read a bit more about our approach to dependencies in the [contribution guide](CONTRIBUTING.md#others).
+
 For our own infrastructure, we rely on the following compile and test dependencies:
 
-* JSR-305 (for static analysis)
 * AssertJ (assertions for our tests)
 * Mockito (mocking for our tests)
 * Log4J (to configure logging during test runs)
 * Jimfs (as an in-memory file system for our test)
+* Equalsverifier (for easier assertion of simple things)
 
 
 ## Contributing
@@ -105,8 +108,6 @@ In lexicographic order, these are:
 	<dd>Bearded guy in Lederhosen, who loves to code, and loves to explore code quality, testing, and other tools that can improve the live of a software craftsman.
 		<a href="https://www.couchsurfing.com/people/simmens">Passionated couchsurfer</a> and <a href="https://www.facebook.com/togtrama">hobby event planner</a>.
 		Maintainer since April 2020.</dd>
-	<dt>Steve Moyer aka <a href="https://github.com/smoyer64">smoyer64</a></dt>
-	<dd>Co-founded the project in November 2016.</dd>
 </dl>
 
 ### Contributors
@@ -129,10 +130,10 @@ The least we can do is to thank them and list some of their accomplishments here
 * [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more), revamped their annotation handling (#460 / #485), and improved the build process (#482 / #483) before becoming a maintainer
 * [Gabriel Diegel](https://github.com/gdiegel) contributed the `@DisabledUntil` extension in [Temporarily disable a test](https://junit-pioneer.org/docs/disabled-until/) (#366)
 * [John Lehne](https://github.com/johnlehne) resolved an issue with the latest build status not showing correctly in README.md (#530)
+* [Jonathan Bluett-Duncan](https://github.com/jbduncan) contributed a fix to `buildSrc/build.gradle` which was failing when a `.idea` directory did not contain a `vcs.xml` file (#532)
 * [Scott Leberknight](https://github.com/sleberknight) resolved a javadoc issue (#547 / #548)
 * [Slawomir Jaranowski](https://github.com/slawekjaranowski) Migrate to new Shipkit plugins (#410 / #419)
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409 and #414 / #453)
-* [Jonathan Bluett-Duncan](https://github.com/jbduncan) contributed a fix to `buildSrc/build.gradle` which was failing when a `.idea` directory did not contain a `vcs.xml` file (#532)
 
 #### 2020
 
