@@ -13,6 +13,10 @@ The only problem with this approach is remembering to activate the test again on
 The `@DisabledUntil` annotation may be used to disable a test only for a certain period of time.
 The test will be automatically executed again once the date supplied by the `date` parameter is reached.
 
+WARNING: Applying `@DisabledUntil` can make the test suite non-reproducible.
+If a failing test is disabled during a build that then passes, rerunning that build after the "until" date would fail.
+A report entry is issued for every test that is disabled until a certain date.
+
 == Usage
 
 To mark a test to be temporarily disabled add the `@DisabledUntil` annotation like so:
