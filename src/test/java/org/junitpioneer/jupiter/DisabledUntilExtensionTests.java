@@ -67,10 +67,7 @@ class DisabledUntilExtensionTests {
 				.executeTestMethod(DisabledUntilTestCases.class, "testIsAnnotatedWithDateInTheFuture");
 		assertThat(results).hasNumberOfStartedTests(0);
 		assertThat(results).hasSingleSkippedTest();
-		assertThat(results)
-				.hasSingleReportEntry()
-				.firstValue()
-				.contains("2199-01-01", "reproduce");
+		assertThat(results).hasSingleReportEntry().firstValue().contains("2199-01-01", "reproduce");
 	}
 
 	@Test
@@ -81,10 +78,7 @@ class DisabledUntilExtensionTests {
 		assertThat(results).hasSingleSkippedContainer(); // NestedDummyTestClass is skipped as container
 		assertThat(results).hasNumberOfStartedTests(0);
 		assertThat(results).hasNumberOfSkippedTests(0);
-		assertThat(results)
-				.hasSingleReportEntry()
-				.firstValue()
-				.contains("2199-01-01", "reproduce");
+		assertThat(results).hasSingleReportEntry().firstValue().contains("2199-01-01", "reproduce");
 	}
 
 	static class DisabledUntilTestCases {
