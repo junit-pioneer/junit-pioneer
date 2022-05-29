@@ -19,7 +19,7 @@ Check the individual documentations for that:
 * link:docs/temp-directory[Temporary directory]
 ====
 
-The first part of this article describes how to use a resource with this extension, the second part describes how to integrate your own kind of resource with this mechanism.
+The first part of this article describes how to use a resource with this extension. The second part describes how to integrate your own kind of resource with this mechanism.
 In both cases, the temporary directory extension will be used as an example, but what's described here applies to other resources as well.
 
 == Using Resources
@@ -37,14 +37,18 @@ To create a new resource for a given test:
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=create_new_resource_demo]
+include::{demo}[tag=create_new_resources_demo]
 ----
 
 ...where `TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].
 
-This will create a brand-new resource which will be "closed" at the end of the test. (So in this case, a new temporary directory will be created, which will be deleted right after the test.)
+This will create a brand-new resource for each test, and each resource which will be "closed" at the end of its associated test.
 
-==== Creation with arguments
+So in this case, a new temporary directory will be created `test1` and another one will be created for `test2`.
+The temporary directory for `test1` will be deleted when the test is finished.
+Likewise, the temporary directory for `test2` will also be deleted right after its test.
+
+==== Creation with Arguments
 
 Some resources accept string arguments to control their behaviour.
 
@@ -65,11 +69,85 @@ TODO
 * no arguments (still under discussion)
 ////
 
+To create a resource that is shared by multiple tests:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_shared_resource_demo]
+----
+
+...where `TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].
+
+This will create a single resource instance that will be injected into all the tests.
+It will be "closed" when all the tests are finished. (See <<scope_of_a_shared_resource>> for a caveat on this.)
+
+So in this case, a single temporary directory will be shared across all tests, and it will only be deleted when all the tests have run.
+
+=== Sharing Multiple Resources
+
+The following code snippet shows an example of creating two shared resources.
+
+In this case, tests `firstSharedResource1` and `firstSharedResource2` use the same temporary directory, and test `secondSharedResource` uses a different temporary directory.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_multiple_shared_resources_demo]
+----
+
+[#scope_of_a_shared_resource]
+=== Scope of a Shared Resource
+
+By default, a shared resource will be closed when the test file using it has finished.
+
+This means that if a resource is shared across two or more test files, it will be closed and re-created for _each_ test file.
+
+If this behaviour isn't what you want, you can change the "scope" of the resource to "global", which will keep the resource around until _all_ test files have finished:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_global_shared_resource_demo_first]
+----
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_global_shared_resource_demo_second]
+----
+
+[NOTE]
+====
+
+You are not limited to singletons! You can create as many global shared resources as you want.
+
+====
+
+=== Thread Safety
+
+Resources may be _mutable_.
+
+Temporary directories are a good example of this, as tests can create new subdirectories and files in them.
+
+So, to prevent thread safety bugs, when a resource is shared, it will force any test using it to run sequentially, even if parallel execution has been enabled or that test has been annotated with JUnit Jupiter's `@Execution(CONCURRENT)`.
+
+===
+
+=== Creation with Arguments
+
+[NOTE]
+====
+
+We do not support creating shared resources with arguments.
+
+If you would like us to support this, please raise a https://github.com/junit-pioneer/junit-pioneer/issues/new[new issue].
+
+====
+
 == Integrating Resources
 
 This extension allows you to integrate your own kind of resource with the mechanisms described above.
+
 To do that, you need to implement `Resource<T>` and `ResourceFactory<T>`, where `T` is the type of resource you want to provide (e.g. `Path` for temporary directories).
-Then you can just reference the factory type in the `@New` and `@Shared` annotations.
+
+Then you can reference the factory type in the `@New` and `@Shared` annotations.
 
 ////
 TODO
@@ -84,7 +162,4 @@ TODO
     * e.g. delete on disk folder
 ////
 
-TODO: Refer to https://www.writethedocs.org/guide/writing/beginners-guide-to-docs/
 
-TODO: Write about:
-- This extension solves https://stackoverflow.com/a/51556718/2252930
