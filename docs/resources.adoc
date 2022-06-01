@@ -128,7 +128,9 @@ You are not limited to singletons. You can create as many global shared resource
 
 We do not support creating shared resources with arguments.
 
-If you would like us to support this, please raise a https://github.com/junit-pioneer/junit-pioneer/issues/new[new issue].
+This is because if a test refers to a shared resource with the name "Foo" without arguments, then later another test refers to it with one argument, there is no reasonable way to fulfill that request.
+
+Furthermore, even if this was supported, the behavior would change if the first and second tests ever ran in opposite order, which is very likely when tests are configured to run in parallel.
 
 ====
 
