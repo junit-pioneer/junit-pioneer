@@ -10,8 +10,6 @@
 
 package org.junitpioneer.jupiter.resource;
 
-// tag::in_memory_directory[]
-
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileVisitResult;
@@ -24,6 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+
+// tag::in_memory_directory[]
 
 public final class InMemoryDirectory implements ResourceFactory<Path> {
 

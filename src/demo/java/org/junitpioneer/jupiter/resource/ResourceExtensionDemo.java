@@ -14,8 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class ResourcesExtensionDemo {
+public class ResourceExtensionDemo {
 
 	// tag::create_new_resources_demo[]
 	void test1(@New(TemporaryDirectory.class) Path tempDir) {
@@ -24,15 +25,22 @@ public class ResourcesExtensionDemo {
 	}
 
 	void test2(@New(TemporaryDirectory.class) Path tempDir) {
-		// Test code goes here, e.g.,
-		assertTrue(Files.exists(tempDir));
+		// This temporary directory is different to the first one.
 	}
 	// end::create_new_resources_demo[]
 
-	// tag::create_new_resource_with_arg_demo[]
-	void testWithArg(@New(value = TemporaryDirectory.class, arguments = { "customDirectoryName" }) Path tempDir) {
+	// tag::create_new_dir_demo[]
+	void dirTest(@Dir Path tempDir) {
 		// Test code goes here, e.g.,
-		assertTrue(tempDir.endsWith("customDirectoryName"));
+		assertTrue(Files.exists(tempDir));
+	}
+	// end::create_new_dir_demo[]
+
+	// tag::create_new_resource_with_arg_demo[]
+	void testWithArg(@New(value = TemporaryDirectory.class, arguments = { "customPrefix" }) Path tempDir) {
+		// Test code goes here, e.g.,
+		Path rootTempDir = Paths.get(System.getProperty("java.io.tmpdir"));
+		assertTrue(rootTempDir.relativize(tempDir).startsWith("customPrefix"));
 	}
 	// end::create_new_resource_with_arg_demo[]
 
@@ -43,8 +51,9 @@ public class ResourcesExtensionDemo {
 	}
 
 	void sharedResourceTest2(@Shared(factory = TemporaryDirectory.class, name = "sharedTempDir") Path sharedTempDir) {
-		// Test code goes here, e.g.,
-		assertTrue(Files.exists(sharedTempDir));
+		// "sharedTempDir" is shared with the temporary directory of
+		// the same name in test "sharedResourceTest1", so any created
+		// subdirectories and files will be shared.
 	}
 	// end::create_shared_resource_demo[]
 
@@ -58,7 +67,7 @@ public class ResourcesExtensionDemo {
 	}
 
 	void secondSharedResource(@Shared(factory = TemporaryDirectory.class, name = "second") Path second) {
-		// Test code working with second shared resource...
+		// This shared resource is different!
 	}
 	// end::create_multiple_shared_resources_demo[]
 

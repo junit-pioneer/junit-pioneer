@@ -1,5 +1,8 @@
 :page-title: Temporary Directory
 :page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject temporary directories.
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourceExtensionDemo.java
+:resources-doc: ./resources.adoc
 
 [NOTE]
 ====
@@ -9,21 +12,59 @@ Most of the extension's features are shared with other resources, though, and ar
 
 A temporary directory is a directory on the machine's on-disk filesystem that is created at the start of a test and deleted immediately afterwards.
 
-Unlike JUnit 5's `@TempDir` annotation, temporary directories created with this extension can be configured to be deleted when the current test class is finished, or when all tests have finished.
+Unlike JUnit Jupiter's `@TempDir` annotation, temporary directories created with this extension can be configured to be deleted when the current test class is finished, or when all tests have finished.
 
 Also, this extension can configure the _prefix_ of a `@New` temporary directory's name, which might be useful for test reporting or debugging reasons.
 
-////
-TODO
-* argument
-* @Dir, not @New (unless argument)
-* @Shared
-////
+== Creating a New Temporary Directory
+
+To create a new temporary directory for a given test:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_new_resources_demo]
+----
+
+== Creating with Arguments
+
+To specify the _prefix_ of a `@New` temporary directory's name, pass the prefix as an argument to the `@New` annotation:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_new_resource_with_arg_demo]
+----
+
+== Shorthand
+
+Alternatively, rather than typing out all of `@New(TemporaryDirectory.class)`, you can use the shorthand annotation `@Dir` instead.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_new_dir_demo]
+----
+
+[NOTE]
+====
+
+`@Dir` annotations do not yet support arguments. Follow https://github.com/junit-pioneer/junit-pioneer/issues/648[this issue] for updates on this feature.
+
+====
+
+== Sharing a Temporary Directory
+
+To create a temporary directory that is shared by multiple tests:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_shared_resource_demo]
+----
+
+See the link:resources.adoc#sharing_a_resource[ Resources page] for more information.
 
 == Thread-Safety
 
 This extension is safe to use during parallel test execution.
 
-When using `@New` temporary directories, the tests using them will continue to run in parallel.
+Tests with `@New` temporary directories will continue to run in parallel.
 
-When using `@Shared` temporary directories, the tests using them will be forced to run *sequentially*, even if parallel execution has been enabled.
+Tests with `@Shared` temporary directories will be forced to run *sequentially*, even if parallel execution has been enabled.

@@ -1,7 +1,7 @@
 :page-title: Creating and Sharing Resourced
 :page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject resources like temporary directories or a port.
 :xp-demo-dir: ../src/demo/java
-:demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourcesExtensionDemo.java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourceExtensionDemo.java
 :in-memory-directory: {xp-demo-dir}/org/junitpioneer/jupiter/resource/InMemoryDirectory.java
 
 Some tests need "resources" which need to be cleaned up when finished, and sometimes, these resources might be needed to be accessed by many tests.
@@ -32,8 +32,6 @@ There are two different approaches to using a resource:
 
 === Creating a New Resource
 
-==== Creation
-
 To create a new resource for a given test:
 
 [source,java,indent=0]
@@ -49,17 +47,18 @@ So in this case, a new temporary directory will be created `test1` and another o
 The temporary directory for `test1` will be deleted when the test is finished.
 Likewise, the temporary directory for `test2` will also be deleted right after its test.
 
-==== Creation with Arguments
+=== Creating a New Resource with Arguments
 
 Some resources accept string arguments to control their behaviour.
 
-For example, `TemporaryDirectory` may accept a String argument to set the name of the temporary directory that is created:
+For example, `TemporaryDirectory` may accept a String argument to set the prefix of the name of the temporary directory that is created:
 
 [source,java,indent=0]
 ----
 include::{demo}[tag=create_new_resource_with_arg_demo]
 ----
 
+[#sharing_a_resource]
 === Sharing a Resource
 
 To create a resource that is shared by multiple tests:
@@ -75,6 +74,15 @@ This will create a single resource instance that will be injected into all the t
 It will be "closed" when all the tests are finished. (See <<scope_of_a_shared_resource>> for a caveat on this.)
 
 So in this case, a single temporary directory will be shared across all tests, and it will only be deleted when all the tests have run.
+
+[NOTE]
+====
+
+When sharing resources, you may want to force your tests to run in a certain order, so that e.g. files written to a temporary directory in one test can be read from another test.
+
+Use JUnit Jupiter's https://junit.org/junit5/docs/current/user-guide/#writing-tests-test-execution-order[Test Execution Order] feature to do this.
+
+====
 
 === Sharing Multiple Resources
 
@@ -113,7 +121,7 @@ You are not limited to singletons. You can create as many global shared resource
 
 ====
 
-=== Creation with Arguments
+=== Sharing Resources with Arguments
 
 [NOTE]
 ====
@@ -134,7 +142,24 @@ Then you can reference the factory type in the `@New` and `@Shared` annotations.
 
 This extension will take care of calling the various methods at the right time.
 
-=== Set up the Factory
+=== Examples
+
+These examples show how to create a resource called `InMemoryDirectory` for an in-memory filesystem using https://github.com/google/jimfs[Jimfs].
+
+==== Set up the Factory
+
+This example shows how to create the `ResourceFactory` for your resources.
+
+This extension will call the constructor of the factory when the first test that has one or more parameters annotated with an e.g. `@New(InMemoryDirectory.class)` or `@Shared(factory = InMemoryDirectory.class)` annotation is about to run.
+
+[NOTE]
+====
+
+This class must have a parameter-less constructor to be able to be instantiated by this extension.
+
+If there isn't such a constructor present, then the extension will throw an exception.
+
+====
 
 [source,java,indent=0]
 ----
@@ -159,7 +184,13 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 }
 ----
 
-=== Close the Factory
+==== Close the Factory
+
+This example shows how to delete, tear down or otherwise "close" everything associated with the factory when this extension is ready to call the factory's `ResourceFactory.close()` method.
+
+This extension will call `close()` when all tests are finished.
+
+Overriding `close()` is optional. It will do nothing by default.
 
 [source,java,indent=0]
 ----
@@ -171,7 +202,6 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 
 	// ...
 
-	// NOTE: Overriding close() is optional! By default, it will do nothing.
 	@Override
 	public void close() throws Exception {
 		this.fileSystem.close();
@@ -180,7 +210,11 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 }
 ----
 
-=== Create a Resource
+==== Create a Resource
+
+This example shows how to create an actual `Resource` from your factory, with the `ResourceFactory.create()` method.
+
+This extension will call this method when a test with a `@New`- or `@Shared`-annotated parameter is about to run. The extension will then populate the parameter with the contents of this resource.
 
 [source,java,indent=0]
 ----
@@ -216,7 +250,15 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 }
 ----
 
-=== Close a Resource
+==== Close a Resource
+
+This example shows how to expand the previous resource to delete, tear down or otherwise "close" everything associated with it when this extension is ready to call the resource's `Resource.close()` method.
+
+For a `@New` parameter, `close()` will be called and the resource will be made eligible for garbage collection immediately after the test.
+
+For a `@Shared` parameter, `close()` will be called when all tests are finished. The resource will be cached in-memory until then.
+
+Overriding `close()` is optional. It will do nothing by default.
 
 [source,java,indent=0]
 ----
@@ -238,7 +280,6 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 
 			// ...
 
-			// NOTE: Overriding close() is optional! By default, it will do nothing.
 			@Override
 			public void close() throws Exception {
 				Files.walkFileTree(newInMemoryDirectory, new SimpleFileVisitor<Path>() {
@@ -264,7 +305,19 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 }
 ----
 
-=== Working with Arguments from `@New`
+==== Working with Arguments from `@New`
+
+`@New` parameters may have associated string `arguments`.
+
+These will be passed to the factory's `ResourceFactory.create()` method as a list when a resource is in the process of being created.
+
+You have full control over what these arguments mean and how they are used. You should document these details in your resource factory's JavaDocs.
+
+////
+TODO: Document the above for TemporaryDirectory in its JavaDocs.
+////
+
+This example shows how to interpret the first argument to be the _prefix_ of the name of the to-be-created in-memory directory resource.
 
 [source,java,indent=0]
 ----
@@ -274,16 +327,6 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 
 	@Override
 	public Resource<Path> create(List<String> arguments) throws Exception {
-		// The parameter 'arguments' contains all strings
-		// passed to @New(..., arguments = { ... }).
-		//
-		// It's then up to you how these arguments should
-		// be used.
-		//
-		// In this case, only the first argument is used,
-		// and it's used as a prefix in the in-memory
-		// directory's name.
-
 		String directoryPrefix = (arguments.size() == 1) ? arguments.get(0) : "";
 		Path newInMemoryDirectory = this.fileSystem.getPath("/" + directoryPrefix + DIRECTORY_NAME.getAndIncrement());
 		Files.createDirectory(newInMemoryDirectory);
@@ -303,7 +346,9 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 }
 ----
 
-=== Putting It All Together
+==== Putting It All Together
+
+This example shows everything from the previous few sections in one big code snippet.
 
 [source,java,indent=0]
 ----
@@ -314,8 +359,8 @@ include::{in-memory-directory}[tag=in_memory_directory]
 
 This extension is safe to use during parallel test execution.
 
-When using `@New` resources, the tests using them will continue to run in parallel.
+Tests with `@New` resources will continue to run in parallel.
 
-When using `@Shared` resources, tests using them will be forced to run *sequentially*, even if parallel execution has been enabled.
+Tests with `@Shared` resources will be forced to run *sequentially*, even if parallel execution has been enabled.
 This is because resources may be _mutable_, and if the tests were allowed to run in parallel, then they could mutate the resources in a non-deterministic way.
 Temporary directories are a good example of this, as tests can create new subdirectories and files inside them.
