@@ -17,8 +17,19 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
-// TODO: JavaDoc
-
+/**
+ * {@code @New} is used to create a new resource.
+ *
+ * <p>It is part of the "resources" JUnit Jupiter extension, which pertains to anything that needs
+ * to be injected into tests and which may need to be started up or torn down. Temporary
+ * directories are a common example.
+ *
+ * <p>This class is intended for <i>users</i>.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>
+ * and <a href="https://junit-pioneer.org/docs/temp-directory/">temporary directories</a>.</p>
+ */
 @ExtendWith(ResourceExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })

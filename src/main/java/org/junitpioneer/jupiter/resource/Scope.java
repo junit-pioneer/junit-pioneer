@@ -10,7 +10,18 @@
 
 package org.junitpioneer.jupiter.resource;
 
-// TODO: JavaDoc
+/**
+ * {@code Scope} specifies how long a shared resource lives.
+ *
+ * <p>It is part of the "resources" JUnit Jupiter extension, which pertains to anything that needs
+ * to be injected into tests and which may need to be started up or torn down. Temporary
+ * directories are a common example.
+ *
+ * <p>This class is intended for <i>users</i>.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>.</p>
+ */
 public enum Scope {
 	GLOBAL, SOURCE_FILE
 }

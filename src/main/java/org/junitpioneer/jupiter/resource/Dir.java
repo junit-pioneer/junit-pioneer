@@ -15,8 +15,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// TODO: JavaDoc
-
+/**
+ * {@code @Dir} is a shorthand for {@code @New(TemporaryDirectory.class)}.
+ *
+ * <p>It is part of the "resources" JUnit Jupiter extension, which pertains to anything that needs
+ * to be injected into tests and which may need to be started up or torn down. Temporary
+ * directories are a common example.
+ *
+ * <p>This class is intended for <i>users</i>.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/temp-directory/">the documentation on temporary directories</a>.</p>
+ *
+ * @see New
+ * @see TemporaryDirectory
+ */
 @New(TemporaryDirectory.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)

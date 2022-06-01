@@ -313,10 +313,6 @@ These will be passed to the factory's `ResourceFactory.create()` method as a lis
 
 You have full control over what these arguments mean and how they are used. You should document these details in your resource factory's JavaDocs.
 
-////
-TODO: Document the above for TemporaryDirectory in its JavaDocs.
-////
-
 This example shows how to interpret the first argument to be the _prefix_ of the name of the to-be-created in-memory directory resource.
 
 [source,java,indent=0]

@@ -12,11 +12,35 @@ package org.junitpioneer.jupiter.resource;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-// TODO: JavaDoc
+/**
+ * {@code Resource} is the common interface for "resources", as managed by {@link ResourceFactory}
+ * implementations.
+ *
+ * <p>It is part of the "resources" JUnit Jupiter extension, which pertains to anything that needs
+ * to be injected into tests and which may need to be started up or torn down. Temporary
+ * directories are a common example.
+ *
+ * <p>This class is intended for <i>implementors</i> of new kinds of resources.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>.</p>
+ *
+ * @param <T> the type of the resource
+ */
 public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
 
+	/**
+	 * Returns the contents of the resource.
+	 *
+	 * @return the contents of the resource.
+	 * @throws Exception if getting the resource failed
+	 */
 	T get() throws Exception;
 
+	/**
+	 * Closes the resource.
+	 * @throws Exception if closing the resource failed
+	 */
 	@Override
 	default void close() throws Exception {
 		// no op by default
