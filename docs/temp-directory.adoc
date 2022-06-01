@@ -46,7 +46,8 @@ include::{demo}[tag=create_new_dir_demo]
 [NOTE]
 ====
 
-`@Dir` annotations do not yet support arguments. Follow https://github.com/junit-pioneer/junit-pioneer/issues/648[this issue] for updates on this feature.
+`@Dir` annotations do not yet support arguments.
+Follow https://github.com/junit-pioneer/junit-pioneer/issues/648[this issue] for updates on this feature.
 
 ====
 
