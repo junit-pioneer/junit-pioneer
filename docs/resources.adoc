@@ -109,19 +109,9 @@ include::{demo}[tag=create_global_shared_resource_demo_second]
 [NOTE]
 ====
 
-You are not limited to singletons! You can create as many global shared resources as you want.
+You are not limited to singletons. You can create as many global shared resources as you want, as long as they have different names.
 
 ====
-
-=== Thread Safety
-
-Resources may be _mutable_.
-
-Temporary directories are a good example of this, as tests can create new subdirectories and files in them.
-
-So, to prevent thread safety bugs, when a resource is shared, it will force any test using it to run sequentially, even if parallel execution has been enabled or that test has been annotated with JUnit Jupiter's `@Execution(CONCURRENT)`.
-
-===
 
 === Creation with Arguments
 
@@ -319,3 +309,13 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 ----
 include::{in-memory-directory}[tag=in_memory_directory]
 ----
+
+== Thread-Safety
+
+This extension is safe to use during parallel test execution.
+
+When using `@New` resources, the tests using them will continue to run in parallel.
+
+When using `@Shared` resources, tests using them will be forced to run *sequentially*, even if parallel execution has been enabled.
+This is because resources may be _mutable_, and if the tests were allowed to run in parallel, then they could mutate the resources in a non-deterministic way.
+Temporary directories are a good example of this, as tests can create new subdirectories and files inside them.
