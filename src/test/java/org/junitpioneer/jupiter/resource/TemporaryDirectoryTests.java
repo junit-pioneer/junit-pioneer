@@ -243,7 +243,6 @@ class TemporaryDirectoryTests {
 								message("Unable to create a resource from `" + TemporaryDirectory.class + "`"),
 								cause(instanceOf(IllegalArgumentException.class),
 									message("Expected 0 or 1 arguments, but got 2")))));
-
 		}
 
 	}

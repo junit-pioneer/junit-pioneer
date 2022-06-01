@@ -2,6 +2,7 @@
 :page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject resources like temporary directories or a port.
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourcesExtensionDemo.java
+:in-memory-directory: {xp-demo-dir}/org/junitpioneer/jupiter/resource/InMemoryDirectory.java
 
 Some tests need "resources" which need to be cleaned up when finished, and sometimes, these resources might be needed to be accessed by many tests.
 Furthermore, you may be running your JUnit Jupiter tests in parallel, which makes sharing these resources flaky.
@@ -60,14 +61,6 @@ include::{demo}[tag=create_new_resource_with_arg_demo]
 ----
 
 === Sharing a Resource
-
-////
-TODO
-* sharing = getting the same instance injected
-* by name and scope
-* thread safety
-* no arguments (still under discussion)
-////
 
 To create a resource that is shared by multiple tests:
 
@@ -149,17 +142,180 @@ To do that, you need to implement `Resource<T>` and `ResourceFactory<T>`, where 
 
 Then you can reference the factory type in the `@New` and `@Shared` annotations.
 
-////
-TODO
-* factory
-    * create resources
-    * if resources need to be handled as a bundle
-    * parameterless constructor
-    * e.g. set up and clean-up of in-memory filesystem
-* resource
-    * wraps a single resource
-    * code handling cleaning up resources individually
-    * e.g. delete on disk folder
-////
+This extension will take care of calling the various methods at the right time.
 
+=== Set up the Factory
 
+[source,java,indent=0]
+----
+public final class InMemoryDirectory implements ResourceFactory<Path> {
+
+	private static final AtomicInteger DIRECTORY_NAME = new AtomicInteger();
+
+	// The resource factory we want to create resources with.
+	// In this case, an in-memory filesystem.
+	private final FileSystem fileSystem;
+
+	// NOTE: The constructor must be parameter-less.
+	public InMemoryDirectory() {
+		this.fileSystem = Jimfs.newFileSystem(Configuration.unix());
+	}
+
+	@Override
+	public Resource<Path> create(List<String> arguments) throws Exception {
+		// ...
+	}
+
+}
+----
+
+=== Close the Factory
+
+[source,java,indent=0]
+----
+public final class InMemoryDirectory implements ResourceFactory<Path> {
+
+	// ...
+
+	private final FileSystem fileSystem;
+
+	// ...
+
+	// NOTE: Overriding close() is optional! By default, it will do nothing.
+	@Override
+	public void close() throws Exception {
+		this.fileSystem.close();
+	}
+
+}
+----
+
+=== Create a Resource
+
+[source,java,indent=0]
+----
+public final class InMemoryDirectory implements ResourceFactory<Path> {
+
+	// ...
+
+	private final FileSystem fileSystem;
+
+	// ...
+
+	@Override
+	public Resource<Path> create(List<String> arguments) throws Exception {
+		// Create a new resource from the factory.
+		// In this case, return a new directory from
+		// the in-memory filesystem.
+
+		Path newInMemoryDirectory = this.fileSystem.getPath("/" + DIRECTORY_NAME.getAndIncrement());
+		Files.createDirectory(newInMemoryDirectory);
+
+		return new Resource<Path>() {
+
+			@Override
+			public Path get() throws Exception {
+				return newInMemoryDirectory;
+			}
+
+			// ...
+
+		};
+	}
+
+}
+----
+
+=== Close a Resource
+
+[source,java,indent=0]
+----
+public final class InMemoryDirectory implements ResourceFactory<Path> {
+
+	// ...
+
+	private final FileSystem fileSystem;
+
+	// ...
+
+	@Override
+	public Resource<Path> create(List<String> arguments) throws Exception {
+
+		Path newInMemoryDirectory = // ...
+		// ...
+
+		return new Resource<Path>() {
+
+			// ...
+
+			// NOTE: Overriding close() is optional! By default, it will do nothing.
+			@Override
+			public void close() throws Exception {
+				Files.walkFileTree(newInMemoryDirectory, new SimpleFileVisitor<Path>() {
+
+					@Override
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+						Files.deleteIfExists(file);
+						return FileVisitResult.CONTINUE;
+					}
+
+					@Override
+					public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+						Files.deleteIfExists(dir);
+						return FileVisitResult.CONTINUE;
+					}
+
+				});
+			}
+
+		};
+	}
+
+}
+----
+
+=== Working with Arguments from `@New`
+
+[source,java,indent=0]
+----
+public final class InMemoryDirectory implements ResourceFactory<Path> {
+
+	// ...
+
+	@Override
+	public Resource<Path> create(List<String> arguments) throws Exception {
+		// The parameter 'arguments' contains all strings
+		// passed to @New(..., arguments = { ... }).
+		//
+		// It's then up to you how these arguments should
+		// be used.
+		//
+		// In this case, only the first argument is used,
+		// and it's used as a prefix in the in-memory
+		// directory's name.
+
+		String directoryPrefix = (arguments.size() == 1) ? arguments.get(0) : "";
+		Path newInMemoryDirectory = this.fileSystem.getPath("/" + directoryPrefix + DIRECTORY_NAME.getAndIncrement());
+		Files.createDirectory(newInMemoryDirectory);
+
+		return new Resource<Path>() {
+
+			@Override
+			public Path get() throws Exception {
+				return newInMemoryDirectory;
+			}
+
+			// ...
+
+		};
+
+	}
+}
+----
+
+=== Putting It All Together
+
+[source,java,indent=0]
+----
+include::{in-memory-directory}[tag=in_memory_directory]
+----
