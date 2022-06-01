@@ -1,13 +1,17 @@
 :page-title: Temporary Directory
 :page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject temporary directories.
 
-// TODO: intro to temp dirs
-
 [NOTE]
 ====
 This article describes the specific of how to inject temporary directories into your tests.
-Most of the extension's features are shared with other resources, though, and are described in link:docs/resources[the article covering resources in general] (eg. thread-safety and sharing resources), so make sure to read that one as well.
+Most of the extension's features are shared with other resources, though, and are described in link:docs/resources[the article covering resources in general] (e.g. thread-safety and sharing resources), so make sure to read that one as well.
 ====
+
+A temporary directory is a directory on the machine's on-disk filesystem that is created at the start of a test and deleted immediately afterwards.
+
+Unlike JUnit 5's `@TempDir` annotation, temporary directories created with this extension can be configured to be deleted when the current test class is finished, or when all tests have finished.
+
+Also, this extension can configure the _prefix_ of a `@New` temporary directory's name, which might be useful for test reporting or debugging reasons.
 
 ////
 TODO
@@ -16,4 +20,10 @@ TODO
 * @Shared
 ////
 
-TODO: Refer to https://www.writethedocs.org/guide/writing/beginners-guide-to-docs/
+== Thread-Safety
+
+This extension is safe to use during parallel test execution.
+
+When using `@New` temporary directories, the tests using them will continue to run in parallel.
+
+When using `@Shared` temporary directories, the tests using them will be forced to run *sequentially*, even if parallel execution has been enabled.
