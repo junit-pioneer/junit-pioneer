@@ -40,7 +40,7 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 	 *
 	 * Setting the information needs to be thread safe, so only positive results (i.e. tests must be disabled)
 	 * will be set. The easiest way to do that is to simply use absence/presence of a key in the store
-	 * as indicator, which means the specific value doesn't.
+	 * as indicator, which means the specific value doesn't matter.
 	 */
 
 	private static final Namespace NAMESPACE = Namespace.create(DisableIfTestFailsExtension.class);
@@ -82,8 +82,8 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 				.map(DisableIfTestFailsExtension::findConfigurations)
 				.orElse(Stream.empty());
 
-		List<Configuration> stream = Stream.concat(onClassConfig, onParentClassConfigs).collect(toList());
-		return stream.stream();
+		List<Configuration> configurations = Stream.concat(onClassConfig, onParentClassConfigs).collect(toList());
+		return configurations.stream();
 	}
 
 	private static Stream<Configuration> createConfigurationFor(ExtensionContext context,

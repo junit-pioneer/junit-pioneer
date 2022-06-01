@@ -9,7 +9,6 @@ These are as follows:
 - DisableIfDisplayName
 - DisableIfArgument
 
-
 == DisableIfDisplayName
 
 The `@DisableIfDisplayName` annotation can be used to selectively disable parameterized tests based on their display names, which are dynamically registered on runtime.
@@ -38,7 +37,6 @@ include::{demo}[tag=disable_parameterized_regex]
 
 NOTE: Since JUnit Pioneer 1.5.0, using both `matches` and `contains` in a single annotation is no longer permitted.
 The reason is that it's not clear from reading the annotation whether it's *and* or *or* semantics, i.e. whether the display name needs to both match the regex *and* contain the substring to be disabled or whether fulfilling one criterion suffices.
-
 
 == DisableIfArgument
 
@@ -177,3 +175,7 @@ Just like with `contains`, if any argument matches any expression from `matches`
 NOTE: While the documentation uses `String` values for demonstration purposes, you can use it to disable tests with other parameter types.
 However, the arguments will be converted to `String` with `Object#toString()` before evaluation.
 Make sure that your parameter types have a meaningful `toString` method.
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

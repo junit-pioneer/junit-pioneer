@@ -18,16 +18,23 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.platform.testkit.engine.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 class RetryingTestExtensionTests {
+
+	private static final int SUSPEND_FOR = 10;
 
 	@Test
 	void invalidConfigurationWithTest() {
@@ -252,6 +259,62 @@ class RetryingTestExtensionTests {
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
 
+	@Test
+	void suspendForLessThanZero_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "suspendForLessThanZero");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
+	void failThreeTimesWithSuspend() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithSuspend");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(3)
+				.hasNumberOfAbortedTests(2)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+
+		assertSuspendedFor(results, SUSPEND_FOR);
+	}
+
+	@Test
+	void failThreeTimesWithoutSuspend() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithoutSuspend");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(3)
+				.hasNumberOfAbortedTests(2)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+
+		assertSuspendedFor(results, 0);
+	}
+
+	private void assertSuspendedFor(ExecutionResults results, long greaterThanOrEqualTo) {
+		List<Execution> finishedExecutions = results.testEvents().executions().finished().list();
+		List<Execution> startedExecutions = results.testEvents().executions().started().list();
+
+		// Compare 'finished' execution timestamp with follow-up 'started' execution,
+		// skipping the 1st 'started' and final 'finished'.
+		// This duration should be equals to or greater than 'suspendFor'.
+		for (int i = 0; i < finishedExecutions.size() - 1; i++) {
+			Execution finished = finishedExecutions.get(i);
+			Execution nextStarted = startedExecutions.get(i + 1);
+
+			Instant finishedAt = finished.getEndInstant();
+			Instant nextStartedAt = nextStarted.getStartInstant();
+
+			long suspendedFor = Duration.between(finishedAt, nextStartedAt).toMillis();
+
+			Assertions.assertThat(suspendedFor).isGreaterThanOrEqualTo(greaterThanOrEqualTo);
+		}
+	}
+
 	// TEST CASES -------------------------------------------------------------------
 
 	// Some tests require state to keep track of the number of test executions.
@@ -412,6 +475,21 @@ class RetryingTestExtensionTests {
 		@RetryingTest(maxAttempts = 2, minSuccess = 0)
 		void minSuccessLessThanOne() {
 			// Do nothing
+		}
+
+		@RetryingTest(suspendForMs = -1)
+		void suspendForLessThanZero() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 3, suspendForMs = SUSPEND_FOR)
+		void failThreeTimesWithSuspend() {
+			throw new IllegalArgumentException();
+		}
+
+		@RetryingTest(maxAttempts = 3)
+		void failThreeTimesWithoutSuspend() {
+			throw new IllegalArgumentException();
 		}
 
 	}

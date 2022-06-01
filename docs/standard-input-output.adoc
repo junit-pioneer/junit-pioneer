@@ -13,12 +13,13 @@ This becomes particularly important when running tests in parallel, where other 
 The extension consists of two parts:
 
 * The annotation `@StdIo`. It allows defining input that is read from `System.in` without having to wait for user input.
-* Parameters `StdIn` and `StdOut`, which you can have injected into your test. Their `capturedLines()` methods allow you to access lines read from `System.in` or written to `System.out`, so you can verify them with common assertions.
+* Parameters `StdIn` and `StdOut`, which you can have injected into your test.
+  Their `capturedLines()` methods allow you to access lines read from `System.in` or written to `System.out`, so you can verify them with common assertions.
 
 For example, after calling `System.out.println("Hello")` and `System.out.println("World")`,  the `StdOut::capturedLines` method would return an array ["Hello", "World"].
 With `System.out.print("Hello")` and `System.out.println("World")` (note that the first method does not print a line break), it would return `["HelloWorld"]`.
 
-Here's which combinations of this annotation (with or without values for the read lines) and parameters are valid:
+Here are the valid combinations of the annotation (with or without values for the read lines) and parameters:
 
 `@StdIo("...")`::
 In this case `System.in` gets replaced and the code under test will read the specified lines (in the snippet, that's just the line `"..."`).
@@ -62,7 +63,6 @@ include::{demo}[tag=stdio_both_replaced_and_verify]
 
 The remaining combinations of the annotation, its values, and `StdIn`/`StdOut` are considered misconfigurations and lead to exceptions.
 
-
 == Thread-Safety
 
 Since `System.in` and `System.out` are global state, reading and writing them during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution] can lead to unpredictable results and flaky tests.
@@ -76,7 +76,6 @@ Tests that cover code that reads or writes `System.in` or `System.out` need to b
 * `@WritesStdIo`
 
 Tests annotated in this way will never execute in parallel with tests annotated with `@StdIo`.
-
 
 == Edge cases and unexpected behavior
 

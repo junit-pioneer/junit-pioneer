@@ -6,7 +6,7 @@
 The annotation `org.junitpioneer.vintage.@Test` is a drop-in replacement for https://junit.org/junit4/javadoc/4.12/org/junit/Test.html[JUnit 4's `org.junit.@Test` annotation], but marks the method as a regular JUnit Jupiter test.
 
 You can make use of it when migrating tests from JUnit 4 to Jupiter by doing a fulltext search/replace of `import org.junit.Test` with `import org.junitpioneer.vintage.Test`.
-That means you do not need to run JUnit 5's Vintage engine to execute such tests--Jupiter suffices.
+That means you do not need to run JUnit 5's Vintage engine to execute such tests - Jupiter suffices.
 
 This should be seen as an intermediate step towards a full migration and should be followed up by gradual/manual replacement of `org.junitpioneer.vintage.Test` with Jupiter's `org.junit.jupiter.api.Test`.
 To emphasize its character as a temporary solution and to reduce https://github.com/junit-pioneer/junit-pioneer/issues/137[risk of accidental use], it's marked as deprecated.
@@ -55,7 +55,7 @@ include::{demo}[tag=vintage_test_timeout]
 ----
 
 Like in JUnit 4, `timeout` aborts long-running tests.
-The following tests does not run indefinitely--it failes after 100 milliseconds:
+The following test does not run indefinitely - it fails after 100 milliseconds:
 
 [source,java,indent=0]
 ----

@@ -14,12 +14,29 @@ import org.junit.jupiter.api.Test;
 
 public class StopwatchExtensionDemo {
 
-	// tag::stopwatch_demo[]
-	@Stopwatch
+	// tag::method[]
 	@Test
+	@Stopwatch
 	void test() {
-		// Some test
+		// execution time will be reported
 	}
+	// end::method[]
 
-	// end::stopwatch_demo[]
+	// tag::class[]
+	@Stopwatch
+	class TestCases {
+
+		@Test
+		void test_1() {
+			// execution time will be reported
+		}
+
+		@Test
+		void test_s() {
+			// execution time will be reported
+		}
+
+	}
+	// end::class[]
+
 }

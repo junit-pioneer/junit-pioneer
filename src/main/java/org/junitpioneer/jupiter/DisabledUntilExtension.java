@@ -62,6 +62,10 @@ class DisabledUntilExtension implements ExecutionCondition {
 		boolean disabled = today.isBefore(untilDate);
 
 		if (disabled) {
+			String reportEntry = format(
+				"This test is disabled until %s. If executing it on this commit would fail, the build can't be reproduced after that date.",
+				untilDate.format(ISO_8601));
+			context.publishReportEntry("DisabledUntil", reportEntry);
 			String message = format("The `date` %s is after the current date %s", untilDate.format(ISO_8601),
 				today.format(ISO_8601));
 			return disabled(message);

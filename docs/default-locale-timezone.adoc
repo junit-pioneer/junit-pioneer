@@ -42,7 +42,7 @@ NOTE: A class-level configuration means that the specified locale is set before 
 
 == `@DefaultTimeZone`
 
-The default `TimeZone` is specified according to the https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html#getTimeZone(java.lang.String)[TimeZone.getTimeZone(String)] method.
+The default `TimeZone` is specified according to the https://docs.oracle.com/javase/8/docs/api/java/util/TimeZone.html#getTimeZone-java.lang.String-[TimeZone.getTimeZone(String)] method.
 
 [source,java,indent=0]
 ----

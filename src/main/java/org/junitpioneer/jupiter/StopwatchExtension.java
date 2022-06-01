@@ -36,30 +36,15 @@ class StopwatchExtension implements BeforeTestExecutionCallback, AfterTestExecut
 		calculateAndReportElapsedTime(context);
 	}
 
-	/**
-	 * Stores the current time for the method in the execution context.
-	 *
-	 * @param context Extension context of the class
-	 */
-	void storeNowAsLaunchTime(ExtensionContext context) {
+	private void storeNowAsLaunchTime(ExtensionContext context) {
 		context.getStore(NAMESPACE).put(context.getUniqueId(), clock.instant().toEpochMilli());
 	}
 
-	/**
-	 * Loads the stored time for method from the execution context.
-	 *
-	 * @param context Extension context of the class
-	 */
-	long loadLaunchTime(ExtensionContext context) {
+	private long loadLaunchTime(ExtensionContext context) {
 		return context.getStore(NAMESPACE).get(context.getUniqueId(), long.class);
 	}
 
-	/**
-	 * Calculates the elapsed time method and publishes it to the execution context.
-	 *
-	 * @param context Extension context of the class
-	 */
-	void calculateAndReportElapsedTime(ExtensionContext context) {
+	private void calculateAndReportElapsedTime(ExtensionContext context) {
 		long launchTime = loadLaunchTime(context);
 		long elapsedTime = clock.instant().toEpochMilli() - launchTime;
 
