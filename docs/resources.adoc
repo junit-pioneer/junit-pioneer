@@ -20,7 +20,8 @@ Check the individual documentations for that:
 * link:docs/temp-directory[Temporary directory]
 ====
 
-The first part of this article describes how to use a resource with this extension. The second part describes how to integrate your own kind of resource with this mechanism.
+The first part of this article describes how to use a resource with this extension.
+The second part describes how to integrate your own kind of resource with this mechanism.
 In both cases, the temporary directory extension will be used as an example, but what's described here applies to other resources as well.
 
 == Using Resources
@@ -71,7 +72,8 @@ include::{demo}[tag=create_shared_resource_demo]
 ...where `TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].
 
 This will create a single resource instance that will be injected into all the tests.
-It will be "closed" when all the tests are finished. (See <<scope_of_a_shared_resource>> for a caveat on this.)
+It will be "closed" when all the tests are finished.
+(See <<scope_of_a_shared_resource>> for a caveat on this.)
 
 So in this case, a single temporary directory will be shared across all tests, and it will only be deleted when all the tests have run.
 
@@ -117,7 +119,8 @@ include::{demo}[tag=create_global_shared_resource_demo_second]
 [NOTE]
 ====
 
-You are not limited to singletons. You can create as many global shared resources as you want, as long as they have different names.
+You are not limited to singletons.
+You can create as many global shared resources as you want, as long as they have different names.
 
 ====
 
@@ -216,7 +219,8 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 
 This example shows how to create an actual `Resource` from your factory, with the `ResourceFactory.create()` method.
 
-This extension will call this method when a test with a `@New`- or `@Shared`-annotated parameter is about to run. The extension will then populate the parameter with the contents of this resource.
+This extension will call this method when a test with a `@New`- or `@Shared`-annotated parameter is about to run.
+The extension will then populate the parameter with the contents of this resource.
 
 [source,java,indent=0]
 ----
@@ -313,7 +317,8 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 
 These will be passed to the factory's `ResourceFactory.create()` method as a list when a resource is in the process of being created.
 
-You have full control over what these arguments mean and how they are used. You should document these details in your resource factory's JavaDocs.
+You have full control over what these arguments mean and how they are used.
+You should document these details in your resource factory's JavaDocs.
 
 This example shows how to interpret the first argument to be the _prefix_ of the name of the to-be-created in-memory directory resource.
 
