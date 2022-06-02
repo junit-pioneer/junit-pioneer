@@ -21,6 +21,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -143,8 +144,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private ResourceWithLock<?> createResource(Shared sharedAnnotation, ResourceFactory<?> resourceFactory) {
 		try {
-			return new ResourceWithLock<>(
-				resourceFactory.create(unmodifiableList(asList(sharedAnnotation.arguments()))));
+			return new ResourceWithLock<>(resourceFactory.create(Collections.emptyList()));
 		}
 		catch (Exception e) {
 			throw new UncheckedParameterResolutionException(new ParameterResolutionException(

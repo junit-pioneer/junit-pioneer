@@ -291,39 +291,8 @@ class TemporaryDirectoryTests {
 
 	// ---
 
-	@DisplayName("when a test class has a test method with a parameter annotated with "
-			+ "@Shared(factory = TemporaryDirectory.class, name = \"some-name\", arguments = {\"tempDirPrefix\"}")
-	@Nested
-	class WhenTestClassHasTestMethodWithParameterAnnotatedWithSharedTempDirWithArg {
-
-		@DisplayName("then the parameter is populated with a shared temporary directory "
-				+ "that has the prefix \"tempDirPrefix\"")
-		@Test
-		void thenParameterIsPopulatedWithSharedTempDirWithSuffixEquallingArg() {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithParameterWithSharedTempDirAndArgTestCases.class);
-			assertThat(executionResults).hasSingleSucceededTest();
-		}
-
-	}
-
-	static class SingleTestMethodWithParameterWithSharedTempDirAndArgTestCases {
-
-		@Test
-		void theTest( //
-				@Shared( //
-						factory = TemporaryDirectory.class, //
-						name = "some-name", //
-						arguments = { "tempDirPrefix" }) //
-				Path tempDir) {
-			assertThat(rootTempDir().relativize(tempDir)).asString().startsWith("tempDirPrefix");
-		}
-
-	}
-
-	// ---
-
-	@DisplayName("when a test class has a test method with multiple @Shared(factory = TemporaryDirectory.class, name = \"...\")-annotated parameters with different names")
+	@DisplayName("when a test class has a test method with multiple "
+			+ "@Shared(factory = TemporaryDirectory.class, name = \"...\")-annotated parameters with different names")
 	@Nested
 	class WhenTestClassHasTestMethodWithMultipleSharedTempDirAnnotatedParametersWithDifferentNamesTests {
 

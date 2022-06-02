@@ -39,8 +39,6 @@ public @interface Shared {
 
 	String name();
 
-	String[] arguments() default {};
-
 	Scope scope() default Scope.SOURCE_FILE;
 
 }
