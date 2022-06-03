@@ -64,11 +64,6 @@ public @interface SetSystemProperty {
 	String value();
 
 	/**
-	 * Optional configuration option when to apply the extension.
-	 */
-	ApplyMode mode() default ApplyMode.TEST;
-
-	/**
 	 * Containing annotation of repeatable {@code @SetSystemProperty}.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)

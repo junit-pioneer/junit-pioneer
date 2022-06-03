@@ -50,11 +50,8 @@ class EnvironmentVariableExtensionTests {
 
 	@AfterAll
 	static void globalTearDown() {
-		assertThat(systemEnvironmentVariable("set envvar A")).isEqualTo("old A");
 		EnvironmentVariableUtils.clear("set envvar A");
-		assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("old B");
 		EnvironmentVariableUtils.clear("set envvar B");
-		assertThat(systemEnvironmentVariable("set envvar C")).isEqualTo("old C");
 		EnvironmentVariableUtils.clear("set envvar C");
 
 		assertThat(systemEnvironmentVariable("clear envvar D")).isNull();
@@ -251,8 +248,8 @@ class EnvironmentVariableExtensionTests {
 
 			@BeforeAll
 			@ReadsEnvironmentVariable
-			void changeShouldNotBeVisible() {
-				assertThat(System.getenv("set envvar A")).isEqualTo("old A");
+			void changeShouldBeVisible() {
+				assertThat(System.getenv("set envvar A")).isEqualTo("new A");
 			}
 
 			@Test
@@ -264,13 +261,13 @@ class EnvironmentVariableExtensionTests {
 			@AfterAll
 			@ReadsEnvironmentVariable
 			void resetAfterTestMethodExecution() {
-				assertThat(System.getenv("set envvar A")).isEqualTo("old A");
+				assertThat(System.getenv("set envvar A")).isEqualTo("new A");
 			}
 
 		}
 
 		@Nested
-		@SetEnvironmentVariable(key = "set envvar A", value = "newer A", mode = ApplyMode.CLASS)
+		@SetEnvironmentVariable(key = "set envvar A", value = "newer A")
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 		class ResettingEnvironmentVariableAfterAllNestedTests {
 
@@ -297,7 +294,7 @@ class EnvironmentVariableExtensionTests {
 		@AfterAll
 		@ReadsEnvironmentVariable
 		void resetAfterTestContainerExecution() {
-			assertThat(System.getenv("set envvar A")).isEqualTo("old A");
+			assertThat(System.getenv("set envvar A")).isEqualTo("new A");
 		}
 
 	}
@@ -332,15 +329,6 @@ class EnvironmentVariableExtensionTests {
 		void shouldFailWhenSetSameEnvironmentVariableTwice() {
 			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
 				"shouldFailWhenSetSameEnvironmentVariableTwice");
-
-			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
-		}
-
-		@Test
-		@DisplayName("should fail when configuring test-level annotation with ApplyMode.CLASS")
-		void shouldFailWhenTestAnnotationIsAppliedOnClassLevel() {
-			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
-				"shouldFailWhenTestAnnotationIsAppliedOnClassLevel");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
@@ -426,11 +414,6 @@ class EnvironmentVariableExtensionTests {
 		@SetEnvironmentVariable(key = "set envvar A", value = "new A")
 		@SetEnvironmentVariable(key = "set envvar A", value = "new B")
 		void shouldFailWhenSetSameEnvironmentVariableTwice() {
-		}
-
-		@Test
-		@SetEnvironmentVariable(key = "set envvar A", value = "new A", mode = ApplyMode.CLASS)
-		void shouldFailWhenTestAnnotationIsAppliedOnClassLevel() {
 		}
 
 	}

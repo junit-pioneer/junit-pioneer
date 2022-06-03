@@ -72,11 +72,6 @@ public @interface SetEnvironmentVariable {
 	String value();
 
 	/**
-	 * Optional configuration option when to apply the extension.
-	 */
-	ApplyMode mode() default ApplyMode.TEST;
-
-	/**
 	 * Containing annotation of repeatable {@code @SetEnvironmentVariable}.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)

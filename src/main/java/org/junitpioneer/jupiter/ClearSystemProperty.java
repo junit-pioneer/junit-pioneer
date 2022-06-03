@@ -57,11 +57,6 @@ public @interface ClearSystemProperty {
 	String key();
 
 	/**
-	 * Optional configuration option when to apply the extension.
-	 */
-	ApplyMode mode() default ApplyMode.TEST;
-
-	/**
 	 * Containing annotation of repeatable {@code @ClearSystemProperty}.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)

@@ -11,20 +11,9 @@
 package org.junitpioneer.jupiter;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 class SystemPropertyExtension
 		extends AbstractEntryBasedExtension<String, String, ClearSystemProperty, SetSystemProperty> {
-
-	@Override
-	protected Predicate<ClearSystemProperty> filterClearAnnotationsByMode(ApplyMode mode) {
-		return annotation -> annotation.mode().equals(mode);
-	}
-
-	@Override
-	protected Predicate<SetSystemProperty> filterSetAnnotationsByMode(ApplyMode mode) {
-		return annotation -> annotation.mode().equals(mode);
-	}
 
 	@Override
 	protected Function<ClearSystemProperty, String> clearKeyMapper() {

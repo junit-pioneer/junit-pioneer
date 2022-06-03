@@ -43,11 +43,8 @@ class SystemPropertyExtensionTests {
 
 	@AfterAll
 	static void globalTearDown() {
-		assertThat(System.getProperty("A")).isEqualTo("old A");
 		System.clearProperty("A");
-		assertThat(System.getProperty("B")).isEqualTo("old B");
 		System.clearProperty("B");
-		assertThat(System.getProperty("C")).isEqualTo("old C");
 		System.clearProperty("C");
 
 		assertThat(System.getProperty("clear prop D")).isNull();
@@ -239,8 +236,8 @@ class SystemPropertyExtensionTests {
 		class ResettingSystemPropertyAfterEachNestedTests {
 
 			@BeforeAll
-			void changeShouldNotBeVisible() {
-				assertThat(System.getProperty("A")).isEqualTo("old A");
+			void changeShouldBeVisible() {
+				assertThat(System.getProperty("A")).isEqualTo("newer A");
 			}
 
 			@Test
@@ -252,13 +249,13 @@ class SystemPropertyExtensionTests {
 			@AfterAll
 			@ReadsSystemProperty
 			void resetAfterTestMethodExecution() {
-				assertThat(System.getProperty("A")).isEqualTo("old A");
+				assertThat(System.getProperty("A")).isEqualTo("newer A");
 			}
 
 		}
 
 		@Nested
-		@SetSystemProperty(key = "A", value = "newer A", mode = ApplyMode.CLASS)
+		@SetSystemProperty(key = "A", value = "newer A")
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 		class ResettingSystemPropertyAfterAllNestedTests {
 
@@ -284,7 +281,7 @@ class SystemPropertyExtensionTests {
 		@AfterAll
 		@ReadsSystemProperty
 		void resetAfterTestContainerExecution() {
-			assertThat(System.getProperty("A")).isEqualTo("old A");
+			assertThat(System.getProperty("A")).isEqualTo("new A");
 		}
 
 	}
@@ -322,15 +319,6 @@ class SystemPropertyExtensionTests {
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
-		@Test
-		@DisplayName("should fail when configuring test-level annotation with ApplyMode.CLASS")
-		void shouldFailWhenTestAnnotationIsAppliedOnClassLevel() {
-			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
-				"shouldFailWhenTestAnnotationIsAppliedOnClassLevel");
-
-			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
-		}
-
 	}
 
 	static class MethodLevelInitializationFailureTestCases {
@@ -352,11 +340,6 @@ class SystemPropertyExtensionTests {
 		@SetSystemProperty(key = "A", value = "new A")
 		@SetSystemProperty(key = "A", value = "new B")
 		void shouldFailWhenSetSameSystemPropertyTwice() {
-		}
-
-		@Test
-		@SetSystemProperty(key = "set envvar A", value = "new A", mode = ApplyMode.CLASS)
-		void shouldFailWhenTestAnnotationIsAppliedOnClassLevel() {
 		}
 
 	}
