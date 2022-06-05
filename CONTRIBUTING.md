@@ -470,6 +470,26 @@ JUnit Pioneer has an uncharacteristically strong relationship to the JUnit 5 pro
 It not only depends on it, it also uses its internal APIs, copies source code that is not released in any artifact, mimics code style, unit testing, build and CI setup, and more.
 As such it will frequently have to adapt to upstream changes, so it makes sense to provision for that in the development strategy.
 
+#### Declaring Dependencies
+
+JUnit Jupiter has few external dependencies, but occasionally uses them in its own API and thus has the `requires transitive` directive in [its module declaration](https://github.com/junit-team/junit5/blob/main/junit-jupiter-api/src/module/org.junit.jupiter.api/module-info.java) (for example, `requires transitive org.opentest4j_`).
+That means, while JUnit Pioneer _could_ list these dependencies in its build configuration and require these modules in its module declaration, it doesn't _have to_.
+
+It is generally recommended not to rely on transitive dependencies when they're used directly and instead manage them yourself, but this does not apply very well to Pioneer and Jupiter:
+
+* If Jupiter stops using one of these dependencies, there is no point for us to keep using it as we only need them to integrate with Jupiter.
+* If Jupiter refactors these module relationships (e.g. by removing the OpenTest4J module from its dependencies and pulling its code into a Jupiter module), we might not be compatible with that new version (e.g. because we still require the removed module, which now results in a split package)
+* We can't choose a different dependency version than Jupiter
+
+We hence only depend on "core Jupiter" explicitly.
+That is:
+
+* core API: _org.junit.jupiter.api_
+* additional APIs as needed, e.g. _org.junit.jupiter.params_
+* additional functionality as needed, e.g. _org.junit.platform.launcher_
+
+#### Updating JUnit 5
+
 As [documented](README.md#dependencies) Pioneer aims to use the lowest JUnit 5 version that supports Pioneer's feature set.
 At the same time, there is no general reason to hesitate with updating the dependency if a new feature requires a newer version or the old version has a severe bug.
 Follow these steps when updating JUnit 5:
