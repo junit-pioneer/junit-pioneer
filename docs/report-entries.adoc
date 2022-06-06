@@ -108,7 +108,6 @@ Then the extension will publish `"21 - Hello - 21"` and `"42 - World - 42"`.
 
 Accessing test parameters in the key of the report entry is unsupported.
 
-
 == Thread-Safety
 
 This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

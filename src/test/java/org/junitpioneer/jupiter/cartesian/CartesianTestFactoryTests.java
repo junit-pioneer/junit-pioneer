@@ -20,6 +20,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junitpioneer.jupiter.ReportEntry;
@@ -85,6 +87,28 @@ public class CartesianTestFactoryTests {
 
 			assertThat(results).hasNumberOfSucceededTests(2);
 			assertThat(results).hasNumberOfReportEntries(2).withValues("A,null", "B,null");
+		}
+
+		@Test
+		@DisplayName("when factory is non-static with lifecyle PER_CLASS")
+		void nonStaticWithLifecylePerClass() {
+			ExecutionResults results = PioneerTestKit
+					.executeNestedTestMethodWithParameterTypes(List.of(CorrectFactoryTestCases.class),
+						CorrectFactoryTestCases.PerClassLifecycle.class, "nonStatic", String.class, String.class);
+
+			assertThat(results).hasNumberOfSucceededTests(4);
+			assertThat(results).hasNumberOfReportEntries(4).withValues("A,C", "A,D", "B,C", "B,D");
+		}
+
+		@Test
+		@DisplayName("finds very explicitly specified class and method with lifecycle PER_CLASS")
+		void findsExactWithLifecyclePerClass() {
+			ExecutionResults results = PioneerTestKit
+					.executeNestedTestMethodWithParameterTypes(List.of(CorrectFactoryTestCases.class),
+						CorrectFactoryTestCases.PerClassLifecycle.class, "findsExact", String.class, String.class);
+
+			assertThat(results).hasNumberOfSucceededTests(4);
+			assertThat(results).hasNumberOfReportEntries(4).withValues("AC", "AD", "BC", "BD");
 		}
 
 	}
@@ -174,6 +198,23 @@ public class CartesianTestFactoryTests {
 								message -> message.matches("^No ParameterResolver registered for parameter .*$")));
 		}
 
+		@Test
+		@DisplayName("finds very explicitly specified class and non-static method with lifecyle PER_CLASS")
+		void findNonStaticExactWithLifecylePerClass() {
+			ExecutionResults results = PioneerTestKit
+					.executeNestedTestMethodWithParameterTypes(List.of(WrongFactoryTestCases.class),
+						WrongFactoryTestCases.PerClassLifecycle.class, "findsNonStaticExact", String.class,
+						String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(ExtensionConfigurationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message.matches("^Method .* must be static.$")));
+		}
+
 	}
 
 	static class WrongFactoryTestCases {
@@ -226,6 +267,18 @@ public class CartesianTestFactoryTests {
 			return ArgumentSets.argumentsForFirstParameter(1, 2).argumentsForNextParameter((Object) null);
 		}
 
+		@Nested
+		@TestInstance(Lifecycle.PER_CLASS)
+		class PerClassLifecycle {
+
+			@CartesianTest
+			@CartesianTest.MethodFactory("org.junitpioneer.jupiter.cartesian.CartesianTestFactoryTests$WrongFactoryTestCases#nonStatic")
+			@ReportEntry("{0},{1}")
+			void findsNonStaticExact(String s1, String s2) {
+			}
+
+		}
+
 	}
 
 	static class CorrectFactoryTestCases {
@@ -275,6 +328,28 @@ public class CartesianTestFactoryTests {
 		static class Inner {
 
 			static ArgumentSets exact() {
+				return ArgumentSets.argumentsForFirstParameter("A", "B").argumentsForNextParameter("C", "D");
+			}
+
+		}
+
+		@Nested
+		@TestInstance(Lifecycle.PER_CLASS)
+		class PerClassLifecycle {
+
+			@CartesianTest
+			@CartesianTest.MethodFactory("nonStatic")
+			@ReportEntry("{0},{1}")
+			void nonStatic(String s1, String s2) {
+			}
+
+			@CartesianTest
+			@CartesianTest.MethodFactory("org.junitpioneer.jupiter.cartesian.CartesianTestFactoryTests$CorrectFactoryTestCases$Inner#exact")
+			@ReportEntry("{0}{1}")
+			void findsExact(String s1, String s2) {
+			}
+
+			ArgumentSets nonStatic() {
 				return ArgumentSets.argumentsForFirstParameter("A", "B").argumentsForNextParameter("C", "D");
 			}
 

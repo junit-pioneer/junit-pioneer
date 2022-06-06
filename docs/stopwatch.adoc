@@ -3,18 +3,40 @@
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/StopwatchExtensionDemo.java
 
-== Introduction
-
-Test shall be fast.
-To get a feeling how fast or slow a specific test is, the `@Stopwatch` annotation can be used.
-It will measure elapsed time and pass the result to the `https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/TestReporter.html[TestReporter]`, which will publish it.
+Annotating a test with `@Stopwatch` will measure the time it takes to execute and report the result to the https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/TestReporter.html[`TestReporter`].
+How that information is displayed depends on the tool used to run the tests and how it processes test report entries.
 
 == Usage
 
-To measure elapsed time just add the `@Stopwatch` annotation to a class or, like in the following example, to a method:
+`@Stopwatch` can be applied to a method to report its execution time:
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=stopwatch_demo]
+include::{demo}[tag=method]
 ----
 
+It can also be applied to a class, in which case it reports the execution times of each test as if it were applied to each method individually:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=class]
+----
+
+It can also be applied to a class and a method therein but since a class-level annotation already works as if each method was annotated, the method-level annotations would be redundant.
+
+== Output
+
+This is how IntelliJ displays a report entry (in the Run/Debug panel):
+
+----
+timestamp = 2022-05-26T12:16:14.021646, StopwatchExtension = Execution of 'test()' took [11] ms.
+----
+
+Other tools may or may not print report entries.
+
+The most reliable way to gather entries is to create a https://junit.org/junit5/docs/current/user-guide/#launcher-api-listeners-custom[`TestExecutionListener`] and register it with the launcher.
+https://junit.org/junit5/docs/current/api/org.junit.platform.engine/org/junit/platform/engine/reporting/ReportEntry.html[Report entries] from the stopwatch extension can be identified by checking their https://junit.org/junit5/docs/current/api/org.junit.platform.engine/org/junit/platform/engine/reporting/ReportEntry.html#getKeyValuePairs()[key-value pairs] - at least one key will start with the string `"StopwatchExtension"`.
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

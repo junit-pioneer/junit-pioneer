@@ -62,6 +62,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 		if (messages.containsKey(REPORT_ENTRY_KEY)) {
 			String issueId = messages.get(REPORT_ENTRY_KEY);
+			// because test IDs are unique, there's no risk of overriding previously entered information
 			testCases.put(testId, new IssueTestCaseBuilder(testId).setIssueId(issueId));
 		}
 	}

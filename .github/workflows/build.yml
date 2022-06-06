@@ -78,13 +78,33 @@ jobs:
       - name: Gradle build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build
+          arguments: --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
       - name: SonarCloud analysis
         if: ${{ matrix.os == 'ubuntu' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
+
+  # Code format check
+  code-format-check:
+    runs-on: ubuntu-latest
+    needs: validation
+    timeout-minutes: 15
+    name: Code format check
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: temurin
+          cache: 'gradle'
+      - name: Spotless check
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: --scan spotlessCheck
 
   # Our full integration job, which will build for a matrix out of our supported
   # Java versions, operating systems, modular or not, and various JUnit versions.
@@ -114,7 +134,7 @@ jobs:
       - name: Gradle build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build
+          arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build -x spotlessCheck
 
   # We want to be up-to-date and know issues with future Java versions as soon as possible.
   # Furthermore, we also would love to see our build working with the latest Gradle version.
@@ -161,7 +181,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: release-candidate
-          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
+          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build -x spotlessCheck
 
   # A release will be created if there is a `version` defined and `releasing` is set to `true`.
   # If not, this stage will be ignored.

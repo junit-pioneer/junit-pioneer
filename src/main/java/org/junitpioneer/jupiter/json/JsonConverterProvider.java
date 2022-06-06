@@ -10,24 +10,22 @@
 
 package org.junitpioneer.jupiter.json;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
-
 class JsonConverterProvider {
 
-	private static final boolean jacksonPresent = isClassPresent("com.fasterxml.jackson.databind.ObjectMapper");
+	private static final boolean JACKSON_PRESENT = isJacksonObjectMapperClassPresent();
 
-	static boolean isClassPresent(String className) {
+	static boolean isJacksonObjectMapperClassPresent() {
 		try {
-			JsonConverterProvider.class.getClassLoader().loadClass(className);
+			JsonConverterProvider.class.getClassLoader().loadClass("com.fasterxml.jackson.databind.ObjectMapper");
 			return true;
 		}
-		catch (Throwable e) {
+		catch (Exception e) {
 			return false;
 		}
 	}
 
-	static JsonConverter getJsonConverter(ExtensionContext context) {
-		if (jacksonPresent) {
+	static JsonConverter getJsonConverter() {
+		if (JACKSON_PRESENT) {
 			return JacksonJsonConverter.getConverter();
 		}
 

@@ -25,8 +25,8 @@ public class StdOut extends OutputStream {
 
 	private final StringWriter writer = new StringWriter();
 
-	// recreate default constructor to prevent compiler warning
 	public StdOut() {
+		// recreate default constructor to prevent compiler warning
 	}
 
 	@Override

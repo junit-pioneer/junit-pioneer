@@ -13,7 +13,6 @@ module org.junitpioneer {
 	// see Javadoc for why these aren't transitive
 	requires org.junit.jupiter.api;
 	requires org.junit.jupiter.params;
-	requires org.junit.platform.commons;
 	requires org.junit.platform.launcher;
 
 	requires static com.fasterxml.jackson.core;

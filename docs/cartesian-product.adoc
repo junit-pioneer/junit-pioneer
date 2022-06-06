@@ -16,7 +16,7 @@ From Wikipedia:
 What does all this mean?
 
 The Cartesian product of sets is all the possible combinations where you take a single element from each set.
-If you have two sets, `{ 1, 2 }` and `{ 3, 4 }`, their cartesian product is `{ { 1, 3 }, { 1, 4 }, { 2, 3 }, { 2, 4 } }`.
+If you have two sets, `{ 1, 2 }` and `{ 3, 4 }`, their Cartesian product is `{ { 1, 3 }, { 1, 4 }, { 2, 3 }, { 2, 4 } }`.
 
 Sometimes it's useful to test all possible combinations of parameter sets.
 Normally, this results in a lot of written test data parameters.
@@ -239,7 +239,7 @@ You can annotate your test method to supply arguments to all parameters simultan
 
 === `@CartesianTest.MethodFactory`
 
-`@CartesianTest.MethodFactory` can be used to name a static factory method that supplies your arguments.
+`@CartesianTest.MethodFactory` can be used to name a factory method that supplies your arguments.
 The `value` annotation parameter is mandatory.
 Just like with JUnit's `@MethodSource`, you can specify the factory method with its fully-qualified name (including the class), e.g. `com.example.Class#factory`.
 This method must return `ArgumentSets`.
@@ -288,23 +288,30 @@ You can reuse the same argument provider method multiple times.
 include::{demo}[tag=cartesian_argument_sets_reuse]
 ----
 
-==== Requirements for the static factory method
+You can use an argument provider method in nested classes, as long as these are annotated with `@TestInstance(Lifecycle.PER_CLASS)`.
 
-There are multiple requirements the static factory method has to fulfill to qualify:
+[source,java,indent=0]
+----
+include::{demo}[tag=cartesian_argument_sets_with_nested_classes]
+----
+
+==== Requirements for the factory method
+
+There are multiple requirements the factory method has to fulfill to qualify:
 
 - must have the same name as the test method (or its name must be specified via the `factory` attribute)
-- must be `static`
+- must be `static` (unless the test class is annotated with `@TestInstance(Lifecycle.PER_CLASS)` and the factory method is defined in the test class)
 - must have **no** parameters
 - must return `ArgumentSets`
 - must register values for every parameter exactly once
 - must register values in order
 
-==== Returning wrong `ArgumentSets` in the static factory method
+==== Returning wrong `ArgumentSets` in the factory method
 
 If you register too few, too many, or conflicting parameters, you will get an https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/ParameterResolutionException.html[`ParameterResolutionException`].
 "Conflicting parameters" means your test method has a parameter that should be injected by JUnit (e.g.: `TestReporter`) but you also try to inject it.
 
-Examples of badly configured tests/static factory method:
+Examples of badly configured tests/factory method:
 
 [source,java,indent=0]
 ----
