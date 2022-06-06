@@ -249,7 +249,7 @@ class EnvironmentVariableExtensionTests {
 			@BeforeAll
 			@ReadsEnvironmentVariable
 			void changeShouldBeVisible() {
-				assertThat(System.getenv("set envvar A")).isEqualTo("new A");
+				assertThat(System.getenv("set envvar A")).isEqualTo("newer A");
 			}
 
 			@Test
@@ -261,7 +261,7 @@ class EnvironmentVariableExtensionTests {
 			@AfterAll
 			@ReadsEnvironmentVariable
 			void resetAfterTestMethodExecution() {
-				assertThat(System.getenv("set envvar A")).isEqualTo("new A");
+				assertThat(System.getenv("set envvar A")).isEqualTo("newer A");
 			}
 
 		}

@@ -15,7 +15,6 @@ import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -55,7 +54,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	public void beforeAll(ExtensionContext context) {
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
 		Collections.reverse(contexts);
-		contexts.forEach(c -> clearAndSetEntries(c, "Class"));
+		contexts.forEach(c -> clearAndSetEntries(c, "Class", context));
 	}
 
 	@Override
@@ -67,10 +66,10 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		 */
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
 		Collections.reverse(contexts);
-		contexts.forEach(c -> clearAndSetEntries(c, "Test"));
+		contexts.forEach(c -> clearAndSetEntries(c, "Test", context));
 	}
 
-	private void clearAndSetEntries(ExtensionContext context, String mode) {
+	private void clearAndSetEntries(ExtensionContext context, String mode, ExtensionContext original) {
 		context.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
@@ -88,7 +87,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 				return;
 
 			reportWarning(context);
-			storeOriginalEntries(context, entriesToClear, entriesToSet.keySet(), mode);
+			storeOriginalEntries(original, entriesToClear, entriesToSet.keySet(), mode);
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
 		});
@@ -150,17 +149,17 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	@Override
 	public void afterEach(ExtensionContext context) {
 		// apply from innermost to outermost
-		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, "Test"));
+		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, "Test", context));
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) {
-		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, "Class"));
+		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, "Class", context));
 	}
 
-	private void restoreOriginalEntries(ExtensionContext context, String mode) {
+	private void restoreOriginalEntries(ExtensionContext context, String mode, ExtensionContext original) {
 		getStore(context)
-				.getOrDefault(getStoreKey(context, mode), EntriesBackup.class, new EntriesBackup())
+				.getOrDefault(getStoreKey(original, mode), EntriesBackup.class, new EntriesBackup())
 				.restoreBackup();
 	}
 
