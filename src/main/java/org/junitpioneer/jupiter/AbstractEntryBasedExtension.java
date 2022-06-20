@@ -54,7 +54,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	public void beforeAll(ExtensionContext context) {
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
 		Collections.reverse(contexts);
-		contexts.forEach(c -> clearAndSetEntries(c, "Class", context));
+		contexts.forEach(c -> clearAndSetEntries(c, context));
 	}
 
 	@Override
@@ -66,10 +66,10 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		 */
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
 		Collections.reverse(contexts);
-		contexts.forEach(c -> clearAndSetEntries(c, "Test", context));
+		contexts.forEach(c -> clearAndSetEntries(c, context));
 	}
 
-	private void clearAndSetEntries(ExtensionContext context, String mode, ExtensionContext original) {
+	private void clearAndSetEntries(ExtensionContext context, ExtensionContext original) {
 		context.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
@@ -87,7 +87,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 				return;
 
 			reportWarning(context);
-			storeOriginalEntries(original, entriesToClear, entriesToSet.keySet(), mode);
+			storeOriginalEntries(original, entriesToClear, entriesToSet.keySet());
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
 		});
@@ -134,8 +134,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void storeOriginalEntries(ExtensionContext context, Collection<K> entriesToClear,
-			Collection<K> entriesToSet, String mode) {
-		getStore(context).put(getStoreKey(context, mode), new EntriesBackup(entriesToClear, entriesToSet));
+			Collection<K> entriesToSet) {
+		getStore(context).put(getStoreKey(context), new EntriesBackup(entriesToClear, entriesToSet));
 	}
 
 	private void clearEntries(Collection<K> entriesToClear) {
@@ -149,17 +149,17 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	@Override
 	public void afterEach(ExtensionContext context) {
 		// apply from innermost to outermost
-		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, "Test", context));
+		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, context));
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) {
-		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, "Class", context));
+		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, context));
 	}
 
-	private void restoreOriginalEntries(ExtensionContext context, String mode, ExtensionContext original) {
+	private void restoreOriginalEntries(ExtensionContext context, ExtensionContext original) {
 		getStore(context)
-				.getOrDefault(getStoreKey(original, mode), EntriesBackup.class, new EntriesBackup())
+				.getOrDefault(getStoreKey(original), EntriesBackup.class, new EntriesBackup())
 				.restoreBackup();
 	}
 
@@ -167,8 +167,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		return context.getStore(Namespace.create(getClass()));
 	}
 
-	private Object getStoreKey(ExtensionContext context, String mode) {
-		return context.getUniqueId() + mode;
+	private Object getStoreKey(ExtensionContext context) {
+		return context.getUniqueId();
 	}
 
 	private class EntriesBackup {
