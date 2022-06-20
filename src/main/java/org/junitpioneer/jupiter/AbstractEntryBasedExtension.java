@@ -52,25 +52,27 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
-		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
-		Collections.reverse(contexts);
-		contexts.forEach(c -> clearAndSetEntries(c, context));
+		applyForAllContexts(context);
 	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
+		applyForAllContexts(context);
+	}
+
+	private void applyForAllContexts(ExtensionContext originalContext) {
 		/*
 		 * We cannot use PioneerAnnotationUtils#findAllEnclosingRepeatableAnnotations(ExtensionContext, Class) or the
 		 * like as clearing and setting might interfere. Therefore, we have to apply the extension from the outermost
 		 * to the innermost ExtensionContext.
 		 */
-		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
+		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(originalContext);
 		Collections.reverse(contexts);
-		contexts.forEach(c -> clearAndSetEntries(c, context));
+		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext));
 	}
 
-	private void clearAndSetEntries(ExtensionContext context, ExtensionContext original) {
-		context.getElement().ifPresent(element -> {
+	private void clearAndSetEntries(ExtensionContext currentContext, ExtensionContext originalContext) {
+		currentContext.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
 
@@ -86,8 +88,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 			if (entriesToClear.isEmpty() && entriesToSet.isEmpty())
 				return;
 
-			reportWarning(context);
-			storeOriginalEntries(original, entriesToClear, entriesToSet.keySet());
+			reportWarning(currentContext);
+			storeOriginalEntries(originalContext, entriesToClear, entriesToSet.keySet());
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
 		});
@@ -148,18 +150,22 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 
 	@Override
 	public void afterEach(ExtensionContext context) {
-		// apply from innermost to outermost
-		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, context));
+		restoreForAllContexts(context);
 	}
 
 	@Override
 	public void afterAll(ExtensionContext context) {
-		PioneerUtils.findAllContexts(context).forEach(c -> restoreOriginalEntries(c, context));
+		restoreForAllContexts(context);
 	}
 
-	private void restoreOriginalEntries(ExtensionContext context, ExtensionContext original) {
-		getStore(context)
-				.getOrDefault(getStoreKey(original), EntriesBackup.class, new EntriesBackup())
+	private void restoreForAllContexts(ExtensionContext originalContext) {
+		// restore from innermost to outermost
+		PioneerUtils.findAllContexts(originalContext).forEach(currentContext -> restoreOriginalEntries(currentContext, originalContext));
+	}
+
+	private void restoreOriginalEntries(ExtensionContext currentContext, ExtensionContext originalContext) {
+		getStore(currentContext)
+				.getOrDefault(getStoreKey(originalContext), EntriesBackup.class, new EntriesBackup())
 				.restoreBackup();
 	}
 
