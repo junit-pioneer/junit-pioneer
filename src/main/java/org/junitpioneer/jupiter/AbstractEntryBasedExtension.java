@@ -160,11 +160,11 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 
 	private void restoreForAllContexts(ExtensionContext originalContext) {
 		// restore from innermost to outermost
-		PioneerUtils.findAllContexts(originalContext).forEach(currentContext -> restoreOriginalEntries(currentContext, originalContext));
+		PioneerUtils.findAllContexts(originalContext).forEach(__ -> restoreOriginalEntries(originalContext));
 	}
 
-	private void restoreOriginalEntries(ExtensionContext currentContext, ExtensionContext originalContext) {
-		getStore(currentContext)
+	private void restoreOriginalEntries(ExtensionContext originalContext) {
+		getStore(originalContext)
 				.getOrDefault(getStoreKey(originalContext), EntriesBackup.class, new EntriesBackup())
 				.restoreBackup();
 	}
