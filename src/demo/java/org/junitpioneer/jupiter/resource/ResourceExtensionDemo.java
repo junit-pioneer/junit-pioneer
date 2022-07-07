@@ -40,6 +40,7 @@ public class ResourceExtensionDemo {
 	}
 	// end::create_new_dir_demo[]
 
+	// @formatter:off
 	// tag::create_new_resource_with_arg_demo[]
 	void testWithArg(
 			@New(value = TemporaryDirectory.class, arguments = "customPrefix")
@@ -49,7 +50,9 @@ public class ResourceExtensionDemo {
 		assertTrue(rootTempDir.relativize(tempDir).startsWith("customPrefix"));
 	}
 	// end::create_new_resource_with_arg_demo[]
+	// @formatter:on
 
+	// @formatter:off
 	// tag::create_shared_resource_demo[]
 	void sharedResourceTest1(
 			@Shared(factory = TemporaryDirectory.class, name = "sharedTempDir")
@@ -66,7 +69,9 @@ public class ResourceExtensionDemo {
 		// subdirectories and files will be shared.
 	}
 	// end::create_shared_resource_demo[]
+	// @formatter:on
 
+	// @formatter:off
 	// tag::create_multiple_shared_resources_demo[]
 	void firstSharedResource1(
 			@Shared(factory = TemporaryDirectory.class, name = "first")
@@ -86,9 +91,11 @@ public class ResourceExtensionDemo {
 		// This shared resource is different!
 	}
 	// end::create_multiple_shared_resources_demo[]
+	// @formatter:on
 
 }
 
+// @formatter:off
 // tag::create_global_shared_resource_demo_first[]
 class FirstTest {
 
@@ -103,7 +110,9 @@ class FirstTest {
 
 }
 // end::create_global_shared_resource_demo_first[]
+// @formatter:on
 
+// @formatter:off
 // tag::create_global_shared_resource_demo_second[]
 class SecondTest {
 
@@ -118,3 +127,4 @@ class SecondTest {
 
 }
 // end::create_global_shared_resource_demo_second[]
+// @formatter:on
