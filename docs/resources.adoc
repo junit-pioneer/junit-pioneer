@@ -4,7 +4,7 @@
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourceExtensionDemo.java
 :in-memory-directory: {xp-demo-dir}/org/junitpioneer/jupiter/resource/InMemoryDirectory.java
 
-Some tests need "resources" which need to be cleaned up when finished, and sometimes, these resources might be needed to be accessed by many tests.
+Some tests need "resources", which need to be cleaned up when finished, and sometimes, many tests need to access these resources.
 Furthermore, you may be running your JUnit Jupiter tests in parallel, which makes sharing these resources flaky.
 
 For example, you might want to share a temporary directory.
@@ -40,11 +40,11 @@ To create a new resource for a given test:
 include::{demo}[tag=create_new_resources_demo]
 ----
 
-...where `TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].
+(`TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].)
 
 This will create a brand-new resource for each test, and each resource which will be "closed" at the end of its associated test.
 
-So in this case, a new temporary directory will be created `test1` and another one will be created for `test2`.
+So in this case, a new temporary directory will be created for `test1` and another one will be created for `test2`.
 The temporary directory for `test1` will be deleted when the test is finished.
 Likewise, the temporary directory for `test2` will also be deleted right after its test.
 
@@ -69,7 +69,7 @@ To create a resource that is shared by multiple tests:
 include::{demo}[tag=create_shared_resource_demo]
 ----
 
-...where `TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].
+(`TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].)
 
 This will create a single resource instance that will be injected into all the tests.
 It will be "closed" when all the tests are finished.
@@ -79,11 +79,9 @@ So in this case, a single temporary directory will be shared across all tests, a
 
 [NOTE]
 ====
-
 When sharing resources, you may want to force your tests to run in a certain order, so that e.g. files written to a temporary directory in one test can be read from another test.
 
 Use JUnit Jupiter's https://junit.org/junit5/docs/current/user-guide/#writing-tests-test-execution-order[Test Execution Order] feature to do this.
-
 ====
 
 === Sharing Multiple Resources
@@ -101,7 +99,6 @@ include::{demo}[tag=create_multiple_shared_resources_demo]
 === Scope of a Shared Resource
 
 By default, a shared resource will be closed when the test file using it has finished.
-
 This means that if a resource is shared across two or more test files, it will be closed and re-created for _each_ test file.
 
 If this behaviour isn't what you want, you can change the "scope" of the resource to "global", which will keep the resource around until _all_ test files have finished:
@@ -128,13 +125,11 @@ You can create as many global shared resources as you want, as long as they have
 
 [NOTE]
 ====
-
 We do not support creating shared resources with arguments.
 
 This is because if a test refers to a shared resource with the name "Foo" without arguments, then later another test refers to it with one argument, there is no reasonable way to fulfill that request.
 
 Furthermore, even if this was supported, the behavior would change if the first and second tests ever ran in opposite order, which is very likely when tests are configured to run in parallel.
-
 ====
 
 == Integrating Resources
@@ -142,10 +137,36 @@ Furthermore, even if this was supported, the behavior would change if the first 
 This extension allows you to integrate your own kind of resource with the mechanisms described above.
 
 To do that, you need to implement `Resource<T>` and `ResourceFactory<T>`, where `T` is the type of resource you want to provide (e.g. `Path` for temporary directories).
-
 Then you can reference the factory type in the `@New` and `@Shared` annotations.
 
-This extension will take care of calling the various methods at the right time.
+=== Creating Factories
+
+This extension will create a single `ResourceFactory`, which hence needs a parameterless constructor.
+If there's no such constructor, the extension will throw an exception.
+
+=== Creating Resources
+
+The factory's `create` method gets called when:
+
+* a test with a `@New`-annotated parameter is about to run
+* a test with a `@Shared`-annotated parameter is about to run and no shared resource with the configured name could be found in the configured scope
+
+The extension will then populate the parameter with the contents of the returned `Resource`.
+
+`@New` parameters may have associated string `arguments`.
+These will be passed to the factory's `ResourceFactory::create` method as a `List<String` when a resource needs to be created.
+You have full control over what these arguments mean and how they are used and should document these details in your resource factory's JavaDoc.
+
+=== Closing Resources and Factories
+
+You can opt-in to cleaning resources up by implementing `close` methods on both of these types.
+
+* For a `@New` parameter, `Resource::close` will be called and the resource will be made eligible for garbage collection immediately after the test.
+* For a `@Shared` parameter, `Resource::close` will be called when all tests are finished (regardless of the resource's scope).
+  The resource will be cached in-memory until then.
+* `ResourceFactory::close` will be called when all tests are finished.
+
+Overriding these `close()` methods is optional - they will do nothing by default.
 
 === Examples
 
@@ -154,17 +175,6 @@ These examples show how to create a resource called `InMemoryDirectory` for an i
 ==== Set up the Factory
 
 This example shows how to create the `ResourceFactory` for your resources.
-
-This extension will call the constructor of the factory when the first test that has one or more parameters annotated with an e.g. `@New(InMemoryDirectory.class)` or `@Shared(factory = InMemoryDirectory.class)` annotation is about to run.
-
-[NOTE]
-====
-
-This class must have a parameter-less constructor to be able to be instantiated by this extension.
-
-If there isn't such a constructor present, then the extension will throw an exception.
-
-====
 
 [source,java,indent=0]
 ----
@@ -193,10 +203,6 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 
 This example shows how to delete, tear down or otherwise "close" everything associated with the factory when this extension is ready to call the factory's `ResourceFactory.close()` method.
 
-This extension will call `close()` when all tests are finished.
-
-Overriding `close()` is optional. It will do nothing by default.
-
 [source,java,indent=0]
 ----
 public final class InMemoryDirectory implements ResourceFactory<Path> {
@@ -218,9 +224,6 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 ==== Create a Resource
 
 This example shows how to create an actual `Resource` from your factory, with the `ResourceFactory.create()` method.
-
-This extension will call this method when a test with a `@New`- or `@Shared`-annotated parameter is about to run.
-The extension will then populate the parameter with the contents of this resource.
 
 [source,java,indent=0]
 ----
@@ -259,12 +262,6 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 ==== Close a Resource
 
 This example shows how to expand the previous resource to delete, tear down or otherwise "close" everything associated with it when this extension is ready to call the resource's `Resource.close()` method.
-
-For a `@New` parameter, `close()` will be called and the resource will be made eligible for garbage collection immediately after the test.
-
-For a `@Shared` parameter, `close()` will be called when all tests are finished. The resource will be cached in-memory until then.
-
-Overriding `close()` is optional. It will do nothing by default.
 
 [source,java,indent=0]
 ----
@@ -312,13 +309,6 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 ----
 
 ==== Working with Arguments from `@New`
-
-`@New` parameters may have associated string `arguments`.
-
-These will be passed to the factory's `ResourceFactory.create()` method as a list when a resource is in the process of being created.
-
-You have full control over what these arguments mean and how they are used.
-You should document these details in your resource factory's JavaDocs.
 
 This example shows how to interpret the first argument to be the _prefix_ of the name of the to-be-created in-memory directory resource.
 

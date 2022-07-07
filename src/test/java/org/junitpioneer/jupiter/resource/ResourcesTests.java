@@ -163,7 +163,7 @@ class ResourcesTests {
 	}
 
 	private static final Exception EXPECTED_THROW_ON_RF_CREATE_EXCEPTION = new IOException(
-		"failed to connect to the Matrix");
+		"Failed to connect to the Matrix");
 
 	static class ThrowOnNewRFCloseTestCases {
 

@@ -6,11 +6,11 @@
 
 [NOTE]
 ====
-This article describes the specific of how to inject temporary directories into your tests.
+This article describes the specifics of how to inject temporary directories into your tests.
 Most of the extension's features are shared with other resources, though, and are described in link:docs/resources[the article covering resources in general] (e.g. thread-safety and sharing resources), so make sure to read that one as well.
 ====
 
-A temporary directory is a directory on the machine's on-disk filesystem that is created at the start of a test and deleted immediately afterwards.
+A temporary directory is a directory on the machine's on-disk filesystem that is created for one or more tests and deleted when it is no longer needed.
 
 Unlike JUnit Jupiter's `@TempDir` annotation, temporary directories created with this extension can be configured to be deleted when the current test class is finished, or when all tests have finished.
 
@@ -22,33 +22,29 @@ To create a new temporary directory for a given test:
 
 [source,java,indent=0]
 ----
+include::{demo}[tag=create_new_dir_demo]
+----
+
+`@Dir` is the shorthand annotation for `@New`, meaning it achieves the same result more succinctly than the long form:
+
+[source,java,indent=0]
+----
 include::{demo}[tag=create_new_resources_demo]
 ----
 
 == Creating with Arguments
 
-To specify the _prefix_ of a `@New` temporary directory's name, pass the prefix as an argument to the `@New` annotation:
+To specify the _prefix_ of a new temporary directory's name, pass the prefix as an argument to the `@New` annotation:
 
 [source,java,indent=0]
 ----
 include::{demo}[tag=create_new_resource_with_arg_demo]
 ----
 
-== Shorthand
-
-Alternatively, rather than typing out all of `@New(TemporaryDirectory.class)`, you can use the shorthand annotation `@Dir` instead.
-
-[source,java,indent=0]
-----
-include::{demo}[tag=create_new_dir_demo]
-----
-
 [NOTE]
 ====
-
-`@Dir` annotations do not yet support arguments.
+The `@Dir` annotation does not yet support arguments.
 Follow https://github.com/junit-pioneer/junit-pioneer/issues/648[this issue] for updates on this feature.
-
 ====
 
 == Sharing a Temporary Directory
@@ -62,10 +58,15 @@ include::{demo}[tag=create_shared_resource_demo]
 
 See the link:resources.adoc#sharing_a_resource[ Resources page] for more information.
 
+[NOTE]
+====
+There's no shorthand form of `@Shared`.
+Follow https://github.com/junit-pioneer/junit-pioneer/issues/648[this issue] for updates on this feature.
+====
+
 == Thread-Safety
 
 This extension is safe to use during parallel test execution.
 
 Tests with `@New` temporary directories will continue to run in parallel.
-
 Tests with `@Shared` temporary directories will be forced to run *sequentially*, even if parallel execution has been enabled.

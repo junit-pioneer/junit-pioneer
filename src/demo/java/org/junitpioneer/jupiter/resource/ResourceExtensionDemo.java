@@ -30,14 +30,20 @@ public class ResourceExtensionDemo {
 	// end::create_new_resources_demo[]
 
 	// tag::create_new_dir_demo[]
-	void dirTest(@Dir Path tempDir) {
+	void dirTest1(@Dir Path tempDir) {
 		// Test code goes here, e.g.,
 		assertTrue(Files.exists(tempDir));
+	}
+
+	void dirTest2(@Dir Path tempDir) {
+		// This temporary directory is different to the first one.
 	}
 	// end::create_new_dir_demo[]
 
 	// tag::create_new_resource_with_arg_demo[]
-	void testWithArg(@New(value = TemporaryDirectory.class, arguments = { "customPrefix" }) Path tempDir) {
+	void testWithArg(
+			@New(value = TemporaryDirectory.class, arguments = "customPrefix")
+			Path tempDir) {
 		// Test code goes here, e.g.,
 		Path rootTempDir = Paths.get(System.getProperty("java.io.tmpdir"));
 		assertTrue(rootTempDir.relativize(tempDir).startsWith("customPrefix"));
@@ -45,12 +51,16 @@ public class ResourceExtensionDemo {
 	// end::create_new_resource_with_arg_demo[]
 
 	// tag::create_shared_resource_demo[]
-	void sharedResourceTest1(@Shared(factory = TemporaryDirectory.class, name = "sharedTempDir") Path sharedTempDir) {
+	void sharedResourceTest1(
+			@Shared(factory = TemporaryDirectory.class, name = "sharedTempDir")
+			Path sharedTempDir) {
 		// Test code goes here, e.g.,
 		assertTrue(Files.exists(sharedTempDir));
 	}
 
-	void sharedResourceTest2(@Shared(factory = TemporaryDirectory.class, name = "sharedTempDir") Path sharedTempDir) {
+	void sharedResourceTest2(
+			@Shared(factory = TemporaryDirectory.class, name = "sharedTempDir")
+			Path sharedTempDir) {
 		// "sharedTempDir" is shared with the temporary directory of
 		// the same name in test "sharedResourceTest1", so any created
 		// subdirectories and files will be shared.
@@ -58,15 +68,21 @@ public class ResourceExtensionDemo {
 	// end::create_shared_resource_demo[]
 
 	// tag::create_multiple_shared_resources_demo[]
-	void firstSharedResource1(@Shared(factory = TemporaryDirectory.class, name = "first") Path first) {
+	void firstSharedResource1(
+			@Shared(factory = TemporaryDirectory.class, name = "first")
+			Path first) {
 		// Test code working with first shared resource...
 	}
 
-	void firstSharedResource2(@Shared(factory = TemporaryDirectory.class, name = "first") Path first) {
+	void firstSharedResource2(
+			@Shared(factory = TemporaryDirectory.class, name = "first")
+			Path first) {
 		// Test code working with first shared resource...
 	}
 
-	void secondSharedResource(@Shared(factory = TemporaryDirectory.class, name = "second") Path second) {
+	void secondSharedResource(
+			@Shared(factory = TemporaryDirectory.class, name = "second")
+			Path second) {
 		// This shared resource is different!
 	}
 	// end::create_multiple_shared_resources_demo[]
@@ -76,7 +92,12 @@ public class ResourceExtensionDemo {
 // tag::create_global_shared_resource_demo_first[]
 class FirstTest {
 
-	void test(@Shared(factory = TemporaryDirectory.class, name = "globalTempDir", scope = Scope.GLOBAL) Path tempDir) {
+	void test(
+			@Shared(
+					factory = TemporaryDirectory.class,
+					name = "globalTempDir",
+					scope = Scope.GLOBAL)
+			Path tempDir) {
 		// Test code using the global shared resource...
 	}
 
@@ -86,7 +107,12 @@ class FirstTest {
 // tag::create_global_shared_resource_demo_second[]
 class SecondTest {
 
-	void test(@Shared(factory = TemporaryDirectory.class, name = "globalTempDir", scope = Scope.GLOBAL) Path tempDir) {
+	void test(
+			@Shared(
+					factory = TemporaryDirectory.class,
+					name = "globalTempDir",
+					scope = Scope.GLOBAL)
+			Path tempDir) {
 		// Test code using the global shared resource...
 	}
 

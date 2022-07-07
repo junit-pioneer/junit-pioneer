@@ -119,6 +119,7 @@ class ResourcesParallelismTests {
 		// This is called a deadlock.
 		//
 		// The purpose of the tests below is to check that the tests don't run in parallel or deadlock.
+		// (We're trying to check both cases at the same time.)
 		//
 		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
 
