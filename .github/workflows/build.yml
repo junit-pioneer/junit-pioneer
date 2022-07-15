@@ -156,18 +156,16 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
-      - uses: sormuras/download-jdk@v1
+      - name: Set up experimental Java
+        uses: oracle-actions/setup-java@v1
         with:
-          feature: ${{ env.EXPERIMENTAL_JAVA }}
-      - uses: actions/setup-java@v2
-        with:
-          java-version: ${{ env.JDK_VERSION }}
-          distribution: jdkfile
-          jdkFile: ${{ env.JDK_FILE }}
+          website: jdk.java.net
+          release: ${{ env.EXPERIMENTAL_JAVA }}
       - name: Prepare JDK_EXPERIMENTAL env var
         shell: bash
         run: echo "JDK_EXPERIMENTAL=$JAVA_HOME" >> $GITHUB_ENV
-      - uses: actions/setup-java@v2
+      - name: Set up supported Java
+        uses: actions/setup-java@v2
         with:
           java-version: 18
           distribution: temurin
