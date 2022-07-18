@@ -154,7 +154,7 @@ The factory's `create` method gets called when:
 The extension will then populate the parameter with the contents of the returned `Resource`.
 
 `@New` parameters may have associated string `arguments`.
-These will be passed to the factory's `ResourceFactory::create` method as a `List<String` when a resource needs to be created.
+These will be passed to the factory's `ResourceFactory::create` method as a `List<String>` when a resource needs to be created.
 You have full control over what these arguments mean and how they are used and should document these details in your resource factory's JavaDoc.
 
 === Closing Resources and Factories
