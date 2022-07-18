@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
-class DirTests {
+class TemporaryDirectoryDirTests {
 
 	@DisplayName("when a test class has a test method with a @Dir-annotated parameter")
 	@Nested
