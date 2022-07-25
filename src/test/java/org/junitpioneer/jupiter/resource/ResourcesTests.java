@@ -94,7 +94,7 @@ class ResourcesTests {
 			@Test
 			void thenProperExceptionIsThrown() {
 				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(ThrowOnRFCreateReturningNullTestCases.class);
+						.executeTestClass(ThrowOnNewRFCreateReturningNullTestCases.class);
 				executionResults
 						.allEvents()
 						.debug()
@@ -215,19 +215,13 @@ class ResourcesTests {
 	private static final Exception EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION = new CloneNotSupportedException(
 		"failed to clone a homunculus");
 
-	@SuppressWarnings("unused")
-	static class ThrowOnRFCreateReturningNullTestCases {
+	static class ThrowOnNewRFCreateReturningNullTestCases {
 
 		@Test
+		@SuppressWarnings("unused")
 		void foo(@New(ThrowOnRFCreateReturningNullResourceFactory.class) Object object) {
 
 		}
-
-		// TODO: Move to "Shared" block further down this file.
-		//		@Test
-		//		void bar(@Shared(name = "bar", factory = ThrowOnRFCreateReturningNullResourceFactory.class) Object object) {
-		//
-		//		}
 
 	}
 
@@ -494,6 +488,29 @@ class ResourcesTests {
 
 		}
 
+		@DisplayName("and the factory returns null on ::create")
+		@Nested
+		class AndFactoryReturnsNullOnCreateTests {
+
+			@DisplayName("then a proper exception is thrown")
+			@Test
+			void thenProperExceptionIsThrown() {
+				ExecutionResults executionResults = PioneerTestKit
+						.executeTestClass(ThrowOnSharedRFCreateReturningNullTestCases.class);
+				executionResults
+						.allEvents()
+						.debug()
+						.assertThatEvents()
+						.haveExactly(//
+							1, //
+							finished(//
+								throwable(//
+									instanceOf(EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION.getClass()), //
+									message(EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION.getMessage()))));
+			}
+
+		}
+
 		@DisplayName("and a resource is created")
 		@Nested
 		class AndResourceIsCreatedTests {
@@ -587,6 +604,16 @@ class ResourcesTests {
 		@Test
 		@SuppressWarnings("unused")
 		void foo(@Shared(factory = ThrowOnRCloseResourceFactory.class, name = "some-name") Object object) {
+
+		}
+
+	}
+
+	static class ThrowOnSharedRFCreateReturningNullTestCases {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@Shared(name = "foo", factory = ThrowOnRFCreateReturningNullResourceFactory.class) Object object) {
 
 		}
 

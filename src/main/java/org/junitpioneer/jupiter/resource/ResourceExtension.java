@@ -95,19 +95,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	private Object resolveNew(New newAnnotation, ExtensionContext.Store store) {
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newAnnotation.value());
 		store.put(uniqueKey(), resourceFactory);
-		Resource<?> resource;
-		try {
-			resource = resourceFactory.create(unmodifiableList(asList(newAnnotation.arguments())));
-			store.put(uniqueKey(), resource);
-		}
-		catch (Exception ex) {
-			throw new ParameterResolutionException(
-				"Unable to create a resource from `" + resourceFactory.getClass().getTypeName() + '`', ex);
-		}
-		if (resource == null) {
-			throw new ParameterResolutionException(
-				"`" + resourceFactory.getClass().getTypeName() + "#create` returned null");
-		}
+		Resource<?> resource = newResource(newAnnotation, resourceFactory);
+		store.put(uniqueKey(), resource);
 		try {
 			return resource.get();
 		}
@@ -133,7 +122,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			resource = store
 					.getOrComputeIfAbsent( //
 						resourceKey(sharedAnnotation), //
-						__ -> createResource(sharedAnnotation, resourceFactory), //
+						__ -> new ResourceWithLock<>(newResource(sharedAnnotation, resourceFactory)), //
 						ResourceWithLock.class);
 		}
 		catch (UncheckedParameterResolutionException e) {
@@ -148,14 +137,26 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		}
 	}
 
-	private ResourceWithLock<?> createResource(Shared sharedAnnotation, ResourceFactory<?> resourceFactory) {
+	private Resource<?> newResource(Object newOrSharedAnnotation, ResourceFactory<?> resourceFactory) {
+		Resource<?> resource;
 		try {
-			return new ResourceWithLock<>(resourceFactory.create(Collections.emptyList()));
+			List<String> arguments;
+			if (newOrSharedAnnotation instanceof New) {
+				arguments = unmodifiableList(asList(((New) newOrSharedAnnotation).arguments()));
+			} else {
+				arguments = Collections.emptyList();
+			}
+			resource = resourceFactory.create(arguments);
 		}
-		catch (Exception e) {
-			throw new UncheckedParameterResolutionException(new ParameterResolutionException(
-				"Unable to create a resource from `" + sharedAnnotation.factory().getTypeName() + "`", e));
+		catch (Exception ex) {
+			throw new ParameterResolutionException(
+				"Unable to create a resource from `" + resourceFactory.getClass().getTypeName() + '`', ex);
 		}
+		if (resource == null) {
+			throw new ParameterResolutionException(
+				"`" + resourceFactory.getClass().getTypeName() + "#create` returned null");
+		}
+		return resource;
 	}
 
 	private void throwIfHasAnnotationWithSameNameButDifferentType(ExtensionContext.Store store,
