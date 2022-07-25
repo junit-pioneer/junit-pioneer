@@ -240,7 +240,8 @@ class TemporaryDirectoryTests {
 						finished(//
 							throwable(//
 								instanceOf(ParameterResolutionException.class), //
-								message("Unable to create a resource from `" + TemporaryDirectory.class + "`"),
+								message("Unable to create a resource from `" + TemporaryDirectory.class.getTypeName()
+										+ "`"),
 								cause(instanceOf(IllegalArgumentException.class),
 									message("Expected 0 or 1 arguments, but got 2")))));
 		}

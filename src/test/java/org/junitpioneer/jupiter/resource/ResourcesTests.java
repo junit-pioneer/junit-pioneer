@@ -55,8 +55,8 @@ class ResourcesTests {
 							finished(//
 								throwable(//
 									instanceOf(ParameterResolutionException.class), //
-									message("Unable to create a resource from `" + ThrowOnRFCreateResourceFactory.class
-											+ "`"), //
+									message("Unable to create a resource from `"
+											+ ThrowOnRFCreateResourceFactory.class.getTypeName() + "`"), //
 									cause(//
 										instanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass()), //
 										message(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage())))));
@@ -86,6 +86,29 @@ class ResourcesTests {
 
 		}
 
+		@DisplayName("and the factory returns null on ::create")
+		@Nested
+		class AndFactoryReturnsNullOnCreateTests {
+
+			@DisplayName("then a proper exception is thrown")
+			@Test
+			void thenProperExceptionIsThrown() {
+				ExecutionResults executionResults = PioneerTestKit
+						.executeTestClass(ThrowOnRFCreateReturningNullTestCases.class);
+				executionResults
+						.allEvents()
+						.debug()
+						.assertThatEvents()
+						.haveExactly(//
+							1, //
+							finished(//
+								throwable(//
+									instanceOf(EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION.getClass()), //
+									message(EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION.getMessage()))));
+			}
+
+		}
+
 		@DisplayName("and a resource is created")
 		@Nested
 		class AndResourceIsCreatedTests {
@@ -108,7 +131,7 @@ class ResourcesTests {
 									throwable(//
 										instanceOf(ParameterResolutionException.class), //
 										message("Unable to get the contents of the resource created by `"
-												+ ThrowOnRGetResourceFactory.class + "`"), //
+												+ ThrowOnRGetResourceFactory.class.getTypeName() + "`"), //
 										cause(//
 											instanceOf(EXPECTED_THROW_ON_R_GET_EXCEPTION.getClass()), //
 											message(EXPECTED_THROW_ON_R_GET_EXCEPTION.getMessage())))));
@@ -191,6 +214,35 @@ class ResourcesTests {
 
 	private static final Exception EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION = new CloneNotSupportedException(
 		"failed to clone a homunculus");
+
+	@SuppressWarnings("unused")
+	static class ThrowOnRFCreateReturningNullTestCases {
+
+		@Test
+		void foo(@New(ThrowOnRFCreateReturningNullResourceFactory.class) Object object) {
+
+		}
+
+		// TODO: Move to "Shared" block further down this file.
+		//		@Test
+		//		void bar(@Shared(name = "bar", factory = ThrowOnRFCreateReturningNullResourceFactory.class) Object object) {
+		//
+		//		}
+
+	}
+
+	static final class ThrowOnRFCreateReturningNullResourceFactory implements ResourceFactory<Object> {
+
+		@Override
+		public Resource<Object> create(List<String> arguments) {
+			return null;
+		}
+
+	}
+
+	private static final Exception EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION = new ParameterResolutionException(
+		"`org.junitpioneer.jupiter.resource.ResourcesTests$ThrowOnRFCreateReturningNullResourceFactory#create` "
+				+ "returned null");
 
 	static class ThrowOnNewRGetTestCases {
 
@@ -410,8 +462,8 @@ class ResourcesTests {
 							finished(//
 								throwable(//
 									instanceOf(ParameterResolutionException.class), //
-									message("Unable to create a resource from `" + ThrowOnRFCreateResourceFactory.class
-											+ "`"), //
+									message("Unable to create a resource from `"
+											+ ThrowOnRFCreateResourceFactory.class.getTypeName() + "`"), //
 									cause(//
 										instanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass()), //
 										message(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage())))));

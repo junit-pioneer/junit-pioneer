@@ -102,14 +102,20 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		}
 		catch (Exception ex) {
 			throw new ParameterResolutionException(
-				"Unable to create a resource from `" + resourceFactory.getClass() + '`', ex);
+				"Unable to create a resource from `" + resourceFactory.getClass().getTypeName() + '`', ex);
+		}
+		if (resource == null) {
+			throw new ParameterResolutionException(
+				"`" + resourceFactory.getClass().getTypeName() + "#create` returned null");
 		}
 		try {
 			return resource.get();
 		}
 		catch (Exception ex) {
-			throw new ParameterResolutionException(
-				"Unable to get the contents of the resource created by `" + resourceFactory.getClass() + '`', ex);
+			throw new ParameterResolutionException(//
+				"Unable to get the contents of the resource created by `" + resourceFactory.getClass().getTypeName()
+						+ '`',
+				ex);
 		}
 	}
 
@@ -148,7 +154,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		}
 		catch (Exception e) {
 			throw new UncheckedParameterResolutionException(new ParameterResolutionException(
-				"Unable to create a resource from `" + sharedAnnotation.factory() + "`", e));
+				"Unable to create a resource from `" + sharedAnnotation.factory().getTypeName() + "`", e));
 		}
 	}
 
