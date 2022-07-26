@@ -10,12 +10,5 @@
 
 package org.junitpioneer.jupiter;
 
-/**
- * <p>For details and examples, see
- * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
- * </p>
- *
- * @see StdIo
- */
-public class StdOut extends StdIoStream {
+public class StdErr extends StdIoStream {
 }

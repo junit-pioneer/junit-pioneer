@@ -40,5 +40,6 @@ import org.junit.jupiter.api.parallel.Resources;
 @Inherited
 @ResourceLock(value = "java.lang.System.in", mode = ResourceAccessMode.READ_WRITE)
 @ResourceLock(value = Resources.SYSTEM_OUT, mode = ResourceAccessMode.READ_WRITE)
+@ResourceLock(value = Resources.SYSTEM_ERR, mode = ResourceAccessMode.READ_WRITE)
 public @interface WritesStdIo {
 }
