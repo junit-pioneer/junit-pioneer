@@ -33,7 +33,7 @@ abstract class StdIoStream extends OutputStream {
 	}
 
 	/**
-	 * @return the lines that were written to {@code System.out}
+	 * @return the lines that were written to {@code System.out} or {@code System.err}
 	 */
 	public String[] capturedLines() {
 		return writer.toString().split(StdIoExtension.SEPARATOR);
