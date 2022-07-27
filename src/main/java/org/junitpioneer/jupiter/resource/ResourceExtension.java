@@ -117,17 +117,11 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 					factoryKey(sharedAnnotation), //
 					__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
 					ResourceFactory.class);
-		ResourceWithLock<?> resource;
-		try {
-			resource = store
-					.getOrComputeIfAbsent( //
-						resourceKey(sharedAnnotation), //
-						__ -> new ResourceWithLock<>(newResource(sharedAnnotation, resourceFactory)), //
-						ResourceWithLock.class);
-		}
-		catch (UncheckedParameterResolutionException e) {
-			throw e.getCause();
-		}
+		ResourceWithLock<?> resource = store
+				.getOrComputeIfAbsent( //
+					resourceKey(sharedAnnotation), //
+					__ -> new ResourceWithLock<>(newResource(sharedAnnotation, resourceFactory)), //
+					ResourceWithLock.class);
 		try {
 			return resource.get();
 		}
@@ -211,21 +205,6 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private String keyOfFactoryKey(Shared sharedAnnotation) {
 		return sharedAnnotation.name() + " resource factory key";
-	}
-
-	private static final class UncheckedParameterResolutionException extends RuntimeException {
-
-		private static final long serialVersionUID = -8656995841157868666L;
-
-		public UncheckedParameterResolutionException(ParameterResolutionException cause) {
-			super(cause);
-		}
-
-		@Override
-		public synchronized ParameterResolutionException getCause() {
-			return (ParameterResolutionException) super.getCause();
-		}
-
 	}
 
 	private static String testMethodDescription(ExtensionContext extensionContext) {
