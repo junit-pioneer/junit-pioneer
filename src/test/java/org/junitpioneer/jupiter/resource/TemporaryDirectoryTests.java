@@ -19,11 +19,11 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.in
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
 import static org.junitpioneer.internal.AllElementsAreEqual.allElementsAreEqual;
-import static org.junitpioneer.jupiter.resource.Assertions.assertCanAddAndReadTextFile;
-import static org.junitpioneer.jupiter.resource.Assertions.assertEmptyReadableWriteableTemporaryDirectory;
-import static org.junitpioneer.jupiter.resource.Assertions.assertReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.jupiter.resource.MorePaths.rootTempDir;
 import static org.junitpioneer.jupiter.resource.Scope.GLOBAL;
+import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
+import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertEmptyReadableWriteableTemporaryDirectory;
+import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.nio.file.Path;

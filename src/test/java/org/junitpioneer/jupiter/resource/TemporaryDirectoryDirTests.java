@@ -11,8 +11,8 @@
 package org.junitpioneer.jupiter.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.jupiter.resource.Assertions.assertCanAddAndReadTextFile;
-import static org.junitpioneer.jupiter.resource.Assertions.assertEmptyReadableWriteableTemporaryDirectory;
+import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
+import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertEmptyReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.nio.file.Path;

@@ -10,9 +10,9 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import static org.junitpioneer.jupiter.resource.Assertions.assertCanAddAndReadTextFile;
-import static org.junitpioneer.jupiter.resource.Assertions.assertReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.jupiter.resource.Scope.SOURCE_FILE;
+import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
+import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertReadableWriteableTemporaryDirectory;
 
 import java.nio.file.Path;
 

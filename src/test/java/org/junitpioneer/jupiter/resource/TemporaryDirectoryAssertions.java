@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-class Assertions {
+class TemporaryDirectoryAssertions {
 
 	static void assertCanAddAndReadTextFile(Path tempDir) {
 		try {

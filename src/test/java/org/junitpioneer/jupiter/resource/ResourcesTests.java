@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
@@ -37,6 +38,14 @@ class ResourcesTests {
 	@DisplayName("when a new resource factory is applied to a parameter")
 	@Nested
 	class WhenNewResourceFactoryAppliedToParameterTests {
+
+		@DisplayName("then ::create is called")
+		@Test
+		void thenCreateIsCalled() {
+			ExecutionResults executionResults = PioneerTestKit.executeTestClass(FakeResourceFactoryTestCases.class);
+			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(1);
+			assertThat(FakeResourceFactory.createCalls).isEqualTo(1);
+		}
 
 		@DisplayName("and the factory throws on ::create")
 		@Nested
@@ -188,6 +197,37 @@ class ResourcesTests {
 
 			}
 
+		}
+
+	}
+
+	static class FakeResourceFactoryTestCases {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@New(FakeResourceFactory.class) Object object) {
+
+		}
+
+	}
+
+	static final class FakeResourceFactory implements ResourceFactory<Object> {
+
+		static int createCalls = 0;
+
+		@Override
+		public Resource<Object> create(List<String> arguments) {
+			createCalls++;
+			return new SomeResource();
+		}
+
+	}
+
+	static final class SomeResource implements Resource<Object> {
+
+		@Override
+		public Object get() {
+			return "some-object";
 		}
 
 	}
