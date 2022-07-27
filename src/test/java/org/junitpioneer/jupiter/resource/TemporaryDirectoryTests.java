@@ -34,6 +34,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junitpioneer.jupiter.resource.testcase.FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter;
+import org.junitpioneer.jupiter.resource.testcase.SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter;
+import org.junitpioneer.jupiter.resource.testcase.SingleTestMethodWithSourceFileScopedTempDirParameter;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 

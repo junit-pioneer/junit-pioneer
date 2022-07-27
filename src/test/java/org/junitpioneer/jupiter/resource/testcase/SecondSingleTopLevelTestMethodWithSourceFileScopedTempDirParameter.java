@@ -8,30 +8,27 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.resource;
+package org.junitpioneer.jupiter.resource.testcase;
 
 import static org.junitpioneer.jupiter.resource.Scope.SOURCE_FILE;
-import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
-import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertReadableWriteableTemporaryDirectory;
 
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.resource.Shared;
+import org.junitpioneer.jupiter.resource.TemporaryDirectory;
 
-class SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter {
+public class SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter {
 
-	static Path recordedOuterPath;
-	static Path recordedInnerPath;
+	public static Path recordedOuterPath;
+	public static Path recordedInnerPath;
 
-	static class OuterTestCases {
+	public static class OuterTestCases {
 
 		@Test
 		void theTest(
 				@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
-			assertReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
-
 			recordedOuterPath = tempDir;
 		}
 
@@ -41,9 +38,6 @@ class SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter {
 			@Test
 			void theTest(
 					@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
-				assertReadableWriteableTemporaryDirectory(tempDir);
-				assertCanAddAndReadTextFile(tempDir);
-
 				recordedInnerPath = tempDir;
 			}
 

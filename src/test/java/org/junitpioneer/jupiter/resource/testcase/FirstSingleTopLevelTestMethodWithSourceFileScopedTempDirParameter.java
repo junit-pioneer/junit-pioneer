@@ -8,28 +8,25 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.resource;
+package org.junitpioneer.jupiter.resource.testcase;
 
 import static org.junitpioneer.jupiter.resource.Scope.SOURCE_FILE;
-import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
-import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertReadableWriteableTemporaryDirectory;
 
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.resource.Shared;
+import org.junitpioneer.jupiter.resource.TemporaryDirectory;
 
-class FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter {
+public class FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter {
 
-	static Path recordedPath;
+	public static Path recordedPath;
 
-	static class OnlyTestCases {
+	public static class OnlyTestCases {
 
 		@Test
 		void theTest(
 				@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
-			assertReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
-
 			recordedPath = tempDir;
 		}
 
