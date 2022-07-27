@@ -49,10 +49,12 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		if (parameterContext.isAnnotated(New.class) && parameterContext.isAnnotated(Shared.class)) {
-			String message = String
-					.format( //
-						"Parameter [%s] in %s is annotated with both @New and @Shared", //
-						parameterContext.getParameter(), testMethodDescription(extensionContext));
+			// @formatter:off
+			String message =
+					String.format(
+							"Parameter [%s] in %s is annotated with both @New and @Shared",
+							parameterContext.getParameter(), testMethodDescription(extensionContext));
+			// @formatter:on
 			throw new ParameterResolutionException(message);
 		}
 		return parameterContext.isAnnotated(New.class) || parameterContext.isAnnotated(Shared.class);
@@ -77,16 +79,18 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			return checkType(resource, parameterContext.getParameter().getType());
 		}
 
-		String errorMessage = String
-				.format( //
-					"Parameter [%s] in %s is not annotated with @New or @Shared", //
-					parameterContext.getParameter(), testMethodDescription(extensionContext));
-		throw new ParameterResolutionException(errorMessage);
+		// @formatter:off
+		String message =
+				String.format(
+						"Parameter [%s] in %s is not annotated with @New or @Shared",
+						parameterContext.getParameter(), testMethodDescription(extensionContext));
+		// @formatter:on
+		throw new ParameterResolutionException(message);
 	}
 
 	private <T> T checkType(Object resource, Class<T> type) {
 		if (!type.isInstance(resource)) {
-			String message = String.format("Parameter [%s] is not of the correct target type %s.", resource, type);
+			String message = String.format("Parameter [%s] is not of the correct target type %s", resource, type);
 			throw new ParameterResolutionException(message);
 		}
 		return type.cast(resource);
@@ -95,17 +99,36 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	private Object resolveNew(New newAnnotation, ExtensionContext.Store store) {
 		ResourceFactory<?> resourceFactory = ReflectionSupport.newInstance(newAnnotation.value());
 		store.put(uniqueKey(), resourceFactory);
+
 		Resource<?> resource = newResource(newAnnotation, resourceFactory);
 		store.put(uniqueKey(), resource);
+
+		Object result;
 		try {
-			return resource.get();
+			result = resource.get();
 		}
 		catch (Exception ex) {
-			throw new ParameterResolutionException(//
-				"Unable to get the contents of the resource created by `" + resourceFactory.getClass().getTypeName()
-						+ '`',
-				ex);
+			// @formatter:off
+			String message =
+					String.format(
+							"Unable to get the contents of the resource created by `%s`",
+							resourceFactory.getClass().getTypeName());
+			// @formatter:on
+			throw new ParameterResolutionException(message, ex);
 		}
+
+		if (result == null) {
+			// @formatter:off
+			String message =
+					String.format(
+							"Method [%s] returned null",
+							ReflectionSupport.findMethod(resource.getClass(), "get")
+									.orElseThrow(this::unreachable));
+			// @formatter:on
+			throw new ParameterResolutionException(message);
+		}
+
+		return result;
 	}
 
 	private Object resolveShared(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store store) {
@@ -117,40 +140,71 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 					factoryKey(sharedAnnotation), //
 					__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
 					ResourceFactory.class);
-		ResourceWithLock<?> resource = store
+		ResourceWithLock<?> resourceWithLock = store
 				.getOrComputeIfAbsent( //
 					resourceKey(sharedAnnotation), //
 					__ -> new ResourceWithLock<>(newResource(sharedAnnotation, resourceFactory)), //
 					ResourceWithLock.class);
+
+		Object result;
 		try {
-			return resource.get();
+			result = resourceWithLock.get();
 		}
-		catch (Exception e) {
-			throw new ParameterResolutionException(
-				"Unable to get the contents of the resource created by `" + sharedAnnotation.factory() + '`', e);
+		catch (Exception ex) {
+			// @formatter:off
+			String message =
+					String.format(
+							"Unable to get the contents of the resource created by `%s`",
+							sharedAnnotation.factory());
+			// @formatter:on
+			throw new ParameterResolutionException(message, ex);
 		}
+
+		if (result == null) {
+			// @formatter:off
+			String message =
+					String.format(
+							"Method [%s] returned null",
+							ReflectionSupport.findMethod(resourceWithLock.delegate().getClass(), "get")
+									.orElseThrow(this::unreachable));
+			// @formatter:on
+			throw new ParameterResolutionException(message);
+		}
+
+		return result;
 	}
 
 	private Resource<?> newResource(Object newOrSharedAnnotation, ResourceFactory<?> resourceFactory) {
-		Resource<?> resource;
+		List<String> arguments;
+		if (newOrSharedAnnotation instanceof New) {
+			arguments = unmodifiableList(asList(((New) newOrSharedAnnotation).arguments()));
+		} else {
+			arguments = Collections.emptyList();
+		}
+
+		Resource<?> result;
 		try {
-			List<String> arguments;
-			if (newOrSharedAnnotation instanceof New) {
-				arguments = unmodifiableList(asList(((New) newOrSharedAnnotation).arguments()));
-			} else {
-				arguments = Collections.emptyList();
-			}
-			resource = resourceFactory.create(arguments);
+			result = resourceFactory.create(arguments);
 		}
 		catch (Exception ex) {
-			throw new ParameterResolutionException(
-				"Unable to create a resource from `" + resourceFactory.getClass().getTypeName() + '`', ex);
+			String message = //
+				String.format("Unable to create a resource from `%s`", resourceFactory.getClass().getTypeName());
+			throw new ParameterResolutionException(message, ex);
 		}
-		if (resource == null) {
-			throw new ParameterResolutionException(
-				"`" + resourceFactory.getClass().getTypeName() + "#create` returned null");
+
+		if (result == null) {
+			// @formatter:off
+			String message =
+					String.format(
+							"Method [%s] with arguments %s returned null",
+							ReflectionSupport.findMethod(resourceFactory.getClass(), "create", List.class)
+									.orElseThrow(this::unreachable),
+							arguments);
+			// @formatter:on
+			throw new ParameterResolutionException(message);
 		}
-		return resource;
+
+		return result;
 	}
 
 	private void throwIfHasAnnotationWithSameNameButDifferentType(ExtensionContext.Store store,
@@ -166,9 +220,14 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 			if (factoryKey(sharedAnnotation).equals(presentResourceFactoryName)
 					&& !sharedAnnotation.factory().equals(presentResourceFactory.getClass())) {
-				throw new ParameterResolutionException(
-					"Two or more parameters are annotated with @Shared annotations with the name \""
-							+ sharedAnnotation.name() + "\" but with different factory classes");
+				// @formatter:off
+				String message =
+						String.format(
+								"Two or more parameters are annotated with @Shared annotations with the name \"%s\" "
+										+ "but with different factory classes",
+								sharedAnnotation.name());
+				// @formatter:on
+				throw new ParameterResolutionException(message);
 			}
 		}
 	}
@@ -177,9 +236,14 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		long parameterCount = //
 			Arrays.stream(parameters).filter(parameter -> hasAnnotation(parameter, sharedAnnotation)).count();
 		if (parameterCount > 1) {
-			throw new ParameterResolutionException(
-				"A test method has " + parameterCount + " parameters annotated with @Shared with the same "
-						+ "factory type and name; this is redundant, so it is not allowed");
+			// @formatter:off
+			String message =
+					String.format(
+							"A test method has %d parameters annotated with @Shared with the same factory type "
+									+ "and name; this is redundant, so it is not allowed",
+							parameterCount);
+			// @formatter:on
+			throw new ParameterResolutionException(message);
 		}
 	}
 
@@ -209,6 +273,10 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private static String testMethodDescription(ExtensionContext extensionContext) {
 		return extensionContext.getTestMethod().map(method -> "method [" + method + ']').orElse("an unknown method");
+	}
+
+	private AssertionError unreachable() {
+		return new AssertionError("Unreachable");
 	}
 
 	@Override
@@ -353,12 +421,16 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private static class ResourceWithLock<T> implements Resource<T> {
 
-		private final Resource<T> resource;
+		private final Resource<T> delegate;
 		private final ReentrantLock lock;
 
-		public ResourceWithLock(Resource<T> resource) {
-			this.resource = requireNonNull(resource);
+		public ResourceWithLock(Resource<T> delegate) {
+			this.delegate = requireNonNull(delegate);
 			this.lock = new ReentrantLock();
+		}
+
+		public Resource<T> delegate() {
+			return delegate;
 		}
 
 		public ReentrantLock lock() {
@@ -367,12 +439,12 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 		@Override
 		public T get() throws Exception {
-			return resource.get();
+			return delegate.get();
 		}
 
 		@Override
 		public void close() throws Exception {
-			resource.close();
+			delegate.close();
 		}
 
 	}

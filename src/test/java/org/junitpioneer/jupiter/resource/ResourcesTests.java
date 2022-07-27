@@ -94,7 +94,7 @@ class ResourcesTests {
 			@Test
 			void thenProperExceptionIsThrown() {
 				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(ThrowOnNewRFCreateReturningNullTestCases.class);
+						.executeTestClass(NewRFCreateReturnsNullTestCases.class);
 				executionResults
 						.allEvents()
 						.debug()
@@ -103,8 +103,10 @@ class ResourcesTests {
 							1, //
 							finished(//
 								throwable(//
-									instanceOf(EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION.getClass()), //
-									message(EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION.getMessage()))));
+									instanceOf(ParameterResolutionException.class), //
+									message("Method [public org.junitpioneer.jupiter.resource.Resource "
+											+ "org.junitpioneer.jupiter.resource.ResourcesTests$RFCreateReturnsNullResourceFactory.create(java.util.List)] "
+											+ "with arguments [some-arg] returned null"))));
 			}
 
 		}
@@ -162,6 +164,30 @@ class ResourcesTests {
 
 			}
 
+			@DisplayName("and the resource returns null on ::get")
+			@Nested
+			class AndResourceReturnsNullOnGetTests {
+
+				@DisplayName("then a proper exception is thrown")
+				@Test
+				void thenProperExceptionIsThrown() {
+					ExecutionResults executionResults = PioneerTestKit
+							.executeTestClass(NewRGetReturnsNullTestCases.class);
+					executionResults
+							.allEvents()
+							.debug()
+							.assertThatEvents()
+							.haveExactly(//
+								1, //
+								finished(//
+									throwable(//
+										instanceOf(ParameterResolutionException.class),
+										message("Method [public java.lang.Object "
+												+ "org.junitpioneer.jupiter.resource.ResourcesTests$RGetReturnsNullResource.get()] returned null"))));
+				}
+
+			}
+
 		}
 
 	}
@@ -215,17 +241,17 @@ class ResourcesTests {
 	private static final Exception EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION = new CloneNotSupportedException(
 		"failed to clone a homunculus");
 
-	static class ThrowOnNewRFCreateReturningNullTestCases {
+	static class NewRFCreateReturnsNullTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(ThrowOnRFCreateReturningNullResourceFactory.class) Object object) {
+		void foo(@New(value = RFCreateReturnsNullResourceFactory.class, arguments = { "some-arg" }) Object object) {
 
 		}
 
 	}
 
-	static final class ThrowOnRFCreateReturningNullResourceFactory implements ResourceFactory<Object> {
+	static final class RFCreateReturnsNullResourceFactory implements ResourceFactory<Object> {
 
 		@Override
 		public Resource<Object> create(List<String> arguments) {
@@ -233,10 +259,6 @@ class ResourcesTests {
 		}
 
 	}
-
-	private static final Exception EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION = new ParameterResolutionException(
-		"`org.junitpioneer.jupiter.resource.ResourcesTests$ThrowOnRFCreateReturningNullResourceFactory#create` "
-				+ "returned null");
 
 	static class ThrowOnNewRGetTestCases {
 
@@ -291,7 +313,7 @@ class ResourcesTests {
 	static final class ThrowOnRCloseResource implements Resource<Object> {
 
 		@Override
-		public Object get() throws Exception {
+		public Object get() {
 			return "foo";
 		}
 
@@ -304,6 +326,34 @@ class ResourcesTests {
 
 	private static final Exception EXPECTED_THROW_ON_R_CLOSE_EXCEPTION = new UnknownHostException(
 		"wait, where's the Internet gone?!");
+
+	static class NewRGetReturnsNullTestCases {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@New(RGetReturnsNullResourceFactory.class) Object object) {
+
+		}
+
+	}
+
+	static final class RGetReturnsNullResourceFactory implements ResourceFactory<Object> {
+
+		@Override
+		public Resource<Object> create(List<String> arguments) {
+			return new RGetReturnsNullResource();
+		}
+
+	}
+
+	static final class RGetReturnsNullResource implements Resource<Object> {
+
+		@Override
+		public Object get() {
+			return null;
+		}
+
+	}
 
 	// ---
 
@@ -496,7 +546,7 @@ class ResourcesTests {
 			@Test
 			void thenProperExceptionIsThrown() {
 				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(ThrowOnSharedRFCreateReturningNullTestCases.class);
+						.executeTestClass(SharedRFCreateReturnsNullTestCases.class);
 				executionResults
 						.allEvents()
 						.debug()
@@ -505,8 +555,10 @@ class ResourcesTests {
 							1, //
 							finished(//
 								throwable(//
-									instanceOf(EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION.getClass()), //
-									message(EXPECTED_FACTORY_RETURNS_NULL_ON_CREATE_EXCEPTION.getMessage()))));
+									instanceOf(ParameterResolutionException.class), //
+									message("Method [public org.junitpioneer.jupiter.resource.Resource "
+											+ "org.junitpioneer.jupiter.resource.ResourcesTests$RFCreateReturnsNullResourceFactory.create(java.util.List)] "
+											+ "with arguments [] returned null"))));
 			}
 
 		}
@@ -565,6 +617,31 @@ class ResourcesTests {
 
 			}
 
+			@DisplayName("and the resource returns null on ::get")
+			@Nested
+			class AndResourceReturnsNullOnGetTests {
+
+				@DisplayName("then a proper exception is thrown")
+				@Test
+				void thenProperExceptionIsThrown() {
+					ExecutionResults executionResults = PioneerTestKit
+							.executeTestClass(SharedRGetReturnsNullTestCases.class);
+					executionResults
+							.allEvents()
+							.debug()
+							.assertThatEvents()
+							.haveExactly(//
+								1, //
+								finished(//
+									throwable(//
+										instanceOf(ParameterResolutionException.class), //
+										message("Method [public java.lang.Object "
+												+ "org.junitpioneer.jupiter.resource.ResourcesTests$RGetReturnsNullResource.get()] "
+												+ "returned null"))));
+				}
+
+			}
+
 		}
 
 	}
@@ -609,11 +686,21 @@ class ResourcesTests {
 
 	}
 
-	static class ThrowOnSharedRFCreateReturningNullTestCases {
+	static class SharedRFCreateReturnsNullTestCases {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@Shared(name = "foo", factory = ThrowOnRFCreateReturningNullResourceFactory.class) Object object) {
+		void foo(@Shared(name = "foo", factory = RFCreateReturnsNullResourceFactory.class) Object object) {
+
+		}
+
+	}
+
+	static class SharedRGetReturnsNullTestCases {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@Shared(name = "foo", factory = RGetReturnsNullResourceFactory.class) Object object) {
 
 		}
 
