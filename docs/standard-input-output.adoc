@@ -61,7 +61,7 @@ A combination of the two previous cases - `System.in` and `System.out` get repla
 include::{demo}[tag=stdio_both_replaced_and_verify]
 ----
 
-NOTE:: Omitted from these examples is `StdErr` which behaves exactly the same way as `StdOut` and works in combination with it.
+NOTE: Omitted from these examples is `StdErr` which behaves exactly the same way as `StdOut` and works in combination with it.
 
 The remaining combinations of the annotation, its values, and `StdIn`/`StdOut`/`StdErr` are considered misconfigurations and lead to exceptions.
 
