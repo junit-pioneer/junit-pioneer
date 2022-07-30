@@ -134,7 +134,7 @@ public class StdIoExtensionTests {
 		@Test
 		@ReadsStdIo
 		@Order(1)
-		@DisplayName("1: System.in, System.err and System.out is untouched")
+		@DisplayName("1: System.in, System.out and System.err is untouched")
 		void untouched() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
@@ -144,7 +144,7 @@ public class StdIoExtensionTests {
 		@Test
 		@StdIo({ "From his low tract, and look another way:", "So thou, thyself outgoing in thy noon" })
 		@Order(2)
-		@DisplayName("2: System.in, System.err and System.out is redirected")
+		@DisplayName("2: System.in, System.out and System.err is redirected")
 		void redirected(StdIn in, StdOut out, StdErr err) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -168,7 +168,7 @@ public class StdIoExtensionTests {
 		@Test
 		@ReadsStdIo
 		@Order(3)
-		@DisplayName("3: System.in, System.err and System.out is reset to their original value")
+		@DisplayName("3: System.in, System.out and System.err is reset to their original value")
 		void reset() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);

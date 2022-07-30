@@ -17,5 +17,5 @@ package org.junitpioneer.jupiter;
  *
  * @see StdIo
  */
-public class StdErr extends StdIoStream {
+public class StdErr extends StdOutputStream {
 }

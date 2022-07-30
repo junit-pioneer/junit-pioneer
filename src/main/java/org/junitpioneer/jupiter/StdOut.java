@@ -17,5 +17,5 @@ package org.junitpioneer.jupiter;
  *
  * @see StdIo
  */
-public class StdOut extends StdIoStream {
+public class StdOut extends StdOutputStream {
 }

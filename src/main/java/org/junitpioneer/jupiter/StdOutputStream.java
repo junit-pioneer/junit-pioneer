@@ -14,11 +14,11 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 
-abstract class StdIoStream extends OutputStream {
+abstract class StdOutputStream extends OutputStream {
 
 	private final StringWriter writer = new StringWriter();
 
-	public StdIoStream() {
+	public StdOutputStream() {
 		// recreate default constructor to prevent compiler warning
 	}
 
