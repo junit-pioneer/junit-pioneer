@@ -17,9 +17,9 @@ package org.junitpioneer.jupiter;
  *
  * @see StdIo
  */
-public class StdOut extends StdOutputStream {
+public class StdErr extends StdOutputStream {
 
-	public StdOut() {
+	public StdErr() {
 		// recreate default constructor to prevent compiler warning
 	}
 

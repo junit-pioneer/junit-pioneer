@@ -43,6 +43,7 @@ public class StdIoExtensionTests {
 	private final BasicCommandLineApp app = new BasicCommandLineApp();
 
 	private final static PrintStream STDOUT = System.out;
+	private final static PrintStream STDERR = System.err;
 	private final static InputStream STDIN = System.in;
 
 	@Nested
@@ -56,6 +57,17 @@ public class StdIoExtensionTests {
 			app.write();
 
 			assertThat(out.capturedLines())
+					.containsExactly("Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye");
+		}
+
+		@Test
+		@StdIo
+		@DisplayName("catches the output on the standard err as lines")
+		void catchesErr(StdErr err) {
+			app.writeErr();
+
+			assertThat(err.capturedLines())
 					.containsExactly("Lo! in the orient when the gracious light",
 						"Lifts up his burning head, each under eye");
 		}
@@ -100,7 +112,7 @@ public class StdIoExtensionTests {
 			app.read();
 
 			assertThat(app.lines)
-					.containsExactlyInAnyOrder("But when from highmost pitch, with weary car,",
+					.containsExactly("But when from highmost pitch, with weary car,",
 						"Like feeble age, he reeleth from the day,");
 		}
 
@@ -122,21 +134,23 @@ public class StdIoExtensionTests {
 		@Test
 		@ReadsStdIo
 		@Order(1)
-		@DisplayName("1: System.in and System.out is untouched")
+		@DisplayName("1: System.in, System.out and System.err is untouched")
 		void untouched() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
 		}
 
 		@Test
 		@StdIo({ "From his low tract, and look another way:", "So thou, thyself outgoing in thy noon" })
 		@Order(2)
-		@DisplayName("2: System.in and System.out is redirected")
-		void redirected(StdIn in, StdOut out) throws IOException {
+		@DisplayName("2: System.in, System.out and System.err is redirected")
+		void redirected(StdIn in, StdOut out, StdErr err) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 			String line = reader.readLine();
 			System.out.println(line);
+			System.err.println(line);
 
 			// even though `BufferedReader::readLine` was called just once,
 			// both lines were read because the reader buffers
@@ -144,18 +158,21 @@ public class StdIoExtensionTests {
 					.containsExactlyInAnyOrder("From his low tract, and look another way:",
 						"So thou, thyself outgoing in thy noon");
 			assertThat(out.capturedLines()).containsExactlyInAnyOrder("From his low tract, and look another way:");
+			assertThat(err.capturedLines()).containsExactlyInAnyOrder("From his low tract, and look another way:");
 
 			assertThat(System.in).isNotEqualTo(STDIN);
 			assertThat(System.out).isNotEqualTo(STDOUT);
+			assertThat(System.err).isNotEqualTo(STDERR);
 		}
 
 		@Test
 		@ReadsStdIo
 		@Order(3)
-		@DisplayName("3: System.in and System.out is reset to their original value")
+		@DisplayName("3: System.in, System.out and System.err is reset to their original value")
 		void reset() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
 		}
 
 		@Test
@@ -176,10 +193,11 @@ public class StdIoExtensionTests {
 		@Test
 		@ReadsStdIo
 		@Order(5)
-		@DisplayName("5: System.in is reset, System.out is unaffected.")
+		@DisplayName("5: System.in is reset, System.out and System.err is unaffected.")
 		void reset_single_in() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
 		}
 
 		@Test
@@ -193,16 +211,43 @@ public class StdIoExtensionTests {
 			assertThat(out.capturedLines()).containsExactlyInAnyOrder("Shakespeare", "Sonnet VII");
 
 			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.err).isEqualTo(STDERR);
 			assertThat(System.out).isNotEqualTo(STDOUT);
 		}
 
 		@Test
 		@ReadsStdIo
 		@Order(7)
-		@DisplayName("7: System.out is reset, System.in is unaffected.")
+		@DisplayName("7: System.out is reset, System.in and System.err is unaffected.")
 		void reset_single_out() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
+		}
+
+		@Test
+		@StdIo
+		@Order(6)
+		@DisplayName("6: Only System.err is redirected.")
+		void redirected_single_err(StdErr err) {
+			System.err.println("Mortal beauty");
+			System.err.println("Gracious light");
+
+			assertThat(err.capturedLines()).containsExactlyInAnyOrder("Mortal beauty", "Gracious light");
+
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isNotEqualTo(STDERR);
+		}
+
+		@Test
+		@ReadsStdIo
+		@Order(7)
+		@DisplayName("7: System.err is reset, System.in and System.out is unaffected.")
+		void reset_single_err() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
 		}
 
 	}
@@ -283,6 +328,12 @@ public class StdIoExtensionTests {
 			System.out.print("Lo! in the orient ");
 			System.out.println("when the gracious light");
 			System.out.println("Lifts up his burning head, each under eye");
+		}
+
+		public void writeErr() {
+			System.err.print("Lo! in the orient ");
+			System.err.println("when the gracious light");
+			System.err.println("Lifts up his burning head, each under eye");
 		}
 
 		public void read() throws IOException {
