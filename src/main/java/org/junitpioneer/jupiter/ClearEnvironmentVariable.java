@@ -36,7 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * allows modifications and can potentially break on different operating systems and
  * Java versions. Be aware that this is a fragile solution and consider finding a
  * better one for your specific situation. If you're running on Java 9 or later, you
- * may have to add {@code --add-opens=java.base/java.util=ALL-UNNAMED} to your test
+ * may have to add {@code --add-opens java.base/java.util=ALL-UNNAMED} to your test
  * execution to prevent warnings or even errors.</p>
  *
  * <p>During
