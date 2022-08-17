@@ -1,7 +1,7 @@
 name: Main build
 
 env:
-  EXPERIMENTAL_JAVA: 19
+  EXPERIMENTAL_JAVA: 18
 
 on:
   # We want to trigger our builds all the time for the default branch
