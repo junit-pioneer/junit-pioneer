@@ -244,12 +244,8 @@ tasks {
 		// `EnvironmentVariableExtension` uses reflection to change environment variables;
 		// this prevents the corresponding warning (and keeps working on Java 8)
 		// IF YOU ADD MORE OPTIONS; CONSIDER REPLACING `-XX:+IgnoreUnrecognizedVMOptions WITH A CONDITIONAL
-		val addOpens = if (modularBuild.toBoolean()) {
-			"--add-opens=java.base/java.util=org.junitpioneer"
-		} else {
-			"--add-opens=java.base/java.util=ALL-UNNAMED"
-		}
-		jvmArgs("-XX:+IgnoreUnrecognizedVMOptions", addOpens)
+		val targetModule = if (modularBuild.toBoolean()) "org.junitpioneer" else "ALL-UNNAMED"
+		jvmArgs("-XX:+IgnoreUnrecognizedVMOptions", "--add-opens=java.base/java.util=$targetModule")
 	}
 
 	testing {
