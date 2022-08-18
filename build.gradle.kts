@@ -257,7 +257,9 @@ testing {
 						filter {
 							includeTestsMatching("*Demo")
 						}
+
 					}
+
 				}
 			}
 		}
@@ -344,8 +346,11 @@ tasks {
 
 	// All compile Tasks should now use UTF-8 not just JavaCompile
 	withType<JavaCompile>().configureEach {
+
 		options.encoding = "UTF-8"
-		options.compilerArgs.add("-Werror")
+		// We do not want to break our DemoBuilds
+		if(!name.contains("Demo"))
+			options.compilerArgs.add("-Werror")
 		// do not break the build on "exports" warnings - see CONTRIBUTING.md for details
 		options.compilerArgs.add("-Xlint:all,-exports")
 	}
