@@ -1,7 +1,7 @@
 name: Main build
 
 env:
-  EXPERIMENTAL_JAVA: 18
+  EXPERIMENTAL_JAVA: 19
 
 on:
   # We want to trigger our builds all the time for the default branch
@@ -106,50 +106,17 @@ jobs:
         with:
           arguments: --scan spotlessCheck
 
-  # Our full integration job, which will build for a matrix out of our supported
-  # Java versions, operating systems, modular or not, and various JUnit versions.
-  # This build is executed on all tags and the default branch. Furthermore, we will
-  # also execute this for pull requests with the label `merge-ready`.
-  full-featured:
-    if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
-    needs: basic
-    runs-on: ${{ matrix.os }}-latest
-    timeout-minutes: 15
-    strategy:
-      matrix:
-        java: [ 11, 17 ]
-        modular: [true, false]
-        os: [ubuntu, macos, windows]
-        exclude:
-          - modular: false # this was run already in the previous stage, no need for a duplicated run
-            java: 11
-    name: with Java ${{ matrix.java }}, Modular ${{ matrix.modular }} on ${{ matrix.os }}
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v2
-      - name: Set up Java
-        uses: actions/setup-java@v2
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: temurin
-          cache: 'gradle'
-      - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} --stacktrace --scan clean build -x spotlessCheck
-
   # We want to be up-to-date and know issues with future Java versions as soon as possible.
   # Furthermore, we also would love to see our build working with the latest Gradle version.
   # As those builds might fail, they are allowed to fail, and should not prevent merges.
   experimental:
     if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
-    needs: full-featured
+    needs: basic
     runs-on: ${{ matrix.os }}-latest
     continue-on-error: true
     timeout-minutes: 15
     strategy:
       matrix:
-        modular: [true, false]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
     # Gradle doesn't work with JDK EA builds, so we start it with a supported Java version,
@@ -182,14 +149,14 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: release-candidate
-          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
+          arguments: --refresh-dependencies -PsupportedJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
 
   # A release will be created if there is a `version` defined and `releasing` is set to `true`.
   # If not, this stage will be ignored.
   release:
     if: github.event.inputs.version != '' && github.event.inputs.releasing == 'true'
     runs-on: ubuntu-latest
-    needs: full-featured
+    needs: basic
     timeout-minutes: 15
     name: Release Pioneer into the wild
     steps:
