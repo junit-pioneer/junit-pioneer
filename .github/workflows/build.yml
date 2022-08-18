@@ -151,7 +151,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: release-candidate
-          arguments: --refresh-dependencies -PsupportedJavaVersions=${{ env.EXPERIMENTAL_JAVA }} -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
+          arguments: --refresh-dependencies -PsupportedJavaVersions=${{ env.EXPERIMENTAL_JAVA }} -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean versionTest
 
   # A release will be created if there is a `version` defined and `releasing` is set to `true`.
   # If not, this stage will be ignored.
