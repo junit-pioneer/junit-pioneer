@@ -191,6 +191,7 @@ nexusPublishing {
 
 // Our Task to call all our versionTests
 val versionTest: Task by tasks.creating
+val versionTestPrep: Task by tasks.creating
 var testFailures : Int by extra(0)
 
 var versionTestTasks: List<NamedDomainObjectProvider<JvmTestSuite>> = listOf()
@@ -199,6 +200,11 @@ versionTest.doLast {
 		val message = "The build finished but ${testFailures} tests failed - blowing up the build ! "
 		throw GradleException(message)
 
+	}
+}
+versionTestPrep.doFirst {
+	if(!project.file("$buildDir/versiontests").exists()) {
+		project.file("$buildDir/versiontests").mkdirs()
 	}
 }
 testing {
@@ -264,8 +270,9 @@ testing {
 			}
 		}
 
+		// for each supported java version
 		supportedJavaVersions.split(",").forEach { javaVersion ->
-			println("$javaVersion != ${targetJavaVersion.majorVersion} ${ javaVersion != targetJavaVersion.majorVersion}")
+			// we test with each supported JunitVersion, except our defaults
 			supportedJUnitVersions.split(",").filter { !(it == junitVersion && javaVersion == targetJavaVersion.majorVersion)}.forEach {
 				val testSuite = register("testWithJUnit${it}On$javaVersion", JvmTestSuite::class) {
 
@@ -298,16 +305,19 @@ testing {
 					targets {
 						all {
 							testTask.configure {
+								dependsOn(versionTestPrep)
 								description = "running with JUnit ${it} in Java $javaVersion"
 								javaLauncher.set(javaToolchains.launcherFor {
 									languageVersion.set(JavaLanguageVersion.of(javaVersion))
+									jvmArgs(
+											"-XX:+IgnoreUnrecognizedVMOptions",
+											"--add-opens=java.base/java.util=ALL-UNNAMED")
+
 								})
 								shouldRunAfter(test)
 								ignoreFailures = true
+
 								val reportFile = project.file("$buildDir/versiontests/$name")
-								if(!reportFile.parentFile.exists()) {
-									reportFile.parentFile.mkdirs()
-								}
 								outputs.upToDateWhen { reportFile.exists() && reportFile.readText() == "true" }
 								outputs.file("$buildDir-$name")
 								addTestListener(object : TestListener {
