@@ -89,7 +89,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: build-reports
+          name: build-reports-${{ matrix.os }}
           path: build/reports/
 
   # Code format check
