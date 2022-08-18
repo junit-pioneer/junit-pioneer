@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutorService.TestTask
+
 plugins {
 	java
 	jacoco
@@ -5,6 +7,7 @@ plugins {
 	`maven-publish`
 	signing
 	`jvm-test-suite`
+	`build-dashboard`
 	id("com.diffplug.spotless") version "6.4.2"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.3"
@@ -27,6 +30,7 @@ val experimentalJavaVersion: String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 
 val supportedJUnitVersions: String by project
+val supportedJavaVersions: String by project
 val targetJavaVersion = JavaVersion.VERSION_11
 
 java {
@@ -62,14 +66,21 @@ val pioneerTestImplementation: List<Dependency> = listOf(
 		project.dependencies.create(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.10"),
 )
 
+val jacksonImplementation: List<Dependency> = listOf(
+		project.dependencies.create(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion),
+)
+
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
-	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
+
 	pioneerImplementation.forEach {
 		implementation(it)
 	}
 	pioneerTestImplementation.forEach {
 		testImplementation(it)
+	}
+	jacksonImplementation.forEach {
+		"jacksonImplementation"(it)
 	}
 
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.2")
@@ -179,12 +190,21 @@ nexusPublishing {
 }
 
 // Our Task to call all our versionTests
-val versionTest by tasks.creating
+val versionTest: Task by tasks.creating
+var testFailures : Int by extra(0)
 
+var versionTestTasks: List<NamedDomainObjectProvider<JvmTestSuite>> = listOf()
+versionTest.doLast {
+	if (testFailures > 0) {
+		val message = "The build finished but ${testFailures} tests failed - blowing up the build ! "
+		throw GradleException(message)
+
+	}
+}
 testing {
 	suites {
 		val test by getting(JvmTestSuite::class) {
-			useJUnitJupiter()
+			useJUnitJupiter(junitVersion)
 
 			targets {
 				all {
@@ -206,7 +226,6 @@ testing {
 						jvmArgs(
 								"-XX:+IgnoreUnrecognizedVMOptions",
 								"--add-opens=java.base/java.util=ALL-UNNAMED")
-
 					}
 				}
 			}
@@ -228,7 +247,7 @@ testing {
 					srcDir("src/demo/java")
 				}
 				resources {
-					srcDir("src/demo/resources")
+					setSrcDirs(listOf("src/demo/resources"))
 				}
 			}
 			targets {
@@ -243,44 +262,80 @@ testing {
 			}
 		}
 
-		supportedJUnitVersions.split(",").filter { it != junitVersion }.forEach {
-			val testSuite = register("testWithJUnit$it", JvmTestSuite::class) {
-				useJUnitJupiter()
+		supportedJavaVersions.split(",").forEach { javaVersion ->
+			println("$javaVersion != ${targetJavaVersion.majorVersion} ${ javaVersion != targetJavaVersion.majorVersion}")
+			supportedJUnitVersions.split(",").filter { !(it == junitVersion && javaVersion == targetJavaVersion.majorVersion)}.forEach {
+				val testSuite = register("testWithJUnit${it}On$javaVersion", JvmTestSuite::class) {
 
-				dependencies {
-					implementation(project)
-					pioneerImplementation.forEach { dependency ->
-						implementation(dependency)
-					}
-					pioneerTestImplementation.forEach {dependency ->
-						implementation(dependency)
-					}
-					implementation(project.dependencies.platform("org.junit:junit-bom:$it"))
-				}
+					useJUnitJupiter(it)
 
-				sources {
-					java {
-						srcDir("src/test/java")
-					}
-					resources {
-						srcDir("src/test/resources")
-					}
-				}
+					dependencies {
+						implementation(project)
+						pioneerImplementation.forEach { dependency ->
+							implementation(dependency)
+						}
+						pioneerTestImplementation.forEach {dependency ->
+							implementation(dependency)
+						}
+						jacksonImplementation.forEach { dependency ->
+							implementation(dependency)
+						}
 
-				targets {
-					all {
-						testTask.configure {
-							shouldRunAfter(test)
+						implementation(project.dependencies.platform("org.junit:junit-bom:$it"))
+					}
 
-							filter {
-								includeTestsMatching("*Tests")
+					sources {
+						java {
+							srcDir("src/test/java")
+						}
+						resources {
+							setSrcDirs(listOf("src/test/resources"))
+						}
+					}
+
+					targets {
+						all {
+							testTask.configure {
+								description = "running with JUnit ${it} in Java $javaVersion"
+								javaLauncher.set(javaToolchains.launcherFor {
+									languageVersion.set(JavaLanguageVersion.of(javaVersion))
+								})
+								shouldRunAfter(test)
+								ignoreFailures = true
+								val reportFile = project.file("$buildDir/versiontests/$name")
+								if(!reportFile.parentFile.exists()) {
+									reportFile.parentFile.mkdirs()
+								}
+								outputs.upToDateWhen { reportFile.exists() && reportFile.readText() == "true" }
+								outputs.file("$buildDir-$name")
+								addTestListener(object : TestListener {
+									override fun beforeSuite(suite: TestDescriptor) {}
+									override fun beforeTest(testDescriptor: TestDescriptor) {}
+									override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {}
+
+									override fun afterSuite(suite: TestDescriptor, result: TestResult) {
+										// root suite
+										reportFile.writeText("${ result.failedTestCount.toInt() == 0}")
+										if (suite.parent == null) {
+											testFailures += result.failedTestCount.toInt()
+											if(result.exceptions.isNotEmpty()) {
+												for (exception in result.exceptions) {
+													logger.lifecycle(exception.message)
+												}
+											}
+										}
+									}
+								})
+								filter {
+									includeTestsMatching("*Tests")
+								}
 							}
 						}
 					}
 				}
-			}
 
-			versionTest.dependsOn(testSuite)
+				versionTest.dependsOn(testSuite)
+			}
 		}
 	}
 }
@@ -290,6 +345,15 @@ tasks {
 	// All compile Tasks should now use UTF-8 not just JavaCompile
 	withType<JavaCompile>().configureEach {
 		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		// do not break the build on "exports" warnings - see CONTRIBUTING.md for details
+		options.compilerArgs.add("-Xlint:all,-exports")
+	}
+
+	compileTestJava {
+		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		options.compilerArgs.add("-Xlint:all")
 	}
 
 
@@ -331,7 +395,7 @@ tasks {
 
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
-		dependsOn(javadoc, validateYaml, testing.suites.named("demoTests"))
+		dependsOn(javadoc, validateYaml, testing.suites.named("demoTests"), versionTest)
 	}
 
 	withType<Jar>().configureEach {
