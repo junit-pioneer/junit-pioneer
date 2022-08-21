@@ -10,11 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @EnabledForJreRange(max = JRE.JAVA_16, disabledReason = "See: https://github.com/junit-pioneer/junit-pioneer/issues/509")
 public class EnvironmentVariablesExtensionDemo {
