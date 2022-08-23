@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -131,47 +132,60 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return result;
 	}
 
+	private static final Lock SHARED_ANNOTATION_RESOLUTION_LOCK = new ReentrantLock();
+
 	private Object resolveShared(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store store) {
-		throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
-		throwIfMultipleParametersHaveExactAnnotation(parameters, sharedAnnotation);
-
-		ResourceFactory<?> resourceFactory = store
-				.getOrComputeIfAbsent( //
-					factoryKey(sharedAnnotation), //
-					__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
-					ResourceFactory.class);
-		ResourceWithLock<?> resourceWithLock = store
-				.getOrComputeIfAbsent( //
-					resourceKey(sharedAnnotation), //
-					__ -> new ResourceWithLock<>(newResource(sharedAnnotation, resourceFactory)), //
-					ResourceWithLock.class);
-
-		Object result;
+		// Force resolveShared to run sequentially, to ensure that assertions that
+		// depend on other runs of resolveShared work correctly when Jupiter runs
+		// tests in parallel.
+		SHARED_ANNOTATION_RESOLUTION_LOCK.lock();
 		try {
-			result = resourceWithLock.get();
-		}
-		catch (Exception ex) {
-			// @formatter:off
-			String message =
-					String.format(
-							"Unable to get the contents of the resource created by `%s`",
-							sharedAnnotation.factory());
-			// @formatter:on
-			throw new ParameterResolutionException(message, ex);
-		}
 
-		if (result == null) {
-			// @formatter:off
-			String message =
-					String.format(
-							"Method [%s] returned null",
-							ReflectionSupport.findMethod(resourceWithLock.delegate().getClass(), "get")
-									.orElseThrow(this::unreachable));
-			// @formatter:on
-			throw new ParameterResolutionException(message);
-		}
+			throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
+			throwIfMultipleParametersHaveExactAnnotation(parameters, sharedAnnotation);
 
-		return result;
+			ResourceFactory<?> resourceFactory = store
+					.getOrComputeIfAbsent( //
+						factoryKey(sharedAnnotation), //
+						__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
+						ResourceFactory.class);
+			ResourceWithLock<?> resourceWithLock = store
+					.getOrComputeIfAbsent( //
+						resourceKey(sharedAnnotation), //
+						__ -> new ResourceWithLock<>(newResource(sharedAnnotation, resourceFactory)), //
+						ResourceWithLock.class);
+
+			Object result;
+			try {
+				result = resourceWithLock.get();
+			}
+			catch (Exception ex) {
+				// @formatter:off
+				String message =
+						String.format(
+								"Unable to get the contents of the resource created by `%s`",
+								sharedAnnotation.factory());
+				// @formatter:on
+				throw new ParameterResolutionException(message, ex);
+			}
+
+			if (result == null) {
+				// @formatter:off
+				String message =
+						String.format(
+								"Method [%s] returned null",
+								ReflectionSupport.findMethod(resourceWithLock.delegate().getClass(), "get")
+										.orElseThrow(this::unreachable));
+				// @formatter:on
+				throw new ParameterResolutionException(message);
+			}
+
+			return result;
+
+		}
+		finally {
+			SHARED_ANNOTATION_RESOLUTION_LOCK.unlock();
+		}
 	}
 
 	private Resource<?> newResource(Object newOrSharedAnnotation, ResourceFactory<?> resourceFactory) {

@@ -447,7 +447,24 @@ class ResourcesTests {
 		@Test
 		void thenItThrowsAnException() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithConflictingSharedTempDirParametersTestCases.class);
+					.executeTestClass(SingleTestMethodWithParamsWithSharedSameNameButDifferentTypesTestCases.class);
+			executionResults
+					.allEvents()
+					.debug()
+					.assertThatEvents()
+					.haveExactly(//
+						1, //
+						finished(//
+							throwable(//
+								instanceOf(ParameterResolutionException.class), //
+								message(String
+										.format(
+											"Two or more parameters are annotated with @Shared annotations with the "
+													+ "name \"%s\" but with different factory classes",
+											"some-name")))));
+
+			executionResults = PioneerTestKit
+					.executeTestClass(TwoTestMethodsWithParamsWithSharedSameNameButDifferentTypesTestCases.class);
 			executionResults
 					.allEvents()
 					.debug()
@@ -466,11 +483,25 @@ class ResourcesTests {
 
 	}
 
-	static class SingleTestMethodWithConflictingSharedTempDirParametersTestCases {
+	static class SingleTestMethodWithParamsWithSharedSameNameButDifferentTypesTestCases {
 
 		@Test
 		void theTest(@Shared(factory = DummyResourceFactory.class, name = "some-name") String first,
 				@Shared(factory = OtherResourceFactory.class, name = "some-name") String second) {
+
+		}
+
+	}
+
+	static class TwoTestMethodsWithParamsWithSharedSameNameButDifferentTypesTestCases {
+
+		@Test
+		void theTest1(@Shared(factory = DummyResourceFactory.class, name = "some-name") String foo) {
+
+		}
+
+		@Test
+		void theTest2(@Shared(factory = OtherResourceFactory.class, name = "some-name") String bar) {
 
 		}
 
