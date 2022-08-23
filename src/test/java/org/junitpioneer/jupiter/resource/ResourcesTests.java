@@ -42,9 +42,9 @@ class ResourcesTests {
 		@DisplayName("then ::create is called")
 		@Test
 		void thenCreateIsCalled() {
-			ExecutionResults executionResults = PioneerTestKit.executeTestClass(FakeResourceFactoryTestCases.class);
+			ExecutionResults executionResults = PioneerTestKit.executeTestClass(FakeResourceFactory1TestCases.class);
 			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(1);
-			assertThat(FakeResourceFactory.createCalls).isEqualTo(1);
+			assertThat(FakeResourceFactory1.createCalls).isEqualTo(1);
 		}
 
 		@DisplayName("and the factory throws on ::create")
@@ -201,17 +201,17 @@ class ResourcesTests {
 
 	}
 
-	static class FakeResourceFactoryTestCases {
+	static class FakeResourceFactory1TestCases {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(FakeResourceFactory.class) Object object) {
+		void foo(@New(FakeResourceFactory1.class) Object object) {
 
 		}
 
 	}
 
-	static final class FakeResourceFactory implements ResourceFactory<Object> {
+	static final class FakeResourceFactory1 implements ResourceFactory<Object> {
 
 		static int createCalls = 0;
 
@@ -528,6 +528,14 @@ class ResourcesTests {
 	@Nested
 	class WhenSharedResourceFactoryAppliedToParameterTests {
 
+		@DisplayName("then ::create is called")
+		@Test
+		void thenCreateIsCalled() {
+			ExecutionResults executionResults = PioneerTestKit.executeTestClass(FakeResourceFactory2TestCases.class);
+			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(1);
+			assertThat(FakeResourceFactory2.createCalls).isEqualTo(1);
+		}
+
 		@DisplayName("and the factory throws on ::create")
 		@Nested
 		class AndFactoryThrowsOnCreateTests {
@@ -686,6 +694,28 @@ class ResourcesTests {
 
 	}
 
+	static class FakeResourceFactory2TestCases {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@Shared(factory = FakeResourceFactory2.class, name = "some-name") Object object) {
+
+		}
+
+	}
+
+	static final class FakeResourceFactory2 implements ResourceFactory<Object> {
+
+		static int createCalls = 0;
+
+		@Override
+		public Resource<Object> create(List<String> arguments) {
+			createCalls++;
+			return new SomeResource();
+		}
+
+	}
+
 	static class ThrowOnSharedRFCreateTestCases {
 
 		@Test
@@ -742,6 +772,50 @@ class ResourcesTests {
 		@SuppressWarnings("unused")
 		void foo(@Shared(name = "foo", factory = RGetReturnsNullResourceFactory.class) Object object) {
 
+		}
+
+	}
+
+	// ---
+
+	@DisplayName("when a shared resource factory is applied to two parameters")
+	@Nested
+	class WhenSharedResourceFactoryAppliedToTwoParametersTests {
+
+		@DisplayName("then ::create is called only once")
+		@Test
+		void thenCreateIsCalledOnlyOnce() {
+			ExecutionResults executionResults = PioneerTestKit.executeTestClass(FakeResourceFactory3TestCases.class);
+			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(2);
+			assertThat(FakeResourceFactory3.createCalls).isEqualTo(1);
+		}
+
+	}
+
+	static class FakeResourceFactory3TestCases {
+
+		@Test
+		@SuppressWarnings("unused")
+		void foo(@Shared(factory = FakeResourceFactory3.class, name = "some-name") Object object) {
+
+		}
+
+		@Test
+		@SuppressWarnings("unused")
+		void bar(@Shared(factory = FakeResourceFactory3.class, name = "some-name") Object object) {
+
+		}
+
+	}
+
+	static final class FakeResourceFactory3 implements ResourceFactory<Object> {
+
+		static int createCalls = 0;
+
+		@Override
+		public Resource<Object> create(List<String> arguments) {
+			createCalls++;
+			return new SomeResource();
 		}
 
 	}
