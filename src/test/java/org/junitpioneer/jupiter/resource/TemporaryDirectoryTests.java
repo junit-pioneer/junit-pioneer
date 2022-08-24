@@ -523,23 +523,15 @@ class TemporaryDirectoryTests {
 							FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.class,
 							SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.class));
 
-			assertThat(executionResults).hasNumberOfSucceededTests(3);
+			assertThat(executionResults).hasNumberOfSucceededTests(2);
 
 			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPath)
 					.isNotEqualTo(
-						SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedOuterPath);
-			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPath)
-					.isNotEqualTo(
-						SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedInnerPath);
-			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedOuterPath)
-					.isEqualTo(
-						SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedInnerPath);
+						SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPath);
 
 			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPath)
 					.doesNotExist();
-			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedOuterPath)
-					.doesNotExist();
-			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedInnerPath)
+			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPath)
 					.doesNotExist();
 		}
 
@@ -563,24 +555,12 @@ class TemporaryDirectoryTests {
 	// automatically but our own tests can still explicitly find it and run it.
 	static class SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases {
 
-		static Path recordedOuterPath;
-		static Path recordedInnerPath;
+		static Path recordedPath;
 
 		@Test
 		void theTest(
 				@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
-			recordedOuterPath = tempDir;
-		}
-
-		@Nested
-		class NestedTestCases {
-
-			@Test
-			void theTest(
-					@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
-				recordedInnerPath = tempDir;
-			}
-
+			recordedPath = tempDir;
 		}
 
 	}
