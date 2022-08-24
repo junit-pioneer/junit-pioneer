@@ -21,6 +21,7 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.th
 import static org.junitpioneer.internal.AllElementsAreEqual.allElementsAreEqual;
 import static org.junitpioneer.jupiter.resource.MorePaths.rootTempDir;
 import static org.junitpioneer.jupiter.resource.Scope.GLOBAL;
+import static org.junitpioneer.jupiter.resource.Scope.SOURCE_FILE;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertEmptyReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertReadableWriteableTemporaryDirectory;
@@ -34,9 +35,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junitpioneer.jupiter.resource.testcase.FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter;
-import org.junitpioneer.jupiter.resource.testcase.SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter;
-import org.junitpioneer.jupiter.resource.testcase.SingleTestMethodWithSourceFileScopedTempDirParameter;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -59,6 +57,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithNewTempDirParameterTestCases {
 
 		static Path recordedPath;
@@ -91,6 +91,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithParameterWithNewTempDirAndArgTestCases {
 
 		@Test
@@ -121,6 +123,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class TwoTestMethodsWithNewTempDirParameterTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -162,6 +166,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithTwoNewTempDirParametersTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -200,6 +206,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class TestConstructorWithNewTempDirParameterTestCases {
 
 		static List<Path> recordedPathsFromConstructor = new CopyOnWriteArrayList<>();
@@ -251,6 +259,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class NewTempDirWithWrongNumberOfArgumentsTestCases {
 
 		@Test
@@ -279,6 +289,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithSharedTempDirParameterTestCases {
 
 		static Path recordedPath;
@@ -315,6 +327,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -355,6 +369,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class TwoTestMethodsWithSharedSameNameTempDirParameterTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -402,6 +418,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class FirstSingleTestMethodWithGlobalTempDirParameterTestCases {
 
 		static Path recordedPath;
@@ -416,6 +434,8 @@ class TemporaryDirectoryTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class SecondSingleTestMethodWithGlobalTempDirParameterTestCases {
 
 		static Path recordedPath;
@@ -443,12 +463,44 @@ class TemporaryDirectoryTests {
 		@Test
 		void thenParametersArePopulatedWithSharedReadableAndWriteableTempDirsThatIsTornDownAfterwards() {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithSourceFileScopedTempDirParameter.TestCases.class);
+					.executeTestClass(SingleTestMethodWithSourceFileScopedTempDirParameterTestCases.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
-			assertThat(SingleTestMethodWithSourceFileScopedTempDirParameter.recordedPathForImplicit)
-					.isEqualTo(SingleTestMethodWithSourceFileScopedTempDirParameter.recordedPathForExplicit);
-			assertThat(SingleTestMethodWithSourceFileScopedTempDirParameter.recordedPathForImplicit).doesNotExist();
-			assertThat(SingleTestMethodWithSourceFileScopedTempDirParameter.recordedPathForExplicit).doesNotExist();
+			assertThat(SingleTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPathForImplicit)
+					.isEqualTo(SingleTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPathForExplicit);
+			assertThat(SingleTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPathForImplicit)
+					.doesNotExist();
+			assertThat(SingleTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPathForExplicit)
+					.doesNotExist();
+		}
+
+	}
+
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
+	static class SingleTestMethodWithSourceFileScopedTempDirParameterTestCases {
+
+		static Path recordedPathForImplicit;
+		static Path recordedPathForExplicit;
+
+		@Nested
+		class Implicit {
+
+			@Test
+			void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
+				recordedPathForImplicit = tempDir;
+			}
+
+		}
+
+		@Nested
+		class Explicit {
+
+			@Test
+			void theTest(
+					@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
+				recordedPathForExplicit = tempDir;
+			}
+
 		}
 
 	}
@@ -468,23 +520,67 @@ class TemporaryDirectoryTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClasses( //
 						asList( //
-							FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OnlyTestCases.class,
-							SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.OuterTestCases.class));
+							FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.class,
+							SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.class));
 
 			assertThat(executionResults).hasNumberOfSucceededTests(3);
 
-			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedPath)
-					.isNotEqualTo(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedOuterPath);
-			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedPath)
-					.isNotEqualTo(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedInnerPath);
-			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedOuterPath)
-					.isEqualTo(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedInnerPath);
+			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPath)
+					.isNotEqualTo(
+						SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedOuterPath);
+			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPath)
+					.isNotEqualTo(
+						SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedInnerPath);
+			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedOuterPath)
+					.isEqualTo(
+						SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedInnerPath);
 
-			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedPath).doesNotExist();
-			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedOuterPath)
+			assertThat(FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedPath)
 					.doesNotExist();
-			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameter.recordedInnerPath)
+			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedOuterPath)
 					.doesNotExist();
+			assertThat(SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases.recordedInnerPath)
+					.doesNotExist();
+		}
+
+	}
+
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
+	static class FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases {
+
+		static Path recordedPath;
+
+		@Test
+		void theTest(
+				@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
+			recordedPath = tempDir;
+		}
+
+	}
+
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
+	static class SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases {
+
+		static Path recordedOuterPath;
+		static Path recordedInnerPath;
+
+		@Test
+		void theTest(
+				@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
+			recordedOuterPath = tempDir;
+		}
+
+		@Nested
+		class NestedTestCases {
+
+			@Test
+			void theTest(
+					@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = SOURCE_FILE) Path tempDir) {
+				recordedInnerPath = tempDir;
+			}
+
 		}
 
 	}

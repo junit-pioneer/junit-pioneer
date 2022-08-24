@@ -201,6 +201,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class FakeResourceFactory1TestCases {
 
 		@Test
@@ -232,6 +234,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class ThrowOnNewRFCreateTestCases {
 
 		@Test
@@ -254,6 +258,8 @@ class ResourcesTests {
 	private static final Exception EXPECTED_THROW_ON_RF_CREATE_EXCEPTION = new IOException(
 		"Failed to connect to the Matrix");
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class ThrowOnNewRFCloseTestCases {
 
 		@Test
@@ -279,8 +285,10 @@ class ResourcesTests {
 	}
 
 	private static final Exception EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION = new CloneNotSupportedException(
-		"failed to clone a homunculus");
+		"Failed to clone a homunculus");
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class NewRFCreateReturnsNullTestCases {
 
 		@Test
@@ -300,6 +308,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class ThrowOnNewRGetTestCases {
 
 		@Test
@@ -329,8 +339,10 @@ class ResourcesTests {
 	}
 
 	private static final Exception EXPECTED_THROW_ON_R_GET_EXCEPTION = new FileAlreadyExistsException(
-		"wait, what's that file doing there?");
+		"Wait, what's that file doing there?");
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class ThrowOnNewRCloseTestCases {
 
 		@Test
@@ -365,8 +377,10 @@ class ResourcesTests {
 	}
 
 	private static final Exception EXPECTED_THROW_ON_R_CLOSE_EXCEPTION = new UnknownHostException(
-		"wait, where's the Internet gone?!");
+		"Wait, where's the Internet gone?!");
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class NewRGetReturnsNullTestCases {
 
 		@Test
@@ -405,8 +419,8 @@ class ResourcesTests {
 		@Test
 		void thenExceptionIsThrown() throws Exception {
 			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndShared.class);
-			Method failingTest = TestMethodWithParameterAnnotatedWithBothNewAndShared.class
+					.executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class);
+			Method failingTest = TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class
 					.getDeclaredMethod("theTest", String.class);
 			assertThat(executionResults)
 					.hasSingleFailedTest()
@@ -417,7 +431,9 @@ class ResourcesTests {
 
 	}
 
-	static class TestMethodWithParameterAnnotatedWithBothNewAndShared {
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
+	static class TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases {
 
 		@Test
 		void theTest(
@@ -483,6 +499,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithParamsWithSharedSameNameButDifferentTypesTestCases {
 
 		@Test
@@ -493,6 +511,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class TwoTestMethodsWithParamsWithSharedSameNameButDifferentTypesTestCases {
 
 		@Test
@@ -543,6 +563,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class TestMethodWithTwoParamsWithSameSharedAnnotationTestCases {
 
 		@Test
@@ -725,6 +747,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class FakeResourceFactory2TestCases {
 
 		@Test
@@ -747,6 +771,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class ThrowOnSharedRFCreateTestCases {
 
 		@Test
@@ -757,6 +783,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class ThrowOnSharedRFCloseTestCases {
 
 		@Test
@@ -767,6 +795,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class ThrowOnSharedRGetTestCases {
 
 		@Test
@@ -777,6 +807,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class ThrowOnSharedRCloseTestCases {
 
 		@Test
@@ -787,6 +819,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class SharedRFCreateReturnsNullTestCases {
 
 		@Test
@@ -797,6 +831,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class SharedRGetReturnsNullTestCases {
 
 		@Test
@@ -823,6 +859,8 @@ class ResourcesTests {
 
 	}
 
+	// This test case class is static so that JUnit 5 doesn't pick it up
+	// automatically but our own tests can still explicitly find it and run it.
 	static class FakeResourceFactory3TestCases {
 
 		@Test
