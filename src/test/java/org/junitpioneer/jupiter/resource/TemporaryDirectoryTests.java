@@ -19,9 +19,9 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.in
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
 import static org.junitpioneer.internal.AllElementsAreEqual.allElementsAreEqual;
-import static org.junitpioneer.jupiter.resource.MorePaths.rootTempDir;
 import static org.junitpioneer.jupiter.resource.Scope.GLOBAL;
 import static org.junitpioneer.jupiter.resource.Scope.SOURCE_FILE;
+import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.ROOT_TEMP_DIR;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertEmptyReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertReadableWriteableTemporaryDirectory;
@@ -97,7 +97,7 @@ class TemporaryDirectoryTests {
 
 		@Test
 		void theTest(@New(value = TemporaryDirectory.class, arguments = { "tempDirPrefix" }) Path tempDir) {
-			assertThat(rootTempDir().relativize(tempDir)).asString().startsWith("tempDirPrefix");
+			assertThat(ROOT_TEMP_DIR.relativize(tempDir)).asString().startsWith("tempDirPrefix");
 		}
 
 	}

@@ -13,11 +13,11 @@ package org.junitpioneer.jupiter.resource;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junitpioneer.jupiter.resource.MorePaths.rootTempDir;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 class TemporaryDirectoryAssertions {
 
@@ -33,11 +33,13 @@ class TemporaryDirectoryAssertions {
 	}
 
 	static void assertReadableWriteableTemporaryDirectory(Path tempDir) {
-		assertThat(tempDir).startsWith(rootTempDir()).isReadable().isWritable();
+		assertThat(tempDir).startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
 	}
 
 	static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
-		assertThat(tempDir).isEmptyDirectory().startsWith(rootTempDir()).isReadable().isWritable();
+		assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
 	}
+
+	public static final Path ROOT_TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
 }
