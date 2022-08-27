@@ -229,6 +229,10 @@ tasks {
 		options.compilerArgs.add("-Xlint:all")
 	}
 
+	// Prepares test-related JVM args to open JDK internals to Pioneer
+	val targetModule = if (modularBuild.toBoolean()) "org.junitpioneer" else "ALL-UNNAMED"
+	val testJvmArgs = listOf("-XX:+IgnoreUnrecognizedVMOptions", "--add-opens=java.base/java.util=$targetModule")
+
 	test {
 		configure<JacocoTaskExtension> {
 			isEnabled = !experimentalBuild
@@ -241,11 +245,7 @@ tasks {
 			includeTestsMatching("*Tests")
 		}
 		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
-		// `EnvironmentVariableExtension` uses reflection to change environment variables;
-		// this prevents the corresponding warning (and keeps working on Java 8)
-		// IF YOU ADD MORE OPTIONS; CONSIDER REPLACING `-XX:+IgnoreUnrecognizedVMOptions WITH A CONDITIONAL
-		val targetModule = if (modularBuild.toBoolean()) "org.junitpioneer" else "ALL-UNNAMED"
-		jvmArgs("-XX:+IgnoreUnrecognizedVMOptions", "--add-opens=java.base/java.util=$targetModule")
+		jvmArgs(testJvmArgs)
 	}
 
 	testing {
@@ -253,6 +253,7 @@ tasks {
 			val test by getting(JvmTestSuite::class) {
 				useJUnitJupiter()
 			}
+
 			val demoTests by registering(JvmTestSuite::class) {
 				dependencies {
 					implementation(project)
@@ -261,15 +262,25 @@ tasks {
 				}
 
 				sources {
-					java { srcDir("src/demo/java") }
-					resources { srcDir("src/demo/resources") }
-				}
-				targets { all { testTask.configure {
-					shouldRunAfter(test)
-					filter {
-						includeTestsMatching("*Demo")
+					java {
+						srcDir("src/demo/java")
 					}
-				} } }
+					resources {
+						srcDir("src/demo/resources")
+					}
+				}
+
+				targets {
+					all {
+						testTask.configure {
+							shouldRunAfter(test)
+							filter {
+								includeTestsMatching("*Demo")
+							}
+							jvmArgs(testJvmArgs)
+						}
+					}
+				}
 			}
 		}
 	}
