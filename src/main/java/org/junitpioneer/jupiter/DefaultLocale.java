@@ -68,7 +68,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface DefaultLocale {
 
 	/**
-	 * An language tag string as specified by IETF BCP 47. See
+	 * A language tag string as specified by IETF BCP 47. See
 	 * {@link java.util.Locale#forLanguageTag(String)} for more information
 	 * about valid language tag values.
 	 *

@@ -66,11 +66,11 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 		String country = annotation.country();
 		String variant = annotation.variant();
 		if (!language.isEmpty() && !country.isEmpty() && !variant.isEmpty()) {
-			return new Locale(language, country, variant);
+			return new Locale.Builder().setLanguage(language).setRegion(country).setVariant(variant).build();
 		} else if (!language.isEmpty() && !country.isEmpty()) {
-			return new Locale(language, country);
+			return new Locale.Builder().setLanguage(language).setRegion(country).build();
 		} else if (!language.isEmpty() && variant.isEmpty()) {
-			return new Locale(language);
+			return new Locale.Builder().setLanguage(language).build();
 		} else {
 			throw new ExtensionConfigurationException(
 				"@DefaultLocale not configured correctly. When not using a language tag, specify either"

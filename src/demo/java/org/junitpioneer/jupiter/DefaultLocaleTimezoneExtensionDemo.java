@@ -19,6 +19,18 @@ import org.junit.jupiter.api.Test;
 
 public class DefaultLocaleTimezoneExtensionDemo {
 
+	protected static Locale createLocale(String language, String country, String variant) {
+		return new Locale.Builder().setLanguage(language).setRegion(country).setVariant(variant).build();
+	}
+
+	protected static Locale createLocale(String language, String country) {
+		return new Locale.Builder().setLanguage(language).setRegion(country).build();
+	}
+
+	protected static Locale createLocale(String language) {
+		return new Locale.Builder().setLanguage(language).build();
+	}
+
 	// tag::default_locale_language[]
 	@Test
 	@DefaultLocale("zh-Hant-TW")
@@ -31,19 +43,19 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	@Test
 	@DefaultLocale(language = "en")
 	void test_with_lanuage_only() {
-		assertThat(Locale.getDefault()).isEqualTo(new Locale("en"));
+		assertThat(Locale.getDefault()).isEqualTo(createLocale("en"));
 	}
 
 	@Test
 	@DefaultLocale(language = "en", country = "EN")
 	void test_with_lanuage_and_country() {
-		assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN"));
+		assertThat(Locale.getDefault()).isEqualTo(createLocale("en", "EN"));
 	}
 
 	@Test
-	@DefaultLocale(language = "en", country = "EN", variant = "gb")
+	@DefaultLocale(language = "ja", country = "JP", variant = "japanese")
 	void test_with_lanuage_and_country_and_vairant() {
-		assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN", "gb"));
+		assertThat(Locale.getDefault()).isEqualTo(createLocale("ja", "JP", "japanese"));
 	}
 	// end::default_locale_language_alternatives[]
 
@@ -53,13 +65,13 @@ public class DefaultLocaleTimezoneExtensionDemo {
 
 		@Test
 		void test_with_class_level_configuration() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("fr"));
+			assertThat(Locale.getDefault()).isEqualTo(createLocale("fr"));
 		}
 
 		@Test
 		@DefaultLocale(language = "en")
 		void test_with_method_level_configuration() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("en"));
+			assertThat(Locale.getDefault()).isEqualTo(createLocale("en"));
 		}
 
 	}
