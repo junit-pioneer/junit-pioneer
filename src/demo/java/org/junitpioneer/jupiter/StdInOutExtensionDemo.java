@@ -70,7 +70,7 @@ public class StdInOutExtensionDemo {
 	// end::stdio_both_replaced_and_verify[]
 
 	// tag::stdio_edge_cases_ExampleConsoleReader[]
-	class ExampleConsoleReader {
+	class ConsoleReader {
 
 		private List<String> lines = new ArrayList<>();
 
@@ -91,7 +91,7 @@ public class StdInOutExtensionDemo {
 
 		@Test
 		@StdIo({ "line1", "line2", "line3" })
-		void testReadLines(StdIn in) {
+		void testReadLines(StdIn in) throws IOException {
 			ConsoleReader consoleReader = new ConsoleReader();
 
 			consoleReader.readLines();
@@ -107,13 +107,5 @@ public class StdInOutExtensionDemo {
 
 	}
 	// end::stdio_edge_cases_ConsoleReaderTest[]
-
-	class ConsoleReader {
-
-		public void readLines() {
-			// demo stuff
-		}
-
-	}
 
 }

@@ -21,8 +21,8 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.api.parallel.Resources;
 
 /**
- * Marks tests that read the static fields {@code System.in} or {@code System.out}
- * but don't call {@code System.setIn()} or {@code System.setOut()}.
+ * Marks tests that read the static fields {@code System.in}, {@code System.out} or {@code System.err}
+ * but don't call {@code System.setIn()}, {@code System.setOut()} or {@code System.setErr()}.
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
@@ -41,5 +41,6 @@ import org.junit.jupiter.api.parallel.Resources;
 @Inherited
 @ResourceLock(value = "java.lang.System.in", mode = ResourceAccessMode.READ)
 @ResourceLock(value = Resources.SYSTEM_OUT, mode = ResourceAccessMode.READ)
+@ResourceLock(value = Resources.SYSTEM_ERR, mode = ResourceAccessMode.READ)
 public @interface ReadsStdIo {
 }
