@@ -576,7 +576,7 @@ public class CartesianTestExtensionTests {
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining("Could not provide arguments")
-					.getCause()
+					.cause()
 					.isInstanceOf(PreconditionViolationException.class)
 					.hasMessageContaining("Parameter of type %s must reference an Enum type", int.class);
 		}
