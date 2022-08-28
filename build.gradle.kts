@@ -241,10 +241,12 @@ tasks {
 	compileTestJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		options.compilerArgs.add("-Xlint:all,-exports,-missing-explicit-ctor,-requires-automatic")
-		if (modularBuild.toBoolean())
+		if (modularBuild.toBoolean()) {
+			options.compilerArgs.add("-Xlint:all,-exports,-missing-explicit-ctor,-requires-automatic")
 			options.compilerArgs.add(patchModuleArg)
-
+		} else {
+			options.compilerArgs.add("-Xlint:all")
+		}
 	}
 
 	test {
