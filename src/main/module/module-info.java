@@ -22,11 +22,14 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter;
 	exports org.junitpioneer.jupiter.cartesian;
 	exports org.junitpioneer.jupiter.params;
+	exports org.junitpioneer.jupiter.json;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.cartesian to org.junit.platform.commons;
+	opens org.junitpioneer.jupiter.issue to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.params to org.junit.platform.commons;
+	opens org.junitpioneer.jupiter.json to org.junit.platform.commons, com.fasterxml.jackson.databind;
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
