@@ -198,6 +198,10 @@ tasks {
 			if (modularBuild.toBoolean())
 				java.srcDir("src/main/module")
 		}
+		test {
+			if (modularBuild.toBoolean())
+				java.srcDir("src/test/module")
+		}
 		create("demo") {
 			java {
 				srcDir("src/demo/java")
@@ -223,15 +227,25 @@ tasks {
 		options.compilerArgs.add("-Xlint:all,-exports")
 	}
 
+	// Prepares test-related JVM args
+	val moduleName = "org.junitpioneer"
+	val targetModule = if (modularBuild.toBoolean()) moduleName else "ALL-UNNAMED"
+	val patchModuleArg = "--patch-module=$moduleName=${compileJava.get().destinationDirectory.asFile.get().path}"
+	val testJvmArgs = listOf(
+			"-XX:+IgnoreUnrecognizedVMOptions",
+			"--add-opens=java.base/java.util=$targetModule",
+			"--add-opens=java.base/java.lang=$targetModule",
+			patchModuleArg
+	)
+
 	compileTestJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		options.compilerArgs.add("-Xlint:all")
-	}
+		options.compilerArgs.add("-Xlint:all,-exports,-missing-explicit-ctor,-requires-automatic")
+		if (modularBuild.toBoolean())
+			options.compilerArgs.add(patchModuleArg)
 
-	// Prepares test-related JVM args to open JDK internals to Pioneer
-	val targetModule = if (modularBuild.toBoolean()) "org.junitpioneer" else "ALL-UNNAMED"
-	val testJvmArgs = listOf("-XX:+IgnoreUnrecognizedVMOptions", "--add-opens=java.base/java.util=$targetModule")
+	}
 
 	test {
 		configure<JacocoTaskExtension> {
