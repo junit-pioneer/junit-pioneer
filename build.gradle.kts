@@ -62,7 +62,7 @@ val pioneerImplementation: List<Dependency> = listOf(
 val pioneerTestImplementation: List<Dependency> = listOf(
         project.dependencies.create(group = "org.junit.jupiter", name = "junit-jupiter-engine"),
         project.dependencies.create(group = "org.junit.platform", name = "junit-platform-testkit"),
-        project.dependencies.create(group = "org.assertj", name = "assertj-core", version = "3.22.0"),
+        project.dependencies.create(group = "org.assertj", name = "assertj-core", version = "3.23.1"),
         project.dependencies.create(group = "org.mockito", name = "mockito-core", version = "4.4.0"),
         project.dependencies.create(group = "com.google.jimfs", name = "jimfs", version = "1.2"),
         project.dependencies.create(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.10"),

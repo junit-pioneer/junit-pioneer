@@ -506,18 +506,19 @@ public class PioneerAnnotationUtilsTests {
 					.allSatisfy(annotation -> assertThat(annotation)
 							.isInstanceOfAny(RepeatableTestAnnotation.class, NonRepeatableTestAnnotation.class,
 								MetaAnnotatedTestAnnotation.class))
-					.extracting(annotation -> {
-						if (annotation instanceof MetaAnnotatedTestAnnotation) {
-							return ((MetaAnnotatedTestAnnotation) annotation).value();
-						} else if (annotation instanceof NonRepeatableTestAnnotation) {
-							return ((NonRepeatableTestAnnotation) annotation).value();
-
-						} else if (annotation instanceof RepeatableTestAnnotation) {
-							return ((RepeatableTestAnnotation) annotation).value();
-						} else {
-							return null;
-						}
-					})
+					.extractingResultOf("value")
+//					.extracting(annotation -> {
+//						if (annotation instanceof MetaAnnotatedTestAnnotation) {
+//							return ((MetaAnnotatedTestAnnotation) annotation).value();
+//						} else if (annotation instanceof NonRepeatableTestAnnotation) {
+//							return ((NonRepeatableTestAnnotation) annotation).value();
+//
+//						} else if (annotation instanceof RepeatableTestAnnotation) {
+//							return ((RepeatableTestAnnotation) annotation).value();
+//						} else {
+//							return null;
+//						}
+//					})
 					.containsExactlyInAnyOrder("Inherited 4", "Inherited 5", "Inherited 6",
 						"Annotated with repeatable 2");
 		}
