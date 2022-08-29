@@ -16,20 +16,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.internal.PioneerUtils;
 
 public class DefaultLocaleTimezoneExtensionDemo {
-
-	protected static Locale createLocale(String language, String country, String variant) {
-		return new Locale.Builder().setLanguage(language).setRegion(country).setVariant(variant).build();
-	}
-
-	protected static Locale createLocale(String language, String country) {
-		return new Locale.Builder().setLanguage(language).setRegion(country).build();
-	}
-
-	protected static Locale createLocale(String language) {
-		return new Locale.Builder().setLanguage(language).build();
-	}
 
 	// tag::default_locale_language[]
 	@Test
@@ -43,19 +32,19 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	@Test
 	@DefaultLocale(language = "en")
 	void test_with_lanuage_only() {
-		assertThat(Locale.getDefault()).isEqualTo(createLocale("en"));
+		assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en"));
 	}
 
 	@Test
 	@DefaultLocale(language = "en", country = "EN")
 	void test_with_lanuage_and_country() {
-		assertThat(Locale.getDefault()).isEqualTo(createLocale("en", "EN"));
+		assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en", "EN"));
 	}
 
 	@Test
 	@DefaultLocale(language = "ja", country = "JP", variant = "japanese")
 	void test_with_lanuage_and_country_and_vairant() {
-		assertThat(Locale.getDefault()).isEqualTo(createLocale("ja", "JP", "japanese"));
+		assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("ja", "JP", "japanese"));
 	}
 	// end::default_locale_language_alternatives[]
 
@@ -65,13 +54,13 @@ public class DefaultLocaleTimezoneExtensionDemo {
 
 		@Test
 		void test_with_class_level_configuration() {
-			assertThat(Locale.getDefault()).isEqualTo(createLocale("fr"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("fr"));
 		}
 
 		@Test
 		@DefaultLocale(language = "en")
 		void test_with_method_level_configuration() {
-			assertThat(Locale.getDefault()).isEqualTo(createLocale("en"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en"));
 		}
 
 	}

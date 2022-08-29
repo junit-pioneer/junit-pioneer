@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junitpioneer.internal.PioneerUtils;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("DefaultLocale extension")
@@ -35,20 +36,8 @@ class DefaultLocaleTests {
 	@BeforeAll
 	static void globalSetUp() {
 		DEFAULT_LOCALE_BEFORE_TEST = Locale.getDefault();
-		TEST_DEFAULT_LOCALE = createLocale("custom");
+		TEST_DEFAULT_LOCALE = PioneerUtils.createLocale("custom");
 		Locale.setDefault(TEST_DEFAULT_LOCALE);
-	}
-
-	protected static Locale createLocale(String language, String country, String variant) {
-		return new Locale.Builder().setLanguage(language).setRegion(country).setVariant(variant).build();
-	}
-
-	protected static Locale createLocale(String language, String country) {
-		return new Locale.Builder().setLanguage(language).setRegion(country).build();
-	}
-
-	protected static Locale createLocale(String language) {
-		return new Locale.Builder().setLanguage(language).build();
 	}
 
 	@AfterAll
@@ -78,14 +67,14 @@ class DefaultLocaleTests {
 		@DefaultLocale(language = "en")
 		@DisplayName("sets the default locale using a language")
 		void setsLanguage() {
-			assertThat(Locale.getDefault()).isEqualTo(createLocale("en"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en"));
 		}
 
 		@Test
 		@DefaultLocale(language = "en", country = "EN")
 		@DisplayName("sets the default locale using a language and a country")
 		void setsLanguageAndCountry() {
-			assertThat(Locale.getDefault()).isEqualTo(createLocale("en", "EN"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en", "EN"));
 		}
 
 		/**
@@ -104,7 +93,7 @@ class DefaultLocaleTests {
 		@DefaultLocale(language = "ja", country = "JP", variant = "japanese")
 		@DisplayName("sets the default locale using a language, a country and a variant")
 		void setsLanguageAndCountryAndVariant() {
-			assertThat(Locale.getDefault()).isEqualTo(createLocale("ja", "JP", "japanese"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("ja", "JP", "japanese"));
 		}
 
 	}
@@ -124,13 +113,13 @@ class DefaultLocaleTests {
 		@Test
 		@ReadsDefaultLocale
 		void shouldExecuteWithClassLevelLocale() {
-			assertThat(Locale.getDefault()).isEqualTo(createLocale("fr", "FR"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("fr", "FR"));
 		}
 
 		@Test
 		@DefaultLocale(language = "de", country = "DE")
 		void shouldBeOverriddenWithMethodLevelLocale() {
-			assertThat(Locale.getDefault()).isEqualTo(createLocale("de", "DE"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("de", "DE"));
 		}
 
 	}
@@ -349,7 +338,7 @@ class DefaultLocaleTests {
 		@Test
 		@DisplayName("should inherit default locale annotation")
 		void shouldInheritClearAndSetProperty() {
-			assertThat(Locale.getDefault()).isEqualTo(createLocale("fr", "FR"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("fr", "FR"));
 		}
 
 	}
