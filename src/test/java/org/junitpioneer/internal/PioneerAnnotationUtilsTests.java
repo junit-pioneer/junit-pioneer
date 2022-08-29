@@ -506,7 +506,18 @@ public class PioneerAnnotationUtilsTests {
 					.allSatisfy(annotation -> assertThat(annotation)
 							.isInstanceOfAny(RepeatableTestAnnotation.class, NonRepeatableTestAnnotation.class,
 								MetaAnnotatedTestAnnotation.class))
-					.extractingResultOf("value")
+					.extracting(annotation -> {
+						if (annotation instanceof MetaAnnotatedTestAnnotation) {
+							return ((MetaAnnotatedTestAnnotation) annotation).value();
+						} else if (annotation instanceof NonRepeatableTestAnnotation) {
+							return ((NonRepeatableTestAnnotation) annotation).value();
+
+						} else if (annotation instanceof RepeatableTestAnnotation) {
+							return ((RepeatableTestAnnotation) annotation).value();
+						} else {
+							return null;
+						}
+					})
 					.containsExactlyInAnyOrder("Inherited 4", "Inherited 5", "Inherited 6",
 						"Annotated with repeatable 2");
 		}
@@ -523,7 +534,19 @@ public class PioneerAnnotationUtilsTests {
 					.allSatisfy(annotation -> assertThat(annotation)
 							.isInstanceOfAny(RepeatableTestAnnotation.class, NonRepeatableTestAnnotation.class,
 								MetaAnnotatedTestAnnotation.class))
-					.extractingResultOf("value")
+					.extracting(annotation -> {
+						if (annotation instanceof MetaAnnotatedTestAnnotation) {
+							return ((MetaAnnotatedTestAnnotation) annotation).value();
+						} else if (annotation instanceof NonRepeatableTestAnnotation) {
+							return ((NonRepeatableTestAnnotation) annotation).value();
+
+						} else if (annotation instanceof RepeatableTestAnnotation) {
+							return ((RepeatableTestAnnotation) annotation).value();
+						} else {
+							return null;
+						}
+
+					})
 					.containsExactlyInAnyOrder("Inherited 1", "Inherited 2", "Inherited 3",
 						"Annotated with repeatable 1");
 		}
@@ -539,7 +562,7 @@ public class PioneerAnnotationUtilsTests {
 			assertThat(result)
 					.hasSize(1)
 					.allSatisfy(annotation -> assertThat(annotation).isInstanceOf(MetaAnnotatedTestAnnotation.class))
-					.extractingResultOf("value")
+					.extracting(annotation -> ((MetaAnnotatedTestAnnotation) annotation).value())
 					.containsExactlyInAnyOrder("Annotated with repeatable 2");
 		}
 
@@ -553,7 +576,7 @@ public class PioneerAnnotationUtilsTests {
 			assertThat(result)
 					.hasSize(1)
 					.allSatisfy(annotation -> assertThat(annotation).isInstanceOf(MetaAnnotatedTestAnnotation.class))
-					.extractingResultOf("value")
+					.extracting(annotation -> ((MetaAnnotatedTestAnnotation) annotation).value())
 					.containsExactlyInAnyOrder("Annotated with repeatable 1");
 		}
 
