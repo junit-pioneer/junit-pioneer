@@ -1,5 +1,13 @@
 import groovy.xml.XmlUtil
 
+repositories {
+	gradlePluginPortal()
+}
+
+dependencies {
+	implementation("org.gradlex:java-module-testing:1.0")
+}
+
 build {
 	doLast {
 		def ideaFolder = new File('.idea');
