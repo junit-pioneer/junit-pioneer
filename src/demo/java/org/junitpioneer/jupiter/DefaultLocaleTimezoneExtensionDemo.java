@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.internal.PioneerUtils;
 
 public class DefaultLocaleTimezoneExtensionDemo {
 
@@ -32,19 +31,20 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	@Test
 	@DefaultLocale(language = "en")
 	void test_with_lanuage_only() {
-		assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en"));
+		assertThat(Locale.getDefault()).isEqualTo(new Locale.Builder().setLanguage("en").build());
 	}
 
 	@Test
 	@DefaultLocale(language = "en", country = "EN")
 	void test_with_lanuage_and_country() {
-		assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en", "EN"));
+		assertThat(Locale.getDefault()).isEqualTo(new Locale.Builder().setLanguage("en").setRegion("EN").build());
 	}
 
 	@Test
 	@DefaultLocale(language = "ja", country = "JP", variant = "japanese")
 	void test_with_lanuage_and_country_and_vairant() {
-		assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("ja", "JP", "japanese"));
+		assertThat(Locale.getDefault())
+				.isEqualTo(new Locale.Builder().setLanguage("ja").setRegion("JP").setVariant("japanese").build());
 	}
 	// end::default_locale_language_alternatives[]
 
@@ -54,13 +54,13 @@ public class DefaultLocaleTimezoneExtensionDemo {
 
 		@Test
 		void test_with_class_level_configuration() {
-			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("fr"));
+			assertThat(Locale.getDefault()).isEqualTo(new Locale.Builder().setLanguage("fr").build());
 		}
 
 		@Test
 		@DefaultLocale(language = "en")
 		void test_with_method_level_configuration() {
-			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en"));
+			assertThat(Locale.getDefault()).isEqualTo(new Locale.Builder().setLanguage("en").build());
 		}
 
 	}
