@@ -10,13 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * {@code @DefaultLocale} is a JUnit Jupiter extension to change the value
@@ -68,7 +68,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface DefaultLocale {
 
 	/**
-	 * An language tag string as specified by IETF BCP 47. See
+	 * A language tag string as specified by IETF BCP 47. See
 	 * {@link java.util.Locale#forLanguageTag(String)} for more information
 	 * about valid language tag values.
 	 *

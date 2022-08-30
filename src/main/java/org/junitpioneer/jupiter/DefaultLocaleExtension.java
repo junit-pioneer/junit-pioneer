@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.PioneerUtils;
 
 class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 
@@ -69,11 +70,11 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 		String country = annotation.country();
 		String variant = annotation.variant();
 		if (!language.isEmpty() && !country.isEmpty() && !variant.isEmpty()) {
-			return new Locale(language, country, variant);
+			return PioneerUtils.createLocale(language, country, variant);
 		} else if (!language.isEmpty() && !country.isEmpty()) {
-			return new Locale(language, country);
+			return PioneerUtils.createLocale(language, country);
 		} else if (!language.isEmpty() && variant.isEmpty()) {
-			return new Locale(language);
+			return PioneerUtils.createLocale(language);
 		} else {
 			throw new ExtensionConfigurationException(
 				"@DefaultLocale not configured correctly. When not using a language tag, specify either"
