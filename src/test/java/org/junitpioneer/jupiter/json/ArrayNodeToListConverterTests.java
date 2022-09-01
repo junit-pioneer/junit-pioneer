@@ -11,16 +11,22 @@
 package org.junitpioneer.jupiter.json;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ArgumentConversionException;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -84,6 +90,28 @@ public class ArrayNodeToListConverterTests {
 	}
 
 	@Test
+	@DisplayName("does not use the converter for non-JSON arguments for simple argument types")
+	void doesNotUseConverterSimple() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "doesNotConvertNonNodesSimple",
+						List.class);
+
+		assertThat(results).hasNumberOfSucceededTests(2);
+		assertThat(results).hasNumberOfReportEntries(2).withValues("12", "23");
+	}
+
+	@Test
+	@DisplayName("does not use the converter for non-JSON arguments for List argument types")
+	void doesNotUseConverterList() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "doesNotConvertNonNodesList",
+						List.class);
+
+		assertThat(results).hasNumberOfSucceededTests(1);
+		assertThat(results).hasNumberOfReportEntries(1).withValues("[a, b, c]");
+	}
+
+	@Test
 	@DisplayName("throws a ParameterResolutionException if it can not convert complex objects")
 	void throwsForMalformedComplexObjects() {
 		ExecutionResults results = PioneerTestKit
@@ -128,6 +156,24 @@ public class ArrayNodeToListConverterTests {
 		} else {
 			then(poems).extracting(Poem::getRelease).noneMatch(i -> i > 1900);
 		}
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "12", "23" })
+	@ReportEntry("{0}")
+	void doesNotConvertNonNodesSimple(@Property("nope") String i) {
+		then(i).isNotNull();
+	}
+
+	@ParameterizedTest
+	@MethodSource("letters")
+	@ReportEntry("{0}")
+	void doesNotConvertNonNodesList(@Property("nope") List<String> letters) {
+		then(letters).hasSize(3).containsExactly("a", "b", "c");
+	}
+
+	public static Stream<Arguments> letters() {
+		return Stream.of(arguments(Arrays.asList("a", "b", "c")));
 	}
 
 	static class BadConfigurationTestCase {
