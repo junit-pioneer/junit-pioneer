@@ -94,7 +94,7 @@ public class ArrayNodeToListConverterTests {
 	void doesNotUseConverterSimple() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class,
-					"doesNotConvertNonNodesSimple", List.class);
+					"doesNotConvertNonNodesSimple", String.class);
 
 		assertThat(results).hasNumberOfSucceededTests(2);
 		assertThat(results).hasNumberOfReportEntries(2).withValues("12", "23");
