@@ -40,7 +40,8 @@ class ArrayNodeToListConverter implements ArgumentConverter {
 		return createList(parameterType, actualTypeArgument, (ArrayNode) source);
 	}
 
-	// We pass the list creation to
+	// We pass the list creation to a generic method, to trick Java into recognizing the element type
+	@SuppressWarnings("unchecked")
 	private static <T> List<T> createList(Class<?> listType, Class<T> elementType, ArrayNode nodes) {
 		List<T> values;
 		if (listType.equals(List.class))
@@ -52,8 +53,9 @@ class ArrayNodeToListConverter implements ArgumentConverter {
 			try {
 				values.add(mapper.treeToValue(node, elementType));
 			}
-			catch (JsonProcessingException e) {
-				throw new RuntimeException(e);
+			catch (JsonProcessingException exception) {
+				throw new ArgumentConversionException("Could not convert parameter because of a JSON exception.",
+					exception);
 			}
 		});
 		return values;

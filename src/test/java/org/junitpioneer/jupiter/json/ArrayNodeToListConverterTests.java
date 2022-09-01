@@ -17,7 +17,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -27,6 +29,7 @@ public class ArrayNodeToListConverterTests {
 
 	private static final String COMPOSERS = "org/junitpioneer/jupiter/json/composers.json";
 	private static final String POETS = "org/junitpioneer/jupiter/json/poets.json";
+	private static final String BAD_POEMS = "org/junitpioneer/jupiter/json/bad_poems.json";
 
 	@Test
 	@DisplayName("can convert classpath source arrays to List")
@@ -68,6 +71,20 @@ public class ArrayNodeToListConverterTests {
 					"T. S. Eliot: [The Hollow Men (1925), Ash Wednesday (1930)]");
 	}
 
+	@Test
+	@DisplayName("throws a ParameterResolutionException if it can not convert complex objects")
+	void throwsForMalformedComplexObjects() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.BadConfigurationTestCase.class,
+					"conversionException", List.class);
+
+		assertThat(results)
+				.hasSingleFailedTest()
+				.withExceptionInstanceOf(ParameterResolutionException.class)
+				.hasMessageContaining("Could not convert parameter because of a JSON exception.")
+				.hasCauseInstanceOf(ArgumentConversionException.class);
+	}
+
 	@ParameterizedTest
 	@JsonClasspathSource(COMPOSERS)
 	@ReportEntry("{1}")
@@ -92,6 +109,15 @@ public class ArrayNodeToListConverterTests {
 		} else {
 			then(poems).extracting(Poem::getRelease).noneMatch(i -> i > 1900);
 		}
+	}
+
+	static class BadConfigurationTestCase {
+
+		@ParameterizedTest
+		@JsonClasspathSource(BAD_POEMS)
+		void conversionException(@Property("poems") List<Poem> poems) {
+		}
+
 	}
 
 	public static class Poem {
