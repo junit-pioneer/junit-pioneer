@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter.json;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -57,6 +58,17 @@ public class ArrayNodeToListConverterTests {
 	}
 
 	@Test
+	@DisplayName("can convert using a specific List implementation")
+	void specificImplementation() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "convertWithExplicitListType",
+					LinkedList.class);
+
+		assertThat(results).hasNumberOfSucceededTests(2);
+		assertThat(results).hasNumberOfReportEntries(2).withValues("[false, true, false]", "[true, false, true]");
+	}
+
+	@Test
 	@DisplayName("can convert classpath source arrays to List with more complex objects")
 	void classpathTestWithComplexObject() {
 		ExecutionResults results = PioneerTestKit
@@ -97,6 +109,13 @@ public class ArrayNodeToListConverterTests {
 	@JsonSource({ "{ 'single': [1, 4, 7] }", "{ 'single': [2, 4, 9] }" })
 	@ReportEntry("{0}")
 	void convertFromAnnotation(@Property("single") List<Integer> numbers) {
+		then(numbers).hasSize(3);
+	}
+
+	@ParameterizedTest
+	@JsonSource({ "{ 'statements': [true, false, true] }", "{ 'statements': [false, true, false] }" })
+	@ReportEntry("{0}")
+	void convertWithExplicitListType(@Property("statements") LinkedList<Boolean> numbers) {
 		then(numbers).hasSize(3);
 	}
 

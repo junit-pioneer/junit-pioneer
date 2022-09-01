@@ -25,8 +25,8 @@ import org.junit.platform.commons.support.ReflectionSupport;
 
 class ArrayNodeToListConverter implements ArgumentConverter {
 
-	// recreate default constructor to prevent compiler warning
 	public ArrayNodeToListConverter() {
+		// recreate default constructor to prevent compiler warning
 	}
 
 	@Override
@@ -45,7 +45,7 @@ class ArrayNodeToListConverter implements ArgumentConverter {
 	private static <T> List<T> createList(Class<?> listType, Class<T> elementType, ArrayNode nodes) {
 		List<T> values;
 		if (listType.equals(List.class))
-			values = (List<T>) ReflectionSupport.newInstance(ArrayList.class);
+			values = ReflectionSupport.newInstance(ArrayList.class);
 		else
 			values = (List<T>) ReflectionSupport.newInstance(listType);
 		ObjectMapper mapper = new ObjectMapper();
