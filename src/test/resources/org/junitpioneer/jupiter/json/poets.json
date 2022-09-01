@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Edgar Allan Poe",
+    "works": [
+      {
+        "title": "The Black Cat",
+        "release": 1843
+      },
+      {
+        "title": "The Cask of Amontillado",
+        "release": 1846
+      },
+      {
+        "title": "The Pit and the Pendulum",
+        "release": 1842
+      }
+    ]
+  },
+  {
+    "name": "T. S. Eliot",
+    "works": [
+      {
+        "title": "The Hollow Men",
+        "release": 1925
+      },
+      {
+        "title": "Ash Wednesday",
+        "release": 1930
+      }
+    ]
+  }
+]
