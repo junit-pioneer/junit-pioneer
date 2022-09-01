@@ -93,8 +93,8 @@ public class ArrayNodeToListConverterTests {
 	@DisplayName("does not use the converter for non-JSON arguments for simple argument types")
 	void doesNotUseConverterSimple() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "doesNotConvertNonNodesSimple",
-						List.class);
+				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class,
+					"doesNotConvertNonNodesSimple", List.class);
 
 		assertThat(results).hasNumberOfSucceededTests(2);
 		assertThat(results).hasNumberOfReportEntries(2).withValues("12", "23");
@@ -105,7 +105,7 @@ public class ArrayNodeToListConverterTests {
 	void doesNotUseConverterList() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "doesNotConvertNonNodesList",
-						List.class);
+					List.class);
 
 		assertThat(results).hasNumberOfSucceededTests(1);
 		assertThat(results).hasNumberOfReportEntries(1).withValues("[a, b, c]");
