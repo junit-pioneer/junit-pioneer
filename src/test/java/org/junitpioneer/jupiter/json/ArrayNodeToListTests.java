@@ -14,6 +14,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,9 +22,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -31,8 +30,8 @@ import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
-@DisplayName("ArrayNodeToListConverter")
-public class ArrayNodeToListConverterTests {
+@DisplayName("Converting JSON to lists")
+public class ArrayNodeToListTests {
 
 	private static final String COMPOSERS = "org/junitpioneer/jupiter/json/composers.json";
 	private static final String POETS = "org/junitpioneer/jupiter/json/poets.json";
@@ -42,8 +41,8 @@ public class ArrayNodeToListConverterTests {
 	@DisplayName("can convert classpath source arrays to List")
 	void classpathTest() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "convertFromClasspath",
-					String.class, List.class);
+				.executeTestMethodWithParameterTypes(ArrayNodeToListTests.class, "convertFromClasspath", String.class,
+					List.class);
 
 		assertThat(results).hasNumberOfSucceededTests(2);
 		assertThat(results)
@@ -56,8 +55,7 @@ public class ArrayNodeToListConverterTests {
 	@DisplayName("can convert annotation source arrays to list")
 	void annotationTest() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "convertFromAnnotation",
-					List.class);
+				.executeTestMethodWithParameterTypes(ArrayNodeToListTests.class, "convertFromAnnotation", List.class);
 
 		assertThat(results).hasNumberOfSucceededTests(2);
 		assertThat(results).hasNumberOfReportEntries(2).withValues("[1, 4, 7]", "[2, 4, 9]");
@@ -67,7 +65,7 @@ public class ArrayNodeToListConverterTests {
 	@DisplayName("can convert using a specific List implementation")
 	void specificImplementation() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "convertWithExplicitListType",
+				.executeTestMethodWithParameterTypes(ArrayNodeToListTests.class, "convertWithExplicitListType",
 					LinkedList.class);
 
 		assertThat(results).hasNumberOfSucceededTests(2);
@@ -78,8 +76,8 @@ public class ArrayNodeToListConverterTests {
 	@DisplayName("can convert classpath source arrays to List with more complex objects")
 	void classpathTestWithComplexObject() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "convertToComplexObject",
-					String.class, List.class);
+				.executeTestMethodWithParameterTypes(ArrayNodeToListTests.class, "convertToComplexObject", String.class,
+					List.class);
 
 		assertThat(results).hasNumberOfSucceededTests(2);
 		assertThat(results)
@@ -93,8 +91,8 @@ public class ArrayNodeToListConverterTests {
 	@DisplayName("does not use the converter for non-JSON arguments for simple argument types")
 	void doesNotUseConverterSimple() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class,
-					"doesNotConvertNonNodesSimple", String.class);
+				.executeTestMethodWithParameterTypes(ArrayNodeToListTests.class, "doesNotConvertNonNodesSimple",
+					String.class);
 
 		assertThat(results).hasNumberOfSucceededTests(2);
 		assertThat(results).hasNumberOfReportEntries(2).withValues("12", "23");
@@ -104,7 +102,7 @@ public class ArrayNodeToListConverterTests {
 	@DisplayName("does not use the converter for non-JSON arguments for List argument types")
 	void doesNotUseConverterList() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.class, "doesNotConvertNonNodesList",
+				.executeTestMethodWithParameterTypes(ArrayNodeToListTests.class, "doesNotConvertNonNodesList",
 					List.class);
 
 		assertThat(results).hasNumberOfSucceededTests(1);
@@ -115,14 +113,13 @@ public class ArrayNodeToListConverterTests {
 	@DisplayName("throws a ParameterResolutionException if it can not convert complex objects")
 	void throwsForMalformedComplexObjects() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(ArrayNodeToListConverterTests.BadConfigurationTestCase.class,
+				.executeTestMethodWithParameterTypes(ArrayNodeToListTests.BadConfigurationTestCase.class,
 					"conversionException", List.class);
 
 		assertThat(results)
-				.hasSingleFailedTest()
-				.withExceptionInstanceOf(ParameterResolutionException.class)
-				.hasMessageContaining("Could not convert parameter because of a JSON exception.")
-				.hasCauseInstanceOf(ArgumentConversionException.class);
+				.hasSingleFailedContainer()
+				.withExceptionInstanceOf(UncheckedIOException.class)
+				.hasMessageContaining("Failed to convert to type");
 	}
 
 	@ParameterizedTest

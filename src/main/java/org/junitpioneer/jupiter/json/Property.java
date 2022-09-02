@@ -16,8 +16,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.junit.jupiter.params.converter.ConvertWith;
-
 /**
  * An annotation indicating the name of the JSON property that should be extracted into the method parameter.
  *
@@ -28,7 +26,6 @@ import org.junit.jupiter.params.converter.ConvertWith;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(ArrayNodeToListConverter.class)
 @Documented
 public @interface Property {
 

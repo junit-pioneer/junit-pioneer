@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.json;
 
 import java.io.UncheckedIOException;
+import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -43,9 +44,9 @@ class JacksonNode implements Node {
 	}
 
 	@Override
-	public <T> T toType(Class<T> type) {
+	public <T> T toType(Type type) {
 		try {
-			return objectMapper.treeToValue(node, type);
+			return objectMapper.treeToValue(node, objectMapper.constructType(type));
 		}
 		catch (JsonProcessingException e) {
 			throw new UncheckedIOException("Failed to convert to type " + type, e);
@@ -62,7 +63,7 @@ class JacksonNode implements Node {
 	}
 
 	@Override
-	public Object value(Class<?> typeHint) {
+	public Object value(Type typeHint) {
 		if (node.isTextual()) {
 			return node.textValue();
 		} else if (node.isInt()) {
@@ -81,7 +82,7 @@ class JacksonNode implements Node {
 			return node.decimalValue();
 		} else if (node.isBigInteger()) {
 			return node.bigIntegerValue();
-		} else if (node.isObject()) {
+		} else if (node.isObject() || node.isArray()) {
 			return toType(typeHint);
 		}
 		return node;
