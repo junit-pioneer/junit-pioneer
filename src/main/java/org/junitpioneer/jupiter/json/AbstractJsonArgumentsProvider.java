@@ -62,6 +62,8 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 			Property property = onlyParameter.getAnnotation(Property.class);
 			if (property == null) {
 				// no property specified -> the node should be converted in the parameter type
+				// We must explicitly wrap the return into an Object[] because otherwise the return
+				// value is mistakenly interpreted as an Object[] and throws a ClassCastException
 				return () -> new Object[] { node.toType(onlyParameter.getParameterizedType()) };
 			}
 
