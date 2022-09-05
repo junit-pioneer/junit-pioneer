@@ -264,6 +264,8 @@ tasks {
 			includeTestsMatching("*Tests")
 		}
 		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
+		if (JavaVersion.current() >= JavaVersion.VERSION_12)
+			systemProperty("java.security.manager", "allow")
 		jvmArgs(testJvmArgs)
 	}
 
