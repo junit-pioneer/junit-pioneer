@@ -33,6 +33,8 @@ module org.junitpioneer {
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
+	provides org.junitpioneer.jupiter.IssueProcessor
+			with org.junitpioneer.jupiter.issue.StoringIssueProcessor;
 	uses org.junitpioneer.jupiter.IssueProcessor;
 
 	requires org.junit.platform.testkit;
