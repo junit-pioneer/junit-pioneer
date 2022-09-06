@@ -167,7 +167,8 @@ jobs:
       - name: Set up supported Java
         uses: actions/setup-java@v2
         with:
-          java-version: 18
+          # The Java Version Gradle will be using for execution
+          java-version: 17
           distribution: temurin
           cache: 'gradle'
       - name: Gradle toolchains
