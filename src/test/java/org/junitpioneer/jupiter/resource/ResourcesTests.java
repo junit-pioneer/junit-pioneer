@@ -113,9 +113,7 @@ class ResourcesTests {
 							finished(//
 								throwable(//
 									instanceOf(ParameterResolutionException.class), //
-									message("Method [public org.junitpioneer.jupiter.resource.Resource "
-											+ "org.junitpioneer.jupiter.resource.ResourcesTests$RFCreateReturnsNullResourceFactory.create(java.util.List)] "
-											+ "with arguments [some-arg] returned null"))));
+									message(message -> message.matches(".*`Resource` instance.*was null.*")))));
 			}
 
 		}
@@ -191,8 +189,7 @@ class ResourcesTests {
 								finished(//
 									throwable(//
 										instanceOf(ParameterResolutionException.class),
-										message("Method [public java.lang.Object "
-												+ "org.junitpioneer.jupiter.resource.ResourcesTests$RGetReturnsNullResource.get()] returned null"))));
+										message(message -> message.matches(".*resource.*was null.*")))));
 				}
 
 			}
@@ -635,9 +632,7 @@ class ResourcesTests {
 							finished(//
 								throwable(//
 									instanceOf(ParameterResolutionException.class), //
-									message("Method [public org.junitpioneer.jupiter.resource.Resource "
-											+ "org.junitpioneer.jupiter.resource.ResourcesTests$RFCreateReturnsNullResourceFactory.create(java.util.List)] "
-											+ "with arguments [] returned null"))));
+									message(message -> message.matches(".*`Resource` instance.*was null.*")))));
 			}
 
 		}
@@ -714,9 +709,7 @@ class ResourcesTests {
 								finished(//
 									throwable(//
 										instanceOf(ParameterResolutionException.class), //
-										message("Method [public java.lang.Object "
-												+ "org.junitpioneer.jupiter.resource.ResourcesTests$RGetReturnsNullResource.get()] "
-												+ "returned null"))));
+										message(message -> message.matches(".*resource.*was null.*")))));
 				}
 
 			}

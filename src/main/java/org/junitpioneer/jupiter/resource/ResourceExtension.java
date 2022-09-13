@@ -81,10 +81,9 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		}
 
 		// @formatter:off
-		String message =
-				String.format(
-						"Parameter [%s] in %s is not annotated with @New or @Shared",
-						parameterContext.getParameter(), testMethodDescription(extensionContext));
+		String message = String.format(
+				"Parameter [%s] in %s is not annotated with @New or @Shared",
+				parameterContext.getParameter(), testMethodDescription(extensionContext));
 		// @formatter:on
 		throw new ParameterResolutionException(message);
 	}
@@ -110,21 +109,20 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		}
 		catch (Exception ex) {
 			// @formatter:off
-			String message =
-					String.format(
-							"Unable to get the contents of the resource created by `%s`",
-							resourceFactory.getClass().getTypeName());
+			String message = String.format(
+					"Unable to get the contents of the resource created by `%s`",
+					resourceFactory.getClass().getTypeName());
 			// @formatter:on
 			throw new ParameterResolutionException(message, ex);
 		}
 
 		if (result == null) {
 			// @formatter:off
-			String message =
-					String.format(
-							"Method [%s] returned null",
-							ReflectionSupport.findMethod(resource.getClass(), "get")
-									.orElseThrow(this::unreachable));
+			String message = String.format(
+					"The resource returned by [%s] was null, which is not allowed",
+					ReflectionSupport
+							.findMethod(resource.getClass(), "get")
+							.orElseThrow(this::unreachable));
 			// @formatter:on
 			throw new ParameterResolutionException(message);
 		}
@@ -161,27 +159,25 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			}
 			catch (Exception ex) {
 				// @formatter:off
-				String message =
-						String.format(
-								"Unable to get the contents of the resource created by `%s`",
-								sharedAnnotation.factory());
+				String message = String.format(
+						"Unable to get the contents of the resource created by `%s`",
+						sharedAnnotation.factory());
 				// @formatter:on
 				throw new ParameterResolutionException(message, ex);
 			}
 
 			if (result == null) {
 				// @formatter:off
-				String message =
-						String.format(
-								"Method [%s] returned null",
-								ReflectionSupport.findMethod(resourceWithLock.delegate().getClass(), "get")
-										.orElseThrow(this::unreachable));
+				String message = String.format(
+						"The resource returned by [%s] was null, which is not allowed",
+						ReflectionSupport
+								.findMethod(resourceWithLock.delegate().getClass(), "get")
+								.orElseThrow(this::unreachable));
 				// @formatter:on
 				throw new ParameterResolutionException(message);
 			}
 
 			return result;
-
 		}
 		finally {
 			SHARED_ANNOTATION_RESOLUTION_LOCK.unlock();
@@ -208,12 +204,12 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 		if (result == null) {
 			// @formatter:off
-			String message =
-					String.format(
-							"Method [%s] with arguments %s returned null",
-							ReflectionSupport.findMethod(resourceFactory.getClass(), "create", List.class)
-									.orElseThrow(this::unreachable),
-							arguments);
+			String message = String.format(
+					"The `Resource` instance returned by the factory method [%s] with arguments %s was null, which is not allowed",
+					ReflectionSupport
+							.findMethod(resourceFactory.getClass(), "create", List.class)
+							.orElseThrow(this::unreachable),
+					arguments);
 			// @formatter:on
 			throw new ParameterResolutionException(message);
 		}
