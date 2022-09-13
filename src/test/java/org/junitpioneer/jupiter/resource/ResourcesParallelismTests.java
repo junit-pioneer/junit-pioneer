@@ -38,6 +38,11 @@ import org.junitpioneer.testkit.PioneerTestKit;
 
 class ResourcesParallelismTests {
 
+	/*
+	 * Asserts that parallel tests don't concurrently access shared resources.
+	 * See `ResourceExtension::runSequentially` for details.
+	 */
+
 	@DisplayName("when a number of shared resources are used in the same test suite")
 	@Nested
 	class WhenANumberOfSharedResourcesAreUsedInSameTestSuiteTests {
@@ -94,34 +99,6 @@ class ResourcesParallelismTests {
 	private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
 
 	static class ThrowIfTestsRunInParallelTestCases {
-
-		// In ResourceExtension, we wrap shared resources in locks. This prevents them from being
-		// used concurrently, which in turn prevents race conditions.
-		//
-		// However, we can still suffer from something known in computer science as the
-		// "dining philosophers problem" [1].
-		//
-		// For example, given these tests and the respective shared resources that they want to
-		// get:
-		// - test1 -> [A, B]
-		// - test2 -> [B, C]
-		// - test3 -> [C, A]
-		//
-		// ...what happens if test1 gets A, then test2 gets B, then test3 gets C, then test1 tries
-		// to get B?
-		//
-		// Well, test1 is waiting on test2 to get B, but test2 is waiting on test3 to get C, and
-		// test3 is waiting on test1 to get A.
-		//
-		// All three tests are now waiting on each other for resources that they will never
-		// release, so the tests will freeze forever!
-		//
-		// This is called a deadlock.
-		//
-		// The purpose of the tests below is to check that the tests don't run in parallel or deadlock.
-		// (We're trying to check both cases at the same time.)
-		//
-		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
 
 		@Test
 		void test1(

@@ -45,6 +45,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	private static final ExtensionContext.Namespace NAMESPACE = //
 		ExtensionContext.Namespace.create(ResourceExtension.class);
 
+	private static final Lock SHARED_ANNOTATION_RESOLUTION_LOCK = new ReentrantLock();
+
 	private static final AtomicLong KEY_GENERATOR = new AtomicLong(0);
 
 	@Override
@@ -130,15 +132,10 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return result;
 	}
 
-	private static final Lock SHARED_ANNOTATION_RESOLUTION_LOCK = new ReentrantLock();
-
 	private Object resolveShared(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store store) {
-		// Force resolveShared to run sequentially, to ensure that assertions that
-		// depend on other runs of resolveShared work correctly when Jupiter runs
-		// tests in parallel.
+		// run sequentially, so that resources of the same name are never created twice (at the same time)
 		SHARED_ANNOTATION_RESOLUTION_LOCK.lock();
 		try {
-
 			throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
 			throwIfMultipleParametersHaveExactAnnotation(parameters, sharedAnnotation);
 
@@ -281,7 +278,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return sharedAnnotation.name() + " resource factory key";
 	}
 
-	private static String testMethodDescription(ExtensionContext extensionContext) {
+	private String testMethodDescription(ExtensionContext extensionContext) {
 		return extensionContext.getTestMethod().map(method -> "method [" + method + ']').orElse("an unknown method");
 	}
 
@@ -292,78 +289,86 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	@Override
 	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
 			ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext, extensionContext);
+		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public <T> T interceptTestFactoryMethod(Invocation<T> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		return runSequentially(invocation, invocationContext, extensionContext);
+		return runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptDynamicTest(Invocation<Void> invocation, DynamicTestInvocationContext invocationContext,
 			ExtensionContext extensionContext) throws Throwable {
-		runDynamicTestSequentially(invocation, extensionContext);
+		runSequentially(invocation, testFactoryMethod(extensionContext), extensionContext);
 	}
 
 	@Override
 	public void interceptTestTemplateMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext, extensionContext);
+		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public <T> T interceptTestClassConstructor(Invocation<T> invocation,
 			ReflectiveInvocationContext<Constructor<T>> invocationContext, ExtensionContext extensionContext)
 			throws Throwable {
-		return runSequentially(invocation, invocationContext, extensionContext);
+		return runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptBeforeAllMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext, extensionContext);
+		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptAfterAllMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext, extensionContext);
+		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptBeforeEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext, extensionContext);
+		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptAfterEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext, extensionContext);
+		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
-	private <T> T runSequentially(Invocation<T> invocation,
-			ReflectiveInvocationContext<? extends Executable> invocationContext, ExtensionContext extensionContext)
+	private <T> T runSequentially(Invocation<T> invocation, Executable executable, ExtensionContext extensionContext)
 			throws Throwable {
-		List<ReentrantLock> locks = //
-			sortedLocks(findShared(invocationContext.getExecutable()), extensionContext);
+		// Parallel tests must not concurrently access shared resources. To ensure that, we associate a lock with
+		// each shared resource and require a test to hold all locks associated with the shared resources it uses.
+		//
+		// This harbors the risk for deadlocks, for example, given these tests and the respective shared resources
+		// that they want to use:
+		//
+		//  - test1 -> [A, B]
+		//  - test2 -> [B, C]
+		//  - test3 -> [C, A]
+		//
+		// If test1 gets A, then test2 gets B, and then test3 gets C, none of the tests can get the second lock
+		// they need and so they can also never give up the one they hold.
+		//
+		// This is known as the Dining Philosophers Problem[1] and a solution is to order locks before acquiring them.
+		// In the above example, test3 would start with trying to get A and since it can't block on that. Then test2
+		// is free to continue and eventually release the locks.
+		//
+		// We implement the solution here by lexicographically sorting the locks by the (globally unique) name of the
+		// shared resource each lock is (uniquely) associated with.
+		//
+		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
+		List<ReentrantLock> locks = getSortedLocksForSharedResources(findShared(executable), extensionContext);
 		return invokeWithLocks(invocation, locks);
 	}
 
-	private void runDynamicTestSequentially(Invocation<Void> invocation, ExtensionContext extensionContext)
-			throws Throwable {
-		List<ReentrantLock> locks = //
-			sortedLocks(findShared(testFactoryMethod(extensionContext)), extensionContext);
-		invokeWithLocks(invocation, locks);
-	}
-
-	private List<ReentrantLock> sortedLocks(Stream<Shared> sharedAnnotations, ExtensionContext extensionContext) {
-		// Sort by @Shared's name to implicitly sort the locks returned by this method, to prevent deadlocks when
-		// locking later.
-		// This is a well-known solution to the "dining philosophers problem".
-		// See ResourcesParallelismTests.ThrowIfTestsRunInParallelTestCases for more info.
+	private List<ReentrantLock> getSortedLocksForSharedResources(Stream<Shared> sharedAnnotations, ExtensionContext extensionContext) {
 		List<Shared> sortedAnnotations = sharedAnnotations.sorted(comparing(Shared::name)).collect(toList());
 		List<ExtensionContext.Store> stores = //
 			sortedAnnotations
@@ -417,7 +422,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.lock();
 	}
 
-	private static <T> T invokeWithLocks(Invocation<T> invocation, List<ReentrantLock> locks) throws Throwable {
+	private <T> T invokeWithLocks(Invocation<T> invocation, List<ReentrantLock> locks) throws Throwable {
 		locks.forEach(ReentrantLock::lock);
 		try {
 			return invocation.proceed();
