@@ -57,8 +57,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithNewTempDirParameterTestCases {
 
 		static Path recordedPath;
@@ -91,8 +89,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithParameterWithNewTempDirAndArgTestCases {
 
 		@Test
@@ -123,8 +119,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class TwoTestMethodsWithNewTempDirParameterTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -166,8 +160,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithTwoNewTempDirParametersTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -206,8 +198,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class TestConstructorWithNewTempDirParameterTestCases {
 
 		static List<Path> recordedPathsFromConstructor = new CopyOnWriteArrayList<>();
@@ -259,8 +249,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class NewTempDirWithWrongNumberOfArgumentsTestCases {
 
 		@Test
@@ -289,8 +277,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithSharedTempDirParameterTestCases {
 
 		static Path recordedPath;
@@ -327,8 +313,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -369,8 +353,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class TwoTestMethodsWithSharedSameNameTempDirParameterTestCases {
 
 		static List<Path> recordedPaths = new CopyOnWriteArrayList<>();
@@ -418,8 +400,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class FirstSingleTestMethodWithGlobalTempDirParameterTestCases {
 
 		static Path recordedPath;
@@ -434,8 +414,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class SecondSingleTestMethodWithGlobalTempDirParameterTestCases {
 
 		static Path recordedPath;
@@ -475,8 +453,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class SingleTestMethodWithSourceFileScopedTempDirParameterTestCases {
 
 		static Path recordedPathForImplicit;
@@ -537,8 +513,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class FirstSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases {
 
 		static Path recordedPath;
@@ -551,8 +525,6 @@ class TemporaryDirectoryTests {
 
 	}
 
-	// This test case class is static so that JUnit 5 doesn't pick it up
-	// automatically but our own tests can still explicitly find it and run it.
 	static class SecondSingleTopLevelTestMethodWithSourceFileScopedTempDirParameterTestCases {
 
 		static Path recordedPath;
