@@ -21,6 +21,8 @@ import java.nio.file.Paths;
 
 class TemporaryDirectoryAssertions {
 
+	public static final Path ROOT_TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
+
 	static void assertCanAddAndReadTextFile(Path tempDir) {
 		try {
 			Path testFile = Files.createTempFile(tempDir, "some-test-file", ".txt");
@@ -39,7 +41,5 @@ class TemporaryDirectoryAssertions {
 	static void assertEmptyReadableWriteableTemporaryDirectory(Path tempDir) {
 		assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
 	}
-
-	public static final Path ROOT_TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
 }
