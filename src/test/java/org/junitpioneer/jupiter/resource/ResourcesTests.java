@@ -59,14 +59,14 @@ class ResourcesTests {
 						.allEvents()
 						.debug()
 						.assertThatEvents()
-						.haveExactly(//
+						.haveExactly( //
 							1, //
-							finished(//
-								throwable(//
+							finished( //
+								throwable( //
 									instanceOf(ParameterResolutionException.class), //
 									message("Unable to create a resource from `"
 											+ ThrowOnRFCreateResourceFactory.class.getTypeName() + "`"), //
-									cause(//
+									cause( //
 										instanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass()), //
 										message(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage())))));
 			}
@@ -85,10 +85,10 @@ class ResourcesTests {
 						.allEvents()
 						.debug()
 						.assertThatEvents()
-						.haveExactly(//
+						.haveExactly( //
 							1, //
-							finished(//
-								throwable(//
+							finished( //
+								throwable( //
 									instanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass()), //
 									message(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage()))));
 			}
@@ -108,10 +108,10 @@ class ResourcesTests {
 						.allEvents()
 						.debug()
 						.assertThatEvents()
-						.haveExactly(//
+						.haveExactly( //
 							1, //
-							finished(//
-								throwable(//
+							finished( //
+								throwable( //
 									instanceOf(ParameterResolutionException.class), //
 									message(message -> message.matches(".*`Resource` instance.*was null.*")))));
 			}
@@ -134,14 +134,14 @@ class ResourcesTests {
 							.allEvents()
 							.debug()
 							.assertThatEvents()
-							.haveExactly(//
+							.haveExactly( //
 								1, //
-								finished(//
-									throwable(//
+								finished( //
+									throwable( //
 										instanceOf(ParameterResolutionException.class), //
 										message("Unable to get the contents of the resource created by `"
 												+ ThrowOnRGetResourceFactory.class.getTypeName() + "`"), //
-										cause(//
+										cause( //
 											instanceOf(EXPECTED_THROW_ON_R_GET_EXCEPTION.getClass()), //
 											message(EXPECTED_THROW_ON_R_GET_EXCEPTION.getMessage())))));
 				}
@@ -161,10 +161,10 @@ class ResourcesTests {
 							.allEvents()
 							.debug()
 							.assertThatEvents()
-							.haveExactly(//
+							.haveExactly( //
 								1, //
-								finished(//
-									throwable(//
+								finished( //
+									throwable( //
 										instanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass()), //
 										message(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage()))));
 				}
@@ -184,10 +184,10 @@ class ResourcesTests {
 							.allEvents()
 							.debug()
 							.assertThatEvents()
-							.haveExactly(//
+							.haveExactly( //
 								1, //
-								finished(//
-									throwable(//
+								finished( //
+									throwable( //
 										instanceOf(ParameterResolutionException.class),
 										message(message -> message.matches(".*resource.*was null.*")))));
 				}
@@ -449,10 +449,10 @@ class ResourcesTests {
 					.allEvents()
 					.debug()
 					.assertThatEvents()
-					.haveExactly(//
+					.haveExactly( //
 						1, //
-						finished(//
-							throwable(//
+						finished( //
+							throwable( //
 								instanceOf(ParameterResolutionException.class), //
 								message(String
 										.format(
@@ -466,10 +466,10 @@ class ResourcesTests {
 					.allEvents()
 					.debug()
 					.assertThatEvents()
-					.haveExactly(//
+					.haveExactly( //
 						1, //
-						finished(//
-							throwable(//
+						finished( //
+							throwable( //
 								instanceOf(ParameterResolutionException.class), //
 								message(String
 										.format(
@@ -529,10 +529,10 @@ class ResourcesTests {
 					.allEvents()
 					.debug()
 					.assertThatEvents()
-					.haveExactly(//
+					.haveExactly( //
 						1, //
-						finished(//
-							throwable(//
+						finished( //
+							throwable( //
 								instanceOf(ParameterResolutionException.class), //
 								message("A test method has 2 parameters annotated with @Shared with the same "
 										+ "factory type and name; this is redundant, so it is not allowed"))));
@@ -577,14 +577,14 @@ class ResourcesTests {
 						.allEvents()
 						.debug()
 						.assertThatEvents()
-						.haveExactly(//
+						.haveExactly( //
 							1, //
-							finished(//
-								throwable(//
+							finished( //
+								throwable( //
 									instanceOf(ParameterResolutionException.class), //
 									message("Unable to create a resource from `"
 											+ ThrowOnRFCreateResourceFactory.class.getTypeName() + "`"), //
-									cause(//
+									cause( //
 										instanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass()), //
 										message(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage())))));
 			}
@@ -604,10 +604,10 @@ class ResourcesTests {
 						.allEvents()
 						.debug()
 						.assertThatEvents()
-						.haveExactly(//
+						.haveExactly( //
 							1, //
-							finished(//
-								throwable(//
+							finished( //
+								throwable( //
 									instanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass()), //
 									message(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage()))));
 			}
@@ -627,10 +627,10 @@ class ResourcesTests {
 						.allEvents()
 						.debug()
 						.assertThatEvents()
-						.haveExactly(//
+						.haveExactly( //
 							1, //
-							finished(//
-								throwable(//
+							finished( //
+								throwable( //
 									instanceOf(ParameterResolutionException.class), //
 									message(message -> message.matches(".*`Resource` instance.*was null.*")))));
 			}
@@ -654,14 +654,14 @@ class ResourcesTests {
 							.allEvents()
 							.debug()
 							.assertThatEvents()
-							.haveExactly(//
+							.haveExactly( //
 								1, //
-								finished(//
-									throwable(//
+								finished( //
+									throwable( //
 										instanceOf(ParameterResolutionException.class), //
 										message("Unable to get the contents of the resource created by `"
 												+ ThrowOnRGetResourceFactory.class + "`"), //
-										cause(//
+										cause( //
 											instanceOf(EXPECTED_THROW_ON_R_GET_EXCEPTION.getClass()), //
 											message(EXPECTED_THROW_ON_R_GET_EXCEPTION.getMessage())))));
 				}
@@ -681,10 +681,10 @@ class ResourcesTests {
 							.allEvents()
 							.debug()
 							.assertThatEvents()
-							.haveExactly(//
+							.haveExactly( //
 								1, //
-								finished(//
-									throwable(//
+								finished( //
+									throwable( //
 										instanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass()), //
 										message(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage()))));
 				}
@@ -704,10 +704,10 @@ class ResourcesTests {
 							.allEvents()
 							.debug()
 							.assertThatEvents()
-							.haveExactly(//
+							.haveExactly( //
 								1, //
-								finished(//
-									throwable(//
+								finished( //
+									throwable( //
 										instanceOf(ParameterResolutionException.class), //
 										message(message -> message.matches(".*resource.*was null.*")))));
 				}
