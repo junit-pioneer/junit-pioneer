@@ -368,7 +368,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return invokeWithLocks(invocation, locks);
 	}
 
-	private List<ReentrantLock> getSortedLocksForSharedResources(Stream<Shared> sharedAnnotations, ExtensionContext extensionContext) {
+	private List<ReentrantLock> getSortedLocksForSharedResources(Stream<Shared> sharedAnnotations,
+			ExtensionContext extensionContext) {
 		List<Shared> sortedAnnotations = sharedAnnotations.sorted(comparing(Shared::name)).collect(toList());
 		List<ExtensionContext.Store> stores = //
 			sortedAnnotations
