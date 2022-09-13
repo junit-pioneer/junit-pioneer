@@ -42,9 +42,10 @@ class ResourcesTests {
 		@DisplayName("then ::create is called")
 		@Test
 		void thenCreateIsCalled() {
-			ExecutionResults executionResults = PioneerTestKit.executeTestClass(FakeResourceFactory1TestCases.class);
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(CountingResourceFactory1TestCases.class);
 			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(1);
-			assertThat(FakeResourceFactory1.createCalls).isEqualTo(1);
+			assertThat(CountingResourceFactory1.createCalls).isEqualTo(1);
 		}
 
 		@DisplayName("and the factory throws on ::create")
@@ -198,33 +199,24 @@ class ResourcesTests {
 
 	}
 
-	static class FakeResourceFactory1TestCases {
+	static class CountingResourceFactory1TestCases {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(FakeResourceFactory1.class) Object object) {
+		void test(@New(CountingResourceFactory1.class) Object object) {
 
 		}
 
 	}
 
-	static final class FakeResourceFactory1 implements ResourceFactory<Object> {
+	static final class CountingResourceFactory1 implements ResourceFactory<Object> {
 
 		static int createCalls = 0;
 
 		@Override
 		public Resource<Object> create(List<String> arguments) {
 			createCalls++;
-			return new SomeResource();
-		}
-
-	}
-
-	static final class SomeResource implements Resource<Object> {
-
-		@Override
-		public Object get() {
-			return "some-object";
+			return () -> "some resource";
 		}
 
 	}
@@ -233,7 +225,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(ThrowOnRFCreateResourceFactory.class) Object object) {
+		void test(@New(ThrowOnRFCreateResourceFactory.class) Object object) {
 
 		}
 
@@ -255,7 +247,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(ThrowOnRFCloseResourceFactory.class) Object object) {
+		void test(@New(ThrowOnRFCloseResourceFactory.class) Object object) {
 
 		}
 
@@ -282,7 +274,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(value = RFCreateReturnsNullResourceFactory.class, arguments = { "some-arg" }) Object object) {
+		void test(@New(value = RFCreateReturnsNullResourceFactory.class, arguments = { "some-arg" }) Object object) {
 
 		}
 
@@ -301,7 +293,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(ThrowOnRGetResourceFactory.class) Object object) {
+		void test(@New(ThrowOnRGetResourceFactory.class) Object object) {
 
 		}
 
@@ -332,7 +324,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(ThrowOnRCloseResourceFactory.class) Object object) {
+		void test(@New(ThrowOnRCloseResourceFactory.class) Object object) {
 
 		}
 
@@ -368,7 +360,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@New(RGetReturnsNullResourceFactory.class) Object object) {
+		void test(@New(RGetReturnsNullResourceFactory.class) Object object) {
 
 		}
 
@@ -404,7 +396,7 @@ class ResourcesTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class);
 			Method failingTest = TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class
-					.getDeclaredMethod("theTest", String.class);
+					.getDeclaredMethod("test", String.class);
 			assertThat(executionResults)
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ParameterResolutionException.class)
@@ -417,7 +409,7 @@ class ResourcesTests {
 	static class TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases {
 
 		@Test
-		void theTest(
+		void test(
 				@New(DummyResourceFactory.class) @Shared(factory = DummyResourceFactory.class, name = "some-name") String param) {
 			fail("We should not get this far.");
 		}
@@ -483,7 +475,7 @@ class ResourcesTests {
 	static class SingleTestMethodWithParamsWithSharedSameNameButDifferentTypesTestCases {
 
 		@Test
-		void theTest(@Shared(factory = DummyResourceFactory.class, name = "some-name") String first,
+		void test(@Shared(factory = DummyResourceFactory.class, name = "some-name") String first,
 				@Shared(factory = OtherResourceFactory.class, name = "some-name") String second) {
 
 		}
@@ -493,12 +485,12 @@ class ResourcesTests {
 	static class TwoTestMethodsWithParamsWithSharedSameNameButDifferentTypesTestCases {
 
 		@Test
-		void theTest1(@Shared(factory = DummyResourceFactory.class, name = "some-name") String foo) {
+		void test_1(@Shared(factory = DummyResourceFactory.class, name = "some-name") String foo) {
 
 		}
 
 		@Test
-		void theTest2(@Shared(factory = OtherResourceFactory.class, name = "some-name") String bar) {
+		void test_2(@Shared(factory = OtherResourceFactory.class, name = "some-name") String bar) {
 
 		}
 
@@ -543,7 +535,7 @@ class ResourcesTests {
 	static class TestMethodWithTwoParamsWithSameSharedAnnotationTestCases {
 
 		@Test
-		void theTest(@Shared(factory = DummyResourceFactory.class, name = "some-name") String first,
+		void test(@Shared(factory = DummyResourceFactory.class, name = "some-name") String first,
 				@Shared(factory = DummyResourceFactory.class, name = "some-name") String second) {
 
 		}
@@ -559,9 +551,9 @@ class ResourcesTests {
 		@DisplayName("then ::create is called")
 		@Test
 		void thenCreateIsCalled() {
-			ExecutionResults executionResults = PioneerTestKit.executeTestClass(FakeResourceFactory2TestCases.class);
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(CountingResourceFactory2TestCases.class);
 			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(1);
-			assertThat(FakeResourceFactory2.createCalls).isEqualTo(1);
 		}
 
 		@DisplayName("and the factory throws on ::create")
@@ -718,24 +710,24 @@ class ResourcesTests {
 
 	}
 
-	static class FakeResourceFactory2TestCases {
+	static class CountingResourceFactory2TestCases {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@Shared(factory = FakeResourceFactory2.class, name = "some-name") Object object) {
+		void test(@Shared(factory = CountingResourceFactory2.class, name = "some-name") Object object) {
 
 		}
 
 	}
 
-	static final class FakeResourceFactory2 implements ResourceFactory<Object> {
+	static final class CountingResourceFactory2 implements ResourceFactory<Object> {
 
 		static int createCalls = 0;
 
 		@Override
 		public Resource<Object> create(List<String> arguments) {
 			createCalls++;
-			return new SomeResource();
+			return () -> "some resource";
 		}
 
 	}
@@ -744,7 +736,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@Shared(factory = ThrowOnRFCreateResourceFactory.class, name = "some-name") Object object) {
+		void test(@Shared(factory = ThrowOnRFCreateResourceFactory.class, name = "some-name") Object object) {
 
 		}
 
@@ -754,7 +746,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@Shared(factory = ThrowOnRFCloseResourceFactory.class, name = "some-name") Object object) {
+		void test(@Shared(factory = ThrowOnRFCloseResourceFactory.class, name = "some-name") Object object) {
 
 		}
 
@@ -764,7 +756,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@Shared(factory = ThrowOnRGetResourceFactory.class, name = "some-name") Object object) {
+		void test(@Shared(factory = ThrowOnRGetResourceFactory.class, name = "some-name") Object object) {
 
 		}
 
@@ -774,7 +766,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@Shared(factory = ThrowOnRCloseResourceFactory.class, name = "some-name") Object object) {
+		void test(@Shared(factory = ThrowOnRCloseResourceFactory.class, name = "some-name") Object object) {
 
 		}
 
@@ -784,7 +776,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@Shared(name = "foo", factory = RFCreateReturnsNullResourceFactory.class) Object object) {
+		void test(@Shared(name = "foo", factory = RFCreateReturnsNullResourceFactory.class) Object object) {
 
 		}
 
@@ -794,7 +786,7 @@ class ResourcesTests {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@Shared(name = "foo", factory = RGetReturnsNullResourceFactory.class) Object object) {
+		void test(@Shared(name = "foo", factory = RGetReturnsNullResourceFactory.class) Object object) {
 
 		}
 
@@ -809,37 +801,38 @@ class ResourcesTests {
 		@DisplayName("then ::create is called only once")
 		@Test
 		void thenCreateIsCalledOnlyOnce() {
-			ExecutionResults executionResults = PioneerTestKit.executeTestClass(FakeResourceFactory3TestCases.class);
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(CountingResourceFactory3TestCases.class);
 			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(2);
-			assertThat(FakeResourceFactory3.createCalls).isEqualTo(1);
+			assertThat(CountingResourceFactory3.createCalls).isEqualTo(1);
 		}
 
 	}
 
-	static class FakeResourceFactory3TestCases {
+	static class CountingResourceFactory3TestCases {
 
 		@Test
 		@SuppressWarnings("unused")
-		void foo(@Shared(factory = FakeResourceFactory3.class, name = "some-name") Object object) {
+		void test_1(@Shared(factory = CountingResourceFactory3.class, name = "some-name") Object object) {
 
 		}
 
 		@Test
 		@SuppressWarnings("unused")
-		void bar(@Shared(factory = FakeResourceFactory3.class, name = "some-name") Object object) {
+		void test_2(@Shared(factory = CountingResourceFactory3.class, name = "some-name") Object object) {
 
 		}
 
 	}
 
-	static final class FakeResourceFactory3 implements ResourceFactory<Object> {
+	static final class CountingResourceFactory3 implements ResourceFactory<Object> {
 
 		static int createCalls = 0;
 
 		@Override
 		public Resource<Object> create(List<String> arguments) {
 			createCalls++;
-			return new SomeResource();
+			return () -> "some resource";
 		}
 
 	}
