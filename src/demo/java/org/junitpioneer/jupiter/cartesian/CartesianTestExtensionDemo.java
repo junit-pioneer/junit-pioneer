@@ -178,47 +178,50 @@ public class CartesianTestExtensionDemo {
 	}
 	// end::cartesian_argument_sets_reuse[]
 
+	static class MisconfiguredExamples {
 
-	// tag::cartesian_bad_examples[]
-	@CartesianTest
-	@CartesianTest.MethodFactory("unsuitableStringIntFactory")
-	void testHasTooFewParameters(String string) {
-		// fails because we try to supply a non-existent integer parameter
-	}
+		// tag::cartesian_bad_examples[]
+		@CartesianTest
+		@CartesianTest.MethodFactory("unsuitableStringIntFactory")
+		void testHasTooFewParameters(String string) {
+			// fails because we try to supply a non-existent integer parameter
+		}
 
-	@CartesianTest
-	@CartesianTest.MethodFactory("unsuitableStringIntFactory")
-	void testHasTooManyParameters(String string, int i, boolean b) {
-		// fails because the boolean parameter is not resolved
-	}
+		@CartesianTest
+		@CartesianTest.MethodFactory("unsuitableStringIntFactory")
+		void testHasTooManyParameters(String string, int i, boolean b) {
+			// fails because the boolean parameter is not resolved
+		}
 
-	@CartesianTest
-	@CartesianTest.MethodFactory("unsuitableStringIntFactory")
-	void testHasParametersInWrongOrder(int i, String string) {
-		// fails because the factory method declared
-		// parameter sets in the wrong order
-	}
+		@CartesianTest
+		@CartesianTest.MethodFactory("unsuitableStringIntFactory")
+		void testHasParametersInWrongOrder(int i, String string) {
+			// fails because the factory method declared
+			// parameter sets in the wrong order
+		}
 
-	@CartesianTest
-	@CartesianTest.MethodFactory("resolveTestReporterParam")
-	void testHasConflictingParameters(String string, TestReporter info) {
-		// fails because both the factory method and JUnit
-		// try to inject TestReporter
-	}
+		@CartesianTest
+		@CartesianTest.MethodFactory("resolveTestReporterParam")
+		void testHasConflictingParameters(String string, TestReporter info) {
+			// fails because both the factory method and JUnit
+			// try to inject TestReporter
+		}
 
-	static ArgumentSets unsuitableStringIntFactory() {
-		return ArgumentSets
-				.argumentsForFirstParameter("A", "B", "C")
-				.argumentsForNextParameter(1, 2, 3);
-	}
+		static ArgumentSets unsuitableStringIntFactory() {
+			return ArgumentSets
+					.argumentsForFirstParameter("A", "B", "C")
+					.argumentsForNextParameter(1, 2, 3);
+		}
 
-	static ArgumentSets resolveTestReporterParam() {
-		return ArgumentSets
-				.argumentsForFirstParameter("A", "B", "C")
-				// in this case MyTestReporter implements TestReporter
-				.argumentsForNextParameter(new MyTestReporter());
+		static ArgumentSets resolveTestReporterParam() {
+			return ArgumentSets
+					.argumentsForFirstParameter("A", "B", "C")
+					// in this case MyTestReporter implements TestReporter
+					.argumentsForNextParameter(new MyTestReporter());
+		}
+		// end::cartesian_bad_examples[]
+
 	}
-	// end::cartesian_bad_examples[]
 
 	// tag::cartesian_argument_sets_ints_annotation[]
 	@Target(ElementType.PARAMETER)
