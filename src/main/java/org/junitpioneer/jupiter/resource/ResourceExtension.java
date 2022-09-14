@@ -346,7 +346,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		// Parallel tests must not concurrently access shared resources. To ensure that, we associate a lock with
 		// each shared resource and require a test to hold all locks associated with the shared resources it uses.
 		//
-		// This harbors the risk for deadlocks, for example, given these tests and the respective shared resources
+		// This harbors a risk of deadlocks. For example, given these tests and the respective shared resources
 		// that they want to use:
 		//
 		//  - test1 -> [A, B]
@@ -356,19 +356,19 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		// If test1 gets A, then test2 gets B, and then test3 gets C, none of the tests can get the second lock
 		// they need and so they can also never give up the one they hold.
 		//
-		// This is known as the Dining Philosophers Problem[1] and a solution is to order locks before acquiring them.
-		// In the above example, test3 would start with trying to get A and since it can't block on that. Then test2
+		// This is known as the Dining Philosophers Problem [1] and a solution is to order locks before acquiring them.
+		// In the above example, test3 would start with trying to get A and, since it can't, block on that. Then test2
 		// is free to continue and eventually release the locks.
 		//
 		// We implement the solution here by lexicographically sorting the locks by the (globally unique) name of the
-		// shared resource each lock is (uniquely) associated with.
+		// shared resource that each lock is (uniquely) associated with.
 		//
 		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
-		List<ReentrantLock> locks = getSortedLocksForSharedResources(findShared(executable), extensionContext);
+		List<ReentrantLock> locks = sortedLocksForSharedResources(findShared(executable), extensionContext);
 		return invokeWithLocks(invocation, locks);
 	}
 
-	private List<ReentrantLock> getSortedLocksForSharedResources(Stream<Shared> sharedAnnotations,
+	private List<ReentrantLock> sortedLocksForSharedResources(Stream<Shared> sharedAnnotations,
 			ExtensionContext extensionContext) {
 		List<Shared> sortedAnnotations = sharedAnnotations.sorted(comparing(Shared::name)).collect(toList());
 		List<ExtensionContext.Store> stores = //
