@@ -26,6 +26,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
+@SuppressWarnings("deprecation")
 @DisplayName("DefaultLocale extension")
 class DefaultLocaleTests {
 

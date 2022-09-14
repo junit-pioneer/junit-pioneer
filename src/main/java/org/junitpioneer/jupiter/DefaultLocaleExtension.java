@@ -61,6 +61,7 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 		return Locale.forLanguageTag(annotation.value());
 	}
 
+	@SuppressWarnings("deprecation")
 	private static Locale createFromParts(DefaultLocale annotation) {
 		String language = annotation.language();
 		String country = annotation.country();
