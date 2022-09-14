@@ -42,8 +42,6 @@ Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
-
 include::{demo}[tag=cartesian_simple_demo]
 ----
 
@@ -64,13 +62,6 @@ You can mix and match parameter annotations as you need.
 
 [source,java,indent=0]
 ----
-import java.time.temporal.ChronoUnit;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.params.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_annotating_parameters]
 ----
 
@@ -81,9 +72,6 @@ The test will try every combination those values can have.
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
-
 include::{demo}[tag=cartesian_combining_values]
 ----
 
@@ -113,11 +101,6 @@ To demonstrate with a table:
 
 [source,java,indent=0]
 ----
-import java.time.temporal.ChronoUnit;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_with_enum]
 ----
 
@@ -131,11 +114,6 @@ The `value` attribute is required in the following example because the method pa
 
 [source,java,indent=0]
 ----
-import java.time.temporal.*;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_type]
 ----
 
@@ -144,11 +122,6 @@ If omitted, all constants will be used.
 
 [source,java,indent=0]
 ----
-import java.time.temporal.*;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_type_and_names]
 ----
 
@@ -157,21 +130,11 @@ For example, you can exclude names from the enum constant pool or specify regula
 
 [source,java,indent=0]
 ----
-import java.time.temporal.*;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_mode]
 ----
 
 [source,java,indent=0]
 ----
-import java.time.temporal.*;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_regex]
 ----
 
@@ -179,9 +142,6 @@ The example below shows how to use `@CartesianTest.Enum` with two `Enum` types.
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_enums]
 ----
 
@@ -209,9 +169,6 @@ For _this purpose only_, range sources can be used on parameters.
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.params.*;
-
 include::{demo}[tag=cartesian_enum_with_range_sources]
 ----
 
@@ -341,9 +298,6 @@ Let's create an annotation for it.
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-
 include::{demo}[tag=cartesian_argument_sets_int_argument_provider]
 ----
 
@@ -355,14 +309,6 @@ Next, we need to implement `IntArgumentsProvider`, that takes these values and p
 
 [source,java,indent=0]
 ----
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
-
 include::{demo}[tag=cartesian_argument_sets_ints_annotation]
 ----
 
@@ -376,14 +322,6 @@ You could do additional processing, for example:
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import java.util.*;
-import java.lang.reflect.Parameter;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
-
 include::{people}[tag=cartesian_people_provider_with_CartesianParameterArgumentsProvider]
 ----
 
@@ -392,15 +330,6 @@ The previous example would look like the following:
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import java.util.*;
-import java.lang.reflect.Parameter;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.support.AnnotationConsumer;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
-
 include::{people}[tag=cartesian_people_provider_with_AnnotationConsumer]
 ----
 
@@ -416,9 +345,6 @@ Let's create an annotation for it.
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-
 include::{bit}[tag=cartesian_bit_source_annotation]
 ----
 
@@ -430,14 +356,6 @@ Next, we need to implement `BitArgumentsProvider`.
 
 [source,java,indent=0]
 ----
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
-
 include::{bit}[tag=cartesian_bit_argument_provider]
 ----
 
@@ -454,16 +372,6 @@ For example:
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
-
 include::{number}[tag=cartesian_number_argument_provider]
 ----
 
@@ -475,9 +383,6 @@ For example:
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
-
 include::{demo}[tag=cartesian_testWithCustomDisplayName]
 ----
 
