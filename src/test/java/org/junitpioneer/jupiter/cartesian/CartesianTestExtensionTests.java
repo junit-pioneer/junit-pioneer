@@ -135,6 +135,17 @@ public class CartesianTestExtensionTests {
 		}
 
 		@Test
+		@DisplayName("works with @CartesianTest.Enum supplying enum values to an interface type")
+		void cartesianEnumSourceWithInterfaceType() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianEnumSourceTestCases.class,
+						"allValuesWithInterfaceType", TestInterface.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+			assertThat(results).hasNumberOfReportEntries(3).withValues("ONE", "TWO", "THREE");
+		}
+
+		@Test
 		@DisplayName("works with @CartesianTest.Enum with multiple omitted Enum types")
 		void cartesianEnumSourceWithMultipleOmittedTypes() {
 			ExecutionResults results = PioneerTestKit
@@ -914,6 +925,11 @@ public class CartesianTestExtensionTests {
 		}
 
 		@CartesianTest
+		@ReportEntry("{0}")
+		void allValuesWithInterfaceType(@CartesianTest.Enum(TestEnum.class) TestInterface e) {
+		}
+
+		@CartesianTest
 		@ReportEntry("{0} - {1}")
 		void allValuesWithMultipleOmittedTypes(@CartesianTest.Enum TestEnum e1,
 				@CartesianTest.Enum AnotherTestEnum e2) {
@@ -1176,12 +1192,15 @@ public class CartesianTestExtensionTests {
 
 	}
 
-	private enum TestEnum {
+	private enum TestEnum implements TestInterface {
 		ONE, TWO, THREE
 	}
 
 	private enum AnotherTestEnum {
 		ALPHA, BETA, GAMMA
+	}
+
+	private interface TestInterface {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
