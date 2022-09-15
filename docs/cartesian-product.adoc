@@ -33,8 +33,8 @@ link:/docs/cartesian-product-v1[The old variant] is deprecated and will be remov
 
 You can supply test parameters to `@CartesianTest` in two ways:
 
- - The test parameters can be annotated directly with `@CartesianTest.Values`, `@CartesianTest.Enum`, or range source annotations (see <<Defining arguments on parameters>>)
- - The test method can be annotated with `@CartesianTest.MethodFactory` to point at a factory method that creates sets of arguments (see <<Defining arguments with factories>>)
+ - You can annotate the test parameters directly with `@CartesianTest.Values`, `@CartesianTest.Enum`, or range source annotations (see <<Defining arguments on parameters>>)
+ - You can annotate test method itself with `@CartesianTest.MethodFactory` to point at a factory method that creates sets of arguments (see <<Defining arguments with factories>>)
 
 Specifying more than one kind of parameter source (i.e.: annotating your test parameters and the test method itself) does not work and will throw an `ExtensionConfigurationException`.
 
