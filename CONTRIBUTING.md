@@ -65,7 +65,7 @@ We really appreciate that you consider contributing to JUnit Pioneer.
 We know that this can be quite daunting at first:
 Everybody uses a vocabulary and techniques that appear quite cryptic to those not steeped in them.
 We can't fix that in a short file like this, but we want to provide some pointers to get you started.
-If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and ask us to explain it better.
+If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new/choose) and ask us to explain it better.
 
 To get you started, have a look at the [Open Source Guide](https://opensource.guide/) article [_How to Contribute to Open Source_](https://opensource.guide/how-to-contribute/).
 We particularly recommend the following sections:
@@ -199,7 +199,7 @@ For that, also add the annotation `@Inherited`.
 #### Thread-safety
 
 It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.
-To that end it is necessary to understand [JUnit Jupiter's parallel execution](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution)), particularly [the synchronization mechanisms it offers](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution-synchronization): `@Execution` and `@ResourceLock`.
+To that end it is necessary to understand [JUnit Jupiter's parallel execution](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution), particularly [the synchronization mechanisms it offers](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution-synchronization): `@Execution` and `@ResourceLock`.
 
 For extensions touching global state (like default locales or environment variables), we've chosen the following approach:
 
@@ -420,7 +420,7 @@ PR: ${pull-request}
 
 `${action}` should succinctly describe what the PR does in good Git style.
 Ideally, this title line (without issue and PR numbers) should not exceed 50 characters - 70 is the absolute maximum.
-It is followed, in parenthesis, by a comma-separated list of all related issues, a slash, and the pull request (to make all of them easy to find from a look at the log).
+It is followed, in parentheses, by a comma-separated list of all related issues, a slash, and the pull request (to make all of them easy to find from a look at the log).
 
 `${body}` should outline the problem the pull request was solving - it should focus on _why_ the code was written, not on _how_ it works.
 This can usually be a summary of the issue description and discussion as well as commit messages.
@@ -622,7 +622,7 @@ This applies to users opening issues, contributors providing PRs, and other main
 These are the channels we use to communicate with one another, our contributors, and users - in decreasing order of importance:
 
 1. [project website](https://junit-pioneer.org)
-2. files in the repository (like [`README.md`](README.md) and and this `CONTRIBUTING.md`)
+2. files in the repository (like [`README.md`](README.md) and this `CONTRIBUTING.md`)
 3. Git commit messages
 4. issues/PRs [on GitHub](https://github.com/junit-pioneer/junit-pioneer)
 5. _#junit-pioneer_ channel [in Discord](https://discord.gg/rHfJeCF)
