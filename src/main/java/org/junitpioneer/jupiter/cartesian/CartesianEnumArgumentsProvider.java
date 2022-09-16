@@ -31,12 +31,12 @@ class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianPara
 
 	@Override
 	public Stream<E> provideArguments(ExtensionContext context, Parameter parameter) {
-		Class<?> parameterType = parameter.getType();
 		CartesianTest.Enum enumSource = AnnotationSupport
 				.findAnnotation(parameter, CartesianTest.Enum.class)
 				.orElseThrow(() -> new PreconditionViolationException(
 					"Parameter has to be annotated with " + CartesianTest.Enum.class.getName()));
 
+		Class<?> parameterType = parameter.getType();
 		Set<E> constants = getEnumConstants(enumSource, parameterType);
 		CartesianTest.Enum.Mode mode = enumSource.mode();
 		String[] declaredConstantNames = enumSource.names();
