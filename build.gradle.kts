@@ -322,15 +322,6 @@ tasks {
 			languageVersion.set(JavaLanguageVersion.of(maxOf(17, targetJavaVersion.majorVersion.toInt())))
 		})
 
-		// Exclude internal implementation package from javadoc
-		/*
-		 * Disabled for modular Gradle build because it fails when these source files are excluded
-		 * See https://stackoverflow.com/q/32785002 and slightly related Gradle issue https://github.com/gradle/gradle/issues/14066
-		 */
-		if (!modularBuild.toBoolean()) {
-			exclude("org/junitpioneer/internal")
-		}
-
 		options {
 			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937
 			this as StandardJavadocDocletOptions
