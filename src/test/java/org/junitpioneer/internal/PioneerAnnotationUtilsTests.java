@@ -506,7 +506,7 @@ public class PioneerAnnotationUtilsTests {
 					.allSatisfy(annotation -> assertThat(annotation)
 							.isInstanceOfAny(RepeatableTestAnnotation.class, NonRepeatableTestAnnotation.class,
 								MetaAnnotatedTestAnnotation.class))
-					.extracting(this::extractingResultOfValue)
+					.extracting(this::resultOfValue)
 					.containsExactlyInAnyOrder("Inherited 4", "Inherited 5", "Inherited 6",
 						"Annotated with repeatable 2");
 		}
@@ -523,7 +523,7 @@ public class PioneerAnnotationUtilsTests {
 					.allSatisfy(annotation -> assertThat(annotation)
 							.isInstanceOfAny(RepeatableTestAnnotation.class, NonRepeatableTestAnnotation.class,
 								MetaAnnotatedTestAnnotation.class))
-					.extracting(this::extractingResultOfValue)
+					.extracting(this::resultOfValue)
 					.containsExactlyInAnyOrder("Inherited 1", "Inherited 2", "Inherited 3",
 						"Annotated with repeatable 1");
 		}
@@ -539,7 +539,7 @@ public class PioneerAnnotationUtilsTests {
 			assertThat(result)
 					.hasSize(1)
 					.allSatisfy(annotation -> assertThat(annotation).isInstanceOf(MetaAnnotatedTestAnnotation.class))
-					.extracting(this::extractingResultOfValue)
+					.extracting(this::resultOfValue)
 					.containsExactlyInAnyOrder("Annotated with repeatable 2");
 		}
 
@@ -553,21 +553,20 @@ public class PioneerAnnotationUtilsTests {
 			assertThat(result)
 					.hasSize(1)
 					.allSatisfy(annotation -> assertThat(annotation).isInstanceOf(MetaAnnotatedTestAnnotation.class))
-					.extracting(this::extractingResultOfValue)
+					.extracting(this::resultOfValue)
 					.containsExactlyInAnyOrder("Annotated with repeatable 1");
 		}
 
 		// see https://github.com/assertj/assertj/issues/2760
-		String extractingResultOfValue(Annotation annotation) {
-			if (annotation instanceof MetaAnnotatedTestAnnotation) {
+		String resultOfValue(Annotation annotation) {
+			// can't wait for type patterns!
+			if (annotation instanceof MetaAnnotatedTestAnnotation)
 				return ((MetaAnnotatedTestAnnotation) annotation).value();
-			} else if (annotation instanceof NonRepeatableTestAnnotation) {
+			if (annotation instanceof NonRepeatableTestAnnotation)
 				return ((NonRepeatableTestAnnotation) annotation).value();
-			} else if (annotation instanceof RepeatableTestAnnotation) {
+			if (annotation instanceof RepeatableTestAnnotation)
 				return ((RepeatableTestAnnotation) annotation).value();
-			} else {
-				return null;
-			}
+			throw new AssertionError("Cannot extract value from annotation of type " + annotation.getClass());
 		}
 
 	}
