@@ -318,8 +318,8 @@ tasks {
 
 	javadoc {
 		javadocTool.set(project.javaToolchains.javadocToolFor {
-			// Create Javadoc with newer JDK to get the latest features, e.g. search bar
-			languageVersion.set(JavaLanguageVersion.of(17))
+			// Create Javadoc with at least Java 17 to get the latest features, e.g. search bar
+			languageVersion.set(JavaLanguageVersion.of(maxOf(17, targetJavaVersion.majorVersion.toInt())))
 		})
 
 		// Exclude internal implementation package from javadoc
