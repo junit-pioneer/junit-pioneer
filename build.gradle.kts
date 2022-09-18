@@ -245,9 +245,11 @@ tasks {
 	compileTestJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		var xlintArg = "-Xlint:all"
 		if (modularBuild.toBoolean()) {
 			options.compilerArgs.add(patchModuleArg)
+		}
+		var xlintArg = "-Xlint:all"
+		if (modularBuild.toBoolean()) {
 			xlintArg += ",-exports,-requires-automatic"
 			// missing-explicit-ctor was added in Java 16. This causes errors on test classes, which don't have one.
 			if (JavaVersion.current() >= JavaVersion.VERSION_16) {
