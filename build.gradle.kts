@@ -223,17 +223,21 @@ tasks {
 	compileJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		// do not break the build on "exports" warnings - see CONTRIBUTING.md for details
+		// Do not break the build on "exports" warnings (see CONTRIBUTING.md for details)
 		options.compilerArgs.add("-Xlint:all,-exports")
 	}
 
 	// Prepares test-related JVM args
 	val moduleName = "org.junitpioneer"
 	val targetModule = if (modularBuild.toBoolean()) moduleName else "ALL-UNNAMED"
+	// See https://docs.gradle.org/current/userguide/java_testing.html#sec:java_testing_modular_patching
 	val patchModuleArg = "--patch-module=$moduleName=${compileJava.get().destinationDirectory.asFile.get().path}"
 	val testJvmArgs = listOf(
+			// Ignore these options on Java 8
 			"-XX:+IgnoreUnrecognizedVMOptions",
+			// EnvironmentVariableUtils: make java.util.Map accessible
 			"--add-opens=java.base/java.util=$targetModule",
+			// EnvironmentVariableUtils: make java.lang.System accessible
 			"--add-opens=java.base/java.lang=$targetModule",
 			patchModuleArg
 	)
@@ -245,6 +249,7 @@ tasks {
 		if (modularBuild.toBoolean()) {
 			options.compilerArgs.add(patchModuleArg)
 			xlintArg += ",-exports,-requires-automatic"
+			// missing-explicit-ctor was added in Java 16. This causes errors on test classes, which don't have one.
 			if (JavaVersion.current() >= JavaVersion.VERSION_16) {
 				xlintArg += ",-missing-explicit-ctor"
 			}
@@ -264,6 +269,9 @@ tasks {
 			includeTestsMatching("*Tests")
 		}
 		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
+		// java.security.manager was added in Java 12 (see
+		// https://www.oracle.com/java/technologies/javase/12-relnote-issues.html#JDK-8191053). We have to explicitly
+		// set it to "allow" for EnvironmentVariableUtilsTests$With_SecurityManager.
 		if (JavaVersion.current() >= JavaVersion.VERSION_12)
 			systemProperty("java.security.manager", "allow")
 		jvmArgs(testJvmArgs)
