@@ -27,14 +27,14 @@ NOTE: The CartesianTest extension has undergone significant changes in 1.6.0.
 This included moving it into a new package.
 link:/docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for 2022).
 
-== Basic Use
+== Basic use
 
 `@CartesianTest` is used _instead_ of `@Test` or other such annotations (e.g. `@RepeatedTest`).
 
 You can supply test parameters to `@CartesianTest` in two ways:
 
- - You can annotate your test method, providing all parameter values in a single annotation.
- - The test parameters can be annotated with `@CartesianTest.Values`, `@CartesianTest.Enum`, or range source annotations (see <<Annotating your test parameters>>)
+ - You can annotate the test parameters directly with `@CartesianTest.Values`, `@CartesianTest.Enum`, or range source annotations (see <<Defining arguments on parameters>>)
+ - You can annotate test method itself with `@CartesianTest.MethodFactory` to point at a factory method that creates sets of arguments (see <<Defining arguments with factories>>)
 
 Specifying more than one kind of parameter source (i.e.: annotating your test parameters and the test method itself) does not work and will throw an `ExtensionConfigurationException`.
 
@@ -42,8 +42,6 @@ Our earlier example with `{ 1, 2 }` and `{ 3, 4 }`, would look like this:
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
-
 include::{demo}[tag=cartesian_simple_demo]
 ----
 
@@ -56,7 +54,7 @@ If your input is `{ 1, 1, 3 }` and `{ 2, 2 }` the extension will consider their 
 Otherwise, the test would run with the same parameters multiple times.
 If you need to pass the same parameters multiple times, you might want to look into https://junit.org/junit5/docs/current/user-guide/#writing-tests-repeated-tests[repeated tests].
 
-== Annotating your test parameters
+== Defining arguments on parameters
 
 You can annotate the parameters of your `@CartesianTest`, to provide values to that specific parameter.
 Parameter annotations are "self-contained", they only provide values to the parameter they are on and do not interfere with each other.
@@ -64,13 +62,6 @@ You can mix and match parameter annotations as you need.
 
 [source,java,indent=0]
 ----
-import java.time.temporal.ChronoUnit;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.params.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_annotating_parameters]
 ----
 
@@ -81,9 +72,6 @@ The test will try every combination those values can have.
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
-
 include::{demo}[tag=cartesian_combining_values]
 ----
 
@@ -113,11 +101,6 @@ To demonstrate with a table:
 
 [source,java,indent=0]
 ----
-import java.time.temporal.ChronoUnit;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_with_enum]
 ----
 
@@ -131,11 +114,6 @@ The `value` attribute is required in the following example because the method pa
 
 [source,java,indent=0]
 ----
-import java.time.temporal.*;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_type]
 ----
 
@@ -144,11 +122,6 @@ If omitted, all constants will be used.
 
 [source,java,indent=0]
 ----
-import java.time.temporal.*;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_type_and_names]
 ----
 
@@ -157,21 +130,11 @@ For example, you can exclude names from the enum constant pool or specify regula
 
 [source,java,indent=0]
 ----
-import java.time.temporal.*;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_mode]
 ----
 
 [source,java,indent=0]
 ----
-import java.time.temporal.*;
-
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_regex]
 ----
 
@@ -179,9 +142,6 @@ The example below shows how to use `@CartesianTest.Enum` with two `Enum` types.
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
-
 include::{demo}[tag=cartesian_enum_with_enums]
 ----
 
@@ -202,16 +162,13 @@ To demonstrate with a table:
 | 6th test  | THREE             | GAMMA
 |===
 
-=== Range Source annotations
+=== Range source annotations
 
 You can annotate your test parameters with link:docs/range-sources[range source annotations].
 For _this purpose only_, range sources can be used on parameters.
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.params.*;
-
 include::{demo}[tag=cartesian_enum_with_range_sources]
 ----
 
@@ -233,7 +190,7 @@ To demonstrate with a table:
 
 For more information, please see the link:docs/range-sources[separate documentation about range sources].
 
-== Annotating your test method
+== Defining arguments with factories
 
 You can annotate your test method to supply arguments to all parameters simultaneously.
 
@@ -245,9 +202,9 @@ Just like with JUnit's `@MethodSource`, you can specify the factory method with 
 This method must return `ArgumentSets`.
 
 `ArgumentSets` is a helper class, specifically for creating sets for `@CartesianTest`.
-To create the test data, instantiate with the static factory method `argumentsForFirstParameter`, then call the `addValuesForNextParameter` method once per additional parameter in the order in which the they appear in the test method.
+To create the test data, instantiate with the static factory method `argumentsForFirstParameter`, then call the `addValuesForNextParameter` method once per additional parameter in the order in which they appear in the test method.
 In each call, pass in all values for the corresponding parameter.
-For convenience, all methods return with your `ArgumentSets` instance, so you can chain `add()` calls.
+For convenience, all methods return with your `ArgumentSets` instance, so you can chain `add...` calls.
 If you want to create an initially-empty `ArgumentSets`, call the static factory method `create()`.
 
 Let's look at an example.
@@ -288,11 +245,11 @@ You can reuse the same argument provider method multiple times.
 include::{demo}[tag=cartesian_argument_sets_reuse]
 ----
 
-You can use an argument provider method in nested classes, as long as these are annotated with `@TestInstance(Lifecycle.PER_CLASS)`.
+You can make the argument provider method non-static if the test class is annotated with `@TestInstance(Lifecycle.PER_CLASS)`.
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=cartesian_argument_sets_with_nested_classes]
+include::{demo}[tag=cartesian_argument_sets_with_non_static_factory]
 ----
 
 ==== Requirements for the factory method
@@ -341,10 +298,7 @@ Let's create an annotation for it.
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-
-include::{demo}[tag=cartesian_argument_sets_int_argument_provider]
+include::{demo}[tag=cartesian_argument_sets_ints_annotation]
 ----
 
 The annotation targets parameters because we want to use it directly on a parameter.
@@ -355,15 +309,7 @@ Next, we need to implement `IntArgumentsProvider`, that takes these values and p
 
 [source,java,indent=0]
 ----
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
-
-include::{demo}[tag=cartesian_argument_sets_ints_annotation]
+include::{demo}[tag=cartesian_argument_sets_int_argument_provider]
 ----
 
 The class has to implement `CartesianParameterArgumentsProvider`.
@@ -376,14 +322,6 @@ You could do additional processing, for example:
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import java.util.*;
-import java.lang.reflect.Parameter;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
-
 include::{people}[tag=cartesian_people_provider_with_CartesianParameterArgumentsProvider]
 ----
 
@@ -392,15 +330,6 @@ The previous example would look like the following:
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import java.util.*;
-import java.lang.reflect.Parameter;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.support.AnnotationConsumer;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
-
 include::{people}[tag=cartesian_people_provider_with_AnnotationConsumer]
 ----
 
@@ -416,9 +345,6 @@ Let's create an annotation for it.
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-
 include::{bit}[tag=cartesian_bit_source_annotation]
 ----
 
@@ -430,14 +356,6 @@ Next, we need to implement `BitArgumentsProvider`.
 
 [source,java,indent=0]
 ----
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
-
 include::{bit}[tag=cartesian_bit_argument_provider]
 ----
 
@@ -454,16 +372,6 @@ For example:
 
 [source,java,indent=0]
 ----
-import java.lang.annotation.*;
-import java.lang.reflect.Parameter;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
-import org.junitpioneer.jupiter.cartesian.CartesianMethodArgumentsProvider;
-
 include::{number}[tag=cartesian_number_argument_provider]
 ----
 
@@ -475,9 +383,6 @@ For example:
 
 [source,java,indent=0]
 ----
-import org.junitpioneer.jupiter.cartesian.*;
-import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
-
 include::{demo}[tag=cartesian_testWithCustomDisplayName]
 ----
 

@@ -31,15 +31,12 @@ class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianPara
 
 	@Override
 	public Stream<E> provideArguments(ExtensionContext context, Parameter parameter) {
-		Class<?> parameterType = parameter.getType();
-		if (!Enum.class.isAssignableFrom(parameterType))
-			throw new PreconditionViolationException(
-				String.format("Parameter of type %s must reference an Enum type", parameterType));
 		CartesianTest.Enum enumSource = AnnotationSupport
 				.findAnnotation(parameter, CartesianTest.Enum.class)
 				.orElseThrow(() -> new PreconditionViolationException(
 					"Parameter has to be annotated with " + CartesianTest.Enum.class.getName()));
 
+		Class<?> parameterType = parameter.getType();
 		Set<E> constants = getEnumConstants(enumSource, parameterType);
 		CartesianTest.Enum.Mode mode = enumSource.mode();
 		String[] declaredConstantNames = enumSource.names();
@@ -63,13 +60,15 @@ class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianPara
 	private Class<E> determineEnumClass(CartesianTest.Enum enumSource, Class<?> parameterType) {
 		Class enumClass = enumSource.value();
 		if (enumClass.equals(NullEnum.class)) {
+			if (!Enum.class.isAssignableFrom(parameterType))
+				throw new PreconditionViolationException(
+					String.format("Parameter of type %s must reference an Enum type", parameterType));
 			enumClass = parameterType;
 		}
 		return enumClass;
 	}
 
 	enum NullEnum {
-
 	}
 
 }
