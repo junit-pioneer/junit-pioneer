@@ -25,7 +25,7 @@ For example:
 
 Example:
 - I would like to see the possibility to use a new annotation, maybe `@Fancy("value")` to do X
-- I suggest to update to Java 2042 to use the new feature Z, but this also means, that the Gradle version has to be updated, and it's only a RC so far.
+- I suggest to update to Java 2042 to use the new feature Z, but this also means, that the Gradle version has to be updated, and it's only a release candidate (RC) so far
 
 **Additional context**
 
