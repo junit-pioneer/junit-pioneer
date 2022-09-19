@@ -1,6 +1,6 @@
 ---
 name: 'Bug report'
-about: Please use this template if you want to report a bug
+about: Report a bug for this project
 title: "[BUG]"
 labels: ["🚦 status: in discussion", "🏗️ type: bug"]
 assignees: ''
