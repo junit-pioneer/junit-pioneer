@@ -1,7 +1,7 @@
 name: Main build
 
 env:
-  EXPERIMENTAL_JAVA: 18
+  EXPERIMENTAL_JAVA: 19
 
 on:
   # We want to trigger our builds all the time for the default branch
@@ -117,7 +117,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 11, 17 ]
+        java: [ 11, 17, 18 ]
         junit-version: [ '5.9.0' ]
         modular: [true, false]
         os: [ubuntu, macos, windows]
@@ -151,23 +151,21 @@ jobs:
         modular: [true, false]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
-    # Gradle doesn't work with JDK EA builds, so we start it with a supported Java version,
-    # but execute the build on the experimental version
+    # Gradle doesn't work with JDK EA builds, so we launch it with a supported Java version,
+    # but set the Gradle toolchain to use the experimental version.
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
-      - uses: sormuras/download-jdk@v1
+      - name: Set up experimental Java
+        uses: oracle-actions/setup-java@v1
         with:
-          feature: ${{ env.EXPERIMENTAL_JAVA }}
-      - uses: actions/setup-java@v2
-        with:
-          java-version: ${{ env.JDK_VERSION }}
-          distribution: jdkfile
-          jdkFile: ${{ env.JDK_FILE }}
+          website: jdk.java.net
+          release: ${{ env.EXPERIMENTAL_JAVA }}
       - name: Prepare JDK_EXPERIMENTAL env var
         shell: bash
         run: echo "JDK_EXPERIMENTAL=$JAVA_HOME" >> $GITHUB_ENV
-      - uses: actions/setup-java@v2
+      - name: Set up supported Java
+        uses: actions/setup-java@v2
         with:
           java-version: 17
           distribution: temurin
