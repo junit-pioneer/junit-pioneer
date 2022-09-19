@@ -25,7 +25,7 @@ Please provide example code (using markdown) to demonstrate the bug in practice.
 
 Please provide information about the versions of the following tools you use, when the bug occurs:
 
-* Which JUnit Pioneer version do you use, when the bug occurs?
+* Which JUnit Pioneer version do you use?
 * Which JUnit Jupiter (JUnit 5) version do you use?
 * Which Java version do you use?
 
