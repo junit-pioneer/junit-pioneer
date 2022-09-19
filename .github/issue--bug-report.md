@@ -19,7 +19,7 @@ Please provide a detailed description for the bug, containing the current and ex
 
 **Code to Reproduce**
 
-Please provide an example code (using the code markdown) to demonstrate the bug in praxis.
+Please provide example code (using markdown) to demonstrate the bug in practice.
 
 **Versions**
 
