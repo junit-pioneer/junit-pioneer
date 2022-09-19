@@ -24,7 +24,7 @@ For example:
 **Please describe, what you would like to be changed / added / improved. If you want to add code or pseudo-code snippets, feel free to do so. If you have knowledge about possible side effects or problems or have considered any alternative solutions, please add information about them, too**
 
 Example:
-- I would like to see the possibility to use a new annotation, maybe `@fancy("value")` to do X
+- I would like to see the possibility to use a new annotation, maybe `@Fancy("value")` to do X
 - I suggest to update to Java 2042 to use the new feature Z, but this also means, that the Gradle version has to be updated, and it's only a RC so far.
 
 **Additional context**
