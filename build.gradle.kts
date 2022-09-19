@@ -198,6 +198,10 @@ tasks {
 			if (modularBuild.toBoolean())
 				java.srcDir("src/main/module")
 		}
+		test {
+			if (modularBuild.toBoolean())
+				java.srcDir("src/test/module")
+		}
 		create("demo") {
 			java {
 				srcDir("src/demo/java")
@@ -219,14 +223,40 @@ tasks {
 	compileJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		// do not break the build on "exports" warnings - see CONTRIBUTING.md for details
+		// Do not break the build on "exports" warnings (see CONTRIBUTING.md for details)
 		options.compilerArgs.add("-Xlint:all,-exports")
 	}
+
+	// Prepares test-related JVM args
+	val moduleName = "org.junitpioneer"
+	val targetModule = if (modularBuild.toBoolean()) moduleName else "ALL-UNNAMED"
+	// See https://docs.gradle.org/current/userguide/java_testing.html#sec:java_testing_modular_patching
+	val patchModuleArg = "--patch-module=$moduleName=${compileJava.get().destinationDirectory.asFile.get().path}"
+	val testJvmArgs = listOf(
+			// Ignore these options on Java 8
+			"-XX:+IgnoreUnrecognizedVMOptions",
+			// EnvironmentVariableUtils: make java.util.Map accessible
+			"--add-opens=java.base/java.util=$targetModule",
+			// EnvironmentVariableUtils: make java.lang.System accessible
+			"--add-opens=java.base/java.lang=$targetModule",
+			patchModuleArg
+	)
 
 	compileTestJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		options.compilerArgs.add("-Xlint:all")
+		if (modularBuild.toBoolean()) {
+			options.compilerArgs.add(patchModuleArg)
+		}
+		var xlintArg = "-Xlint:all"
+		if (modularBuild.toBoolean()) {
+			xlintArg += ",-exports,-requires-automatic"
+			// missing-explicit-ctor was added in Java 16. This causes errors on test classes, which don't have one.
+			if (JavaVersion.current() >= JavaVersion.VERSION_16) {
+				xlintArg += ",-missing-explicit-ctor"
+			}
+		}
+		options.compilerArgs.add(xlintArg)
 	}
 
 	test {
@@ -241,12 +271,12 @@ tasks {
 			includeTestsMatching("*Tests")
 		}
 		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
-		// `EnvironmentVariableExtension` uses reflection to change environment variables;
-		// this prevents the corresponding warning (and keeps working on Java 8)
-		// IF YOU ADD MORE OPTIONS; CONSIDER REPLACING `-XX:+IgnoreUnrecognizedVMOptions WITH A CONDITIONAL
-		jvmArgs(
-				"-XX:+IgnoreUnrecognizedVMOptions",
-				"--add-opens=java.base/java.util=ALL-UNNAMED")
+		// java.security.manager was added in Java 12 (see
+		// https://www.oracle.com/java/technologies/javase/12-relnote-issues.html#JDK-8191053). We have to explicitly
+		// set it to "allow" for EnvironmentVariableUtilsTests$With_SecurityManager.
+		if (JavaVersion.current() >= JavaVersion.VERSION_12)
+			systemProperty("java.security.manager", "allow")
+		jvmArgs(testJvmArgs)
 	}
 
 	testing {
@@ -254,6 +284,7 @@ tasks {
 			val test by getting(JvmTestSuite::class) {
 				useJUnitJupiter()
 			}
+
 			val demoTests by registering(JvmTestSuite::class) {
 				dependencies {
 					implementation(project)
@@ -262,33 +293,34 @@ tasks {
 				}
 
 				sources {
-					java { srcDir("src/demo/java") }
-					resources { srcDir("src/demo/resources") }
-				}
-				targets { all { testTask.configure {
-					shouldRunAfter(test)
-					filter {
-						includeTestsMatching("*Demo")
+					java {
+						srcDir("src/demo/java")
 					}
-				} } }
+					resources {
+						srcDir("src/demo/resources")
+					}
+				}
+
+				targets {
+					all {
+						testTask.configure {
+							shouldRunAfter(test)
+							filter {
+								includeTestsMatching("*Demo")
+							}
+							jvmArgs(testJvmArgs)
+						}
+					}
+				}
 			}
 		}
 	}
 
 	javadoc {
 		javadocTool.set(project.javaToolchains.javadocToolFor {
-			// Create Javadoc with newer JDK to get the latest features, e.g. search bar
-			languageVersion.set(JavaLanguageVersion.of(17))
+			// Create Javadoc with at least Java 17 to get the latest features, e.g. search bar
+			languageVersion.set(JavaLanguageVersion.of(maxOf(17, targetJavaVersion.majorVersion.toInt())))
 		})
-
-		// Exclude internal implementation package from javadoc
-		/*
-		 * Disabled for modular Gradle build because it fails when these source files are excluded
-		 * See https://stackoverflow.com/q/32785002 and slightly related Gradle issue https://github.com/gradle/gradle/issues/14066
-		 */
-		if (!modularBuild.toBoolean()) {
-			exclude("org/junitpioneer/internal")
-		}
 
 		options {
 			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937

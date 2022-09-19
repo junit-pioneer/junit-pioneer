@@ -66,8 +66,15 @@ module java.base does not "opens java.lang" to unnamed module [...]
 ----
 
 The best way to prevent these warnings/errors, is to change the code under test, so this extension is no longer needed.
-The next best thing is to allow access to that specific package with `--add-opens=java.base/java.util=ALL-UNNAMED` (if you place JUnit Pioneer on the class path) or `--add-opens=java.base/java.util=org.junitpioneer` (if you place it on the module path).
+The next best thing is to allow access to that specific package:
 
+[source]
+----
+--add-opens java.base/java.util=$TARGET_MODULE
+--add-opens java.base/java.lang=$TARGET_MODULE
+----
+
+Where `$TARGET_MODULE` equals `ALL-UNNAMED` if you place JUnit Pioneer on the class path, or `org.junitpioneer` if you place JUnit Pioneer on the module path.
 These command line options need to be added to the JVM that executes the tests:
 
 * https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html[Gradle]
