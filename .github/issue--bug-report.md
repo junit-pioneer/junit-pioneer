@@ -1,5 +1,5 @@
 ---
-name: 'Issue: Bug report'
+name: 'Bug report'
 about: Please use this template if you want to report a bug
 title: "[BUG]"
 labels: ["🚦 status: in discussion", "🏗️ type: bug"]
