@@ -43,10 +43,8 @@ import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
  * @see DoubleRangeSource
  * @see FloatRangeSource
  */
-// CartesianAnnotationConsumer is deprecated for removal
-@SuppressWarnings("deprecation")
-class RangeSourceArgumentsProvider<N extends Number & Comparable<N>> implements ArgumentsProvider,
-		org.junitpioneer.jupiter.CartesianAnnotationConsumer<Annotation>, CartesianParameterArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
+class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
+		implements ArgumentsProvider, CartesianParameterArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
 
 	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
@@ -93,11 +91,6 @@ class RangeSourceArgumentsProvider<N extends Number & Comparable<N>> implements 
 
 	private Stream<N> asStream(Range<N> range) {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(range, Spliterator.ORDERED), false);
-	}
-
-	@Override
-	public void accept(Annotation argumentsSource) {
-		this.argumentsSource = argumentsSource;
 	}
 
 }
