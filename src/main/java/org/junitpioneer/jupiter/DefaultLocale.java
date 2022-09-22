@@ -27,10 +27,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <ul>
  *     <li>using a {@link java.util.Locale#forLanguageTag(String) language tag}</li>
- *     <li>using a {@link java.util.Locale#Locale(String) language}</li>
- *     <li>using a {@link java.util.Locale#Locale(String, String) language and a county}</li>
- *     <li>using a {@link java.util.Locale#Locale(String, String, String) language, a county, and a variant}</li>
+ *     <li>using a {@link java.util.Locale.Builder} Locale.Builder} together with
+ *         <ul>
+ *            <li>a language</li>
+ * 		      <li>a language and a county</li>
+ * 			  <li>a language, a county, and a variant</li>
+ *         </ul>
+ *     </li>
  * </ul>
+ *
+ * <p>Please keep in mind the the {@code Locale.Builder} does a syntax check, if you use a variant!
+ * The given string must match the BCP 47 (or more detailed <a href="https://www.rfc-editor.org/rfc/rfc5646.html">RFC 5646</a>) syntax.</p>
  *
  * <p>If a language tag is set, none of the other fields must be set. Otherwise an
  * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException} will
@@ -91,8 +98,8 @@ public @interface DefaultLocale {
 	String country() default "";
 
 	/**
-	 * Any arbitrary value used to indicate a variation of a {@code Locale}.
-	 * See the {@link java.util.Locale} class description for the details.
+	 * An IETF BCP 47 language string that matches the <a href="https://www.rfc-editor.org/rfc/rfc5646.html">RFC 5646</a> syntax.
+	 * It's validated by the {@code Locale.Builder}, using {@code sun.util.locale.LanguageTag#isVariant}.
 	 */
 	String variant() default "";
 

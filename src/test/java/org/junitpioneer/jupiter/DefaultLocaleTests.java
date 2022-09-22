@@ -24,11 +24,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junitpioneer.internal.PioneerUtils;
 import org.junitpioneer.testkit.ExecutionResults;
 
-// On Java 19+, `Locale` constructors are deprecated.
-// We ignore them until they're removed in #658
-@SuppressWarnings("deprecation")
 @DisplayName("DefaultLocale extension")
 class DefaultLocaleTests {
 
@@ -38,7 +36,7 @@ class DefaultLocaleTests {
 	@BeforeAll
 	static void globalSetUp() {
 		DEFAULT_LOCALE_BEFORE_TEST = Locale.getDefault();
-		TEST_DEFAULT_LOCALE = new Locale("custom");
+		TEST_DEFAULT_LOCALE = PioneerUtils.createLocale("custom");
 		Locale.setDefault(TEST_DEFAULT_LOCALE);
 	}
 
@@ -66,24 +64,36 @@ class DefaultLocaleTests {
 		}
 
 		@Test
-		@DefaultLocale(language = "en_EN")
+		@DefaultLocale(language = "en")
 		@DisplayName("sets the default locale using a language")
 		void setsLanguage() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("en_EN"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en"));
 		}
 
 		@Test
 		@DefaultLocale(language = "en", country = "EN")
 		@DisplayName("sets the default locale using a language and a country")
 		void setsLanguageAndCountry() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("en", "EN"));
 		}
 
+		/**
+		 * A valid variant checked by {@link sun.util.locale.LanguageTag#isVariant} against BCP 47 (or more detailed RFC 5646) matches either {@code [0-9a-Z]{5-8}} or {@code [0-9][0-9a-Z]{3}}.
+		 * It does NOT check if such a variant exists in real.
+		 * <br>
+		 * The Locale-Builder accepts valid variants, concatenated by minus or underscore (minus will be transformed by the builder).
+		 * This means "en-EN" is a valid languageTag, but not a valid IETF BCP 47 variant subtag.
+		 * <br>
+		 * This is very confusing as the <a href="https://www.oracle.com/java/technologies/javase/jdk11-suported-locales.html">official page for supported locales</a> shows that japanese locales return {@code *} or {@code JP} as a variant.
+		 * Even more confusing the enum values {@code Locale.JAPAN} and {@code Locale.JAPANESE} don't return a variant.
+		 *
+		 * @see <a href="https://www.rfc-editor.org/rfc/rfc5646.html">RFC 5646</a>
+		 */
 		@Test
-		@DefaultLocale(language = "en", country = "EN", variant = "gb")
+		@DefaultLocale(language = "ja", country = "JP", variant = "japanese")
 		@DisplayName("sets the default locale using a language, a country and a variant")
 		void setsLanguageAndCountryAndVariant() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN", "gb"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("ja", "JP", "japanese"));
 		}
 
 	}
@@ -103,13 +113,13 @@ class DefaultLocaleTests {
 		@Test
 		@ReadsDefaultLocale
 		void shouldExecuteWithClassLevelLocale() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("fr", "FR"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("fr", "FR"));
 		}
 
 		@Test
 		@DefaultLocale(language = "de", country = "DE")
 		void shouldBeOverriddenWithMethodLevelLocale() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("de", "DE"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("de", "DE"));
 		}
 
 	}
@@ -263,6 +273,17 @@ class DefaultLocaleTests {
 						.withExceptionInstanceOf(ExtensionConfigurationException.class);
 			}
 
+			@Test
+			@DisplayName("should fail when invalid BCP 47 variant is set")
+			void shouldFailIfNoValidBCP47VariantIsSet() {
+				ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
+					"shouldFailNoValidBCP47Variant");
+
+				assertThat(results)
+						.hasSingleFailedTest()
+						.withExceptionInstanceOf(ExtensionConfigurationException.class);
+			}
+
 		}
 
 		@Nested
@@ -310,6 +331,11 @@ class DefaultLocaleTests {
 		void shouldFailLanguageTagAndVariant() {
 		}
 
+		@Test
+		@DefaultLocale(variant = "en-GB")
+		void shouldFailNoValidBCP47Variant() {
+		}
+
 	}
 
 	@DefaultLocale(language = "de", variant = "ch")
@@ -328,7 +354,7 @@ class DefaultLocaleTests {
 		@Test
 		@DisplayName("should inherit default locale annotation")
 		void shouldInheritClearAndSetProperty() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("fr", "FR"));
+			assertThat(Locale.getDefault()).isEqualTo(PioneerUtils.createLocale("fr", "FR"));
 		}
 
 	}
