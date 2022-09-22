@@ -16,11 +16,13 @@ The default `Locale` can be specified using an https://docs.oracle.com/javase/8/
 include::{demo}[tag=default_locale_language]
 ----
 
-Alternatively the default `Locale` can be specified according to https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#constructor.summary[its constructors] - it needs either:
+Alternatively the default `Locale` can be created using the following attributes of which a https://docs.oracle.com/javase/8/docs/api/java/util/Locale.Builder.html[Locale Builder] can create an instance with:
 
 * `language` or
 * `language` and `country` or
 * `language`, `country`, and `variant`
+
+NOTE: The variant needs to be a string which follows the https://www.rfc-editor.org/rfc/rfc5646.html[IETF BCP 47 / RFC 5646] syntax!
 
 [source,java,indent=0]
 ----
@@ -28,7 +30,7 @@ include::{demo}[tag=default_locale_language_alternatives]
 ----
 
 Note that mixing language tag configuration and constructor based configuration will cause an `ExtensionConfigurationException` to be thrown.
-Furthermore a `variant` can only be specified if `country` is also specified.
+Furthermore, a `variant` can only be specified if `country` is also specified.
 If `variant` is specified without `country`, an `ExtensionConfigurationException` will be thrown.
 
 Any method level `@DefaultLocale` configurations will override class level configurations.
