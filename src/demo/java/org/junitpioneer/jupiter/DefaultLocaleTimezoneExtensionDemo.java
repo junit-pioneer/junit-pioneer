@@ -31,19 +31,20 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	@Test
 	@DefaultLocale(language = "en")
 	void test_with_language_only() {
-		assertThat(Locale.getDefault()).isEqualTo(new Locale("en"));
+		assertThat(Locale.getDefault()).isEqualTo(new Locale.Builder().setLanguage("en").build());
 	}
 
 	@Test
 	@DefaultLocale(language = "en", country = "EN")
 	void test_with_language_and_country() {
-		assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN"));
+		assertThat(Locale.getDefault()).isEqualTo(new Locale.Builder().setLanguage("en").setRegion("EN").build());
 	}
 
 	@Test
-	@DefaultLocale(language = "en", country = "EN", variant = "gb")
-	void test_with_language_and_country_and_variant() {
-		assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN", "gb"));
+	@DefaultLocale(language = "ja", country = "JP", variant = "japanese")
+	void test_with_language_and_country_and_vairant() {
+		assertThat(Locale.getDefault())
+				.isEqualTo(new Locale.Builder().setLanguage("ja").setRegion("JP").setVariant("japanese").build());
 	}
 	// end::default_locale_language_alternatives[]
 
@@ -53,13 +54,13 @@ public class DefaultLocaleTimezoneExtensionDemo {
 
 		@Test
 		void test_with_class_level_configuration() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("fr"));
+			assertThat(Locale.getDefault()).isEqualTo(new Locale.Builder().setLanguage("fr").build());
 		}
 
 		@Test
 		@DefaultLocale(language = "en")
 		void test_with_method_level_configuration() {
-			assertThat(Locale.getDefault()).isEqualTo(new Locale("en"));
+			assertThat(Locale.getDefault()).isEqualTo(new Locale.Builder().setLanguage("en").build());
 		}
 
 	}
