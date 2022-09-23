@@ -178,8 +178,6 @@ nexusPublishing {
 tasks {
 
 	sourceSets {
-		main {
-		}
 		create("demo") {
 			java {
 				srcDir("src/demo/java")
