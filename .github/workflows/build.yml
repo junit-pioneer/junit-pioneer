@@ -105,10 +105,10 @@ jobs:
         with:
           arguments: --scan spotlessCheck
 
-  # Our full integration job, which will build for a matrix out of our supported
-  # Java versions, operating systems, modular or not, and various JUnit versions.
-  # This build is executed on all tags and the default branch. Furthermore, we will
-  # also execute this for pull requests with the label `full-build`.
+  # Our full integration job, which will build for a matrix out of our
+  # supported Java versions, operating systems and various JUnit versions.
+  # This build is executed on all tags and the default branch as well as
+  # for pull requests with the label `full-build`.
   full-featured:
     if: (contains(github.event.pull_request.labels.*.name, 'full-build') || !github.event.pull_request)
     needs: basic
@@ -118,9 +118,8 @@ jobs:
       matrix:
         java: [ 11, 17, 18 ]
         junit-version: [ '5.9.0' ]
-        modular: [true, false]
         os: [ubuntu, macos, windows]
-    name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }}, Modular ${{ matrix.modular }} on ${{ matrix.os }}
+    name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
@@ -133,7 +132,7 @@ jobs:
       - name: Gradle build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build -x spotlessCheck
+          arguments: --refresh-dependencies -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build -x spotlessCheck
 
   # We want to be up-to-date and know issues with future Java versions as soon as possible.
   # Furthermore, we also would love to see our build working with the latest Gradle version.
@@ -147,7 +146,6 @@ jobs:
     strategy:
       matrix:
         junit-version: [ '5.9.0' ]
-        modular: [true, false]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
     # Gradle doesn't work with JDK EA builds, so we launch it with a supported Java version,
@@ -178,7 +176,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: release-candidate
-          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build -x spotlessCheck
+          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build -x spotlessCheck
 
   # A release will be created if there is a `version` defined and `releasing` is set to `true`.
   # If not, this stage will be ignored.

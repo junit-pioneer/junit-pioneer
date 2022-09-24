@@ -7,7 +7,6 @@ plugins {
 	id("com.diffplug.spotless") version "6.4.2"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "3.3"
-	id("org.moditect.gradleplugin") version "1.0.0-rc3"
 	id("org.shipkit.shipkit-changelog") version "1.1.15"
 	id("org.shipkit.shipkit-github-release") version "1.1.15"
 	id("com.github.ben-manes.versions") version "0.42.0"
@@ -24,11 +23,10 @@ plugins.withType<JavaPlugin>().configureEach {
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
-val modularBuild : String by project
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 
-val targetJavaVersion = JavaVersion.VERSION_1_8
+val targetJavaVersion = JavaVersion.VERSION_11
 
 java {
 	if (experimentalBuild) {
@@ -36,11 +34,7 @@ java {
 			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion!!))
 		}
 	} else {
-		sourceCompatibility = if (modularBuild.toBoolean()) {
-			JavaVersion.VERSION_11
-		} else {
-			targetJavaVersion
-		}
+		sourceCompatibility = targetJavaVersion
 	}
 	withJavadocJar()
 	withSourcesJar()
@@ -111,16 +105,6 @@ sonarqube {
 		property("sonar.projectKey", "junit-pioneer_junit-pioneer") // needs to be changed
 		property("sonar.organization", "junit-pioneer-xp") // needs to be changed
 		property("sonar.host.url", "https://sonarcloud.io")
-	}
-}
-
-moditect {
-	addMainModuleInfo {
-		version = project.version
-		overwriteExistingFiles.set(true)
-		module {
-			moduleInfoFile = rootProject.file("src/main/module/module-info.java")
-		}
 	}
 }
 
@@ -204,14 +188,6 @@ extraJavaModuleInfo {
 tasks {
 
 	sourceSets {
-		main {
-			if (modularBuild.toBoolean())
-				java.srcDir("src/main/module")
-		}
-		test {
-			if (modularBuild.toBoolean())
-				java.srcDir("src/test/module")
-		}
 		create("demo") {
 			java {
 				srcDir("src/demo/java")
@@ -239,32 +215,27 @@ tasks {
 
 	// Prepares test-related JVM args
 	val moduleName = "org.junitpioneer"
-	val targetModule = if (modularBuild.toBoolean()) moduleName else "ALL-UNNAMED"
 	// See https://docs.gradle.org/current/userguide/java_testing.html#sec:java_testing_modular_patching
 	val patchModuleArg = "--patch-module=$moduleName=${compileJava.get().destinationDirectory.asFile.get().path}"
 	val testJvmArgs = listOf(
 			// Ignore these options on Java 8
 			"-XX:+IgnoreUnrecognizedVMOptions",
 			// EnvironmentVariableUtils: make java.util.Map accessible
-			"--add-opens=java.base/java.util=$targetModule",
+			"--add-opens=java.base/java.util=$moduleName",
 			// EnvironmentVariableUtils: make java.lang.System accessible
-			"--add-opens=java.base/java.lang=$targetModule",
+			"--add-opens=java.base/java.lang=$moduleName",
 			patchModuleArg
 	)
 
 	compileTestJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		if (modularBuild.toBoolean()) {
-			options.compilerArgs.add(patchModuleArg)
-		}
+		options.compilerArgs.add(patchModuleArg)
 		var xlintArg = "-Xlint:all"
-		if (modularBuild.toBoolean()) {
-			xlintArg += ",-exports,-requires-automatic"
-			// missing-explicit-ctor was added in Java 16. This causes errors on test classes, which don't have one.
-			if (JavaVersion.current() >= JavaVersion.VERSION_16) {
-				xlintArg += ",-missing-explicit-ctor"
-			}
+		xlintArg += ",-exports,-requires-automatic"
+		// missing-explicit-ctor was added in Java 16. This causes errors on test classes, which don't have one.
+		if (JavaVersion.current() >= JavaVersion.VERSION_16) {
+			xlintArg += ",-missing-explicit-ctor"
 		}
 		options.compilerArgs.add(xlintArg)
 	}
@@ -343,7 +314,7 @@ tasks {
 			// Set javadoc `--release` flag (affects which warnings and errors are reported)
 			// (Note: Gradle adds one leading '-' to the option on its own)
 			// Have to use at least Java 9 to support modular build
-			addStringOption("-release", maxOf(11, targetJavaVersion.majorVersion.toInt()).toString())
+			addStringOption("-release", targetJavaVersion.majorVersion.toInt().toString())
 
 			// Enable doclint, but ignore warnings for missing tags, see
 			// https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#additional-options-provided-by-the-standard-doclet
