@@ -3,7 +3,7 @@
  * and its Jupiter API.
  *
  * <p>Pioneer does not limit itself to proven ideas with wide application but is purposely open to
- * experiments. It aims to spin off successful and cohesive portions into sibling projects or back
+ * experimentation. It aims to spin off successful and cohesive portions into sibling projects or back
  * into the JUnit 5 code base.
  *
  * <p>The dependencies on Jupiter modules could be marked as <code>transitive</code> but that would
