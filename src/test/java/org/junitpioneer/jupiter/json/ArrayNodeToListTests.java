@@ -16,6 +16,7 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import java.io.UncheckedIOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -120,11 +121,8 @@ public class ArrayNodeToListTests {
 	@JsonClasspathSource(POETS)
 	@ReportEntry("{0}: {1}")
 	void convertToComplexObject(@Property("name") String name, @Property("works") List<Poem> poems) {
-		if (name.equals("T. S. Eliot")) {
-			then(poems).extracting(Poem::getRelease).noneMatch(i -> i < 1900);
-		} else {
-			then(poems).extracting(Poem::getRelease).noneMatch(i -> i > 1900);
-		}
+		Predicate<Integer> predicate = name.equals("T. S. Eliot") ? release -> release < 1900 : release -> release > 1900;
+		then(poems).extracting(Poem::getRelease).noneMatch(predicate);
 	}
 
 	static class BadConfigurationTestCase {
