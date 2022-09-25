@@ -61,6 +61,9 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 		return Locale.forLanguageTag(annotation.value());
 	}
 
+	// On Java 19+, `Locale` constructors are deprecated.
+	// We ignore them until they're removed in #658
+	@SuppressWarnings("deprecation")
 	private static Locale createFromParts(DefaultLocale annotation) {
 		String language = annotation.language();
 		String country = annotation.country();

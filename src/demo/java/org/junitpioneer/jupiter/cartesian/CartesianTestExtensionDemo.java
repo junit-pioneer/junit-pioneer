@@ -39,94 +39,74 @@ import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.junitpioneer.jupiter.params.LongRangeSource;
 import org.junitpioneer.jupiter.params.ShortRangeSource;
 
+// @formatter:off
 public class CartesianTestExtensionDemo {
 
 	// tag::cartesian_simple_demo[]
-	class MyCartesianTestClass {
-
-		@CartesianTest
-		void myCartesianTestMethod(@Values(ints = { 1, 2 }) int x, @Values(ints = { 3, 4 }) int y) {
-			// passing test code
-		}
-
+	@CartesianTest
+	void myCartesianTestMethod(
+			@Values(ints = { 1, 2 }) int x,
+			@Values(ints = { 3, 4 }) int y) {
+		// passing test code
 	}
 	// end::cartesian_simple_demo[]
 
 	// tag::cartesian_annotating_parameters[]
-	class SecondCartesianTestClass {
-
-		@CartesianTest
-		void testIntChars(@ShortRangeSource(from = 1, to = 3, step = 1) short s,
-				@Values(strings = { "A", "B" }) String character, @Enum ChronoUnit unit) {
-			// passing test code
-		}
-
+	@CartesianTest
+	void testIntChars(
+			@ShortRangeSource(from = 1, to = 3, step = 1) short s,
+			@Values(strings = { "A", "B" }) String character,
+			@Enum ChronoUnit unit) {
+		// passing test code
 	}
 	// end::cartesian_annotating_parameters[]
 
 	// tag::cartesian_combining_values[]
-	class ThirdCartesianTestClass {
-
-		@CartesianTest
-		void testIntChars(@Values(ints = { 1, 2, 4 }) int number, @Values(strings = { "A", "B" }) String character) {
-			// passing test code
-		}
-
+	@CartesianTest
+	void testIntChars(
+			@Values(ints = { 1, 2, 4 }) int number,
+			@Values(strings = { "A", "B" }) String character) {
+		// passing test code
 	}
 	// end::cartesian_combining_values[]
 
 	// tag::cartesian_with_enum[]
-	class CartesianTestWithEnumClass {
-
-		@CartesianTest
-		void testWithEnum(@Enum ChronoUnit unit) {
-			assertThat(unit).isNotNull();
-		}
-
+	@CartesianTest
+	void testWithEnum(@Enum ChronoUnit unit) {
+		assertThat(unit).isNotNull();
 	}
 	// end::cartesian_with_enum[]
 
 	// tag::cartesian_enum_with_type[]
-	class CartesianTestEnumWithTypeClass {
-
-		@CartesianTest
-		void testExplicitEnum(@Enum(ChronoUnit.class) TemporalUnit unit) {
-			assertThat(unit).isNotNull();
-		}
-
+	@CartesianTest
+	void testExplicitEnum(
+			@Enum(ChronoUnit.class) TemporalUnit unit) {
+		assertThat(unit).isNotNull();
 	}
 	// end::cartesian_enum_with_type[]
 
 	// tag::cartesian_enum_with_type_and_names[]
-	class CartesianTestEnumWithTypeAndNamesClass {
-
-		@CartesianTest
-		void testEnumNames(@Enum(names = { "DAYS", "HOURS" }) ChronoUnit unit) {
-			assertThat(EnumSet.of(ChronoUnit.DAYS, ChronoUnit.HOURS)).contains(unit);
-		}
-
+	@CartesianTest
+	void testEnumNames(
+			@Enum(names = { "DAYS", "HOURS" }) ChronoUnit unit) {
+		assertThat(EnumSet.of(ChronoUnit.DAYS, ChronoUnit.HOURS)).contains(unit);
 	}
 	// end::cartesian_enum_with_type_and_names[]
 
 	// tag::cartesian_enum_with_mode[]
-	class CartesianTestEnumWithModeClass {
-
-		@CartesianTest
-		void testWithEnumModes(@Enum(mode = EXCLUDE, names = { "ERAS", "FOREVER" }) ChronoUnit unit) {
-			assertThat(EnumSet.of(ChronoUnit.ERAS, ChronoUnit.FOREVER)).doesNotContain(unit);
-		}
-
+	@CartesianTest
+	void testWithEnumModes(
+			@Enum(mode = EXCLUDE, names = { "ERAS", "FOREVER" })
+			ChronoUnit unit) {
+		assertThat(EnumSet.of(ChronoUnit.ERAS, ChronoUnit.FOREVER)).doesNotContain(unit);
 	}
 	// end::cartesian_enum_with_mode[]
 
 	// tag::cartesian_enum_with_regex[]
-	class CartesianTestEnumWithRegExClass {
-
-		@CartesianTest
-		void testWithEnumRegex(@Enum(mode = MATCH_ALL, names = "^.*DAYS$") ChronoUnit unit) {
-			assertThat(unit.name()).endsWith("DAYS");
-		}
-
+	@CartesianTest
+	void testWithEnumRegex(
+			@Enum(mode = MATCH_ALL, names = "^.*DAYS$") ChronoUnit unit) {
+		assertThat(unit.name()).endsWith("DAYS");
 	}
 	// end::cartesian_enum_with_regex[]
 
@@ -139,112 +119,109 @@ public class CartesianTestExtensionDemo {
 		ALPHA, BETA, GAMMA, DELTA
 	}
 
-	class CartesianTestEnumWithEnumTypesClass {
-
-		@CartesianTest
-		void testEnumValues(@Enum MyEnum myEnum,
-				@Enum(names = { "ALPHA", "DELTA" }, mode = Enum.Mode.EXCLUDE) AnotherEnum anotherEnum) {
-			// passing test code
-		}
-
+	@CartesianTest
+	void testEnumValues(
+			@Enum MyEnum myEnum,
+			@Enum(names = { "ALPHA", "DELTA" }, mode = Enum.Mode.EXCLUDE)
+			AnotherEnum anotherEnum) {
+		// passing test code
 	}
 	// end::cartesian_enum_with_enums[]
 
 	// tag::cartesian_enum_with_range_sources[]
-	class CartesianTestEnumWithRangeSourcesClass {
-
-		@CartesianTest
-		void testShortAndLong(@ShortRangeSource(from = 1, to = 3, step = 1) short s,
-				@LongRangeSource(from = 0L, to = 2L, step = 1, closed = true) long l) {
-			// passing test code
-		}
-
+	@CartesianTest
+	void testShortAndLong(
+			@ShortRangeSource(from = 1, to = 3, step = 1) short s,
+			@LongRangeSource(from = 0L, to = 2L, step = 1, closed = true) long l) {
+		// passing test code
 	}
 	// end::cartesian_enum_with_range_sources[]
 
 	// tag::cartesian_argument_sets[]
-	class CartesianTestWithArgumentSetsClass {
+	@CartesianTest
+	@CartesianTest.MethodFactory("stringClassTimeUnitFactory")
+	void testStringClassTimeUnit(
+			String string,
+			Class<?> clazz,
+			TimeUnit unit) {
+		// passing test code
+	}
 
-		@CartesianTest
-		@CartesianTest.MethodFactory("setFactory")
-		void testMethod(String string, Class<?> clazz, TimeUnit unit) {
-			// passing test code
-		}
-
-		ArgumentSets setFactory() {
-			return ArgumentSets
-					.argumentsForFirstParameter("Alpha", "Omega")
-					.argumentsForNextParameter(Runnable.class, Cloneable.class, Predicate.class)
-					.argumentsForNextParameter(TimeUnit.DAYS, TimeUnit.HOURS);
-		}
-
+	static ArgumentSets stringClassTimeUnitFactory() {
+		return ArgumentSets
+				.argumentsForFirstParameter(
+						"Alpha", "Omega")
+				.argumentsForNextParameter(
+						Runnable.class, Cloneable.class, Predicate.class)
+				.argumentsForNextParameter(
+						TimeUnit.DAYS, TimeUnit.HOURS);
 	}
 	// end::cartesian_argument_sets[]
 
 	// tag::cartesian_argument_sets_reuse[]
-	class CartesianTestWithReusedArgumentSetsClass {
+	@CartesianTest
+	@CartesianTest.MethodFactory("stringIntFactory")
+	void testStringInt(String string, int i) {
+		// passing test code
+	}
 
-		@CartesianTest
-		@CartesianTest.MethodFactory("provideArguments")
-		void testNeedingArguments(String string, int i) {
-			// passing test code
-		}
+	@CartesianTest
+	@CartesianTest.MethodFactory("stringIntFactory")
+	void testSameStringInt(String string, int i) {
+		// different passing test code
+	}
 
-		@CartesianTest
-		@CartesianTest.MethodFactory("provideArguments")
-		void testNeedingSameArguments(String string, int i) {
-			// different passing test code
-		}
-
-		ArgumentSets provideArguments() {
-			return ArgumentSets
-					.argumentsForFirstParameter("Mercury", "Earth", "Venus")
-					.argumentsForNextParameter(1, 12, 144);
-		}
-
+	static ArgumentSets stringIntFactory() {
+		return ArgumentSets
+				.argumentsForFirstParameter("Mercury", "Earth", "Venus")
+				.argumentsForNextParameter(1, 12, 144);
 	}
 	// end::cartesian_argument_sets_reuse[]
 
-	// tag::cartesian_bad_examples[]
-	class BadExamples {
+	static class MisconfiguredExamples {
 
+		// tag::cartesian_bad_examples[]
 		@CartesianTest
-		@CartesianTest.MethodFactory("resolveParameters")
-		void tooFewParameters(String string, int i, boolean b) {
-			// fails because the boolean parameter is not resolved
-		}
-
-		@CartesianTest
-		@CartesianTest.MethodFactory("resolveParameters")
-		void tooManyParameters(String string) {
+		@CartesianTest.MethodFactory("unsuitableStringIntFactory")
+		void testHasTooFewParameters(String string) {
 			// fails because we try to supply a non-existent integer parameter
 		}
 
 		@CartesianTest
-		@CartesianTest.MethodFactory("resolveParameters")
-		void wrongOrderParameters(int i, String string) {
-			// fails because the factory method declared parameter sets in the wrong order
+		@CartesianTest.MethodFactory("unsuitableStringIntFactory")
+		void testHasTooManyParameters(String string, int i, boolean b) {
+			// fails because the boolean parameter is not resolved
+		}
+
+		@CartesianTest
+		@CartesianTest.MethodFactory("unsuitableStringIntFactory")
+		void testHasParametersInWrongOrder(int i, String string) {
+			// fails because the factory method declared
+			// parameter sets in the wrong order
 		}
 
 		@CartesianTest
 		@CartesianTest.MethodFactory("resolveTestReporterParam")
-		void conflictingParameters(String string, TestReporter info) {
-			// fails because both the factory method and JUnit tries to inject TestReporter
+		void testHasConflictingParameters(String string, TestReporter info) {
+			// fails because both the factory method and JUnit
+			// try to inject TestReporter
 		}
 
-		ArgumentSets resolveParameters() {
-			return ArgumentSets.argumentsForFirstParameter("A", "B", "C").argumentsForNextParameter(1, 2, 3);
+		static ArgumentSets unsuitableStringIntFactory() {
+			return ArgumentSets
+					.argumentsForFirstParameter("A", "B", "C")
+					.argumentsForNextParameter(1, 2, 3);
 		}
 
-		ArgumentSets resolveTestReporterParam() {
+		static ArgumentSets resolveTestReporterParam() {
 			return ArgumentSets
 					.argumentsForFirstParameter("A", "B", "C")
 					// in this case MyTestReporter implements TestReporter
 					.argumentsForNextParameter(new MyTestReporter());
 		}
+		// end::cartesian_bad_examples[]
 
 	}
-	// end::cartesian_bad_examples[]
 
 	// tag::cartesian_argument_sets_ints_annotation[]
 	@Target(ElementType.PARAMETER)
@@ -255,14 +232,17 @@ public class CartesianTestExtensionDemo {
 		int[] value();
 
 	}
-	// end::cartesian_argument_sets_int_argument_provider[]
+	// end::cartesian_argument_sets_ints_annotation[]
 
-	// tag::cartesian_argument_sets_ints_annotation[]
-	class IntArgumentsProvider implements CartesianParameterArgumentsProvider {
+	// tag::cartesian_argument_sets_int_argument_provider[]
+	class IntArgumentsProvider
+			implements CartesianParameterArgumentsProvider {
 
 		@Override
-		public Stream<Integer> provideArguments(ExtensionContext context, Parameter parameter) {
-			Ints source = Objects.requireNonNull(parameter.getAnnotation(Ints.class));
+		public Stream<Integer> provideArguments(
+				ExtensionContext context, Parameter parameter) {
+			Ints source = Objects.requireNonNull(
+					parameter.getAnnotation(Ints.class));
 			return Arrays.stream(source.value()).boxed();
 		}
 
@@ -270,42 +250,37 @@ public class CartesianTestExtensionDemo {
 	// end::cartesian_argument_sets_int_argument_provider[]
 
 	// tag::cartesian_testWithCustomDisplayName[]
-	class MyCartesianWithDisplayNameTest {
-
-		@CartesianTest(name = "{index} => first bit: {0} second bit: {1}")
-		@DisplayName("Basic bit test")
-		void testWithCustomDisplayName(@Values(strings = { "0", "1" }) String a,
-				@Values(strings = { "0", "1" }) String b) {
-			// passing test code
-		}
-
+	@CartesianTest(name = "{index} => first bit: {0} second bit: {1}")
+	@DisplayName("Basic bit test")
+	void testWithCustomDisplayName(
+			@Values(strings = { "0", "1" }) String a,
+			@Values(strings = { "0", "1" }) String b) {
+		// passing test code
 	}
 	// end::cartesian_testWithCustomDisplayName[]
 
-	// tag::cartesian_argument_sets_with_nested_classes[]
-	class MyCartesianTestClassWithNestedClasses {
+	// tag::cartesian_argument_sets_with_non_static_factory[]
+	@Nested
+	// with this lifecycle annotation the factory method can be non-static
+	@TestInstance(Lifecycle.PER_CLASS)
+	class MyCartesianTests {
 
-		@Nested
-		// the next annotation is required to allow a non-static factory method
-		@TestInstance(Lifecycle.PER_CLASS)
-		class MyNestedCartesianTestClass {
+		@CartesianTest
+		@CartesianTest.MethodFactory("provideArguments")
+		void testNeedingArguments(String string, int i) {
+			// passing test code
+		}
 
-			@CartesianTest
-			@CartesianTest.MethodFactory("provideArguments")
-			void testNeedingArguments(String string, int i) {
-				// passing test code
-			}
-
-			// this provider method doesn't have to be static
-			ArgumentSets provideArguments() {
-				return ArgumentSets
-						.argumentsForFirstParameter("Mercury", "Earth", "Venus")
-						.argumentsForNextParameter(1, 12, 144);
-			}
-
+		// this provider method doesn't have to be static
+		ArgumentSets provideArguments() {
+			return ArgumentSets
+					.argumentsForFirstParameter(
+							"Mercury", "Earth", "Venus")
+					.argumentsForNextParameter(1, 12, 144);
 		}
 
 	}
-	// end::cartesian_argument_sets_with_nested_classes[]
+	// end::cartesian_argument_sets_with_non_static_factory[]
 
 }
+// @formatter:on

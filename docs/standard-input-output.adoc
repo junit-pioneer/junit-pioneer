@@ -3,9 +3,9 @@
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/StdInOutExtensionDemo.java
 
-The standard IO extension adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out`).
+The standard IO extension adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out` or `System.err`).
 
-WARNING: Depending on the configuration, the extension redirects the standard input and/or output, in which case nothing gets forwarded to the original `System.in` and/or `System.out`.
+WARNING: Depending on the configuration, the extension redirects the standard input and/or output, in which case nothing gets forwarded to the original `System.in` and/or `System.out` / `System.err`.
 This becomes particularly important when running tests in parallel, where other tests may interfere with tests annotated with `@StdIo`.
 
 == Basic use
@@ -13,8 +13,8 @@ This becomes particularly important when running tests in parallel, where other 
 The extension consists of two parts:
 
 * The annotation `@StdIo`. It allows defining input that is read from `System.in` without having to wait for user input.
-* Parameters `StdIn` and `StdOut`, which you can have injected into your test.
-  Their `capturedLines()` methods allow you to access lines read from `System.in` or written to `System.out`, so you can verify them with common assertions.
+* Parameters `StdIn`, `StdOut`, and `StdErr`, which you can have injected into your test.
+  Their `capturedLines()` methods allow you to access lines read from `System.in` or written to `System.out` or `System.err`, so you can verify them with common assertions.
 
 For example, after calling `System.out.println("Hello")` and `System.out.println("World")`,  the `StdOut::capturedLines` method would return an array ["Hello", "World"].
 With `System.out.print("Hello")` and `System.out.println("World")` (note that the first method does not print a line break), it would return `["HelloWorld"]`.
@@ -61,7 +61,9 @@ A combination of the two previous cases - `System.in` and `System.out` get repla
 include::{demo}[tag=stdio_both_replaced_and_verify]
 ----
 
-The remaining combinations of the annotation, its values, and `StdIn`/`StdOut` are considered misconfigurations and lead to exceptions.
+NOTE: Omitted from these examples is `StdErr` which behaves exactly the same way as `StdOut` and works in combination with it.
+
+The remaining combinations of the annotation, its values, and `StdIn`/`StdOut`/`StdErr` are considered misconfigurations and lead to exceptions.
 
 == Thread-Safety
 

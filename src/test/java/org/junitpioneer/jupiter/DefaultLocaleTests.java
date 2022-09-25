@@ -26,6 +26,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
+// On Java 19+, `Locale` constructors are deprecated.
+// We ignore them until they're removed in #658
+@SuppressWarnings("deprecation")
 @DisplayName("DefaultLocale extension")
 class DefaultLocaleTests {
 
