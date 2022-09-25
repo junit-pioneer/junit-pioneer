@@ -15,7 +15,9 @@ import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -235,9 +237,11 @@ class SystemPropertyExtensionTests {
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 		class ResettingSystemPropertyAfterEachNestedTests {
 
-			@BeforeAll
+			@BeforeEach
 			void changeShouldBeVisible() {
-				assertThat(System.getProperty("A")).isEqualTo("newer A");
+				// we already see "newest A" because BeforeEachCallBack is invoked before @BeforeEach
+				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				assertThat(System.getProperty("A")).isEqualTo("newest A");
 			}
 
 			@Test
@@ -246,10 +250,12 @@ class SystemPropertyExtensionTests {
 				assertThat(System.getProperty("A")).isEqualTo("newest A");
 			}
 
-			@AfterAll
+			@AfterEach
 			@ReadsSystemProperty
 			void resetAfterTestMethodExecution() {
-				assertThat(System.getProperty("A")).isEqualTo("newer A");
+				// we still see "newest A" because AfterEachCallBack is invoked after @AfterEach
+				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				assertThat(System.getProperty("A")).isEqualTo("newest A");
 			}
 
 		}
