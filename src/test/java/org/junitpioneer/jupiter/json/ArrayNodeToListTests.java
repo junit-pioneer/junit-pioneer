@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter.json;
 
-import static org.assertj.core.api.BDDAssertions.then;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.UncheckedIOException;
@@ -18,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -99,22 +99,22 @@ public class ArrayNodeToListTests {
 	@JsonClasspathSource(COMPOSERS)
 	@ReportEntry("{1}")
 	void convertFromClasspath(@Property("name") String name, @Property("music") List<String> works) {
-		then(name).isNotEmpty();
-		then(works).hasSize(2);
+		Assertions.assertThat(name).isNotEmpty();
+		Assertions.assertThat(works).hasSize(2);
 	}
 
 	@ParameterizedTest
 	@JsonSource({ "{ 'single': [1, 4, 7] }", "{ 'single': [2, 4, 9] }" })
 	@ReportEntry("{0}")
 	void convertFromAnnotation(@Property("single") List<Integer> numbers) {
-		then(numbers).hasSize(3);
+		Assertions.assertThat(numbers).hasSize(3);
 	}
 
 	@ParameterizedTest
 	@JsonSource({ "{ 'statements': [true, false, true] }", "{ 'statements': [false, true, false] }" })
 	@ReportEntry("{0}")
 	void convertWithExplicitListType(@Property("statements") LinkedList<Boolean> numbers) {
-		then(numbers).hasSize(3);
+		Assertions.assertThat(numbers).hasSize(3);
 	}
 
 	@ParameterizedTest
@@ -122,7 +122,7 @@ public class ArrayNodeToListTests {
 	@ReportEntry("{0}: {1}")
 	void convertToComplexObject(@Property("name") String name, @Property("works") List<Poem> poems) {
 		Predicate<Integer> predicate = name.equals("T. S. Eliot") ? release -> release < 1900 : release -> release > 1900;
-		then(poems).extracting(Poem::getRelease).noneMatch(predicate);
+		Assertions.assertThat(poems).extracting(Poem::getRelease).noneMatch(predicate);
 	}
 
 	static class BadConfigurationTestCase {
