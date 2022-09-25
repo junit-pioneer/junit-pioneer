@@ -121,7 +121,8 @@ public class ArrayNodeToListTests {
 	@JsonClasspathSource(POETS)
 	@ReportEntry("{0}: {1}")
 	void convertToComplexObject(@Property("name") String name, @Property("works") List<Poem> poems) {
-		Predicate<Integer> predicate = name.equals("T. S. Eliot") ? release -> release < 1900 : release -> release > 1900;
+		Predicate<Integer> predicate = name.equals("T. S. Eliot") ? release -> release < 1900
+				: release -> release > 1900;
 		Assertions.assertThat(poems).extracting(Poem::getRelease).noneMatch(predicate);
 	}
 
