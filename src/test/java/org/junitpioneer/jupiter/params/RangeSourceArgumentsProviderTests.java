@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
@@ -172,7 +173,8 @@ class RangeSourceArgumentsProviderTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(IllegalArgumentException.class)
-					.hasMessageContainingAll("Expected exactly one annotation to provide an ArgumentSource, found 2.");
+					.hasMessageContainingAll(format(
+						"Expected exactly one annotation with meta-annotation type %s, found 2.", RangeClass.class));
 		}
 
 		@Test

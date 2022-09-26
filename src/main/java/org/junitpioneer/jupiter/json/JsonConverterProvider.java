@@ -14,6 +14,10 @@ class JsonConverterProvider {
 
 	private static final boolean JACKSON_PRESENT = isJacksonObjectMapperClassPresent();
 
+	private JsonConverterProvider() {
+		// private constructor to hide the implicit public one
+	}
+
 	static boolean isJacksonObjectMapperClassPresent() {
 		try {
 			JsonConverterProvider.class.getClassLoader().loadClass("com.fasterxml.jackson.databind.ObjectMapper");

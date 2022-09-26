@@ -44,7 +44,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
  * @see FloatRangeSource
  */
 class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
-		implements ArgumentsProvider, CartesianParameterArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
+		implements ArgumentsProvider, CartesianParameterArgumentsProvider<N> {
 
 	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
@@ -57,11 +57,7 @@ class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-		// argumentSource is present if fed through the CartesianAnnotationConsumer interface
-		if (argumentsSource == null)
-			// since it's a method annotation, the element will always be present
-			initArgumentsSource(context.getRequiredTestMethod());
-
+		initArgumentsSource(context.getRequiredTestMethod());
 		return provideArguments(argumentsSource).map(Arguments::of);
 	}
 
@@ -76,12 +72,11 @@ class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 	}
 
 	private void initArgumentsSource(AnnotatedElement element) {
-		List<Annotation> argumentsSources = PioneerAnnotationUtils
-				.findAnnotatedAnnotations(element, ArgumentsSource.class);
+		List<Annotation> argumentsSources = PioneerAnnotationUtils.findAnnotatedAnnotations(element, RangeClass.class);
 
 		if (argumentsSources.size() != 1) {
 			String message = String
-					.format("Expected exactly one annotation to provide an ArgumentSource, found %d.",
+					.format("Expected exactly one annotation with meta-annotation type %s, found %d.", RangeClass.class,
 						argumentsSources.size());
 			throw new IllegalArgumentException(message);
 		}
