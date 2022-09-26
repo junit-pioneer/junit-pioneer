@@ -135,7 +135,7 @@ class ReportEntryExtension implements TestWatcher, BeforeEachCallback, Invocatio
 	}
 
 	private static boolean hasTestParameterVariables(String value) {
-		return value.matches(".*\\{[0-9]+}.*");
+		return value.matches(".*\\{\\d+}.*");
 	}
 
 	@Override

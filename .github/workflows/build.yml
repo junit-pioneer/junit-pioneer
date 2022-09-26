@@ -7,7 +7,7 @@ on:
   # We want to trigger our builds all the time for the default branch
   # except when Shipkit creates a new version tag
   push:
-    branches: 'main'
+    branches: ['main']
     tags-ignore:
       - 'v**'
   # Each pull request is important to us, doesn't matter from which branch.
@@ -15,7 +15,6 @@ on:
   # events, we also want to react onto `labeled` events for our extended
   # build execution
   pull_request:
-    branches: '*'
     types: [labeled, opened, synchronize, reopened]
   # We also utilize this pipeline for releasing. By providing a `version`
   # and setting `releasing` to `true`, we can trigger a release.

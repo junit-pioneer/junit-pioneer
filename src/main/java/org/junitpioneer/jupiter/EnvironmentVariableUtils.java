@@ -68,8 +68,11 @@ class EnvironmentVariableUtils {
 	/*
 	 * Works on Windows
 	 */
+	@SuppressWarnings("Java9ReflectionClassVisibility")
 	private static void setInProcessEnvironmentClass(Consumer<Map<String, String>> consumer)
 			throws ReflectiveOperationException {
+		// The Java 9 access restriction problem is explicitly documented in our user guide
+		// for the EnvironmentVariable extension
 		Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
 		// The order of operations is critical here: On some operating systems, theEnvironment is present but
 		// theCaseInsensitiveEnvironment is not present. In such cases, this method must throw a

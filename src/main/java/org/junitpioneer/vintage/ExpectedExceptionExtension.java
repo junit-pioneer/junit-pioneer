@@ -58,7 +58,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 	}
 
 	@Override
-	public void afterTestExecution(ExtensionContext context) throws Exception {
+	public void afterTestExecution(ExtensionContext context) {
 		switch (loadExceptionStatus(context)) {
 			case WAS_NOT_THROWN:
 				expectedException(context)

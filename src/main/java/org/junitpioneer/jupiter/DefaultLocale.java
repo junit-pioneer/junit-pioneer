@@ -36,7 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *     </li>
  * </ul>
  *
- * <p>Please keep in mind the the {@code Locale.Builder} does a syntax check, if you use a variant!
+ * <p>Please keep in mind the {@code Locale.Builder} does a syntax check, if you use a variant!
  * The given string must match the BCP 47 (or more detailed <a href="https://www.rfc-editor.org/rfc/rfc5646.html">RFC 5646</a>) syntax.</p>
  *
  * <p>If a language tag is set, none of the other fields must be set. Otherwise an
