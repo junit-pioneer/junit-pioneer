@@ -55,15 +55,16 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 	}
 
 	private static Arguments createArguments(Method method, Node node) {
-		boolean singleParameter = method.getParameterCount() == 1;
-		if (singleParameter) {
+		if (method.getParameterCount() == 1) {
 			Parameter onlyParameter = method.getParameters()[0];
 			// When there is a single parameter, the user might want to extract a single value or an entire type.
 			// When the parameter has the `@Property` annotation, then a single value needs to be extracted.
 			Property property = onlyParameter.getAnnotation(Property.class);
 			if (property == null) {
 				// no property specified -> the node should be converted in the parameter type
-				return Arguments.arguments(node.toType(onlyParameter.getType()));
+				// We must explicitly wrap the return into an Object[] because otherwise the return
+				// value is mistakenly interpreted as an Object[] and throws a ClassCastException
+				return () -> new Object[] { node.toType(onlyParameter.getParameterizedType()) };
 			}
 
 			// otherwise, treat this as method arguments
@@ -82,7 +83,7 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 							: property.value();
 					return node
 							.getNode(name)
-							.map(value -> value.value(parameter.getType()))
+							.map(value -> value.value(parameter.getParameterizedType()))
 							.orElse(null);
 				})
 				.toArray();
