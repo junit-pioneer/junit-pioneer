@@ -105,7 +105,8 @@ public class PioneerUtils {
 
 	/**
 	 * This is a self-hosted copy of {@code org.junit.platform.commons.util.StringUtils#nullSafeToString(Object)}.
-	 * This is
+	 * This is intentionally not kept up-to-date with JUnit's implementation but that
+	 * does not guarantee that it won't be changed.
 	 *
 	 * Convert the supplied {@code Object} to a {@code String} using the
 	 * following algorithm.
