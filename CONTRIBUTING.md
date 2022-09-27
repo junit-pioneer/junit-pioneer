@@ -65,7 +65,7 @@ We really appreciate that you consider contributing to JUnit Pioneer.
 We know that this can be quite daunting at first:
 Everybody uses a vocabulary and techniques that appear quite cryptic to those not steeped in them.
 We can't fix that in a short file like this, but we want to provide some pointers to get you started.
-If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and ask us to explain it better.
+If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new/choose) and ask us to explain it better.
 
 To get you started, have a look at the [Open Source Guide](https://opensource.guide/) article [_How to Contribute to Open Source_](https://opensource.guide/how-to-contribute/).
 We particularly recommend the following sections:
@@ -199,7 +199,7 @@ For that, also add the annotation `@Inherited`.
 #### Thread-safety
 
 It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.
-To that end it is necessary to understand [JUnit Jupiter's parallel execution](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution)), particularly [the synchronization mechanisms it offers](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution-synchronization): `@Execution` and `@ResourceLock`.
+To that end it is necessary to understand [JUnit Jupiter's parallel execution](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution), particularly [the synchronization mechanisms it offers](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution-synchronization): `@Execution` and `@ResourceLock`.
 
 For extensions touching global state (like default locales or environment variables), we've chosen the following approach:
 
@@ -420,7 +420,7 @@ PR: ${pull-request}
 
 `${action}` should succinctly describe what the PR does in good Git style.
 Ideally, this title line (without issue and PR numbers) should not exceed 50 characters - 70 is the absolute maximum.
-It is followed, in parenthesis, by a comma-separated list of all related issues, a slash, and the pull request (to make all of them easy to find from a look at the log).
+It is followed, in parentheses, by a comma-separated list of all related issues, a slash, and the pull request (to make all of them easy to find from a look at the log).
 
 `${body}` should outline the problem the pull request was solving - it should focus on _why_ the code was written, not on _how_ it works.
 This can usually be a summary of the issue description and discussion as well as commit messages.
@@ -469,6 +469,26 @@ Finally, because of the noise it generates on the issue, please do _not_ mention
 JUnit Pioneer has an uncharacteristically strong relationship to the JUnit 5 project (often called _upstream_).
 It not only depends on it, it also uses its internal APIs, copies source code that is not released in any artifact, mimics code style, unit testing, build and CI setup, and more.
 As such it will frequently have to adapt to upstream changes, so it makes sense to provision for that in the development strategy.
+
+#### Declaring Dependencies
+
+JUnit Jupiter has few external dependencies, but occasionally uses them in its own API and thus has the `requires transitive` directive in [its module declaration](https://github.com/junit-team/junit5/blob/main/junit-jupiter-api/src/module/org.junit.jupiter.api/module-info.java) (for example, `requires transitive org.opentest4j_`).
+That means, while JUnit Pioneer _could_ list these dependencies in its build configuration and require these modules in its module declaration, it doesn't _have to_.
+
+It is generally recommended not to rely on transitive dependencies when they're used directly and instead manage them yourself, but this does not apply very well to Pioneer and Jupiter:
+
+* If Jupiter stops using one of these dependencies, there is no point for us to keep using it as we only need them to integrate with Jupiter.
+* If Jupiter refactors these module relationships (e.g. by removing the OpenTest4J module from its dependencies and pulling its code into a Jupiter module), we might not be compatible with that new version (e.g. because we still require the removed module, which now results in a split package)
+* We can't choose a different dependency version than Jupiter
+
+We hence only depend on "core Jupiter" explicitly.
+That is:
+
+* core API: _org.junit.jupiter.api_
+* additional APIs as needed, e.g. _org.junit.jupiter.params_
+* additional functionality as needed, e.g. _org.junit.platform.launcher_
+
+#### Updating JUnit 5
 
 As [documented](README.md#dependencies) Pioneer aims to use the lowest JUnit 5 version that supports Pioneer's feature set.
 At the same time, there is no general reason to hesitate with updating the dependency if a new feature requires a newer version or the old version has a severe bug.
@@ -602,7 +622,7 @@ This applies to users opening issues, contributors providing PRs, and other main
 These are the channels we use to communicate with one another, our contributors, and users - in decreasing order of importance:
 
 1. [project website](https://junit-pioneer.org)
-2. files in the repository (like [`README.md`](README.md) and and this `CONTRIBUTING.md`)
+2. files in the repository (like [`README.md`](README.md) and this `CONTRIBUTING.md`)
 3. Git commit messages
 4. issues/PRs [on GitHub](https://github.com/junit-pioneer/junit-pioneer)
 5. _#junit-pioneer_ channel [in Discord](https://discord.gg/rHfJeCF)

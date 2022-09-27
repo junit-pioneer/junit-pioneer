@@ -25,7 +25,7 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.json;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
-	opens org.junitpioneer.jupiter to org.junit.platform.commons;
+	opens org.junitpioneer.jupiter to org.junit.platform.commons, nl.jqno.equalsverifier;
 	opens org.junitpioneer.jupiter.cartesian to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.issue to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.params to org.junit.platform.commons;
@@ -33,5 +33,21 @@ module org.junitpioneer {
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
+	provides org.junitpioneer.jupiter.IssueProcessor
+			with org.junitpioneer.jupiter.issue.StoringIssueProcessor;
 	uses org.junitpioneer.jupiter.IssueProcessor;
+
+	requires org.junit.platform.testkit;
+	requires org.mockito;
+	requires org.assertj.core;
+	requires nl.jqno.equalsverifier;
+
+	// via org.assertj.core
+	requires java.instrument;
+	requires jdk.unsupported;
+	// via nl.jqno.equalsverifier
+	requires java.sql;
+
+	opens org.junitpioneer.internal to org.junit.platform.commons;
+	opens org.junitpioneer.testkit to org.junit.platform.commons;
 }

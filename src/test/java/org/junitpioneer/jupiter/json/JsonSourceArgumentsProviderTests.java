@@ -214,7 +214,7 @@ class JsonSourceArgumentsProviderTests {
 			assertThat(results)
 					.hasSingleFailedContainer()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.getCause()
+					.cause()
 					.isInstanceOf(PreconditionViolationException.class)
 					.hasMessage("value must not be empty");
 		}

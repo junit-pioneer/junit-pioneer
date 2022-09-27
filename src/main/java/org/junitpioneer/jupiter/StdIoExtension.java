@@ -33,12 +33,13 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 
 	private static final String SYSTEM_IN_KEY = "StdIo_System_In";
 	private static final String SYSTEM_OUT_KEY = "StdIo_System_Out";
+	private static final String SYSTEM_ERR_KEY = "StdIo_System_Err";
 	private static final String STD_IN_KEY = "StdIo_Std_In";
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 		Class<?> type = parameterContext.getParameter().getType();
-		return (type == StdIn.class || type == StdOut.class);
+		return (type == StdIn.class || type == StdOut.class || type == StdErr.class);
 	}
 
 	@Override
@@ -46,6 +47,8 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 		Class<?> parameterType = parameterContext.getParameter().getType();
 		if (parameterType == StdOut.class)
 			return prepareStdOut(extensionContext);
+		if (parameterType == StdErr.class)
+			return prepareStdErr(extensionContext);
 		if (parameterType == StdIn.class) {
 			String[] source = extensionContext.getRequiredTestMethod().getAnnotation(StdIo.class).value();
 			if (source.length == 0)
@@ -92,6 +95,21 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 		System.setIn(stdIn); //NOSONAR required to redirect output
 	}
 
+	private StdErr prepareStdErr(ExtensionContext context) {
+		storeStdErr(context);
+		return createErr();
+	}
+
+	private void storeStdErr(ExtensionContext context) {
+		context.getStore(NAMESPACE).put(SYSTEM_ERR_KEY, System.err); //NOSONAR never writing to System.err, only storing it
+	}
+
+	private StdErr createErr() {
+		StdErr err = new StdErr();
+		System.setErr(new PrintStream(err));
+		return err;
+	}
+
 	@Override
 	public void beforeEach(ExtensionContext context) {
 		String[] source = findClosestEnclosingAnnotation(context, StdIo.class)
@@ -119,6 +137,10 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 		PrintStream storedSystemOut = context.getStore(NAMESPACE).get(SYSTEM_OUT_KEY, PrintStream.class);
 		if (storedSystemOut != null)
 			System.setOut(storedSystemOut); //NOSONAR resetting input
+
+		PrintStream storedSystemErr = context.getStore(NAMESPACE).get(SYSTEM_ERR_KEY, PrintStream.class);
+		if (storedSystemErr != null)
+			System.setErr(storedSystemErr); //NOSONAR resetting input
 	}
 
 }

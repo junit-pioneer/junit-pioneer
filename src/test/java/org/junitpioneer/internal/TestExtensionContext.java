@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExecutableInvoker;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstances;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -42,8 +43,13 @@ public class TestExtensionContext implements ExtensionContext {
 		this.testMethod = testMethod;
 	}
 
-	// @Override once we baseline against 5.8
+	@Override
 	public ExecutionMode getExecutionMode() {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
+	}
+
+	@Override
+	public ExecutableInvoker getExecutableInvoker() {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
