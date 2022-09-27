@@ -17,6 +17,7 @@ module org.junitpioneer {
 
 	requires static com.fasterxml.jackson.core;
 	requires static com.fasterxml.jackson.databind;
+	requires static com.google.common.jimfs;
 
 	exports org.junitpioneer.vintage;
 	exports org.junitpioneer.jupiter;
