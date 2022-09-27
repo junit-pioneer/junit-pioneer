@@ -191,6 +191,17 @@ public class PioneerUtils {
 	/**
 	 * Static factory method for creating a Locale using {@link Locale.Builder}.
 	 * Required because Locale constructors are deprecated.
+	 * Will rethrow any syntax exceptions from the builder.
+	 *
+	 * @param language An ISO 639 alpha-2 or alpha-3 language code, or a language subtag
+	 * up to 8 characters in length.
+	 * @param country An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.
+	 * @param variant Any arbitrary value used to indicate a variation of a {@code Locale}.
+	 * @return a new Locale instance constructed by {@link Locale.Builder}
+	 * @throws java.util.IllformedLocaleException if {@link Locale.Builder} throws
+	 *
+	 * @see Locale
+	 * @see Locale.Builder
 	 */
 	public static Locale createLocale(String language, String country, String variant) {
 		return new Locale.Builder().setLanguage(language).setRegion(country).setVariant(variant).build();
@@ -199,6 +210,16 @@ public class PioneerUtils {
 	/**
 	 * Static factory method for creating a Locale using {@link Locale.Builder}.
 	 * Required because Locale constructors are deprecated.
+	 * Will rethrow any syntax exceptions from the builder.
+	 *
+	 * @param language An ISO 639 alpha-2 or alpha-3 language code, or a language subtag
+	 * up to 8 characters in length.
+	 * @param country An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.
+	 * @return a new Locale instance constructed by {@link Locale.Builder}
+	 * @throws java.util.IllformedLocaleException from the {@link Locale.Builder}
+	 *
+	 * @see Locale
+	 * @see Locale.Builder
 	 */
 	public static Locale createLocale(String language, String country) {
 		return new Locale.Builder().setLanguage(language).setRegion(country).build();
@@ -207,6 +228,15 @@ public class PioneerUtils {
 	/**
 	 * Static factory method for creating a Locale using {@link Locale.Builder}.
 	 * Required because Locale constructors are deprecated.
+	 * Will rethrow any syntax exceptions from the builder.
+	 *
+	 * @param language An ISO 639 alpha-2 or alpha-3 language code, or a language subtag
+	 * up to 8 characters in length.
+	 * @return a new Locale instance constructed by {@link Locale.Builder}
+	 * @throws java.util.IllformedLocaleException from the {@link Locale.Builder}
+	 *
+	 * @see Locale
+	 * @see Locale.Builder
 	 */
 	public static Locale createLocale(String language) {
 		return new Locale.Builder().setLanguage(language).build();

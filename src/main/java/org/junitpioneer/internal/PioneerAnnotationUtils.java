@@ -159,7 +159,8 @@ public class PioneerAnnotationUtils {
 	 * in most practical use-cases.
 	 *
 	 * @param annotation the annotation we want to check for container annotation status
-	 * @return true if the annotation is a container annotation for a {@link Repeatable} annotation
+	 * @return {@code true} if the annotation is a container annotation for a {@link Repeatable} annotation,
+	 * otherwise {@code false}
 	 */
 	public static boolean isContainerAnnotation(Annotation annotation) {
 		try {
@@ -213,7 +214,7 @@ public class PioneerAnnotationUtils {
 
 	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
 			boolean findRepeated, boolean findAllEnclosing) {
-		if (!type.isPresent())
+		if (type.isEmpty())
 			return Stream.empty();
 
 		List<A> onThisClass = Arrays.asList(type.get().getAnnotationsByType(annotationType));
@@ -261,10 +262,12 @@ public class PioneerAnnotationUtils {
 
 	/**
 	 * A helper utility method for {@link org.junitpioneer.jupiter.cartesian.CartesianTest} for finding
-	 * argument sources on parameters.
+	 * argument sources on parameters. Note that, while it is possible there are multiple valid annotations
+	 * on the parameter, we only take the first annotation.
 	 *
 	 * @param testMethod the test method for which we want to find parameter arguments sources
-	 * @return a list of found arguments source annotations, including {@link CartesianArgumentsSource} annotations
+	 * @return a list of found arguments source annotations, including {@link CartesianArgumentsSource} annotations,
+	 * never {@code null} but potentially empty.
 	 *
 	 * @see CartesianArgumentsSource
 	 * @see ArgumentsSource
@@ -292,7 +295,8 @@ public class PioneerAnnotationUtils {
 	 * argument sources on the test method.
 	 *
 	 * @param testMethod the test method for which we want to find arguments sources
-	 * @return a list of found arguments source annotations, including {@link CartesianArgumentsSource} annotations
+	 * @return a list of found arguments source annotations, including {@link CartesianArgumentsSource} annotations,
+	 * never {@code null} but potentially empty.
 	 *
 	 * @see CartesianArgumentsSource
 	 * @see ArgumentsSource

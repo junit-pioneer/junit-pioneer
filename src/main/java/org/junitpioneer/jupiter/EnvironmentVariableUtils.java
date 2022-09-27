@@ -73,6 +73,7 @@ class EnvironmentVariableUtils {
 			throws ReflectiveOperationException {
 		// The Java 9 access restriction problem is explicitly documented in our user guide
 		// for the EnvironmentVariable extension
+		// https://junit-pioneer.org/docs/environment-variables/#warnings-for-reflective-access
 		Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
 		// The order of operations is critical here: On some operating systems, theEnvironment is present but
 		// theCaseInsensitiveEnvironment is not present. In such cases, this method must throw a
