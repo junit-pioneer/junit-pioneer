@@ -193,6 +193,7 @@ nexusPublishing {
 }
 
 extraJavaModuleInfo {
+	failOnMissingModuleInfo.set(false)
 	automaticModule("com.google.guava:failureaccess", "com.google.guava.failureaccess")
 	automaticModule("com.google.guava:listenablefuture", "com.google.guava.listenablefuture")
 	automaticModule("com.google.code.findbugs:jsr305", "com.google.code.findbugs.jsr305")
