@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter.json;
 
+import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -36,7 +37,7 @@ interface Node {
 	 * @param <T> the type
 	 * @return the converted type
 	 */
-	<T> T toType(Class<T> type);
+	<T> T toType(Type type);
 
 	/**
 	 * Get the node value with the given name.
@@ -52,6 +53,6 @@ interface Node {
 	 * @param typeHint the potential type of the value
 	 * @return the node value
 	 */
-	Object value(Class<?> typeHint);
+	Object value(Type typeHint);
 
 }
