@@ -79,6 +79,13 @@ This parametrized test will generate the following tests:
 * [1] Luke
 * [2] Yoda
 
+The extension will automatically map JSON types to their corresponding Java types, including arrays:
+
+[source,java,indent=0]
+----
+include::{json-demo}/[tag=inline_source_with_list]
+----
+
 === Multiple Argument Methods
 
 If the method has multiple arguments, each JSON object argument will be deconstructed to each of the method arguments.

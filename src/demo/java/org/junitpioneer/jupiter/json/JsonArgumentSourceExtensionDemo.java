@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter.json;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 
@@ -92,6 +94,20 @@ class JsonArgumentSourceExtensionDemo {
 			// YOUR TEST CODE HERE
 		}
 		// end::inline_source_with_property[]
+		// @formatter:on
+
+		// @formatter:off
+		// tag::inline_source_with_list[]
+		@ParameterizedTest
+		@JsonSource({
+				"{ name: 'Yoda', padawans: ['Dooku', 'Luke']  }",
+				"{ name: 'Obi-Wan', padawans: ['Anakin', 'Luke'] }"
+		})
+		void multipleJedis(
+				@Property("padawans") List<String> padawanNames) {
+			// YOUR TEST CODE HERE
+		}
+		// end::inline_source_with_list[]
 		// @formatter:on
 
 		// @formatter:off
