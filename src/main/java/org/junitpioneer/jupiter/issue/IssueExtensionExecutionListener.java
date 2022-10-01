@@ -10,13 +10,11 @@
 
 package org.junitpioneer.jupiter.issue;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.junit.platform.engine.TestExecutionResult.Status;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -96,13 +94,9 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 	List<IssueTestSuite> createIssueTestSuites() {
 		//@formatter:off
-		List<IssueTestSuite> suites = testCases
+		return testCases
 				.values().stream()
-				.collect(toMap(IssueTestCaseBuilder::getIssueId, builder -> new ArrayList<>(Arrays.asList(builder)),
-						(builders1, builders2) -> {
-							builders1.addAll(builders2);
-							return builders1;
-						}))
+				.collect(groupingBy(IssueTestCaseBuilder::getIssueId))
 				.entrySet().stream()
 				.map(issueIdWithTestCases -> new IssueTestSuite(
 						issueIdWithTestCases.getKey(),
@@ -110,9 +104,8 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 								.getValue().stream()
 								.map(IssueTestCaseBuilder::build)
 								.collect(toList())))
-				.collect(toList());
+				.collect(toUnmodifiableList());
 		//@formatter:on
-		return Collections.unmodifiableList(suites);
 	}
 
 }

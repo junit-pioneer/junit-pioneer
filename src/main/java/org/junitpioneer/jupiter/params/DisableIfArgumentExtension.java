@@ -70,30 +70,27 @@ class DisableIfArgumentExtension implements InvocationInterceptor {
 	}
 
 	private static void checkRequiredAnnotations(Method testMethod) {
-		if (!AnnotationSupport.findAnnotation(testMethod, DisableIfAnyArgument.class).isPresent()
-				&& !AnnotationSupport.findAnnotation(testMethod, DisableIfAllArguments.class).isPresent()
+		if (AnnotationSupport.findAnnotation(testMethod, DisableIfAnyArgument.class).isEmpty()
+				&& AnnotationSupport.findAnnotation(testMethod, DisableIfAllArguments.class).isEmpty()
 				&& AnnotationSupport.findRepeatableAnnotations(testMethod, DisableIfArgument.class).isEmpty()) {
 			throw new ExtensionConfigurationException(
 				"Required at least one of the following: @DisableIfArgument, @DisableIfAllArguments, @DisableIfAnyArgument but found none.");
 		}
 	}
 
-	private static DisableIfAllArguments verifyNonEmptyInputs(DisableIfAllArguments annotation) {
+	private static void verifyNonEmptyInputs(DisableIfAllArguments annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
 			throw invalidInputs(DisableIfAllArguments.class);
-		return annotation;
 	}
 
-	private static DisableIfAnyArgument verifyNonEmptyInputs(DisableIfAnyArgument annotation) {
+	private static void verifyNonEmptyInputs(DisableIfAnyArgument annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
 			throw invalidInputs(DisableIfAnyArgument.class);
-		return annotation;
 	}
 
-	private static DisableIfArgument verifyNonEmptyInputs(DisableIfArgument annotation) {
+	private static void verifyNonEmptyInputs(DisableIfArgument annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
 			throw invalidInputs(DisableIfArgument.class);
-		return annotation;
 	}
 
 	private static RuntimeException invalidInputs(Class<?> annotationClass) {

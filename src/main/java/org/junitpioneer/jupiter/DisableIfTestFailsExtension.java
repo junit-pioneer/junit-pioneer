@@ -72,7 +72,7 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 	private static Stream<Configuration> findConfigurations(ExtensionContext context) {
 		Optional<Class<?>> type = context.getTestClass();
 		// type may not be present because of recursion to the parent context
-		if (!type.isPresent())
+		if (type.isEmpty())
 			return Stream.empty();
 
 		List<DisableIfTestFails> annotations = findAnnotationOn(type.get()).collect(toList());
@@ -112,9 +112,7 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 
 		Stream<DisableIfTestFails> onElement = AnnotationSupport
 				.findAnnotation(element, DisableIfTestFails.class)
-				// turn Optional into Stream
-				.map(Stream::of)
-				.orElse(Stream.empty());
+				.stream();
 		Stream<DisableIfTestFails> onInterfaces = Arrays
 				.stream(element.getInterfaces())
 				.flatMap(DisableIfTestFailsExtension::findAnnotationOn);

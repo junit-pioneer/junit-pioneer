@@ -17,7 +17,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 /**
- * This class implements the functionality for the {@code @Issue} annotation.
+ * This class implements the functionality for the {@link Issue} annotation.
  *
  * @see Issue
  */

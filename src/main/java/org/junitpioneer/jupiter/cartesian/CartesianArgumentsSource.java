@@ -37,8 +37,12 @@ public @interface CartesianArgumentsSource {
 
 	/**
 	 * The type of {@link CartesianArgumentsProvider} to be used.
+	 *
+	 * Note that {@link CartesianArgumentsProvider} is never used
+	 * directly, only as either {@link CartesianMethodArgumentsProvider}
+	 * or {@link CartesianParameterArgumentsProvider}.
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("ClassEscapesDefinedScope")
 	Class<? extends CartesianArgumentsProvider> value();
 
 }

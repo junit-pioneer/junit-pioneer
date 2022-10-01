@@ -19,13 +19,13 @@ import java.util.NoSuchElementException;
  */
 abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 
-	private N from;
-	private N to;
-	private N step;
-	private boolean closed;
+	private final N from;
+	private final N to;
+	private final N step;
+	private final boolean closed;
 	private N current;
-	private int sign;
-	private N zero;
+	private final int sign;
+	private final N zero;
 
 	Range(N from, N to, N step, boolean closed, N zero) {
 		this.from = from;
@@ -33,8 +33,8 @@ abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 		this.step = step;
 		this.closed = closed;
 		this.zero = zero;
+		this.sign = step.compareTo(getZero());
 		current = null;
-		sign = step.compareTo(getZero());
 	}
 
 	/**
