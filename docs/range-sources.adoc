@@ -32,12 +32,19 @@ This behavior can be controlled by specifying the `closed` argument:
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=rangesources_ranges]
+include::{demo}[tag=rangesources_ranges_1, indent=0]
+
+include::{demo}[tag=rangesources_ranges_2, indent=0]
 ----
 
 == Empty ranges
 
 The range sources check whether the range defined by `from`, `to`, and `step` is empty and throws an `IllegalArgumentException` if it is.
+
+== Usage with other `@ArgumentSource` annotations
+
+Because of a limitation in the implementation you can not use multiple range source annotations on your test.
+You _can_ use other `@ArgumentSource` annotations (e.g.: `@ValueSource`, `@MethodSource`).
 
 == Thread-Safety
 

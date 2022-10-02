@@ -30,29 +30,30 @@ public class RangeSourcesDemo {
 	@DoubleRangeSource(from = -0.1, to = -10, step = -0.1)
 	void howColdIsIt(double d) {
 		System.out.println(d + " °C is cold");
-		System.out.println(d + " °F is REALY cold");
+		System.out.println(d + " °F is REALLY cold");
 		System.out.println(d + " K is too cold to be true");
 	}
 	// end::rangesources_double_with_step[]
 
+	// tag::rangesources_ranges_2[]
 	@ParameterizedTest
 	@LongRangeSource(from = 0L, to = 0L, closed = true)
-	void legalRrange(long arg) {
+	void legalRange(long arg) {
 		// But this is fine
 		assertThat(arg).isEqualTo(0L);
 	}
-	// end::rangesources_ranges[]
+	// end::rangesources_ranges_2[]
 
-	class TheseTestsWillFailIntentionally {
+	static class TheseTestsWillFailIntentionally {
 
-		// tag::rangesources_ranges[]
+		// tag::rangesources_ranges_1[]
 		@ParameterizedTest
 		@ByteRangeSource(from = 0, to = 0)
 		void illegalRange(byte arg) {
 			// this will fail with an IllegalArgumentException
 			// since the range will be empty
 		}
-
+		// end::rangesources_ranges_1[]
 	}
 
 }
