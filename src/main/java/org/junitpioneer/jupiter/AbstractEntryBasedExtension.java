@@ -138,7 +138,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	@Override
-	public void afterEach(ExtensionContext context) throws Exception {
+	public void afterEach(ExtensionContext context) {
 		// apply from innermost to outermost
 		PioneerUtils.findAllContexts(context).forEach(this::restoreOriginalEntries);
 	}

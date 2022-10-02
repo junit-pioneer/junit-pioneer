@@ -81,7 +81,7 @@ public class PioneerUtils {
 			// null checking done by ReflectionSupport.findMethod
 			method = findMethod(current, methodName, parameterTypes);
 			current = current.getEnclosingClass();
-		} while (!method.isPresent() && current != null);
+		} while (method.isEmpty() && current != null);
 		return method;
 	}
 
@@ -103,6 +103,29 @@ public class PioneerUtils {
 		return allContexts;
 	}
 
+	/**
+	 * This is a self-hosted copy of {@code org.junit.platform.commons.util.StringUtils#nullSafeToString(Object)}.
+	 * This is intentionally not kept up-to-date with JUnit's implementation but that
+	 * does not guarantee that it won't be changed.
+	 *
+	 * Convert the supplied {@code Object} to a {@code String} using the
+	 * following algorithm.
+	 *
+	 * <ul>
+	 * <li>If the supplied object is {@code null}, this method returns {@code "null"}.</li>
+	 * <li>If the supplied object is a primitive array, the appropriate
+	 * {@code Arrays#toString(...)} variant will be used to convert it to a String.</li>
+	 * <li>If the supplied object is an object array, {@code Arrays#deepToString(Object[])}
+	 * will be used to convert it to a String.</li>
+	 * <li>Otherwise, {@code toString()} will be invoked on the object. If the
+	 * result is non-null, that result will be returned. If the result is
+	 * {@code null}, {@code "null"} will be returned.</li>
+	 * </ul>
+	 *
+	 * @param object the object to convert to a String; may be {@code null}
+	 * @return a String representation of the supplied object; never {@code null}
+	 * @see Arrays#deepToString(Object[])
+	 */
 	public static String nullSafeToString(Object object) {
 		if (object == null) {
 			return "null";
@@ -165,14 +188,56 @@ public class PioneerUtils {
 		return resultLists;
 	}
 
+	/**
+	 * Static factory method for creating a Locale using {@link Locale.Builder}.
+	 * Required because Locale constructors are deprecated.
+	 * Will rethrow any syntax exceptions from the builder.
+	 *
+	 * @param language An ISO 639 alpha-2 or alpha-3 language code, or a language subtag
+	 * up to 8 characters in length.
+	 * @param country An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.
+	 * @param variant Any arbitrary value used to indicate a variation of a {@code Locale}.
+	 * @return a new Locale instance constructed by {@link Locale.Builder}
+	 * @throws java.util.IllformedLocaleException if {@link Locale.Builder} throws
+	 *
+	 * @see Locale
+	 * @see Locale.Builder
+	 */
 	public static Locale createLocale(String language, String country, String variant) {
 		return new Locale.Builder().setLanguage(language).setRegion(country).setVariant(variant).build();
 	}
 
+	/**
+	 * Static factory method for creating a Locale using {@link Locale.Builder}.
+	 * Required because Locale constructors are deprecated.
+	 * Will rethrow any syntax exceptions from the builder.
+	 *
+	 * @param language An ISO 639 alpha-2 or alpha-3 language code, or a language subtag
+	 * up to 8 characters in length.
+	 * @param country An ISO 3166 alpha-2 country code or a UN M.49 numeric-3 area code.
+	 * @return a new Locale instance constructed by {@link Locale.Builder}
+	 * @throws java.util.IllformedLocaleException from the {@link Locale.Builder}
+	 *
+	 * @see Locale
+	 * @see Locale.Builder
+	 */
 	public static Locale createLocale(String language, String country) {
 		return new Locale.Builder().setLanguage(language).setRegion(country).build();
 	}
 
+	/**
+	 * Static factory method for creating a Locale using {@link Locale.Builder}.
+	 * Required because Locale constructors are deprecated.
+	 * Will rethrow any syntax exceptions from the builder.
+	 *
+	 * @param language An ISO 639 alpha-2 or alpha-3 language code, or a language subtag
+	 * up to 8 characters in length.
+	 * @return a new Locale instance constructed by {@link Locale.Builder}
+	 * @throws java.util.IllformedLocaleException from the {@link Locale.Builder}
+	 *
+	 * @see Locale
+	 * @see Locale.Builder
+	 */
 	public static Locale createLocale(String language) {
 		return new Locale.Builder().setLanguage(language).build();
 	}

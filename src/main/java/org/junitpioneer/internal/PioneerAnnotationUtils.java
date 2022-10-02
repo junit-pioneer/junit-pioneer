@@ -151,8 +151,18 @@ public class PioneerAnnotationUtils {
 		}
 	}
 
+	/**
+	 * Checks whether the given annotation is a container annotation for a {@link Repeatable}
+	 * annotation. This is a non-exhaustive check, meaning it does not comply with
+	 * <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6.3">
+	 * the full JLS specification</a>. It could be considered "good enough"
+	 * in most practical use-cases.
+	 *
+	 * @param annotation the annotation we want to check for container annotation status
+	 * @return {@code true} if the annotation is a container annotation for a {@link Repeatable} annotation,
+	 * otherwise {@code false}
+	 */
 	public static boolean isContainerAnnotation(Annotation annotation) {
-		// See https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6.3
 		try {
 			Method value = annotation.annotationType().getDeclaredMethod("value");
 			return value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
@@ -204,7 +214,7 @@ public class PioneerAnnotationUtils {
 
 	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
 			boolean findRepeated, boolean findAllEnclosing) {
-		if (!type.isPresent())
+		if (type.isEmpty())
 			return Stream.empty();
 
 		List<A> onThisClass = Arrays.asList(type.get().getAnnotationsByType(annotationType));
@@ -250,6 +260,18 @@ public class PioneerAnnotationUtils {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * A helper utility method for {@link org.junitpioneer.jupiter.cartesian.CartesianTest} for finding
+	 * argument sources on parameters. Note that, while it is possible there are multiple valid annotations
+	 * on the parameter, we only take the first annotation.
+	 *
+	 * @param testMethod the test method for which we want to find parameter arguments sources
+	 * @return a list of found arguments source annotations, including {@link CartesianArgumentsSource} annotations,
+	 * never {@code null} but potentially empty.
+	 *
+	 * @see CartesianArgumentsSource
+	 * @see ArgumentsSource
+	 */
 	public static List<Annotation> findParameterArgumentsSources(Method testMethod) {
 		return Arrays
 				.stream(testMethod.getParameters())
@@ -268,6 +290,17 @@ public class PioneerAnnotationUtils {
 		return annotations;
 	}
 
+	/**
+	 * A helper utility method for {@link org.junitpioneer.jupiter.cartesian.CartesianTest} for finding
+	 * argument sources on the test method.
+	 *
+	 * @param testMethod the test method for which we want to find arguments sources
+	 * @return a list of found arguments source annotations, including {@link CartesianArgumentsSource} annotations,
+	 * never {@code null} but potentially empty.
+	 *
+	 * @see CartesianArgumentsSource
+	 * @see ArgumentsSource
+	 */
 	public static List<Annotation> findMethodArgumentsSources(Method testMethod) {
 		return Arrays
 				.stream(testMethod.getAnnotations())

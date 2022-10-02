@@ -21,7 +21,7 @@ import java.util.List;
 public interface IssueProcessor {
 
 	/**
-	 * Processes results of `@Issue` annotated test cases grouped by the issueId, called {@link IssueTestSuite}.
+	 * Processes results of {@link Issue} annotated test cases grouped by the issueId, called {@link IssueTestSuite}.
 	 *
 	 * @param issueTestSuites List of issues, each with a list of test cases annotated with their issueId
 	 */
