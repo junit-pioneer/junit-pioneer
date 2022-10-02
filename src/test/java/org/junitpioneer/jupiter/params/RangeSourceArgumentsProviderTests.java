@@ -26,6 +26,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -66,6 +68,16 @@ class RangeSourceArgumentsProviderTests {
 				.collect(Collectors.toList());
 
 		assertThat(actualValues).containsExactlyInAnyOrder(expectedValues);
+	}
+
+	@Test
+	void worksWithOtherArgumentSources() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RangeWithOtherArgumentSourcesCase.class, "withOtherSources",
+					int.class);
+
+		assertThat(results).hasNumberOfSucceededTests(4);
+		assertThat(results).hasNumberOfReportEntries(4).withValues("1", "2", "6", "7");
 	}
 
 	private static Number displayNameToNumber(String displayName) {
@@ -230,6 +242,17 @@ class RangeSourceArgumentsProviderTests {
 		@IntRangeSource(from = 7, to = 7, step = 1)
 		@ParameterizedTest
 		void emptyRange() {
+		}
+
+	}
+
+	static class RangeWithOtherArgumentSourcesCase {
+
+		@IntRangeSource(from = 1, to = 3)
+		@ValueSource(ints = { 6, 7 })
+		@ReportEntry("{0}")
+		@ParameterizedTest
+		void withOtherSources(int i) {
 		}
 
 	}
