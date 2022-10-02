@@ -33,7 +33,6 @@ This behavior can be controlled by specifying the `closed` argument:
 [source,java,indent=0]
 ----
 include::{demo}[tag=rangesources_ranges_1, indent=0]
-
 include::{demo}[tag=rangesources_ranges_2, indent=0]
 ----
 
