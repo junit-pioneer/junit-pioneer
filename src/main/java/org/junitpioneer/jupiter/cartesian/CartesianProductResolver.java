@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -45,7 +45,9 @@ class CartesianProductResolver implements ParameterResolver {
 		if (parameterType.isPrimitive())
 			return parameter != null && parameterClass.isAssignableFrom(parameter.getClass());
 		// parameter with correct type (or `null`)
-		return parameter == null || parameterClass.isAssignableFrom(parameter.getClass());
+		if (parameter == null)
+			return true;
+		return parameterClass.isAssignableFrom(parameter.getClass());
 	}
 
 	@Override

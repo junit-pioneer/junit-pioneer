@@ -1,4 +1,5 @@
 rootProject.name = "junit-pioneer"
+include("demo")
 
 plugins {
 	id("com.gradle.enterprise") version "3.2"

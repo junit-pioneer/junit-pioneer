@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -24,8 +24,8 @@ public class IssueExtensionIntegrationTests {
 	 * (not even adapted as `EngineExecutionListener`) and so it wouldn't gather the report
 	 * entries nor get called when the test kit run finished.
 	 *
-	 * Hence, we're not able to write a proper integration test for this extensions.
-	 * Instead we have to rely on the occasional visual verification that it works - the
+	 * Hence, we're not able to write a proper integration test for this extension.
+	 * Instead, we have to rely on the occasional visual verification that it works - the
 	 * `StoringIssueProcessor` prints the gathered information to System.out.
 	 *
 	 * https://github.com/junit-pioneer/junit-pioneer/issues/375

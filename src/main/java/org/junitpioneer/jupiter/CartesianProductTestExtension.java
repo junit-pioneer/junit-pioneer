@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -37,6 +37,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
+import org.junitpioneer.internal.TestNameFormatter;
 
 /**
  * @deprecated Replaced by `org.junitpioneer.jupiter.cartesian.CartesianTestExtension`.
@@ -53,20 +54,20 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		List<List<?>> sets = computeSets(context);
-		CartesianProductTestNameFormatter formatter = createNameFormatter(context);
+		TestNameFormatter formatter = createNameFormatter(context);
 		return cartesianProduct(sets)
 				.stream()
 				.map(params -> new CartesianProductTestInvocationContext(params, formatter));
 	}
 
-	private CartesianProductTestNameFormatter createNameFormatter(ExtensionContext context) {
+	private TestNameFormatter createNameFormatter(ExtensionContext context) {
 		CartesianProductTest annotation = findAnnotation(context.getRequiredTestMethod(), CartesianProductTest.class)
 				.orElseThrow(() -> new ExtensionConfigurationException("@CartesianProductTest not found."));
 		String pattern = annotation.name();
 		if (pattern.isEmpty())
 			throw new ExtensionConfigurationException("CartesianProductTest can not have a non-empty display name.");
 		String displayName = context.getDisplayName();
-		return new CartesianProductTestNameFormatter(pattern, displayName);
+		return new TestNameFormatter(pattern, displayName, CartesianProductTest.class);
 	}
 
 	private List<List<?>> computeSets(ExtensionContext context) {
@@ -135,7 +136,7 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	private List<Object> provideArguments(ExtensionContext context, Annotation source, ArgumentsProvider provider)
 			throws Exception {
 		if (provider instanceof CartesianAnnotationConsumer) {
-			((CartesianAnnotationConsumer) provider).accept(source);
+			((CartesianAnnotationConsumer<Annotation>) provider).accept(source);
 			return provider
 					.provideArguments(context)
 					.map(Arguments::get)

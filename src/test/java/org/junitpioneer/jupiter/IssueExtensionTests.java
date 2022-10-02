@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -25,8 +25,7 @@ public class IssueExtensionTests {
 	@Test
 	@DisplayName("publishes nothing, if method is not annotated")
 	void publishNothingIfMethodIsNotAnnotated() {
-		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(IssueExtensionTests.IssueDummyTestClass.class, "testNoAnnotation");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(IssueExtensionTestCases.class, "testNoAnnotation");
 
 		assertThat(results).hasNumberOfSucceededTests(1);
 		assertThat(results).hasNumberOfReportEntries(0);
@@ -35,8 +34,7 @@ public class IssueExtensionTests {
 	@Test
 	@DisplayName("publishes the annotations value with key 'Issue'")
 	void publishAnnotationsValueWithKeyIssueFromMethodAnnotation() {
-		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(IssueExtensionTests.IssueDummyTestClass.class, "testIsAnnotated");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(IssueExtensionTestCases.class, "testIsAnnotated");
 		assertThat(results).hasNumberOfSucceededTests(1);
 
 		assertThat(results).hasSingleReportEntry().withKeyAndValue(REPORT_ENTRY_KEY, "Req 11");
@@ -46,13 +44,13 @@ public class IssueExtensionTests {
 	@DisplayName("publishes the class annotation with value 'Req-Class'")
 	void publishAnnotationsFromClass() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestClass(IssueExtensionTests.IssueDummyTestClass.NestedDummyTestClass.class);
+				.executeTestClass(IssueExtensionTestCases.NestedIssueExtensionTestCases.class);
 		assertThat(results).hasNumberOfSucceededTests(1);
 
 		assertThat(results).hasSingleReportEntry().withKeyAndValue(REPORT_ENTRY_KEY, "Req-Class");
 	}
 
-	static class IssueDummyTestClass {
+	static class IssueExtensionTestCases {
 
 		@Test
 		void testNoAnnotation() {
@@ -67,7 +65,7 @@ public class IssueExtensionTests {
 
 		@Nested
 		@Issue("Req-Class")
-		class NestedDummyTestClass {
+		class NestedIssueExtensionTestCases {
 
 			@Test
 			void shouldRetrieveFromClass() {

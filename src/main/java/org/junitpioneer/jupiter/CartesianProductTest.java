@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -97,10 +97,16 @@ public @interface CartesianProductTest {
 	 * Class for defining sets to a {@code CartesianProductTest} execution.
 	 *
 	 * @since 1.0
+	 * @deprecated CartesianProductTest has been superseded by CartesianTest, scheduled to be removed in 2.0
 	 */
+	@Deprecated
 	class Sets {
 
 		private final List<List<?>> sets = new ArrayList<>(); //NOSONAR
+
+		// recreate default constructor to prevent compiler warning
+		public Sets() {
+		}
 
 		/**
 		 * Creates a single set of distinct objects (according to

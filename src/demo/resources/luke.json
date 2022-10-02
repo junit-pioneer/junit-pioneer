@@ -1,0 +1,14 @@
+{
+  "name": "Luke",
+  "height": 172,
+  "vehicles": [
+    {
+      "name": "Snowspeeder",
+      "length": 4.5
+    },
+    {
+      "name": "Imperial Speeder Bike",
+      "length": 3
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExecutableInvoker;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstances;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -42,8 +43,13 @@ public class TestExtensionContext implements ExtensionContext {
 		this.testMethod = testMethod;
 	}
 
-	// @Override once we baseline against 5.8
+	@Override
 	public ExecutionMode getExecutionMode() {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
+	}
+
+	@Override
+	public ExecutableInvoker getExecutableInvoker() {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 

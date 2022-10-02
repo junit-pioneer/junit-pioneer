@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -27,10 +27,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@link #key()} and {@link #value()}. After the annotated method has been
  * executed, the initial default value is restored.</p>
  *
- * <p>{@code SetEnvironmentVariable} is repeatable and can be used on the method and on
- * the class level. If a class is annotated, the configured variable will be set
- * for all tests inside that class. Any method level configurations will
- * override the class level configurations.</p>
+ * <p>{@code SetEnvironmentVariable} can be used on the method and on the class level.
+ * It is repeatable and inherited from higher-level containers. If a class is
+ * annotated, the configured property will be set before every test inside that
+ * class. Any method level configurations will override the class level
+ * configurations.</p>
  *
  * <p>WARNING: Java considers environment variables to be immutable, so this extension
  * uses reflection to change them. This requires that the {@link SecurityManager}

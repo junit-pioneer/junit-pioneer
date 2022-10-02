@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -48,7 +48,7 @@ public class PioneerAnnotationUtilsTests {
 				AnnotationCluster.class.getMethod("notAnnotated"));
 
 			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
+					.isAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
 
 			assertThat(result).isTrue();
 		}
@@ -60,7 +60,7 @@ public class PioneerAnnotationUtilsTests {
 				Extender.class.getMethod("notAnnotated"));
 
 			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
+					.isAnnotationPresent(testContext, PioneerAnnotationUtilsTestCases.NotInheritedAnnotation.class);
 
 			assertThat(result).isFalse();
 		}
@@ -71,8 +71,7 @@ public class PioneerAnnotationUtilsTests {
 			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
 				AnnotationCheck.class.getMethod("direct"));
 
-			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
+			boolean result = PioneerAnnotationUtils.isAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
 			assertThat(result).isTrue();
 		}
@@ -83,8 +82,7 @@ public class PioneerAnnotationUtilsTests {
 			TestExtensionContext testContext = new TestExtensionContext(Child.class,
 				Child.class.getMethod("notAnnotated"));
 
-			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
+			boolean result = PioneerAnnotationUtils.isAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
 			assertThat(result).isTrue();
 		}
@@ -95,8 +93,7 @@ public class PioneerAnnotationUtilsTests {
 			TestExtensionContext testContext = new TestExtensionContext(AnnotationCheck.class,
 				AnnotationCheck.class.getMethod("meta"));
 
-			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
+			boolean result = PioneerAnnotationUtils.isAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
 			assertThat(result).isTrue();
 		}
@@ -107,8 +104,7 @@ public class PioneerAnnotationUtilsTests {
 			TestExtensionContext testContext = new TestExtensionContext(Enclosing.class,
 				Enclosing.class.getMethod("notAnnotated"));
 
-			boolean result = PioneerAnnotationUtils
-					.isAnyAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
+			boolean result = PioneerAnnotationUtils.isAnnotationPresent(testContext, NonRepeatableTestAnnotation.class);
 
 			assertThat(result).isTrue();
 		}
@@ -510,7 +506,7 @@ public class PioneerAnnotationUtilsTests {
 					.allSatisfy(annotation -> assertThat(annotation)
 							.isInstanceOfAny(RepeatableTestAnnotation.class, NonRepeatableTestAnnotation.class,
 								MetaAnnotatedTestAnnotation.class))
-					.extractingResultOf("value")
+					.extracting(this::resultOfValue)
 					.containsExactlyInAnyOrder("Inherited 4", "Inherited 5", "Inherited 6",
 						"Annotated with repeatable 2");
 		}
@@ -527,7 +523,7 @@ public class PioneerAnnotationUtilsTests {
 					.allSatisfy(annotation -> assertThat(annotation)
 							.isInstanceOfAny(RepeatableTestAnnotation.class, NonRepeatableTestAnnotation.class,
 								MetaAnnotatedTestAnnotation.class))
-					.extractingResultOf("value")
+					.extracting(this::resultOfValue)
 					.containsExactlyInAnyOrder("Inherited 1", "Inherited 2", "Inherited 3",
 						"Annotated with repeatable 1");
 		}
@@ -543,7 +539,7 @@ public class PioneerAnnotationUtilsTests {
 			assertThat(result)
 					.hasSize(1)
 					.allSatisfy(annotation -> assertThat(annotation).isInstanceOf(MetaAnnotatedTestAnnotation.class))
-					.extractingResultOf("value")
+					.extracting(this::resultOfValue)
 					.containsExactlyInAnyOrder("Annotated with repeatable 2");
 		}
 
@@ -557,8 +553,20 @@ public class PioneerAnnotationUtilsTests {
 			assertThat(result)
 					.hasSize(1)
 					.allSatisfy(annotation -> assertThat(annotation).isInstanceOf(MetaAnnotatedTestAnnotation.class))
-					.extractingResultOf("value")
+					.extracting(this::resultOfValue)
 					.containsExactlyInAnyOrder("Annotated with repeatable 1");
+		}
+
+		// see https://github.com/assertj/assertj/issues/2760
+		String resultOfValue(Annotation annotation) {
+			// can't wait for type patterns!
+			if (annotation instanceof MetaAnnotatedTestAnnotation)
+				return ((MetaAnnotatedTestAnnotation) annotation).value();
+			if (annotation instanceof NonRepeatableTestAnnotation)
+				return ((NonRepeatableTestAnnotation) annotation).value();
+			if (annotation instanceof RepeatableTestAnnotation)
+				return ((RepeatableTestAnnotation) annotation).value();
+			throw new AssertionError("Cannot extract value from annotation of type " + annotation.getClass());
 		}
 
 	}

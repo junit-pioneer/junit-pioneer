@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -62,6 +62,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 		if (messages.containsKey(REPORT_ENTRY_KEY)) {
 			String issueId = messages.get(REPORT_ENTRY_KEY);
+			// because test IDs are unique, there's no risk of overriding previously entered information
 			testCases.put(testId, new IssueTestCaseBuilder(testId).setIssueId(issueId));
 		}
 	}

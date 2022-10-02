@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * Pioneer-internal utility class.
@@ -80,6 +82,24 @@ public class PioneerUtils {
 			current = current.getEnclosingClass();
 		} while (!method.isPresent() && current != null);
 		return method;
+	}
+
+	/**
+	 * Find all (parent) {@code ExtensionContext}s via {@link ExtensionContext#getParent()}.
+	 *
+	 * @param context the context for which to find all (parent) contexts; never {@code null}
+	 * @return a list of all contexts, "outwards" in the {@link ExtensionContext#getParent() getParent}-order,
+	 *         beginning with the given context; never {@code null} or empty
+	 */
+	public static List<ExtensionContext> findAllContexts(ExtensionContext context) {
+		List<ExtensionContext> allContexts = new ArrayList<>();
+		allContexts.add(context);
+		List<ExtensionContext> parentContexts = context
+				.getParent()
+				.map(PioneerUtils::findAllContexts)
+				.orElse(Collections.emptyList());
+		allContexts.addAll(parentContexts);
+		return allContexts;
 	}
 
 	public static String nullSafeToString(Object object) {

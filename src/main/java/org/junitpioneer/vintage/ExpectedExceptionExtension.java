@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -66,6 +66,7 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 						.ifPresent(error -> {
 							throw error;
 						});
+				break;
 			case WAS_THROWN_AS_EXPECTED:
 				// the exception was thrown as expected so there is nothing to do
 				break;
@@ -80,6 +81,8 @@ class ExpectedExceptionExtension implements TestExecutionExceptionHandler, After
 		}
 	}
 
+	// vintage @Test is deprecated (not for removal)
+	@SuppressWarnings("deprecation")
 	private static Optional<? extends Class<? extends Throwable>> expectedException(ExtensionContext context) {
 		return findAnnotation(context.getElement(), Test.class)
 				.map(Test::expected)

@@ -3,6 +3,7 @@
 The following guidelines were chosen very deliberately to make sure the project benefits from contributions.
 This is true for such diverse areas as a firm legal foundation or a sensible and helpful commit history.
 
+* [Code of Conduct](#code-of-conduct)
 * [Contributor License Agreement](#junit-pioneer-contributor-license-agreement)
 * [If you're new...](#if-youre-new)
 	* [...to Open Source](#to-open-source)
@@ -11,6 +12,7 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 * [Writing Code](#writing-code)
 	* [Code Organization](#code-organization)
 	* [Code Style](#code-style)
+	* [Tests](#tests)
 	* [Documentation](#documentation)
 	* [Git](#git)
 * [Fixing Bugs, Developing Features](#fixing-bugs-developing-features)
@@ -34,16 +36,24 @@ This is true for such diverse areas as a firm legal foundation or a sensible and
 
 The guidelines apply to maintainers as well as contributors!
 
+## Code of Conduct
+
+JUnit Pioneer uses a slightly adapted version of [the Contributor Covenant code of conduct](https://www.contributor-covenant.org/):
+
+> We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
+>
+> We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
+
+Please read on in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for standards, scope, and enforcement.
+The CoC binds maintainers, contributors, and other community members alike; in community spaces and in cases of stark violations also outside of them.
 
 ## JUnit Pioneer Contributor License Agreement
 
-**Project License:** [Eclipse Public License v2.0](LICENSE.md)
+We don't have a dedicated contributor license agreement (CLA), but please consider [GitHub's terms of service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service#6-contributions-under-repository-license):
 
-* You will only submit contributions where you have authored 100% of the content.
-* You will only submit contributions to which you have the necessary rights.
-  This means that if you are employed you have received the necessary permissions from your employer to make the contributions.
-* Whatever content you contribute will be provided under the project license(s).
+> Whenever you add Content to a repository containing notice of a license, you license that Content under the same terms, and you agree that you have the right to license that Content under those terms.
 
+JUnit Pioneer uses the [Eclipse Public License v2.0](https:/eclipse.org/legal/epl-2.0/), which you can also find [here](https://github.com/junit-pioneer/junit-pioneer/blob/main/LICENSE.md) in this repository.
 
 ## If you're new...
 
@@ -55,7 +65,7 @@ We really appreciate that you consider contributing to JUnit Pioneer.
 We know that this can be quite daunting at first:
 Everybody uses a vocabulary and techniques that appear quite cryptic to those not steeped in them.
 We can't fix that in a short file like this, but we want to provide some pointers to get you started.
-If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and ask us to explain it better.
+If anything that follows in this document isn't clear, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new/choose) and ask us to explain it better.
 
 To get you started, have a look at the [Open Source Guide](https://opensource.guide/) article [_How to Contribute to Open Source_](https://opensource.guide/how-to-contribute/).
 We particularly recommend the following sections:
@@ -89,7 +99,7 @@ To get started, check [these good first issues](https://github.com/junit-pioneer
 
 ## Writing Code
 
-We have a few guidelines on how to organize, style, and document extensions. 
+We have a few guidelines on how to organize, style, and document extensions.
 Everything related to branches, commits, and more is described [further below](#fixing-bugs-developing-features).
 
 ### Code Organization
@@ -123,6 +133,34 @@ Classes implementing an extension's functionality should reflect that in their n
 
 Note _should_, not _must_ - there can be exceptions if well argued.
 
+#### Extension Scopes
+
+Consider the following:
+
+```java
+@YourExtension
+class MyTests {
+
+	@Test
+	void testFoo() { /* ... */ }
+
+	@Test
+	void testBar() { /* ... */ }
+
+}
+```
+
+You might ask yourself: should `@YourExtension` run
+
+1. once before/after all tests (meaning it "brackets" the test class, typically via [`BeforeAllCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeAllCallback.html) / [`AfterAllCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterAllCallback.html)) or
+2. once before/after each test (meaning it "brackets" each test method, typically via [`BeforeEachCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeEachCallback.html) / [`AfterEachCallback`](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterEachCallback.html))?
+
+We decided to _default_ to option 2, particularly for extensions that set and reset state (often global state like `DefaultLocaleExtension` and `DefaultTimezoneExtension`), as we believe this is less error-prone and covers more common use cases.
+Furthermore, we want to guarantee consistent behavior across different extensions.
+
+This, however, is just a default.
+`@YourExtension` is free to diverge if it makes sense.
+
 #### Namespaces
 
 Interacting with [Jupiter's extension `Store`](https://junit.org/junit5/docs/current/user-guide/#extensions-keeping-state) requires a `Namespace` instance.
@@ -145,29 +183,23 @@ How to write the code itself.
 * design code to avoid optionality wherever feasibly possible
 * in all remaining cases, prefer `Optional` over `null`
 
-#### Assertions
+#### Reusability
 
-All tests shall use [AssertJ](https://assertj.github.io/doc/)'s assertions and not the ones built into Jupiter:
+We strive to make our extensions reusable and extensible.
 
-* more easily discoverable API
-* more detailed assertion failures
+A key ingredient in that is making sure that annotations work as meta-annotations (i.e. users can apply _our_ annotations to _their_ annotations and our extensions still work).
+To achieve this, apply `@Target({ ElementType.ANNOTATION_TYPE })` to annotations and prefer `org.junitpioneer.internal.PioneerAnnotationUtils` and `org.junit.platform.commons.support.AnnotationSupport` when searching for annotations.
 
-Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue(bool)` vs `assertThat(bool).isTrue()`) - that will spare us the discussion which assertion to use in a specific case.
+Another aspect is that annotations that apply to classes (i.e. those marked with `@Target({ ElementType.TYPE })`) should be inherited by subclasses.
+For that, also add the annotation `@Inherited`.
 
-Pioneer now has its own assertions for asserting not directly executed tests.
-This means asserting `ExecutionResults`.
-We can divide those kinds of assertions into two categories: test case assertions and test suite assertions.
- - Test case assertions are the ones where you assert a single test, e.g.: it failed with an exception or succeeded.
- For those, use the assertions that being with `hasSingle...`, e.g.: `hasSingleSucceededTest()`.
- - Test suite assertions are the ones where you assert multiple tests and their outcomes, e.g.: three tests started, two failed, one succeeded.
- For those, use the assertions that being with `hasNumberOf...`, e.g.: `hasNumberOfFailedTests(1)`.
-
-Do not mix the two - while technically correct (meaning you _can_ write `hasNumberOfFailedTests(3).hasSingleSucceededTest()`) it is better to handle them separately.
+**NOTE**:
+`ElementType.TYPE` includes annotations, so there's no need to apply it _and_ `ElementType.ANNOTATION_TYPE`.
 
 #### Thread-safety
 
 It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.
-To that end it is necessary to understand [JUnit Jupiter's parallel execution](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution)), particularly [the synchronization mechanisms it offers](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution-synchronization): `@Execution` and `@ResourceLock`.
+To that end it is necessary to understand [JUnit Jupiter's parallel execution](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution), particularly [the synchronization mechanisms it offers](https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution-synchronization): `@Execution` and `@ResourceLock`.
 
 For extensions touching global state (like default locales or environment variables), we've chosen the following approach:
 
@@ -186,6 +218,41 @@ It helps with writing parallel tests for them if they do not change global state
 That particularly applies to "store in beforeEach - restore in afterEach"-extensions!
 If they fail after "store", they will still "restore" and thus potentially create a race condition with other tests.
 
+#### Compiler Warnings
+
+The build is configured to treat almost all compiler warnings as errors (see below for exceptions).
+If code that triggers a warning can't be refactored to avoid that, `@SuppressWarning` may be added, but we don't want to do that liberally.
+Developers and reviewers should minimize its use.
+
+Exceptions:
+* `exports` - Pioneer's public API mentions a lot of Jupiter classes (e.g. all custom annotations use Jupiter's annotations), which leads to warnings that recommend to transitively require the corresponding Jupiter modules.
+  Doing that would mean that Pioneer users wouldn't have to require Jupiter's modules, which is backwards - we're the appendix, here.
+  Since we don't want to pepper `@SuppressWarning("exports")` everywhere, the warning is disabled.
+
+### Tests
+
+The name of test classes _must_ end with `Tests`, otherwise Gradle will ignore them.
+The name of nested classes which are used as test fixture for executing Jupiter should end with `TestCases`, even when they only contain a single test method.
+
+#### Assertions
+
+All tests shall use [AssertJ](https://assertj.github.io/doc/)'s assertions and not the ones built into Jupiter:
+
+* more easily discoverable API
+* more detailed assertion failures
+
+Yes, use it even if Jupiter's assertions are as good or better (c.f. `assertTrue(bool)` vs `assertThat(bool).isTrue()`) - that will spare us the discussion which assertion to use in a specific case.
+
+Pioneer now has its own assertions for asserting not directly executed tests.
+This means asserting `ExecutionResults`.
+We can divide those kinds of assertions into two categories: test case assertions and test suite assertions.
+ - Test case assertions are the ones where you assert a single test, e.g.: it failed with an exception or succeeded.
+ For those, use the assertions that begin with `hasSingle...`, e.g.: `hasSingleSucceededTest()`.
+ - Test suite assertions are the ones where you assert multiple tests and their outcomes, e.g.: three tests started, two failed, one succeeded.
+ For those, use the assertions that begin with `hasNumberOf...`, e.g.: `hasNumberOfFailedTests(1)`.
+
+Do not mix the two - while technically correct (meaning you _can_ write `hasNumberOfFailedTests(3).hasSingleSucceededTest()`) it is better to handle them separately.
+
 ### Documentation
 
 There are several aspects of this project's documentation.
@@ -199,10 +266,60 @@ Some project-specific requirements apply to all non-`.java` files:
 Each feature is documented on [the project website](https://junit-pioneer.org/docs/), which is pulled from the files in the `docs/` folder, where each feature has:
 
 * an entry in `docs-nav.yml` (lexicographically ordered)
-* it's own `.adoc` file
+* its own `.adoc` file
 
 Add these entries when implementing a new feature and update them when changing an existing one.
 The Javadoc on an extension's annotations should link back to the documentation on the website "for more information".
+
+Code blocks in these files should not just be text.
+Instead, in the `src/demo/java` source tree, create/update a `...Demo` class that is dedicated to a feature and place code snippets in `@Test`-annotated methods in `...Demo`.
+Write each snippet as needed for the documentation and bracket it with tags:
+
+```java
+// tagging the entire test method:
+
+// tag::$TAG_NAME[]
+@Test
+@SomePioneerExtension
+void simple() {
+	// demonstrate extension
+}
+// end::$TAG_NAME[]
+
+
+// tagging a few lines from the test:
+
+@Test
+void simple() {
+	// tag::$TAG_NAME[]
+	SomePioneerExtension ex = // ...
+	// demonstrate extension
+	// end::$TAG_NAME[]
+	assertThat(ex). // ...
+}
+```
+
+Where feasible, include or follow up with assertions that ensure correct behavior.
+Thus `...Demo` classes guarantee that snippets compile and (roughly) behave as explained.
+
+In the documentation file, include these two attributes pointing at the demo source file:
+
+```adoc
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/...Demo.java
+```
+
+It is **critically important** that the first attribute is called `xp-demo-dir` and that the second attribute references it.
+Without this exact structure, the snippets will not show up on the website (even if they appear correctly in an IDE).
+
+To include these snippets, use a block like the following:
+
+```adoc
+[source,java,indent=0]
+----
+include::{demo}[tag=$TAG_NAME]
+----
+```
 
 #### README.md and CONTRIBUTING.md
 
@@ -303,7 +420,7 @@ PR: ${pull-request}
 
 `${action}` should succinctly describe what the PR does in good Git style.
 Ideally, this title line (without issue and PR numbers) should not exceed 50 characters - 70 is the absolute maximum.
-It is followed, in parenthesis, by a comma-separated list of all related issues, a slash, and the pull request (to make all of them easy to find from a look at the log).
+It is followed, in parentheses, by a comma-separated list of all related issues, a slash, and the pull request (to make all of them easy to find from a look at the log).
 
 `${body}` should outline the problem the pull request was solving - it should focus on _why_ the code was written, not on _how_ it works.
 This can usually be a summary of the issue description and discussion as well as commit messages.
@@ -353,6 +470,26 @@ JUnit Pioneer has an uncharacteristically strong relationship to the JUnit 5 pro
 It not only depends on it, it also uses its internal APIs, copies source code that is not released in any artifact, mimics code style, unit testing, build and CI setup, and more.
 As such it will frequently have to adapt to upstream changes, so it makes sense to provision for that in the development strategy.
 
+#### Declaring Dependencies
+
+JUnit Jupiter has few external dependencies, but occasionally uses them in its own API and thus has the `requires transitive` directive in [its module declaration](https://github.com/junit-team/junit5/blob/main/junit-jupiter-api/src/module/org.junit.jupiter.api/module-info.java) (for example, `requires transitive org.opentest4j_`).
+That means, while JUnit Pioneer _could_ list these dependencies in its build configuration and require these modules in its module declaration, it doesn't _have to_.
+
+It is generally recommended not to rely on transitive dependencies when they're used directly and instead manage them yourself, but this does not apply very well to Pioneer and Jupiter:
+
+* If Jupiter stops using one of these dependencies, there is no point for us to keep using it as we only need them to integrate with Jupiter.
+* If Jupiter refactors these module relationships (e.g. by removing the OpenTest4J module from its dependencies and pulling its code into a Jupiter module), we might not be compatible with that new version (e.g. because we still require the removed module, which now results in a split package)
+* We can't choose a different dependency version than Jupiter
+
+We hence only depend on "core Jupiter" explicitly.
+That is:
+
+* core API: _org.junit.jupiter.api_
+* additional APIs as needed, e.g. _org.junit.jupiter.params_
+* additional functionality as needed, e.g. _org.junit.platform.launcher_
+
+#### Updating JUnit 5
+
 As [documented](README.md#dependencies) Pioneer aims to use the lowest JUnit 5 version that supports Pioneer's feature set.
 At the same time, there is no general reason to hesitate with updating the dependency if a new feature requires a newer version or the old version has a severe bug.
 Follow these steps when updating JUnit 5:
@@ -368,11 +505,38 @@ Follow these steps when updating JUnit 5:
 
 ### Others
 
-Pioneer does not take on run-time dependencies outside of JUnit 5.
-Of course test dependencies like AssertJ and build dependencies on Gradle plugins are fair game.
-To keep them updated, run `gradle dependencyUpdates`, which lists all dependencies for which a newer version exists.
-Updates still need to be done manually.
+JUnit Pioneer handles dependencies beyond JUnit 5 differently depending on how they impact its users.
 
+#### For Execution
+
+Pioneer avoids adding to users' dependency hell and hence doesn't take on dependencies beyond JUnit 5 that are _required_ at run time.
+_Optional_ dependencies are acceptable if they are needed to provide specific features, particularly:
+
+* to _integrate_ with other tools, frameworks, and libraries by offering features that directly interact with them (a hypothetical example is [Playwright](https://playwright.dev) for E2E testing)
+* for _ease of use_ when recreating functionality would be too complex or otherwise out of scope for Pioneer (an example is [Jackson](https://github.com/FasterXML/jackson) for JSON parsing)
+
+Unless we see reports of optional dependencies causing unexpected problems for users, there is no particularly high hurdle for taking them on, given each provides more than marginal value.
+They should only be used by specifically chosen features that require them, though, and care needs to be taken to prevent them from creeping into the rest of the code base - CheckStyle rules need to be configured for each that fail the build on accidental use of these dependencies.
+
+Optional dependencies are implemented with [Gradle's feature variants](https://docs.gradle.org/current/userguide/feature_variants.html).
+Pioneer's module declaration must be extended with a matching `requires static` clause, which limits optional dependencies to those that have at least an explicit automatic module name.
+Note that `requires static` does not suffice to pull in the optional dependency's module if no user code depends on it as well.
+
+Each Pioneer feature that depends on them must profusely document that:
+
+* in the feature documentation with configuration examples for Maven and Gradle (Kotlin suffices), including for the case where Pioneer is used on the module path and no other module depends on the optional dependency (i.e. explain how to configure `--add-modules`)
+* in the Javadoc with a mention of the needed dependencies and the potential `--add-modules` directive (but no detailed guide how to accomplish either - link to website instead)
+* in the case that the dependency is missing, with a clear error message that echoes the Javadoc
+
+#### For Test and Build
+
+Test dependencies like AssertJ and build dependencies on Gradle plugins do not impact users and are fair game.
+Of course, we want to avoid our own dependency hell, so each dependency should still be carefully considered.
+
+#### Updates
+
+To keep dependencies up to date, run `gradle dependencyUpdates`, which lists all dependencies for which a newer version exists.
+Updates then need to be done manually.
 To keep the commit history clean, these should be done in bulk every few weeks.
 
 
@@ -451,14 +615,14 @@ While maintainers will naturally gravitate towards tasks they prefer working on,
 
 We all have a soft spot for the project, but we also have jobs, families, hobbies, and other human afflictions.
 There's no expectation of availability!
-This applies to users opening issues, contributors providing PRs, and other maintainers - none of them can _expect_ a maintainer to have time to reply to their request. 
+This applies to users opening issues, contributors providing PRs, and other maintainers - none of them can _expect_ a maintainer to have time to reply to their request.
 
 ### Communication
 
 These are the channels we use to communicate with one another, our contributors, and users - in decreasing order of importance:
 
 1. [project website](https://junit-pioneer.org)
-2. files in the repository (like [`README.md`](README.md) and and this `CONTRIBUTING.md`)
+2. files in the repository (like [`README.md`](README.md) and this `CONTRIBUTING.md`)
 3. Git commit messages
 4. issues/PRs [on GitHub](https://github.com/junit-pioneer/junit-pioneer)
 5. _#junit-pioneer_ channel [in Discord](https://discord.gg/rHfJeCF)
@@ -472,7 +636,7 @@ A few examples:
 * when we discover a problem or possible feature on stream, a new GitHub issue will be created
 * when a team call or Discord discussion shapes our opinion on an issue or PR, the discussion (not just the conclusion!) is summarized in the issue or PR (see [the comments on the ShipKit evaluation](https://github.com/junit-pioneer/junit-pioneer/issues/193#issuecomment-611620554) for an example)
 * when a PR is merged, the commit message summarizes what it is about (see [_Commit Message_](#commit-message) above)
-* when a decision regarding the project structure or the development processes is made, it is reflected in `README.md`, `CONTRIBUTING.md`, or another suitable file or even the website  
+* when a decision regarding the project structure or the development processes is made, it is reflected in `README.md`, `CONTRIBUTING.md`, or another suitable file or even the website
 * when a new feature is merged, documentation is added to the website
 
 ### Where The Buck Stops

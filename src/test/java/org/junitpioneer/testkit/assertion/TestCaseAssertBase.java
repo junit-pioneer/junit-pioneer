@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.assertj.core.api.ThrowableAssert;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.testkit.engine.Events;
 import org.junitpioneer.testkit.assertion.single.TestCaseAbortedAssert;
@@ -32,17 +32,15 @@ class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Event
 	}
 
 	@Override
-	public AbstractThrowableAssert<?, ? extends Throwable> withExceptionInstanceOf(
-			Class<? extends Throwable> exceptionType) {
+	public <T extends Throwable> AbstractThrowableAssert<?, T> withExceptionInstanceOf(Class<T> exceptionType) {
 		Throwable thrown = getRequiredThrowable();
-		assertThat(thrown).isInstanceOf(exceptionType);
-		return new ThrowableAssert(thrown);
+		return assertThat(thrown).asInstanceOf(InstanceOfAssertFactories.throwable(exceptionType));
 	}
 
 	@Override
 	public AbstractThrowableAssert<?, ? extends Throwable> withException() {
 		Throwable thrown = getRequiredThrowable();
-		return new ThrowableAssert(thrown);
+		return assertThat(thrown);
 	}
 
 	@Override

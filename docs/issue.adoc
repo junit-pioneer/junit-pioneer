@@ -1,7 +1,7 @@
 :page-title: Issue Information
 :page-description: Extends JUnit Jupiter with `@Issue` to publish issue information.
-
-== Introduction
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/IssueExtensionDemo.java
 
 The main reason developers write tests is to ensure the functionality of a requirement or to avoid technical problems.
 The `@Issue` annotation allows marking tests with a `String`, referencing a related issue (like a requirement, or a bugfix) of an issue-tracker (like Jira or Redmine).
@@ -21,13 +21,9 @@ Then there is an API interface to further process the results, so users can plug
 
 To show that a test relates to an issue just add the annotation and provide a value, e.g. a Jira issue id, like in the following example:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Issue("REQ-123")
-@Test
-void test() {
-	// One of the tests for the issue with the id "REQ-123"
-}
+include::{demo}[tag=issue_simple]
 ----
 
 The `@Issue` annotation can be used on the class and method level.
@@ -46,20 +42,14 @@ To use the information published this way, https://docs.oracle.com/javase/8/docs
 
 The following snippet shows a simple implementation of the interface that just prints out the `issueID` of received values:
 
-[source,java]
+[source,java,indent=0]
 ----
-public class SimpleProcessor implements IssueProcessor {
-
-	@Override
-	public void processTestResults(
-			List<IssueTestSuite> allResults) {
-		for(IssueTestSuite testSuite : allResults) {
-			System.out.println(testSuite.issueId());
-		}
-	}
-
-}
+include::{demo}[tag=issue_processor_sample]
 ----
 
 NOTE: The implementing class must be registered to the Java ecosystem as a service.
 For further information about registering a service, please see the Java https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html[`ServiceLoader` documentation].
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

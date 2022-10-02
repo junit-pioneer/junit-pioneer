@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -34,9 +35,9 @@ import org.junit.jupiter.api.parallel.Resources;
  *
  * @since 0.9
  */
-@ResourceLock(value = Resources.LOCALE, mode = ResourceAccessMode.READ)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PACKAGE,
-		ElementType.TYPE })
+@Target({ ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PACKAGE, ElementType.TYPE })
+@Inherited
+@ResourceLock(value = Resources.LOCALE, mode = ResourceAccessMode.READ)
 public @interface ReadsDefaultLocale {
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
+import org.junitpioneer.internal.TestNameFormatter;
 
 /**
  * @deprecated scheduled to be removed in 2.0
@@ -23,9 +24,9 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 class CartesianProductTestInvocationContext implements TestTemplateInvocationContext {
 
 	private final List<?> parameters;
-	private final CartesianProductTestNameFormatter formatter;
+	private final TestNameFormatter formatter;
 
-	CartesianProductTestInvocationContext(List<?> parameters, CartesianProductTestNameFormatter formatter) {
+	CartesianProductTestInvocationContext(List<?> parameters, TestNameFormatter formatter) {
 		this.parameters = parameters;
 		this.formatter = formatter;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -77,6 +77,9 @@ public @interface IntRangeSource {
 	 */
 	boolean closed() default false;
 
+	/**
+	 * Containing annotation of repeatable {@code IntRangeSource}.
+	 */
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
