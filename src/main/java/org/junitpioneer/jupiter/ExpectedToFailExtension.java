@@ -21,24 +21,24 @@ import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
 
-class NotWorkingExtension implements Extension, InvocationInterceptor {
+class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 
 	/**
 	 * No-arg constructor for JUnit to be able to create an instance.
 	 */
-	public NotWorkingExtension() {
+	public ExpectedToFailExtension() {
 	}
 
-	private static NotWorking getNotWorkingAnnotation(ExtensionContext context) {
+	private static ExpectedToFail getExpectedToFailAnnotation(ExtensionContext context) {
 		return AnnotationSupport
-				.findAnnotation(context.getRequiredTestMethod(), NotWorking.class)
-				.orElseThrow(() -> new IllegalStateException("@NotWorking is missing."));
+				.findAnnotation(context.getRequiredTestMethod(), ExpectedToFail.class)
+				.orElseThrow(() -> new IllegalStateException("@ExpectedToFail is missing."));
 
 	}
 
 	/**
 	 * Returns whether the exception should be preserved and reported as is instead
-	 * of considering it an expected 'not working' exception.
+	 * of considering it an 'expected to fail' exception.
 	 *
 	 * <p>This method is used for exceptions which abort test execution and should
 	 * have higher precedence than aborted exceptions thrown by this extension.
@@ -60,17 +60,17 @@ class NotWorkingExtension implements Extension, InvocationInterceptor {
 				throw t;
 			}
 
-			NotWorking annotation = getNotWorkingAnnotation(extensionContext);
+			ExpectedToFail annotation = getExpectedToFailAnnotation(extensionContext);
 
 			String message = annotation.value();
 			if (message.isEmpty()) {
-				message = "Test marked as 'not working' failed as expected";
+				message = "Test marked as temporarily 'expected to fail' failed as expected";
 			}
 
 			throw new TestAbortedException(message, t);
 		}
 
-		return fail("Test marked as 'not working' succeeded; remove @NotWorking from it");
+		return fail("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
 	}
 
 	@Override

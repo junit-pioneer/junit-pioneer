@@ -31,34 +31,36 @@ import org.junitpioneer.testkit.PioneerTestKit;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
-@DisplayName("NotWorking extension")
-public class NotWorkingExtensionTests {
+@DisplayName("ExpectedToFail extension")
+public class ExpectedToFailExtensionTests {
 
 	@Test
 	void abortsOnTestFailure() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingTestCases.class, "failure");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ExpectedToFailTestCases.class, "failure");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
-				.hasMessage("Test marked as 'not working' failed as expected")
+				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected")
 				.hasCause(new AssertionFailedError("failed"));
 	}
 
 	@Test
 	void abortsOnTestFailureWithMetaAnnotation() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingTestCases.class, "metaAnnotationFailure");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "metaAnnotationFailure");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
-				.hasMessage("Test marked as 'not working' failed as expected")
+				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected")
 				.hasCause(new AssertionFailedError("failed"));
 	}
 
 	@Test
 	void abortsOnTestFailureWithMessage() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingTestCases.class, "failureWithMessage");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "failureWithMessage");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichAborted()
@@ -69,18 +71,18 @@ public class NotWorkingExtensionTests {
 
 	@Test
 	void abortsOnException() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingTestCases.class, "exception");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ExpectedToFailTestCases.class, "exception");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
-				.hasMessage("Test marked as 'not working' failed as expected")
+				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected")
 				.hasCause(new RuntimeException("test"));
 	}
 
 	@Test
 	void preservesTestAbort() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingTestCases.class, "aborted");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ExpectedToFailTestCases.class, "aborted");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichAborted()
@@ -91,17 +93,18 @@ public class NotWorkingExtensionTests {
 
 	@Test
 	void failsOnWorkingTest() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingTestCases.class, "working");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ExpectedToFailTestCases.class, "working");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichFailed()
 				.withExceptionInstanceOf(AssertionError.class)
-				.hasMessage("Test marked as 'not working' succeeded; remove @NotWorking from it");
+				.hasMessage("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
 	}
 
 	@Test
 	void doesNotAbortOnBeforeEachTestFailure() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingFailureBeforeEachTestCases.class, "test");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailFailureBeforeEachTestCases.class, "test");
 		assertThat(results)
 				.hasSingleFailedTest()
 				.withExceptionInstanceOf(AssertionError.class)
@@ -110,11 +113,12 @@ public class NotWorkingExtensionTests {
 
 	@Test
 	void doesNotAbortOnAfterEachTestFailure() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingFailureAfterEachTestCases.class, "test");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailFailureAfterEachTestCases.class, "test");
 		assertThat(results)
 				.hasSingleFailedTest()
 				.withExceptionInstanceOf(AssertionError.class)
-				.hasMessage("Test marked as 'not working' succeeded; remove @NotWorking from it")
+				.hasMessage("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it")
 				// Note: This check for suppressed exception actually tests JUnit platform behavior
 				.hasSuppressedException(new AssertionFailedError("after each"));
 	}
@@ -122,7 +126,7 @@ public class NotWorkingExtensionTests {
 	@Test
 	void doesNotAbortOnAfterEachTestFailureAfterTestAbort() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(NotWorkingAbortThenFailureAfterEachTestCases.class, "test");
+				.executeTestMethod(ExpectedToFailAbortThenFailureAfterEachTestCases.class, "test");
 		assertThat(results)
 				.hasSingleFailedTest()
 				.withExceptionInstanceOf(AssertionError.class)
@@ -132,12 +136,12 @@ public class NotWorkingExtensionTests {
 	@Test
 	void afterEachAbortAfterTestFailure() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(NotWorkingFailureThenAbortAfterEachTestCases.class, "test");
+				.executeTestMethod(ExpectedToFailFailureThenAbortAfterEachTestCases.class, "test");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
-				.hasMessage("Test marked as 'not working' failed as expected")
+				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected")
 				.hasCause(new AssertionFailedError("failed"))
 				// Note: This check for suppressed exception actually tests JUnit platform behavior
 				.has(new Condition<>((Throwable throwable) -> {
@@ -150,7 +154,8 @@ public class NotWorkingExtensionTests {
 
 	@Test
 	void doesNotAbortOnBeforeAllTestFailure() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingFailureBeforeAllTestCases.class, "test");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailFailureBeforeAllTestCases.class, "test");
 		assertThat(results).hasNumberOfStartedTests(0);
 		assertThat(results)
 				.hasSingleFailedContainer()
@@ -160,54 +165,55 @@ public class NotWorkingExtensionTests {
 
 	@Test
 	void doesNotAbortOnAfterAllTestFailure() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(NotWorkingFailureAfterAllTestCases.class, "test");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailFailureAfterAllTestCases.class, "test");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichFailed()
 				.withExceptionInstanceOf(AssertionError.class)
-				.hasMessage("Test marked as 'not working' succeeded; remove @NotWorking from it");
+				.hasMessage("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
 	}
 
-	static class NotWorkingTestCases {
+	static class ExpectedToFailTestCases {
 
-		@NotWorking
+		@ExpectedToFail
 		@Retention(RUNTIME)
 		@Target(METHOD)
-		@interface NotWorkingMetaAnnotation {
+		@interface ExpectedToFailMetaAnnotation {
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void failure() {
 			fail("failed");
 		}
 
-		@NotWorkingMetaAnnotation
+		@ExpectedToFailMetaAnnotation
 		@Test
 		void metaAnnotationFailure() {
 			fail("failed");
 		}
 
-		@NotWorking("Custom message")
+		@ExpectedToFail("Custom message")
 		@Test
 		void failureWithMessage() {
 			fail("failed");
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void exception() {
 			throw new RuntimeException("test");
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void aborted() {
-			// Assumption should have higher precedence than @NotWorking
+			// Assumption should have higher precedence than @ExpectedToFail
 			Assumptions.assumeTrue(false, "custom assumption message");
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void working() {
 			// Does not cause failure or error
@@ -216,17 +222,17 @@ public class NotWorkingExtensionTests {
 	}
 
 	/**
-	 * {@link BeforeEach} should not be considered by {@link NotWorking} because it
+	 * {@link BeforeEach} should not be considered by {@link ExpectedToFail} because it
 	 * is not specific to the annotated test method.
 	 */
-	static class NotWorkingFailureBeforeEachTestCases {
+	static class ExpectedToFailFailureBeforeEachTestCases {
 
 		@BeforeEach
 		void beforeEach() {
 			fail("before each");
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void test() {
 		}
@@ -234,17 +240,17 @@ public class NotWorkingExtensionTests {
 	}
 
 	/**
-	 * {@link AfterEach} should be considered by {@link NotWorking} because it
+	 * {@link AfterEach} should be considered by {@link ExpectedToFail} because it
 	 * might fail due to changes made to the test instance by the test method.
 	 */
-	static class NotWorkingFailureAfterEachTestCases {
+	static class ExpectedToFailFailureAfterEachTestCases {
 
 		@AfterEach
 		void afterEach() {
 			fail("after each");
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void test() {
 		}
@@ -255,14 +261,14 @@ public class NotWorkingExtensionTests {
 	 * Abort in test method followed by failure in {@link AfterEach} method should
 	 * be treated as expected failure.
 	 */
-	static class NotWorkingAbortThenFailureAfterEachTestCases {
+	static class ExpectedToFailAbortThenFailureAfterEachTestCases {
 
 		@AfterEach
 		void afterEach() {
 			fail("after each");
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void test() {
 			Assumptions.assumeTrue(false, "custom assumption message");
@@ -270,14 +276,14 @@ public class NotWorkingExtensionTests {
 
 	}
 
-	static class NotWorkingFailureThenAbortAfterEachTestCases {
+	static class ExpectedToFailFailureThenAbortAfterEachTestCases {
 
 		@AfterEach
 		void afterEach() {
 			Assumptions.assumeTrue(false, "custom assumption message");
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void test() {
 			fail("failed");
@@ -286,16 +292,16 @@ public class NotWorkingExtensionTests {
 	}
 
 	/**
-	 * {@link BeforeAll} should not be considered by {@link NotWorking}.
+	 * {@link BeforeAll} should not be considered by {@link ExpectedToFail}.
 	 */
-	static class NotWorkingFailureBeforeAllTestCases {
+	static class ExpectedToFailFailureBeforeAllTestCases {
 
 		@BeforeAll
 		static void beforeAll() {
 			fail("before all");
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void test() {
 		}
@@ -303,16 +309,16 @@ public class NotWorkingExtensionTests {
 	}
 
 	/**
-	 * {@link AfterAll} should not be considered by {@link NotWorking}.
+	 * {@link AfterAll} should not be considered by {@link ExpectedToFail}.
 	 */
-	static class NotWorkingFailureAfterAllTestCases {
+	static class ExpectedToFailFailureAfterAllTestCases {
 
 		@AfterAll
 		static void afterAll() {
 			fail("after all");
 		}
 
-		@NotWorking
+		@ExpectedToFail
 		@Test
 		void test() {
 		}

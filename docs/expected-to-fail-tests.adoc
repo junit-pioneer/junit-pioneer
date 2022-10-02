@@ -1,5 +1,7 @@
-:page-title: Not Working Tests
-:page-description: Extends JUnit Jupiter with `@NotWorking`, which marks a test method as 'not working'
+:page-title: Expected to Fail Tests
+:page-description: Extends JUnit Jupiter with `@ExpectedToFail`, which marks a test method as temporarily 'expected to fail'
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/ExpectedToFailExtensionDemo.java
 
 Often tests fail due to a bug in the tested application or in used dependencies.
 Traditionally such a test method would be annotated with JUnit's `@Disabled`.
@@ -8,10 +10,10 @@ However, this has the following disadvantages when the bug causing the test fail
 * the developer might not notice the existing test method and create a new one
 * the existing test method might not be noticed and remains disabled for a long time after the bug has been fixed, adding no value for the project
 
-`@NotWorking` tries to solve these issues.
+`@ExpectedToFail` tries to solve these issues.
 Unlike `@Disabled` it still executes the annotated test method but aborts the test if a test failure or error occurs.
-However, if the test is executed successfully the `@NotWorking` annotation will cause a test failure because the test _is working_.
-This lets the developer know that they have fixed a bug (possibly by accident) and that they can now remove the `@NotWorking` annotation from the test method.
+However, if the test is executed successfully the `@ExpectedToFail` annotation will cause a test failure because the test _is working_.
+This lets the developer know that they have fixed the bug (possibly by accident) and that they can now remove the `@ExpectedToFail` annotation from the test method.
 
 The annotation can only be used on methods and as meta-annotation on other annotation types.
 Similar to `@Disabled`, it has to be used in addition to a "testable" annotation, such as `@Test`.
@@ -22,26 +24,18 @@ Such test methods should use https://junit.org/junit5/docs/current/api/org.junit
 
 == Basic Use
 
-The test is aborted because the tested method `brokenMethod()` causes a test failure.
+The test is aborted because the tested method `brokenMethod()` returns an incorrect result.
 
-[source,java]
+[source,java,indent=0]
 ----
-@NotWorking
-@Test
-void doSomething() {
-	brokenMethod();
-}
+include::{demo}[tag=expected_to_fail]
 ----
 
-A custom message can be provided, explaining why the test is not working.
+A custom message can be provided, explaining why the tested code is not working as intended at the moment.
 
-[source,java]
+[source,java,indent=0]
 ----
-@NotWorking("Implementation bug in brokenMethod()")
-@Test
-void doSomething() {
-	brokenMethod();
-}
+include::{demo}[tag=expected_to_fail_message]
 ----
 
 == Thread-Safety

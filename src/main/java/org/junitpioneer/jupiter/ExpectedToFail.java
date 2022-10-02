@@ -21,11 +21,12 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @NotWorking} is a JUnit Jupiter extension to mark test methods as 'not working'.
+ * {@code @ExpectedToFail} is a JUnit Jupiter extension to mark test methods as temporarily
+ * 'expected to fail'.
  * Such test methods will still be executed but when they result in a test failure or error
  * the test will be aborted.
  * However, if the test method unexpectedly executes successfully, it is marked as failure
- * to let the developer know that the test is now successful and that the {@code @NotWorking}
+ * to let the developer know that the test is now successful and that the {@code @ExpectedToFail}
  * annotation can be removed.
  *
  * <p>The big difference compared to JUnit's {@link org.junit.jupiter.api.Disabled @Disabled}
@@ -44,7 +45,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * specific action.
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/not-working-tests/" target="_top">the documentation on <code>@NotWorking</code></a>.
+ * <a href="https://junit-pioneer.org/docs/expected-to-fail-tests/" target="_top">the documentation on <code>@ExpectedToFail</code></a>.
  * </p>
  *
  * @see org.junit.jupiter.api.Disabled
@@ -53,18 +54,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * Implementation note:
  * Only supports METHOD and ANNOTATION_TYPE as targets but not test classes because there
  * it is not clear what the 'correct' behavior would be when only a few test methods
- * execute successfully. Would the developer then have to remove the @NotWorking annotation
+ * execute successfully. Would the developer then have to remove the @ExpectedToFail annotation
  * from the test class and annotate methods individually?
  */
 @Documented
 @Retention(RUNTIME)
 @Target({ METHOD, ANNOTATION_TYPE })
-@ExtendWith(NotWorkingExtension.class)
-public @interface NotWorking {
+@ExtendWith(ExpectedToFailExtension.class)
+public @interface ExpectedToFail {
 
 	/**
-	 * Defines the message to show when a test is aborted because it is 'not working'.
-	 * This can be used for example to briefly explain why a test is not working.
+	 * Defines the message to show when a test is aborted because it is failing.
+	 * This can be used for example to briefly explain why the tested code is not working
+	 * as intended at the moment.
 	 * An empty string (the default) causes a generic default message to be used.
 	 */
 	String value() default "";
