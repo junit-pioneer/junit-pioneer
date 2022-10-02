@@ -55,7 +55,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * it is not clear what the 'correct' behavior would be when only a few test methods
  * execute successfully. Would the developer then have to remove the @NotWorking annotation
  * from the test class and annotate methods individually?
- * Additionally it is rather unlikely that a complete test class is 'not working'.
  */
 @Documented
 @Retention(RUNTIME)

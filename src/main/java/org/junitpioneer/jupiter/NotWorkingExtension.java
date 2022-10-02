@@ -12,43 +12,21 @@ package org.junitpioneer.jupiter;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
+import java.lang.reflect.Method;
+
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.ExtensionContext.Store;
-import org.junit.jupiter.api.extension.LifecycleMethodExecutionExceptionHandler;
-import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
+import org.junit.jupiter.api.extension.InvocationInterceptor;
+import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.TestAbortedException;
 
-class NotWorkingExtension implements Extension, TestExecutionExceptionHandler, LifecycleMethodExecutionExceptionHandler,
-		BeforeEachCallback, AfterEachCallback {
-
-	private static final Namespace NAMESPACE = Namespace.create(NotWorkingExtension.class);
-
-	/**
-	 * {@code Boolean} key indicating whether a 'not working' exception occurred:
-	 *
-	 * <ul>
-	 *   <li>{@code true}: A 'not working' exception occurred; the extension should cause
-	 *   the test to be skipped
-	 *   <li>{@code false}: No exception occurred; the extension should cause the test to fail
-	 *   <li>{@code null}: A regular test abort exception was thrown by user code; the
-	 *   extension should do nothing
-	 * </ul>
-	 */
-	private static final String EXCEPTION_OCCURRED_STORE_KEY = "exceptionOccurred";
+class NotWorkingExtension implements Extension, InvocationInterceptor {
 
 	/**
 	 * No-arg constructor for JUnit to be able to create an instance.
 	 */
 	public NotWorkingExtension() {
-	}
-
-	private Store getStore(ExtensionContext context) {
-		return context.getStore(NAMESPACE);
 	}
 
 	private static NotWorking getNotWorkingAnnotation(ExtensionContext context) {
@@ -71,50 +49,34 @@ class NotWorkingExtension implements Extension, TestExecutionExceptionHandler, L
 		return TestAbortedException.class.isInstance(t);
 	}
 
-	@Override
-	public void beforeEach(ExtensionContext context) throws Exception {
-		getStore(context).put(EXCEPTION_OCCURRED_STORE_KEY, false);
-	}
+	private static <T> T invokeAndInvertResult(Invocation<T> invocation, ExtensionContext extensionContext)
+			throws Throwable {
+		try {
+			invocation.proceed();
+			// if no exception was thrown fall through and call fail(...) eventually
+		}
+		catch (Throwable t) {
+			if (shouldPreserveException(t)) {
+				throw t;
+			}
 
-	@Override
-	public void afterEach(ExtensionContext context) throws Exception {
-		NotWorking annotation = getNotWorkingAnnotation(context);
+			NotWorking annotation = getNotWorkingAnnotation(extensionContext);
 
-		// null if extension should ignore test result
-		Boolean didExceptionOccur = getStore(context).remove(EXCEPTION_OCCURRED_STORE_KEY, Boolean.class);
-		if (Boolean.TRUE.equals(didExceptionOccur)) {
 			String message = annotation.value();
 			if (message.isEmpty()) {
 				message = "Test marked as 'not working' failed as expected";
 			}
 
-			throw new TestAbortedException(message);
-		} else if (Boolean.FALSE.equals(didExceptionOccur)) {
-			fail("Test marked as 'not working' succeeded; remove @NotWorking from it");
+			throw new TestAbortedException(message, t);
 		}
+
+		return fail("Test marked as 'not working' succeeded; remove @NotWorking from it");
 	}
 
 	@Override
-	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-		Store store = getStore(context);
-		if (shouldPreserveException(throwable)) {
-			store.remove(EXCEPTION_OCCURRED_STORE_KEY);
-			throw throwable;
-		} else {
-			store.put(EXCEPTION_OCCURRED_STORE_KEY, true);
-		}
-	}
-
-	@Override
-	public void handleAfterEachMethodExecutionException(ExtensionContext context, Throwable throwable)
-			throws Throwable {
-		Store store = getStore(context);
-		if (shouldPreserveException(throwable)) {
-			store.remove(EXCEPTION_OCCURRED_STORE_KEY);
-			LifecycleMethodExecutionExceptionHandler.super.handleAfterEachMethodExecutionException(context, throwable);
-		} else {
-			store.put(EXCEPTION_OCCURRED_STORE_KEY, true);
-		}
+	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
+			ExtensionContext extensionContext) throws Throwable {
+		invokeAndInvertResult(invocation, extensionContext);
 	}
 
 }
