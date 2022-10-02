@@ -53,6 +53,7 @@ public class RangeSourcesDemo {
 			// this will fail with an IllegalArgumentException
 			// since the range will be empty
 		}
+
 		// end::rangesources_ranges_1[]
 	}
 
