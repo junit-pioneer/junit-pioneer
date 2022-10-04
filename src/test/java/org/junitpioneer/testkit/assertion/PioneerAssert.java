@@ -88,11 +88,11 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public TestCaseStartedAssert hasSingleStartedTest() {
-		Events testEvents = actual.testEvents();
-		assertSingleTest(testEvents.started().count());
-		// Retain all events for returned Assert because TestCaseStartedAssert allows further filtering
-		// (would otherwise erroneously filter twice)
-		return new TestCaseAssertBase(testEvents);
+		Events events = actual.testEvents();
+		assertSingleTest(events.started());
+		// Don't filter started() here; this would prevent further assertions on test outcome on
+		// returned assert because outcome is reported for the FINISHED event, not the STARTED one
+		return new TestCaseAssertBase(events);
 	}
 
 	@Override
@@ -117,35 +117,31 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public TestCaseStartedAssert hasSingleDynamicallyRegisteredTest() {
-		Events testEvents = actual.testEvents();
-		assertSingleTest(testEvents.dynamicallyRegistered().count());
-		// Retain all events for returned Assert because TestCaseStartedAssert allows further filtering
-		// (would otherwise erroneously filter twice)
-		return new TestCaseAssertBase(testEvents);
+		Events events = actual.testEvents();
+		assertSingleTest(events.dynamicallyRegistered());
+		// Don't filter dynamicallyRegistered() here; this would prevent further assertions on test outcome on
+		// returned assert because outcome is reported for the FINISHED event, not the DYNAMIC_TEST_REGISTERED one
+		return new TestCaseAssertBase(events);
 	}
 
-	private void assertSingleTest(long numberOfTestsWithOutcome) {
+	private TestCaseAssertBase assertSingleTest(Events events) {
 		try {
-			Assertions.assertThat(numberOfTestsWithOutcome).isEqualTo(1);
+			Assertions.assertThat(events.count()).isEqualTo(1);
 		}
 		catch (AssertionError error) {
 			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
 			throw error;
 		}
-	}
-
-	private TestCaseAssertBase assertSingleTest(Events events) {
-		assertSingleTest(events.count());
 		return new TestCaseAssertBase(events);
 	}
 
 	@Override
 	public TestCaseStartedAssert hasSingleStartedContainer() {
-		Events containerEvents = actual.containerEvents();
-		assertSingleContainer(containerEvents.started().count());
-		// Retain all events for returned Assert because TestCaseStartedAssert allows further filtering
-		// (would otherwise erroneously filter twice)
-		return new TestCaseAssertBase(containerEvents);
+		Events events = actual.containerEvents();
+		assertSingleTest(events.started());
+		// Don't filter started() here; this would prevent further assertions on container outcome on
+		// returned assert because outcome is reported for the FINISHED event, not the STARTED one
+		return new TestCaseAssertBase(events);
 	}
 
 	@Override
@@ -170,25 +166,21 @@ public class PioneerAssert extends AbstractAssert<PioneerAssert, ExecutionResult
 
 	@Override
 	public TestCaseStartedAssert hasSingleDynamicallyRegisteredContainer() {
-		Events containerEvents = actual.containerEvents();
-		assertSingleContainer(containerEvents.dynamicallyRegistered().count());
-		// Retain all events for returned Assert because TestCaseStartedAssert allows further filtering
-		// (would otherwise erroneously filter twice)
-		return new TestCaseAssertBase(containerEvents);
+		Events events = actual.containerEvents();
+		assertSingleContainer(events.dynamicallyRegistered());
+		// Don't filter dynamicallyRegistered() here; this would prevent further assertions on container outcome on
+		// returned assert because outcome is reported for the FINISHED event, not the DYNAMIC_TEST_REGISTERED one
+		return new TestCaseAssertBase(events);
 	}
 
-	private void assertSingleContainer(long numberOfContainersWithOutcome) {
+	private TestCaseAssertBase assertSingleContainer(Events events) {
 		try {
-			Assertions.assertThat(numberOfContainersWithOutcome).isEqualTo(1);
+			Assertions.assertThat(events.count()).isEqualTo(1);
 		}
 		catch (AssertionError error) {
 			getAllExceptions(actual.allEvents()).forEach(error::addSuppressed);
 			throw error;
 		}
-	}
-
-	private TestCaseAssertBase assertSingleContainer(Events events) {
-		assertSingleContainer(events.count());
 		return new TestCaseAssertBase(events);
 	}
 
