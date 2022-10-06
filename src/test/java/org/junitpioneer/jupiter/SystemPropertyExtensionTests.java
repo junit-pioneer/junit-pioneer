@@ -11,10 +11,13 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -25,7 +28,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("SystemProperty extension")
 class SystemPropertyExtensionTests {
@@ -43,11 +45,8 @@ class SystemPropertyExtensionTests {
 
 	@AfterAll
 	static void globalTearDown() {
-		assertThat(System.getProperty("A")).isEqualTo("old A");
 		System.clearProperty("A");
-		assertThat(System.getProperty("B")).isEqualTo("old B");
 		System.clearProperty("B");
-		assertThat(System.getProperty("C")).isEqualTo("old C");
 		System.clearProperty("C");
 
 		assertThat(System.getProperty("clear prop D")).isNull();
@@ -236,7 +235,40 @@ class SystemPropertyExtensionTests {
 		@Nested
 		@SetSystemProperty(key = "A", value = "newer A")
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-		class ResettingSystemPropertyNestedTests {
+		class ResettingSystemPropertyAfterEachNestedTests {
+
+			@BeforeEach
+			void changeShouldBeVisible() {
+				// we already see "newest A" because BeforeEachCallBack is invoked before @BeforeEach
+				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				assertThat(System.getProperty("A")).isEqualTo("newest A");
+			}
+
+			@Test
+			@SetSystemProperty(key = "A", value = "newest A")
+			void setForTestMethod() {
+				assertThat(System.getProperty("A")).isEqualTo("newest A");
+			}
+
+			@AfterEach
+			@ReadsSystemProperty
+			void resetAfterTestMethodExecution() {
+				// we still see "newest A" because AfterEachCallBack is invoked after @AfterEach
+				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				assertThat(System.getProperty("A")).isEqualTo("newest A");
+			}
+
+		}
+
+		@Nested
+		@SetSystemProperty(key = "A", value = "newer A")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingSystemPropertyAfterAllNestedTests {
+
+			@BeforeAll
+			void changeShouldBeVisible() {
+				assertThat(System.getProperty("A")).isEqualTo("newer A");
+			}
 
 			@Test
 			@SetSystemProperty(key = "A", value = "newest A")
@@ -247,7 +279,7 @@ class SystemPropertyExtensionTests {
 			@AfterAll
 			@ReadsSystemProperty
 			void resetAfterTestMethodExecution() {
-				assertThat(System.getProperty("A")).isEqualTo("old A");
+				assertThat(System.getProperty("A")).isEqualTo("newer A");
 			}
 
 		}
@@ -255,7 +287,7 @@ class SystemPropertyExtensionTests {
 		@AfterAll
 		@ReadsSystemProperty
 		void resetAfterTestContainerExecution() {
-			assertThat(System.getProperty("A")).isEqualTo("old A");
+			assertThat(System.getProperty("A")).isEqualTo("new A");
 		}
 
 	}
@@ -267,9 +299,8 @@ class SystemPropertyExtensionTests {
 		@Test
 		@DisplayName("should fail when clear and set same system property")
 		void shouldFailWhenClearAndSetSameSystemProperty() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(MethodLevelInitializationFailureTestCases.class,
-						"shouldFailWhenClearAndSetSameSystemProperty");
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
+				"shouldFailWhenClearAndSetSameSystemProperty");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
@@ -280,9 +311,8 @@ class SystemPropertyExtensionTests {
 				+ "deduplicates identical annotations like the ones required for this test: "
 				+ "https://github.com/junit-team/junit5/issues/2131")
 		void shouldFailWhenClearSameSystemPropertyTwice() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(MethodLevelInitializationFailureTestCases.class,
-						"shouldFailWhenClearSameSystemPropertyTwice");
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
+				"shouldFailWhenClearSameSystemPropertyTwice");
 
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
@@ -290,9 +320,8 @@ class SystemPropertyExtensionTests {
 		@Test
 		@DisplayName("should fail when set same system property twice")
 		void shouldFailWhenSetSameSystemPropertyTwice() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethod(MethodLevelInitializationFailureTestCases.class,
-						"shouldFailWhenSetSameSystemPropertyTwice");
+			ExecutionResults results = executeTestMethod(MethodLevelInitializationFailureTestCases.class,
+				"shouldFailWhenSetSameSystemPropertyTwice");
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 

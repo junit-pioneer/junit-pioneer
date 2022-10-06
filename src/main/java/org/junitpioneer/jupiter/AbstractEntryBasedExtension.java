@@ -27,7 +27,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -46,22 +48,31 @@ import org.junitpioneer.internal.PioneerUtils;
  * @param <S> The set annotation type.
  */
 abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation>
-		implements BeforeEachCallback, AfterEachCallback {
+		implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
+
+	@Override
+	public void beforeAll(ExtensionContext context) {
+		applyForAllContexts(context);
+	}
 
 	@Override
 	public void beforeEach(ExtensionContext context) {
+		applyForAllContexts(context);
+	}
+
+	private void applyForAllContexts(ExtensionContext originalContext) {
 		/*
 		 * We cannot use PioneerAnnotationUtils#findAllEnclosingRepeatableAnnotations(ExtensionContext, Class) or the
 		 * like as clearing and setting might interfere. Therefore, we have to apply the extension from the outermost
 		 * to the innermost ExtensionContext.
 		 */
-		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(context);
+		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(originalContext);
 		Collections.reverse(contexts);
-		contexts.forEach(this::clearAndSetEntries);
+		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext));
 	}
 
-	private void clearAndSetEntries(ExtensionContext context) {
-		context.getElement().ifPresent(element -> {
+	private void clearAndSetEntries(ExtensionContext currentContext, ExtensionContext originalContext) {
+		currentContext.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
 
@@ -77,8 +88,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 			if (entriesToClear.isEmpty() && entriesToSet.isEmpty())
 				return;
 
-			reportWarning(context);
-			storeOriginalEntries(context, entriesToClear, entriesToSet.keySet());
+			reportWarning(currentContext);
+			storeOriginalEntries(originalContext, entriesToClear, entriesToSet.keySet());
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
 		});
@@ -138,13 +149,24 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	@Override
-	public void afterEach(ExtensionContext context) throws Exception {
-		// apply from innermost to outermost
-		PioneerUtils.findAllContexts(context).forEach(this::restoreOriginalEntries);
+	public void afterEach(ExtensionContext context) {
+		restoreForAllContexts(context);
 	}
 
-	private void restoreOriginalEntries(ExtensionContext context) {
-		getStore(context).getOrDefault(getStoreKey(context), EntriesBackup.class, new EntriesBackup()).restoreBackup();
+	@Override
+	public void afterAll(ExtensionContext context) {
+		restoreForAllContexts(context);
+	}
+
+	private void restoreForAllContexts(ExtensionContext originalContext) {
+		// restore from innermost to outermost
+		PioneerUtils.findAllContexts(originalContext).forEach(__ -> restoreOriginalEntries(originalContext));
+	}
+
+	private void restoreOriginalEntries(ExtensionContext originalContext) {
+		getStore(originalContext)
+				.getOrDefault(getStoreKey(originalContext), EntriesBackup.class, new EntriesBackup())
+				.restoreBackup();
 	}
 
 	private Store getStore(ExtensionContext context) {
