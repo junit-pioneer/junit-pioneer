@@ -24,7 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * of a environment variable for a test execution.
  *
  * <p>The key of the environment variable to be cleared must be specified via {@link #key()}.
- * After the annotated element has been executed, the initial default value is restored.</p>
+ * After the annotated element has been executed, the original value or the value of the
+ * higher-level container is restored.</p>
  *
  * <p>{@code ClearEnvironmentVariable} can be used on the method and on the class level.
  * It is repeatable and inherited from higher-level containers. If a class is

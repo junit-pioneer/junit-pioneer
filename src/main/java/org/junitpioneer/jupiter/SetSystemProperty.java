@@ -25,12 +25,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>The key and value of the system property to be set must be specified via
  * {@link #key()} and {@link #value()}. After the annotated method has been
- * executed, the initial default value is restored.</p>
+ * executed, the original value or the value of the higher-level container is
+ * restored.</p>
  *
  * <p>{@code SetSystemProperty} can be used on the method and on the class level.
  * It is repeatable and inherited from higher-level containers. If a class is
  * annotated, the configured property will be set before every test inside that
- * class. Any method level configurations will override the class level
+ * class. Any method-level configurations will override the class-level
  * configurations.</p>
  *
  * <p>During

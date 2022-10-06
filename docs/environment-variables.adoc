@@ -5,7 +5,7 @@
 
 The `@ClearEnvironmentVariable` and `@SetEnvironmentVariable` annotations can be used to clear, respectively, set the values of environment variables for a test execution.
 Both annotations work on the test method and class level, are repeatable, combinable, and inherited from higher-level containers.
-After the annotated method has been executed, the variables mentioned in the annotation will be restored to their original value or will be cleared if they didn't have one before.
+After the annotated method has been executed, the variables mentioned in the annotation will be restored to their original value or the value of the higher-level container, or will be cleared if they didn't have one before.
 Other environment variables that are changed during the test, are *not* restored.
 
 WARNING: Java considers environment variables to be immutable, so this extension uses reflection to change them.
@@ -34,12 +34,14 @@ As mentioned before, both annotations are repeatable and they can also be combin
 include::{demo}[tag=environment_using_set_and_clear]
 ----
 
-Note that class level configurations are overwritten by method level configurations:
+Note that class-level configurations are overwritten by method-level configurations:
 
 [source,java,indent=0]
 ----
 include::{demo}[tag=environment_using_at_class_level]
 ----
+
+NOTE: Method-level configurations are visible in both `@BeforeEach` setup methods and `@AfterEach` teardown methods (see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview[user code and extension code execution order]).
 
 NOTE: Since v1.7.0, a class-level configuration means that the specified environment variables are cleared/set before and reset after each individual test in the annotated class.
 
