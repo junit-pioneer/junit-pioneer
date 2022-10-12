@@ -19,8 +19,8 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.in
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
 import static org.junitpioneer.internal.AllElementsAreEqual.allElementsAreEqual;
-import static org.junitpioneer.jupiter.resource.Scope.GLOBAL;
-import static org.junitpioneer.jupiter.resource.Scope.SOURCE_FILE;
+import static org.junitpioneer.jupiter.resource.Shared.Scope.GLOBAL;
+import static org.junitpioneer.jupiter.resource.Shared.Scope.SOURCE_FILE;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.ROOT_TEMP_DIR;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertEmptyReadableWriteableTemporaryDirectory;

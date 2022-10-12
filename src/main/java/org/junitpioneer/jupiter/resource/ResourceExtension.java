@@ -391,8 +391,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.getRequiredTestMethod();
 	}
 
-	private ExtensionContext scopedContext(ExtensionContext extensionContext, Scope scope) {
-		if (scope == Scope.SOURCE_FILE) {
+	private ExtensionContext scopedContext(ExtensionContext extensionContext, Shared.Scope scope) {
+		if (scope == Shared.Scope.SOURCE_FILE) {
 			ExtensionContext currentContext = extensionContext;
 			Optional<ExtensionContext> parentContext = extensionContext.getParent();
 

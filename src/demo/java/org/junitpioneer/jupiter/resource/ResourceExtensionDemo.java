@@ -103,7 +103,7 @@ class FirstTest {
 			@Shared(
 					factory = TemporaryDirectory.class,
 					name = "globalTempDir",
-					scope = Scope.GLOBAL)
+					scope = Shared.Scope.GLOBAL)
 			Path tempDir) {
 		// Test code using the global shared resource...
 	}
@@ -120,7 +120,7 @@ class SecondTest {
 			@Shared(
 					factory = TemporaryDirectory.class,
 					name = "globalTempDir",
-					scope = Scope.GLOBAL)
+					scope = Shared.Scope.GLOBAL)
 			Path tempDir) {
 		// Test code using the global shared resource...
 	}
