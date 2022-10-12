@@ -14,7 +14,9 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -27,6 +29,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -332,7 +335,13 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	@Override
 	public void interceptBeforeEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
+		String testName = invocationContext.getExecutable().getName();
+		System.out.println(Thread.currentThread() + ": " + testName + ": interceptBeforeEachMethod starting...");
+		runSequentially(invocation,
+				// TODO: Report better exception
+				extensionContext.getTestMethod().get(),
+				extensionContext);
+		System.out.println(Thread.currentThread() + ": " + testName + ": interceptBeforeEachMethod finished");
 	}
 
 	@Override
@@ -364,13 +373,17 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		// shared resource that each lock is (uniquely) associated with.
 		//
 		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
-		List<ReentrantLock> locks = sortedLocksForSharedResources(findShared(executable), extensionContext);
+
+		List<Shared> sharedAnnotations = findShared(executable);
+		List<ReentrantLock> locks = sortedLocksForSharedResources(sharedAnnotations, extensionContext);
+		String testName = executable.getName();
+		System.out.println(Thread.currentThread() + ": " + testName + ": interceptBeforeAllMethod: number of locks = " + locks.size());
 		return invokeWithLocks(invocation, locks);
 	}
 
-	private List<ReentrantLock> sortedLocksForSharedResources(Stream<Shared> sharedAnnotations,
+	private List<ReentrantLock> sortedLocksForSharedResources(List<Shared> sharedAnnotations,
 			ExtensionContext extensionContext) {
-		List<Shared> sortedAnnotations = sharedAnnotations.sorted(comparing(Shared::name)).collect(toList());
+		List<Shared> sortedAnnotations = sharedAnnotations.stream().sorted(comparing(Shared::name)).collect(toList());
 		List<ExtensionContext.Store> stores = //
 			sortedAnnotations
 					.stream() //
@@ -379,7 +392,10 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 					.collect(toList());
 		return IntStream
 				.range(0, sortedAnnotations.size()) //
-				.mapToObj(i -> findLockForShared(sortedAnnotations.get(i), stores.get(i)))
+				.mapToObj(i -> {
+					// TODO: The problem is here!
+					return findLockForShared(sortedAnnotations.get(i), stores.get(i));
+				})
 				.collect(toList());
 	}
 
@@ -407,12 +423,13 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return extensionContext.getRoot();
 	}
 
-	private Stream<Shared> findShared(Executable executable) {
+	private List<Shared> findShared(Executable executable) {
 		return Arrays
 				.stream(executable.getParameters())
 				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
 				.filter(Optional::isPresent)
-				.map(Optional::get);
+				.map(Optional::get)
+				.collect(toList());
 	}
 
 	private ReentrantLock findLockForShared(Shared shared, ExtensionContext.Store store) {

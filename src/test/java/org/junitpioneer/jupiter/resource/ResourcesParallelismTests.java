@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.GLOBAL;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -24,11 +26,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Condition;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -87,6 +92,16 @@ class ResourcesParallelismTests {
 							ThrowIfTestClassConstructorsRunInParallelTestCases2.class,
 							ThrowIfTestClassConstructorsRunInParallelTestCases3.class)),
 				"The tests in ThrowIfTestTemplatesRunInParallelTestCases(1|2|3) became deadlocked!");
+			assertThat(executionResults).hasNumberOfSucceededTests(3);
+		}
+
+		@DisplayName("then the @BeforeEach methods do not run in parallel")
+		@Execution(SAME_THREAD)
+		@Test
+		void thenBeforeEachMethodsDoNotRunInParallel() {
+			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15_000),
+				() -> PioneerTestKit.executeTestClass(ThrowIfBeforeEachMethodsRunInParallelTestCases.class),
+				"The tests in ThrowIfBeforeEachMethodsRunInParallelTestCases became deadlocked!");
 			assertThat(executionResults).hasNumberOfSucceededTests(3);
 		}
 
@@ -247,49 +262,65 @@ class ResourcesParallelismTests {
 
 	}
 
+	static class ThrowIfBeforeEachMethodsRunInParallelTestCases {
+
+		@BeforeEach
+		void setup(TestInfo testInfo) throws InterruptedException {
+			failIfExecutedInParallel("testBeforeEach-" + testInfo.getTestMethod().get().getName());
+		}
+
+		@Test
+		void fakeTest1(
+				// we don't actually use the resources, we just have them injected to verify whether sharing the
+				// same resources prevents the @BeforeEach method from running multiple times in parallel
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB) throws InterruptedException {
+			failIfExecutedInParallel("fakeTest1");
+		}
+
+		@Test
+		void fakeTest2(
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC) throws InterruptedException {
+			failIfExecutedInParallel("fakeTest1");
+		}
+
+		@Test
+		void fakeTest3(
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA) throws InterruptedException {
+			failIfExecutedInParallel("fakeTest1");
+		}
+
+	}
+
 	// this method is written to fail if it is executed at overlapping times in different threads
 	private static void failIfExecutedInParallel(String testName) throws InterruptedException {
-		boolean wasZero = COUNTER.compareAndSet(0, 1);
-		assertThat(wasZero).isTrue();
-		// wait for the next test to catch up and potentially fail
-		Thread.sleep(TIMEOUT_MILLIS);
-		boolean wasOne = COUNTER.compareAndSet(1, 2);
-		assertThat(wasOne).isTrue();
-		// wait for the last test to catch up and potentially fail
-		Thread.sleep(TIMEOUT_MILLIS);
-		boolean wasTwo = COUNTER.compareAndSet(2, 0);
-		assertThat(wasTwo).isTrue();
+		try {
+			System.out.println(Thread.currentThread() + ": " + testName + ": COUNTER = " + COUNTER);
+			boolean wasZero = COUNTER.compareAndSet(0, 1);
+			assertThat(wasZero).isTrue();
+			// wait for the next test to catch up and potentially fail
+			Thread.sleep(TIMEOUT_MILLIS);
+			System.out.println(Thread.currentThread() + ": " + testName + ": COUNTER = " + COUNTER);
+			boolean wasOne = COUNTER.compareAndSet(1, 2);
+			assertThat(wasOne).isTrue();
+			// wait for the last test to catch up and potentially fail
+			Thread.sleep(TIMEOUT_MILLIS);
+			System.out.println(Thread.currentThread() + ": " + testName + ": COUNTER = " + COUNTER);
+			boolean wasTwo = COUNTER.compareAndSet(2, 0);
+			assertThat(wasTwo).isTrue();
+		}
+		catch (AssertionError e) {
+			System.out.println(Thread.currentThread() + ": " + testName + ": e = " + stackTraceToString(e));
+			throw e;
+		}
 	}
 
-	// At time of writing, we couldn't find a way to test that @{Before, After}{All, Each}-annotated methods are not
-	// executed at overlapping times, so we do the next-best thing: we ensure that all such methods are intercepted by
-	// ResourceExtension at all.
-
-	@Test
-	void checkThatBeforeAllMethodsAreIntercepted() {
-		assertOverrides("interceptBeforeAllMethod");
-	}
-
-	@Test
-	void checkThatAfterAllMethodsAreIntercepted() {
-		assertOverrides("interceptAfterAllMethod");
-	}
-
-	@Test
-	void checkThatBeforeEachMethodsAreIntercepted() {
-		assertOverrides("interceptBeforeEachMethod");
-	}
-
-	@Test
-	void checkThatAfterEachMethodsAreIntercepted() {
-		assertOverrides("interceptAfterEachMethod");
-	}
-
-	private void assertOverrides(String methodName) {
-		assertThat(InvocationInterceptor.class).isAssignableFrom(ResourceExtension.class);
-		assertThat(ResourceExtension.class.getDeclaredMethods())
-				.haveExactly(1, new Condition<>((Method m) -> m.getName().equals(methodName),
-					"declared method with name '%s'", methodName));
+	private static String stackTraceToString(Throwable throwable) {
+		StringWriter writer = new StringWriter();
+		throwable.printStackTrace(new PrintWriter(writer));
+		return writer.toString();
 	}
 
 }
