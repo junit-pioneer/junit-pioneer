@@ -21,8 +21,8 @@ class PathDeleter extends SimpleFileVisitor<Path> {
 
 	static final PathDeleter INSTANCE = new PathDeleter();
 
-	// prevent instantiation
 	private PathDeleter() {
+		// private constructor to prevent instantiation of utility class
 	}
 
 	@Override
