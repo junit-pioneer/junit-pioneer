@@ -18,7 +18,6 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.ca
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
-import static org.junitpioneer.internal.AllElementsAreEqual.allElementsAreEqual;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.GLOBAL;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.SOURCE_FILE;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.ROOT_TEMP_DIR;
@@ -345,9 +344,10 @@ class TemporaryDirectoryTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(TwoTestMethodsWithSharedSameNameTempDirParameterTestCases.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
-			assertThat(TwoTestMethodsWithSharedSameNameTempDirParameterTestCases.recordedPaths)
+			List<Path> paths = TwoTestMethodsWithSharedSameNameTempDirParameterTestCases.recordedPaths;
+			assertThat(paths)
 					.hasSize(2)
-					.satisfies(allElementsAreEqual())
+					.allSatisfy(path -> assertThat(path).isEqualTo(paths.get(0)))
 					.allSatisfy(path -> assertThat(path).doesNotExist());
 		}
 
