@@ -57,7 +57,7 @@ public final class TemporaryDirectory implements ResourceFactory<Path> {
 		}
 
 		@Override
-		public Path get() throws Exception {
+		public Path get() {
 			return tempDir;
 		}
 
@@ -66,10 +66,10 @@ public final class TemporaryDirectory implements ResourceFactory<Path> {
 			deleteRecursively(tempDir);
 		}
 
-	}
+		private static void deleteRecursively(Path tempDir) throws IOException {
+			Files.walkFileTree(tempDir, PathDeleter.INSTANCE);
+		}
 
-	private static void deleteRecursively(Path tempDir) throws IOException {
-		Files.walkFileTree(tempDir, PathDeleter.INSTANCE);
 	}
 
 }
