@@ -122,9 +122,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			// @formatter:off
 			String message = String.format(
 					"The resource returned by [%s] was null, which is not allowed",
-					ReflectionSupport
-							.findMethod(resource.getClass(), "get")
-							.orElseThrow(this::unreachable));
+					getMethod(resource.getClass(), "get"));
 			// @formatter:on
 			throw new ParameterResolutionException(message);
 		}
@@ -167,9 +165,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				// @formatter:off
 				String message = String.format(
 						"The resource returned by [%s] was null, which is not allowed",
-						ReflectionSupport
-								.findMethod(resourceWithLock.delegate().getClass(), "get")
-								.orElseThrow(this::unreachable));
+						getMethod(resourceWithLock.delegate().getClass(), "get"));
 				// @formatter:on
 				throw new ParameterResolutionException(message);
 			}
@@ -203,9 +199,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			// @formatter:off
 			String message = String.format(
 					"The `Resource` instance returned by the factory method [%s] with arguments %s was null, which is not allowed",
-					ReflectionSupport
-							.findMethod(resourceFactory.getClass(), "create", List.class)
-							.orElseThrow(this::unreachable),
+					getMethod(resourceFactory.getClass(), "create", List.class),
 					arguments);
 			// @formatter:on
 			throw new ParameterResolutionException(message);
@@ -282,8 +276,14 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return extensionContext.getTestMethod().map(method -> "method [" + method + ']').orElse("an unknown method");
 	}
 
-	private AssertionError unreachable() {
-		return new AssertionError("Unreachable");
+	private Method getMethod(Class<?> clazz, String method, Class<?>... parameterTypes) {
+		try {
+			return clazz.getMethod(method, parameterTypes);
+		}
+		catch (NoSuchMethodException e) {
+			throw new IllegalStateException(
+				String.format("There should be a `%s` method on class `%s`", method, clazz.getTypeName()), e);
+		}
 	}
 
 	@Override
