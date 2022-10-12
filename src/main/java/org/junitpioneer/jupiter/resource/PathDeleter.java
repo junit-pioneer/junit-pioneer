@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-// visible for testing purposes
 class PathDeleter extends SimpleFileVisitor<Path> {
 
 	static final PathDeleter INSTANCE = new PathDeleter();
