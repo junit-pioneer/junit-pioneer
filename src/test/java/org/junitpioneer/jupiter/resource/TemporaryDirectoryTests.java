@@ -18,10 +18,10 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.ca
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
+import static org.junitpioneer.internal.PioneerPathAssert.assertThatPath;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.GLOBAL;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.SOURCE_FILE;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.ROOT_TEMP_DIR;
-import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertEmptyReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
@@ -34,6 +34,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junitpioneer.internal.PioneerPathAssert;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -63,7 +64,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void theTest(@New(TemporaryDirectory.class) Path tempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
+			assertThatPath(tempDir).canAddTextFile().canReadTextFile();
 
 			recordedPath = tempDir;
 		}
@@ -167,9 +168,9 @@ class TemporaryDirectoryTests {
 		void firstTest(@New(TemporaryDirectory.class) Path firstTempDir,
 				@New(TemporaryDirectory.class) Path secondTempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(firstTempDir);
-			assertCanAddAndReadTextFile(firstTempDir);
+			assertThatPath(firstTempDir).canAddTextFile().canReadTextFile();
 			assertEmptyReadableWriteableTemporaryDirectory(secondTempDir);
-			assertCanAddAndReadTextFile(secondTempDir);
+			assertThatPath(secondTempDir).canAddTextFile().canReadTextFile();
 
 			recordedPaths.addAll(asList(firstTempDir, secondTempDir));
 		}
@@ -283,7 +284,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
+			assertThatPath(tempDir).canAddTextFile().canReadTextFile();
 
 			recordedPath = tempDir;
 		}
@@ -320,9 +321,9 @@ class TemporaryDirectoryTests {
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "first-name") Path firstTempDir,
 				@Shared(factory = TemporaryDirectory.class, name = "second-name") Path secondTempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(firstTempDir);
-			assertCanAddAndReadTextFile(firstTempDir);
+			assertThatPath(firstTempDir).canAddTextFile().canReadTextFile();
 			assertEmptyReadableWriteableTemporaryDirectory(secondTempDir);
-			assertCanAddAndReadTextFile(secondTempDir);
+			assertThatPath(secondTempDir).canAddTextFile().canReadTextFile();
 
 			recordedPaths.add(firstTempDir);
 			recordedPaths.add(secondTempDir);
@@ -360,7 +361,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void firstTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
 			assertReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
+			assertThatPath(tempDir).canAddTextFile().canReadTextFile();
 
 			recordedPaths.add(tempDir);
 		}
@@ -368,7 +369,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void secondTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
 			assertReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
+			assertThatPath(tempDir).canAddTextFile().canReadTextFile();
 
 			recordedPaths.add(tempDir);
 		}
@@ -407,7 +408,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = GLOBAL) Path tempDir) {
 			assertReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
+			assertThatPath(tempDir).canAddTextFile().canReadTextFile();
 
 			recordedPath = tempDir;
 		}
@@ -421,7 +422,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = GLOBAL) Path tempDir) {
 			assertReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
+			assertThatPath(tempDir).canAddTextFile().canReadTextFile();
 
 			recordedPath = tempDir;
 		}

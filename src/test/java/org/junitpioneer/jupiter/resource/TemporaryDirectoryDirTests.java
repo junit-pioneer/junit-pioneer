@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertCanAddAndReadTextFile;
+import static org.junitpioneer.internal.PioneerPathAssert.assertThatPath;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryAssertions.assertEmptyReadableWriteableTemporaryDirectory;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
@@ -48,7 +48,7 @@ class TemporaryDirectoryDirTests {
 		@Test
 		void theTest(@Dir Path tempDir) {
 			assertEmptyReadableWriteableTemporaryDirectory(tempDir);
-			assertCanAddAndReadTextFile(tempDir);
+			assertThatPath(tempDir).canAddTextFile().canReadTextFile();
 
 			recordedPath = tempDir;
 		}
