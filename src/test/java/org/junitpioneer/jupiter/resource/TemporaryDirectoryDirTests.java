@@ -47,11 +47,7 @@ class TemporaryDirectoryDirTests {
 
 		@Test
 		void theTest(@Dir Path tempDir) {
-			assertThat(tempDir)
-					.isEmptyDirectory()
-					.startsWith(ROOT_TEMP_DIR)
-					.isReadable()
-					.isWritable();
+			assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
 			assertThatPath(tempDir).canAddTextFile().canReadTextFile();
 
 			recordedPath = tempDir;
