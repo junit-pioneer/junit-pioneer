@@ -13,10 +13,7 @@ package org.junitpioneer.jupiter.resource;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Comparator.comparing;
-import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -29,9 +26,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.DynamicTestInvocationContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -134,7 +129,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	}
 
 	private Object resolveShared(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store store) {
-		// run sequentially, so that resources of the same name are never created twice (at the same time)
+		// run sequentially, so that resources of the same name are never created twice at the same time
 		SHARED_ANNOTATION_RESOLUTION_LOCK.lock();
 		try {
 			throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
@@ -145,15 +140,16 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 						factoryKey(sharedAnnotation), //
 						__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
 						ResourceFactory.class);
-			ResourceWithLock<?> resourceWithLock = store
+			Resource<?> resource = store
 					.getOrComputeIfAbsent( //
 						resourceKey(sharedAnnotation), //
-						__ -> new ResourceWithLock<>(newResource(sharedAnnotation, resourceFactory)), //
-						ResourceWithLock.class);
+						__ -> newResource(sharedAnnotation, resourceFactory), //
+						Resource.class);
+			putNewLockForShared(sharedAnnotation, store);
 
 			Object result;
 			try {
-				result = resourceWithLock.get();
+				result = resource.get();
 			}
 			catch (Exception ex) {
 				// @formatter:off
@@ -168,7 +164,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				// @formatter:off
 				String message = String.format(
 						"The resource returned by [%s] was null, which is not allowed",
-						getMethod(resourceWithLock.delegate().getClass(), "get"));
+						getMethod(resource.getClass(), "get"));
 				// @formatter:on
 				throw new ParameterResolutionException(message);
 			}
@@ -271,6 +267,10 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return sharedAnnotation.name() + " resource";
 	}
 
+	private String resourceLockKey(Shared sharedAnnotation) {
+		return sharedAnnotation.name() + " resource lock";
+	}
+
 	private String keyOfFactoryKey(Shared sharedAnnotation) {
 		return sharedAnnotation.name() + " resource factory key";
 	}
@@ -335,13 +335,16 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	@Override
 	public void interceptBeforeEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		String testName = invocationContext.getExecutable().getName();
-		System.out.println(Thread.currentThread() + ": " + testName + ": interceptBeforeEachMethod starting...");
-		runSequentially(invocation,
-				// TODO: Report better exception
-				extensionContext.getTestMethod().get(),
-				extensionContext);
-		System.out.println(Thread.currentThread() + ": " + testName + ": interceptBeforeEachMethod finished");
+		Method testMethod = extensionContext.getRequiredTestMethod();
+		List<Shared> sharedAnnotations = findShared(testMethod);
+
+		sharedAnnotations.forEach(sharedAnnotation -> {
+			ExtensionContext scopedContext = scopedContext(extensionContext, sharedAnnotation.scope());
+			ExtensionContext.Store scopedStore = scopedContext.getStore(NAMESPACE);
+			putNewLockForShared(sharedAnnotation, scopedStore);
+		});
+
+		runSequentially(invocation, testMethod, extensionContext);
 	}
 
 	@Override
@@ -376,8 +379,6 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 		List<Shared> sharedAnnotations = findShared(executable);
 		List<ReentrantLock> locks = sortedLocksForSharedResources(sharedAnnotations, extensionContext);
-		String testName = executable.getName();
-		System.out.println(Thread.currentThread() + ": " + testName + ": interceptBeforeAllMethod: number of locks = " + locks.size());
 		return invokeWithLocks(invocation, locks);
 	}
 
@@ -388,14 +389,12 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			sortedAnnotations
 					.stream() //
 					.map(shared -> scopedContext(extensionContext, shared.scope()))
+					// TODO: Write test to force us to use scopedContext
 					.map(scopedContext -> extensionContext.getStore(NAMESPACE))
 					.collect(toList());
 		return IntStream
 				.range(0, sortedAnnotations.size()) //
-				.mapToObj(i -> {
-					// TODO: The problem is here!
-					return findLockForShared(sortedAnnotations.get(i), stores.get(i));
-				})
+				.mapToObj(i -> findLockForShared(sortedAnnotations.get(i), stores.get(i)))
 				.collect(toList());
 	}
 
@@ -432,12 +431,18 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.collect(toList());
 	}
 
+	private void putNewLockForShared(Shared shared, ExtensionContext.Store store) {
+		store.getOrComputeIfAbsent(resourceLockKey(shared), __ -> new ReentrantLock(), ReentrantLock.class);
+	}
+
 	private ReentrantLock findLockForShared(Shared shared, ExtensionContext.Store store) {
-		return Optional
-				.ofNullable(store.get(resourceKey(shared), ResourceWithLock.class))
-				.orElseThrow(
-					() -> new IllegalStateException("There should be a shared resource for the name " + shared.name()))
-				.lock();
+		// @formatter:off
+		return Optional.ofNullable(store.get(resourceLockKey(shared), ReentrantLock.class))
+				.orElseThrow(() -> {
+					String message = String.format("There should be a shared resource for the name %s", shared.name());
+					return new IllegalStateException(message);
+				});
+		// @formatter:on
 	}
 
 	private <T> T invokeWithLocks(Invocation<T> invocation, List<ReentrantLock> locks) throws Throwable {
@@ -450,36 +455,6 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			// (quote from Wikipedia)
 			locks.forEach(ReentrantLock::unlock);
 		}
-	}
-
-	private static class ResourceWithLock<T> implements Resource<T> {
-
-		private final Resource<T> delegate;
-		private final ReentrantLock lock;
-
-		public ResourceWithLock(Resource<T> delegate) {
-			this.delegate = requireNonNull(delegate);
-			this.lock = new ReentrantLock();
-		}
-
-		public Resource<T> delegate() {
-			return delegate;
-		}
-
-		public ReentrantLock lock() {
-			return lock;
-		}
-
-		@Override
-		public T get() throws Exception {
-			return delegate.get();
-		}
-
-		@Override
-		public void close() throws Exception {
-			delegate.close();
-		}
-
 	}
 
 }
