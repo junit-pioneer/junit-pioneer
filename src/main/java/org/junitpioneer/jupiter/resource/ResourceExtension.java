@@ -350,7 +350,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	@Override
 	public void interceptAfterEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
+		runSequentially(invocation, extensionContext.getRequiredTestMethod(), extensionContext);
 	}
 
 	private <T> T runSequentially(Invocation<T> invocation, Executable executable, ExtensionContext extensionContext)
