@@ -24,7 +24,9 @@ import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
@@ -32,6 +34,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -109,6 +112,42 @@ class ResourcesParallelismTests {
 			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
 				() -> PioneerTestKit.executeTestClass(ThrowIfAfterEachMethodsRunInParallelTestCases.class),
 				"The tests in ThrowIfAfterEachMethodsRunInParallelTestCases became deadlocked!");
+			assertThat(executionResults).hasNumberOfSucceededTests(3);
+		}
+
+		@DisplayName("then the @BeforeAll methods do not run in parallel")
+		@Execution(SAME_THREAD)
+		@Test
+		void thenBeforeAllMethodsDoNotRunInParallel() {
+
+			// TODO: There is a heisenbug where a stack trace like the following is printed:
+			//           Thread[ForkJoinPool-2-worker-19,5,main]: testBeforeAll1: COUNTER = 0
+			//           Thread[ForkJoinPool-2-worker-19,5,main]: testBeforeAll1: COUNTER = 1
+			//           Thread[ForkJoinPool-2-worker-19,5,main]: testBeforeAll1: COUNTER = 2
+			//           Thread[ForkJoinPool-2-worker-5,5,main]: fakeTest1: COUNTER = 0
+			//           Thread[ForkJoinPool-2-worker-19,5,main]: testBeforeAll2: COUNTER = 1
+			//           Thread[ForkJoinPool-2-worker-19,5,main]: testBeforeAll2: e = org.opentest4j.AssertionFailedError:
+			//           Expecting value to be true but was false
+			//       Figure out why this is happening.
+			//       Potential solution:
+			//         - In the implementation of the extension, implement BeforeAllCallback and run
+			//           putNewLockForShared() on _all_ @Shared annotations in the current test class, including
+			//           nested classes.
+			//         - Then ensure that all intercept* methods in the extension use these locks.
+
+			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15_000),
+				() -> PioneerTestKit.executeTestClass(ThrowIfBeforeAllMethodsRunInParallelTestCases.class),
+				"The tests in ThrowIfBeforeAllMethodsRunInParallelTestCases became deadlocked!");
+			assertThat(executionResults).hasNumberOfSucceededTests(3);
+		}
+
+		@DisplayName("then the @AfterAll methods do not run in parallel")
+		@Execution(SAME_THREAD)
+		@Test
+		void thenAfterAllMethodsDoNotRunInParallel() {
+			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
+				() -> PioneerTestKit.executeTestClass(ThrowIfAfterAllMethodsRunInParallelTestCases.class),
+				"The tests in ThrowIfAfterAllMethodsRunInParallelTestCases became deadlocked!");
 			assertThat(executionResults).hasNumberOfSucceededTests(3);
 		}
 
@@ -289,7 +328,7 @@ class ResourcesParallelismTests {
 		@Test
 		void fakeTest1(
 				// we don't actually use the resources, we just have them injected to verify whether sharing the
-				// same resources prevents the @BeforeEach method from running multiple times in parallel
+				// same resources prevents the @BeforeEach methods from running multiple times in parallel
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB)
 				throws InterruptedException {
@@ -319,7 +358,7 @@ class ResourcesParallelismTests {
 		@Test
 		void fakeTest1(
 				// we don't actually use the resources, we just have them injected to verify whether sharing the
-				// same resources prevents the @BeforeEach method from running multiple times in parallel
+				// same resources prevents the @AfterEach methods from running multiple times in parallel
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
 				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB)
 				throws InterruptedException {
@@ -355,6 +394,120 @@ class ResourcesParallelismTests {
 		@AfterEach
 		void teardown3(TestInfo testInfo) throws InterruptedException {
 			failIfExecutedInParallel("testAfterEach3-" + testInfo.getTestMethod().get().getName());
+		}
+
+	}
+
+	static class ThrowIfBeforeAllMethodsRunInParallelTestCases {
+
+		@BeforeAll
+		static void setup(
+				// we don't actually use the resources, we just have them injected to verify whether sharing the
+				// same resources prevents the @BeforeAll methods from running multiple times in parallel
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB)
+				throws InterruptedException {
+			failIfExecutedInParallel("testBeforeAll1");
+		}
+
+		@Test
+		void fakeTest() throws InterruptedException {
+			failIfExecutedInParallel("fakeTest1");
+		}
+
+		@Nested
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class NestedTestCases1 {
+
+			@BeforeAll
+			void setup(
+					@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
+					@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC)
+					throws InterruptedException {
+				failIfExecutedInParallel("testBeforeAll2");
+			}
+
+			@Test
+			void fakeTest() throws InterruptedException {
+				failIfExecutedInParallel("fakeTest2");
+			}
+
+			@Nested
+			@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+			class NestedTestCases2 {
+
+				@BeforeAll
+				void setup(
+						@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC,
+						@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA)
+						throws InterruptedException {
+					failIfExecutedInParallel("testBeforeAll3");
+				}
+
+				@Test
+				void fakeTest() throws InterruptedException {
+					failIfExecutedInParallel("fakeTest3");
+				}
+
+			}
+
+		}
+
+	}
+
+	static class ThrowIfAfterAllMethodsRunInParallelTestCases {
+
+		@Test
+		void fakeTest() throws InterruptedException {
+			failIfExecutedInParallel("fakeTest1");
+		}
+
+		@AfterAll
+		static void teardown(
+				// we don't actually use the resources, we just have them injected to verify whether sharing the
+				// same resources prevents the @AfterAll methods from running multiple times in parallel
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA,
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB)
+				throws InterruptedException {
+			failIfExecutedInParallel("testAfterAll1");
+		}
+
+		@Nested
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class NestedTestCases1 {
+
+			@Test
+			void fakeTest() throws InterruptedException {
+				failIfExecutedInParallel("fakeTest2");
+			}
+
+			@AfterAll
+			void teardown(
+					@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_B_NAME) Path directoryB,
+					@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC)
+					throws InterruptedException {
+				failIfExecutedInParallel("testAfterAll2");
+			}
+
+			@Nested
+			@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+			class NestedTestCases2 {
+
+				@Test
+				void fakeTest() throws InterruptedException {
+					failIfExecutedInParallel("fakeTest3");
+				}
+
+				@AfterAll
+				void teardown(
+						@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_C_NAME) Path directoryC,
+						@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directoryA)
+						throws InterruptedException {
+					failIfExecutedInParallel("testAfterAll3");
+				}
+
+			}
+
 		}
 
 	}
