@@ -19,20 +19,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.DynamicTestInvocationContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -42,7 +37,6 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.support.AnnotationSupport;
-import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 class ResourceExtension implements ParameterResolver, InvocationInterceptor {
@@ -332,37 +326,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	@Override
 	public void interceptBeforeAllMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		Class<?> declaringClass = invocationContext.getExecutable().getDeclaringClass();
-		List<Class<?>> nestedClasses = findNestedClassesRecursively(declaringClass);
-		Set<Shared> sharedAnnotations = Stream
-				.concat(Stream.of(declaringClass), nestedClasses.stream())
-				.flatMap(clazz -> ReflectionSupport
-						.findMethods(clazz, unused -> true, HierarchyTraversalMode.TOP_DOWN)
-						.stream())
-				.flatMap(method -> findShared(method).stream())
-				.collect(Collectors.toCollection(LinkedHashSet::new));
-
-		sharedAnnotations.forEach(sharedAnnotation -> {
-			ExtensionContext scopedContext = scopedContext(extensionContext, sharedAnnotation.scope());
-			ExtensionContext.Store scopedStore = scopedContext.getStore(NAMESPACE);
-			putNewLockForShared(sharedAnnotation, scopedStore);
-		});
-
-		runSequentially(invocation, sharedAnnotations, extensionContext);
-	}
-
-	// TODO: Move into a new class, PioneerReflectionUtils?
-	private List<Class<?>> findNestedClassesRecursively(Class<?> clazz) {
-		Set<Class<?>> candidates = new LinkedHashSet<>();
-		findNestedClassesRecursively(clazz, candidates);
-		return Collections.unmodifiableList(new ArrayList<>(candidates));
-	}
-
-	private void findNestedClassesRecursively(Class<?> clazz, Set<Class<?>> candidates) {
-		for (Class<?> nestedClazz : ReflectionSupport.findNestedClasses(clazz, unused -> true)) {
-			candidates.add(nestedClazz);
-			findNestedClassesRecursively(nestedClazz, candidates);
-		}
+		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
@@ -374,32 +338,17 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	@Override
 	public void interceptBeforeEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		Method testMethod = extensionContext.getRequiredTestMethod();
-		List<Shared> sharedAnnotations = findShared(testMethod);
-
-		sharedAnnotations.forEach(sharedAnnotation -> {
-			ExtensionContext scopedContext = scopedContext(extensionContext, sharedAnnotation.scope());
-			ExtensionContext.Store scopedStore = scopedContext.getStore(NAMESPACE);
-			putNewLockForShared(sharedAnnotation, scopedStore);
-		});
-
-		runSequentially(invocation, testMethod, extensionContext);
+		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptAfterEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, extensionContext.getRequiredTestMethod(), extensionContext);
+		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	private <T> T runSequentially(Invocation<T> invocation, Executable executable, ExtensionContext extensionContext)
 			throws Throwable {
-		List<Shared> sharedAnnotations = findShared(executable);
-		return runSequentially(invocation, sharedAnnotations, extensionContext);
-	}
-
-	private <T> T runSequentially(Invocation<T> invocation, Collection<Shared> sharedAnnotations,
-			ExtensionContext extensionContext) throws Throwable {
 		// Parallel tests must not concurrently access shared resources. To ensure that, we associate a lock with
 		// each shared resource and require a test to hold all locks associated with the shared resources it uses.
 		//
@@ -422,6 +371,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		//
 		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
 
+		List<Shared> sharedAnnotations = findShared(executable);
 		List<ReentrantLock> locks = sortedLocksForSharedResources(sharedAnnotations, extensionContext);
 		return invokeWithLocks(invocation, locks);
 	}
