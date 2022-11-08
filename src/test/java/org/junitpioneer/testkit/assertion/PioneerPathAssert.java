@@ -58,8 +58,8 @@ public class PioneerPathAssert extends PathAssert {
 		}
 
 		if (!Objects.equals(actualText, expectedText)) {
-			throw failureWithActualExpected(actualText, expectedText,
-				"File expected to contain <%s>, but was <%s>", expectedText, actualText);
+			throw failureWithActualExpected(actualText, expectedText, "File expected to contain <%s>, but was <%s>",
+				expectedText, actualText);
 		}
 
 		return this;
