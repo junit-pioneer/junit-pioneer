@@ -42,7 +42,7 @@ include::{demo}[tag=create_new_resources_demo]
 
 (`TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].)
 
-This will create a brand-new resource for each test, and each resource which will be "closed" at the end of its associated test.
+This will create a brand-new resource for each test, and each resource will be "closed" at the end of its associated test.
 
 So in this case, a new temporary directory will be created for `test1` and another one will be created for `test2`.
 The temporary directory for `test1` will be deleted when the test is finished.
