@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junitpioneer.internal.PioneerPathAssert.assertThatPath;
+import static org.junitpioneer.testkit.assertion.PioneerPathAssert.assertThatPath;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryTests.ROOT_TEMP_DIR;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 

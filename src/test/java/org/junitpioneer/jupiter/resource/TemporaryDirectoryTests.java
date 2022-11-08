@@ -18,7 +18,7 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.ca
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
-import static org.junitpioneer.internal.PioneerPathAssert.assertThatPath;
+import static org.junitpioneer.testkit.assertion.PioneerPathAssert.assertThatPath;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.GLOBAL;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.SOURCE_FILE;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
