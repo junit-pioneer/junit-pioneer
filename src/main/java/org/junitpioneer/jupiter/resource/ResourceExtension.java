@@ -129,7 +129,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	}
 
 	private Object resolveShared(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store store) {
-		// run sequentially, so that resources of the same name are never created twice at the same time
+		// run sequentially, so that resources with the same name are never created twice at the same time
 		SHARED_ANNOTATION_RESOLUTION_LOCK.lock();
 		try {
 			throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
