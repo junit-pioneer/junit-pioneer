@@ -30,20 +30,23 @@ public class PioneerPathAssert extends PathAssert {
 		super(path);
 	}
 
-	public PioneerPathAssert canAddTextFile() {
-		canAddTextFileInternal();
-		return this;
-	}
+	public PioneerPathAssert canReadAndWriteFile() {
+		isNotNull();
 
-	public PioneerPathAssert canReadTextFile() {
-		Path textFile = canAddTextFileInternal();
+		Path textFile;
+		try {
+			textFile = Files.createTempFile(actual, "some-text-file", ".txt");
+		}
+		catch (IOException e1) {
+			throw failure("Cannot create a file");
+		}
 
 		String expectedText = "some-text";
 		try {
 			Files.write(textFile, singletonList(expectedText));
 		}
 		catch (IOException e) {
-			throw failure("Cannot write to a text file");
+			throw failure("Cannot write to a file");
 		}
 
 		String actualText;
@@ -51,28 +54,15 @@ public class PioneerPathAssert extends PathAssert {
 			actualText = new String(Files.readAllBytes(textFile), UTF_8).trim();
 		}
 		catch (IOException e) {
-			throw failure("Cannot read from a text file");
+			throw failure("Cannot read from a file");
 		}
 
 		if (!Objects.equals(actualText, expectedText)) {
 			throw failureWithActualExpected(actualText, expectedText,
-				"Text file expected to contain <%s>, but was <%s>", expectedText, actualText);
+				"File expected to contain <%s>, but was <%s>", expectedText, actualText);
 		}
 
 		return this;
-	}
-
-	private Path canAddTextFileInternal() {
-		isNotNull();
-
-		Path textFile;
-		try {
-			textFile = Files.createTempFile(actual, "some-text-file", ".txt");
-		}
-		catch (IOException e) {
-			throw failure("Cannot add a text file");
-		}
-		return textFile;
 	}
 
 }
