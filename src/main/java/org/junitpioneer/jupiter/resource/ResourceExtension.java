@@ -75,10 +75,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		Optional<Shared> sharedAnnotation = parameterContext.findAnnotation(Shared.class);
 		if (sharedAnnotation.isPresent()) {
 			Parameter[] parameters = parameterContext.getDeclaringExecutable().getParameters();
-			// TODO: All usages of scopedContext in this file are immediately followed by a scoped store.
-			//       Rename scopedContext() to scopedStore() and return the store instead.
-			ExtensionContext scopedContext = scopedContext(extensionContext, sharedAnnotation.get().scope());
-			ExtensionContext.Store scopedStore = scopedContext.getStore(NAMESPACE);
+			ExtensionContext.Store scopedStore = scopedStore(extensionContext, sharedAnnotation.get().scope());
 			Object resource = resolveShared(sharedAnnotation.get(), parameters, scopedStore);
 			return checkType(resource, parameterContext.getParameter().getType());
 		}
@@ -382,8 +379,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		List<ExtensionContext.Store> stores = //
 			sortedAnnotations
 					.stream() //
-					.map(shared -> scopedContext(extensionContext, shared.scope()))
-					.map(scopedContext -> scopedContext.getStore(NAMESPACE))
+					.map(shared -> scopedStore(extensionContext, shared.scope()))
 					.collect(toList());
 		return IntStream
 				.range(0, sortedAnnotations.size()) //
@@ -397,6 +393,11 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.orElseThrow(() -> new IllegalStateException(
 					"The parent extension context of a DynamicTest was not a @TestFactory-annotated test method"))
 				.getRequiredTestMethod();
+	}
+
+	private ExtensionContext.Store scopedStore(ExtensionContext extensionContext, Shared.Scope scope) {
+		ExtensionContext scopedContext = scopedContext(extensionContext, scope);
+		return scopedContext.getStore(NAMESPACE);
 	}
 
 	private ExtensionContext scopedContext(ExtensionContext extensionContext, Shared.Scope scope) {
