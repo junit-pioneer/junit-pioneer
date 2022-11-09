@@ -23,46 +23,26 @@ import org.opentest4j.TestAbortedException;
 
 class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 
-	/**
-	 * No-arg constructor for JUnit to be able to create an instance.
-	 */
-	public ExpectedToFailExtension() {
-	}
-
-	private static ExpectedToFail getExpectedToFailAnnotation(ExtensionContext context) {
-		return AnnotationSupport
-				.findAnnotation(context.getRequiredTestMethod(), ExpectedToFail.class)
-				.orElseThrow(() -> new IllegalStateException("@ExpectedToFail is missing."));
-
-	}
-
-	/**
-	 * Returns whether the exception should be preserved and reported as is instead
-	 * of considering it an 'expected to fail' exception.
-	 *
-	 * <p>This method is used for exceptions which abort test execution and should
-	 * have higher precedence than aborted exceptions thrown by this extension.
-	 */
-	private static boolean shouldPreserveException(Throwable t) {
-		// Note: Ideally would use the same logic JUnit uses to determine if exception is aborting
-		// execution, see its class OpenTest4JAndJUnit4AwareThrowableCollector
-		return TestAbortedException.class.isInstance(t);
+	@Override
+	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
+			ExtensionContext extensionContext) throws Throwable {
+		invokeAndInvertResult(invocation, extensionContext);
 	}
 
 	private static <T> T invokeAndInvertResult(Invocation<T> invocation, ExtensionContext extensionContext)
 			throws Throwable {
 		try {
 			invocation.proceed();
-			// if no exception was thrown fall through and call fail(...) eventually
+			// at this point, the invocation succeeded, so we'd want to call `fail(...)`,
+			// but that would get handled by the following `catch` and so it's easier
+			// to instead fall through to a `fail(...)` after the `catch` block
 		}
 		catch (Throwable t) {
 			if (shouldPreserveException(t)) {
 				throw t;
 			}
 
-			ExpectedToFail annotation = getExpectedToFailAnnotation(extensionContext);
-
-			String message = annotation.value();
+			String message = getExpectedToFailAnnotation(extensionContext).value();
 			if (message.isEmpty()) {
 				message = "Test marked as temporarily 'expected to fail' failed as expected";
 			}
@@ -73,10 +53,24 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 		return fail("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
 	}
 
-	@Override
-	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
-			ExtensionContext extensionContext) throws Throwable {
-		invokeAndInvertResult(invocation, extensionContext);
+	/**
+	 * Returns whether the exception should be preserved and reported as is instead
+	 * of considering it an 'expected to fail' exception.
+	 *
+	 * <p>This method is used for exceptions that abort test execution and should
+	 * have higher precedence than aborted exceptions thrown by this extension.
+	 */
+	private static boolean shouldPreserveException(Throwable t) {
+		// Note: Ideally would use the same logic JUnit uses to determine if exception is aborting
+		// execution, see its class OpenTest4JAndJUnit4AwareThrowableCollector
+		return TestAbortedException.class.isInstance(t);
+	}
+
+	private static ExpectedToFail getExpectedToFailAnnotation(ExtensionContext context) {
+		return AnnotationSupport
+				.findAnnotation(context.getRequiredTestMethod(), ExpectedToFail.class)
+				.orElseThrow(() -> new IllegalStateException("@ExpectedToFail is missing."));
+
 	}
 
 }

@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Test;
 public class ExpectedToFailExtensionDemo {
 
 	// tag::expected_to_fail[]
-	@ExpectedToFail
 	@Test
+	@ExpectedToFail
 	void test() {
 		int actual = brokenMethod();
 		assertEquals(10, actual);
@@ -26,8 +26,8 @@ public class ExpectedToFailExtensionDemo {
 	// end::expected_to_fail[]
 
 	// tag::expected_to_fail_message[]
-	@ExpectedToFail("Implementation bug in brokenMethod()")
 	@Test
+	@ExpectedToFail("Implementation bug in brokenMethod()")
 	void doSomething() {
 		int actual = brokenMethod();
 		assertEquals(10, actual);

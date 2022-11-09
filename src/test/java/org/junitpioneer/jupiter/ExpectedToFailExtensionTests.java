@@ -182,39 +182,39 @@ public class ExpectedToFailExtensionTests {
 		@interface ExpectedToFailMetaAnnotation {
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void failure() {
 			fail("failed");
 		}
 
-		@ExpectedToFailMetaAnnotation
 		@Test
+		@ExpectedToFailMetaAnnotation
 		void metaAnnotationFailure() {
 			fail("failed");
 		}
 
-		@ExpectedToFail("Custom message")
 		@Test
+		@ExpectedToFail("Custom message")
 		void failureWithMessage() {
 			fail("failed");
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void exception() {
 			throw new RuntimeException("test");
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void aborted() {
 			// Assumption should have higher precedence than @ExpectedToFail
 			Assumptions.assumeTrue(false, "custom assumption message");
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void working() {
 			// Does not cause failure or error
 		}
@@ -232,8 +232,8 @@ public class ExpectedToFailExtensionTests {
 			fail("before each");
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void test() {
 		}
 
@@ -250,8 +250,8 @@ public class ExpectedToFailExtensionTests {
 			fail("after each");
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void test() {
 		}
 
@@ -268,8 +268,8 @@ public class ExpectedToFailExtensionTests {
 			fail("after each");
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void test() {
 			Assumptions.assumeTrue(false, "custom assumption message");
 		}
@@ -283,8 +283,8 @@ public class ExpectedToFailExtensionTests {
 			Assumptions.assumeTrue(false, "custom assumption message");
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void test() {
 			fail("failed");
 		}
@@ -301,8 +301,8 @@ public class ExpectedToFailExtensionTests {
 			fail("before all");
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void test() {
 		}
 
@@ -318,8 +318,8 @@ public class ExpectedToFailExtensionTests {
 			fail("after all");
 		}
 
-		@ExpectedToFail
 		@Test
+		@ExpectedToFail
 		void test() {
 		}
 
