@@ -16,7 +16,7 @@
         url: /docs/disable-if-test-fails/
       - title: "Disable Parameterized Tests"
         url: /docs/disable-parameterized-tests/
-      - title: "Expected to Fail Tests"
+      - title: "Expected-to-Fail Tests"
         url: /docs/expected-to-fail-tests/
       - title: "Issue information"
         url: /docs/issue/
