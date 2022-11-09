@@ -209,6 +209,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private void throwIfHasAnnotationWithSameNameButDifferentType(ExtensionContext.Store store,
 			Shared sharedAnnotation) {
+		// TODO: throw if has annotation with same name but different scope
 		ResourceFactory<?> presentResourceFactory = //
 			store.getOrDefault(factoryKey(sharedAnnotation), ResourceFactory.class, null);
 
@@ -233,6 +234,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	}
 
 	private void throwIfMultipleParametersHaveExactAnnotation(Parameter[] parameters, Shared sharedAnnotation) {
+		// TODO: throw if multiple parameters have @Shared annotations with not just the same
+		//       name and factory type but the same scope too?
 		long parameterCount = //
 			Arrays.stream(parameters).filter(parameter -> hasAnnotation(parameter, sharedAnnotation)).count();
 		if (parameterCount > 1) {
