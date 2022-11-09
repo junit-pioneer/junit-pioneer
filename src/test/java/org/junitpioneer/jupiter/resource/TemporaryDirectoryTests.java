@@ -21,7 +21,7 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.th
 import static org.junitpioneer.jupiter.resource.Shared.Scope.GLOBAL;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.SOURCE_FILE;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-import static org.junitpioneer.testkit.assertion.PioneerPathAssert.assertThatPath;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThatPath;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

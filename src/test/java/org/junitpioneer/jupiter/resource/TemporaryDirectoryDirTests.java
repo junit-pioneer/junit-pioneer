@@ -10,10 +10,9 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryTests.ROOT_TEMP_DIR;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-import static org.junitpioneer.testkit.assertion.PioneerPathAssert.assertThatPath;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThatPath;
 
 import java.nio.file.Path;
 
@@ -25,18 +24,18 @@ import org.junitpioneer.testkit.PioneerTestKit;
 
 class TemporaryDirectoryDirTests {
 
-	@DisplayName("when a test class has a test method with a @Dir-annotated parameter")
 	@Nested
+	@DisplayName("when a test class has a test method with a @Dir-annotated parameter")
 	class WhenTestClassHasTestMethodWithDirParameterTests {
 
+		@Test
 		@DisplayName("then the parameter is populated with a new readable and writeable temporary directory "
 				+ "that lasts as long as the test")
-		@Test
 		void thenParameterIsPopulatedWithNewReadableAndWriteableTempDirThatLastsAsLongAsTheTest() {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(SingleTestMethodWithDirParameterTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestMethodWithDirParameterTestCases.recordedPath).doesNotExist();
+			assertThatPath(SingleTestMethodWithDirParameterTestCases.recordedPath).doesNotExist();
 		}
 
 	}
@@ -47,7 +46,7 @@ class TemporaryDirectoryDirTests {
 
 		@Test
 		void theTest(@Dir Path tempDir) {
-			assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
+			assertThatPath(tempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
 			assertThatPath(tempDir).canReadAndWriteFile();
 
 			recordedPath = tempDir;

@@ -22,11 +22,7 @@ import org.assertj.core.api.PathAssert;
 
 public class PioneerPathAssert extends PathAssert {
 
-	public static PioneerPathAssert assertThatPath(Path actual) {
-		return new PioneerPathAssert(actual);
-	}
-
-	private PioneerPathAssert(Path path) {
+	PioneerPathAssert(Path path) {
 		super(path);
 	}
 
