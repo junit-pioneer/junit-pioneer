@@ -1,5 +1,5 @@
 :page-title: Standard Input and Output
-:page-description: Extends JUnit Jupiter with `@StdIo`, which simulates standard input or catches standard output.
+:page-description: The JUnit 5 (Jupiter) extension `@StdIo` simulates standard input to `System.in` and captures standard output to `System.out` or `System.err` for assertions
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/StdInOutExtensionDemo.java
 

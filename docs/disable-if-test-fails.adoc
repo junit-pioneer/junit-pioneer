@@ -1,5 +1,5 @@
 :page-title: Disable Tests if Others Fail
-:page-description: Disables all tests in a container once the first test failed
+:page-description:  The JUnit 5 (Jupiter) extension @DisableIfTestFails disables all tests in a class once the first test failed
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/DisableIfTestFailsExtensionDemo.java
 

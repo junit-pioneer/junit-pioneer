@@ -1,5 +1,5 @@
 :page-title: Range Sources
-:page-description: Extends JUnit Jupiter with `@IntRangeSource`, `@FloatRangeSource`, etc., which provide series of numbers as argument sources for parameterized tests.
+:page-description: The JUnit 5 (Jupiter) extensions `@IntRangeSource`, `@FloatRangeSource`, etc. provide series of numbers as argument sources for parameterized tests
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/params/RangeSourcesDemo.java
 

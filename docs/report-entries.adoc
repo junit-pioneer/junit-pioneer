@@ -1,5 +1,5 @@
 :page-title: Publishing Report Entries
-:page-description: Extends JUnit Jupiter with `@ReportEntry`, which publishes report entries using `TestReporter`.
+:page-description: The JUnit 5 (Jupiter) extension `@ReportEntry` declaratively publishes report entries via the `TestReporter`
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/ReportEntryExtensionDemo.java
 

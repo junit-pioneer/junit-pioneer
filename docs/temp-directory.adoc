@@ -1,5 +1,5 @@
-:page-title: Temporary Directory
-:page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject temporary directories.
+:page-title: Injecting Temporary Directories
+:page-description: The JUnit 5 (Jupiter) extension `@Dir` allows to create, share, and inject temporary directories as arguments
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourceExtensionDemo.java
 :resources-doc: ./resources.adoc

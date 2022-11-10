@@ -1,5 +1,5 @@
 :page-title: Clearing or Setting System Properties
-:page-description: Extends JUnit Jupiter with `@ClearSystemProperty`, `@SetSystemProperty`, which clear and set the values of system properties
+:page-description: The JUnit 5 (Jupiter) extensions `@ClearSystemProperty`/`@SetSystemProperty` clear/set the values of system properties for the duration of a test
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/SystemPropertyExtensionDemo.java
 

@@ -1,5 +1,5 @@
-:page-title: Temporarily Disable a Test
-:page-description: Extends JUnit Jupiter with `@DisabledUntil` to temporarily disable a test.
+:page-title: Disable a Test Temporarily
+:page-description: The JUnit 5 (Jupiter) extension `@DisabledUntil` temporarily disables a test until a certain date
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/DisableUntilExtensionDemo.java
 

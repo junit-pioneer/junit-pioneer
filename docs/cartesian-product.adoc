@@ -1,5 +1,5 @@
-:page-title: Cartesian product of all test parameters
-:page-description: Extends JUnit Jupiter with `@CartesianTest`, a variant of parameterized tests that tests all combinations of its input
+:page-title: Cartesian Product of Parameters
+:page-description: The JUnit 5 (Jupiter) extension `@CartesianTest` adds a variant of parameterized tests that executes a test for each possible combination of input arguments
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/cartesian/CartesianTestExtensionDemo.java
 :people: {xp-demo-dir}/org/junitpioneer/jupiter/cartesian/PeopleProviderSources.java

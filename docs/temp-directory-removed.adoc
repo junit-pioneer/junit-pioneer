@@ -1,5 +1,6 @@
 :page-title: Temporary Files and Directories (removed in 1.0)
-:page-description: Extends JUnit Jupiter with `@TempDir`, which create and clean up a temporary directory.
+:page-description: The JUnit 5 (Jupiter) extension `@TempDir` allows to inject temporary directories as arguments
+:page-unlist: true
 
 NOTE: JUnit Jupiter 5.4 introduced a https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory[built-in `@TempDir` extension]. This extension was built before then, but its only advantage over the JUnit Jupiter extension is support for custom file systems. We felt this didn't have enough value, so we removed this extension in JUnit Pioneer 1.0.
 

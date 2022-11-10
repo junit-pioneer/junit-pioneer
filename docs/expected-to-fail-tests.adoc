@@ -1,5 +1,5 @@
-:page-title: Expected to Fail Tests
-:page-description: Extends JUnit Jupiter with `@ExpectedToFail`, which marks a test method as temporarily 'expected to fail'
+:page-title: Expected-to-Fail Tests
+:page-description: The JUnit 5 (Jupiter) extension `@ExpectedToFail` marks a test method as 'expected to fail', which marks a failing test as aborted and a passing test as failed
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/ExpectedToFailExtensionDemo.java
 

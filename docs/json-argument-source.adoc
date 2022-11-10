@@ -1,5 +1,5 @@
 :page-title: JSON Argument Source
-:page-description: Extends JUnit Jupiter with `@JsonFileSource`, a parametrized test that creates test based on a JSON Source
+:page-description: The JUnit 5 (Jupiter) extensions `@JsonSource`, `@JsonFileSource`, and `@JsonClasspathSource` allow passing arguments to a parametrized test that where read from inline JSON or a JSON file
 :xp-demo-dir: ../src/demo/java
 :json-demo: {xp-demo-dir}/org/junitpioneer/jupiter/json/JsonArgumentSourceExtensionDemo.java
 :jedi: {xp-demo-dir}/org/junitpioneer/jupiter/json/Jedi.java

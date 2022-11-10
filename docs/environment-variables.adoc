@@ -1,5 +1,5 @@
 :page-title: Clearing or Setting Environment Variables
-:page-description: Extends JUnit Jupiter with `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, which clear and set the values of environment variables
+:page-description: The JUnit 5 (Jupiter) extensions `@ClearEnvironmentVariable`/`@SetEnvironmentVariable` clear/set the values of environment variables for the duration of a test
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/EnvironmentVariablesExtensionDemo.java
 

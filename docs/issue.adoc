@@ -1,5 +1,5 @@
 :page-title: Issue Information
-:page-description: Extends JUnit Jupiter with `@Issue` to publish issue information.
+:page-description: The JUnit 5 (Jupiter) extension `@Issue` associates test information (e.g. passed or failed) an issue number
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/IssueExtensionDemo.java
 
