@@ -36,8 +36,6 @@
         url: /docs/stopwatch/
       - title: "Temporary Directories"
         url: /docs/temp-directory/
-      - title: "Temporary Files and Directories (removed in 1.0)"
-        url: /docs/temp-directory-removed/
       - title: "Vintage @Test"
         url: /docs/vintage-test/
 

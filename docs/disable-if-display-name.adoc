@@ -1,4 +1,5 @@
 :page-title: Disable Parameterized Test Based on DisplayName
 :page-description: Extends JUnit Jupiter with `@DisableIfDisplayName`, which selectively disables parameterized tests
+:page-unlist: true
 
 This document has been link:/docs/disable-parameterized-tests.adoc[moved and updated].

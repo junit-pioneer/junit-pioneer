@@ -78,6 +78,7 @@ To demonstrate with a table:
 
 |===
 | # of test | value of `a`   | value of `b`   | value of `c`
+
 | 1st test  | "0"            | "0"            | "0"
 | 2nd test  | "0"            | "0"            | "1"
 | 3rd test  | "0"            | "1"            | "0"
@@ -118,6 +119,7 @@ To demonstrate with a table:
 
 |===
 | # of test | value of `number` | value of `character`
+
 | 1st test  | 1                 | "A"
 | 2nd test  | 1                 | "B"
 | 3rd test  | 2                 | "A"
@@ -237,6 +239,7 @@ To demonstrate with a table:
 
 |===
 | # of test | value of `myEnum` | value of `anotherEnum`
+
 | 1st test  | ONE               | BETA
 | 2nd test  | ONE               | GAMMA
 | 3rd test  | TWO               | BETA
@@ -287,8 +290,10 @@ The second parameter can have any of the three values `0L`, `1L` or `2L`.
 `@CartesianProductTest` tests for all input combinations, that's `2 × 3`, so six tests in total.
 
 To demonstrate with a table:
+
 |===
 | # of test | value of `s` | value of `l`
+
 | 1st test  | 1            | 0L
 | 2nd test  | 1            | 1L
 | 3rd test  | 1            | 2L
@@ -347,6 +352,7 @@ To demonstrate with a table:
 
 |===
 | # of test  | value of `string` | value of `clazz` | value of `unit`
+
 | 1st test   | "Alpha"           | Runnable.class   | TimeUnit.DAYS
 | 2nd test   | "Alpha"           | Runnable.class   | TimeUnit.HOURS
 | 3rd test   | "Alpha"           | Cloneable.class  | TimeUnit.DAYS
