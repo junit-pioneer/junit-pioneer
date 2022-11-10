@@ -263,7 +263,7 @@ void testEnumValues(int i, MyEnum myEnum) {
 
 === Range Source annotations
 
-Alternatively, you can annotate your test method with link:docs/range-sources[range source annotations].
+Alternatively, you can annotate your test method with link:/docs/range-sources[range source annotations].
 For _this purpose only_, range sources are repeatable.
 When you annotate your `@CartesianProductTest` with a range source, you specify the inputs to a single test parameter.
 This is _not_ like `@ParameterizedTest` where you have to define all inputs in a single `@ArgumentsSource`.
@@ -297,7 +297,7 @@ To demonstrate with a table:
 | 6th test  | 2            | 2L
 |===
 
-For more information, please see the link:docs/range-sources[separate documentation about range sources].
+For more information, please see the link:/docs/range-sources[separate documentation about range sources].
 You can combine range sources with `@CartesianValueSource`, it works as you'd expect:
 
 [source,java]

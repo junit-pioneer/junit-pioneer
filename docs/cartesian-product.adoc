@@ -164,7 +164,7 @@ To demonstrate with a table:
 
 === Range source annotations
 
-You can annotate your test parameters with link:docs/range-sources[range source annotations].
+You can annotate your test parameters with link:/docs/range-sources[range source annotations].
 For _this purpose only_, range sources can be used on parameters.
 
 [source,java,indent=0]
@@ -188,7 +188,7 @@ To demonstrate with a table:
 | 6th test  | 2            | 2L
 |===
 
-For more information, please see the link:docs/range-sources[separate documentation about range sources].
+For more information, please see the link:/docs/range-sources[separate documentation about range sources].
 
 == Defining arguments with factories
 
