@@ -27,10 +27,7 @@ public class PioneerAssert {
 		return new PioneerExecutionResultAssert(actual);
 	}
 
-	// while AssertJ assertion entry points are usually called `assertThat`,
-	// this method needs a different name to prevent conflicts with the
-	// official `Assertions.assertThat(Path)` when both are statically imported
-	public static PioneerPathAssert assertThatPath(Path actual) {
+	public static PioneerPathAssert assertThat(Path actual) {
 		return new PioneerPathAssert(actual);
 	}
 

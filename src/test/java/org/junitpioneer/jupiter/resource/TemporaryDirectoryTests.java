@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter.resource;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
@@ -21,13 +20,13 @@ import static org.junit.platform.testkit.engine.TestExecutionResultConditions.th
 import static org.junitpioneer.jupiter.resource.Shared.Scope.GLOBAL;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.SOURCE_FILE;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThatPath;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -63,7 +62,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void theTest(@New(TemporaryDirectory.class) Path tempDir) {
 			assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(tempDir).canReadAndWriteFile();
+			assertThat(tempDir).canReadAndWriteFile();
 
 			recordedPath = tempDir;
 		}
@@ -110,7 +109,8 @@ class TemporaryDirectoryTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(TwoTestMethodsWithNewTempDirParameterTestCases.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
-			assertThat(TwoTestMethodsWithNewTempDirParameterTestCases.recordedPaths)
+			Assertions
+					.assertThat(TwoTestMethodsWithNewTempDirParameterTestCases.recordedPaths)
 					.hasSize(2)
 					.doesNotHaveDuplicates()
 					.allSatisfy(path -> assertThat(path).doesNotExist());
@@ -151,7 +151,8 @@ class TemporaryDirectoryTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(SingleTestMethodWithTwoNewTempDirParametersTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestMethodWithTwoNewTempDirParametersTestCases.recordedPaths)
+			Assertions
+					.assertThat(SingleTestMethodWithTwoNewTempDirParametersTestCases.recordedPaths)
 					.hasSize(2)
 					.doesNotHaveDuplicates()
 					.allSatisfy(path -> assertThat(path).doesNotExist());
@@ -167,9 +168,9 @@ class TemporaryDirectoryTests {
 		void firstTest(@New(TemporaryDirectory.class) Path firstTempDir,
 				@New(TemporaryDirectory.class) Path secondTempDir) {
 			assertThat(firstTempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(firstTempDir).canReadAndWriteFile();
+			assertThat(firstTempDir).canReadAndWriteFile();
 			assertThat(secondTempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(secondTempDir).canReadAndWriteFile();
+			assertThat(secondTempDir).canReadAndWriteFile();
 
 			recordedPaths.addAll(asList(firstTempDir, secondTempDir));
 		}
@@ -189,7 +190,8 @@ class TemporaryDirectoryTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(TestConstructorWithNewTempDirParameterTestCases.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
-			assertThat(TestConstructorWithNewTempDirParameterTestCases.recordedPathsFromConstructor)
+			Assertions
+					.assertThat(TestConstructorWithNewTempDirParameterTestCases.recordedPathsFromConstructor)
 					.hasSize(2)
 					.doesNotHaveDuplicates()
 					.allSatisfy(path -> assertThat(path).doesNotExist());
@@ -283,7 +285,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
 			assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(tempDir).canReadAndWriteFile();
+			assertThat(tempDir).canReadAndWriteFile();
 
 			recordedPath = tempDir;
 		}
@@ -304,7 +306,8 @@ class TemporaryDirectoryTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
-			assertThat(SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCases.recordedPaths)
+			Assertions
+					.assertThat(SingleTestMethodWithTwoDifferentSharedTempDirParametersTestCases.recordedPaths)
 					.hasSize(2)
 					.doesNotHaveDuplicates()
 					.allSatisfy(path -> assertThat(path).doesNotExist());
@@ -320,9 +323,9 @@ class TemporaryDirectoryTests {
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "first-name") Path firstTempDir,
 				@Shared(factory = TemporaryDirectory.class, name = "second-name") Path secondTempDir) {
 			assertThat(firstTempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(firstTempDir).canReadAndWriteFile();
+			assertThat(firstTempDir).canReadAndWriteFile();
 			assertThat(secondTempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(secondTempDir).canReadAndWriteFile();
+			assertThat(secondTempDir).canReadAndWriteFile();
 
 			recordedPaths.add(firstTempDir);
 			recordedPaths.add(secondTempDir);
@@ -345,10 +348,11 @@ class TemporaryDirectoryTests {
 					.executeTestClass(TwoTestMethodsWithSharedSameNameTempDirParameterTestCases.class);
 			assertThat(executionResults).hasNumberOfSucceededTests(2);
 			List<Path> paths = TwoTestMethodsWithSharedSameNameTempDirParameterTestCases.recordedPaths;
-			assertThat(paths)
+			Assertions
+					.assertThat(paths)
 					.hasSize(2)
-					.allSatisfy(path -> assertThat(path).isEqualTo(paths.get(0)))
-					.allSatisfy(path -> assertThat(path).doesNotExist());
+					.allSatisfy(path -> Assertions.assertThat(path).isEqualTo(paths.get(0)))
+					.allSatisfy(path -> Assertions.assertThat(path).doesNotExist());
 		}
 
 	}
@@ -360,7 +364,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void firstTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
 			assertThat(tempDir).startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(tempDir).canReadAndWriteFile();
+			assertThat(tempDir).canReadAndWriteFile();
 
 			recordedPaths.add(tempDir);
 		}
@@ -368,7 +372,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void secondTest(@Shared(factory = TemporaryDirectory.class, name = "some-name") Path tempDir) {
 			assertThat(tempDir).startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(tempDir).canReadAndWriteFile();
+			assertThat(tempDir).canReadAndWriteFile();
 
 			recordedPaths.add(tempDir);
 		}
@@ -407,7 +411,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = GLOBAL) Path tempDir) {
 			assertThat(tempDir).startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(tempDir).canReadAndWriteFile();
+			assertThat(tempDir).canReadAndWriteFile();
 
 			recordedPath = tempDir;
 		}
@@ -421,7 +425,7 @@ class TemporaryDirectoryTests {
 		@Test
 		void theTest(@Shared(factory = TemporaryDirectory.class, name = "some-name", scope = GLOBAL) Path tempDir) {
 			assertThat(tempDir).startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(tempDir).canReadAndWriteFile();
+			assertThat(tempDir).canReadAndWriteFile();
 
 			recordedPath = tempDir;
 		}
@@ -542,7 +546,7 @@ class TemporaryDirectoryTests {
 	@DisplayName("check that TemporaryDirectory is final")
 	@Test
 	void checkThatTemporaryDirectoryIsFinal() {
-		assertThat(TemporaryDirectory.class).isFinal();
+		Assertions.assertThat(TemporaryDirectory.class).isFinal();
 	}
 
 }

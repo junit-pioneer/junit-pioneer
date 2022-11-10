@@ -12,7 +12,6 @@ package org.junitpioneer.jupiter.resource;
 
 import static org.junitpioneer.jupiter.resource.TemporaryDirectoryTests.ROOT_TEMP_DIR;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThatPath;
 
 import java.nio.file.Path;
 
@@ -35,7 +34,7 @@ class TemporaryDirectoryDirTests {
 			ExecutionResults executionResults = PioneerTestKit
 					.executeTestClass(SingleTestMethodWithDirParameterTestCases.class);
 			assertThat(executionResults).hasSingleSucceededTest();
-			assertThatPath(SingleTestMethodWithDirParameterTestCases.recordedPath).doesNotExist();
+			assertThat(SingleTestMethodWithDirParameterTestCases.recordedPath).doesNotExist();
 		}
 
 	}
@@ -46,8 +45,8 @@ class TemporaryDirectoryDirTests {
 
 		@Test
 		void theTest(@Dir Path tempDir) {
-			assertThatPath(tempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
-			assertThatPath(tempDir).canReadAndWriteFile();
+			assertThat(tempDir).isEmptyDirectory().startsWith(ROOT_TEMP_DIR).isReadable().isWritable();
+			assertThat(tempDir).canReadAndWriteFile();
 
 			recordedPath = tempDir;
 		}
