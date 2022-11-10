@@ -391,7 +391,7 @@ To enforce the [branching strategy](#branching-strategy) pull requests from `mai
 ### Full Testing
 
 In order to minimize the delay between a push and feedback, the default build is only run on a small subset of all possible builds (which include different operating system, Java versions and so on).
-Once a pull request is ready to be merged, a maintainer needs to apply the _merge-ready_ label to trigger a full build.
+To get more wider feedback, for example once a pull request is ready to be merged, a maintainer needs to apply the _full-build_ label to trigger just that.
 
 ### Merging
 
