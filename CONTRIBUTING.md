@@ -638,11 +638,3 @@ A few examples:
 * when a PR is merged, the commit message summarizes what it is about (see [_Commit Message_](#commit-message) above)
 * when a decision regarding the project structure or the development processes is made, it is reflected in `README.md`, `CONTRIBUTING.md`, or another suitable file or even the website
 * when a new feature is merged, documentation is added to the website
-
-### Where The Buck Stops
-
-This project was founded by [Nicolai Parlog](https://github.com/nicolaiparlog) (together with [Steve Moyer](https://github.com/smoyer64)) and I (surprise, it's me writing this section) maintained it almost exclusively for the first two years.
-As such, I have the right to overrule any decision that was made by other maintainers.
-This also translates to a duty to do that with any decision that could end up harming the project in any form.
-On other words, the buck stops with me and, ultimately, I bare responsibility for all mistakes.
-(Moral responsibility, that is - legally, nobody has any responsibility. 😉)
