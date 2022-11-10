@@ -76,8 +76,8 @@ For our own infrastructure, we rely on the following compile and test dependenci
 We welcome contributions of all shapes and forms! 🌞
 
 * If you have an idea for an extension, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and let's discuss.
-* If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly [unassigned ones](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee) and those [marked as up for grabs](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs).
-* If you want to have a chat about JUnit Pioneer, [join our discord](https://discord.gg/rHfJeCF) - we have a _#junit-pioneer_ channel. 😊
+* If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly those marked [_up for grabs_](https://github.com/junit-pioneer/junit-pioneer/labels/%F0%9F%93%A2%20up%20for%20grabs) or [_good first issue_](https://github.com/junit-pioneer/junit-pioneer/labels/good%20first%20issue).
+* If you want to chat about JUnit Pioneer, [join our discord](https://discord.gg/rHfJeCF) - we have a _#junit-pioneer_ channel. 😊
 
 Before contributing, please read the [contribution guide](CONTRIBUTING.md) as well as [the code of conduct](CODE_OF_CONDUCT.md).
 
@@ -100,10 +100,9 @@ In lexicographic order, these are:
 		A Hungarian Java developer who spends more time on Twitch than recommended by his doctors and used creative and diligent contributions to fool everyone into believing he is a decent enough guy to get promoted to maintainer (in November 2020).
 		</dd>
 	<dt>Nicolai Parlog aka <a href="https://github.com/nipafx">nipafx</a></dt>
-	<dd>Java enthusiast with a passion for learning and sharing.
-		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://nipafx.dev">nipafx.dev</a>.
-		That aside, he's best known for his head decor.
-		He co-founded the project in November 2016 and has maintained it ever since (although often very negligently).</dd>
+	<dd>Java enthusiast with a passion for learning and sharing, best known for his head decor.
+		He's a Java Developer Advocate at Oracle, organizer of <a href="https://accento.dev/">Accento</a>, occasional streamer, and more - check <a href="https://nipafx.dev">nipafx.dev</a> for the full list.
+		He co-founded JUnit Pioneer in November 2016 and has maintained it ever since (although often very negligently).</dd>
 	<dt>Simon Schrottner aka <a href="https://github.com/aepfli">aepfli</a></dt>
 	<dd>Bearded guy in Lederhosen, who loves to code, and loves to explore code quality, testing, and other tools that can improve the live of a software craftsman.
 		<a href="https://www.couchsurfing.com/people/simmens">Passionated couchsurfer</a> and <a href="https://www.facebook.com/togtrama">hobby event planner</a>.
