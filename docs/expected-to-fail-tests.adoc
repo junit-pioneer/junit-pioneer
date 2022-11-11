@@ -12,7 +12,7 @@ However, this has disadvantages when the bug that causes the test failure is fix
 
 `@ExpectedToFail` solves these issues.
 Unlike `@Disabled` it still executes the annotated test method but aborts the test if a test failure or error occurs.
-However, if the test is executed successfully the it will cause a test failure because the test _is working_.
+However, if the test is executed successfully it will cause a test failure because the test _is working_.
 This lets the developer know that they have fixed the bug (possibly by accident) and that they can now remove the `@ExpectedToFail` annotation from the test method.
 
 The annotation can only be used on methods and as meta-annotation on other annotation types.
