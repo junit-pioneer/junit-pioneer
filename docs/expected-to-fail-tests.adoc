@@ -1,0 +1,46 @@
+:page-title: Expected to Fail Tests
+:page-description: Extends JUnit Jupiter with `@ExpectedToFail`, which marks a test method as temporarily 'expected to fail'
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/ExpectedToFailExtensionDemo.java
+
+Often tests fail due to a bug in the tested application or in dependencies.
+Traditionally such a test method would be annotated with JUnit's `@Disabled`.
+However, this has disadvantages when the bug that causes the test failure is fixed:
+
+* the developer might not notice the existing test method and create a new one
+* the existing test method might not be noticed and remains disabled for a long time after the bug has been fixed, adding no value for the project
+
+`@ExpectedToFail` solves these issues.
+Unlike `@Disabled` it still executes the annotated test method but aborts the test if a test failure or error occurs.
+However, if the test is executed successfully it will cause a test failure because the test _is working_.
+This lets the developer know that they have fixed the bug (possibly by accident) and that they can now remove the `@ExpectedToFail` annotation from the test method.
+
+The annotation can only be used on methods and as meta-annotation on other annotation types.
+Similar to `@Disabled`, it has to be used in addition to a "testable" annotation, such as `@Test`.
+Otherwise the annotation has no effect.
+
+IMPORTANT: This annotation is *not* intended as a way to mark test methods which intentionally cause exceptions.
+Such test methods should use https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html#assertThrows(java.lang.Class,org.junit.jupiter.api.function.Executable)[JUnit's `assertThrows`] or similar means to explicitly test for a specific exception class being thrown by a specific action.
+
+== Basic Use
+
+The test is aborted because the tested method `brokenMethod()` returns an incorrect result.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=expected_to_fail]
+----
+
+An aborted test is no failure and so the test suite passes (if all other tests pass, of course).
+Should `brokenMethod()` start returning the correct value, the test invocation passes, but `@ExpectedToFail` marks the test as failed to draw attention to that change in behavior.
+
+A custom message can be provided, explaining why the tested code is not working as intended at the moment.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=expected_to_fail_message]
+----
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

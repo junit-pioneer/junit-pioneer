@@ -20,11 +20,12 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.testkit.engine.Events;
+import org.junitpioneer.testkit.assertion.single.TestCaseAbortedAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseFailureAssert;
 import org.junitpioneer.testkit.assertion.single.TestCaseStartedAssert;
 
 class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Events>
-		implements TestCaseStartedAssert, TestCaseFailureAssert {
+		implements TestCaseStartedAssert, TestCaseFailureAssert, TestCaseAbortedAssert {
 
 	TestCaseAssertBase(Events events) {
 		super(events, TestCaseAssertBase.class, 1);
@@ -45,7 +46,7 @@ class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Event
 	@Override
 	public TestCaseFailureAssert whichFailed() {
 		assertThat(actual.failed().count()).isEqualTo(1);
-		return this;
+		return new TestCaseAssertBase(actual.failed());
 	}
 
 	@Override
@@ -54,8 +55,9 @@ class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Event
 	}
 
 	@Override
-	public void whichAborted() {
+	public TestCaseAbortedAssert whichAborted() {
 		assertThat(actual.aborted().count()).isEqualTo(1);
+		return new TestCaseAssertBase(actual.aborted());
 	}
 
 	@Override
@@ -78,7 +80,6 @@ class TestCaseAssertBase extends AbstractPioneerAssert<TestCaseAssertBase, Event
 
 	private Optional<? extends Throwable> throwable() {
 		return actual
-				.failed()
 				.stream()
 				.findFirst()
 				.flatMap(fail -> fail.getPayload(TestExecutionResult.class))
