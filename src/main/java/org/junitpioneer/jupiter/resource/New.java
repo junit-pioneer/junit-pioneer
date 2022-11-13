@@ -39,8 +39,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 public @interface New {
 
+	/**
+	 * The class of the resource factory to get the resource from.
+	 *
+	 * @return the class of the resource factory to get the resource from.
+	 */
 	Class<? extends ResourceFactory<?>> value();
 
+	/**
+	 * An array of string arguments to pass to the resource factory.
+	 *
+	 * <p>Refer to the documentation of the resource factory class passed to this annotation for more information on
+	 * which arguments are accepted and what they do.</p>
+	 *
+	 * @return the class of the resource factory to get the resource from.
+	 */
 	String[] arguments() default {};
 
 }
