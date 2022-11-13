@@ -76,7 +76,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		if (sharedAnnotation.isPresent()) {
 			Parameter[] parameters = parameterContext.getDeclaringExecutable().getParameters();
 			ExtensionContext.Store scopedStore = scopedStore(extensionContext, sharedAnnotation.get().scope());
-			Object resource = resolveShared(sharedAnnotation.get(), parameters, scopedStore);
+			ExtensionContext.Store rootStore = extensionContext.getRoot().getStore(NAMESPACE);
+			Object resource = resolveShared(sharedAnnotation.get(), parameters, scopedStore, rootStore);
 			return checkType(resource, parameterContext.getParameter().getType());
 		}
 
@@ -128,24 +129,26 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return result;
 	}
 
-	private Object resolveShared(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store store) {
+	private Object resolveShared(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store scopedStore,
+			ExtensionContext.Store rootStore) {
 		// run sequentially, so that resources with the same name are never created twice at the same time
 		SHARED_ANNOTATION_RESOLUTION_LOCK.lock();
 		try {
-			throwIfHasAnnotationWithSameNameButDifferentType(store, sharedAnnotation);
+			throwIfHasAnnotationWithSameNameButDifferentType(scopedStore, sharedAnnotation);
+			throwIfHasAnnotationWithSameNameButDifferentScope(rootStore, sharedAnnotation);
 			throwIfMultipleParametersHaveExactAnnotation(parameters, sharedAnnotation);
 
-			ResourceFactory<?> resourceFactory = store
+			ResourceFactory<?> resourceFactory = scopedStore
 					.getOrComputeIfAbsent( //
 						factoryKey(sharedAnnotation), //
 						__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
 						ResourceFactory.class);
-			Resource<?> resource = store
+			Resource<?> resource = scopedStore
 					.getOrComputeIfAbsent( //
 						resourceKey(sharedAnnotation), //
 						__ -> newResource(sharedAnnotation, resourceFactory), //
 						Resource.class);
-			putNewLockForShared(sharedAnnotation, store);
+			putNewLockForShared(sharedAnnotation, scopedStore);
 
 			Object result;
 			try {
@@ -207,17 +210,16 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return result;
 	}
 
-	private void throwIfHasAnnotationWithSameNameButDifferentType(ExtensionContext.Store store,
+	private void throwIfHasAnnotationWithSameNameButDifferentType(ExtensionContext.Store scopedStore,
 			Shared sharedAnnotation) {
-		// TODO: throw if has annotation with same name but different scope
 		ResourceFactory<?> presentResourceFactory = //
-			store.getOrDefault(factoryKey(sharedAnnotation), ResourceFactory.class, null);
+			scopedStore.getOrDefault(factoryKey(sharedAnnotation), ResourceFactory.class, null);
 
 		if (presentResourceFactory == null) {
-			store.put(keyOfFactoryKey(sharedAnnotation), factoryKey(sharedAnnotation));
+			scopedStore.put(keyOfFactoryKey(sharedAnnotation), factoryKey(sharedAnnotation));
 		} else {
 			String presentResourceFactoryName = //
-				store.getOrDefault(keyOfFactoryKey(sharedAnnotation), String.class, null);
+				scopedStore.getOrDefault(keyOfFactoryKey(sharedAnnotation), String.class, null);
 
 			if (factoryKey(sharedAnnotation).equals(presentResourceFactoryName)
 					&& !sharedAnnotation.factory().equals(presentResourceFactory.getClass())) {
@@ -233,9 +235,29 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		}
 	}
 
+	private void throwIfHasAnnotationWithSameNameButDifferentScope(ExtensionContext.Store rootStore,
+			Shared sharedAnnotation) {
+		Shared presentSharedAnnotation = rootStore
+				.getOrDefault(sharedAnnotationKey(sharedAnnotation), Shared.class, null);
+
+		if (presentSharedAnnotation == null) {
+			rootStore.put(sharedAnnotationKey(sharedAnnotation), sharedAnnotation);
+		} else {
+			if (presentSharedAnnotation.name().equals(sharedAnnotation.name())
+					&& !presentSharedAnnotation.scope().equals(sharedAnnotation.scope())) {
+				// @formatter:off
+				String message =
+						String.format(
+								"Two or more parameters are annotated with @Shared annotations with the name " +
+										"\"%s\" but with different scopes",
+								sharedAnnotation.name());
+				// @formatter:on
+				throw new ParameterResolutionException(message);
+			}
+		}
+	}
+
 	private void throwIfMultipleParametersHaveExactAnnotation(Parameter[] parameters, Shared sharedAnnotation) {
-		// TODO: throw if multiple parameters have @Shared annotations with not just the same
-		//       name and factory type but the same scope too?
 		long parameterCount = //
 			Arrays.stream(parameters).filter(parameter -> hasAnnotation(parameter, sharedAnnotation)).count();
 		if (parameterCount > 1) {
@@ -276,6 +298,10 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private String keyOfFactoryKey(Shared sharedAnnotation) {
 		return sharedAnnotation.name() + " resource factory key";
+	}
+
+	private String sharedAnnotationKey(Shared sharedAnnotation) {
+		return sharedAnnotation.name() + " shared annotation";
 	}
 
 	private String testMethodDescription(ExtensionContext extensionContext) {

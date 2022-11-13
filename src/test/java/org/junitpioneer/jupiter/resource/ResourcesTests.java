@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter.resource;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
@@ -501,6 +502,88 @@ class ResourcesTests {
 		@Override
 		public Resource<String> create(List<String> arguments) {
 			return () -> null;
+		}
+
+	}
+
+	// ---
+
+	@DisplayName("when a parameter is annotated with @Shared, and another parameter is annotated with @Shared with "
+			+ "the same name but a different scope")
+	@Nested
+	class WhenParameterIsAnnotatedWithSharedAndAnotherParamIsAnnotatedWithSharedWithSameNameButDifferentScopeTests {
+
+		@DisplayName("then it throws an exception")
+		@Test
+		void thenItThrowsAnException() {
+			ExecutionResults executionResults = PioneerTestKit
+					.executeTestClass(TwoTestMethodsWithParamsWithSharedSameNameButDifferentScopesTestCases.class);
+			executionResults
+					.allEvents()
+					.debug()
+					.assertThatEvents()
+					.haveExactly( //
+						1, //
+						finished( //
+							throwable( //
+								instanceOf(ParameterResolutionException.class), //
+								message(String
+										.format("Two or more parameters are annotated with @Shared annotations with "
+												+ "the name \"%s\" but with different scopes",
+											"some-name-1")))));
+
+			executionResults = PioneerTestKit
+					.executeTestClasses(asList(TestMethodWithParamsWithSharedSameNameButDifferentScopesTestCases1.class,
+						TestMethodWithParamsWithSharedSameNameButDifferentScopesTestCases2.class));
+			executionResults
+					.allEvents()
+					.debug()
+					.assertThatEvents()
+					.haveExactly( //
+						1, //
+						finished( //
+							throwable( //
+								instanceOf(ParameterResolutionException.class), //
+								message(String
+										.format("Two or more parameters are annotated with @Shared annotations with "
+												+ "the name \"%s\" but with different scopes",
+											"some-name-2")))));
+		}
+
+	}
+
+	static class TwoTestMethodsWithParamsWithSharedSameNameButDifferentScopesTestCases {
+
+		@Test
+		void test_1(
+				@Shared(factory = DummyResourceFactory.class, name = "some-name-1", scope = Shared.Scope.GLOBAL) String first) {
+
+		}
+
+		@Test
+		void test_2(
+				@Shared(factory = DummyResourceFactory.class, name = "some-name-1", scope = Shared.Scope.SOURCE_FILE) String second) {
+
+		}
+
+	}
+
+	static class TestMethodWithParamsWithSharedSameNameButDifferentScopesTestCases1 {
+
+		@Test
+		void test(
+				@Shared(factory = DummyResourceFactory.class, name = "some-name-2", scope = Shared.Scope.GLOBAL) String first) {
+
+		}
+
+	}
+
+	static class TestMethodWithParamsWithSharedSameNameButDifferentScopesTestCases2 {
+
+		@Test
+		void test(
+				@Shared(factory = DummyResourceFactory.class, name = "some-name-2", scope = Shared.Scope.SOURCE_FILE) String second) {
+
 		}
 
 	}
