@@ -352,8 +352,15 @@ include::{in-memory-directory}[tag=in_memory_directory]
 
 This extension is safe to use during parallel test execution.
 
-Tests with `@New` resources will continue to run in parallel.
+Tests, test constructors and lifecycle methods with `@New` resources will continue to run in parallel.
 
-Tests with `@Shared` resources will be forced to run *sequentially*, even if parallel execution has been enabled.
+Tests, test constructors and lifecycle methods with `@Shared` resources will be forced to run *sequentially*, even if parallel execution has been enabled.
 This is because resources may be _mutable_, and if the tests were allowed to run in parallel, then they could mutate the resources in a non-deterministic way.
 Temporary directories are a good example of this, as tests can create new subdirectories and files inside them.
+
+[CAUTION]
+====
+
+Be careful not to save resources in fields from any test method, including `@BeforeAll` and `@BeforeEach` methods, as this extension cannot guarantee that such resources are read or mutated sequentially.
+
+====
