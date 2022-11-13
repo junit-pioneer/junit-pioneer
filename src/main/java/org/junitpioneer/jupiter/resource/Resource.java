@@ -26,6 +26,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>.</p>
  *
  * @param <T> the type of the resource
+ * @see ResourceFactory
+ * @since 1.9.0
  */
 public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
 

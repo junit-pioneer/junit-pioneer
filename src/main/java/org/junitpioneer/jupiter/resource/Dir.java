@@ -29,6 +29,9 @@ import java.lang.annotation.Target;
  *
  * @see New
  * @see TemporaryDirectory
+ * @see Resource
+ * @see ResourceFactory
+ * @since 1.9.0
  */
 @New(TemporaryDirectory.class)
 @Retention(RetentionPolicy.RUNTIME)

@@ -29,6 +29,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>
  * and <a href="https://junit-pioneer.org/docs/temp-directory/">temporary directories</a>.</p>
+ *
+ * @see Resource
+ * @see ResourceFactory
+ * @since 1.9.0
  */
 @ExtendWith(ResourceExtension.class)
 @Retention(RetentionPolicy.RUNTIME)

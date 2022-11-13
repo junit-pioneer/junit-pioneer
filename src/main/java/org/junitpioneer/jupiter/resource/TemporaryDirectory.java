@@ -35,6 +35,11 @@ import java.util.List;
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>
  * and <a href="https://junit-pioneer.org/docs/temp-directory/">temporary directories</a>.</p>
+ *
+ * @see ResourceFactory
+ * @see New
+ * @see Shared
+ * @since 1.9.0
  */
 public final class TemporaryDirectory implements ResourceFactory<Path> {
 
