@@ -36,10 +36,10 @@ import java.util.List;
  * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>
  * and <a href="https://junit-pioneer.org/docs/temp-directory/">temporary directories</a>.</p>
  *
+ * @since 1.9.0
  * @see ResourceFactory
  * @see New
  * @see Shared
- * @since 1.9.0
  */
 public final class TemporaryDirectory implements ResourceFactory<Path> {
 

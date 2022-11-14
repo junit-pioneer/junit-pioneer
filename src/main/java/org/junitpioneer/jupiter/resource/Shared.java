@@ -30,10 +30,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>
  * and <a href="https://junit-pioneer.org/docs/temp-directory/">temporary directories</a>.</p>
  *
+ * @since 1.9.0
  * @see Resource
  * @see ResourceFactory
  * @see Scope
- * @since 1.9.0
  */
 @ExtendWith(ResourceExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
@@ -42,15 +42,11 @@ public @interface Shared {
 
 	/**
 	 * The class of the resource factory to get the resource from.
-	 *
-	 * @return the class of the resource factory to get the resource from.
 	 */
 	Class<? extends ResourceFactory<?>> factory();
 
 	/**
 	 * The unique name of the resource.
-	 *
-	 * @return the unique name of the resource.
 	 */
 	String name();
 
@@ -61,7 +57,6 @@ public @interface Shared {
 	 *
 	 * @see Shared.Scope#SOURCE_FILE
 	 * @see Shared.Scope#GLOBAL
-	 * @return the scope for how long the resource will live.
 	 */
 	Scope scope() default Scope.SOURCE_FILE;
 
@@ -72,25 +67,26 @@ public @interface Shared {
 	 * to be injected into tests and which may need to be started up or torn down. Temporary
 	 * directories are a common example.
 	 *
-	 * <p>This class is intended for <i>users</i>.</p>
-	 *
 	 * <p>For more details and examples, see
 	 * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>.</p>
 	 *
+	 * @since 1.9.0
 	 * @see Resource
 	 * @see ResourceFactory
 	 * @see Shared
-	 * @since 1.9.0
 	 */
 	enum Scope {
+
 		/**
 		 * <p>At this scope, a shared resource will last as long as the entire test suite.</p>
 		 */
 		GLOBAL,
+
 		/**
 		 * <p>At this scope, a shared resource will last as long as the test file it is defined in.</p>
 		 */
 		SOURCE_FILE
+
 	}
 
 }

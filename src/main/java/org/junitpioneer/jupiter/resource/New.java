@@ -30,9 +30,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>
  * and <a href="https://junit-pioneer.org/docs/temp-directory/">temporary directories</a>.</p>
  *
+ * @since 1.9.0
  * @see Resource
  * @see ResourceFactory
- * @since 1.9.0
  */
 @ExtendWith(ResourceExtension.class)
 @Retention(RetentionPolicy.RUNTIME)
@@ -41,18 +41,14 @@ public @interface New {
 
 	/**
 	 * The class of the resource factory to get the resource from.
-	 *
-	 * @return the class of the resource factory to get the resource from.
 	 */
 	Class<? extends ResourceFactory<?>> value();
 
 	/**
 	 * An array of string arguments to pass to the resource factory.
 	 *
-	 * <p>Refer to the documentation of the resource factory class passed to this annotation for more information on
-	 * which arguments are accepted and what they do.</p>
-	 *
-	 * @return the class of the resource factory to get the resource from.
+	 * <p>Refer to the documentation of the resource factory implementation that is passed to this
+	 * annotation for more information on which arguments are accepted and what they do.</p>
 	 */
 	String[] arguments() default {};
 

@@ -26,21 +26,21 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on resources</a>.</p>
  *
  * @param <T> the type of the resource
- * @see ResourceFactory
  * @since 1.9.0
+ * @see ResourceFactory
  */
 public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
 
 	/**
 	 * Returns the contents of the resource.
 	 *
-	 * @return the contents of the resource.
 	 * @throws Exception if getting the resource failed
 	 */
 	T get() throws Exception;
 
 	/**
 	 * Closes the resource.
+	 *
 	 * @throws Exception if closing the resource failed
 	 */
 	@Override
