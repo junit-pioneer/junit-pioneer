@@ -18,6 +18,7 @@ import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -47,11 +48,8 @@ class EnvironmentVariableExtensionTests {
 
 	@AfterAll
 	static void globalTearDown() {
-		assertThat(systemEnvironmentVariable("set envvar A")).isEqualTo("old A");
 		EnvironmentVariableUtils.clear("set envvar A");
-		assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("old B");
 		EnvironmentVariableUtils.clear("set envvar B");
-		assertThat(systemEnvironmentVariable("set envvar C")).isEqualTo("old C");
 		EnvironmentVariableUtils.clear("set envvar C");
 
 		assertThat(systemEnvironmentVariable("clear envvar D")).isNull();
@@ -244,7 +242,42 @@ class EnvironmentVariableExtensionTests {
 		@Nested
 		@SetEnvironmentVariable(key = "set envvar A", value = "newer A")
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-		class ResettingEnvironmentVariableNestedTests {
+		class ResettingEnvironmentVariableAfterEachNestedTests {
+
+			@BeforeEach
+			@ReadsEnvironmentVariable
+			void changeShouldBeVisible() {
+				// we already see "newest A" because BeforeEachCallBack is invoked before @BeforeEach
+				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
+			}
+
+			@Test
+			@SetEnvironmentVariable(key = "set envvar A", value = "newest A")
+			void setForTestMethod() {
+				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
+			}
+
+			@AfterEach
+			@ReadsEnvironmentVariable
+			void resetAfterTestMethodExecution() {
+				// we still see "newest A" because AfterEachCallBack is invoked after @AfterEach
+				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
+			}
+
+		}
+
+		@Nested
+		@SetEnvironmentVariable(key = "set envvar A", value = "newer A")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingEnvironmentVariableAfterAllNestedTests {
+
+			@BeforeAll
+			@ReadsEnvironmentVariable
+			void changeShouldBeVisible() {
+				assertThat(System.getenv("set envvar A")).isEqualTo("newer A");
+			}
 
 			@Test
 			@SetEnvironmentVariable(key = "set envvar A", value = "newest A")
@@ -255,7 +288,7 @@ class EnvironmentVariableExtensionTests {
 			@AfterAll
 			@ReadsEnvironmentVariable
 			void resetAfterTestMethodExecution() {
-				assertThat(System.getenv("set envvar A")).isEqualTo("old A");
+				assertThat(System.getenv("set envvar A")).isEqualTo("newer A");
 			}
 
 		}
@@ -263,7 +296,7 @@ class EnvironmentVariableExtensionTests {
 		@AfterAll
 		@ReadsEnvironmentVariable
 		void resetAfterTestContainerExecution() {
-			assertThat(System.getenv("set envvar A")).isEqualTo("old A");
+			assertThat(System.getenv("set envvar A")).isEqualTo("new A");
 		}
 
 	}

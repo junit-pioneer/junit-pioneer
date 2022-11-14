@@ -108,9 +108,9 @@ jobs:
   # Our full integration job, which will build for a matrix out of our supported
   # Java versions, operating systems, modular or not, and various JUnit versions.
   # This build is executed on all tags and the default branch. Furthermore, we will
-  # also execute this for pull requests with the label `merge-ready`.
+  # also execute this for pull requests with the label `full-build`.
   full-featured:
-    if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
+    if: (contains(github.event.pull_request.labels.*.name, 'full-build') || !github.event.pull_request)
     needs: basic
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 15
@@ -139,7 +139,7 @@ jobs:
   # Furthermore, we also would love to see our build working with the latest Gradle version.
   # As those builds might fail, they are allowed to fail, and should not prevent merges.
   experimental:
-    if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
+    if: (contains(github.event.pull_request.labels.*.name, 'full-build') || !github.event.pull_request)
     needs: full-featured
     runs-on: ${{ matrix.os }}-latest
     continue-on-error: true

@@ -120,6 +120,7 @@ The least we can do is to thank them and list some of their accomplishments here
 #### 2022
 
 * [Filip Hrisafov](https://github.com/filiphr) contributed the [JSON Argument Source](https://junit-pioneer.org/docs/json-argument-source/) support (#101 / #492)
+* [Marcono1234](https://github.com/Marcono1234) contributed the [`@ExpectedToFail` extension](https://junit-pioneer.org/docs/expected-to-fail-tests/) (#551 / #676)
 * [Mathieu Fortin](https://github.com/mathieufortin01) contributed the `suspendForMs` attribute in [retrying tests](https://junit-pioneer.org/docs/retrying-test/) (#407 / #604)
 * [Pankaj Kumar](https://github.com/p1729) contributed towards improving GitHub actions (#587 / #611)
 * [Rob Spoor](https://github.com/robtimus) enabled non-static factory methods for `@CartesianTest.MethodFactory` (#628)
