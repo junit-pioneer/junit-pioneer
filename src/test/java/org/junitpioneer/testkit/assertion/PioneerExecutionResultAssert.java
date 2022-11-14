@@ -287,7 +287,7 @@ class PioneerExecutionResultAssert extends AbstractAssert<PioneerExecutionResult
 	@Override
 	public ListAssert<String> withExceptions() {
 		return assertExceptions(
-				events -> Assertions.assertThat(events.failed().count()).isEqualTo(getAllExceptions(events).count()));
+			events -> Assertions.assertThat(events.failed().count()).isEqualTo(getAllExceptions(events).count()));
 	}
 
 	private ListAssert<String> assertExceptions(Consumer<Events> assertion) {
