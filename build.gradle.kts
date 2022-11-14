@@ -297,7 +297,7 @@ tasks {
 
 			val demoTests by registering(JvmTestSuite::class) {
 				dependencies {
-					implementation(project)
+					implementation(project(project.path))
 					implementation("com.google.jimfs:jimfs:1.2")
 					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 					implementation("org.assertj:assertj-core:3.22.0")
