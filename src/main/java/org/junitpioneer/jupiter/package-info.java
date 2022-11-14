@@ -21,6 +21,7 @@
  *     <li>{@link org.junitpioneer.jupiter.issue issue}</li>
  *     <li>{@link org.junitpioneer.jupiter.json json}</li>
  *     <li>{@link org.junitpioneer.jupiter.params params}</li>
+ *     <li>{@link org.junitpioneer.jupiter.resource resource}</li>
  * </ul>
  *
  */

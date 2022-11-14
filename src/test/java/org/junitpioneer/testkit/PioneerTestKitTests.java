@@ -10,6 +10,7 @@
 
 package org.junitpioneer.testkit;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
@@ -28,6 +29,14 @@ class PioneerTestKitTests {
 		ExecutionResults results = PioneerTestKit.executeTestClass(DummyClass.class);
 
 		assertThat(results).hasNumberOfStartedTests(1);
+	}
+
+	@Test
+	@DisplayName("all tests of all given classes")
+	void executeTestClasses() {
+		ExecutionResults results = PioneerTestKit.executeTestClasses(asList(DummyClass.class, SecondDummyClass.class));
+
+		assertThat(results).hasNumberOfStartedTests(2);
 	}
 
 	@Test
@@ -92,6 +101,15 @@ class PioneerTestKitTests {
 	}
 
 	static class DummyClass {
+
+		@Test
+		void nothing() {
+			// Do nothing
+		}
+
+	}
+
+	static class SecondDummyClass {
 
 		@Test
 		void nothing() {

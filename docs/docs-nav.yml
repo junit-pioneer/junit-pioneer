@@ -26,14 +26,18 @@
         url: /docs/report-entries/
       - title: "Range Sources"
         url: /docs/range-sources/
+      - title: "Resources"
+        url: /docs/resources/
       - title: "Retrying Failing Tests"
         url: /docs/retrying-test/
       - title: "Standard Input and Output"
         url: /docs/standard-input-output/
       - title: "Measuring time with a Stopwatch"
         url: /docs/stopwatch/
-      - title: "Temporary Files and Directories (removed in 1.0)"
+      - title: "Temporary Directories"
         url: /docs/temp-directory/
+      - title: "Temporary Files and Directories (removed in 1.0)"
+        url: /docs/temp-directory-removed/
       - title: "Vintage @Test"
         url: /docs/vintage-test/
 

@@ -1,0 +1,61 @@
+:page-title: Temporary Files and Directories (removed in 1.0)
+:page-description: Extends JUnit Jupiter with `@TempDir`, which create and clean up a temporary directory.
+
+NOTE: JUnit Jupiter 5.4 introduced a https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory[built-in `@TempDir` extension]. This extension was built before then, but its only advantage over the JUnit Jupiter extension is support for custom file systems. We felt this didn't have enough value, so we removed this extension in JUnit Pioneer 1.0.
+
+NOTE: We've tackled this problem again, and *introduced a link:docs/resource-temporary-directory[resource-based extension]*. It allows temporary directories to be created that last longer than a single test method. Please give it a try!
+
+The `TempDirectory` extension can be used to create and clean up a temporary directory for an individual test or all tests in a test class.
+To use it, simply register the extension and add a parameter of type `java.nio.file.Path` to your test or lifecycle method or constructor.
+
+For example, the following test registers the extension for a single test method, creates and writes a file to the temporary directory and checks its content.
+
+[source,java]
+----
+@Test
+@ExtendWith(TempDirectory.class)
+void test(@TempDir Path tempDir) {
+	Path file = tempDir.resolve("test.txt");
+	writeFile(file);
+	assertExpectedFileContent(file);
+}
+----
+
+In addition to the default file system, the extension can be used with any `FileSystem` implementation, e.g. https://github.com/google/jimfs[Jimfs].
+In order to use a custom file system, simply register the extension programmatically and pass a provider of a custom parent directory of type `Path`.
+The following example uses the Jimfs `FileSystem` and passes a custom `tmp` parent directory to the static factory method `TempDirectory::createInCustomDirectory`.
+
+[source,java]
+----
+class MyTests {
+
+	private static FileSystem fileSystem;
+
+	@BeforeAll
+	static void createFileSystem() {
+		fileSystem = Jimfs.newFileSystem();
+	}
+
+	@AfterAll
+	static void closeFileSystem() throws Exception {
+		fileSystem.close();
+	}
+
+	@RegisterExtension
+	Extension tempDirectory = TempDirectory.createInCustomDirectory(() ->
+		Files.createDirectories(fileSystem.getPath("tmp")));
+
+	@Test
+	void test(@TempDir Path tempDir) {
+		Path file = tempDir.resolve("test.txt");
+		writeFile(file);
+		assertExpectedFileContent(file);
+	}
+
+}
+----
+
+== Thread-Safety
+
+This extension's thread-safety is undetermined, we recommend to be cautious when using it during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].
+(We're working on it.)

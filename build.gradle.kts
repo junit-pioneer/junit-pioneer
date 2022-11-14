@@ -12,6 +12,7 @@ plugins {
 	id("org.shipkit.shipkit-github-release") version "1.1.15"
 	id("com.github.ben-manes.versions") version "0.42.0"
 	id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+	id("org.gradlex.extra-java-module-info") version "1.0"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -191,6 +192,15 @@ nexusPublishing {
 	}
 }
 
+extraJavaModuleInfo {
+	failOnMissingModuleInfo.set(false)
+	automaticModule("com.google.guava:failureaccess", "com.google.guava.failureaccess")
+	automaticModule("com.google.guava:listenablefuture", "com.google.guava.listenablefuture")
+	automaticModule("com.google.code.findbugs:jsr305", "com.google.code.findbugs.jsr305")
+	automaticModule("com.google.j2objc:j2objc-annotations", "com.google.j2objc.annotations")
+	automaticModule("com.google.jimfs:jimfs", "com.google.jimfs")
+}
+
 tasks {
 
 	sourceSets {
@@ -288,6 +298,7 @@ tasks {
 			val demoTests by registering(JvmTestSuite::class) {
 				dependencies {
 					implementation(project)
+					implementation("com.google.jimfs:jimfs:1.2")
 					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 					implementation("org.assertj:assertj-core:3.22.0")
 				}

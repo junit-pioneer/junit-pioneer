@@ -29,6 +29,7 @@ module org.junitpioneer {
 	opens org.junitpioneer.jupiter.cartesian to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.issue to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.params to org.junit.platform.commons;
+	opens org.junitpioneer.jupiter.resource to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.json to org.junit.platform.commons, com.fasterxml.jackson.databind;
 
 	provides org.junit.platform.launcher.TestExecutionListener

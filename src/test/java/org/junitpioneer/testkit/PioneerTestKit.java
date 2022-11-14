@@ -22,7 +22,7 @@ public class PioneerTestKit {
 	/**
 	 * Returns the execution results of the given test class.
 	 *
-	 * @param testClass Name of the test class, the results should be returned
+	 * @param testClass The test class instance
 	 * @return The execution results
 	 */
 	public static ExecutionResults executeTestClass(Class<?> testClass) {
@@ -30,9 +30,19 @@ public class PioneerTestKit {
 	}
 
 	/**
+	 * Returns the execution results of the given test classes.
+	 *
+	 * @param testClasses The collection of test class instances
+	 * @return The execution results
+	 */
+	public static ExecutionResults executeTestClasses(Iterable<Class<?>> testClasses) {
+		return new ExecutionResults(testClasses);
+	}
+
+	/**
 	 * Returns the execution results of the given method of a given test class.
 	 *
-	 * @param testClass Name of the test class
+	 * @param testClass The test class instance
 	 * @param testMethodName Name of the test method (of the given class)
 	 * @return The execution results
 	 */
@@ -43,7 +53,7 @@ public class PioneerTestKit {
 	/**
 	 * Returns the execution results of the given method of a given test class.
 	 *
-	 * @param testClass Name of the test class
+	 * @param testClass The test class instance
 	 * @param testMethodName Name of the test method (of the given class)
 	 * @param methodParameterTypes Class type(s) of the parameter(s)
 	 * @return The execution results

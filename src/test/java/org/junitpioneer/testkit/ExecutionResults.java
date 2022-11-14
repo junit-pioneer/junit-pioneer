@@ -11,7 +11,9 @@
 package org.junitpioneer.testkit;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
+import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.testkit.engine.EngineExecutionResults;
 import org.junit.platform.testkit.engine.EngineTestKit;
@@ -29,9 +31,15 @@ public class ExecutionResults {
 	private static final String JUPITER_ENGINE_NAME = "junit-jupiter";
 
 	ExecutionResults(Class<?> testClass) {
-		executionResults = EngineTestKit
-				.engine(JUPITER_ENGINE_NAME)
-				.selectors(DiscoverySelectors.selectClass(testClass))
+		executionResults = getConfiguredJupiterEngine().selectors(DiscoverySelectors.selectClass(testClass)).execute();
+	}
+
+	ExecutionResults(Iterable<Class<?>> testClasses) {
+		executionResults = getConfiguredJupiterEngine()
+				.selectors(StreamSupport
+						.stream(testClasses.spliterator(), false)
+						.map(DiscoverySelectors::selectClass)
+						.toArray(DiscoverySelector[]::new))
 				.execute();
 	}
 

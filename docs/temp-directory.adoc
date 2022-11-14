@@ -1,60 +1,72 @@
-:page-title: Temporary Files and Directories (removed in 1.0)
-:page-description: Extends JUnit Jupiter with `@TempDir`, which create and clean up a temporary directory.
+:page-title: Temporary Directory
+:page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject temporary directories.
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourceExtensionDemo.java
+:resources-doc: ./resources.adoc
 
-NOTE: Since JUnit Jupiter 5.4, there's a https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory[built-in `@TempDir` extension].
-It doesn't support custom file systems, but other than that it's much better than this version, so *we removed the extension in JUnit Pioneer 1.0*.
-We plan to tackle this problem again in the future - see https://github.com/junit-pioneer/junit-pioneer/issues/348[issue #348].
+[NOTE]
+====
+This article describes the specifics of how to inject temporary directories into your tests.
+Most of the extension's features are shared with other resources, though, and are described in link:docs/resources[the article covering resources in general] (e.g. thread-safety and sharing resources), so make sure to read that one as well.
+====
 
-The `TempDirectory` extension can be used to create and clean up a temporary directory for an individual test or all tests in a test class.
-To use it, simply register the extension and add a parameter of type `java.nio.file.Path` to your test or lifecycle method or constructor.
+A temporary directory is a directory on the machine's on-disk filesystem that is created for one or more tests and deleted when it is no longer needed.
 
-For example, the following test registers the extension for a single test method, creates and writes a file to the temporary directory and checks its content.
+Unlike JUnit Jupiter's `@TempDir` annotation, temporary directories created with this extension can be configured to be deleted when the current test class is finished, or when all tests have finished.
 
-[source,java]
+Also, this extension can configure the _prefix_ of a `@New` temporary directory's name, which might be useful for test reporting or debugging reasons.
+
+== Creating a New Temporary Directory
+
+To create a new temporary directory for a given test:
+
+[source,java,indent=0]
 ----
-@Test
-@ExtendWith(TempDirectory.class)
-void test(@TempDir Path tempDir) {
-	Path file = tempDir.resolve("test.txt");
-	writeFile(file);
-	assertExpectedFileContent(file);
-}
+include::{demo}[tag=create_new_dir_demo]
 ----
 
-In addition to the default file system, the extension can be used with any `FileSystem` implementation, e.g. https://github.com/google/jimfs[Jimfs].
-In order to use a custom file system, simply register the extension programmatically and pass a provider of a custom parent directory of type `Path`.
-The following example uses the Jimfs `FileSystem` and passes a custom `tmp` parent directory to the static factory method `TempDirectory::createInCustomDirectory`.
+`@Dir` is the shorthand annotation for `@New`, meaning it achieves the same result more succinctly than the long form:
 
-[source,java]
+[source,java,indent=0]
 ----
-class MyTests {
-
-	private static FileSystem fileSystem;
-
-	@BeforeAll
-	static void createFileSystem() {
-		fileSystem = Jimfs.newFileSystem();
-	}
-
-	@AfterAll
-	static void closeFileSystem() throws Exception {
-		fileSystem.close();
-	}
-
-	@RegisterExtension
-	Extension tempDirectory = TempDirectory.createInCustomDirectory(() ->
-		Files.createDirectories(fileSystem.getPath("tmp")));
-
-	@Test
-	void test(@TempDir Path tempDir) {
-		Path file = tempDir.resolve("test.txt");
-		writeFile(file);
-		assertExpectedFileContent(file);
-	}
-
-}
+include::{demo}[tag=create_new_resources_demo]
 ----
+
+== Creating with Arguments
+
+To specify the _prefix_ of a new temporary directory's name, pass the prefix as an argument to the `@New` annotation:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_new_resource_with_arg_demo]
+----
+
+[NOTE]
+====
+The `@Dir` annotation does not yet support arguments.
+Follow https://github.com/junit-pioneer/junit-pioneer/issues/648[this issue] for updates on this feature.
+====
+
+== Sharing a Temporary Directory
+
+To create a temporary directory that is shared by multiple tests:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=create_shared_resource_demo]
+----
+
+See the link:resources.adoc#sharing_a_resource[ Resources page] for more information.
+
+[NOTE]
+====
+There's no shorthand form of `@Shared`.
+Follow https://github.com/junit-pioneer/junit-pioneer/issues/648[this issue] for updates on this feature.
+====
 
 == Thread-Safety
 
-This extension's thread-safety is undetermined, we recommend to be cautious when using it during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].
+This extension is safe to use during parallel test execution.
+
+Tests with `@New` temporary directories will continue to run in parallel.
+Tests with `@Shared` temporary directories will be forced to run *sequentially*, even if parallel execution has been enabled.
