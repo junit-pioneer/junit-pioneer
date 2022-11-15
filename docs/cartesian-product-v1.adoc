@@ -2,10 +2,13 @@
 :page-description: The JUnit 5 (Jupiter) extension `@CartesianTest` adds a variant of parameterized tests that executes a test for each possible combination of input arguments
 :page-unlist: true
 
-NOTE: The CartesianTest extension has undergone significant changes in 1.6.0.
+[NOTE]
+====
+The CartesianTest extension has undergone significant changes in 1.6.0.
 This included moving it into a new package.
-This here is the old variant, which is deprecated and will be removed in the 2.0 release (tentatively scheduled for 2022).
+This here is the old variant, which was deprecated in 1.6.0 and removed in 2.0.
 link:/docs/cartesian-product[For the new version, see here.]
+====
 
 From Wikipedia:
 

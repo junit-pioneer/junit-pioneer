@@ -5,8 +5,11 @@
 
 The standard IO extension adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out` or `System.err`).
 
-WARNING: Depending on the configuration, the extension redirects the standard input and/or output, in which case nothing gets forwarded to the original `System.in` and/or `System.out` / `System.err`.
+[WARNING]
+====
+Depending on the configuration, the extension redirects the standard input and/or output, in which case nothing gets forwarded to the original `System.in` and/or `System.out` / `System.err`.
 This becomes particularly important when running tests in parallel, where other tests may interfere with tests annotated with `@StdIo`.
+====
 
 == Basic use
 

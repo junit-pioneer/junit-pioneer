@@ -8,10 +8,13 @@ Both annotations work on the test method and class level, are repeatable, combin
 After the annotated method has been executed, the variables mentioned in the annotation will be restored to their original value or the value of the higher-level container, or will be cleared if they didn't have one before.
 Other environment variables that are changed during the test, are *not* restored.
 
-WARNING: Java considers environment variables to be immutable, so this extension uses reflection to change them.
+[WARNING]J
+====
+Java considers environment variables to be immutable, so this extension uses reflection to change them.
 This requires that the `SecurityManager` allows modifications and can potentially break on different operating systems and Java versions.
 Be aware that this is a fragile solution and consider finding a better one for your specific situation.
 For more details, see <<Warnings for Reflective Access>>.
+====
 
 For example, clearing a environment variable for a test execution can be done as follows:
 
@@ -41,9 +44,12 @@ Note that class-level configurations are overwritten by method-level configurati
 include::{demo}[tag=environment_using_at_class_level]
 ----
 
-NOTE: Method-level configurations are visible in both `@BeforeEach` setup methods and `@AfterEach` teardown methods (see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview[user code and extension code execution order]).
+[NOTE]
+====
+Method-level configurations are visible in both `@BeforeEach` setup methods and `@AfterEach` teardown methods (see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview[user code and extension code execution order]).
 
-NOTE: Since v1.7.0, a class-level configuration means that the specified environment variables are cleared/set before and reset after each individual test in the annotated class.
+Since v1.7.0, a class-level configuration means that the specified environment variables are cleared/set before and reset after each individual test in the annotated class.
+====
 
 == Warnings for Reflective Access
 

@@ -80,7 +80,6 @@ So in this case, a single temporary directory will be shared across all tests, a
 [NOTE]
 ====
 When sharing resources, you may want to force your tests to run in a certain order, so that e.g. files written to a temporary directory in one test can be read from another test.
-
 Use JUnit Jupiter's https://junit.org/junit5/docs/current/user-guide/#writing-tests-test-execution-order[Test Execution Order] feature to do this.
 ====
 
@@ -361,4 +360,5 @@ Temporary directories are a good example of this, as tests can create new subdir
 [CAUTION]
 ====
 Be careful not to save resources in fields from any test method, including `@BeforeAll` and `@BeforeEach` methods, as this extension cannot guarantee that such resources are read or mutated sequentially.
+Instead, use `@Shared` to reuse resources in multiple tests.
 ====

@@ -37,9 +37,12 @@ Note that class-level configurations are overwritten by method-level configurati
 include::{demo}[tag=systemproperty_using_at_class_level]
 ----
 
-NOTE: Method-level configurations are visible in both `@BeforeEach` setup methods and `@AfterEach` teardown methods (see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview[user code and extension code execution order]).
+[NOTE]
+====
+Method-level configurations are visible in both `@BeforeEach` setup methods and `@AfterEach` teardown methods (see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview[user code and extension code execution order]).
 
-NOTE: Since v1.7.0, a class-level configuration means that the specified system properties are cleared/set before and reset after each individual test in the annotated class.
+Since v1.7.0, a class-level configuration means that the specified system properties are cleared/set before and reset after each individual test in the annotated class.
+====
 
 Sometimes, you might also need to set a system property to a value that is not a constant expression, which is required for annotation values.
 In this case, you can still leverage the restore mechanism:
