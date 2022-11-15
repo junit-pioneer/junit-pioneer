@@ -5,6 +5,7 @@
 
 The main reason developers write tests is to ensure the functionality of a requirement or to avoid technical problems.
 The `@Issue` annotation allows marking tests with a `String`, referencing a related issue (like a requirement, or a bugfix) of an issue-tracker (like Jira or Redmine).
+Information about the tests, e.g. whether ot passed or failed, are then associated with the issue number for later evaluation.
 
 It's a JUnit Jupiter extension for showing that tests exist to cover a specific issue.
 

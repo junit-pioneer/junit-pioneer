@@ -431,6 +431,10 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private ExtensionContext scopedContext(ExtensionContext extensionContext, Shared.Scope scope) {
 		if (scope == Shared.Scope.SOURCE_FILE) {
+			// search for the test scope that's associated with the same source file,
+			// which we assume is the one that has the root context as parent
+			// (contexts in between the test method context and the source class context
+			//  would belong to nested test classes)
 			ExtensionContext currentContext = extensionContext;
 			Optional<ExtensionContext> parentContext = extensionContext.getParent();
 

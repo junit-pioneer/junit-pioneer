@@ -4,7 +4,6 @@
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/ReportEntryExtensionDemo.java
 
 You can use `@ReportEntry` as a simple way to declaratively add metadata to test methods.
-
 From the https://https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection[JUnit 5 documentation]:
 
 > In JUnit Jupiter you should use `TestReporter` where you used to print information to `stdout` or `stderr` in JUnit 4.

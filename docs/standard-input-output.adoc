@@ -4,6 +4,7 @@
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/StdInOutExtensionDemo.java
 
 The standard IO extension adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out` or `System.err`).
+It redirects the original input/output streams to make predefined lines readable from `System.in` and to inject arguments that capture what was written to `System.out` or `System.err` for assertions.
 
 [WARNING]
 ====
