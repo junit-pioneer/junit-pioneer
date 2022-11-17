@@ -1,20 +1,23 @@
-:page-title: Temporary Directory
-:page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject temporary directories.
+:page-title: Injecting Temporary Directories
+:page-description: The JUnit 5 (Jupiter) extension `@Dir` allows to create, share, and inject temporary directories as arguments
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourceExtensionDemo.java
 :resources-doc: ./resources.adoc
 
+A temporary directory is a directory on the machine's on-disk filesystem that is created for one or more tests and deleted when it is no longer needed.
+Temporary directories are created via annotations on parameters and configure whether a directory is created anew for a test or shared with others.
+Either way, they're deleted once they're no longer needed.
+You can also configure the _prefix_ of a temporary directory's name, which might be useful for test reporting or debugging reasons.
+
 [NOTE]
 ====
 This article describes the specifics of how to inject temporary directories into your tests.
-Most of the extension's features are shared with other resources, though, and are described in link:docs/resources[the article covering resources in general] (e.g. thread-safety and sharing resources), so make sure to read that one as well.
+Most of the extension's features are shared with other resources, though, and are described in link:/docs/resources[the article covering resources in general].
+This includes important aspects like thread-safety, sharing resources, and cleaning up behind them (in this case, deleting the temporary directory), so make sure to read that one as well.
+
+This temporary directory extension was introduced in JUnit Pioneer 1.9.0.
+JUnit Pioneer versions before 1.0 contain link:/docs/resource-temporary-directory[a then-removed temp dir extension], which was superseded by the very similar but more powerful https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory[official `@TempDir` extension] shipped with JUnit Jupiter 5.4.
 ====
-
-A temporary directory is a directory on the machine's on-disk filesystem that is created for one or more tests and deleted when it is no longer needed.
-
-Unlike JUnit Jupiter's `@TempDir` annotation, temporary directories created with this extension can be configured to be deleted when the current test class is finished, or when all tests have finished.
-
-Also, this extension can configure the _prefix_ of a `@New` temporary directory's name, which might be useful for test reporting or debugging reasons.
 
 == Creating a New Temporary Directory
 

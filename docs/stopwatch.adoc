@@ -1,9 +1,9 @@
-:page-title: Measuring time with a Stopwatch
-:page-description: Extends JUnit Jupiter with `@Stopwatch` to measure elapsed time of a test method
+:page-title: Measuring Test Run Time
+:page-description: The JUnit 5 (Jupiter) extension `@Stopwatch` measures elapsed time of a test method
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/StopwatchExtensionDemo.java
 
-Annotating a test with `@Stopwatch` will measure the time it takes to execute and report the result to the https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/TestReporter.html[`TestReporter`].
+Annotating a test with `@Stopwatch` will measure the time the test takes to execute and will report the result to the https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/TestReporter.html[`TestReporter`].
 How that information is displayed depends on the tool used to run the tests and how it processes test report entries.
 
 == Usage

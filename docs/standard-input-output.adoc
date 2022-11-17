@@ -1,12 +1,16 @@
 :page-title: Standard Input and Output
-:page-description: Extends JUnit Jupiter with `@StdIo`, which simulates standard input or catches standard output.
+:page-description: The JUnit 5 (Jupiter) extension `@StdIo` simulates standard input to `System.in` and captures standard output to `System.out` or `System.err` for assertions
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/StdInOutExtensionDemo.java
 
 The standard IO extension adds a simple way to test classes that read from the standard input (`System.in`) or write to the standard output (`System.out` or `System.err`).
+It redirects the original input/output streams to make predefined lines readable from `System.in` and to inject arguments that capture what was written to `System.out` or `System.err` for assertions.
 
-WARNING: Depending on the configuration, the extension redirects the standard input and/or output, in which case nothing gets forwarded to the original `System.in` and/or `System.out` / `System.err`.
+[WARNING]
+====
+Depending on the configuration, the extension redirects the standard input and/or output, in which case nothing gets forwarded to the original `System.in` and/or `System.out` / `System.err`.
 This becomes particularly important when running tests in parallel, where other tests may interfere with tests annotated with `@StdIo`.
+====
 
 == Basic use
 

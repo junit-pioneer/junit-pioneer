@@ -1,5 +1,5 @@
-:page-title: Temporarily Disable a Test
-:page-description: Extends JUnit Jupiter with `@DisabledUntil` to temporarily disable a test.
+:page-title: Disable a Test Temporarily
+:page-description: The JUnit 5 (Jupiter) extension `@DisabledUntil` temporarily disables a test until a certain date
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/DisableUntilExtensionDemo.java
 
@@ -13,9 +13,12 @@ The only problem with this approach is remembering to activate the test again on
 The `@DisabledUntil` annotation may be used to disable a test only for a certain period of time.
 The test will be automatically executed again once the date supplied by the `date` parameter is reached.
 
-WARNING: Applying `@DisabledUntil` can make the test suite non-reproducible.
+[WARNING]
+====
+Applying `@DisabledUntil` can make the test suite non-reproducible.
 If a failing test is disabled during a build that then passes, rerunning that build after the "until" date would fail.
 A report entry is issued for every test that is disabled until a certain date.
+====
 
 == Usage
 

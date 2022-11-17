@@ -1,9 +1,9 @@
 :page-title: Disable Tests if Others Fail
-:page-description: Disables all tests in a container once the first test failed
+:page-description:  The JUnit 5 (Jupiter) extension @DisableIfTestFails disables all tests in a class once the first test failed
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/DisableIfTestFailsExtensionDemo.java
 
-There are situations where when one test in a class fails, the remaining tests in the class don't need to be executed because their results offer little additional insight.
+There are situations where, when one test in a class fails, the remaining tests in the class don't need to be executed because their results offer little additional insight.
 In those situations, disabling the remaining tests can be preferable in order to avoid larger build logs and/or reduce the test suite's overall run time.
 By applying `@DisableIfTestFails` to the test class, all tests after the first failed one are disabled.
 
@@ -65,4 +65,4 @@ That means if...
 
 == Thread-Safety
 
-This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution], but no guarantee can be given how soon after a failed test, other tests will be disabled, i.e. how soon other threads observe that "their" tests are supposed to be disabled.
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution], but no guarantee can be given how soon after a failed test other tests will be disabled, i.e. how soon other threads observe that "their" tests are supposed to be disabled.

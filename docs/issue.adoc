@@ -1,10 +1,11 @@
 :page-title: Issue Information
-:page-description: Extends JUnit Jupiter with `@Issue` to publish issue information.
+:page-description: The JUnit 5 (Jupiter) extension `@Issue` associates test information (e.g. passed or failed) an issue number
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/IssueExtensionDemo.java
 
 The main reason developers write tests is to ensure the functionality of a requirement or to avoid technical problems.
 The `@Issue` annotation allows marking tests with a `String`, referencing a related issue (like a requirement, or a bugfix) of an issue-tracker (like Jira or Redmine).
+Information about the tests, e.g. whether ot passed or failed, are then associated with the issue number for later evaluation.
 
 It's a JUnit Jupiter extension for showing that tests exist to cover a specific issue.
 
@@ -47,8 +48,11 @@ The following snippet shows a simple implementation of the interface that just p
 include::{demo}[tag=issue_processor_sample]
 ----
 
-NOTE: The implementing class must be registered to the Java ecosystem as a service.
-For further information about registering a service, please see the Java https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html[`ServiceLoader` documentation].
+[NOTE]
+====
+The implementing class must be registered as a service.
+For further information about that, see https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html[the `ServiceLoader` documentation].
+====
 
 == Thread-Safety
 

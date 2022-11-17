@@ -138,7 +138,7 @@ class ResourcesParallelismTests {
 	}
 
 	private static final AtomicInteger COUNTER = new AtomicInteger(0);
-	private static final int TIMEOUT_MILLIS = 100;
+	private static final int TIMEOUT_MILLIS = 20;
 	private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
 	private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
 	private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";

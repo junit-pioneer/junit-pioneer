@@ -1,5 +1,5 @@
-:page-title: Cartesian product of all test parameters
-:page-description: Extends JUnit Jupiter with `@CartesianTest`, a variant of parameterized tests that tests all combinations of its input
+:page-title: Cartesian Product of Parameters
+:page-description: The JUnit 5 (Jupiter) extension `@CartesianTest` adds a variant of parameterized tests that executes a test for each possible combination of input arguments
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/cartesian/CartesianTestExtensionDemo.java
 :people: {xp-demo-dir}/org/junitpioneer/jupiter/cartesian/PeopleProviderSources.java
@@ -23,9 +23,12 @@ Normally, this results in a lot of written test data parameters.
 For a more comfortable way you may use the `@CartesianTest` extension.
 The extension takes the test data parameter values and runs the test for every possible combination of them.
 
-NOTE: The CartesianTest extension has undergone significant changes in 1.6.0.
-This included moving it into a new package.
-link:/docs/cartesian-product-v1[The old variant] is deprecated and will be removed in the 2.0 release (tentatively scheduled for 2022).
+[NOTE]
+====
+The CartesianTest extension has undergone significant changes in 1.6.0.
+This here is the new variant, which, among other differences, lives in another package and does much of its work by annotating parameters directly.
+link:/docs/cartesian-product-v1[The old variant] was deprecated in 1.6.0 and removed in 2.0.
+====
 
 == Basic use
 
@@ -87,6 +90,7 @@ To demonstrate with a table:
 
 |===
 | # of test | value of `number` | value of `character`
+
 | 1st test  | 1                 | "A"
 | 2nd test  | 1                 | "B"
 | 3rd test  | 2                 | "A"
@@ -154,6 +158,7 @@ To demonstrate with a table:
 
 |===
 | # of test | value of `myEnum` | value of `anotherEnum`
+
 | 1st test  | ONE               | BETA
 | 2nd test  | ONE               | GAMMA
 | 3rd test  | TWO               | BETA
@@ -164,7 +169,7 @@ To demonstrate with a table:
 
 === Range source annotations
 
-You can annotate your test parameters with link:docs/range-sources[range source annotations].
+You can annotate your test parameters with link:/docs/range-sources[range source annotations].
 For _this purpose only_, range sources can be used on parameters.
 
 [source,java,indent=0]
@@ -178,8 +183,10 @@ The second parameter can have any of the three values `0L`, `1L` or `2L`.
 `@CartesianTest` tests for all input combinations, that's `2 × 3`, so six tests in total.
 
 To demonstrate with a table:
+
 |===
 | # of test | value of `s` | value of `l`
+
 | 1st test  | 1            | 0L
 | 2nd test  | 1            | 1L
 | 3rd test  | 1            | 2L
@@ -188,7 +195,7 @@ To demonstrate with a table:
 | 6th test  | 2            | 2L
 |===
 
-For more information, please see the link:docs/range-sources[separate documentation about range sources].
+For more information, please see the link:/docs/range-sources[separate documentation about range sources].
 
 == Defining arguments with factories
 
@@ -224,6 +231,7 @@ To demonstrate with a table:
 
 |===
 | # of test  | value of `string` | value of `clazz` | value of `unit`
+
 | 1st test   | "Alpha"           | Runnable.class   | TimeUnit.DAYS
 | 2nd test   | "Alpha"           | Runnable.class   | TimeUnit.HOURS
 | 3rd test   | "Alpha"           | Cloneable.class  | TimeUnit.DAYS

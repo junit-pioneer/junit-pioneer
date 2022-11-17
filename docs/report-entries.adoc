@@ -1,10 +1,9 @@
 :page-title: Publishing Report Entries
-:page-description: Extends JUnit Jupiter with `@ReportEntry`, which publishes report entries using `TestReporter`.
+:page-description: The JUnit 5 (Jupiter) extension `@ReportEntry` declaratively publishes report entries via the `TestReporter`
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/ReportEntryExtensionDemo.java
 
 You can use `@ReportEntry` as a simple way to declaratively add metadata to test methods.
-
 From the https://https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection[JUnit 5 documentation]:
 
 > In JUnit Jupiter you should use `TestReporter` where you used to print information to `stdout` or `stderr` in JUnit 4.

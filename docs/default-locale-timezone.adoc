@@ -1,11 +1,11 @@
 :page-title: Default Locale and TimeZone
-:page-description: Extends JUnit Jupiter with `@DefaultLocale`, `@DefaultTimeZone`, which change the values returned from Locale.getDefault() and TimeZone.getDefault()
+:page-description: The JUnit 5 (Jupiter) extensions `@DefaultLocale` and `@DefaultTimeZone` change the runtime's default locale and time zone as returned from `Locale.getDefault()` and `TimeZone.getDefault()` for the duration of a test
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/DefaultLocaleTimezoneExtensionDemo.java
 
-The `@DefaultLocale` and `@DefaultTimeZone` annotations can be used to change the values returned from `Locale.getDefault()` and `TimeZone.getDefault()`.
+The `@DefaultLocale` and `@DefaultTimeZone` annotations can be used to change the values returned from `Locale.getDefault()` and `TimeZone.getDefault()`, respectively, which are often used implicitly when no specific locale or time zone is chosen.
 Both annotations work on the test class level and on the test method level, and are inherited from higher-level containers.
-After the annotated element has been executed the initial default value is restored.
+After the annotated element has been executed, the initial default value is restored.
 
 == `@DefaultLocale`
 

@@ -1,23 +1,22 @@
-:page-title: Creating and Sharing Resourced
-:page-description: Extends JUnit Jupiter with a mechanism to create, share, and inject resources like temporary directories or a port.
+:page-title: Injecting Resources
+:page-description: A JUnit 5 (Jupiter) extension mechanism to create, share, and inject resources like temporary directories or a port
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/ResourceExtensionDemo.java
 :in-memory-directory: {xp-demo-dir}/org/junitpioneer/jupiter/resource/InMemoryDirectory.java
 
 Some tests need "resources", which need to be cleaned up when finished, and sometimes, many tests need to access these resources.
 Furthermore, you may be running your JUnit Jupiter tests in parallel, which makes sharing these resources flaky.
-
 For example, you might want to share a temporary directory.
 This can be a problem if the directory isn't deleted after your tests, or your tests try to read and write files at the same time.
 
-This extension separates parsing annotations, injecting new or shared resources, and registering them for getting cleaned up (which is needed for all kinds of resources) from actually creating and closing them (which is specific to each kind of resource).
+This extension separates parsing annotations, injecting new or shared resources, and registering them for getting cleaned up (which is needed for many kinds of resources) from actually creating and closing them (which is specific to each kind of resource).
 
 [NOTE]
 ====
 This article describes the general mechanisms shared by different resource extensions but not their specifics.
 Check the individual documentations for that:
 
-* link:docs/temp-directory[Temporary directory]
+* link:/docs/temp-directory[Temporary directory]
 ====
 
 The first part of this article describes how to use a resource with this extension.
@@ -40,7 +39,7 @@ To create a new resource for a given test:
 include::{demo}[tag=create_new_resources_demo]
 ----
 
-(`TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].)
+(`TemporaryDirectory` is a built-in resource for creating link:/docs/temp-directory[temporary directories].)
 
 This will create a brand-new resource for each test, and each resource will be "closed" at the end of its associated test.
 
@@ -69,7 +68,7 @@ To create a resource that is shared by multiple tests:
 include::{demo}[tag=create_shared_resource_demo]
 ----
 
-(`TemporaryDirectory` is a built-in resource for creating link:docs/temp-directory[temporary directories].)
+(`TemporaryDirectory` is a built-in resource for creating link:/docs/temp-directory[temporary directories].)
 
 This will create a single resource instance that will be injected into all the tests.
 It will be "closed" when all the tests are finished.
@@ -80,7 +79,6 @@ So in this case, a single temporary directory will be shared across all tests, a
 [NOTE]
 ====
 When sharing resources, you may want to force your tests to run in a certain order, so that e.g. files written to a temporary directory in one test can be read from another test.
-
 Use JUnit Jupiter's https://junit.org/junit5/docs/current/user-guide/#writing-tests-test-execution-order[Test Execution Order] feature to do this.
 ====
 
@@ -115,10 +113,8 @@ include::{demo}[tag=create_global_shared_resource_demo_second]
 
 [NOTE]
 ====
-
 You are not limited to singletons.
 You can create as many global shared resources as you want, as long as they have different names.
-
 ====
 
 === Sharing Resources with Arguments
@@ -126,11 +122,19 @@ You can create as many global shared resources as you want, as long as they have
 [NOTE]
 ====
 We do not support creating shared resources with arguments.
-
 This is because if a test refers to a shared resource with the name "Foo" without arguments, then later another test refers to it with one argument, there is no reasonable way to fulfill that request.
-
 Furthermore, even if this was supported, the behavior would change if the first and second tests ever ran in opposite order, which is very likely when tests are configured to run in parallel.
 ====
+
+== Cleaning Up Resources
+
+Resources will be cleaned up, meaning `close` will be called on them and they will be made eligible for garbage collection, when they are no longer needed:
+
+* for a `@New` parameter, this happens immediately after the test
+* for a `@Shared` parameter with scope `SOURCE_FILE`, this happens when all tests in that source file were executed
+* for a `@Shared` parameter with scope `GLOBAL`, this happens when the entire test suite was executed
+
+Resources will be cached in-memory until then.
 
 == Integrating Resources
 
@@ -159,12 +163,9 @@ You have full control over what these arguments mean and how they are used and s
 
 === Closing Resources and Factories
 
-You can opt-in to cleaning resources up by implementing `close` methods on both of these types.
-
-* For a `@New` parameter, `Resource::close` will be called and the resource will be made eligible for garbage collection immediately after the test.
-* For a `@Shared` parameter, `Resource::close` will be called when all tests are finished (regardless of the resource's scope).
-  The resource will be cached in-memory until then.
-* `ResourceFactory::close` will be called when all tests are finished.
+You can opt-in to cleaning resources and their factories up by implementing `close` methods on both of these types.
+The method `Resource::close` will be called as described above in <<Cleaning Up Resources>>.
+`ResourceFactory::close` will be called when all tests are finished.
 
 Overriding these `close()` methods is optional - they will do nothing by default.
 
@@ -361,4 +362,5 @@ Temporary directories are a good example of this, as tests can create new subdir
 [CAUTION]
 ====
 Be careful not to save resources in fields from any test method, including `@BeforeAll` and `@BeforeEach` methods, as this extension cannot guarantee that such resources are read or mutated sequentially.
+Instead, use `@Shared` to reuse resources in multiple tests.
 ====

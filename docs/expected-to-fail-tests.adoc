@@ -1,5 +1,5 @@
-:page-title: Expected to Fail Tests
-:page-description: Extends JUnit Jupiter with `@ExpectedToFail`, which marks a test method as temporarily 'expected to fail'
+:page-title: Expected-to-Fail Tests
+:page-description: The JUnit 5 (Jupiter) extension `@ExpectedToFail` marks a test method as 'expected to fail', which marks a failing test as aborted and a passing test as failed
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/ExpectedToFailExtensionDemo.java
 
@@ -19,8 +19,11 @@ The annotation can only be used on methods and as meta-annotation on other annot
 Similar to `@Disabled`, it has to be used in addition to a "testable" annotation, such as `@Test`.
 Otherwise the annotation has no effect.
 
-IMPORTANT: This annotation is *not* intended as a way to mark test methods which intentionally cause exceptions.
+[IMPORTANT]
+====
+This annotation is _not_ intended as a way to mark test methods which intentionally cause exceptions.
 Such test methods should use https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html#assertThrows(java.lang.Class,org.junit.jupiter.api.function.Executable)[JUnit's `assertThrows`] or similar means to explicitly test for a specific exception class being thrown by a specific action.
+====
 
 == Basic Use
 

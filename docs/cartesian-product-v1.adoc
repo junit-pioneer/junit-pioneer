@@ -1,11 +1,14 @@
-:page-title: Old Cartesian product of all test parameters (deprecated in 1.6.0)
-:page-description: Extends JUnit Jupiter with `@CartesianProductTest`, a variant of parameterized tests that tests all combinations of its input
+:page-title: Cartesian Product of Parameters [removed in 2.0]
+:page-description: The JUnit 5 (Jupiter) extension `@CartesianProductTest` adds a variant of parameterized tests that executes a test for each possible combination of input arguments
 :page-unlist: true
 
-NOTE: The CartesianTest extension has undergone significant changes in 1.6.0.
-This included moving it into a new package.
-This here is the old variant, which is deprecated and will be removed in the 2.0 release (tentatively scheduled for 2022).
+[NOTE]
+====
+The CartesianProductTest extension has undergone significant changes in 1.6.0.
+This included renaming it to `@CartesianTest` and moving it into a new package.
+This here is the old variant, which was deprecated in 1.6.0 and removed in 2.0.
 link:/docs/cartesian-product[For the new version, see here.]
+====
 
 From Wikipedia:
 
@@ -78,6 +81,7 @@ To demonstrate with a table:
 
 |===
 | # of test | value of `a`   | value of `b`   | value of `c`
+
 | 1st test  | "0"            | "0"            | "0"
 | 2nd test  | "0"            | "0"            | "1"
 | 3rd test  | "0"            | "1"            | "0"
@@ -118,6 +122,7 @@ To demonstrate with a table:
 
 |===
 | # of test | value of `number` | value of `character`
+
 | 1st test  | 1                 | "A"
 | 2nd test  | 1                 | "B"
 | 3rd test  | 2                 | "A"
@@ -237,6 +242,7 @@ To demonstrate with a table:
 
 |===
 | # of test | value of `myEnum` | value of `anotherEnum`
+
 | 1st test  | ONE               | BETA
 | 2nd test  | ONE               | GAMMA
 | 3rd test  | TWO               | BETA
@@ -263,7 +269,7 @@ void testEnumValues(int i, MyEnum myEnum) {
 
 === Range Source annotations
 
-Alternatively, you can annotate your test method with link:docs/range-sources[range source annotations].
+Alternatively, you can annotate your test method with link:/docs/range-sources[range source annotations].
 For _this purpose only_, range sources are repeatable.
 When you annotate your `@CartesianProductTest` with a range source, you specify the inputs to a single test parameter.
 This is _not_ like `@ParameterizedTest` where you have to define all inputs in a single `@ArgumentsSource`.
@@ -287,8 +293,10 @@ The second parameter can have any of the three values `0L`, `1L` or `2L`.
 `@CartesianProductTest` tests for all input combinations, that's `2 × 3`, so six tests in total.
 
 To demonstrate with a table:
+
 |===
 | # of test | value of `s` | value of `l`
+
 | 1st test  | 1            | 0L
 | 2nd test  | 1            | 1L
 | 3rd test  | 1            | 2L
@@ -297,7 +305,7 @@ To demonstrate with a table:
 | 6th test  | 2            | 2L
 |===
 
-For more information, please see the link:docs/range-sources[separate documentation about range sources].
+For more information, please see the link:/docs/range-sources[separate documentation about range sources].
 You can combine range sources with `@CartesianValueSource`, it works as you'd expect:
 
 [source,java]
@@ -347,6 +355,7 @@ To demonstrate with a table:
 
 |===
 | # of test  | value of `string` | value of `clazz` | value of `unit`
+
 | 1st test   | "Alpha"           | Runnable.class   | TimeUnit.DAYS
 | 2nd test   | "Alpha"           | Runnable.class   | TimeUnit.HOURS
 | 3rd test   | "Alpha"           | Cloneable.class  | TimeUnit.DAYS

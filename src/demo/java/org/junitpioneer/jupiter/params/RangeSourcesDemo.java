@@ -35,15 +35,7 @@ public class RangeSourcesDemo {
 	}
 	// end::rangesources_double_with_step[]
 
-	@ParameterizedTest
-	@LongRangeSource(from = 0L, to = 0L, closed = true)
-	void legalRrange(long arg) {
-		// But this is fine
-		assertThat(arg).isEqualTo(0L);
-	}
-	// end::rangesources_ranges[]
-
-	class TheseTestsWillFailIntentionally {
+	class SomeOfTheseTestsWillFailIntentionally {
 
 		// tag::rangesources_ranges[]
 		@ParameterizedTest
@@ -52,6 +44,14 @@ public class RangeSourcesDemo {
 			// this will fail with an IllegalArgumentException
 			// since the range will be empty
 		}
+
+		@ParameterizedTest
+		@LongRangeSource(from = 0L, to = 0L, closed = true)
+		void legalRange(long arg) {
+			// But this is fine
+			assertThat(arg).isEqualTo(0L);
+		}
+		// end::rangesources_ranges[]
 
 	}
 

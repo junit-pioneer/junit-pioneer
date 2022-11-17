@@ -1,5 +1,5 @@
 :page-title: Retrying Failing Tests
-:page-description: Extends JUnit Jupiter with `@RetryingTest`, which retries a failing test a certain number of times; only marking it failed if none of them pass
+:page-description: The JUnit 5 (Jupiter) extension `@RetryingTest` retries a failing test a certain number of times; only marking the test failed if no execution passes
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/RetryingTestExtensionDemo.java
 

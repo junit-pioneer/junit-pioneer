@@ -1,17 +1,21 @@
 ---
-excerpt: 'JUnit 5 extension pack, pushing the frontiers on Jupiter.<br/> <small>Released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases) and [Maven Central](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer) under<br /><span class="coordinates">`org.junit-pioneer : junit-pioneer : @xp:version`</span></small><br/><br/> {::nomarkdown}<iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=watch&count=true&size=large&v=2" frameborder="0" scrolling="0" width="145px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=star&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe> <iframe style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=fork&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe>{:/nomarkdown}'
+excerpt: 'JUnit 5 extension pack, pushing the frontiers on Jupiter.<br/> <small>Released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases) and [Maven Central](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer) under<br /><span class="coordinates">`org.junit-pioneer : junit-pioneer : @xp:version`</span></small><br/><br/> {::nomarkdown}<iframe title="Number of people watching JUnit Pioneer on GitHub" style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=watch&count=true&size=large&v=2" frameborder="0" scrolling="0" width="145px" height="30px"></iframe> <iframe title="Number of stars of JUnit Pioneer on GitHub" style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=star&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe> <iframe title="Number of forks of JUnit Pioneer on GitHub" style="display: inline-block;" src="https://ghbtns.com/github-btn.html?user=junit-pioneer&repo=junit-pioneer&type=fork&count=true&size=large" frameborder="0" scrolling="0" width="138px" height="30px"></iframe>{:/nomarkdown}'
 ---
 :page-layout: single
 :page-permalink: /junit-pioneer/
 :page-header: { overlay_image: {site-images}/pioneer-full.jpg, title_alignment: left }
 :page-title: JUnit Pioneer
 
+JUnit Pioneer provides extensions for JUnit 5 and its Jupiter API.
+It does not limit itself to proven ideas with wide application but is purposely open to experiments.
+
 JUnit Pioneer is an https://nipafx.dev/junit-5-extension-model/[extension pack] for https://junit.org/junit5/[JUnit 5] or, https://nipafx.dev/junit-5-architecture-jupiter/[to be more precise], for the Jupiter engine.
 It offers https://junit-pioneer.org/docs/[a wide variety of extensions] and is continuously released with more.
 
 == Quick start
 
-Determine the latest version (e.g. on https://search.maven.org/artifact/org.junit-pioneer/junit-pioneer[Maven Central]) and add Pioneer as a test dependency.
+JUnit Pioneer is released https://search.maven.org/artifact/org.junit-pioneer/junit-pioneer[on Maven Central] and https://github.com/junit-pioneer/junit-pioneer/releases[on GitHub] and supports https://jitpack.io/[JitPack].
+Once you have determine the latest version, simply add Pioneer as a test dependency.
 
 Maven:
 
@@ -33,11 +37,14 @@ testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /* ... *
 ----
 
 Done, you're good to go! 👍
+Now's a good time to check out link:/docs[the list of features] to get started using Pioneer.
 
-== Contributing
+== Contributing and More
 
 There are various ways to help us improve JUnit Pioneer if you're interested:
 
 * if you have an idea for an extension you could make good use of, https://github.com/junit-pioneer/junit-pioneer/issues/new[open an issue]
 * if you already wrote some code and would like to release it as part of JUnit Pioneer, which is an awesome idea, please also https://github.com/junit-pioneer/junit-pioneer/issues/new[open an issue] (rather than a pull request)
-* if you want to contribute but aren't sure how, have a look at https://github.com/junit-pioneer/junit-pioneer/issues[the list of open issues], particularly those https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs[marked as _up for grabs_]
+* if you want to contribute but aren't sure how, have a look at https://github.com/junit-pioneer/junit-pioneer/issues[the list of open issues], particularly those marked as https://github.com/junit-pioneer/junit-pioneer/labels/%F0%9F%93%A2%20up%20for%20grabs[_up for grabs_] or https://github.com/junit-pioneer/junit-pioneer/labels/good%20first%20issue[_good first issue_]
+
+To learn more about the project, for example how it handles dependencies, check the project https://github.com/junit-pioneer/junit-pioneer[on GitHub].

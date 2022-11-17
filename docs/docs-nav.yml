@@ -1,8 +1,9 @@
-# NOTE: The URLs need a trailing slash or the selected nav element
-#       won't be highlighted.
+# NOTES:
+#  * the URLs need a trailing slash or the selected nav element won't be highlighted
+#  * the entries are sorted lexicographically by their title (i.e. not their slug)
   - title: JUnit Pioneer Extensions
     children:
-      - title: "Cartesian product of all test parameters"
+      - title: "Cartesian Product of Parameters"
         url: /docs/cartesian-product/
       - title: "Clearing or Setting System Properties"
         url: /docs/system-properties/
@@ -10,7 +11,7 @@
         url: /docs/environment-variables/
       - title: "Default Locale and TimeZone"
         url: /docs/default-locale-timezone/
-      - title: "Temporarily disable a test"
+      - title: "Disable a Test Temporarily"
         url: /docs/disabled-until/
       - title: "Disable If Test Fails"
         url: /docs/disable-if-test-fails/
@@ -18,26 +19,23 @@
         url: /docs/disable-parameterized-tests/
       - title: "Expected-to-Fail Tests"
         url: /docs/expected-to-fail-tests/
-      - title: "Issue information"
+      - title: "Injecting Resources"
+        url: /docs/resources/
+      - title: "Injecting Temporary Directories"
+        url: /docs/temp-directory/
+      - title: "Issue Information"
         url: /docs/issue/
       - title: "JSON Argument Source"
         url: /docs/json-argument-source
+      - title: "Measuring Test Run Time"
+        url: /docs/stopwatch/
       - title: "Publishing Report Entries"
         url: /docs/report-entries/
       - title: "Range Sources"
         url: /docs/range-sources/
-      - title: "Resources"
-        url: /docs/resources/
       - title: "Retrying Failing Tests"
         url: /docs/retrying-test/
       - title: "Standard Input and Output"
         url: /docs/standard-input-output/
-      - title: "Measuring time with a Stopwatch"
-        url: /docs/stopwatch/
-      - title: "Temporary Directories"
-        url: /docs/temp-directory/
-      - title: "Temporary Files and Directories (removed in 1.0)"
-        url: /docs/temp-directory-removed/
       - title: "Vintage @Test"
         url: /docs/vintage-test/
-
