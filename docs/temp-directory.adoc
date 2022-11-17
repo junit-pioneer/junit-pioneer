@@ -6,7 +6,7 @@
 
 A temporary directory is a directory on the machine's on-disk filesystem that is created for one or more tests and deleted when it is no longer needed.
 Temporary directories are created via annotations on parameters and configure whether a directory is created anew for a test or shared with others.
-Either way, they are deleted once they re no longer needed.
+Either way, they're deleted once they're no longer needed.
 You can also configure the _prefix_ of a temporary directory's name, which might be useful for test reporting or debugging reasons.
 
 [NOTE]

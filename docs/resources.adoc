@@ -113,10 +113,8 @@ include::{demo}[tag=create_global_shared_resource_demo_second]
 
 [NOTE]
 ====
-
 You are not limited to singletons.
 You can create as many global shared resources as you want, as long as they have different names.
-
 ====
 
 === Sharing Resources with Arguments

@@ -47,7 +47,7 @@ public class RangeSourcesDemo {
 
 		@ParameterizedTest
 		@LongRangeSource(from = 0L, to = 0L, closed = true)
-		void legalRrange(long arg) {
+		void legalRange(long arg) {
 			// But this is fine
 			assertThat(arg).isEqualTo(0L);
 		}
