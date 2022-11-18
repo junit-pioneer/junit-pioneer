@@ -16,7 +16,7 @@ Most of the extension's features are shared with other resources, though, and ar
 This includes important aspects like thread-safety, sharing resources, and cleaning up behind them (in this case, deleting the temporary directory), so make sure to read that one as well.
 
 This temporary directory extension was introduced in JUnit Pioneer 1.9.0.
-JUnit Pioneer versions before 1.0 contain link:/docs/resource-temporary-directory[a then-removed temp dir extension], which was superseded by the very similar but more powerful https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory[official `@TempDir` extension] shipped with JUnit Jupiter 5.4.
+JUnit Pioneer versions before 1.0 contain link:/docs/temp-directory-removed[a then-removed temp dir extension], which was superseded by the very similar but more powerful https://junit.org/junit5/docs/current/user-guide/#writing-tests-built-in-extensions-TempDirectory[official `@TempDir` extension] shipped with JUnit Jupiter 5.4.
 ====
 
 == Creating a New Temporary Directory
@@ -59,7 +59,7 @@ To create a temporary directory that is shared by multiple tests:
 include::{demo}[tag=create_shared_resource_demo]
 ----
 
-See the link:resources.adoc#sharing_a_resource[ Resources page] for more information.
+See the link:/docs/resources#sharing_a_resource[Resources documentation] for more information.
 
 [NOTE]
 ====

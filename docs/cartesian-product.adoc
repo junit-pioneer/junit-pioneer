@@ -286,10 +286,10 @@ include::{demo}[tag=cartesian_bad_examples]
 == Writing your own `@ArgumentsSource` for `@CartesianTest`
 
 You might find that the available annotations do not fit your need.
-For a `@ParameterizedTest`, you can write a custom https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsSource.html::[`@ArgumentsSource`] and a corresponding https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsProvider.html::[`ArgumentsProvider`].
+For a `@ParameterizedTest`, you can write a custom https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsSource.html[`@ArgumentsSource`] and a corresponding https://junit.org/junit5/docs/current/api/org.junit.jupiter.params/org/junit/jupiter/params/provider/ArgumentsProvider.html[`ArgumentsProvider`].
 You can do the same thing for `@CartesianTest`, with the following caveats:
 
- - Instead of `@ArgumentsSource`, you have to use https://javadoc.io/static/org.junit-pioneer/junit-pioneer/1.5.0/org/junitpioneer/jupiter/cartesian/CartesianArgumentsSource.html::[`@CartesianArgumentsSource`]
+ - Instead of `@ArgumentsSource`, you have to use https://javadoc.io/static/org.junit-pioneer/junit-pioneer/1.6.0/org/junitpioneer/jupiter/cartesian/CartesianArgumentsSource.html[`@CartesianArgumentsSource`]
  - Instead of `ArgumentsProvider`, you have to use one of two interfaces, each explored in their own section.
 
 === Implementing `CartesianParameterArgumentsProvider`
@@ -405,7 +405,7 @@ Basic bit test
 └─ 4 => first bit: 1 second bit: 1
 ----
 
-Please note that name is a https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/MessageFormat.html::[`MessageFormat`] pattern.
+Please note that name is a https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/MessageFormat.html[`MessageFormat`] pattern.
 A single quote (') needs to be represented as a doubled single quote ('') in order to be displayed.
 
 `CartesianTest` supports the following placeholders in custom display names:
