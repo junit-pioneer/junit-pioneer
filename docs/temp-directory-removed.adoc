@@ -8,7 +8,7 @@ JUnit Jupiter 5.4 introduced a https://junit.org/junit5/docs/current/user-guide/
 This extension was built before then, but its only advantage over the JUnit Jupiter extension is support for custom file systems.
 We felt this didn't have enough value, so we removed this extension in JUnit Pioneer 1.0.
 
-We've tackled this problem again, and introduced a link:/docs/resource-temporary-directory[resource-based extension] in version 1.9.0.
+We've tackled this problem again, and introduced a link:/docs/temp-directory-removed[resource-based extension] in version 1.9.0.
 It allows temporary directories to be created that last longer than a single test method.
 Give it a try!
 ====
