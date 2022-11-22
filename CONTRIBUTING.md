@@ -573,7 +573,7 @@ JUnit Pioneer uses semantic versioning, i.e. _major.minor.patch_ as follows:
 * _patch_: resets to 0 when _minor_ changes and increases otherwise
 
 The Javadoc `@since` tag can guide whether a change is non-trivial.
-If such a tag was added, _minor_ must increased - if not, it's up for debate (which is best held in a high-fidelity tool like Discord or Twitch chat).
+If such a tag was added, _minor_ must be increased - if not, it's up for debate (which is best held in a high-fidelity tool like Discord or Twitch chat).
 
 For contributors that means that when they add members that require such a tag, they should generally put the next _minor_ version next to it.
 

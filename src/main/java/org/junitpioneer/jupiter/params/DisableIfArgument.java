@@ -63,7 +63,7 @@ public @interface DisableIfArgument {
 
 	/**
 	 * Disable test cases whose argument (converted to String with {@link Object#toString()})
-	 * contains any of the the specified strings (according to {@link String#contains(CharSequence)}).
+	 * contains any of the specified strings (according to {@link String#contains(CharSequence)}).
 	 */
 	String[] contains() default {};
 

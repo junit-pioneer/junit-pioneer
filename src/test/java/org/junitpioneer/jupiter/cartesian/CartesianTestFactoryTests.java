@@ -90,8 +90,8 @@ public class CartesianTestFactoryTests {
 		}
 
 		@Test
-		@DisplayName("when factory is non-static with lifecyle PER_CLASS")
-		void nonStaticWithLifecylePerClass() {
+		@DisplayName("when factory is non-static with lifecycle PER_CLASS")
+		void nonStaticWithLifecyclePerClass() {
 			ExecutionResults results = PioneerTestKit
 					.executeNestedTestMethodWithParameterTypes(List.of(CorrectFactoryTestCases.class),
 						CorrectFactoryTestCases.PerClassLifecycle.class, "nonStatic", String.class, String.class);
@@ -199,8 +199,8 @@ public class CartesianTestFactoryTests {
 		}
 
 		@Test
-		@DisplayName("finds very explicitly specified class and non-static method with lifecyle PER_CLASS")
-		void findNonStaticExactWithLifecylePerClass() {
+		@DisplayName("finds very explicitly specified class and non-static method with lifecycle PER_CLASS")
+		void findNonStaticExactWithLifecyclePerClass() {
 			ExecutionResults results = PioneerTestKit
 					.executeNestedTestMethodWithParameterTypes(List.of(WrongFactoryTestCases.class),
 						WrongFactoryTestCases.PerClassLifecycle.class, "findsNonStaticExact", String.class,

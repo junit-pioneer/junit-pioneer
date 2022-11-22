@@ -20,8 +20,8 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @SetEnvironmentVariable} is a JUnit Jupiter extension to set the value of a
- * environment variable for a test execution.
+ * {@code @SetEnvironmentVariable} is a JUnit Jupiter extension to set the value of
+ * an environment variable for a test execution.
  *
  * <p>The key and value of the environment variable to be set must be specified via
  * {@link #key()} and {@link #value()}. After the annotated method has been executed,

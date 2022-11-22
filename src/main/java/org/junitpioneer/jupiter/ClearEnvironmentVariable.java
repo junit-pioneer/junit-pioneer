@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * {@code @ClearEnvironmentVariable} is a JUnit Jupiter extension to clear the value
- * of a environment variable for a test execution.
+ * of an environment variable for a test execution.
  *
  * <p>The key of the environment variable to be cleared must be specified via {@link #key()}.
  * After the annotated element has been executed, the original value or the value of the

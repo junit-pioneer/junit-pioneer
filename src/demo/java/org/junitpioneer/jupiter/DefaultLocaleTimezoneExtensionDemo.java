@@ -22,7 +22,7 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	// tag::default_locale_language[]
 	@Test
 	@DefaultLocale("zh-Hant-TW")
-	void test_with_lanuage() {
+	void test_with_language() {
 		assertThat(Locale.getDefault()).isEqualTo(Locale.forLanguageTag("zh-Hant-TW"));
 	}
 	// end::default_locale_language[]
@@ -30,19 +30,19 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	// tag::default_locale_language_alternatives[]
 	@Test
 	@DefaultLocale(language = "en")
-	void test_with_lanuage_only() {
+	void test_with_language_only() {
 		assertThat(Locale.getDefault()).isEqualTo(new Locale("en"));
 	}
 
 	@Test
 	@DefaultLocale(language = "en", country = "EN")
-	void test_with_lanuage_and_country() {
+	void test_with_language_and_country() {
 		assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN"));
 	}
 
 	@Test
 	@DefaultLocale(language = "en", country = "EN", variant = "gb")
-	void test_with_lanuage_and_country_and_vairant() {
+	void test_with_language_and_country_and_variant() {
 		assertThat(Locale.getDefault()).isEqualTo(new Locale("en", "EN", "gb"));
 	}
 	// end::default_locale_language_alternatives[]

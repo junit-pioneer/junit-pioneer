@@ -199,8 +199,8 @@ class CartesianProductTestExtension implements TestTemplateInvocationContextProv
 	private CartesianProductTest.Sets invokeSetsFactory(Method testMethod, Method factory) {
 		CartesianProductTest.Sets sets = (CartesianProductTest.Sets) invokeMethod(factory, null);
 		if (sets.getSets().size() > testMethod.getParameterCount()) {
-			// If sets == parameters but one of the parameters should be auto-injected by JUnit
-			// JUnit will throw a ParameterResolutionException for competing resolvers before we could get to this line
+			// If sets == parameters but one of the parameters should be auto-injected by JUnit.
+			// JUnit will throw a ParameterResolutionException for competing resolvers before we could get to this line.
 			throw new ParameterResolutionException(format(
 				"Method `%s` must register values for each parameter exactly once. Expected [%d] parameter sets, but got [%d].",
 				factory, testMethod.getParameterCount(), sets.getSets().size()));

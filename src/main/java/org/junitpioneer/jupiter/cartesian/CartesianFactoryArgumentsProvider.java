@@ -94,8 +94,8 @@ class CartesianFactoryArgumentsProvider
 		ArgumentSets argumentSets = (ArgumentSets) invokeMethod(factory, target);
 		long count = argumentSets.getArguments().size();
 		if (count > testMethod.getParameterCount()) {
-			// If arguments count == parameters but one of the parameters should be auto-injected by JUnit
-			// JUnit will throw a ParameterResolutionException for competing resolvers before we could get to this line
+			// If arguments count == parameters but one of the parameters should be auto-injected by JUnit.
+			// JUnit will throw a ParameterResolutionException for competing resolvers before we could get to this line.
 			throw new ParameterResolutionException(format(
 				"Method `%s` must register values for each parameter exactly once. Expected [%d] parameter sets, but got [%d].",
 				factory, testMethod.getParameterCount(), count));

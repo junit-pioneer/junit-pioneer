@@ -123,6 +123,7 @@ The least we can do is to thank them and list some of their accomplishments here
 * [Mathieu Fortin](https://github.com/mathieufortin01) contributed the `suspendForMs` attribute in [retrying tests](https://junit-pioneer.org/docs/retrying-test/) (#407 / #604)
 * [Pankaj Kumar](https://github.com/p1729) contributed towards improving GitHub actions (#587 / #611)
 * [Rob Spoor](https://github.com/robtimus) enabled non-static factory methods for `@CartesianTest.MethodFactory` (#628)
+* [Marc Wrobel](https://github.com/marcwrobel) improved the documentation (#692)
 
 #### 2021
 
