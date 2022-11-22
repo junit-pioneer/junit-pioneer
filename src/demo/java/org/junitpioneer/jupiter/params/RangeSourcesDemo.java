@@ -30,7 +30,7 @@ public class RangeSourcesDemo {
 	@DoubleRangeSource(from = -0.1, to = -10, step = -0.1)
 	void howColdIsIt(double d) {
 		System.out.println(d + " °C is cold");
-		System.out.println(d + " °F is REALY cold");
+		System.out.println(d + " °F is REALLY cold");
 		System.out.println(d + " K is too cold to be true");
 	}
 	// end::rangesources_double_with_step[]

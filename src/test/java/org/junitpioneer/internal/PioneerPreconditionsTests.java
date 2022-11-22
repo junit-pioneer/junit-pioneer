@@ -113,7 +113,7 @@ class PioneerPreconditionsTests {
 
 	@Nested
 	@DisplayName("not empty with message")
-	class NotEmptyWithMessgeTests {
+	class NotEmptyWithMessageTests {
 
 		@Test
 		@DisplayName("should throw violation exception if collection is null")

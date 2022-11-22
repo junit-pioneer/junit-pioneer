@@ -21,7 +21,7 @@ For example:
 - I tried to use extension Y to do X, but with the current implementation I can only do Z
 - I read about this fancy thing, Gradle can do now!
 
-**Please describe, what you would like to be changed / added / improved. If you want to add code or pseudo-code snippets, feel free to do so. If you have knowledge about possible side effects or problems or have considered any alternative solutions, please add information about them, too**
+**Please describe, what you would like to be changed / added / improved. If you want to add code or pseudocode snippets, feel free to do so. If you have knowledge about possible side effects or problems or have considered any alternative solutions, please add information about them, too**
 
 Example:
 - I would like to see the possibility to use a new annotation, maybe `@Fancy("value")` to do X
