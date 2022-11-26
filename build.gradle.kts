@@ -257,6 +257,10 @@ tasks {
 		// set it to "allow" for EnvironmentVariableUtilsTests$With_SecurityManager.
 		if (JavaVersion.current() >= JavaVersion.VERSION_12)
 			systemProperty("java.security.manager", "allow")
+		// Disables Byte Buddy validation for the maximum supported class file version, since we are possibly using a
+		// Java EA release.
+		if (experimentalBuild)
+			systemProperty("net.bytebuddy.experimental", true)
 		jvmArgs(testJvmArgs)
 	}
 
