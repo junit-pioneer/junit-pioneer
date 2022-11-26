@@ -64,7 +64,7 @@ dependencies {
 	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.22.0")
 	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.4.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.10")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.11.1")
 
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.2")
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.17.2")
