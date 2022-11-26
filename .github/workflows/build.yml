@@ -164,7 +164,7 @@ jobs:
       - name: Set up supported Java
         uses: actions/setup-java@v2
         with:
-          java-version: 19
+          java-version: 17
           distribution: temurin
           cache: 'gradle'
       - name: Gradle toolchains
