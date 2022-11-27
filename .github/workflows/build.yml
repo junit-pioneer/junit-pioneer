@@ -1,7 +1,7 @@
 name: Main build
 
 env:
-  EXPERIMENTAL_JAVA: 19
+  EXPERIMENTAL_JAVA: 20
 
 on:
   # We want to trigger our builds all the time for the default branch
@@ -116,7 +116,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 11, 17, 18 ]
+        java: [ 11, 17, 19 ]
         junit-version: [ '5.9.0' ]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
