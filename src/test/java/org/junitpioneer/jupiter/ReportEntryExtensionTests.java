@@ -18,6 +18,10 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
 import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
@@ -88,6 +92,17 @@ public class ReportEntryExtensionTests {
 				.hasNumberOfReportEntries(3)
 				.withValues("suddenly there came a tapping", "As if some one gently rapping",
 					"rapping at my chamber door");
+	}
+
+	@Test
+	@DisplayName("works as a meta-annotation")
+	void metaAnnotation() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ReportEntryTestCases.class, "with_composed_annotation");
+
+		assertThat(results)
+				.hasNumberOfReportEntries(1)
+				.withValues("“Though thy crest be shorn and shaven, thou,” I said, “art sure no craven,");
 	}
 
 	@Nested
@@ -600,10 +615,21 @@ public class ReportEntryExtensionTests {
 		void parameterized_with_nulls(String line, String value) {
 		}
 
+		@Test
+		@ComposedEntry
+		void with_composed_annotation() {
+		}
+
 		private static Stream<Arguments> withNulls() {
 			return Stream.of(Arguments.of("By the grave and stern decorum of the countenance it wore,", null));
 		}
 
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@ReportEntry("“Though thy crest be shorn and shaven, thou,” I said, “art sure no craven,")
+	@interface ComposedEntry {
 	}
 
 }

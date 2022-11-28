@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +58,17 @@ public class StdIoExtensionTests {
 		@StdIo
 		@DisplayName("catches the output on the standard out as lines")
 		void catchesOut(StdOut out) {
+			app.write();
+
+			assertThat(out.capturedLines())
+					.containsExactly("Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye");
+		}
+
+		@Test
+		@ComposedIo
+		@DisplayName("works if StdIo is a meta-annotation")
+		void catchesOutFromMeta(StdOut out) {
 			app.write();
 
 			assertThat(out.capturedLines())
@@ -350,6 +365,12 @@ public class StdIoExtensionTests {
 			System.out.println("Attending on his golden pilgrimage:");
 		}
 
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@StdIo
+	@interface ComposedIo {
 	}
 
 }
