@@ -39,7 +39,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @since 0.5.6
  */
 @Repeatable(ReportEntry.ReportEntries.class)
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(ReportEntryExtension.class)
 public @interface ReportEntry {

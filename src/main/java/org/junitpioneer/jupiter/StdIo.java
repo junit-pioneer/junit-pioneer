@@ -40,7 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @since 0.7
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @WritesStdIo
 @ExtendWith(StdIoExtension.class)
 public @interface StdIo {
