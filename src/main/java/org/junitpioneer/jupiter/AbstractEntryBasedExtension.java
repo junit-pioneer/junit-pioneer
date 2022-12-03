@@ -79,6 +79,12 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 			try {
 				entriesToClear = findEntriesToClear(element);
 				entriesToSet = findEntriesToSet(element);
+
+				//It seems like order is important here and shouldn't always be an error.
+				//If a prop is marked as cleared in a superclass and set on a method, this is OK, right?
+				//I think the intention here is for this to be OK (we are in a context loop), but I think
+				//the loop only applies to @Nested tests, not superclass/subclass relationships.
+				System.setProperties(null);
 				preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
 			}
 			catch (IllegalStateException ex) {
