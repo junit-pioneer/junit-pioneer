@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
@@ -66,6 +68,11 @@ class EnvironmentVariableExtension
 	@Override
 	protected void setEntry(String key, String value) {
 		EnvironmentVariableUtils.set(key, value);
+	}
+
+	@Override
+	protected Set<Map.Entry<Object, Object>> getAllEntries() {
+		return null;
 	}
 
 }

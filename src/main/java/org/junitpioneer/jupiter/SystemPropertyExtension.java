@@ -10,6 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 
 class SystemPropertyExtension
@@ -43,6 +46,11 @@ class SystemPropertyExtension
 	@Override
 	protected void setEntry(String key, String value) {
 		System.setProperty(key, value);
+	}
+
+	@Override
+	protected Set<Entry<Object, Object>> getAllEntries() {
+		return System.getProperties().entrySet();
 	}
 
 }

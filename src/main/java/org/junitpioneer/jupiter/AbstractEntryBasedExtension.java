@@ -36,6 +36,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 
 /**
@@ -61,6 +62,11 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void applyForAllContexts(ExtensionContext originalContext) {
+
+		// If true, a complete copy of the current state of related environment is made
+		boolean fullRestoreNeeded =
+				PioneerAnnotationUtils.isAnnotationPresent(originalContext, RestoreSystemProperties.class);
+
 		/*
 		 * We cannot use PioneerAnnotationUtils#findAllEnclosingRepeatableAnnotations(ExtensionContext, Class) or the
 		 * like as clearing and setting might interfere. Therefore, we have to apply the extension from the outermost
@@ -68,10 +74,11 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		 */
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(originalContext);
 		Collections.reverse(contexts);
-		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext));
+		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext, !fullRestoreNeeded));
 	}
 
-	private void clearAndSetEntries(ExtensionContext currentContext, ExtensionContext originalContext) {
+	private void clearAndSetEntries(
+			ExtensionContext currentContext, ExtensionContext originalContext, boolean storeOriginal) {
 		currentContext.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
@@ -95,11 +102,19 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 				return;
 
 			reportWarning(currentContext);
-			storeOriginalEntries(originalContext, entriesToClear, entriesToSet.keySet());
+
+
+			// If this is false, backup of original values is done elsewhere
+			if (storeOriginal) {
+				storeOriginalEntries(originalContext, entriesToClear, entriesToSet.keySet());
+			}
+
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
 		});
 	}
+
+	abstract protected Set<Map.Entry<Object, Object>> getAllEntries();
 
 	private Set<K> findEntriesToClear(AnnotatedElement element) {
 		return findAnnotations(element, getClearAnnotationType())
@@ -188,11 +203,24 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		private final Set<K> entriesToClear = new HashSet<>();
 		private final Map<K, V> entriesToSet = new HashMap<>();
 
+		private final boolean completeBackup;
+
 		public EntriesBackup() {
 			// empty backup
+			completeBackup = false;
 		}
 
+		/**
+		 * Create a backup where entriesToClear and entriesToSet are the only properties that will
+		 * be modified, so they are the only ones that need to be restored.
+		 *
+		 * @param entriesToClear
+		 * @param entriesToSet
+		 */
 		public EntriesBackup(Collection<K> entriesToClear, Collection<K> entriesToSet) {
+
+			completeBackup = false;
+
 			Stream.concat(entriesToClear.stream(), entriesToSet.stream()).forEach(entry -> {
 				V backup = AbstractEntryBasedExtension.this.getEntry(entry);
 				if (backup == null)
@@ -202,9 +230,45 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 			});
 		}
 
+		/**
+		 * Create a backup where the entriesToSet is the complete state that should be restored.
+		 *
+		 * <p>
+		 * Any entries not present in the entriesToSet should be removed.
+		 * </p>
+		 * @param entriesToSet
+		 */
+		public EntriesBackup(Map<K, V> entriesToSet) {
+			this.completeBackup = true;
+			this.entriesToSet.putAll(entriesToSet);
+		}
+
+
 		public void restoreBackup() {
-			entriesToClear.forEach(AbstractEntryBasedExtension.this::clearEntry);
-			entriesToSet.forEach(AbstractEntryBasedExtension.this::setEntry);
+			if (completeBackup) {
+
+				// entriesToSet is the complete and total state that should be restored
+
+				entriesToSet.forEach(AbstractEntryBasedExtension.this::setEntry);
+
+				// remove any other entries
+				AbstractEntryBasedExtension.this.getAllEntries().stream().forEach(entry -> {
+					String existingKey = entry.getKey().toString();
+					if (! entriesToSet.containsKey(existingKey)) {
+
+						// This won't work as is - force the keys to always be Strings?  Seems reasonable.
+						// What about object values?
+						// If everything becomes objects, then no generics are needed - maybe that is better.
+						AbstractEntryBasedExtension.this.clearEntry(existingKey);
+					}
+				});
+
+			} else {
+
+				//Only the properties in these two collections need to be restored
+				entriesToClear.forEach(AbstractEntryBasedExtension.this::clearEntry);
+				entriesToSet.forEach(AbstractEntryBasedExtension.this::setEntry);
+			}
 		}
 
 	}
