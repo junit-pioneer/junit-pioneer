@@ -10,10 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.Properties;
 import java.util.function.Function;
 
 class SystemPropertyExtension
-		extends AbstractEntryBasedExtension<String, String, ClearSystemProperty, SetSystemProperty> {
+		extends AbstractEntryBasedExtension<String, String, Properties, ClearSystemProperty, SetSystemProperty> {
 
 	@Override
 	protected Function<ClearSystemProperty, String> clearKeyMapper() {
@@ -43,6 +44,16 @@ class SystemPropertyExtension
 	@Override
 	protected void setEntry(String key, String value) {
 		System.setProperty(key, value);
+	}
+
+	@Override
+	protected Properties getAllCurrentEntries() {
+		return System.getProperties();
+	}
+
+	@Override
+	protected void setAllCurrentEntries(Properties properties) {
+		System.setProperties(properties);
 	}
 
 }

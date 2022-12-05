@@ -10,13 +10,15 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 class EnvironmentVariableExtension
-		extends AbstractEntryBasedExtension<String, String, ClearEnvironmentVariable, SetEnvironmentVariable> {
+		extends AbstractEntryBasedExtension<String, String, Map<String, String>, ClearEnvironmentVariable, SetEnvironmentVariable> {
 
 	// package visible to make accessible for tests
 	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
@@ -66,6 +68,31 @@ class EnvironmentVariableExtension
 	@Override
 	protected void setEntry(String key, String value) {
 		EnvironmentVariableUtils.set(key, value);
+	}
+
+	@Override
+	protected Map<String, String> getAllCurrentEntries() {
+		return System.getenv();
+	}
+
+	@Override
+	protected void setAllCurrentEntries(final Map<String, String> restoreMe) {
+		final Map<String, String> original = System.getenv();
+
+		// Set all values, but only if different from actual value to avoid reflective set
+		restoreMe.entrySet().parallelStream()
+				.filter(e -> ! System.getenv(e.getKey()).equals(e.getValue()))
+				.forEach(e -> setEntry(e.getKey(), e.getValue()));
+
+
+		// Find entries to remove.
+		// Cannot remove in stream b/c the stream is based on the collection that needs to be modified
+		Set<String> entriesToClear = original.entrySet().parallelStream()
+				.filter( e -> !restoreMe.containsKey(e.getKey()) )
+				.map( e -> e.getKey())
+				.collect(Collectors.toSet());
+
+		entriesToClear.stream().forEach( k -> clearEntry(k) );
 	}
 
 }

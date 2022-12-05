@@ -17,13 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -44,10 +38,11 @@ import org.junitpioneer.internal.PioneerUtils;
  *
  * @param <K> The entry key type.
  * @param <V> The entry value type.
+ * @param <B> The bulk collection type of the entire key-value set
  * @param <C> The clear annotation type.
  * @param <S> The set annotation type.
  */
-abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation>
+abstract class AbstractEntryBasedExtension<K, V, B extends Map, C extends Annotation, S extends Annotation>
 		implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
 	@Override
@@ -239,5 +234,25 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	protected void reportWarning(ExtensionContext context) {
 		// nothing reported by default
 	}
+
+	/**
+	 * Return a Map of all current entries as reported from the current runtime environment.
+	 *
+	 * The returned Map must not be null and its key-value pairs must follow the rules for entries
+	 * of its type.  For instance, Environment vars never contain null values, System properties may.
+	 *
+	 * @return A non-null Map that contains all key-values of the runtime for this entry type.
+	 */
+	protected abstract B getAllCurrentEntries();
+
+	/**
+	 * Update the current runtime environment to match the passed entries map.
+	 *
+	 * The key-value pairs in the Map must follow the rules for entries of its type.
+	 * For instance, Environment vars never contain null values, System properties may.
+	 *
+	 * @param entries Not null.
+	 */
+	protected abstract void setAllCurrentEntries(B entries);
 
 }
