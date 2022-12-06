@@ -49,7 +49,16 @@ class SystemPropertyExtension
 
 	@Override
 	protected Properties getAllCurrentEntries() {
-		return System.getProperties();
+
+		final Properties props = new Properties();
+
+		// System.getProperties() returns the actual Properties object, not a copy.
+		// Clone doesn't include defaults, but propertyNames() does.
+		System.getProperties().propertyNames().asIterator().forEachRemaining(k -> {
+			props.put(k, System.getProperty(k.toString()));
+		});
+
+		return props;
 	}
 
 	@Override
