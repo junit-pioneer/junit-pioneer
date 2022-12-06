@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 class EnvironmentVariableExtension
-		extends AbstractEntryBasedExtension<String, String, Map<String, String>, ClearEnvironmentVariable, SetEnvironmentVariable> {
+		extends AbstractEntryBasedExtension<String, String, Map<String, String>,
+				ClearEnvironmentVariable, SetEnvironmentVariable, RestoreEnvironmentVariables> {
 
 	// package visible to make accessible for tests
 	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);

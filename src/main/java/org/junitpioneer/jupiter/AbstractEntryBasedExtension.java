@@ -30,20 +30,28 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 
 /**
  * An abstract base class for entry-based extensions, where entries (key-value
- * pairs) can be cleared or set.
+ * pairs) can be cleared, set, or restored.
  *
  * @param <K> The entry key type.
  * @param <V> The entry value type.
  * @param <B> The bulk collection type of the entire key-value set
  * @param <C> The clear annotation type.
  * @param <S> The set annotation type.
+ * @param <R> The restore annotation type.
  */
-abstract class AbstractEntryBasedExtension<K, V, B extends Map, C extends Annotation, S extends Annotation>
+abstract class AbstractEntryBasedExtension<K, V, B extends Map<?,?>, C extends Annotation, S extends Annotation, R extends Annotation>
 		implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
+
+	/** Key to indicate storage is for an incremental backup object */
+	private static final String INCREMENTAL_KEY = "inc";
+
+	/** Key to indicate storage is for a complete backup object */
+	private static final String COMPLETE_KEY = "full";
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
@@ -56,6 +64,14 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map, C extends Annota
 	}
 
 	private void applyForAllContexts(ExtensionContext originalContext) {
+
+		final boolean fullRestore = PioneerAnnotationUtils.isAnnotationPresent(originalContext, getRestoreAnnotationType());
+
+		if (fullRestore) {
+			B bulk = this.getAllCurrentEntries();
+			storeOriginalCompleteEntries(originalContext, bulk);
+		}
+
 		/*
 		 * We cannot use PioneerAnnotationUtils#findAllEnclosingRepeatableAnnotations(ExtensionContext, Class) or the
 		 * like as clearing and setting might interfere. Therefore, we have to apply the extension from the outermost
@@ -63,10 +79,11 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map, C extends Annota
 		 */
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(originalContext);
 		Collections.reverse(contexts);
-		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext));
+		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext, ! fullRestore));
 	}
 
-	private void clearAndSetEntries(ExtensionContext currentContext, ExtensionContext originalContext) {
+	private void clearAndSetEntries(ExtensionContext currentContext, ExtensionContext originalContext,
+			boolean doIncrementalBackup) {
 		currentContext.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
@@ -84,7 +101,12 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map, C extends Annota
 				return;
 
 			reportWarning(currentContext);
-			storeOriginalEntries(originalContext, entriesToClear, entriesToSet.keySet());
+
+			// Only backup original values if we didn't already do bulk storage of the original state
+			if (doIncrementalBackup) {
+				storeOriginalIncrementalEntries(originalContext, entriesToClear, entriesToSet.keySet());
+			}
+
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
 		});
@@ -106,17 +128,32 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map, C extends Annota
 
 	@SuppressWarnings("unchecked")
 	private Class<C> getClearAnnotationType() {
-		return (Class<C>) getActualTypeArgumentAt(2);
+		return (Class<C>) getActualTypeArgumentAt(3);
 	}
 
 	@SuppressWarnings("unchecked")
 	private Class<S> getSetAnnotationType() {
-		return (Class<S>) getActualTypeArgumentAt(3);
+		return (Class<S>) getActualTypeArgumentAt(4);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<B> getBulkType() {
+		return (Class<B>) getActualTypeArgumentAt(2);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<R> getRestoreAnnotationType() {
+		return (Class<R>) getActualTypeArgumentAt(5);
 	}
 
 	private Type getActualTypeArgumentAt(int index) {
 		ParameterizedType abstractEntryBasedExtensionType = (ParameterizedType) getClass().getGenericSuperclass();
-		return abstractEntryBasedExtensionType.getActualTypeArguments()[index];
+		Type type = abstractEntryBasedExtensionType.getActualTypeArguments()[index];
+		if (type instanceof ParameterizedType) {
+			return ((ParameterizedType) type).getRawType();
+		} else {
+			return type;
+		}
 	}
 
 	private void preventClearAndSetSameEntries(Collection<K> entriesToClear, Collection<K> entriesToSet) {
@@ -130,9 +167,33 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map, C extends Annota
 				"Cannot clear and set the following entries at the same time: " + duplicateEntries);
 	}
 
-	private void storeOriginalEntries(ExtensionContext context, Collection<K> entriesToClear,
+	private void storeOriginalIncrementalEntries(ExtensionContext context, Collection<K> entriesToClear,
 			Collection<K> entriesToSet) {
-		getStore(context).put(getStoreKey(context), new EntriesBackup(entriesToClear, entriesToSet));
+		getStore(context).put(getStoreKey(context, INCREMENTAL_KEY), new EntriesBackup(entriesToClear, entriesToSet));
+	}
+
+	private void storeOriginalCompleteEntries(ExtensionContext context, B originalEntries) {
+		getStore(context).put(getStoreKey(context, COMPLETE_KEY), originalEntries);
+	}
+
+
+	/**
+	 * Restore the complete original state of the entries as they were prior to this ExtensionContext,
+	 * if the complete state was initially stored in a BeforeXXX event.
+	 *
+	 * @param originalContext
+	 * @return true if a complete backup exists and was used to restore, false if not.
+	 */
+	private boolean restoreOriginalCompleteEntries(ExtensionContext originalContext) {
+		B bulk = getStore(originalContext).get(getStoreKey(originalContext, COMPLETE_KEY), getBulkType());
+
+		if (bulk != null) {
+			this.setAllCurrentEntries(bulk);
+			return true;
+		} else {
+			// No complete backup - false will let the caller know to continue w/ an incremental restore
+			return false;
+		}
 	}
 
 	private void clearEntries(Collection<K> entriesToClear) {
@@ -154,13 +215,17 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map, C extends Annota
 	}
 
 	private void restoreForAllContexts(ExtensionContext originalContext) {
-		// restore from innermost to outermost
-		PioneerUtils.findAllContexts(originalContext).forEach(__ -> restoreOriginalEntries(originalContext));
+
+		// Try a complete restore first
+		if (! restoreOriginalCompleteEntries(originalContext) ) {
+				// A complete backup is not available, so restore incrementally from innermost to outermost
+				PioneerUtils.findAllContexts(originalContext).forEach(__ -> restoreOriginalIncrementalEntries(originalContext));
+		}
 	}
 
-	private void restoreOriginalEntries(ExtensionContext originalContext) {
+	private void restoreOriginalIncrementalEntries(ExtensionContext originalContext) {
 		getStore(originalContext)
-				.getOrDefault(getStoreKey(originalContext), EntriesBackup.class, new EntriesBackup())
+				.getOrDefault(getStoreKey(originalContext, INCREMENTAL_KEY), EntriesBackup.class, new EntriesBackup())
 				.restoreBackup();
 	}
 
@@ -168,8 +233,8 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map, C extends Annota
 		return context.getStore(Namespace.create(getClass()));
 	}
 
-	private Object getStoreKey(ExtensionContext context) {
-		return context.getUniqueId();
+	private String getStoreKey(ExtensionContext context, String discriminator) {
+		return context.getUniqueId() + "-" + discriminator;
 	}
 
 	private class EntriesBackup {

@@ -14,7 +14,8 @@ import java.util.Properties;
 import java.util.function.Function;
 
 class SystemPropertyExtension
-		extends AbstractEntryBasedExtension<String, String, Properties, ClearSystemProperty, SetSystemProperty> {
+		extends AbstractEntryBasedExtension<String, String, Properties,
+				ClearSystemProperty, SetSystemProperty, RestoreSystemProperties> {
 
 	@Override
 	protected Function<ClearSystemProperty, String> clearKeyMapper() {
