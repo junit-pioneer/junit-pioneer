@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 class EnvironmentVariableExtension
-		extends AbstractEntryBasedExtension<String, String, Map<String, String>,
+		extends AbstractEntryBasedExtension<String, String,
 				ClearEnvironmentVariable, SetEnvironmentVariable, RestoreEnvironmentVariables> {
 
 	// package visible to make accessible for tests
@@ -72,23 +72,25 @@ class EnvironmentVariableExtension
 	}
 
 	@Override
-	protected Map<String, String> getAllCurrentEntries() {
-		return System.getenv();
+	protected Properties getAllCurrentEntries() {
+		final Properties clone = new Properties();
+		clone.putAll(System.getenv());
+		return clone;
 	}
 
 	@Override
-	protected void setAllCurrentEntries(final Map<String, String> restoreMe) {
-		final Map<String, String> original = System.getenv();
+	protected void setAllCurrentEntries(final Properties restoreMe) {
+		final Map<String, String> existingEnv = System.getenv();
 
 		// Set all values, but only if different from actual value to avoid reflective set
 		restoreMe.entrySet().parallelStream()
-				.filter(e -> ! System.getenv(e.getKey()).equals(e.getValue()))
-				.forEach(e -> setEntry(e.getKey(), e.getValue()));
+				.filter(e -> ! System.getenv(e.getKey().toString()).equals(e.getValue()))
+				.forEach(e -> setEntry(e.getKey().toString(), e.getValue().toString()));
 
 
 		// Find entries to remove.
 		// Cannot remove in stream b/c the stream is based on the collection that needs to be modified
-		Set<String> entriesToClear = original.entrySet().parallelStream()
+		Set<String> entriesToClear = existingEnv.entrySet().parallelStream()
 				.filter( e -> !restoreMe.containsKey(e.getKey()) )
 				.map( e -> e.getKey())
 				.collect(Collectors.toSet());

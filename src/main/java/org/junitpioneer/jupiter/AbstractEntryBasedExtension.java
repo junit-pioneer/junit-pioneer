@@ -39,12 +39,11 @@ import org.junitpioneer.internal.PioneerUtils;
  *
  * @param <K> The entry key type.
  * @param <V> The entry value type.
- * @param <B> The bulk collection type of the entire key-value set
  * @param <C> The clear annotation type.
  * @param <S> The set annotation type.
  * @param <R> The restore annotation type.
  */
-abstract class AbstractEntryBasedExtension<K, V, B extends Map<?,?>, C extends Annotation, S extends Annotation, R extends Annotation>
+abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation, R extends Annotation>
 		implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
 	/** Key to indicate storage is for an incremental backup object */
@@ -68,7 +67,7 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map<?,?>, C extends A
 		final boolean fullRestore = PioneerAnnotationUtils.isAnnotationPresent(originalContext, getRestoreAnnotationType());
 
 		if (fullRestore) {
-			B bulk = this.getAllCurrentEntries();
+			Properties bulk = this.getAllCurrentEntries();
 			storeOriginalCompleteEntries(originalContext, bulk);
 		}
 
@@ -128,22 +127,17 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map<?,?>, C extends A
 
 	@SuppressWarnings("unchecked")
 	private Class<C> getClearAnnotationType() {
-		return (Class<C>) getActualTypeArgumentAt(3);
+		return (Class<C>) getActualTypeArgumentAt(2);
 	}
 
 	@SuppressWarnings("unchecked")
 	private Class<S> getSetAnnotationType() {
-		return (Class<S>) getActualTypeArgumentAt(4);
-	}
-
-	@SuppressWarnings("unchecked")
-	private Class<B> getBulkType() {
-		return (Class<B>) getActualTypeArgumentAt(2);
+		return (Class<S>) getActualTypeArgumentAt(3);
 	}
 
 	@SuppressWarnings("unchecked")
 	private Class<R> getRestoreAnnotationType() {
-		return (Class<R>) getActualTypeArgumentAt(5);
+		return (Class<R>) getActualTypeArgumentAt(4);
 	}
 
 	private Type getActualTypeArgumentAt(int index) {
@@ -172,7 +166,7 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map<?,?>, C extends A
 		getStore(context).put(getStoreKey(context, INCREMENTAL_KEY), new EntriesBackup(entriesToClear, entriesToSet));
 	}
 
-	private void storeOriginalCompleteEntries(ExtensionContext context, B originalEntries) {
+	private void storeOriginalCompleteEntries(ExtensionContext context, Properties originalEntries) {
 		getStore(context).put(getStoreKey(context, COMPLETE_KEY), originalEntries);
 	}
 
@@ -185,7 +179,7 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map<?,?>, C extends A
 	 * @return true if a complete backup exists and was used to restore, false if not.
 	 */
 	private boolean restoreOriginalCompleteEntries(ExtensionContext originalContext) {
-		B bulk = getStore(originalContext).get(getStoreKey(originalContext, COMPLETE_KEY), getBulkType());
+		Properties bulk = getStore(originalContext).get(getStoreKey(originalContext, COMPLETE_KEY), Properties.class);
 
 		if (bulk != null) {
 			this.setAllCurrentEntries(bulk);
@@ -301,14 +295,14 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map<?,?>, C extends A
 	}
 
 	/**
-	 * Return a Map of all current entries as reported from the current runtime environment.
+	 * Return all current entries as reported from the current runtime environment.
 	 *
 	 * The returned Map must not be null and its key-value pairs must follow the rules for entries
 	 * of its type.  For instance, Environment vars never contain null values, System properties may.
 	 *
-	 * @return A non-null Map that contains all key-values of the runtime for this entry type.
+	 * @return A non-null Properties that contains all key-values of the runtime for this entry type.
 	 */
-	protected abstract B getAllCurrentEntries();
+	protected abstract Properties getAllCurrentEntries();
 
 	/**
 	 * Update the current runtime environment to match the passed entries map.
@@ -318,6 +312,6 @@ abstract class AbstractEntryBasedExtension<K, V, B extends Map<?,?>, C extends A
 	 *
 	 * @param entries Not null.
 	 */
-	protected abstract void setAllCurrentEntries(B entries);
+	protected abstract void setAllCurrentEntries(Properties entries);
 
 }

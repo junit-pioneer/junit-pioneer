@@ -14,7 +14,7 @@ import java.util.Properties;
 import java.util.function.Function;
 
 class SystemPropertyExtension
-		extends AbstractEntryBasedExtension<String, String, Properties,
+		extends AbstractEntryBasedExtension<String, String,
 				ClearSystemProperty, SetSystemProperty, RestoreSystemProperties> {
 
 	@Override
@@ -50,15 +50,16 @@ class SystemPropertyExtension
 	@Override
 	protected Properties getAllCurrentEntries() {
 
-		final Properties props = new Properties();
+		final Properties current = System.getProperties();
+		final Properties clone = new Properties();
 
 		// System.getProperties() returns the actual Properties object, not a copy.
 		// Clone doesn't include defaults, but propertyNames() does.
-		System.getProperties().propertyNames().asIterator().forEachRemaining(k -> {
-			props.put(k, System.getProperty(k.toString()));
+		current.propertyNames().asIterator().forEachRemaining(k -> {
+			clone.put(k, current.get(k));
 		});
 
-		return props;
+		return clone;
 	}
 
 	@Override
