@@ -47,7 +47,7 @@ import java.lang.annotation.*;
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on
- * <code @ClearSystemProperty, @SetSystemProperty and @RestoreSystemProperties</code></a>.
+ * <code>@ClearSystemProperty, @SetSystemProperty and @RestoreSystemProperties</code></a>.
  * </p>
  *
  * <p>Note:  System properties are normally just strings, however, it is technically possible to bend the

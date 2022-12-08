@@ -49,7 +49,7 @@ import java.lang.annotation.*;
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on
- * <code @ClearEnvironmentVariable, @SetEnvironmentVariable and @RestoreEnvironmentVariables</code></a>.
+ * <code>@ClearEnvironmentVariable, @SetEnvironmentVariable and @RestoreEnvironmentVariables</code></a>.
  * </p>
  *
  * <p>Note:  Environment Variables are normally not editable.
