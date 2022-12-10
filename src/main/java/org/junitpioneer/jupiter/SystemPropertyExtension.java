@@ -56,7 +56,7 @@ class SystemPropertyExtension
 		// System.getProperties() returns the actual Properties object, not a copy.
 		// Clone doesn't include defaults, but propertyNames() does.
 		current.propertyNames().asIterator().forEachRemaining(k -> {
-			clone.put(k, current.get(k));
+			clone.put(k, current.getProperty(k.toString()));
 		});
 
 		return clone;
