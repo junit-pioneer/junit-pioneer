@@ -67,7 +67,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		final boolean fullRestore = PioneerAnnotationUtils.isAnnotationPresent(originalContext, getRestoreAnnotationType());
 
 		if (fullRestore) {
-			Properties bulk = this.getAllCurrentEntries();
+			Properties bulk = this.prepareToEnterRestorableContext();
 			storeOriginalCompleteEntries(originalContext, bulk);
 		}
 
@@ -182,7 +182,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		Properties bulk = getStore(originalContext).get(getStoreKey(originalContext, COMPLETE_KEY), Properties.class);
 
 		if (bulk != null) {
-			this.setAllCurrentEntries(bulk);
+			this.prepareToExitRestorableContext(bulk);
 			return true;
 		} else {
 			// No complete backup - false will let the caller know to continue w/ an incremental restore
@@ -295,23 +295,33 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	/**
-	 * Return all current entries as reported from the current runtime environment.
+	 * Prepare the entry based environment for entering a context that must be restorable.
+	 * <p>
+	 * Implementations may choose one of two strategies:
+	 * <ul>
+	 * <li>Leave the original entry environment in place and return a clone of that environment.
+	 * In this case {@link #prepareToExitRestorableContext} will restore the clone.
+	 * <li>Preemptively swap the current entry environment with a clone and return the original
+	 * environment.  In this case the 'prepareToExit' will restore the original environment.</li>
+	 * </ul>
 	 *
-	 * The returned Map must not be null and its key-value pairs must follow the rules for entries
-	 * of its type.  For instance, Environment vars never contain null values, System properties may.
+	 * The returned Properties must not be null and its key-value pairs must follow the rules for
+	 * entries of its type.  E.g., Environment vars contain only Strings while System properties
+	 * may contain Objects.
 	 *
-	 * @return A non-null Properties that contains all key-values of the runtime for this entry type.
+	 * @return A non-null Properties that contains all entries of the entry environment.
 	 */
-	protected abstract Properties getAllCurrentEntries();
+	protected abstract Properties prepareToEnterRestorableContext();
 
 	/**
-	 * Update the current runtime environment to match the passed entries map.
-	 *
-	 * The key-value pairs in the Map must follow the rules for entries of its type.
-	 * For instance, Environment vars never contain null values, System properties may.
+	 * Prepare to exit a restorable context for the entry based environment.
+	 * <p>
+	 * The entry environment will be restored to the state passed in as Properties.
+	 * The Properties entries must follow the rules for entries of this environment,
+	 * e.g., environment vars contain only Strings while System properties may contain Objects.
 	 *
 	 * @param entries Not null.
 	 */
-	protected abstract void setAllCurrentEntries(Properties entries);
+	protected abstract void prepareToExitRestorableContext(Properties entries);
 
 }

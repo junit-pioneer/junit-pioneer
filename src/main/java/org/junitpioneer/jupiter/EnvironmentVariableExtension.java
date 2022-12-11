@@ -72,14 +72,14 @@ class EnvironmentVariableExtension
 	}
 
 	@Override
-	protected Properties getAllCurrentEntries() {
+	protected Properties prepareToEnterRestorableContext() {
 		final Properties clone = new Properties();
 		clone.putAll(System.getenv());
 		return clone;
 	}
 
 	@Override
-	protected void setAllCurrentEntries(final Properties restoreMe) {
+	protected void prepareToExitRestorableContext(final Properties restoreMe) {
 		final Map<String, String> existingEnv = System.getenv();
 
 		// Set all values, but only if different from actual value to avoid reflective set
