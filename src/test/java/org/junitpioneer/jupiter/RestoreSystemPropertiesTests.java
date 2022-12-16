@@ -10,12 +10,12 @@
 
 package org.junitpioneer.jupiter;
 
-import org.assertj.core.api.AbstractAssert;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.*;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
+import org.junitpioneer.testkit.assertion.PropertiesAssert;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -214,92 +214,4 @@ class RestoreSystemPropertiesTests {
 
 	}
 
-	static class PropertiesAssert extends AbstractAssert<PropertiesAssert, Properties> {
-
-		public PropertiesAssert(Properties actual) {
-			super(actual, PropertiesAssert.class);
-		}
-
-		public static PropertiesAssert assertThat(Properties actual) {
-			return new PropertiesAssert(actual);
-		}
-
-		/**
-		 * Compares the String values of properties which includes inherited / default values.
-		 *
-		 * @param expected
-		 * @return
-		 */
-		public PropertiesAssert isEffectivelyTheSameAs(Properties expected) {
-
-			// Compare values present in actual
-			actual.propertyNames().asIterator().forEachRemaining(k -> {
-				if (! actual.getProperty(k.toString()).equals(expected.getProperty(k.toString()))) {
-					throw failure("For the property <%s> the actual value was <%s> but <%s> was expected",
-							k, actual.get(k), expected.get(k));
-				}
-			});
-
-			// Compare values present in expected - Anything not matching must not have been present in actual
-			expected.propertyNames().asIterator().forEachRemaining(k -> {
-				if (! expected.getProperty(k.toString()).equals(actual.getProperty(k.toString()))) {
-					throw failure("The property <%s> was expected to be <%s>, but was missing",
-							k, expected.get(k));
-				}
-			});
-
-			return this;
-		}
-
-
-		/**
-		 * Compare values directly present in Properties and recursively into default Properties
-		 *
-		 * @param expected
-		 * @return
-		 */
-		public PropertiesAssert isStrictlyTheSameAs(Properties expected) throws Exception {
-
-			// Compare values present in actual
-			actual.keySet().forEach(k -> {
-				if (! actual.get(k).equals(expected.get(k))) {
-					throw failure("For the property <%s> the actual value was <%s> but <%s> was expected",
-							k, actual.get(k), expected.get(k));
-				}
-			});
-
-			// Compare values present in expected - Anything not matching must not have been present in actual
-			expected.keySet().forEach(k -> {
-				if (! expected.get(k).equals(actual.get(k))) {
-					throw failure("The property <%s> was expected to be <%s>, but was missing",
-							k, expected.get(k));
-				}
-			});
-
-
-			//
-			// Dig down into the nested defaults
-
-			Field field = ReflectionSupport
-					.findFields(Properties.class, f -> f.getName().equals("defaults"), HierarchyTraversalMode.BOTTOM_UP)
-					.stream().findFirst().get();
-
-			field.setAccessible(true);
-
-			Properties actualDefault = (Properties) ReflectionSupport.tryToReadFieldValue(field, actual).get();
-			Properties expectedDefault = (Properties) ReflectionSupport.tryToReadFieldValue(field, expected).get();
-
-			if (actualDefault != null && expectedDefault != null) {
-				return PropertiesAssert.assertThat(actualDefault).isStrictlyTheSameAs(expectedDefault);
-			} else if (actualDefault != null) {
-				throw failure("The actual Properties had non-null defaults, but none were expected");
-			} else if (expectedDefault != null) {
-				throw failure("The expected Properties had non-null defaults, but none were in actual");
-			}
-
-			return this;
-		}
-
-		// assertion methods described later
-	}
 }
