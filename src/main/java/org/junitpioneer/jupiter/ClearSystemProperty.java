@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -46,7 +45,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
-@Inherited
 @Repeatable(ClearSystemProperty.ClearSystemProperties.class)
 @WritesSystemProperty
 @ExtendWith(SystemPropertyExtension.class)
@@ -62,7 +60,6 @@ public @interface ClearSystemProperty {
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD, ElementType.TYPE })
-	@Inherited
 	@WritesSystemProperty
 	@ExtendWith(SystemPropertyExtension.class)
 	@interface ClearSystemProperties {

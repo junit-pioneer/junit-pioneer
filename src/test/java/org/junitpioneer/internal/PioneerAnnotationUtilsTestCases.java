@@ -11,7 +11,6 @@
 package org.junitpioneer.internal;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -21,7 +20,6 @@ public class PioneerAnnotationUtilsTestCases {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE, ElementType.METHOD })
-	@Inherited
 	public @interface NonRepeatableTestAnnotation {
 
 		String value() default "";
@@ -30,7 +28,6 @@ public class PioneerAnnotationUtilsTestCases {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE, ElementType.METHOD })
-	@Inherited
 	@Repeatable(PioneerAnnotationUtilsTestCases.RepeatableTestAnnotation.Container.class)
 	public @interface RepeatableTestAnnotation {
 
@@ -38,7 +35,6 @@ public class PioneerAnnotationUtilsTestCases {
 
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target({ ElementType.TYPE, ElementType.METHOD })
-		@Inherited
 		@interface Container {
 
 			RepeatableTestAnnotation[] value();
@@ -49,6 +45,15 @@ public class PioneerAnnotationUtilsTestCases {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE, ElementType.METHOD })
+	public @interface MetaAnnotation {
+
+		String value() default "";
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE, ElementType.METHOD })
+	@MetaAnnotation
 	@NonRepeatableTestAnnotation("This annotation is meta present on anything annotated with @MetaAnnotatedTestAnnotation")
 	@RepeatableTestAnnotation("This annotation is meta present on anything annotated with @MetaAnnotatedTestAnnotation")
 	public @interface MetaAnnotatedTestAnnotation {
@@ -59,7 +64,7 @@ public class PioneerAnnotationUtilsTestCases {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE, ElementType.METHOD })
-	public @interface NotInheritedAnnotation {
+	public @interface SomeAnnotation {
 
 		String value() default "";
 
@@ -67,16 +72,16 @@ public class PioneerAnnotationUtilsTestCases {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE, ElementType.METHOD })
-	@Repeatable(NotInheritedRepeatableAnnotation.NotInheritedRepeatableAnnotations.class)
-	public @interface NotInheritedRepeatableAnnotation {
+	@Repeatable(RepeatableAnnotation.RepeatableAnnotations.class)
+	public @interface RepeatableAnnotation {
 
 		String value() default "";
 
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target({ ElementType.TYPE, ElementType.METHOD })
-		@interface NotInheritedRepeatableAnnotations {
+		@interface RepeatableAnnotations {
 
-			NotInheritedRepeatableAnnotation[] value();
+			RepeatableAnnotation[] value();
 
 		}
 
@@ -84,7 +89,7 @@ public class PioneerAnnotationUtilsTestCases {
 
 	@NonRepeatableTestAnnotation("This annotation is indirectly present (inherited) on any method of an implementing class.")
 	@RepeatableTestAnnotation("This annotation is indirectly present (inherited) on any method of an implementing class.")
-	@NotInheritedAnnotation
+	@SomeAnnotation
 	public interface Base {
 	}
 
@@ -161,38 +166,38 @@ public class PioneerAnnotationUtilsTestCases {
 
 	}
 
-	@RepeatableTestAnnotation("Inherited 1")
-	@RepeatableTestAnnotation("Inherited 2")
-	@NonRepeatableTestAnnotation("Inherited 3")
-	@MetaAnnotatedTestAnnotation("Annotated with repeatable 1")
-	@NotInheritedAnnotation
+	@RepeatableTestAnnotation("Repeatable 1")
+	@RepeatableTestAnnotation("Repeatable 2")
+	@NonRepeatableTestAnnotation("Repeatable 3")
+	@MetaAnnotatedTestAnnotation("Annotated with repeatable 1 and meta")
+	@SomeAnnotation
 	public static class AnnotatedAnnotations {
 
-		@RepeatableTestAnnotation("Inherited 4")
-		@RepeatableTestAnnotation("Inherited 5")
-		@NonRepeatableTestAnnotation("Inherited 6")
-		@NotInheritedAnnotation
-		@MetaAnnotatedTestAnnotation("Annotated with repeatable 2")
+		@RepeatableTestAnnotation("Repeatable 4")
+		@RepeatableTestAnnotation("Repeatable 5")
+		@NonRepeatableTestAnnotation("Repeatable 6")
+		@SomeAnnotation
+		@MetaAnnotatedTestAnnotation("Annotated with repeatable 2 and meta")
 		public void annotated() {
 
 		}
 
 	}
 
-	@NotInheritedRepeatableAnnotation("Not inherited repeatable 1")
-	@NotInheritedRepeatableAnnotation("Not inherited repeatable 2")
-	@NotInheritedAnnotation("Not inherited 1")
+	@RepeatableAnnotation("Repeatable 7")
+	@RepeatableAnnotation("Repeatable 8")
+	@SomeAnnotation("Some 1")
 	public interface TestInterface1 {
 	}
 
-	@NotInheritedRepeatableAnnotation("Not inherited repeatable 3")
-	@NotInheritedAnnotation("Not inherited 2")
+	@RepeatableAnnotation("Repeatable 9")
+	@SomeAnnotation("Some 2")
 	public interface TestInterface2 {
 	}
 
-	@NotInheritedAnnotation
-	@NotInheritedRepeatableAnnotation("Not inherited class 1")
-	@NotInheritedRepeatableAnnotation("Not inherited class 2")
+	@RepeatableAnnotation("Repeatable 10")
+	@RepeatableAnnotation("Repeatable 11")
+	@SomeAnnotation("Some 3")
 	public static class TestSuperclass {
 	}
 
