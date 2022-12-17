@@ -18,8 +18,10 @@ import java.lang.reflect.Field;
 import java.util.Properties;
 
 /**
- * Allow comparisons of java.util.Properties with awareness of their structure,
- * rather than just treating them as Maps.
+ * Allow comparisons of java.util.Properties with optional awareness of their structure,
+ * rather than just treating them as Maps.  Object values, which are marginally supported
+ * by Properties, is supported in assertions.
+ *
  */
 public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Properties> {
 
@@ -36,20 +38,15 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 		/**
 		 * Assert Properties has the same effective values as the passed instance, but not
 		 * the same nested default structure.
-		 *
-		 * Specifically, these aspects are compared:
-		 * <ul>
-		 * <li>String and Object keys and values directly present in the Properties are the same
-		 * ({@code .equals()}).</li>
-		 * <li>String keys and values are the same ({@code .equals()}) regardless if they are
-		 * directly present in the via a nested default.</li>
-		 * </ul>
-		 *
-		 * And these aspects are NOT compared:
-		 * <ul>
-		 * <li>Non-String key entries in nested defaults</li>
-		 * <li>Non-String values for String keys in nested defaults have their values considered null.</li>
-		 * </ul>
+		 * <p>
+		 * Properties are considered <em>effectively same</em> if they have the same property
+		 * names returned by {@code Properties.propertyNames()} and the same values returned by
+		 * {@code getProperty(name)}.  Properties may come from the properties instance itself,
+		 * or from a nested default instance, indiscrimiately.
+		 * <p>
+		 * Properties partially supports object values, but return null for {@code getProperty(name)}
+		 * when the value is a non-string.  This assertion follows the same rules:  Any non-String
+		 * value is considered null for comparison purposes.
 		 *
 		 * @param expected
 		 * @return
@@ -61,14 +58,18 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 
 			String kStr = k.toString();
 
-			Object actValue = actual.getProperty(kStr);
-			if (actValue == null) actValue = actual.get(k);
+			String actValue = actual.getProperty(kStr);
+			String expValue = expected.getProperty(kStr);
 
-			Object expValue = expected.getProperty(kStr);
-			if (expValue == null) expValue = expected.get(k);
-
-			if (!actValue.equals(expValue)) {
-				throw failure("For the property <%s> the actual value was <%s> but <%s> was expected",
+			if (actValue == null) {
+				if (expValue != null) {
+					// An object value is the only way to get a null from getProperty()
+					throw failure("For the property '<%s>', " +
+									"the actual value was an object but the expected the string '<%s>'.",
+							k, expValue);
+				}
+			} else if (!actValue.equals(expValue)) {
+				throw failure("For the property '<%s>', the actual value was <%s> but <%s> was expected",
 						k, actValue, expValue);
 			}
 		});
@@ -78,15 +79,20 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 
 			String kStr = k.toString();
 
-			Object actValue = actual.getProperty(kStr);
-			if (actValue == null) actValue = actual.get(k);	//Handles objects
+			String actValue = actual.getProperty(kStr);
+			String expValue = expected.getProperty(kStr);
 
-			Object expValue = expected.getProperty(kStr);
-			if (expValue == null) expValue = expected.get(k); //Handles objects
+			if (expValue == null) {
+				if (actValue != null) {
 
-			if (! expValue.equals(actValue)) {
+					// An object value is the only way to get a null from getProperty()
+					throw failure("For the property '<%s>', " +
+									"the actual value was the string '<%s>', but an object was expected.",
+							k, actValue);
+				}
+			} else if (! expValue.equals(actValue)) {
 				throw failure("The property <%s> was expected to be <%s>, but was missing",
-						k, expected.get(k));
+						k, expValue);
 			}
 		});
 
