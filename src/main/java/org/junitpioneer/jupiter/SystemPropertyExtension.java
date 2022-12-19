@@ -68,41 +68,45 @@ class SystemPropertyExtension
 	@Override
 	protected Properties prepareToEnterRestorableContext() {
 
-		System.out.println("prepareToEnterRestorableContext");
-
 		final Properties current = System.getProperties();
-		final Properties clone = cloneProperties(current);
+		final Properties clone = createEffectiveClone(current);
 
 		System.setProperties(clone);
 
 		return current;
 	}
 
+	@Override
+	protected void prepareToExitRestorableContext(final Properties properties) {
+		System.setProperties(properties);
+	}
+
 	/**
-	 * Create a complete clone of the passed original Properties.
+	 * A clone of the String values of the passed Properties, including defaults.
 	 * <p>
-	 * The clone should have the same effective values, but may not use the same wrapped default
-	 * structure as the original.
+	 * The clone will have the same effective values, but may not use the same nested
+	 * structure as the original.  Object values, which are technically possible,
+	 * are not included in the clone.
 	 *
 	 * @param original
 	 * @return
 	 */
-	Properties cloneProperties(final Properties original) {
+	static Properties createEffectiveClone(final Properties original) {
 		final Properties clone = new Properties();
 
+		// This implementation used because:
 		// System.getProperties() returns the actual Properties object, not a copy.
-		// Clone doesn't include defaults, but propertyNames() does.
+		// Clone doesn't include nested defaults, but propertyNames() does.
 		original.propertyNames().asIterator().forEachRemaining(k -> {
-			clone.put(k, original.getProperty(k.toString()));
+			String v = original.getProperty(k.toString());
+
+			if (v != null) {
+				// v will be null if the actual value was an object
+				clone.put(k, original.getProperty(k.toString()));
+			}
 		});
 
 		return clone;
-	}
-
-	@Override
-	protected void prepareToExitRestorableContext(final Properties properties) {
-		System.out.println("prepareToExitRestorableContext");
-		System.setProperties(properties);
 	}
 
 }

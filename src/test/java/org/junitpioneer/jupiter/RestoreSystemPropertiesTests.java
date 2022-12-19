@@ -26,10 +26,13 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 /**
  * Verify proper behavior when annotated on a top level class
+ *
+ * VerifySysPropsExtension is registered as an extension BEFORE RestoreSystemProperties.
+ * VerifySysPropsExtension stores the initial Sys Props and verifies them at the end.
  */
 @DisplayName("RestoreSystemProperties Annotation")
-@ExtendWith(RestoreSystemPropertiesTests.VerifySysPropsExtension.class)
-@RestoreSystemProperties
+@ExtendWith(RestoreSystemPropertiesTests.VerifySysPropsExtension.class)	// 1st: Order is important here
+@RestoreSystemProperties																// 2nd
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Execution(SAME_THREAD)	// Single thread.  See VerifySysPropsExtension inner class
@@ -40,15 +43,22 @@ class RestoreSystemPropertiesTests {
 		System.setProperty("A", "all sys A");
 		System.setProperty("B", "all sys B");
 
-		// Create a new Sys Props using defaults for all values!
-		// This crazy structure will need to be restored for each test and replaced
-		// with the original props when the test is complete
-		Properties orgProps = getflatClone(System.getProperties());	// Will include A & B from above
+		// Replace Sys Props w/ a crazy new instance using defaults for all values.
+		// RestoreSystemProperties should ensure this instance is in place for Sys Props before
+		// each test and auto-revert to the original Sys Prop instance when the Test class is done.
+		Properties orgProps = SystemPropertyExtension.createEffectiveClone(System.getProperties());	// Will include A & B from above
 		Properties newProps = new Properties(orgProps);
 
 		newProps.setProperty("C", "all sys C");	//	one prop actually set (not a default)
 
 		System.setProperties(newProps);
+	}
+
+	@AfterAll
+	static void globalTearDown() {
+		// Can I break this??
+		// Restore should restore it after @AfterAll - will be verified in VerifySysPropsExtension
+		System.setProperties(new Properties());
 	}
 
 	@BeforeEach
@@ -109,22 +119,25 @@ class RestoreSystemPropertiesTests {
 		}
 	}
 
-	/**
-	 * 'Dumb' clone that flattens the nested default structure into a flat set of values.
-	 *
-	 * @param original
-	 * @return
-	 */
-	static public Properties getflatClone(Properties original) {
+	@Test
+	@DisplayName("Verify local deepClone method")
+	public void deepCloneTest() throws Exception {
+		Properties inner1 = new Properties();
+		Properties inner2 = new Properties(inner1);
+		Properties outer = new Properties(inner2);
+		final Object B_OBJ = new Object();
+		final Object D_OBJ = new Object();
+		final Object F_OBJ = new Object();
 
-		final Properties clone = new Properties();
+		inner1.setProperty("A", "is A");
+		inner1.put("B", B_OBJ);
+		inner2.setProperty("C", "is C");
+		inner2.put("D", "is D");
+		outer.setProperty("E", "is E");
+		outer.put("F", F_OBJ);
 
-		// This will get default values, but doesn't handle non-strings...
-		original.propertyNames().asIterator().forEachRemaining(k -> {
-			clone.put(k, original.getProperty(k.toString()));
-		});
-
-		return clone;
+		Properties cloned = deepClone(outer);
+		PropertiesAssert.assertThat(cloned).isStrictlyTheSameAs(outer);
 	}
 
 	static public Properties deepClone(Properties original) throws Exception {
@@ -158,10 +171,10 @@ class RestoreSystemPropertiesTests {
 	}
 	/**
 	 * Extension that checks the before and after state of SysProps.
-	 *
-	 * Must be programatically registered with low 'Order' to precede extensions under test.
-	 * To avoid replicating the system being tested w/ the test itself, this doesn't
-	 * use the extension store, it just uses static state.  As a result, this test
+	 * <p>
+	 * Must be registered before RestoreSystemProperties.
+	 * To avoid replicating the system being tested w/ the test itself, this class
+	 * uses static state rather than the extension store.  As a result, this test
 	 * class is marked as single threaded.
 	 */
 	protected static class VerifySysPropsExtension implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
@@ -174,16 +187,11 @@ class RestoreSystemPropertiesTests {
 
 		@Override
 		public void beforeAll(final ExtensionContext context) throws Exception {
-			System.out.println("Verify BeforeAll");
-
 			beforeAllState.push(deepClone(System.getProperties()));
 		}
 
 		@Override
 		public void afterAll(final ExtensionContext context) throws Exception {
-
-			System.out.println("Verify in after All");
-
 			Properties preTest = beforeAllState.pop();
 			Properties actual = System.getProperties();
 
@@ -194,15 +202,11 @@ class RestoreSystemPropertiesTests {
 
 		@Override
 		public void beforeEach(final ExtensionContext context) throws Exception {
-			System.out.println("Verify BeforeEach");
-
 			beforeEachState = deepClone(System.getProperties());
 		}
 
 		@Override
 		public void afterEach(final ExtensionContext context) throws Exception {
-			System.out.println("Verify in after Each");
-
 			Properties preTest = beforeEachState;
 			Properties actual = System.getProperties();
 

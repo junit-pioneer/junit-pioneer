@@ -11,23 +11,18 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.assertion.PropertiesAssert;
+
+import java.util.Properties;
 
 @DisplayName("SystemProperty extension")
 class SystemPropertyExtensionTests {
@@ -126,7 +121,7 @@ class SystemPropertyExtensionTests {
 	@DisplayName("used with both ClearSystemProperty and SetSystemProperty")
 	@ClearSystemProperty(key = "A")
 	@SetSystemProperty(key = "clear prop D", value = "new D")
-	class CombinedSystemPropertyTests {
+	class CombinedClearAndSetTests {
 
 		@Test
 		@DisplayName("should be combinable")
@@ -171,6 +166,127 @@ class SystemPropertyExtensionTests {
 		}
 
 	}
+
+	@WritesSystemProperty	// Many of these tests write, many also access
+	@Execution(SAME_THREAD)	// Uses instance state
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)	// Uses instance state
+	@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+	class CombinedClearSetRestoreTests {
+
+		Properties initialSysProps;		// stateful
+
+		@BeforeAll
+		public void beforeAll() { initialSysProps = System.getProperties(); }
+
+		@AfterAll
+		public void afterAll() {
+			System.setProperties(new Properties());		// Really blow it up after this class
+		}
+
+		@Nested @Order(1)
+		@DisplayName("Set, Clear & Restore on class")
+		@ClearSystemProperty(key = "A")
+		@SetSystemProperty(key = "clear prop D", value = "new D")
+		@RestoreSystemProperties
+		@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+		class SetClearRestoreOnClass {
+
+			@Test	@Order(1)
+			@DisplayName("Set, Clear on method w/ direct set Sys Prop")
+			@ClearSystemProperty(key = "B")
+			@SetSystemProperty(key = "clear prop E", value = "new E")
+			void clearSetRestoreShouldBeCombinable() {
+
+				assertThat(System.getProperties())
+						.withFailMessage("Restore should swap out the Sys Properties instance")
+						.isNotSameAs(initialSysProps);
+
+				// Direct modification
+				System.setProperty("Restore", "Restore Me");	// SHOULDN'T BE VISIBLE IN NEXT TEST
+				System.getProperties().put("XYZ", this);			// SHOULDN'T BE VISIBLE IN NEXT TEST
+				assertThat(System.getProperty("Restore")).isEqualTo("Restore Me");
+				assertThat(System.getProperties().get("XYZ")).isSameAs(this);
+
+				// All the others
+				assertThat(System.getProperty("A")).isNull();
+				assertThat(System.getProperty("B")).isNull();
+				assertThat(System.getProperty("C")).isEqualTo("old C");
+
+				assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
+				assertThat(System.getProperty("clear prop E")).isEqualTo("new E");
+				assertThat(System.getProperty("clear prop F")).isNull();
+			}
+
+			@Test
+			@DisplayName("Restore from class should restore direct mods")
+			@Order(2)
+			void restoreShouldHaveRevertedDirectModification() {
+				assertThat(System.getProperty("Restore")).isNull();
+				assertThat(System.getProperties().get("XYZ")).isNull();
+				PropertiesAssert.assertThat(System.getProperties()).isStrictlyTheSameAs(initialSysProps);
+			}
+		}
+
+		@Nested @Order(2)
+		@DisplayName("Prior nested class changes should be restored}")
+		class priorNestedChangesRestored {
+			@Test
+			@DisplayName("Restore from class should restore direct mods")
+			void restoreShouldHaveRevertedDirectModification() {
+				PropertiesAssert.assertThat(System.getProperties()).isStrictlyTheSameAs(initialSysProps);
+			}
+		}
+
+		@Nested @Order(3)
+		@DisplayName("Set & Clear on class, Restore on method")
+		@ClearSystemProperty(key = "A")
+		@SetSystemProperty(key = "clear prop D", value = "new D")
+		@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+		class SetAndClearOnClass {
+
+			Properties initialSysProps;		// stateful
+
+			@BeforeAll
+			public void beforeAll() { initialSysProps = System.getProperties(); }
+
+
+			@Test	@Order(1)
+			@DisplayName("Set, Clear & Restore on method w/ direct set Sys Prop")
+			@ClearSystemProperty(key = "B")
+			@SetSystemProperty(key = "clear prop E", value = "new E")
+			@RestoreSystemProperties
+			void clearSetRestoreShouldBeCombinable() {
+
+				assertThat(System.getProperties())
+						.withFailMessage("Restore should swap out the Sys Properties instance")
+						.isNotSameAs(initialSysProps);
+
+				// Direct modification
+				System.setProperty("Restore", "Restore Me");	// SHOULDN'T BE VISIBLE IN NEXT TEST
+				System.getProperties().put("XYZ", this);			// SHOULDN'T BE VISIBLE IN NEXT TEST
+
+				// All the others
+				assertThat(System.getProperty("A")).isNull();
+				assertThat(System.getProperty("B")).isNull();
+				assertThat(System.getProperty("C")).isEqualTo("old C");
+
+				assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
+				assertThat(System.getProperty("clear prop E")).isEqualTo("new E");
+				assertThat(System.getProperty("clear prop F")).isNull();
+			}
+
+			@Test
+			@DisplayName("Restore from prior method should restore direct mods")
+			@Order(2)
+			void restoreShouldHaveRevertedDirectModification() {
+				assertThat(System.getProperty("Restore")).isNull();
+				assertThat(System.getProperties().get("XYZ")).isNull();
+				PropertiesAssert.assertThat(System.getProperties()).isStrictlyTheSameAs(initialSysProps);
+			}
+
+		}
+	}
+
 
 	@DisplayName("with nested classes")
 	@ClearSystemProperty(key = "A")
@@ -352,7 +468,7 @@ class SystemPropertyExtensionTests {
 
 	@Nested
 	@DisplayName("used with inheritance")
-	class InheritanceTests extends InheritanceBaseTest {
+	class InheritanceClearAndSetTests extends InheritanceClearAndSetBaseTest {
 
 		@Test
 		@Issue("448")
@@ -366,11 +482,142 @@ class SystemPropertyExtensionTests {
 
 	}
 
+	@Nested
+	@DisplayName("used with inheritance")
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	@Execution(SAME_THREAD)	// Uses instance state
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)	// Uses instance state
+	class InheritanceClearSetAndRestoreTests extends InheritanceClearSetAndRestoreBaseTest {
+
+		Properties initialSysProps;		// stateful
+
+		@BeforeAll
+		public void beforeAll() { initialSysProps = System.getProperties(); }
+
+		@Test		@Order(1)
+		@DisplayName("should inherit clear and set annotations")
+		void shouldInheritClearAndSetProperty() {
+
+			// Direct modification
+			System.setProperty("Restore", "Restore Me");	// SHOULDN'T BE VISIBLE IN NEXT TEST
+			System.getProperties().put("XYZ", this);			// SHOULDN'T BE VISIBLE IN NEXT TEST
+
+			assertThat(System.getProperty("A")).isNull();
+			assertThat(System.getProperty("B")).isNull();
+			assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
+			assertThat(System.getProperty("clear prop E")).isEqualTo("new E");
+		}
+
+		@Test
+		@DisplayName("Restore from class should restore direct mods")
+		@Order(2)
+		void restoreShouldHaveRevertedDirectModification() {
+			assertThat(System.getProperty("Restore")).isNull();
+			assertThat(System.getProperties().get("XYZ")).isNull();
+			PropertiesAssert.assertThat(System.getProperties()).isStrictlyTheSameAs(initialSysProps);
+		}
+
+	}
+
+	@Nested
+	@DisplayName("Unit tests of individual methods")
+	@WritesSystemProperty	// Many of these tests write, many also access
+	class UnitTests {
+		SystemPropertyExtension spe;
+
+		@BeforeEach
+		public void beforeEach() {
+			spe = new SystemPropertyExtension();
+		}
+
+		@Nested
+		@DisplayName("cloneProperties Tests")
+		class ClonePropertiesTests {
+
+			Properties inner;
+			Properties outer;	//Created w/ inner as nested defaults
+
+			@BeforeEach
+			public void beforeEach() {
+				inner = new Properties();
+				outer = new Properties(inner);
+
+				inner.setProperty("A", "is A");
+				outer.setProperty("B", "is B");
+			}
+
+			@Test
+			@DisplayName("Nested defaults handled")
+			void nestedDefaultsHandled() {
+				Properties cloned = SystemPropertyExtension.createEffectiveClone(outer);
+				PropertiesAssert.assertThat(cloned).isEffectivelyTheSameAs(outer);
+			}
+
+			@Test
+			@DisplayName("Object values are skipped")
+			void objectValuesAreSkipped() {
+				inner.put("inner_obj", new Object());
+				outer.put("outer_obj", new Object());
+				Properties cloned = SystemPropertyExtension.createEffectiveClone(outer);
+
+				PropertiesAssert.assertThat(cloned).isEffectivelyTheSameAs(outer);
+				assertThat(cloned.contains("inner_obj")).isFalse();
+				assertThat(cloned.contains("outer_obj")).isFalse();
+			}
+
+		}
+
+		@Nested
+		@DisplayName("RestorableContext Tests")
+		class RestorableContextTests {
+			@Test
+			@DisplayName("Workflow of RestorableContext")
+			void workflowOfRestorableContexts() {
+				Properties initialSysProps = System.getProperties();	//This is a live reference
+
+				try {
+					Properties returnedFromPrepareToEnter = spe.prepareToEnterRestorableContext();
+					Properties postPrepareToEnterSysProps = System.getProperties();
+					spe.prepareToExitRestorableContext(initialSysProps);
+					Properties postPrepareToExitSysProps = System.getProperties();
+
+					PropertiesAssert.assertThat(returnedFromPrepareToEnter)
+							.withFailMessage("prepareToEnterRestorableContext should return actual original or deep copy")
+							.isStrictlyTheSameAs(initialSysProps);
+
+					assertThat(returnedFromPrepareToEnter)
+							.withFailMessage("prepareToEnterRestorableContext should replace the actual Sys Props")
+							.isNotSameAs(postPrepareToEnterSysProps);
+
+					PropertiesAssert.assertThat(postPrepareToEnterSysProps).isEffectivelyTheSameAs(initialSysProps);
+
+					// Could assert isSameAs, but a deep copy would also be allowed
+					PropertiesAssert.assertThat(postPrepareToExitSysProps).isStrictlyTheSameAs(initialSysProps);
+
+				} finally {
+					System.setProperties(initialSysProps);	// Ensure complete recovery
+				}
+			}
+		}
+
+
+
+	}
+
 	@ClearSystemProperty(key = "A")
 	@ClearSystemProperty(key = "B")
 	@SetSystemProperty(key = "clear prop D", value = "new D")
 	@SetSystemProperty(key = "clear prop E", value = "new E")
-	static class InheritanceBaseTest {
+	static class InheritanceClearAndSetBaseTest {
+
+	}
+
+	@ClearSystemProperty(key = "A")
+	@ClearSystemProperty(key = "B")
+	@SetSystemProperty(key = "clear prop D", value = "new D")
+	@SetSystemProperty(key = "clear prop E", value = "new E")
+	@RestoreSystemProperties
+	static class InheritanceClearSetAndRestoreBaseTest {
 
 	}
 

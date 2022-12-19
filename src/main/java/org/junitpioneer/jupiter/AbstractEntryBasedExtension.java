@@ -302,7 +302,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	 * <li>Leave the original entry environment in place and return a clone of that environment.
 	 * In this case {@link #prepareToExitRestorableContext} will restore the clone.
 	 * <li>Preemptively swap the current entry environment with a clone and return the original
-	 * environment.  In this case the 'prepareToExit' will restore the original environment.</li>
+	 * environment (or a deep clone of it).
+	 * In this case the 'prepareToExit' will restore the original environment.</li>
 	 * </ul>
 	 *
 	 * The returned Properties must not be null and its key-value pairs must follow the rules for
