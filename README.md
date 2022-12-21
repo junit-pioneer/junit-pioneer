@@ -16,7 +16,7 @@ Check out [junit-pioneer.org](https://junit-pioneer.org/), particularly [the doc
 ## A Pioneer's Mission
 
 JUnit Pioneer provides extensions for [JUnit 5](https://github.com/junit-team/junit5/) and its Jupiter API.
-It does not limit itself to proven ideas with wide application but is purposely open to experiments.
+It does not limit itself to proven ideas with wide application but is purposely open to experimentation.
 It aims to spin off successful and cohesive portions into sibling projects or back into the JUnit 5 code base.
 
 To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its infrastructure, from code style to build tool and configuration to continuous integration.
@@ -50,8 +50,8 @@ testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
 
 ## Dependencies
 
-JUnit Pioneer is compiled against Java 8 (built with JDK 11), but comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
-That means it can be used on all Java versions 8 and higher on class path and module path.
+Starting with release 2.0, JUnit Pioneer is compiled against **Java 11** and comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
+That means it can be used on all Java versions 11 and higher on class path and module path.
 
 Pioneer does not only use JUnit 5's API, but also other artifacts from its ecosystem such as [`junit-platform-commons`](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons).
 To avoid dependency issues (e.g. in [junit-pioneer#343](https://github.com/junit-pioneer/junit-pioneer/issues/343)), you should add the JUnit 5 BOM ([`junit-bom`](https://mvnrepository.com/artifact/org.junit/junit-bom)) to your project instead of defining all dependency versions manually.

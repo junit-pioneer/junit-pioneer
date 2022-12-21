@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -162,6 +163,18 @@ public class PioneerUtils {
 			}
 		}
 		return resultLists;
+	}
+
+	public static Locale createLocale(String language, String country, String variant) {
+		return new Locale.Builder().setLanguage(language).setRegion(country).setVariant(variant).build();
+	}
+
+	public static Locale createLocale(String language, String country) {
+		return new Locale.Builder().setLanguage(language).setRegion(country).build();
+	}
+
+	public static Locale createLocale(String language) {
+		return new Locale.Builder().setLanguage(language).build();
 	}
 
 }
