@@ -15,7 +15,6 @@ import org.junit.jupiter.api.*;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Verify proper behavior when annotated on a top level class.
@@ -91,6 +90,11 @@ class PropertiesAssertTests {
 		objProp2wDefaults = new Properties(objProp2);
 		objProp2wDefaults.put("Q", Q_OBJ);
 		objProp2wDefaults.put("R", R_OBJ);
+	}
+
+	@Test
+	public void fakeTest() {
+
 	}
 
 	@Nested
