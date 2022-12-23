@@ -20,27 +20,28 @@ import java.lang.annotation.Target;
 /**
  * {@code @RestoreSystemProperties} is a JUnit Jupiter extension to restore the entire set of
  * system properties to the original value, or the value of the higher-level container, after the
- * annotated element has been executed.
+ * annotated element is complete.
  *
- * <p>Use this annotation when you need programmatically modify system properties in a test method
- * or in {@code @BeforeAll} / {@code @BeforeEach} blocks.
+ * <p>Use this annotation when there is a need programmatically modify system properties in a test
+ * method or in {@code @BeforeAll} / {@code @BeforeEach} blocks.
  * To simply set or clear a system property, consider {@link SetSystemProperty @SetSystemProperty} or
  * {@link ClearSystemProperty @ClearSystemProperty} instead.
  * </p>
  *
  * <p>{@code RestoreSystemProperties} can be used on the method and on the class level.
- * When placed on a test method, system properties are stored before the method is run and restored
- * after the method is complete.  Specifically, properties are stored after any {@code @BeforeAll}
- * methods have run and before any {@code @BeforeEach} methods.</p>
+ * When placed on a test method, a snapshot of system properties is stored prior to that test.
+ * The snapshot is created before any {@code @BeforeEach} blocks in scope and before any
+ * {@link SetSystemProperty @SetSystemProperty} or {@link ClearSystemProperty @ClearSystemProperty}
+ * annotations on that method.  After the test, system properties are restored from the
+ * snapshot after any {@code @AfterEach} have completed.
  *
- * <p>When placed on a test class, system properties are stored before the test class runs and
- * restored after the test class is complete, <em>in addition too</em> running before and after
- * each test method just as if the annotation was on each method.  An advanced usage could include
- * modifying some system properties in a {@code @BeforeAll} block to apply to all tests and
- * additional property modifications within some tests themselves, all while safely restoring
- * the state of the system properties after each test and after the entire test class.</p>
- *
- * <p>SetSystemProperty and ClearSystemProperty interaction....</p>
+ * <p>When placed on a test class, a snapshot of system properties is stored prior to any
+ * {@code @BeforeAll} blocks in scope and before any {@link SetSystemProperty @SetSystemProperty}
+ * or {@link ClearSystemProperty @ClearSystemProperty} annotations on that class.
+ * After the test class completes, system properties are restored from the snapshot after any
+ * {@code @AfterAll} blocks have completed.
+ * In addition, a class level annotation is inherited by each test method just as if each one was
+ * annotated with {@code RestoreSystemProperties}.
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
@@ -54,9 +55,12 @@ import java.lang.annotation.Target;
  * <code>@ClearSystemProperty, @SetSystemProperty and @RestoreSystemProperties</code></a>.
  * </p>
  *
- * <p>Note:  System properties are normally just strings, however, it is technically possible to bend the
- * rules a bit to store other objects.  If this is your situation, be aware that this extension
- * does a shallow copy of the system properties hashmap.</p>
+ * <p><em>Note:</em>  System properties are normally just a hashmap of strings, however, it is
+ * technically possible to store non-string values and create nested Properties with inherited /
+ * default values.  Within the context of an element annotated with {@link RestoreSystemProperties},
+ * non-String values are not preserved and the structure of nested defaults are flattened.
+ * After the annotated context is exited, the original Properties object is restored with
+ * all its potential (non-standard) richness.</p>
  *
  * @since 1.9.2
  */
