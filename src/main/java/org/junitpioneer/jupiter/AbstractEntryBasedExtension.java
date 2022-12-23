@@ -10,17 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toMap;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -32,6 +21,24 @@ import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * An abstract base class for entry-based extensions, where entries (key-value
@@ -175,11 +182,11 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	 * Restore the complete original state of the entries as they were prior to this ExtensionContext,
 	 * if the complete state was initially stored in a BeforeXXX event.
 	 *
-	 * @param originalContext
+	 * @param context The ExtensionContext which may have a bulk backup stored
 	 * @return true if a complete backup exists and was used to restore, false if not.
 	 */
-	private boolean restoreOriginalCompleteEntries(ExtensionContext originalContext) {
-		Properties bulk = getStore(originalContext).get(getStoreKey(originalContext, COMPLETE_KEY), Properties.class);
+	private boolean restoreOriginalCompleteEntries(ExtensionContext context) {
+		Properties bulk = getStore(context).get(getStoreKey(context, COMPLETE_KEY), Properties.class);
 
 		if (bulk != null) {
 			this.prepareToExitRestorableContext(bulk);

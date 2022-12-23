@@ -30,6 +30,12 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 		super(actual, PropertiesAssert.class);
 	}
 
+	/**
+	 * Begin an assertion
+	 *
+	 * @param actual The value the assert is made WRT.
+	 * @return Assertion instance
+	 */
 	public static PropertiesAssert assertThat(Properties actual) {
 		return new PropertiesAssert(actual);
 	}
@@ -48,8 +54,8 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 		 * when the value is a non-string.  This assertion follows the same rules:  Any non-String
 		 * value is considered null for comparison purposes.
 		 *
-		 * @param expected
-		 * @return
+		 * @param expected The actual is expected to be effectively the same as this Properties
+		 * @return Assertion instance
 		 */
 	public PropertiesAssert isEffectivelyTheSameAs(Properties expected) {
 
@@ -100,7 +106,12 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	}
 
 
-
+	/**
+	 * The converse of isEffectivelyTheSameAs.
+	 *
+	 * @param expected The actual is expected to NOT be effectively the same as this Properties
+	 * @return Assertion instance
+	 */
 	public PropertiesAssert isNotEffectivelyTheSameAs(Properties expected) {
 		try {
 			isEffectivelyTheSameAs(expected);
@@ -115,11 +126,8 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	/**
 	 * Compare values directly present in Properties and recursively into default Properties.
 	 *
-	 * Objects (non-Strings) within the Properties object are compared with {@code .equals()}.
-	 *
-	 *
-	 * @param expected
-	 * @return
+	 * @param expected The actual is expected to be strictly the same as this Properties
+	 * @return Assertion instance
 	 */
 	public PropertiesAssert isStrictlyTheSameAs(Properties expected) {
 
@@ -159,8 +167,8 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	/**
 	 * Simple converse of isStrictlyTheSameAs.
 	 *
-	 * @param expected
-	 * @return
+	 * @param expected The actual is expected to NOT be strictly the same as this Properties
+	 * @return Assertion instance
 	 */
 	public PropertiesAssert isNotStrictlyTheSameAs(Properties expected) {
 		try {
@@ -175,8 +183,8 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	/**
 	 * Use reflection to grab the {@code defaults} field from a java.utils.Properties instance.
 	 *
-	 * @param parent
-	 * @return
+	 * @param parent The Properties to fetch default values from
+	 * @return The Properties instance that was stored as defaults in the parent.
 	 */
 	protected Properties getDefaultFieldValue(Properties parent) {
 		Field field = ReflectionSupport

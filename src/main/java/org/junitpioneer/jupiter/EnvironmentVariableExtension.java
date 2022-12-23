@@ -10,12 +10,14 @@
 
 package org.junitpioneer.jupiter;
 
-import java.util.*;
+import org.junit.jupiter.api.extension.ExtensionContext;
+
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
 
 class EnvironmentVariableExtension
 		extends AbstractEntryBasedExtension<String, String,

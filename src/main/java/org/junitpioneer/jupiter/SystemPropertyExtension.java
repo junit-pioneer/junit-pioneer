@@ -88,8 +88,8 @@ class SystemPropertyExtension
 	 * structure as the original.  Object values, which are technically possible,
 	 * are not included in the clone.
 	 *
-	 * @param original
-	 * @return
+	 * @param original Properties to be cloned
+	 * @return A new Properties instance containing the same effective entries as the original.
 	 */
 	static Properties createEffectiveClone(final Properties original) {
 		final Properties clone = new Properties();
