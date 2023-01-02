@@ -30,6 +30,11 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.assertion.PropertiesAssert;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -454,8 +459,8 @@ class SystemPropertyExtensionTests {
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
-	}
 
+	}
 	static class MethodLevelInitializationFailureTestCases {
 
 		@Test
@@ -544,6 +549,32 @@ class SystemPropertyExtensionTests {
 		}
 
 		@Nested
+		@DisplayName("Basic attributes")
+		class BasicAttributes {
+
+			@Test
+			@DisplayName("Restore ann has correct markers")
+			public void restoreHasCorrectMarkers() {
+				assertThat(RestoreSystemProperties.class)
+						.hasAnnotations(Inherited.class, WritesSystemProperty.class);
+			}
+
+			@Test
+			@DisplayName("Restore ann has correct retention")
+			public void restoreHasCorrectRetention() {
+				assertThat(RestoreSystemProperties.class.getAnnotation(Retention.class).value())
+						.isEqualTo(RetentionPolicy.RUNTIME);
+			}
+
+			@Test
+			@DisplayName("Restore ann has correct targets")
+			public void restoreHasCorrectTargets() {
+				assertThat(RestoreSystemProperties.class.getAnnotation(Target.class).value())
+						.containsExactlyInAnyOrder(ElementType.METHOD, ElementType.TYPE);
+			}
+
+		}
+		@Nested
 		@DisplayName("cloneProperties Tests")
 		class ClonePropertiesTests {
 
@@ -581,8 +612,8 @@ class SystemPropertyExtensionTests {
 		}
 
 		@Nested
-		@DisplayName("RestorableContext Tests")
-		class RestorableContextTests {
+		@DisplayName("RestorableContext Workflow Tests")
+		class RestorableContextWorkflowTests {
 			@Test
 			@DisplayName("Workflow of RestorableContext")
 			void workflowOfRestorableContexts() {
@@ -612,8 +643,6 @@ class SystemPropertyExtensionTests {
 				}
 			}
 		}
-
-
 
 	}
 
