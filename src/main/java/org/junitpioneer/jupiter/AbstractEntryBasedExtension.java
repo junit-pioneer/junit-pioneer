@@ -7,6 +7,7 @@
  *
  * http://www.eclipse.org/legal/epl-v20.html
  */
+
 package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;

@@ -1,12 +1,13 @@
-:page-title: Clearing or Setting System Properties
-:page-description: The JUnit 5 (Jupiter) extensions `@ClearSystemProperty`/`@SetSystemProperty` clear/set the values of system properties for the duration of a test
+:page-title: Clearing, Setting and Restoring System Properties
+:page-description: The JUnit 5 (Jupiter) extensions `@ClearSystemProperty`, `@SetSystemProperty` and `@RestoreSystemProperties`	 clear/set/restore the values of system properties during a test
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/SystemPropertyExtensionDemo.java
 
+== `@ClearSystemProperty` and `@SetSystemProperty`
 The `@ClearSystemProperty` and `@SetSystemProperty` annotations can be used to clear and set, respectively, the values of system properties for a test execution.
 Both annotations work on the test method and class level, are repeatable, combinable, and inherited from higher-level containers.
 After the annotated method has been executed, the properties mentioned in the annotation will be restored to their original value or the value of the higher-level container, or will be cleared if they didn't have one before.
-Other system properties that are changed during the test, are *not* restored.
+Other system properties that are changed during the test, are *not* restored (unless the `@RestoreSystemProperties` is used).
 
 For example, clearing a system property for a test execution can be done as follows:
 
@@ -44,13 +45,41 @@ Method-level configurations are visible in both `@BeforeEach` setup methods and 
 Since v1.7.0, a class-level configuration means that the specified system properties are cleared/set before and reset after each individual test in the annotated class.
 ====
 
-Sometimes, you might also need to set a system property to a value that is not a constant expression, which is required for annotation values.
-In this case, you can still leverage the restore mechanism:
+== `@RestoreSystemProperties`
+When you need to modify system properties directly in your code, either for a parameterized tests or other custom requirements, `@RestoreSystemProperties` can be used to ensure system properties are restored.
+`@RestoreSystemProperties` can be used on test methods or test classes to completely restores all system properties to their original state after a test or test class is complete.
+
+In this example, `@RestoreSystemProperties` is used on a test method, so any change made in that method are restored:
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=systemproperty_parameter]
+include::{demo}[tag=systemproperty_restore_test]
 ----
+
+[NOTE]
+====
+`@ClearSystemProperty` and `@SetSystemProperty` cannot accept variables for values, so any type of calculated or parameterized value needs to be set in code.
+====
+
+When `@RestoreSystemProperties` is used on a test class, any changes made in `@BeforeAll` methods is restored after the test class is complete.
+In addition, a class level annotation is inherited by each test method just as if each one was annotated with `@RestoreSystemProperties`.
+
+In the following example, `SomeOtherTest` is completely isolated from changes made in `MySystemPropertyRestoreTest` and `isolatedTest2` is isolated from changes made in `isolatedTest1`.
+Both `isolatedTest1` and `isolatedTest2` will see system property values set in `@BeforeAll` and `@BeforeEach`, however.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=systemproperty_restore_class_level]
+----
+
+
+When placed on a test method, a snapshot of system properties is stored prior to that test.
+The snapshot is created before any `@BeforeEach` blocks in scope and before the effects of any `@SetSystemProperty` or `@ClearSystemProperty` annotations on that method.
+After the test method, system properties are restored from the snapshot after any `@AfterEach` have completed.
+
+
+
+
 
 == Thread-Safety
 

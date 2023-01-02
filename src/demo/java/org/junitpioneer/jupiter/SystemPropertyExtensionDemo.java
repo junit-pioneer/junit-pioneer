@@ -12,6 +12,8 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -59,13 +61,38 @@ public class SystemPropertyExtensionDemo {
 	}
 	// end::systemproperty_using_at_class_level[]
 
-	// tag::systemproperty_parameter[]
+	// tag::systemproperty_restore_test[]
 	@ParameterizedTest
 	@ValueSource(strings = { "foo", "bar" })
-	@ClearSystemProperty(key = "some property")
+	@RestoreSystemProperties
 	void parameterizedTest(String value) {
-		System.setProperty("some property", value);
+		System.setProperty("some parameterized property", value);
+		System.setProperty("some other dynamic property", "my code calculates somehow");
 	}
-	// end::systemproperty_parameter[]
+	// end::systemproperty_restore_test[]
+
+	// tag::systemproperty_restore_class_level[]
+	@RestoreSystemProperties
+	class MySystemPropertyRestoreTest {
+
+		@BeforeAll
+		public void beforeAll() { System.setProperty("A", "A value"); }
+
+		@BeforeEach
+		public void beforeEach() { System.setProperty("B", "B value"); }
+
+		@Test
+		void isolatedTest1() { System.setProperty("C", "C value"); }
+
+		@Test
+		void isolatedTest2() {
+			// A & B are visible, C is not
+		}
+	}
+
+	class SomeOtherTest {
+		// Changes to A, B & C have been restored to their values prior to the above test
+	}
+	// end::systemproperty_restore_class_level[]
 
 }
