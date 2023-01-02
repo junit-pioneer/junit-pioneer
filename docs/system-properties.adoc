@@ -46,51 +46,46 @@ Since v1.7.0, a class-level configuration means that the specified system proper
 ====
 
 == `@RestoreSystemProperties`
-When you need to modify system properties directly in your code, either for a parameterized tests or other custom requirements, `@RestoreSystemProperties` can be used to ensure system properties are restored.
-`@RestoreSystemProperties` can be used on test methods or test classes to completely restores all system properties to their original state after a test or test class is complete.
+`@RestoreSystemProperties` can be used to restore changes to system properties made directly in code.
+While `@ClearSystemProperty` and `@SetSystemProperty` set or clear specific properties and values, they don't allow property values to be calculated or parameterized, thus there are times you may want to directly set properties in your test code.
+`@RestoreSystemProperties` can be placed on test methods or test classes and will completely restore all system properties to their original state after a test or test class is complete.
 
-In this example, `@RestoreSystemProperties` is used on a test method, so any change made in that method are restored:
+In this example, `@RestoreSystemProperties` is used on a test method, ensuring any changes made in that method are restored:
 
 [source,java,indent=0]
 ----
 include::{demo}[tag=systemproperty_restore_test]
 ----
 
-[NOTE]
-====
-`@ClearSystemProperty` and `@SetSystemProperty` cannot accept variables for values, so any type of calculated or parameterized value needs to be set in code.
-====
-
-When `@RestoreSystemProperties` is used on a test class, any changes made in `@BeforeAll` methods is restored after the test class is complete.
-In addition, a class level annotation is inherited by each test method just as if each one was annotated with `@RestoreSystemProperties`.
+When `@RestoreSystemProperties` is used on a test class, any system properties changes made during the entire lifecycle of test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, is restored after the test class lifecycle is complete.
+In addition, the annotation is inherited by each test method just as if each one was annotated with `@RestoreSystemProperties`.
 
 In the following example, `SomeOtherTest` is completely isolated from changes made in `MySystemPropertyRestoreTest` and `isolatedTest2` is isolated from changes made in `isolatedTest1`.
-Both `isolatedTest1` and `isolatedTest2` will see system property values set in `@BeforeAll` and `@BeforeEach`, however.
+Both `isolatedTest1` and `isolatedTest2` _will_ see system property values set in `@BeforeAll` and `@BeforeEach`.
 
 [source,java,indent=0]
 ----
 include::{demo}[tag=systemproperty_restore_class_level]
 ----
 
+=== `@RestoreSystemProperties` Limitations
+The system `Properties` object is normally just a hashmap of strings, however, it is technically possible to store non-string values and create https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Properties.html#%3Cinit%3E(java.util.Properties)[nested `Properties` with inherited default values].
+`@RestoreSystemProperties` restores the original `SystemProperties` object with all of it's potential richness _after_ the annotated scope is complete.
+However, for use during the test _within_ the test scope it provides a cloned `Properties` object with these limitations:
 
-When placed on a test method, a snapshot of system properties is stored prior to that test.
-The snapshot is created before any `@BeforeEach` blocks in scope and before the effects of any `@SetSystemProperty` or `@ClearSystemProperty` annotations on that method.
-After the test method, system properties are restored from the snapshot after any `@AfterEach` have completed.
-
-
-
-
+- Properties with non-string values are removed
+- Nested `Properties` are flattened into a non-nested instance that has the same effective values, but not necessarily the same structure
 
 == Thread-Safety
 
 Since system properties are global state, reading and writing them during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution] can lead to unpredictable results and flaky tests.
-The system property extension is prepared for that and tests annotated with `@ClearSystemProperty` or `@SetSystemProperty` will never execute in parallel (thanks to https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/parallel/ResourceLock.html[resource locks]) to guarantee correct test results.
+The system property extension is prepared for that and tests annotated with `@ClearSystemProperty`, `@SetSystemProperty`, or `@RestoreSystemProperties` will never execute in parallel (thanks to https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/parallel/ResourceLock.html[resource locks]) to guarantee correct test results.
 
 However, this does not cover all possible cases.
 Tested code that reads or writes system properties _independently_ of the extension can still run in parallel to it and may thus behave erratically when, for example, it unexpectedly reads a property set by the extension in another thread.
 Tests that cover code that reads or writes system properties need to be annotated with the respective annotation:
 
 * `@ReadsSystemProperty`
-* `@WritesSystemProperty`
+* `@WritesSystemProperty` (though consider using `@RestoreSystemProperties` instead)
 
-Tests annotated in this way will never execute in parallel with tests annotated with `@ClearSystemProperty` or `@SetSystemProperty`.
+Tests annotated in this way will never execute in parallel with tests annotated with `@ClearSystemProperty`, `@SetSystemProperty`, or `@RestoreSystemProperties`.
