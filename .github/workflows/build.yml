@@ -38,7 +38,7 @@ jobs:
     name: Gradle wrapper validation
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
@@ -58,12 +58,12 @@ jobs:
     name: with Java 11 on ${{ matrix.os }}
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # Sonar needs the whole Git history for issue assignment
           fetch-depth: 0
       - name: Set up Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: temurin
@@ -93,9 +93,9 @@ jobs:
     name: Code format check
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: temurin
@@ -122,9 +122,9 @@ jobs:
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
@@ -152,7 +152,7 @@ jobs:
     # but set the Gradle toolchain to use the experimental version.
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up experimental Java
         uses: oracle-actions/setup-java@v1
         with:
@@ -162,7 +162,7 @@ jobs:
         shell: bash
         run: echo "JDK_EXPERIMENTAL=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up supported Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: temurin
@@ -188,12 +188,12 @@ jobs:
     name: Release Pioneer into the wild
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # Shipkit needs the whole Git history for changelog generation
           fetch-depth: 0
       - name: Set up Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: temurin
