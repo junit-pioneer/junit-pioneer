@@ -549,8 +549,8 @@ class SystemPropertyExtensionTests {
 		}
 
 		@Nested
-		@DisplayName("Basic attributes")
-		class BasicAttributes {
+		@DisplayName("Attributes of RestoreSystemProperties")
+		class BasicAttributesOfRestoreSystemProperties {
 
 			@Test
 			@DisplayName("Restore ann has correct markers")

@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_KEY;
 import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_VALUE;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
@@ -31,6 +32,16 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.assertion.PropertiesAssert;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 @DisplayName("EnvironmentVariable extension")
 class EnvironmentVariableExtensionTests {
@@ -434,6 +445,92 @@ class EnvironmentVariableExtensionTests {
 			assertThat(systemEnvironmentVariable("clear envvar E")).isEqualTo("new E");
 		}
 
+	}
+
+
+	@Nested
+	@DisplayName("Unit tests of individual methods")
+	@WritesEnvironmentVariable	// Many of these tests write, many also access
+	class UnitTests {
+		EnvironmentVariableExtension eve;
+
+		@BeforeEach
+		public void beforeEach() {
+			eve = new EnvironmentVariableExtension();
+		}
+
+		@Nested
+		@DisplayName("Attributes of RestoreEnvironmentVariables")
+		class BasicAttributesOfRestoreEnvironmentVariables {
+
+			@Test
+			@DisplayName("Restore ann has correct markers")
+			public void restoreHasCorrectMarkers() {
+				assertThat(RestoreEnvironmentVariables.class)
+						.hasAnnotations(Inherited.class, WritesEnvironmentVariable.class);
+			}
+
+			@Test
+			@DisplayName("Restore ann has correct retention")
+			public void restoreHasCorrectRetention() {
+				assertThat(RestoreEnvironmentVariables.class.getAnnotation(Retention.class).value())
+						.isEqualTo(RetentionPolicy.RUNTIME);
+			}
+
+			@Test
+			@DisplayName("Restore ann has correct targets")
+			public void restoreHasCorrectTargets() {
+				assertThat(RestoreEnvironmentVariables.class.getAnnotation(Target.class).value())
+						.containsExactlyInAnyOrder(ElementType.METHOD, ElementType.TYPE);
+			}
+
+		}
+
+		@Nested
+		@DisplayName("RestorableContext Workflow Tests")
+		class RestorableContextWorkflowTests {
+
+			@Test
+			@DisplayName("Workflow of RestorableContext")
+			void workflowOfRestorableContexts() {
+
+				Properties initialEnvVars = new Properties();
+				initialEnvVars.putAll(System.getenv());
+
+				try {
+					Properties returnedFromPrepareToEnter = eve.prepareToEnterRestorableContext();
+
+					PropertiesAssert.assertThat(returnedFromPrepareToEnter).isStrictlyTheSameAs(initialEnvVars);
+
+					// modify actual env vars
+					EnvironmentVariableUtils.clear("set envvar A");
+					EnvironmentVariableUtils.set("set envvar B", "XXX");
+					EnvironmentVariableUtils.set("NewEntry", "I am new");
+
+					// Sanity check:  Above changes should be visible in env vars
+					assertThat(System.getenv("set envvar A")).isNull();
+					assertThat(System.getenv("set envvar B")).isEqualTo("XXX");
+					assertThat(System.getenv("NewEntry")).isEqualTo("I am new");
+
+					// changes should not be reflected in detached clone
+					assertThat(returnedFromPrepareToEnter).contains(entry("set envvar A", "old A"));
+					assertThat(returnedFromPrepareToEnter).contains(entry("set envvar B", "old B"));
+					assertThat(returnedFromPrepareToEnter).doesNotContainKey("NewEntry");
+
+					// prepare to exit should restore original values
+					eve.prepareToExitRestorableContext(returnedFromPrepareToEnter);
+
+					// verify changed vals
+					assertThat(System.getenv("set envvar A")).isEqualTo("old A");
+					assertThat(System.getenv("set envvar B")).isEqualTo("old B");
+					assertThat(System.getenv("NewEntry")).isNull();
+
+				} finally {
+					// failsafe:  manually reset the values set in this method
+					EnvironmentVariableUtils.clear("NewEntry");
+				}
+			}
+		}
 	}
 
 	@ClearEnvironmentVariable(key = "set envvar A")

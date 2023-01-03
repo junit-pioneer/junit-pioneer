@@ -84,9 +84,9 @@ class EnvironmentVariableExtension
 	protected void prepareToExitRestorableContext(final Properties restoreMe) {
 		final Map<String, String> existingEnv = System.getenv();
 
-		// Set all values, but only if different from actual value to avoid reflective set
+		// Set all values, but only if different from actual value
 		restoreMe.entrySet().parallelStream()
-				.filter(e -> ! System.getenv(e.getKey().toString()).equals(e.getValue()))
+				.filter(e -> ! e.getValue().equals(System.getenv(e.getKey().toString())) )
 				.forEach(e -> setEntry(e.getKey().toString(), e.getValue().toString()));
 
 
