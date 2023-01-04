@@ -1,12 +1,13 @@
-:page-title: Clearing or Setting Environment Variables
-:page-description: The JUnit 5 (Jupiter) extensions `@ClearEnvironmentVariable`/`@SetEnvironmentVariable` clear/set the values of environment variables for the duration of a test
+:page-title: Clearing, Setting and Restoring Environment Variables
+:page-description: The JUnit 5 (Jupiter) extensions `@ClearEnvironmentVariable`, `@SetEnvironmentVariable` and `@RestoreEnvironmentVariables` clear/set/restore the values of environment variables during a test
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/EnvironmentVariablesExtensionDemo.java
 
+== `@ClearEnvironmentVariable` and `@SetEnvironmentVariable`
 The `@ClearEnvironmentVariable` and `@SetEnvironmentVariable` annotations can be used to clear and set, respectively, the values of environment variables for a test execution.
 Both annotations work on the test method and class level, are repeatable, combinable, and inherited from higher-level containers.
 After the annotated method has been executed, the variables mentioned in the annotation will be restored to their original value or the value of the higher-level container, or will be cleared if they didn't have one before.
-Other environment variables that are changed during the test, are *not* restored.
+Other environment variables that are changed during the test, are *not* restored (unless the `@RestoreEnvironmentVariables` is used).
 
 [WARNING]J
 ====
@@ -51,6 +52,35 @@ Method-level configurations are visible in both `@BeforeEach` setup methods and 
 Since v1.7.0, a class-level configuration means that the specified environment variables are cleared/set before and reset after each individual test in the annotated class.
 ====
 
+== `@RestoreEnvironmentVariables`
+`@RestoreEnvironmentVariables` can be used to restore changes to environment variables made directly in code.
+While `@ClearEnvironmentVariable` and `@SetEnvironmentVariable` set or clear specific variables and values, they don't allow values to be calculated or parameterized, thus there are times you may want to directly set them in your test code.
+`@RestoreEnvironmentVariables` can be placed on test methods or test classes and will completely restore all environment variables to their original state after a test or test class is complete.
+
+In this example, `@RestoreEnvironmentVariables` is used on a test method, ensuring any changes made in that method are restored:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=environment_method_restore_test]
+----
+
+[NOTE]
+====
+Modifying environment variables in code requires using the Java reflection API.
+The two `@RestoreEnvironmentVariables` examples uses an https://github.com/junit-pioneer/junit-pioneer/blob/63c82ed9c417048f88c334aad5678fe1148b3d4b/src/main/java/org/junitpioneer/jupiter/EnvironmentVariableUtils.java#L35[internal JUnitPioneer utility] to do that, which can be copied to your code if needed.
+====
+
+When `@RestoreEnvironmentVariables` is used on a test class, any environment variables changes made during the entire lifecycle of test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, is restored after the test class lifecycle is complete.
+In addition, the annotation is inherited by each test method just as if each one was annotated with `@RestoreEnvironmentVariables`.
+
+In the following example, `SomeOtherTest` is completely isolated from changes made in `MyEnvironmentVariableRestoreTest` and `isolatedTest2` is isolated from changes made in `isolatedTest1`.
+Both `isolatedTest1` and `isolatedTest2` _will_ see environment variable values set in `@BeforeAll` and `@BeforeEach`.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=environment_class_restore]
+----
+
 == Warnings for Reflective Access
 
 As explained above, this extension uses reflective access to change the otherwise immutable environment variables.
@@ -91,13 +121,13 @@ These command line options need to be added to the JVM that executes the tests:
 == Thread-Safety
 
 Since environment variables are global state, reading and writing them during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution] can lead to unpredictable results and flaky tests.
-The environment variable extension is prepared for that and tests annotated with `@ClearEnvironmentVariable` or `@SetEnvironmentVariable` will never execute in parallel (thanks to https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/parallel/ResourceLock.html[resource locks]) to guarantee correct test results.
+The environment variable extension is prepared for that and tests annotated with `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, or `@RestoreEnvironmentVariables` will never execute in parallel (thanks to https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/parallel/ResourceLock.html[resource locks]) to guarantee correct test results.
 
 However, this does not cover all possible cases.
 Tested code that reads or writes environment variables _independently_ of the extension can still run in parallel to it and may thus behave erratically when, for example, it unexpectedly reads a variable set by the extension in another thread.
 Tests that cover code that reads or writes environment variables need to be annotated with the respective annotation:
 
 * `@ReadsEnvironmentVariable`
-* `@WritesEnvironmentVariable`
+* `@WritesEnvironmentVariable` (though consider using `@RestoreEnvironmentVariables` instead)
 
-Tests annotated in this way will never execute in parallel with tests annotated with `@ClearEnvironmentVariable` or `@SetEnvironmentVariable`.
+Tests annotated in this way will never execute in parallel with tests annotated with `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, or `@RestoreEnvironmentVariables`.

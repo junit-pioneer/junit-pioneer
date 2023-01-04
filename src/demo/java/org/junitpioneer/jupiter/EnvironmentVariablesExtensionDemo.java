@@ -12,9 +12,13 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @EnabledForJreRange(max = JRE.JAVA_16, disabledReason = "See: https://github.com/junit-pioneer/junit-pioneer/issues/509")
 public class EnvironmentVariablesExtensionDemo {
@@ -59,5 +63,41 @@ public class EnvironmentVariablesExtensionDemo {
 
 	}
 	// end::environment_using_at_class_level[]
+
+	// tag::environment_method_restore_test[]
+	@ParameterizedTest
+	@ValueSource(strings = { "foo", "bar" })
+	@RestoreEnvironmentVariables
+	void parameterizedTest(String value) {
+		EnvironmentVariableUtils.set("some parameterized property", value);
+		EnvironmentVariableUtils.set("some other dynamic property", "my code calculates somehow");
+	}
+	// end::environment_method_restore_test[]
+
+
+	// tag::environment_class_restore[]
+	@RestoreSystemProperties
+	class MyEnvironmentVariableRestoreTest {
+
+		@BeforeAll
+		public void beforeAll() { EnvironmentVariableUtils.set("A", "A value"); }
+
+		@BeforeEach
+		public void beforeEach() { EnvironmentVariableUtils.set("B", "B value"); }
+
+		@Test
+		void isolatedTest1() { EnvironmentVariableUtils.set("C", "C value"); }
+
+		@Test
+		void isolatedTest2() {
+			// A & B are visible, C is not
+		}
+	}
+
+	class SomeOtherTest {
+		// Changes to A, B & C have been restored to their values prior to the above test
+	}
+	// end::environment_class_restore[]
+
 
 }

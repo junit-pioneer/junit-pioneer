@@ -12,13 +12,12 @@ package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -41,7 +40,6 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 @DisplayName("RestoreEnvironmentVariables Annotation")
 @ExtendWith(RestoreEnvironmentVariablesTests.VerifyEnvVarsExtension.class)	// 1st: Order is important here
 @RestoreEnvironmentVariables
-@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(OrderAnnotation.class)
 @Execution(SAME_THREAD)	// Single thread.  See VerifyEnvVarsExtension inner class
 class RestoreEnvironmentVariablesTests {
@@ -80,9 +78,10 @@ class RestoreEnvironmentVariablesTests {
 		assertThat(System.getenv("X")).isNull();
 	}
 
-	@Nested @Order(1)
+	@Nested
+	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 	@DisplayName("Nested tests should inherit restore behavior and be able to override")
-	class NestedTestsA {
+	class NestedTests {
 
 		@BeforeEach
 		void methodSetUp() {

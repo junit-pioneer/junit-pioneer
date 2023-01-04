@@ -13,13 +13,11 @@ package org.junitpioneer.jupiter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -48,7 +46,6 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 @DisplayName("RestoreSystemProperties Annotation")
 @ExtendWith(RestoreSystemPropertiesTests.VerifySysPropsExtension.class)	// 1st: Order is important here
 @RestoreSystemProperties																// 2nd
-@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Execution(SAME_THREAD)	// Single thread.  See VerifySysPropsExtension inner class
 class RestoreSystemPropertiesTests {
@@ -83,7 +80,29 @@ class RestoreSystemPropertiesTests {
 		System.setProperty("O", "each sys O");
 	}
 
+	// Test a util method used in this test class
 	@Test @Order(1)
+	@DisplayName("Verify local deepClone method")
+	public void deepCloneTest() throws Exception {
+		Properties inner1 = new Properties();
+		Properties inner2 = new Properties(inner1);
+		Properties outer = new Properties(inner2);
+		final Object B_OBJ = new Object();
+		final Object D_OBJ = new Object();
+		final Object F_OBJ = new Object();
+
+		inner1.setProperty("A", "is A");
+		inner1.put("B", B_OBJ);
+		inner2.setProperty("C", "is C");
+		inner2.put("D", "is D");
+		outer.setProperty("E", "is E");
+		outer.put("F", F_OBJ);
+
+		Properties cloned = deepClone(outer);
+		PropertiesAssert.assertThat(cloned).isStrictlyTheSameAs(outer);
+	}
+
+	@Test @Order(2)
 	@DisplayName("verify initial state from BeforeAll & BeforeEach and set prop")
 	void verifyInitialState() {
 		assertThat(System.getProperty("A")).isEqualTo("all sys A");
@@ -97,16 +116,16 @@ class RestoreSystemPropertiesTests {
 		System.setProperty("X", "method X");	// SHOULDN'T BE VISIBLE IN NEXT TEST
 	}
 
-	@Test @Order(2)
+	@Test @Order(3)
 	@DisplayName("Property X from the previous test should have been reset")
 	void shouldNotSeeChangesFromPreviousTest() {
 		assertThat(System.getProperty("X")).isNull();
 	}
 
-	@Nested @Order(1)
+	@Nested
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 	@DisplayName("Nested tests should inherit restore behavior and be able to override")
-	class NestedTestsA {
+	class NestedTests {
 
 		@BeforeEach
 		void methodSetUp() {
@@ -133,29 +152,6 @@ class RestoreSystemPropertiesTests {
 			assertThat(System.getProperty("X")).isNull();
 		}
 	}
-
-	// Test a util method used in this test class
-	@Test
-	@DisplayName("Verify local deepClone method")
-	public void deepCloneTest() throws Exception {
-		Properties inner1 = new Properties();
-		Properties inner2 = new Properties(inner1);
-		Properties outer = new Properties(inner2);
-		final Object B_OBJ = new Object();
-		final Object D_OBJ = new Object();
-		final Object F_OBJ = new Object();
-
-		inner1.setProperty("A", "is A");
-		inner1.put("B", B_OBJ);
-		inner2.setProperty("C", "is C");
-		inner2.put("D", "is D");
-		outer.setProperty("E", "is E");
-		outer.put("F", F_OBJ);
-
-		Properties cloned = deepClone(outer);
-		PropertiesAssert.assertThat(cloned).isStrictlyTheSameAs(outer);
-	}
-
 
 	/**
 	 * Extension that checks the before and after state of SysProps.

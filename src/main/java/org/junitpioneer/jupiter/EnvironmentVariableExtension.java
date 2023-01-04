@@ -73,6 +73,14 @@ class EnvironmentVariableExtension
 		EnvironmentVariableUtils.set(key, value);
 	}
 
+	/**
+	 * This implementation uses the 'Post Swap' strategy, returning a clone of the environment vars
+	 * which will be restored in prepareToExitRestorableContext.
+	 * <p>
+	 * See {@link AbstractEntryBasedExtension#prepareToEnterRestorableContext} for more details.
+	 *
+	 * @return A clone of the current System environment variables, as a Properties object.
+	 */
 	@Override
 	protected Properties prepareToEnterRestorableContext() {
 		final Properties clone = new Properties();

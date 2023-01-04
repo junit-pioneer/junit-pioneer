@@ -312,6 +312,115 @@ class SystemPropertyExtensionTests {
 	}
 
 	@Nested
+	@DisplayName("RestoreSystemProperties individual methods tests")
+	@WritesSystemProperty	// Many of these tests write, many also access
+	class RestoreSystemPropertiesUnitTests {
+		SystemPropertyExtension spe;
+
+		@BeforeEach
+		public void beforeEach() {
+			spe = new SystemPropertyExtension();
+		}
+
+		@Nested
+		@DisplayName("Attributes of RestoreSystemProperties Annotation")
+		class BasicAttributesOfRestoreSystemProperties {
+
+			@Test
+			@DisplayName("Restore ann has correct markers")
+			public void restoreHasCorrectMarkers() {
+				assertThat(RestoreSystemProperties.class)
+						.hasAnnotations(Inherited.class, WritesSystemProperty.class);
+			}
+
+			@Test
+			@DisplayName("Restore ann has correct retention")
+			public void restoreHasCorrectRetention() {
+				assertThat(RestoreSystemProperties.class.getAnnotation(Retention.class).value())
+						.isEqualTo(RetentionPolicy.RUNTIME);
+			}
+
+			@Test
+			@DisplayName("Restore ann has correct targets")
+			public void restoreHasCorrectTargets() {
+				assertThat(RestoreSystemProperties.class.getAnnotation(Target.class).value())
+						.containsExactlyInAnyOrder(ElementType.METHOD, ElementType.TYPE);
+			}
+
+		}
+		@Nested
+		@DisplayName("cloneProperties Tests")
+		class ClonePropertiesTests {
+
+			Properties inner;
+			Properties outer;	//Created w/ inner as nested defaults
+
+			@BeforeEach
+			public void beforeEach() {
+				inner = new Properties();
+				outer = new Properties(inner);
+
+				inner.setProperty("A", "is A");
+				outer.setProperty("B", "is B");
+			}
+
+			@Test
+			@DisplayName("Nested defaults handled")
+			void nestedDefaultsHandled() {
+				Properties cloned = SystemPropertyExtension.createEffectiveClone(outer);
+				PropertiesAssert.assertThat(cloned).isEffectivelyTheSameAs(outer);
+			}
+
+			@Test
+			@DisplayName("Object values are skipped")
+			void objectValuesAreSkipped() {
+				inner.put("inner_obj", new Object());
+				outer.put("outer_obj", new Object());
+				Properties cloned = SystemPropertyExtension.createEffectiveClone(outer);
+
+				PropertiesAssert.assertThat(cloned).isEffectivelyTheSameAs(outer);
+				assertThat(cloned.contains("inner_obj")).isFalse();
+				assertThat(cloned.contains("outer_obj")).isFalse();
+			}
+
+		}
+
+		@Nested
+		@DisplayName("RestorableContext Workflow Tests")
+		class RestorableContextWorkflowTests {
+			@Test
+			@DisplayName("Workflow of RestorableContext")
+			void workflowOfRestorableContexts() {
+				Properties initialState = System.getProperties();	//This is a live reference
+
+				try {
+					Properties returnedFromPrepareToEnter = spe.prepareToEnterRestorableContext();
+					Properties postPrepareToEnterSysProps = System.getProperties();
+					spe.prepareToExitRestorableContext(initialState);
+					Properties postPrepareToExitSysProps = System.getProperties();
+
+					PropertiesAssert.assertThat(returnedFromPrepareToEnter)
+							.withFailMessage("prepareToEnterRestorableContext should return actual original or deep copy")
+							.isStrictlyTheSameAs(initialState);
+
+					assertThat(returnedFromPrepareToEnter)
+							.withFailMessage("prepareToEnterRestorableContext should replace the actual Sys Props")
+							.isNotSameAs(postPrepareToEnterSysProps);
+
+					PropertiesAssert.assertThat(postPrepareToEnterSysProps).isEffectivelyTheSameAs(initialState);
+
+					// Could assert isSameAs, but a deep copy would also be allowed
+					PropertiesAssert.assertThat(postPrepareToExitSysProps).isStrictlyTheSameAs(initialState);
+
+				} finally {
+					System.setProperties(initialState);	// Ensure complete recovery
+				}
+			}
+		}
+
+	}
+
+	@Nested
 	@DisplayName("with nested classes")
 	@ClearSystemProperty(key = "A")
 	@SetSystemProperty(key = "B", value = "new B")
@@ -508,9 +617,10 @@ class SystemPropertyExtensionTests {
 	@Nested
 	@DisplayName("used with inheritance")
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+	@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 	@Execution(SAME_THREAD)	// Uses instance state
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS)	// Uses instance state
-	class InheritanceClearSetAndRestoreTests extends InheritanceClearSetAndRestoreBaseTest {
+	class InheritanceClearSetRestoreTests extends InheritanceClearSetRestoreBaseTest {
 
 		Properties initialState;		// stateful
 
@@ -519,133 +629,58 @@ class SystemPropertyExtensionTests {
 
 		@Test		@Order(1)
 		@DisplayName("should inherit clear and set annotations")
-		void shouldInheritClearAndSetProperty() {
+		void shouldInheritClearSetRestore() {
 
 			// Direct modification
 			System.setProperty("Restore", "Restore Me");	// SHOULDN'T BE VISIBLE IN NEXT TEST
 			System.getProperties().put("XYZ", this);			// SHOULDN'T BE VISIBLE IN NEXT TEST
 
-			assertThat(System.getProperty("A")).isNull();
-			assertThat(System.getProperty("B")).isNull();
-			assertThat(System.getProperty("clear prop D")).isEqualTo("new D");
-			assertThat(System.getProperty("clear prop E")).isEqualTo("new E");
+			assertThat(System.getProperty("A")).isNull();	// The rest are checked elsewhere
 		}
 
-		@Test
+		@Test	@Order(2)
 		@DisplayName("Restore from class should restore direct mods")
-		@Order(2)
 		void restoreShouldHaveRevertedDirectModification() {
 			assertThat(System.getProperty("Restore")).isNull();
 			assertThat(System.getProperties().get("XYZ")).isNull();
 			PropertiesAssert.assertThat(System.getProperties()).isStrictlyTheSameAs(initialState);
 		}
 
-	}
+		@Nested	@Order(1)
+		@DisplayName("Set props to ensure inherited restore")
+		@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class SetSomeValuesToRestore {
 
-	@Nested
-	@DisplayName("Unit tests of individual methods")
-	@WritesSystemProperty	// Many of these tests write, many also access
-	class UnitTests {
-		SystemPropertyExtension spe;
+			@AfterAll
+			void afterAll() {
+				System.setProperty("RestoreAll", "Restore Me");	// This should also be restored
+			}
 
-		@BeforeEach
-		public void beforeEach() {
-			spe = new SystemPropertyExtension();
+			@Test	@Order(1)
+			@DisplayName("Inherit values and restore behavior")
+			void shouldInheritInNestedClass() {
+				assertThat(System.getProperty("A")).isNull();
+
+				System.setProperty("Restore", "Restore Me");	// SHOULDN'T BE VISIBLE IN NEXT TEST
+			}
+
+			@Test	@Order(2)
+			@DisplayName("Verify restore behavior bt methods")
+			void verifyRestoreBetweenMethods() {
+				assertThat(System.getProperty("Restore")).isNull();
+			}
 		}
 
-		@Nested
-		@DisplayName("Attributes of RestoreSystemProperties")
-		class BasicAttributesOfRestoreSystemProperties {
+		@Nested	@Order(2)
+		@DisplayName("Verify props are restored")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class VerifyValuesAreRestored {
 
 			@Test
-			@DisplayName("Restore ann has correct markers")
-			public void restoreHasCorrectMarkers() {
-				assertThat(RestoreSystemProperties.class)
-						.hasAnnotations(Inherited.class, WritesSystemProperty.class);
-			}
-
-			@Test
-			@DisplayName("Restore ann has correct retention")
-			public void restoreHasCorrectRetention() {
-				assertThat(RestoreSystemProperties.class.getAnnotation(Retention.class).value())
-						.isEqualTo(RetentionPolicy.RUNTIME);
-			}
-
-			@Test
-			@DisplayName("Restore ann has correct targets")
-			public void restoreHasCorrectTargets() {
-				assertThat(RestoreSystemProperties.class.getAnnotation(Target.class).value())
-						.containsExactlyInAnyOrder(ElementType.METHOD, ElementType.TYPE);
-			}
-
-		}
-		@Nested
-		@DisplayName("cloneProperties Tests")
-		class ClonePropertiesTests {
-
-			Properties inner;
-			Properties outer;	//Created w/ inner as nested defaults
-
-			@BeforeEach
-			public void beforeEach() {
-				inner = new Properties();
-				outer = new Properties(inner);
-
-				inner.setProperty("A", "is A");
-				outer.setProperty("B", "is B");
-			}
-
-			@Test
-			@DisplayName("Nested defaults handled")
-			void nestedDefaultsHandled() {
-				Properties cloned = SystemPropertyExtension.createEffectiveClone(outer);
-				PropertiesAssert.assertThat(cloned).isEffectivelyTheSameAs(outer);
-			}
-
-			@Test
-			@DisplayName("Object values are skipped")
-			void objectValuesAreSkipped() {
-				inner.put("inner_obj", new Object());
-				outer.put("outer_obj", new Object());
-				Properties cloned = SystemPropertyExtension.createEffectiveClone(outer);
-
-				PropertiesAssert.assertThat(cloned).isEffectivelyTheSameAs(outer);
-				assertThat(cloned.contains("inner_obj")).isFalse();
-				assertThat(cloned.contains("outer_obj")).isFalse();
-			}
-
-		}
-
-		@Nested
-		@DisplayName("RestorableContext Workflow Tests")
-		class RestorableContextWorkflowTests {
-			@Test
-			@DisplayName("Workflow of RestorableContext")
-			void workflowOfRestorableContexts() {
-				Properties initialState = System.getProperties();	//This is a live reference
-
-				try {
-					Properties returnedFromPrepareToEnter = spe.prepareToEnterRestorableContext();
-					Properties postPrepareToEnterSysProps = System.getProperties();
-					spe.prepareToExitRestorableContext(initialState);
-					Properties postPrepareToExitSysProps = System.getProperties();
-
-					PropertiesAssert.assertThat(returnedFromPrepareToEnter)
-							.withFailMessage("prepareToEnterRestorableContext should return actual original or deep copy")
-							.isStrictlyTheSameAs(initialState);
-
-					assertThat(returnedFromPrepareToEnter)
-							.withFailMessage("prepareToEnterRestorableContext should replace the actual Sys Props")
-							.isNotSameAs(postPrepareToEnterSysProps);
-
-					PropertiesAssert.assertThat(postPrepareToEnterSysProps).isEffectivelyTheSameAs(initialState);
-
-					// Could assert isSameAs, but a deep copy would also be allowed
-					PropertiesAssert.assertThat(postPrepareToExitSysProps).isStrictlyTheSameAs(initialState);
-
-				} finally {
-					System.setProperties(initialState);	// Ensure complete recovery
-				}
+			@DisplayName("Inherit values and restore behavior")
+			void shouldInheritInNestedClass() {
+				assertThat(System.getProperty("RestoreAll")).isNull();	// should be restored
 			}
 		}
 
@@ -664,8 +699,6 @@ class SystemPropertyExtensionTests {
 	@SetSystemProperty(key = "clear prop D", value = "new D")
 	@SetSystemProperty(key = "clear prop E", value = "new E")
 	@RestoreSystemProperties
-	static class InheritanceClearSetAndRestoreBaseTest {
-
-	}
+	static class InheritanceClearSetRestoreBaseTest {	}
 
 }

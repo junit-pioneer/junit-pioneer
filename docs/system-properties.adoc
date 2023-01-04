@@ -1,5 +1,5 @@
 :page-title: Clearing, Setting and Restoring System Properties
-:page-description: The JUnit 5 (Jupiter) extensions `@ClearSystemProperty`, `@SetSystemProperty` and `@RestoreSystemProperties`	 clear/set/restore the values of system properties during a test
+:page-description: The JUnit 5 (Jupiter) extensions `@ClearSystemProperty`, `@SetSystemProperty` and `@RestoreSystemProperties`	clear/set/restore the values of system properties during a test
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/SystemPropertyExtensionDemo.java
 
@@ -57,7 +57,7 @@ In this example, `@RestoreSystemProperties` is used on a test method, ensuring a
 include::{demo}[tag=systemproperty_restore_test]
 ----
 
-When `@RestoreSystemProperties` is used on a test class, any system properties changes made during the entire lifecycle of test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, is restored after the test class lifecycle is complete.
+When `@RestoreSystemProperties` is used on a test class, any system properties changes made during the entire lifecycle of a test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, is restored after the test class lifecycle is complete.
 In addition, the annotation is inherited by each test method just as if each one was annotated with `@RestoreSystemProperties`.
 
 In the following example, `SomeOtherTest` is completely isolated from changes made in `MySystemPropertyRestoreTest` and `isolatedTest2` is isolated from changes made in `isolatedTest1`.

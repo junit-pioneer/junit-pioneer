@@ -306,10 +306,10 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	 * <p>
 	 * Implementations may choose one of two strategies:
 	 * <ul>
-	 * <li>Leave the original entry environment in place and return a clone of that environment.
+	 * <li>'Post Swap', where the original entry environment is left in place and a clone is returned.
 	 * In this case {@link #prepareToExitRestorableContext} will restore the clone.
-	 * <li>Preemptively swap the current entry environment with a clone and return the original
-	 * environment (or a deep clone of it).
+	 * <li>'Preemptive swap', where the current entry environment is replaced with a clone and the
+	 * original is returned.
 	 * In this case the 'prepareToExit' will restore the original environment.</li>
 	 * </ul>
 	 *
