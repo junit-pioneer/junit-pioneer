@@ -20,16 +20,30 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.parallel.Execution;
+
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 /**
  * Verify proper behavior when annotated on a top level class
  */
 @DisplayName("RestoreEnvironmentVariables Annotation")
+@ExtendWith(RestoreEnvironmentVariablesTests.VerifyEnvVarsExtension.class)	// 1st: Order is important here
 @RestoreEnvironmentVariables
 @TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(OrderAnnotation.class)
+@Execution(SAME_THREAD)	// Single thread.  See VerifyEnvVarsExtension inner class
 class RestoreEnvironmentVariablesTests {
 
 	@BeforeAll
@@ -94,6 +108,61 @@ class RestoreEnvironmentVariablesTests {
 		void shouldNotSeeChangesFromPreviousTest() {
 			assertThat(System.getenv("X")).isNull();
 		}
+	}
+
+
+	/**
+	 * Extension that checks the before and after state of Environment Vars.
+	 * <p>
+	 * Must be registered before RestoreEnvironmentVariables.
+	 * To avoid replicating the system being tested w/ the test itself, this class
+	 * uses static state rather than the extension store.  As a result, this test
+	 * class is marked as single threaded.
+	 */
+	protected static class VerifyEnvVarsExtension implements
+			BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
+
+		/* Nested tests will push additional copies */
+		private static ArrayDeque<Map<String, String>> beforeAllState = new ArrayDeque<>();
+
+		/* Only one test method happens at a time */
+		private static Map<String, String> beforeEachState;
+
+		@Override
+		public void beforeAll(final ExtensionContext context) throws Exception {
+			HashMap<String, String> envVars = new HashMap<>();
+			envVars.putAll(System.getenv());	//detached
+
+			beforeAllState.push(envVars);
+		}
+
+		@Override
+		public void afterAll(final ExtensionContext context) throws Exception {
+			Map<String, String> preTest = beforeAllState.pop();
+			Map<String, String> actual = System.getenv();
+
+			assertThat(preTest).isNotNull();
+			assertThat(actual).containsExactlyInAnyOrderEntriesOf(preTest);
+		}
+
+		@Override
+		public void beforeEach(final ExtensionContext context) throws Exception {
+			Map<String, String> envVars = new HashMap<>();
+			envVars.putAll(System.getenv());	//detached
+
+			beforeEachState = envVars;
+		}
+
+		@Override
+		public void afterEach(final ExtensionContext context) throws Exception {
+			Map<String, String> preTest = beforeEachState;
+			Map<String, String> actual = System.getenv();
+
+			assertThat(preTest).isNotNull();
+			assertThat(actual).containsExactlyInAnyOrderEntriesOf(preTest);
+			beforeEachState = null;
+		}
+
 	}
 
 }

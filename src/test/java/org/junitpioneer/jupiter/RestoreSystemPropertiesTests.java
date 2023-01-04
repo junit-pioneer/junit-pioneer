@@ -134,6 +134,7 @@ class RestoreSystemPropertiesTests {
 		}
 	}
 
+	// Test a util method used in this test class
 	@Test
 	@DisplayName("Verify local deepClone method")
 	public void deepCloneTest() throws Exception {
@@ -155,35 +156,7 @@ class RestoreSystemPropertiesTests {
 		PropertiesAssert.assertThat(cloned).isStrictlyTheSameAs(outer);
 	}
 
-	static public Properties deepClone(Properties original) throws Exception {
 
-		Properties clonedDefaults = null;
-		Properties defaults = getDefaultPropertiesInstance(original);
-
-		if (defaults != null) {
-			clonedDefaults = deepClone(defaults);
-		}
-
-		final Properties clone = new Properties(clonedDefaults);
-
-		// Copy just the values directly in Map backing the Properties
-		original.keySet().forEach(k -> {
-			clone.put(k, original.get(k));
-		});
-
-		return clone;
-	}
-
-	static public Properties getDefaultPropertiesInstance(Properties parent) throws Exception {
-		Field field = ReflectionSupport
-				.findFields(Properties.class, f -> f.getName().equals("defaults"), HierarchyTraversalMode.BOTTOM_UP)
-				.stream().findFirst().get();
-
-		field.setAccessible(true);
-		Properties theDefault = (Properties) ReflectionSupport.tryToReadFieldValue(field, parent).get();
-
-		return theDefault;
-	}
 	/**
 	 * Extension that checks the before and after state of SysProps.
 	 * <p>
@@ -192,7 +165,8 @@ class RestoreSystemPropertiesTests {
 	 * uses static state rather than the extension store.  As a result, this test
 	 * class is marked as single threaded.
 	 */
-	protected static class VerifySysPropsExtension implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
+	protected static class VerifySysPropsExtension
+			implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
 		/* Nested tests will push additional copies */
 		private static ArrayDeque<Properties> beforeAllState = new ArrayDeque<>();
@@ -231,6 +205,58 @@ class RestoreSystemPropertiesTests {
 			beforeEachState = null;
 		}
 
+	}
+
+
+	/**
+	 * This 'deep' clone method uses reflection to do a clone that preserves the structure
+	 * (i.e. nested defaults) and potential non-string values of Properties.
+	 * This method is only used to ensure we have a 100% complete clone of original Sys Props for
+	 * comparison after restore.
+	 * <p>
+	 * The actual SystemProperties extension does an 'effective' clone which is simpler and doesn't
+	 * require reflection.
+	 *
+	 * @param original Props to be cloned
+	 * @return A detached clone of the original Props
+	 * @throws Exception Possibly due to reflection access
+	 */
+	static public Properties deepClone(Properties original) throws Exception {
+
+		Properties clonedDefaults = null;
+		Properties defaults = getDefaultPropertiesInstance(original);
+
+		if (defaults != null) {
+			clonedDefaults = deepClone(defaults);
+		}
+
+		final Properties clone = new Properties(clonedDefaults);
+
+		// Copy just the values directly in Map backing the Properties
+		original.keySet().forEach(k -> {
+			clone.put(k, original.get(k));
+		});
+
+		return clone;
+	}
+
+	/**
+	 * Helper method for 'deepClone' that uses reflection to grab the 'defaults' properties field
+	 * within a Properties object.
+	 *
+	 * @param parent Instance to grab the 'defaults' field from
+	 * @return A Properties object, which may be null if the actual defaults are null.
+	 * @throws Exception Possibly due to reflection access
+	 */
+	static public Properties getDefaultPropertiesInstance(Properties parent) throws Exception {
+		Field field = ReflectionSupport
+				.findFields(Properties.class, f -> f.getName().equals("defaults"), HierarchyTraversalMode.BOTTOM_UP)
+				.stream().findFirst().get();
+
+		field.setAccessible(true);
+		Properties theDefault = (Properties) ReflectionSupport.tryToReadFieldValue(field, parent).get();
+
+		return theDefault;
 	}
 
 }
