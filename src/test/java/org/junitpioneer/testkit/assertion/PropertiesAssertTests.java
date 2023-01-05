@@ -10,14 +10,14 @@
 
 package org.junitpioneer.testkit.assertion;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.Properties;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import java.util.Properties;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Verify proper behavior when annotated on a top level class.
@@ -39,7 +39,6 @@ class PropertiesAssertTests {
 	static final Object Q_OBJ = new Object();
 	static final Object R_OBJ = new Object();
 
-
 	// Two Properties objects w/ the exact same string contents
 	Properties strPropAB1;
 	Properties strPropAB2;
@@ -54,9 +53,6 @@ class PropertiesAssertTests {
 	Properties objProp1wDefaults;
 	Properties objProp2wDefaults;
 
-
-
-
 	@BeforeEach
 	void beforeEachMethod() {
 		strPropAB1 = new Properties();
@@ -67,7 +63,6 @@ class PropertiesAssertTests {
 		strPropAB2.setProperty("A", "is A");
 		strPropAB2.setProperty("B", "is B");
 
-
 		strPropAB1CDwDefaults = new Properties(strPropAB1);
 		strPropAB1CDwDefaults.setProperty("C", "is C");
 		strPropAB1CDwDefaults.setProperty("D", "is D");
@@ -75,8 +70,6 @@ class PropertiesAssertTests {
 		strPropAB2CDwDefaults = new Properties(strPropAB2);
 		strPropAB2CDwDefaults.setProperty("C", "is C");
 		strPropAB2CDwDefaults.setProperty("D", "is D");
-
-
 
 		objProp1 = new Properties();
 		objProp1.put("O", O_OBJ);
@@ -103,6 +96,7 @@ class PropertiesAssertTests {
 	@Nested
 	@DisplayName("Top level String values")
 	class TopLevelStringValues {
+
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
 		public void compareIdentical() {
@@ -213,14 +207,15 @@ class PropertiesAssertTests {
 			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyTheSameAs(strPropAB2);
 			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyTheSameAs(strPropAB2);
 		}
-	}
 
+	}
 
 	// This section is missing some tests that are in the above section
 	// Is not completely coverted over to objects (was copy paste from above)
 	@Nested
 	@DisplayName("Top level Object values")
 	class TopLevelObjectValues {
+
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
 		public void compareIdentical() {
@@ -241,7 +236,8 @@ class PropertiesAssertTests {
 		public void addedActualValue() {
 			objProp1.put("Q", new Object());
 
-			PropertiesAssert.assertThat(objProp1)
+			PropertiesAssert
+					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
 					.isEffectivelyTheSameAs(objProp2);
 
@@ -261,7 +257,8 @@ class PropertiesAssertTests {
 		public void addedExpectedValue() {
 			objProp2.put("Q", new Object());
 
-			PropertiesAssert.assertThat(objProp1)
+			PropertiesAssert
+					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
 					.isEffectivelyTheSameAs(objProp2);
 
@@ -275,13 +272,13 @@ class PropertiesAssertTests {
 			PropertiesAssert.assertThat(objProp1).isNotStrictlyTheSameAs(objProp2);
 		}
 
-
 		@Test
 		@DisplayName("Not same changed actual value")
 		public void changedActualValue() {
 			objProp1.put("P", new Object());
 
-			PropertiesAssert.assertThat(objProp1)
+			PropertiesAssert
+					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
 					.isEffectivelyTheSameAs(objProp2);
 
@@ -300,7 +297,8 @@ class PropertiesAssertTests {
 		public void changedExpectedValue() {
 			objProp2.put("P", new Object());
 
-			PropertiesAssert.assertThat(objProp1)
+			PropertiesAssert
+					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
 					.isEffectivelyTheSameAs(objProp2);
 
@@ -319,7 +317,8 @@ class PropertiesAssertTests {
 		public void removedActualValue() {
 			objProp1.remove("P");
 
-			PropertiesAssert.assertThat(objProp1)
+			PropertiesAssert
+					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
 					.isEffectivelyTheSameAs(objProp2);
 
@@ -338,7 +337,8 @@ class PropertiesAssertTests {
 		public void removedExpValue() {
 			objProp2.remove("P");
 
-			PropertiesAssert.assertThat(objProp1)
+			PropertiesAssert
+					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
 					.isEffectivelyTheSameAs(objProp2);
 
@@ -354,10 +354,10 @@ class PropertiesAssertTests {
 
 	}
 
-
 	@Nested
 	@DisplayName("Nested default String values")
 	class NestedDefaultStringValues {
+
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
 		public void compareIdentical() {
@@ -482,7 +482,7 @@ class PropertiesAssertTests {
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
@@ -506,7 +506,6 @@ class PropertiesAssertTests {
 
 			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
 		}
-
 
 		@Test
 		@DisplayName("Move exp value from default to top level")
@@ -545,11 +544,13 @@ class PropertiesAssertTests {
 
 			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
 		}
+
 	}
 
 	@Nested
 	@DisplayName("Nested default Object values")
 	class NestedDefaultObjectValues {
+
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
 		public void compareIdentical() {
@@ -570,10 +571,10 @@ class PropertiesAssertTests {
 		public void addedActualValue() {
 			objProp1.put("X", new Object());
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
-
 
 			assertThatThrownBy(() -> {
 				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
@@ -591,7 +592,8 @@ class PropertiesAssertTests {
 		public void addedExpectedValue() {
 			objProp2.put("X", new Object());
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
 
@@ -611,7 +613,8 @@ class PropertiesAssertTests {
 		public void changedActualValue() {
 			objProp1.put("P", new Object());
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
 
@@ -630,7 +633,8 @@ class PropertiesAssertTests {
 		public void changedExpectedValue() {
 			objProp2.put("P", new Object());
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
 
@@ -649,7 +653,8 @@ class PropertiesAssertTests {
 		public void removedActualValue() {
 			objProp1.remove("P");
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
 
@@ -668,7 +673,8 @@ class PropertiesAssertTests {
 		public void removedExpValue() {
 			objProp2.remove("P");
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
 
@@ -688,7 +694,8 @@ class PropertiesAssertTests {
 			objProp1wDefaults.put("P", objProp1.get("P"));
 			objProp1.remove("P");
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
 
@@ -709,7 +716,8 @@ class PropertiesAssertTests {
 			objProp1.put("R", objProp1wDefaults.get("R"));
 			objProp1wDefaults.remove("R");
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
 
@@ -724,14 +732,14 @@ class PropertiesAssertTests {
 			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
 		}
 
-
 		@Test
 		@DisplayName("Move exp value from default to top level")
 		public void moveExpValueFromDefaultToTopLevel() {
 			objProp2wDefaults.put("P", objProp2.get("P"));
 			objProp2.remove("P");
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
 
@@ -752,7 +760,8 @@ class PropertiesAssertTests {
 			objProp2.put("R", objProp2wDefaults.get("R"));
 			objProp2wDefaults.remove("R");
 
-			PropertiesAssert.assertThat(objProp1wDefaults)
+			PropertiesAssert
+					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyTheSameAs(objProp2wDefaults);
 
@@ -766,6 +775,7 @@ class PropertiesAssertTests {
 
 			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
 		}
+
 	}
 
 }

@@ -10,6 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+
+import java.lang.reflect.Field;
+import java.util.ArrayDeque;
+import java.util.Properties;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,13 +37,6 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.testkit.assertion.PropertiesAssert;
 
-import java.lang.reflect.Field;
-import java.util.ArrayDeque;
-import java.util.Properties;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
-
 /**
  * Verify proper behavior when annotated on a top level class
  *
@@ -44,10 +44,10 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
  * VerifySysPropsExtension stores the initial Sys Props and verifies them at the end.
  */
 @DisplayName("RestoreSystemProperties Annotation")
-@ExtendWith(RestoreSystemPropertiesTests.VerifySysPropsExtension.class)	// 1st: Order is important here
-@RestoreSystemProperties																// 2nd
+@ExtendWith(RestoreSystemPropertiesTests.VerifySysPropsExtension.class) // 1st: Order is important here
+@RestoreSystemProperties // 2nd
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Execution(SAME_THREAD)	// Single thread.  See VerifySysPropsExtension inner class
+@Execution(SAME_THREAD) // Single thread.  See VerifySysPropsExtension inner class
 class RestoreSystemPropertiesTests {
 
 	@BeforeAll
@@ -58,10 +58,10 @@ class RestoreSystemPropertiesTests {
 		// Replace Sys Props w/ a crazy new instance using defaults for all values.
 		// RestoreSystemProperties should ensure this instance is in place for Sys Props before
 		// each test and auto-revert to the original Sys Prop instance when the Test class is done.
-		Properties orgProps = SystemPropertyExtension.createEffectiveClone(System.getProperties());	// Will include A & B from above
+		Properties orgProps = SystemPropertyExtension.createEffectiveClone(System.getProperties()); // Will include A & B from above
 		Properties newProps = new Properties(orgProps);
 
-		newProps.setProperty("C", "all sys C");	//	one prop actually set (not a default)
+		newProps.setProperty("C", "all sys C"); //	one prop actually set (not a default)
 
 		System.setProperties(newProps);
 	}
@@ -81,7 +81,8 @@ class RestoreSystemPropertiesTests {
 	}
 
 	// Test a util method used in this test class
-	@Test @Order(1)
+	@Test
+	@Order(1)
 	@DisplayName("Verify local deepClone method")
 	public void deepCloneTest() throws Exception {
 		Properties inner1 = new Properties();
@@ -102,7 +103,8 @@ class RestoreSystemPropertiesTests {
 		PropertiesAssert.assertThat(cloned).isStrictlyTheSameAs(outer);
 	}
 
-	@Test @Order(2)
+	@Test
+	@Order(2)
 	@DisplayName("verify initial state from BeforeAll & BeforeEach and set prop")
 	void verifyInitialState() {
 		assertThat(System.getProperty("A")).isEqualTo("all sys A");
@@ -113,10 +115,11 @@ class RestoreSystemPropertiesTests {
 		assertThat(System.getProperty("N")).isEqualTo("each sys N");
 		assertThat(System.getProperty("O")).isEqualTo("each sys O");
 
-		System.setProperty("X", "method X");	// SHOULDN'T BE VISIBLE IN NEXT TEST
+		System.setProperty("X", "method X"); // SHOULDN'T BE VISIBLE IN NEXT TEST
 	}
 
-	@Test @Order(3)
+	@Test
+	@Order(3)
 	@DisplayName("Property X from the previous test should have been reset")
 	void shouldNotSeeChangesFromPreviousTest() {
 		assertThat(System.getProperty("X")).isNull();
@@ -132,7 +135,8 @@ class RestoreSystemPropertiesTests {
 			System.setProperty("M", "each sys M Nest");
 		}
 
-		@Test @Order(1)
+		@Test
+		@Order(1)
 		@DisplayName("initial state from nested BeforeAll & BeforeEach and set prop")
 		void verifyInitialState() {
 			assertThat(System.getProperty("A")).isEqualTo("all sys A");
@@ -146,11 +150,13 @@ class RestoreSystemPropertiesTests {
 			System.setProperty("X", "method X");
 		}
 
-		@Test @Order(2)
+		@Test
+		@Order(2)
 		@DisplayName("Property X from the previous test should have been reset")
 		void shouldNotSeeChangesFromPreviousTest() {
 			assertThat(System.getProperty("X")).isNull();
 		}
+
 	}
 
 	/**
@@ -203,7 +209,6 @@ class RestoreSystemPropertiesTests {
 
 	}
 
-
 	/**
 	 * This 'deep' clone method uses reflection to do a clone that preserves the structure
 	 * (i.e. nested defaults) and potential non-string values of Properties.
@@ -247,7 +252,9 @@ class RestoreSystemPropertiesTests {
 	static public Properties getDefaultPropertiesInstance(Properties parent) throws Exception {
 		Field field = ReflectionSupport
 				.findFields(Properties.class, f -> f.getName().equals("defaults"), HierarchyTraversalMode.BOTTOM_UP)
-				.stream().findFirst().get();
+				.stream()
+				.findFirst()
+				.get();
 
 		field.setAccessible(true);
 		Properties theDefault = (Properties) ReflectionSupport.tryToReadFieldValue(field, parent).get();

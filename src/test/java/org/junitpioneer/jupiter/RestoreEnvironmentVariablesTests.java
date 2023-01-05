@@ -10,6 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,21 +34,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.parallel.Execution;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
-
 /**
  * Verify proper behavior when annotated on a top level class
  */
 @DisplayName("RestoreEnvironmentVariables Annotation")
-@ExtendWith(RestoreEnvironmentVariablesTests.VerifyEnvVarsExtension.class)	// 1st: Order is important here
+@ExtendWith(RestoreEnvironmentVariablesTests.VerifyEnvVarsExtension.class) // 1st: Order is important here
 @RestoreEnvironmentVariables
 @TestMethodOrder(OrderAnnotation.class)
-@Execution(SAME_THREAD)	// Single thread.  See VerifyEnvVarsExtension inner class
+@Execution(SAME_THREAD) // Single thread.  See VerifyEnvVarsExtension inner class
 class RestoreEnvironmentVariablesTests {
 
 	@BeforeAll
@@ -58,7 +58,8 @@ class RestoreEnvironmentVariablesTests {
 		EnvironmentVariableUtils.set("O", "each envar O");
 	}
 
-	@Test @Order(1)
+	@Test
+	@Order(1)
 	@DisplayName("verify initial state from BeforeAll & BeforeEach and setenv")
 	void verifyInitialState() {
 		assertThat(System.getenv("A")).isEqualTo("all envar A");
@@ -72,7 +73,8 @@ class RestoreEnvironmentVariablesTests {
 		EnvironmentVariableUtils.set("X", "method X");
 	}
 
-	@Test @Order(2)
+	@Test
+	@Order(2)
 	@DisplayName("Envar X from the previous test should have been reset")
 	void shouldNotSeeChangesFromPreviousTest() {
 		assertThat(System.getenv("X")).isNull();
@@ -88,7 +90,8 @@ class RestoreEnvironmentVariablesTests {
 			EnvironmentVariableUtils.set("M", "each envar M Nest");
 		}
 
-		@Test @Order(1)
+		@Test
+		@Order(1)
 		@DisplayName("initial state from nested BeforeAll & BeforeEach and setenv")
 		void verifyInitialState() {
 			assertThat(System.getenv("A")).isEqualTo("all envar A");
@@ -102,13 +105,14 @@ class RestoreEnvironmentVariablesTests {
 			EnvironmentVariableUtils.set("X", "method X");
 		}
 
-		@Test @Order(2)
+		@Test
+		@Order(2)
 		@DisplayName("Envar X from the previous test should have been reset")
 		void shouldNotSeeChangesFromPreviousTest() {
 			assertThat(System.getenv("X")).isNull();
 		}
-	}
 
+	}
 
 	/**
 	 * Extension that checks the before and after state of Environment Vars.
@@ -118,8 +122,8 @@ class RestoreEnvironmentVariablesTests {
 	 * uses static state rather than the extension store.  As a result, this test
 	 * class is marked as single threaded.
 	 */
-	protected static class VerifyEnvVarsExtension implements
-			BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
+	protected static class VerifyEnvVarsExtension
+			implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
 		/* Nested tests will push additional copies */
 		private static ArrayDeque<Map<String, String>> beforeAllState = new ArrayDeque<>();
@@ -130,7 +134,7 @@ class RestoreEnvironmentVariablesTests {
 		@Override
 		public void beforeAll(final ExtensionContext context) throws Exception {
 			HashMap<String, String> envVars = new HashMap<>();
-			envVars.putAll(System.getenv());	//detached
+			envVars.putAll(System.getenv()); //detached
 
 			beforeAllState.push(envVars);
 		}
@@ -147,7 +151,7 @@ class RestoreEnvironmentVariablesTests {
 		@Override
 		public void beforeEach(final ExtensionContext context) throws Exception {
 			Map<String, String> envVars = new HashMap<>();
-			envVars.putAll(System.getenv());	//detached
+			envVars.putAll(System.getenv()); //detached
 
 			beforeEachState = envVars;
 		}

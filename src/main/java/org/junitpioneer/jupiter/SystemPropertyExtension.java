@@ -13,9 +13,8 @@ package org.junitpioneer.jupiter;
 import java.util.Properties;
 import java.util.function.Function;
 
-class SystemPropertyExtension
-		extends AbstractEntryBasedExtension<String, String,
-				ClearSystemProperty, SetSystemProperty, RestoreSystemProperties> {
+class SystemPropertyExtension extends
+		AbstractEntryBasedExtension<String, String, ClearSystemProperty, SetSystemProperty, RestoreSystemProperties> {
 
 	@Override
 	protected Function<ClearSystemProperty, String> clearKeyMapper() {

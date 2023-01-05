@@ -76,18 +76,25 @@ public class SystemPropertyExtensionDemo {
 	class MySystemPropertyRestoreTest {
 
 		@BeforeAll
-		public void beforeAll() { System.setProperty("A", "A value"); }
+		public void beforeAll() {
+			System.setProperty("A", "A value");
+		}
 
 		@BeforeEach
-		public void beforeEach() { System.setProperty("B", "B value"); }
+		public void beforeEach() {
+			System.setProperty("B", "B value");
+		}
 
 		@Test
-		void isolatedTest1() { System.setProperty("C", "C value"); }
+		void isolatedTest1() {
+			System.setProperty("C", "C value");
+		}
 
 		@Test
 		void isolatedTest2() {
 			// A & B are visible, C is not
 		}
+
 	}
 
 	class SomeOtherTest {

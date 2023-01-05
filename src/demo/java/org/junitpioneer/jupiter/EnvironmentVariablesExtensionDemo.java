@@ -74,30 +74,35 @@ public class EnvironmentVariablesExtensionDemo {
 	}
 	// end::environment_method_restore_test[]
 
-
 	// tag::environment_class_restore[]
 	@RestoreSystemProperties
 	class MyEnvironmentVariableRestoreTest {
 
 		@BeforeAll
-		public void beforeAll() { EnvironmentVariableUtils.set("A", "A value"); }
+		public void beforeAll() {
+			EnvironmentVariableUtils.set("A", "A value");
+		}
 
 		@BeforeEach
-		public void beforeEach() { EnvironmentVariableUtils.set("B", "B value"); }
+		public void beforeEach() {
+			EnvironmentVariableUtils.set("B", "B value");
+		}
 
 		@Test
-		void isolatedTest1() { EnvironmentVariableUtils.set("C", "C value"); }
+		void isolatedTest1() {
+			EnvironmentVariableUtils.set("C", "C value");
+		}
 
 		@Test
 		void isolatedTest2() {
 			// A & B are visible, C is not
 		}
+
 	}
 
 	class SomeOtherTest {
 		// Changes to A, B & C have been restored to their values prior to the above test
 	}
 	// end::environment_class_restore[]
-
 
 }

@@ -10,17 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.ExtensionContext.Store;
-import org.junit.platform.commons.support.AnnotationSupport;
-import org.junitpioneer.internal.PioneerAnnotationUtils;
-import org.junitpioneer.internal.PioneerUtils;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -37,8 +28,17 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toMap;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ExtensionContext.Store;
+import org.junit.platform.commons.support.AnnotationSupport;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.PioneerUtils;
 
 /**
  * An abstract base class for entry-based extensions, where entries (key-value
@@ -71,7 +71,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 
 	private void applyForAllContexts(ExtensionContext originalContext) {
 
-		final boolean fullRestore = PioneerAnnotationUtils.isAnnotationPresent(originalContext, getRestoreAnnotationType());
+		final boolean fullRestore = PioneerAnnotationUtils
+				.isAnnotationPresent(originalContext, getRestoreAnnotationType());
 
 		if (fullRestore) {
 			Properties bulk = this.prepareToEnterRestorableContext();
@@ -85,7 +86,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		 */
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(originalContext);
 		Collections.reverse(contexts);
-		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext, ! fullRestore));
+		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext, !fullRestore));
 	}
 
 	private void clearAndSetEntries(ExtensionContext currentContext, ExtensionContext originalContext,
@@ -177,7 +178,6 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		getStore(context).put(getStoreKey(context, COMPLETE_KEY), originalEntries);
 	}
 
-
 	/**
 	 * Restore the complete original state of the entries as they were prior to this ExtensionContext,
 	 * if the complete state was initially stored in a BeforeXXX event.
@@ -218,9 +218,11 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	private void restoreForAllContexts(ExtensionContext originalContext) {
 
 		// Try a complete restore first
-		if (! restoreOriginalCompleteEntries(originalContext) ) {
-				// A complete backup is not available, so restore incrementally from innermost to outermost
-				PioneerUtils.findAllContexts(originalContext).forEach(__ -> restoreOriginalIncrementalEntries(originalContext));
+		if (!restoreOriginalCompleteEntries(originalContext)) {
+			// A complete backup is not available, so restore incrementally from innermost to outermost
+			PioneerUtils
+					.findAllContexts(originalContext)
+					.forEach(__ -> restoreOriginalIncrementalEntries(originalContext));
 		}
 	}
 

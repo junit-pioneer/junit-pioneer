@@ -10,8 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
-
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -19,9 +17,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-class EnvironmentVariableExtension
-		extends AbstractEntryBasedExtension<String, String,
-				ClearEnvironmentVariable, SetEnvironmentVariable, RestoreEnvironmentVariables> {
+import org.junit.jupiter.api.extension.ExtensionContext;
+
+class EnvironmentVariableExtension extends
+		AbstractEntryBasedExtension<String, String, ClearEnvironmentVariable, SetEnvironmentVariable, RestoreEnvironmentVariables> {
 
 	// package visible to make accessible for tests
 	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
@@ -93,19 +92,22 @@ class EnvironmentVariableExtension
 		final Map<String, String> existingEnv = System.getenv();
 
 		// Set all values, but only if different from actual value
-		restoreMe.entrySet().parallelStream()
-				.filter(e -> ! e.getValue().equals(System.getenv(e.getKey().toString())) )
+		restoreMe
+				.entrySet()
+				.parallelStream()
+				.filter(e -> !e.getValue().equals(System.getenv(e.getKey().toString())))
 				.forEach(e -> setEntry(e.getKey().toString(), e.getValue().toString()));
-
 
 		// Find entries to remove.
 		// Cannot remove in stream b/c the stream is based on the collection that needs to be modified
-		Set<String> entriesToClear = existingEnv.entrySet().parallelStream()
-				.filter( e -> !restoreMe.containsKey(e.getKey()) )
-				.map( e -> e.getKey())
+		Set<String> entriesToClear = existingEnv
+				.entrySet()
+				.parallelStream()
+				.filter(e -> !restoreMe.containsKey(e.getKey()))
+				.map(e -> e.getKey())
 				.collect(Collectors.toSet());
 
-		entriesToClear.stream().forEach( k -> clearEntry(k) );
+		entriesToClear.stream().forEach(k -> clearEntry(k));
 	}
 
 }

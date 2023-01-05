@@ -7,15 +7,16 @@
  *
  * http://www.eclipse.org/legal/epl-v20.html
  */
-package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.extension.ExtendWith;
+package org.junitpioneer.jupiter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * {@code @RestoreSystemProperties} is a JUnit Jupiter extension to restore the entire set of
@@ -69,4 +70,5 @@ import java.lang.annotation.Target;
 @Inherited
 @WritesSystemProperty
 @ExtendWith(SystemPropertyExtension.class)
-public @interface RestoreSystemProperties {  }
+public @interface RestoreSystemProperties {
+}
