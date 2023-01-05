@@ -61,7 +61,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * This extension uses refleftion to change the values, thus you may run into
  * permissions issues...</p>
  *
- * @since 1.9.2
+ * @since 2.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })

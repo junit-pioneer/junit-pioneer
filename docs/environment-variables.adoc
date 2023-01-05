@@ -1,5 +1,5 @@
-:page-title: Clearing, Setting and Restoring Environment Variables
-:page-description: The JUnit 5 (Jupiter) extensions `@ClearEnvironmentVariable`, `@SetEnvironmentVariable` and `@RestoreEnvironmentVariables` clear/set/restore the values of environment variables during a test
+:page-title: Clear, Set, and Restore Environment Variables
+:page-description: The JUnit 5 (Jupiter) extensions `@ClearEnvironmentVariable`, `@SetEnvironmentVariable` and `@RestoreEnvironmentVariables` clear/set/restore the values of environment variables for the duration of a test, and/or restore them after
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/EnvironmentVariablesExtensionDemo.java
 

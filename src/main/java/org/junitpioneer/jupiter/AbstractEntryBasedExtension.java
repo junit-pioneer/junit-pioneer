@@ -237,7 +237,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private String getStoreKey(ExtensionContext context, String discriminator) {
-		return context.getUniqueId() + "-" + discriminator;
+		return context.getUniqueId() + "-" + this.getClass().getSimpleName() + "-" + discriminator;
 	}
 
 	private class EntriesBackup {

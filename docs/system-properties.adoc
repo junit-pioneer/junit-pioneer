@@ -1,5 +1,5 @@
-:page-title: Clearing, Setting and Restoring System Properties
-:page-description: The JUnit 5 (Jupiter) extensions `@ClearSystemProperty`, `@SetSystemProperty` and `@RestoreSystemProperties`	clear/set/restore the values of system properties during a test
+:page-title: Clear, Set, and Restore System Properties
+:page-description: The JUnit 5 (Jupiter) extensions `@ClearSystemProperty`, `@SetSystemProperty` and `@RestoreSystemProperties` clear/set/restore the values of system properties for the duration of a test, and/or restore them after
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/SystemPropertyExtensionDemo.java
 
@@ -69,7 +69,7 @@ include::{demo}[tag=systemproperty_restore_class_level]
 ----
 
 === `@RestoreSystemProperties` Limitations
-The system `Properties` object is normally just a hashmap of strings, however, it is technically possible to store non-string values and create https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Properties.html#%3Cinit%3E(java.util.Properties)[nested `Properties` with inherited default values].
+The system `Properties` object is normally just a hashmap of strings, however, it is technically possible to store non-string values and create https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Properties.html#%3Cinit%3E(java.util.Properties)[nested `Properties` with inherited default values].
 `@RestoreSystemProperties` restores the original `SystemProperties` object with all of it's potential richness _after_ the annotated scope is complete.
 However, for use during the test _within_ the test scope it provides a cloned `Properties` object with these limitations:
 

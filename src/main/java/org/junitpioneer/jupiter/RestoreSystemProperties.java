@@ -63,7 +63,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * After the annotated context is exited, the original Properties object is restored with
  * all its potential (non-standard) richness.</p>
  *
- * @since 1.9.2
+ * @since 2.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
