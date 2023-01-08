@@ -82,7 +82,7 @@ include::{demo}[tag=environment_class_restore]
 ----
 
 Note that using `@RestoreEnvironmentVariables` is not necessary to restore environment variables modified via `@ClearEnvironmentVariable` or `@SetEnvironmentVariable`.
-However, it is OK and normal to use all three annotations together, which you might do if some environment values parameterized (i.e. need to be set in code) and others are not.
+However, it is OK and normal to use all three annotations together, which you might do if some environment values are parameterized (i.e. need to be set in code) and others are not.
 
 == Warnings for Reflective Access
 

@@ -69,7 +69,7 @@ include::{demo}[tag=systemproperty_restore_class_level]
 ----
 
 Note that using `@RestoreSystemProperties` is not necessary to restore system properties modified via `@ClearSystemProperty` or `@SetSystemProperty`.
-However, it is OK and normal to use all three annotations together, which you might do if some property values parameterized (i.e. need to be set in code) and others are not.
+However, it is OK and normal to use all three annotations together, which you might do if some property values are parameterized (i.e. need to be set in code) and others are not.
 
 === `@RestoreSystemProperties` Limitations
 The system `Properties` object is normally just a hashmap of strings, however, it is technically possible to store non-string values and create https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Properties.html#%3Cinit%3E(java.util.Properties)[nested `Properties` with inherited default values].
