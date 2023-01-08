@@ -69,8 +69,8 @@ public class EnvironmentVariablesExtensionDemo {
 	@ValueSource(strings = { "foo", "bar" })
 	@RestoreEnvironmentVariables
 	void parameterizedTest(String value) {
-		EnvironmentVariableUtils.set("some parameterized property", value);
-		EnvironmentVariableUtils.set("some other dynamic property", "my code calculates somehow");
+		setEnvVar("some parameterized property", value);
+		setEnvVar("some other dynamic property", "my code calculates somehow");
 	}
 	// end::environment_method_restore_test[]
 
@@ -80,17 +80,17 @@ public class EnvironmentVariablesExtensionDemo {
 
 		@BeforeAll
 		public void beforeAll() {
-			EnvironmentVariableUtils.set("A", "A value");
+			setEnvVar("A", "A value");
 		}
 
 		@BeforeEach
 		public void beforeEach() {
-			EnvironmentVariableUtils.set("B", "B value");
+			setEnvVar("B", "B value");
 		}
 
 		@Test
 		void isolatedTest1() {
-			EnvironmentVariableUtils.set("C", "C value");
+			setEnvVar("C", "C value");
 		}
 
 		@Test
@@ -104,5 +104,9 @@ public class EnvironmentVariablesExtensionDemo {
 		// Changes to A, B & C have been restored to their values prior to the above test
 	}
 	// end::environment_class_restore[]
+
+	public static void setEnvVar(String name, String value) {
+		EnvironmentVariableUtils.set(name, value);
+	}
 
 }

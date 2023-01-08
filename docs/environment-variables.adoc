@@ -66,8 +66,8 @@ include::{demo}[tag=environment_method_restore_test]
 
 [NOTE]
 ====
-Modifying environment variables in code requires using the Java reflection API.
-The two `@RestoreEnvironmentVariables` examples uses an https://github.com/junit-pioneer/junit-pioneer/blob/63c82ed9c417048f88c334aad5678fe1148b3d4b/src/main/java/org/junitpioneer/jupiter/EnvironmentVariableUtils.java#L35[internal JUnitPioneer utility] to do that, which can be copied to your code if needed.
+Modifying environment variables of a running JVM requires several lines of code and the Java reflection API.
+The two `@RestoreEnvironmentVariables` examples leave out that detail and use a hypothetical `setEnvVar()` method.
 ====
 
 When `@RestoreEnvironmentVariables` is used on a test class, any environment variables changes made during the entire lifecycle of test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, is restored after the test class lifecycle is complete.
@@ -80,6 +80,9 @@ Both `isolatedTest1` and `isolatedTest2` _will_ see environment variable values 
 ----
 include::{demo}[tag=environment_class_restore]
 ----
+
+Note that using `@RestoreEnvironmentVariables` is not necessary to restore environment variables modified via `@ClearEnvironmentVariable` or `@SetEnvironmentVariable`.
+However, it is OK and normal to use all three annotations together, which you might do if some environment values parameterized (i.e. need to be set in code) and others are not.
 
 == Warnings for Reflective Access
 
