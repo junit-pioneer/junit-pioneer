@@ -15,7 +15,6 @@ import static java.util.stream.Collectors.toMap;
 import static org.junit.platform.engine.TestExecutionResult.Status;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +97,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 		//@formatter:off
 		List<IssueTestSuite> suites = testCases
 				.values().stream()
-				.collect(toMap(IssueTestCaseBuilder::getIssueId, builder -> new ArrayList<>(Arrays.asList(builder)),
+				.collect(toMap(IssueTestCaseBuilder::getIssueId, builder -> new ArrayList<>(List.of(builder)),
 						(builders1, builders2) -> {
 							builders1.addAll(builders2);
 							return builders1;

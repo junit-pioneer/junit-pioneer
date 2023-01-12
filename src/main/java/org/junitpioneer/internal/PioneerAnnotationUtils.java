@@ -20,7 +20,6 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -183,7 +182,7 @@ public class PioneerAnnotationUtils {
 		List<A> onMethod = context
 				.getTestMethod()
 				.map(method -> findOnMethod(method, annotationType, findRepeated))
-				.orElse(Collections.emptyList());
+				.orElse(List.of());
 		if (!findAllEnclosing && !onMethod.isEmpty())
 			return onMethod.stream();
 		Stream<A> onClass = findOnOuterClasses(context.getTestClass(), annotationType, findRepeated, findAllEnclosing);
@@ -196,10 +195,7 @@ public class PioneerAnnotationUtils {
 		if (findRepeated)
 			return AnnotationSupport.findRepeatableAnnotations(element, annotationType);
 		else
-			return AnnotationSupport
-					.findAnnotation(element, annotationType)
-					.map(Collections::singletonList)
-					.orElse(Collections.emptyList());
+			return AnnotationSupport.findAnnotation(element, annotationType).map(List::of).orElse(List.of());
 	}
 
 	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
@@ -220,14 +216,11 @@ public class PioneerAnnotationUtils {
 	private static <A extends Annotation> List<A> findOnType(Class<?> element, Class<A> annotationType,
 			boolean findRepeated, boolean findAllEnclosing) {
 		if (element == null || element == Object.class)
-			return Collections.emptyList();
+			return List.of();
 		if (findRepeated)
 			return AnnotationSupport.findRepeatableAnnotations(element, annotationType);
 
-		List<A> onElement = AnnotationSupport
-				.findAnnotation(element, annotationType)
-				.map(Collections::singletonList)
-				.orElse(Collections.emptyList());
+		List<A> onElement = AnnotationSupport.findAnnotation(element, annotationType).map(List::of).orElse(List.of());
 		List<A> onInterfaces = Arrays
 				.stream(element.getInterfaces())
 				.flatMap(clazz -> findOnType(clazz, annotationType, false, findAllEnclosing).stream())

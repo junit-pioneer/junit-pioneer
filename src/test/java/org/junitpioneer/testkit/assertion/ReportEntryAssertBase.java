@@ -12,7 +12,6 @@ package org.junitpioneer.testkit.assertion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,10 +55,10 @@ class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase,
 		assertThat(actual).containsExactlyInAnyOrderElementsOf(asEntryList(keyAndValuePairs));
 	}
 
-	private Iterable<AbstractMap.SimpleEntry<String, String>> asEntryList(String... values) {
-		List<AbstractMap.SimpleEntry<String, String>> entryList = new ArrayList<>();
+	private Iterable<Map.Entry<String, String>> asEntryList(String... values) {
+		List<Map.Entry<String, String>> entryList = new ArrayList<>();
 		for (int i = 0; i < values.length; i += 2) {
-			entryList.add(new AbstractMap.SimpleEntry<>(values[i], values[i + 1]));
+			entryList.add(Map.entry(values[i], values[i + 1]));
 		}
 		return entryList;
 	}

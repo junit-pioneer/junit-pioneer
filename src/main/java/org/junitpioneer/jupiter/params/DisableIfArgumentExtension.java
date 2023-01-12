@@ -15,7 +15,6 @@ import static java.lang.String.format;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -164,7 +163,7 @@ class DisableIfArgumentExtension implements InvocationInterceptor {
 		}
 
 		static ArgumentChecker check(Object argument) {
-			return new ArgumentChecker(Collections.singletonList(argument), true);
+			return new ArgumentChecker(List.of(argument), true);
 		}
 
 		public void matches(String[] matches) {

@@ -16,7 +16,6 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -98,7 +97,7 @@ public class PioneerUtils {
 		List<ExtensionContext> parentContexts = context
 				.getParent()
 				.map(PioneerUtils::findAllContexts)
-				.orElse(Collections.emptyList());
+				.orElse(List.of());
 		allContexts.addAll(parentContexts);
 		return allContexts;
 	}
@@ -148,7 +147,7 @@ public class PioneerUtils {
 	public static List<List<?>> cartesianProduct(List<List<?>> lists) {
 		List<List<?>> resultLists = new ArrayList<>();
 		if (lists.isEmpty()) {
-			resultLists.add(Collections.emptyList());
+			resultLists.add(List.of());
 			return resultLists;
 		}
 		List<?> firstList = lists.get(0);

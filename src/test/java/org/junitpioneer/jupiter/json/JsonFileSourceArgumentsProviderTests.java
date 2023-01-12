@@ -14,9 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Disabled;
@@ -124,7 +124,7 @@ class JsonFileSourceArgumentsProviderTests {
 		@ParameterizedTest
 		@JsonFileSource(JEDIS)
 		void singleObject(Jedi jedi) {
-			assertThat(Collections.singleton(tuple(jedi.getName(), jedi.getHeight())))
+			assertThat(Set.of(tuple(jedi.getName(), jedi.getHeight())))
 					.containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
@@ -137,27 +137,27 @@ class JsonFileSourceArgumentsProviderTests {
 		@ParameterizedTest
 		@JsonFileSource(JEDIS)
 		void deconstructObjectsFromArray(@Property("name") String name, @Property("height") int height) {
-			assertThat(Collections.singleton(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
+			assertThat(Set.of(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 		@ParameterizedTest
 		@JsonFileSource(value = LUKE, data = "vehicles")
 		void customDataLocation(@Property("name") String name, @Property("length") double length) {
-			assertThat(Collections.singleton(tuple(name, length)))
+			assertThat(Set.of(tuple(name, length)))
 					.containsAnyOf(tuple("Snowspeeder", 4.5), tuple("Imperial Speeder Bike", 3d));
 		}
 
 		@ParameterizedTest
 		@JsonFileSource({ YODA, LUKE, })
 		void deconstructObjectsFromMultipleFiles(@Property("height") int height, @Property("name") String name) {
-			assertThat(Collections.singleton(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
+			assertThat(Set.of(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 		@ParameterizedTest
 		@JsonFileSource({ YODA, LUKE })
 		void deconstructObjectsFromMultipleFilesIntoComplexType(@Property("name") String name,
 				@Property("location") Location location) {
-			assertThat(Collections.singleton(tuple(name, location.getName())))
+			assertThat(Set.of(tuple(name, location.getName())))
 					.containsAnyOf(tuple("Luke", "Tatooine"), tuple("Yoda", "unknown"));
 		}
 
@@ -168,7 +168,7 @@ class JsonFileSourceArgumentsProviderTests {
 
 		@CartesianTest
 		void singleObject(@JsonFileSource(JEDIS) Jedi jedi) {
-			assertThat(Collections.singleton(tuple(jedi.getName(), jedi.getHeight())))
+			assertThat(Set.of(tuple(jedi.getName(), jedi.getHeight())))
 					.containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 

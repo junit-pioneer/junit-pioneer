@@ -10,8 +10,6 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableList;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
@@ -21,7 +19,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -182,9 +179,9 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	private Resource<?> newResource(Object newOrSharedAnnotation, ResourceFactory<?> resourceFactory) {
 		List<String> arguments;
 		if (newOrSharedAnnotation instanceof New) {
-			arguments = unmodifiableList(asList(((New) newOrSharedAnnotation).arguments()));
+			arguments = List.of(((New) newOrSharedAnnotation).arguments());
 		} else {
-			arguments = Collections.emptyList();
+			arguments = List.of();
 		}
 
 		Resource<?> result;

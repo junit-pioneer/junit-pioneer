@@ -11,11 +11,11 @@
 package org.junitpioneer.testkit.assertion;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 import org.assertj.core.api.PathAssert;
@@ -39,7 +39,7 @@ public class PioneerPathAssert extends PathAssert {
 
 		String expectedText = "some-text";
 		try {
-			Files.write(textFile, singletonList(expectedText));
+			Files.write(textFile, List.of(expectedText));
 		}
 		catch (IOException e) {
 			throw failure("Cannot write to a file");

@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,7 +35,7 @@ public final class IssueTestSuite {
 	 */
 	public IssueTestSuite(String issueId, List<IssueTestCase> tests) {
 		this.issueId = issueId;
-		this.tests = Collections.unmodifiableList(tests);
+		this.tests = List.copyOf(tests);
 	}
 
 	/**
