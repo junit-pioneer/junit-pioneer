@@ -81,7 +81,7 @@ public class PioneerUtils {
 			// null checking done by ReflectionSupport.findMethod
 			method = findMethod(current, methodName, parameterTypes);
 			current = current.getEnclosingClass();
-		} while (!method.isPresent() && current != null);
+		} while (method.isEmpty() && current != null);
 		return method;
 	}
 

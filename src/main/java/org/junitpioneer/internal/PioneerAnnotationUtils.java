@@ -204,7 +204,7 @@ public class PioneerAnnotationUtils {
 
 	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
 			boolean findRepeated, boolean findAllEnclosing) {
-		if (!type.isPresent())
+		if (type.isEmpty())
 			return Stream.empty();
 
 		List<A> onThisClass = Arrays.asList(type.get().getAnnotationsByType(annotationType));

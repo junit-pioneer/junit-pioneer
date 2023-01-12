@@ -70,8 +70,8 @@ class DisableIfArgumentExtension implements InvocationInterceptor {
 	}
 
 	private static void checkRequiredAnnotations(Method testMethod) {
-		if (!AnnotationSupport.findAnnotation(testMethod, DisableIfAnyArgument.class).isPresent()
-				&& !AnnotationSupport.findAnnotation(testMethod, DisableIfAllArguments.class).isPresent()
+		if (AnnotationSupport.findAnnotation(testMethod, DisableIfAnyArgument.class).isEmpty()
+				&& AnnotationSupport.findAnnotation(testMethod, DisableIfAllArguments.class).isEmpty()
 				&& AnnotationSupport.findRepeatableAnnotations(testMethod, DisableIfArgument.class).isEmpty()) {
 			throw new ExtensionConfigurationException(
 				"Required at least one of the following: @DisableIfArgument, @DisableIfAllArguments, @DisableIfAnyArgument but found none.");

@@ -72,7 +72,7 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 	private static Stream<Configuration> findConfigurations(ExtensionContext context) {
 		Optional<Class<?>> type = context.getTestClass();
 		// type may not be present because of recursion to the parent context
-		if (!type.isPresent())
+		if (type.isEmpty())
 			return Stream.empty();
 
 		List<DisableIfTestFails> annotations = findAnnotationOn(type.get()).collect(toList());
