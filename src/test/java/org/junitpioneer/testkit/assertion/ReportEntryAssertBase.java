@@ -10,6 +10,7 @@
 
 package org.junitpioneer.testkit.assertion;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractStringAssert;
@@ -74,11 +74,11 @@ class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase,
 	}
 
 	private List<String> getValues() {
-		return this.actual.stream().map(Map.Entry::getValue).collect(Collectors.toList());
+		return this.actual.stream().map(Map.Entry::getValue).collect(toList());
 	}
 
 	private List<String> getKeys() {
-		return this.actual.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+		return this.actual.stream().map(Map.Entry::getKey).collect(toList());
 	}
 
 	@Override

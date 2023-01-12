@@ -10,6 +10,9 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
@@ -17,7 +20,6 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,9 +46,8 @@ class JsonSourceArgumentsProviderTests {
 		Map<String, List<String>> displayNames = results
 				.dynamicallyRegisteredEvents()
 				.map(Event::getTestDescriptor)
-				.collect(Collectors
-						.groupingBy(JsonSourceArgumentsProviderTests::testSourceMethodName,
-							Collectors.mapping(TestDescriptor::getDisplayName, Collectors.toList())));
+				.collect(groupingBy(JsonSourceArgumentsProviderTests::testSourceMethodName,
+					mapping(TestDescriptor::getDisplayName, toList())));
 
 		assertThat(displayNames)
 				.containsOnlyKeys("deconstructCustomerFromArray", "deconstructCustomerMultipleValues",
@@ -72,9 +73,8 @@ class JsonSourceArgumentsProviderTests {
 		Map<String, List<String>> displayNames = results
 				.dynamicallyRegisteredEvents()
 				.map(Event::getTestDescriptor)
-				.collect(Collectors
-						.groupingBy(JsonSourceArgumentsProviderTests::testSourceMethodName,
-							Collectors.mapping(TestDescriptor::getDisplayName, Collectors.toList())));
+				.collect(groupingBy(JsonSourceArgumentsProviderTests::testSourceMethodName,
+					mapping(TestDescriptor::getDisplayName, toList())));
 
 		assertThat(displayNames)
 				.containsOnlyKeys("extractPropertyFromArray", "extractPropertyFromMultipleValues",

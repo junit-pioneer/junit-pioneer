@@ -10,8 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.util.Arrays;
 import java.util.List;
@@ -75,14 +75,16 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 		if (type.isEmpty())
 			return Stream.empty();
 
-		List<DisableIfTestFails> annotations = findAnnotationOn(type.get()).collect(toList());
+		List<DisableIfTestFails> annotations = findAnnotationOn(type.get()).collect(toUnmodifiableList());
 		Stream<Configuration> onClassConfig = createConfigurationFor(context, annotations);
 		Stream<Configuration> onParentClassConfigs = context
 				.getParent()
 				.map(DisableIfTestFailsExtension::findConfigurations)
 				.orElse(Stream.empty());
 
-		List<Configuration> configurations = Stream.concat(onClassConfig, onParentClassConfigs).collect(toList());
+		List<Configuration> configurations = Stream
+				.concat(onClassConfig, onParentClassConfigs)
+				.collect(toUnmodifiableList());
 		return configurations.stream();
 	}
 

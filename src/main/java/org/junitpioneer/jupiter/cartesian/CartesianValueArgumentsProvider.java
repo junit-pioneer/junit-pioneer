@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.cartesian;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Parameter;
@@ -51,7 +51,7 @@ class CartesianValueArgumentsProvider
 						source.classes()
 				)
 				.filter(array -> Array.getLength(array) > 0)
-				.collect(toList());
+				.collect(toUnmodifiableList());
 		// @formatter:on
 
 		if (arrays.size() != 1)

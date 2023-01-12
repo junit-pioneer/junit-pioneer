@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter.resource;
 
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -401,16 +401,19 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private List<ReentrantLock> sortedLocksForSharedResources(Collection<Shared> sharedAnnotations,
 			ExtensionContext extensionContext) {
-		List<Shared> sortedAnnotations = sharedAnnotations.stream().sorted(comparing(Shared::name)).collect(toList());
+		List<Shared> sortedAnnotations = sharedAnnotations
+				.stream()
+				.sorted(comparing(Shared::name))
+				.collect(toUnmodifiableList());
 		List<ExtensionContext.Store> stores = //
 			sortedAnnotations
 					.stream() //
 					.map(shared -> scopedStore(extensionContext, shared.scope()))
-					.collect(toList());
+					.collect(toUnmodifiableList());
 		return IntStream
 				.range(0, sortedAnnotations.size()) //
 				.mapToObj(i -> findLockForShared(sortedAnnotations.get(i), stores.get(i)))
-				.collect(toList());
+				.collect(toUnmodifiableList());
 	}
 
 	private Method testFactoryMethod(ExtensionContext extensionContext) {
@@ -452,7 +455,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
-				.collect(toList());
+				.collect(toUnmodifiableList());
 	}
 
 	private void putNewLockForShared(Shared shared, ExtensionContext.Store store) {

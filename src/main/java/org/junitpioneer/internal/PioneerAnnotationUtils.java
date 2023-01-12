@@ -10,6 +10,8 @@
 
 package org.junitpioneer.internal;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
@@ -22,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -132,7 +133,7 @@ public class PioneerAnnotationUtils {
 				// flatten @Repeatable aggregator annotations
 				.flatMap(PioneerAnnotationUtils::flatten)
 				.filter(a -> !(findOnType(a.annotationType(), annotation, isRepeatable, false).isEmpty()))
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 	}
 
 	private static Stream<Annotation> flatten(Annotation annotation) {
@@ -224,7 +225,7 @@ public class PioneerAnnotationUtils {
 		List<A> onInterfaces = Arrays
 				.stream(element.getInterfaces())
 				.flatMap(clazz -> findOnType(clazz, annotationType, false, findAllEnclosing).stream())
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 		if (!annotationType.isAnnotationPresent(Inherited.class)) {
 			if (!findAllEnclosing)
 				return onElement;
@@ -233,14 +234,14 @@ public class PioneerAnnotationUtils {
 						.of(onElement, onInterfaces)
 						.flatMap(Collection::stream)
 						.distinct()
-						.collect(Collectors.toList());
+						.collect(toUnmodifiableList());
 		}
 		List<A> onSuperclass = findOnType(element.getSuperclass(), annotationType, false, findAllEnclosing);
 		return Stream
 				.of(onElement, onInterfaces, onSuperclass)
 				.flatMap(Collection::stream)
 				.distinct()
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 	}
 
 	public static List<Annotation> findParameterArgumentsSources(Method testMethod) {
@@ -249,7 +250,7 @@ public class PioneerAnnotationUtils {
 				.map(PioneerAnnotationUtils::collectArgumentSources)
 				.filter(list -> !list.isEmpty())
 				.map(annotations -> annotations.get(0))
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 	}
 
 	private static List<Annotation> collectArgumentSources(Parameter parameter) {
@@ -267,7 +268,7 @@ public class PioneerAnnotationUtils {
 				.filter(annotation -> AnnotationSupport
 						.findAnnotation(annotation.annotationType(), CartesianArgumentsSource.class)
 						.isPresent())
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 	}
 
 }

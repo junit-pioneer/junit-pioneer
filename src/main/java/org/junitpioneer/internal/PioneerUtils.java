@@ -22,7 +22,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -39,7 +38,7 @@ public class PioneerUtils {
 	}
 
 	/**
-	 * A {@link Collectors#toSet() toSet} collector that throws an {@link IllegalStateException}
+	 * A {@link java.util.stream.Collectors#toSet() toSet} collector that throws an {@link IllegalStateException}
 	 * on duplicate elements (according to {@link Object#equals(Object) equals}).
 	 */
 	public static <T> Collector<T, Set<T>, Set<T>> distinctToSet() {
