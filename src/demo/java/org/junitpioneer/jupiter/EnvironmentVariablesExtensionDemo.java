@@ -19,6 +19,7 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junitpioneer.jupiter.params.IntRangeSource;
 
 @EnabledForJreRange(max = JRE.JAVA_16, disabledReason = "See: https://github.com/junit-pioneer/junit-pioneer/issues/509")
 public class EnvironmentVariablesExtensionDemo {
@@ -104,6 +105,19 @@ public class EnvironmentVariablesExtensionDemo {
 		// Changes to A, B & C have been restored to their values prior to the above test
 	}
 	// end::environment_class_restore[]
+
+	// tag::environment_method_combine_all_test[]
+	@ParameterizedTest
+	@IntRangeSource(from = 0, to = 10000, step = 500)
+	@RestoreEnvironmentVariables
+	@SetEnvironmentVariable(key = "DISABLE_CACHE", value = "TRUE")
+	@ClearEnvironmentVariable(key = "COPYWRITE_OVERLAY_TEXT")
+	void imageGenerationTest(int imageSize) {
+		setEnvVar("IMAGE_SIZE", String.valueOf(imageSize)); // Requires Restore
+
+		// ...test your image generation utility with the current env vars...
+	}
+	// end::environment_method_combine_all_test[]
 
 	public static void setEnvVar(String name, String value) {
 		EnvironmentVariableUtils.set(name, value);

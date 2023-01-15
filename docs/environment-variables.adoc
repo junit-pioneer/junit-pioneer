@@ -81,8 +81,21 @@ Both `isolatedTest1` and `isolatedTest2` _will_ see environment variable values 
 include::{demo}[tag=environment_class_restore]
 ----
 
-Note that using `@RestoreEnvironmentVariables` is not necessary to restore environment variables modified via `@ClearEnvironmentVariable` or `@SetEnvironmentVariable`.
-However, it is OK and normal to use all three annotations together, which you might do if some environment values are parameterized (i.e. need to be set in code) and others are not.
+== Using `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, and `@RestoreEnvironmentVariables` together
+All three annotations can be combined, which could be used when some environment values are parameterized (i.e. need to be set in code) and others are not.
+For instance, imagine testing an image generation utility that takes configuration from environment variables.
+Basic configuration can be specified using `Set` and `Clear` and the image size parameterized:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=environment_method_combine_all_test]
+----
+
+[NOTE]
+====
+Using `@RestoreEnvironmentVariables` is not necessary to restore environment variables modified via `@ClearEnvironmentVariable` or `@SetEnvironmentVariable` - They each automatically restore the referenced variables.
+'Restore', is only needed if environment variables are modified in some way _other than_ Set and Clear during a test.
+====
 
 == Warnings for Reflective Access
 

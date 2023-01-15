@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junitpioneer.jupiter.params.IntRangeSource;
 
 public class SystemPropertyExtensionDemo {
 
@@ -101,5 +102,18 @@ public class SystemPropertyExtensionDemo {
 		// Changes to A, B & C have been restored to their values prior to the above test
 	}
 	// end::systemproperty_restore_class_level[]
+
+	// tag::systemproperty_method_combine_all_test[]
+	@ParameterizedTest
+	@IntRangeSource(from = 0, to = 10000, step = 500)
+	@RestoreSystemProperties
+	@SetSystemProperty(key = "DISABLE_CACHE", value = "TRUE")
+	@ClearSystemProperty(key = "COPYWRITE_OVERLAY_TEXT")
+	void imageGenerationTest(int imageSize) {
+		System.setProperty("IMAGE_SIZE", String.valueOf(imageSize)); // Requires Restore
+
+		// ...test your image generation utility with the current env vars...
+	}
+	// end::systemproperty_method_combine_all_test[]
 
 }
