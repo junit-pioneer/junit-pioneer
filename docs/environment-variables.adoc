@@ -8,7 +8,7 @@ Both annotations work on the test method and class level, are repeatable, combin
 After the annotated method has been executed, the variables mentioned in the annotation will be restored to their original value or the value of the higher-level container, or will be cleared if they didn't have one before.
 Other environment variables that are changed during the test, are *not* restored.
 
-[WARNING]J
+[WARNING]
 ====
 Java considers environment variables to be immutable, so this extension uses reflection to change them.
 This requires that the `SecurityManager` allows modifications and can potentially break on different operating systems and Java versions.
