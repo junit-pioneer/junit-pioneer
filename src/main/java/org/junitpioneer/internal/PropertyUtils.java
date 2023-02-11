@@ -18,7 +18,8 @@ import java.util.Properties;
 
 /**
  * Utils to read a property file.
- * */
+ *
+ */
 public final class PropertyUtils {
 
 	private static final String PROPERTY_FILE_NAME = "junitpioneer.properties";
