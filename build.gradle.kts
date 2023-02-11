@@ -211,6 +211,14 @@ tasks {
 		options.compilerArgs.add("-Werror")
 		// Do not break the build on "exports" warnings (see CONTRIBUTING.md for details)
 		options.compilerArgs.add("-Xlint:all,-exports")
+
+		if(project.version != "unspecified") {
+			// Add version to JPMS modules
+			// Version is only set in a release-build.
+			// See build.yml line 212f "# defines released version according to GitHub Action input"
+			options.compilerArgs.addAll(listOf("--module-version", "${project.version}"));
+		}
+
 	}
 
 	// Prepares test-related JVM args
