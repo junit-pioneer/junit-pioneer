@@ -80,7 +80,7 @@ include::{demo}[tag=systemproperty_method_combine_all_test]
 
 [NOTE]
 ====
-Using `@RestoreSystemProperties` is not necessary to restore system properties modified via `@ClearSystemProperty` or `@SetSystemProperty` - They each automatically restore the referenced properties.
+Using `@RestoreSystemProperties` is not necessary to restore system properties modified via `@ClearSystemProperty` or `@SetSystemProperty` - they each automatically restore the referenced properties.
 'Restore', is only needed if system properties are modified in some way _other than_ Set and Clear during a test.
 ====
 
