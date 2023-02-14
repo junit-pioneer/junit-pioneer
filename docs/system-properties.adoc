@@ -86,7 +86,7 @@ Using `@RestoreSystemProperties` is not necessary to restore system properties m
 
 === `@RestoreSystemProperties` Limitations
 The system `Properties` object is normally just a hashmap of strings, however, it is technically possible to store non-string values and create https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Properties.html#%3Cinit%3E(java.util.Properties)[nested `Properties` with inherited default values].
-`@RestoreSystemProperties` restores the original `SystemProperties` object with all of it's potential richness _after_ the annotated scope is complete.
+`@RestoreSystemProperties` restores the original `Properties` object with all of its potential richness _after_ the annotated scope is complete.
 However, for use during the test _within_ the test scope it provides a cloned `Properties` object with these limitations:
 
 - Properties with non-string values are removed
