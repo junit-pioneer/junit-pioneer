@@ -93,7 +93,7 @@ include::{demo}[tag=environment_method_combine_all_test]
 
 [NOTE]
 ====
-Using `@RestoreEnvironmentVariables` is not necessary to restore environment variables modified via `@ClearEnvironmentVariable` or `@SetEnvironmentVariable` - They each automatically restore the referenced variables.
+Using `@RestoreEnvironmentVariables` is not necessary to restore environment variables modified via `@ClearEnvironmentVariable` or `@SetEnvironmentVariable` - they each automatically restore the referenced variables.
 'Restore', is only needed if environment variables are modified in some way _other than_ Set and Clear during a test.
 ====
 
