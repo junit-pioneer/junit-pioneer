@@ -143,7 +143,6 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 			}
 		});
 
-		//
 		// Dig down into the nested defaults
 		Properties actualDefault = getDefaultFieldValue(actual);
 		Properties expectedDefault = getDefaultFieldValue(expected);
