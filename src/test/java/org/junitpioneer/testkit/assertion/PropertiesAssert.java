@@ -197,7 +197,7 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Unable to access the java.util.Properties.defaults field by reflection. "
-					+ "Please adjust your local environment to allow this.");
+					+ "Please adjust your local environment to allow this.", e);
 		}
 	}
 
