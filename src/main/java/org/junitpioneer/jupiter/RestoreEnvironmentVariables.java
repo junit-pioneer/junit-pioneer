@@ -54,7 +54,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <code>@ClearEnvironmentVariable, @SetEnvironmentVariable and @RestoreEnvironmentVariables</code></a>.
  * </p>
  *
- * <p>Note:  Environment Variables are normally not editable.
+ * <p>Note: Environment Variables are normally not editable.
  * This extension uses refleftion to change the values, thus you may run into
  * permissions issues...</p>
  *
