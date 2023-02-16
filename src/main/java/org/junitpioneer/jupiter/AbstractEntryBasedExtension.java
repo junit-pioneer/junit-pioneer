@@ -302,7 +302,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	/**
-	 * Prepare the entry based environment for entering a context that must be restorable.
+	 * Prepare the entry-based environment for entering a context that must be restorable.
 	 * <p>
 	 * Implementations may choose one of two strategies:
 	 * <ul>
