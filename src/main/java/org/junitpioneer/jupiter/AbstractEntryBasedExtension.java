@@ -179,7 +179,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	/**
-	 * Restore the complete original state of the entries as they were prior to this ExtensionContext,
+	 * Restore the complete original state of the entries as they were prior to this {@code ExtensionContext},
 	 * if the complete state was initially stored in a BeforeXXX event.
 	 *
 	 * @param context The ExtensionContext which may have a bulk backup stored
