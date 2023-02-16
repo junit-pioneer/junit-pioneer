@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * environment variables to the original value, or the value of the higher-level container, after the
  * annotated element has been executed.
  *
- *
  * <p>Use this annotation when you need programmatically modify environment variables in a test method
  * or in {@code @BeforeAll} / {@code @BeforeEach} blocks.
  * To simply set or clear an environment variable, consider
@@ -37,8 +36,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * methods have run and before any {@code @BeforeEach} methods.</p>
  *
  * <p>When placed on a test class, environment variables are stored before the test class runs and
- * restored after the test class is complete, <em>in addition too</em> running before and after
- * each test method just as if the annotation was on each method.  An advanced usage could include
+ * restored after the test class is complete, <em>in addition to</em> running before and after
+ * each test method just as if the annotation was on each method. An advanced usage could include
  * modifying some environment variables in a {@code @BeforeAll} block to apply to all tests and
  * additional variable modifications within some tests themselves, all while safely restoring
  * the state of the environment variables after each test and after the entire test class.</p>

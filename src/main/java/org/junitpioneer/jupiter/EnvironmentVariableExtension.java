@@ -10,12 +10,14 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.toSet;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -74,7 +76,7 @@ class EnvironmentVariableExtension extends
 
 	/**
 	 * This implementation uses the 'Post Swap' strategy, returning a clone of the environment vars
-	 * which will be restored in prepareToExitRestorableContext.
+	 * which will be restored in {@link AbstractEntryBasedExtension#prepareToExitRestorableContext}.
 	 * <p>
 	 * See {@link AbstractEntryBasedExtension#prepareToEnterRestorableContext} for more details.
 	 *
@@ -94,20 +96,15 @@ class EnvironmentVariableExtension extends
 		// Set all values, but only if different from actual value
 		restoreMe
 				.entrySet()
-				.parallelStream()
+				.stream()
 				.filter(e -> !e.getValue().equals(System.getenv(e.getKey().toString())))
 				.forEach(e -> setEntry(e.getKey().toString(), e.getValue().toString()));
 
 		// Find entries to remove.
 		// Cannot remove in stream b/c the stream is based on the collection that needs to be modified
-		Set<String> entriesToClear = existingEnv
-				.entrySet()
-				.parallelStream()
-				.filter(e -> !restoreMe.containsKey(e.getKey()))
-				.map(e -> e.getKey())
-				.collect(Collectors.toSet());
+		Set<String> entriesToClear = existingEnv.keySet().stream().filter(not(restoreMe::containsKey)).collect(toSet());
 
-		entriesToClear.stream().forEach(k -> clearEntry(k));
+		entriesToClear.stream().forEach(this::clearEntry);
 	}
 
 }
