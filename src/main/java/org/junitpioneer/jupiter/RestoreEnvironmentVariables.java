@@ -42,9 +42,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * additional variable modifications within some tests themselves, all while safely restoring
  * the state of the environment variables after each test and after the entire test class.</p>
  *
- * <p>SetEnvironmentVariable and ClearEnvironmentVariable interaction....</p>
- *
- * <p>During
+ * <p>{@code SetEnvironmentVariable} and {@code ClearEnvironmentVariable interaction}: During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
  * all tests annotated with {@link RestoreEnvironmentVariables}, {@link SetEnvironmentVariable},
  * {@link ReadsEnvironmentVariable}, and {@link WritesEnvironmentVariable}
