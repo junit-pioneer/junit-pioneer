@@ -100,7 +100,7 @@ class RestoreSystemPropertiesTests {
 		outer.put("F", F_OBJ);
 
 		Properties cloned = deepClone(outer);
-		PropertiesAssert.assertThat(cloned).isStrictlyTheSameAs(outer);
+		PropertiesAssert.assertThat(cloned).isStrictlyEqualTo(outer);
 	}
 
 	@Test
@@ -187,8 +187,8 @@ class RestoreSystemPropertiesTests {
 			Properties actual = System.getProperties();
 
 			assertThat(preTest).isNotNull();
-			PropertiesAssert.assertThat(actual).isEffectivelyTheSameAs(preTest);
-			PropertiesAssert.assertThat(actual).isStrictlyTheSameAs(preTest);
+			PropertiesAssert.assertThat(actual).isEffectivelyEqualsTo(preTest);
+			PropertiesAssert.assertThat(actual).isStrictlyEqualTo(preTest);
 		}
 
 		@Override
@@ -202,8 +202,8 @@ class RestoreSystemPropertiesTests {
 			Properties actual = System.getProperties();
 
 			assertThat(preTest).isNotNull();
-			PropertiesAssert.assertThat(actual).isEffectivelyTheSameAs(preTest);
-			PropertiesAssert.assertThat(actual).isStrictlyTheSameAs(preTest);
+			PropertiesAssert.assertThat(actual).isEffectivelyEqualsTo(preTest);
+			PropertiesAssert.assertThat(actual).isStrictlyEqualTo(preTest);
 			beforeEachState = null;
 		}
 

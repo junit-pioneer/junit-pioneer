@@ -14,7 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.jupiter.params.IntRangeSource;
@@ -72,6 +74,8 @@ public class SystemPropertyExtensionDemo {
 	}
 	// end::systemproperty_restore_test[]
 
+	@Nested
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	// tag::systemproperty_restore_class_level[]
 	@RestoreSystemProperties
 	class MySystemPropertyRestoreTest {
@@ -93,7 +97,11 @@ public class SystemPropertyExtensionDemo {
 
 		@Test
 		void isolatedTest2() {
-			// A & B are visible, C is not
+			assertThat(System.getProperty("A")).isEqualTo("A value");
+			assertThat(System.getProperty("B")).isEqualTo("B value");
+
+			//Class-level @RestoreSystemProperties restores 'C' to original state
+			assertThat(System.getProperty("C")).isNull();
 		}
 
 	}
@@ -112,7 +120,7 @@ public class SystemPropertyExtensionDemo {
 	void imageGenerationTest(int imageSize) {
 		System.setProperty("IMAGE_SIZE", String.valueOf(imageSize)); // Requires Restore
 
-		// ...test your image generation utility with the current env vars...
+		// Test your image generation utility with the current System Properties
 	}
 	// end::systemproperty_method_combine_all_test[]
 

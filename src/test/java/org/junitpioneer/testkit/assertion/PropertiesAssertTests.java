@@ -100,15 +100,15 @@ class PropertiesAssertTests {
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
 		public void compareIdentical() {
-			PropertiesAssert.assertThat(strPropAB1).isEffectivelyTheSameAs(strPropAB2);
-			PropertiesAssert.assertThat(strPropAB1).isStrictlyTheSameAs(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isStrictlyEqualTo(strPropAB2);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyEqualTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isNotStrictlyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isNotStrictlyEqualTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 		}
 
@@ -117,15 +117,15 @@ class PropertiesAssertTests {
 		public void addedActualValue() {
 			strPropAB1.setProperty("C", "I am not in set 2");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isEffectivelyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isStrictlyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isStrictlyEqualTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyTheSameAs(strPropAB2);
-			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyTheSameAs(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyEqualTo(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyEqualTo(strPropAB2);
 		}
 
 		@Test
@@ -133,15 +133,15 @@ class PropertiesAssertTests {
 		public void addedExpectedValue() {
 			strPropAB2.setProperty("C", "I am not in set 1");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isEffectivelyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isStrictlyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isStrictlyEqualTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyTheSameAs(strPropAB2);
-			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyTheSameAs(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyEqualTo(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyEqualTo(strPropAB2);
 		}
 
 		@Test
@@ -149,15 +149,15 @@ class PropertiesAssertTests {
 		public void changedActualValue() {
 			strPropAB1.setProperty("B", "I am different");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isEffectivelyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isStrictlyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isStrictlyEqualTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyTheSameAs(strPropAB2);
-			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyTheSameAs(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyEqualTo(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyEqualTo(strPropAB2);
 		}
 
 		@Test
@@ -165,15 +165,15 @@ class PropertiesAssertTests {
 		public void changedExpectedValue() {
 			strPropAB2.setProperty("B", "I am different");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isEffectivelyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isStrictlyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isStrictlyEqualTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyTheSameAs(strPropAB2);
-			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyTheSameAs(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyEqualTo(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyEqualTo(strPropAB2);
 		}
 
 		@Test
@@ -181,15 +181,15 @@ class PropertiesAssertTests {
 		public void removedActualValue() {
 			strPropAB1.remove("B");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isEffectivelyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isStrictlyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isStrictlyEqualTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyTheSameAs(strPropAB2);
-			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyTheSameAs(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyEqualTo(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyEqualTo(strPropAB2);
 		}
 
 		@Test
@@ -197,15 +197,15 @@ class PropertiesAssertTests {
 		public void removedExpValue() {
 			strPropAB2.remove("B");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isEffectivelyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1).isStrictlyTheSameAs(strPropAB2);
+				PropertiesAssert.assertThat(strPropAB1).isStrictlyEqualTo(strPropAB2);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyTheSameAs(strPropAB2);
-			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyTheSameAs(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotEffectivelyEqualTo(strPropAB2);
+			PropertiesAssert.assertThat(strPropAB1).isNotStrictlyEqualTo(strPropAB2);
 		}
 
 	}
@@ -219,15 +219,15 @@ class PropertiesAssertTests {
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
 		public void compareIdentical() {
-			PropertiesAssert.assertThat(objProp1).isEffectivelyTheSameAs(objProp2);
-			PropertiesAssert.assertThat(objProp1).isStrictlyTheSameAs(objProp2);
+			PropertiesAssert.assertThat(objProp1).isEffectivelyEqualsTo(objProp2);
+			PropertiesAssert.assertThat(objProp1).isStrictlyEqualTo(objProp2);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isNotEffectivelyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isNotEffectivelyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isNotStrictlyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isNotStrictlyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
 		}
 
@@ -239,17 +239,17 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
-					.isEffectivelyTheSameAs(objProp2);
+					.isEffectivelyEqualsTo(objProp2);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isStrictlyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isStrictlyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isNotEffectivelyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isNotEffectivelyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(objProp1).isNotStrictlyTheSameAs(objProp2);
+			PropertiesAssert.assertThat(objProp1).isNotStrictlyEqualTo(objProp2);
 		}
 
 		@Test
@@ -260,16 +260,16 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
-					.isEffectivelyTheSameAs(objProp2);
+					.isEffectivelyEqualsTo(objProp2);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isStrictlyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isStrictlyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isNotEffectivelyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isNotEffectivelyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
-			PropertiesAssert.assertThat(objProp1).isNotStrictlyTheSameAs(objProp2);
+			PropertiesAssert.assertThat(objProp1).isNotStrictlyEqualTo(objProp2);
 		}
 
 		@Test
@@ -280,16 +280,16 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
-					.isEffectivelyTheSameAs(objProp2);
+					.isEffectivelyEqualsTo(objProp2);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isStrictlyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isStrictlyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isNotEffectivelyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isNotEffectivelyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
-			PropertiesAssert.assertThat(objProp1).isNotStrictlyTheSameAs(objProp2);
+			PropertiesAssert.assertThat(objProp1).isNotStrictlyEqualTo(objProp2);
 		}
 
 		@Test
@@ -300,16 +300,16 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
-					.isEffectivelyTheSameAs(objProp2);
+					.isEffectivelyEqualsTo(objProp2);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isStrictlyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isStrictlyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isNotEffectivelyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isNotEffectivelyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
-			PropertiesAssert.assertThat(objProp1).isNotStrictlyTheSameAs(objProp2);
+			PropertiesAssert.assertThat(objProp1).isNotStrictlyEqualTo(objProp2);
 		}
 
 		@Test
@@ -320,16 +320,16 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
-					.isEffectivelyTheSameAs(objProp2);
+					.isEffectivelyEqualsTo(objProp2);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isStrictlyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isStrictlyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isNotEffectivelyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isNotEffectivelyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
-			PropertiesAssert.assertThat(objProp1).isNotStrictlyTheSameAs(objProp2);
+			PropertiesAssert.assertThat(objProp1).isNotStrictlyEqualTo(objProp2);
 		}
 
 		@Test
@@ -340,16 +340,16 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1)
 					.withFailMessage("Unable to see object value differences")
-					.isEffectivelyTheSameAs(objProp2);
+					.isEffectivelyEqualsTo(objProp2);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isStrictlyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isStrictlyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1).isNotEffectivelyTheSameAs(objProp2);
+				PropertiesAssert.assertThat(objProp1).isNotEffectivelyEqualTo(objProp2);
 			}).isInstanceOf(AssertionError.class);
-			PropertiesAssert.assertThat(objProp1).isNotStrictlyTheSameAs(objProp2);
+			PropertiesAssert.assertThat(objProp1).isNotStrictlyEqualTo(objProp2);
 		}
 
 	}
@@ -361,15 +361,15 @@ class PropertiesAssertTests {
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
 		public void compareIdentical() {
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 		}
 
@@ -378,15 +378,15 @@ class PropertiesAssertTests {
 		public void addedActualValue() {
 			strPropAB1.setProperty("E", "I am not in '2' and set in the default prop instance");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 		@Test
@@ -394,15 +394,15 @@ class PropertiesAssertTests {
 		public void addedExpectedValue() {
 			strPropAB2.setProperty("E", "I am not in '1' and set in the default prop instance");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 		@Test
@@ -410,15 +410,15 @@ class PropertiesAssertTests {
 		public void changedActualValue() {
 			strPropAB1.setProperty("B", "I am different than '2' and set in the default prop instance");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 		@Test
@@ -426,15 +426,15 @@ class PropertiesAssertTests {
 		public void changedExpectedValue() {
 			strPropAB2.setProperty("B", "I am different than '1' and set in the default prop instance");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 		@Test
@@ -442,15 +442,15 @@ class PropertiesAssertTests {
 		public void removedActualValue() {
 			strPropAB1.remove("B");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 		@Test
@@ -458,15 +458,15 @@ class PropertiesAssertTests {
 		public void removedExpValue() {
 			strPropAB2.remove("B");
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 		@Test
@@ -475,17 +475,17 @@ class PropertiesAssertTests {
 			strPropAB1CDwDefaults.put("B", strPropAB1.getProperty("B"));
 			strPropAB1.remove("B");
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 		@Test
@@ -494,17 +494,17 @@ class PropertiesAssertTests {
 			strPropAB1.put("D", strPropAB1CDwDefaults.getProperty("D"));
 			strPropAB1CDwDefaults.remove("D");
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 		@Test
@@ -513,17 +513,17 @@ class PropertiesAssertTests {
 			strPropAB2CDwDefaults.put("B", strPropAB2.getProperty("B"));
 			strPropAB2.remove("B");
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 		@Test
@@ -532,17 +532,17 @@ class PropertiesAssertTests {
 			strPropAB2.put("D", strPropAB2CDwDefaults.getProperty("D"));
 			strPropAB2CDwDefaults.remove("D");
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyTheSameAs(strPropAB2CDwDefaults);
+				PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotEffectivelyEqualTo(strPropAB2CDwDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyTheSameAs(strPropAB2CDwDefaults);
+			PropertiesAssert.assertThat(strPropAB1CDwDefaults).isNotStrictlyEqualTo(strPropAB2CDwDefaults);
 		}
 
 	}
@@ -554,15 +554,15 @@ class PropertiesAssertTests {
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
 		public void compareIdentical() {
-			PropertiesAssert.assertThat(objProp1wDefaults).isEffectivelyTheSameAs(objProp2wDefaults);
-			PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isEffectivelyEqualsTo(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 		}
 
@@ -574,17 +574,17 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 		@Test
@@ -595,17 +595,17 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 		@Test
@@ -616,16 +616,16 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 		@Test
@@ -636,16 +636,16 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 		@Test
@@ -656,16 +656,16 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 		@Test
@@ -676,16 +676,16 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 		@Test
@@ -697,17 +697,17 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 		@Test
@@ -719,17 +719,17 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 		@Test
@@ -741,17 +741,17 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 		@Test
@@ -763,17 +763,17 @@ class PropertiesAssertTests {
 			PropertiesAssert
 					.assertThat(objProp1wDefaults)
 					.withFailMessage("'Effective' should treat object values as null")
-					.isEffectivelyTheSameAs(objProp2wDefaults);
+					.isEffectivelyEqualsTo(objProp2wDefaults);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
 			assertThatThrownBy(() -> {
-				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyTheSameAs(objProp2wDefaults);
+				PropertiesAssert.assertThat(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
 			}).isInstanceOf(AssertionError.class);
 
-			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyTheSameAs(objProp2wDefaults);
+			PropertiesAssert.assertThat(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
 
 	}

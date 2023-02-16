@@ -378,7 +378,7 @@ class EnvironmentVariableExtensionTests {
 				try {
 					Properties returnedFromPrepareToEnter = eve.prepareToEnterRestorableContext();
 
-					PropertiesAssert.assertThat(returnedFromPrepareToEnter).isStrictlyTheSameAs(initialEnvVars);
+					PropertiesAssert.assertThat(returnedFromPrepareToEnter).isStrictlyEqualTo(initialEnvVars);
 
 					// modify actual env vars
 					EnvironmentVariableUtils.clear("set envvar A");

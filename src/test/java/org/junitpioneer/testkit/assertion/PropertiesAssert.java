@@ -44,10 +44,10 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	 * Assert Properties has the same effective values as the passed instance, but not
 	 * the same nested default structure.
 	 * <p>
-	 * Properties are considered <em>effectively same</em> if they have the same property
+	 * Properties are considered <em>effectively equal</em> if they have the same property
 	 * names returned by {@code Properties.propertyNames()} and the same values returned by
 	 * {@code getProperty(name)}.  Properties may come from the properties instance itself,
-	 * or from a nested default instance, indiscrimiately.
+	 * or from a nested default instance, indiscriminately.
 	 * <p>
 	 * Properties partially supports object values, but return null for {@code getProperty(name)}
 	 * when the value is a non-string.  This assertion follows the same rules:  Any non-String
@@ -56,7 +56,7 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	 * @param expected The actual is expected to be effectively the same as this Properties
 	 * @return Assertion instance
 	 */
-	public PropertiesAssert isEffectivelyTheSameAs(Properties expected) {
+	public PropertiesAssert isEffectivelyEqualsTo(Properties expected) {
 
 		// Compare values present in actual
 		actual.propertyNames().asIterator().forEachRemaining(k -> {
@@ -104,29 +104,29 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	}
 
 	/**
-	 * The converse of isEffectivelyTheSameAs.
+	 * The converse of isEffectivelyEqualTo.
 	 *
-	 * @param expected The actual is expected to NOT be effectively the same as this Properties
+	 * @param expected The actual is expected to NOT be effectively equal to this Properties
 	 * @return Assertion instance
 	 */
-	public PropertiesAssert isNotEffectivelyTheSameAs(Properties expected) {
+	public PropertiesAssert isNotEffectivelyEqualTo(Properties expected) {
 		try {
-			isEffectivelyTheSameAs(expected);
+			isEffectivelyEqualsTo(expected);
 		}
 		catch (AssertionError ae) {
 			return this; // Expected
 		}
 
-		throw failure("The actual Properties should not be effectively the same as the expected one.");
+		throw failure("The actual Properties should not be effectively equal to the expected one.");
 	}
 
 	/**
 	 * Compare values directly present in Properties and recursively into default Properties.
 	 *
-	 * @param expected The actual is expected to be strictly the same as this Properties
+	 * @param expected The actual is expected to be strictly equal to this Properties
 	 * @return Assertion instance
 	 */
-	public PropertiesAssert isStrictlyTheSameAs(Properties expected) {
+	public PropertiesAssert isStrictlyEqualTo(Properties expected) {
 
 		// Compare values present in actual
 		actual.keySet().forEach(k -> {
@@ -148,7 +148,7 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 		Properties expectedDefault = getDefaultFieldValue(expected);
 
 		if (actualDefault != null && expectedDefault != null) {
-			return PropertiesAssert.assertThat(actualDefault).isStrictlyTheSameAs(expectedDefault);
+			return PropertiesAssert.assertThat(actualDefault).isStrictlyEqualTo(expectedDefault);
 		} else if (actualDefault != null) {
 			throw failure("The actual Properties had non-null defaults, but none were expected");
 		} else if (expectedDefault != null) {
@@ -159,14 +159,14 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	}
 
 	/**
-	 * Simple converse of isStrictlyTheSameAs.
+	 * Simple converse of isStrictlyEqualTo.
 	 *
-	 * @param expected The actual is expected to NOT be strictly the same as this Properties
+	 * @param expected The actual is expected to NOT be strictly equal to this Properties
 	 * @return Assertion instance
 	 */
-	public PropertiesAssert isNotStrictlyTheSameAs(Properties expected) {
+	public PropertiesAssert isNotStrictlyEqualTo(Properties expected) {
 		try {
-			isStrictlyTheSameAs(expected);
+			isStrictlyEqualTo(expected);
 		}
 		catch (AssertionError ae) {
 			return this; // Expected
@@ -197,7 +197,8 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Unable to access the java.util.Properties.defaults field by reflection. "
-					+ "Please adjust your local environment to allow this.", e);
+					+ "Please adjust your local environment to allow this.",
+				e);
 		}
 	}
 

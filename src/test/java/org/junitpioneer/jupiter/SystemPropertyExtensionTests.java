@@ -261,7 +261,7 @@ class SystemPropertyExtensionTests {
 			@Test
 			@DisplayName("Restore from class should restore direct mods")
 			void restoreShouldHaveRevertedDirectModification() {
-				PropertiesAssert.assertThat(System.getProperties()).isStrictlyTheSameAs(initialState);
+				PropertiesAssert.assertThat(System.getProperties()).isStrictlyEqualTo(initialState);
 			}
 
 		}
@@ -314,7 +314,7 @@ class SystemPropertyExtensionTests {
 			void restoreShouldHaveRevertedDirectModification() {
 				assertThat(System.getProperty("Restore")).isNull();
 				assertThat(System.getProperties().get("XYZ")).isNull();
-				PropertiesAssert.assertThat(System.getProperties()).isStrictlyTheSameAs(initialState);
+				PropertiesAssert.assertThat(System.getProperties()).isStrictlyEqualTo(initialState);
 			}
 
 		}
@@ -378,7 +378,7 @@ class SystemPropertyExtensionTests {
 			@DisplayName("Nested defaults handled")
 			void nestedDefaultsHandled() {
 				Properties cloned = SystemPropertyExtension.createEffectiveClone(outer);
-				PropertiesAssert.assertThat(cloned).isEffectivelyTheSameAs(outer);
+				PropertiesAssert.assertThat(cloned).isEffectivelyEqualsTo(outer);
 			}
 
 			@Test
@@ -388,7 +388,7 @@ class SystemPropertyExtensionTests {
 				outer.put("outer_obj", new Object());
 				Properties cloned = SystemPropertyExtension.createEffectiveClone(outer);
 
-				PropertiesAssert.assertThat(cloned).isEffectivelyTheSameAs(outer);
+				PropertiesAssert.assertThat(cloned).isEffectivelyEqualsTo(outer);
 				assertThat(cloned.contains("inner_obj")).isFalse();
 				assertThat(cloned.contains("outer_obj")).isFalse();
 			}
@@ -414,16 +414,16 @@ class SystemPropertyExtensionTests {
 							.assertThat(returnedFromPrepareToEnter)
 							.withFailMessage(
 								"prepareToEnterRestorableContext should return actual original or deep copy")
-							.isStrictlyTheSameAs(initialState);
+							.isStrictlyEqualTo(initialState);
 
 					assertThat(returnedFromPrepareToEnter)
 							.withFailMessage("prepareToEnterRestorableContext should replace the actual Sys Props")
 							.isNotSameAs(postPrepareToEnterSysProps);
 
-					PropertiesAssert.assertThat(postPrepareToEnterSysProps).isEffectivelyTheSameAs(initialState);
+					PropertiesAssert.assertThat(postPrepareToEnterSysProps).isEffectivelyEqualsTo(initialState);
 
 					// Could assert isSameAs, but a deep copy would also be allowed
-					PropertiesAssert.assertThat(postPrepareToExitSysProps).isStrictlyTheSameAs(initialState);
+					PropertiesAssert.assertThat(postPrepareToExitSysProps).isStrictlyEqualTo(initialState);
 
 				}
 				finally {
@@ -661,7 +661,7 @@ class SystemPropertyExtensionTests {
 		void restoreShouldHaveRevertedDirectModification() {
 			assertThat(System.getProperty("Restore")).isNull();
 			assertThat(System.getProperties().get("XYZ")).isNull();
-			PropertiesAssert.assertThat(System.getProperties()).isStrictlyTheSameAs(initialState);
+			PropertiesAssert.assertThat(System.getProperties()).isStrictlyEqualTo(initialState);
 		}
 
 		@Nested

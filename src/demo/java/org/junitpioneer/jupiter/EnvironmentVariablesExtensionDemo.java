@@ -14,7 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -75,8 +77,10 @@ public class EnvironmentVariablesExtensionDemo {
 	}
 	// end::environment_method_restore_test[]
 
+	@Nested
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 	// tag::environment_class_restore[]
-	@RestoreSystemProperties
+	@RestoreEnvironmentVariables
 	class MyEnvironmentVariableRestoreTest {
 
 		@BeforeAll
@@ -96,7 +100,11 @@ public class EnvironmentVariablesExtensionDemo {
 
 		@Test
 		void isolatedTest2() {
-			// A & B are visible, C is not
+			assertThat(System.getenv("A")).isEqualTo("A value");
+			assertThat(System.getenv("B")).isEqualTo("B value");
+
+			//Class-level @RestoreEnvironmentVariables restores 'C' to original state
+			assertThat(System.getenv("C")).isNull();
 		}
 
 	}
@@ -115,7 +123,7 @@ public class EnvironmentVariablesExtensionDemo {
 	void imageGenerationTest(int imageSize) {
 		setEnvVar("IMAGE_SIZE", String.valueOf(imageSize)); // Requires Restore
 
-		// ...test your image generation utility with the current env vars...
+		// Test your image generation utility with the current environment variables
 	}
 	// end::environment_method_combine_all_test[]
 
