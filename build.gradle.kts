@@ -213,10 +213,8 @@ tasks {
 		options.compilerArgs.add("-Xlint:all,-exports")
 
 		if(project.version != "unspecified") {
-			// Add version to JPMS modules
-			// Version is only set in a release-build.
-			// See build.yml line 212f "# defines released version according to GitHub Action input"
-			options.compilerArgs.addAll(listOf("--module-version", "${project.version}"));
+			// Add version to Java modules
+			options.javaModuleVersion.set(project.version.toString());
 		}
 
 	}
