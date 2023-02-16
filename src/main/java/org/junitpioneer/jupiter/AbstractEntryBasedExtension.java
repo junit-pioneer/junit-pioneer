@@ -70,7 +70,6 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void applyForAllContexts(ExtensionContext originalContext) {
-
 		final boolean fullRestore = PioneerAnnotationUtils
 				.isAnnotationPresent(originalContext, getRestoreAnnotationType());
 
@@ -182,18 +181,18 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	 * Restore the complete original state of the entries as they were prior to this {@code ExtensionContext},
 	 * if the complete state was initially stored in a BeforeXXX event.
 	 *
-	 * @param context The {@code ExtensionContext} which may have a bulk backup stored
+	 * @param context The {@code ExtensionContext} which may have a bulk backup stored.
 	 * @return true if a complete backup exists and was used to restore, false if not.
 	 */
 	private boolean restoreOriginalCompleteEntries(ExtensionContext context) {
 		Properties bulk = getStore(context).get(getStoreKey(context, COMPLETE_KEY), Properties.class);
 
-		if (bulk != null) {
-			this.prepareToExitRestorableContext(bulk);
-			return true;
-		} else {
+		if (bulk == null) {
 			// No complete backup - false will let the caller know to continue w/ an incremental restore
 			return false;
+		} else {
+			this.prepareToExitRestorableContext(bulk);
+			return true;
 		}
 	}
 
@@ -216,7 +215,6 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void restoreForAllContexts(ExtensionContext originalContext) {
-
 		// Try a complete restore first
 		if (!restoreOriginalCompleteEntries(originalContext)) {
 			// A complete backup is not available, so restore incrementally from innermost to outermost
@@ -312,23 +310,23 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	 * In this case {@link #prepareToExitRestorableContext} will restore the clone.
 	 * <li>'Preemptive swap', where the current entry environment is replaced with a clone and the
 	 * original is returned.
-	 * In this case the 'prepareToExit' will restore the original environment.</li>
+	 * In this case the {@link #prepareToExitRestorableContext} will restore the original environment.</li>
 	 * </ul>
 	 *
-	 * The returned Properties must not be null and its key-value pairs must follow the rules for
-	 * entries of its type.  E.g., Environment vars contain only Strings while System properties
+	 * The returned {@code Properties} must not be null and its key-value pairs must follow the rules for
+	 * entries of its type.  E.g., Environment vars contain only Strings while System {@code Properties}
 	 * may contain Objects.
 	 *
-	 * @return A non-null Properties that contains all entries of the entry environment.
+	 * @return A non-null {@code Properties} that contains all entries of the entry environment.
 	 */
 	protected abstract Properties prepareToEnterRestorableContext();
 
 	/**
 	 * Prepare to exit a restorable context for the entry based environment.
 	 * <p>
-	 * The entry environment will be restored to the state passed in as Properties.
-	 * The Properties entries must follow the rules for entries of this environment,
-	 * e.g., environment vars contain only Strings while System properties may contain Objects.
+	 * The entry environment will be restored to the state passed in as {@code Properties}.
+	 * The {@code Properties} entries must follow the rules for entries of this environment,
+	 * e.g., environment vars contain only Strings while System {@code Properties} may contain Objects.
 	 *
 	 * @param entries Not null.
 	 */
