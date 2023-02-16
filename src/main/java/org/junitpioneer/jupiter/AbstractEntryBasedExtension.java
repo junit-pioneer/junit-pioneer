@@ -302,13 +302,13 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	/**
-	 * Prepare the entry based environment for entering a context that must be restorable.
+	 * Prepare the entry-based environment for entering a context that must be restorable.
 	 * <p>
 	 * Implementations may choose one of two strategies:
 	 * <ul>
-	 * <li>'Post Swap', where the original entry environment is left in place and a clone is returned.
+	 * <li>'Post Swap', where the original entry-based environment is left in place and a clone is returned.
 	 * In this case {@link #prepareToExitRestorableContext} will restore the clone.
-	 * <li>'Preemptive swap', where the current entry environment is replaced with a clone and the
+	 * <li>'Preemptive swap', where the current entry-based environment is replaced with a clone and the
 	 * original is returned.
 	 * In this case the {@link #prepareToExitRestorableContext} will restore the original environment.</li>
 	 * </ul>
