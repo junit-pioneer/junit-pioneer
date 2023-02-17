@@ -6,7 +6,7 @@ plugins {
 	signing
 	id("com.diffplug.spotless") version "6.4.2"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "3.3"
+	id("org.sonarqube") version "4.0.0.2929"
 	id("org.shipkit.shipkit-changelog") version "1.1.15"
 	id("org.shipkit.shipkit-github-release") version "1.1.15"
 	id("com.github.ben-manes.versions") version "0.42.0"
@@ -97,7 +97,7 @@ jacoco {
 	toolVersion = "0.8.8"
 }
 
-sonarqube {
+sonar {
 	// If you want to use this locally a sonarLogin has to be provided, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
 	properties {
@@ -197,7 +197,7 @@ tasks {
 		}
 	}
 	project(":demo") {
-		sonarqube {
+		sonar {
 			isSkipProject = true
 		}
 	}
