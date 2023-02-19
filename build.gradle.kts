@@ -211,6 +211,11 @@ tasks {
 		options.compilerArgs.add("-Werror")
 		// Do not break the build on "exports" warnings (see CONTRIBUTING.md for details)
 		options.compilerArgs.add("-Xlint:all,-exports")
+
+		if (project.version != "unspecified") {
+			// Add version to Java modules
+			options.javaModuleVersion.set(project.version.toString());
+		}
 	}
 
 	// Prepares test-related JVM args
