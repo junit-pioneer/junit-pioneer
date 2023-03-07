@@ -42,7 +42,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * additional variable modifications within some tests themselves, all while safely restoring
  * the state of the environment variables after each test and after the entire test class.</p>
  *
- * <p>{@code SetEnvironmentVariable} and {@code ClearEnvironmentVariable interaction}: During
+ * <p>WARNING: Java considers environment variables to be immutable, so this extension
+ * uses reflection to change them. This requires that the {@link SecurityManager}
+ * allows modifications and can potentially break on different operating systems and
+ * Java versions. Be aware that this is a fragile solution and consider finding a
+ * better one for your specific situation. If you're running on Java 9 or later and
+ * are encountering warnings or errors, check
+ * <a href="https://junit-pioneer.org/docs/environment-variables/#warnings-for-reflective-access">the documentation</a>.</p>
+ *
+ * <p>{@code SetEnvironmentVariable} and {@code ClearEnvironmentVariable} interaction: During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
  * all tests annotated with {@link RestoreEnvironmentVariables}, {@link SetEnvironmentVariable},
  * {@link ReadsEnvironmentVariable}, and {@link WritesEnvironmentVariable}
@@ -53,10 +61,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on
  * <code>@ClearEnvironmentVariable, @SetEnvironmentVariable and @RestoreEnvironmentVariables</code></a>.
  * </p>
- *
- * <p>Note: Environment Variables are normally not editable.
- * This extension uses refleftion to change the values, thus you may run into
- * permissions issues...</p>
  *
  * @since 2.0.0
  */
