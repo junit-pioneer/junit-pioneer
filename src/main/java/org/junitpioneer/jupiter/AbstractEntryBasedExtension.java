@@ -70,7 +70,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void applyForAllContexts(ExtensionContext originalContext) {
-		final boolean fullRestore = PioneerAnnotationUtils
+		boolean fullRestore = PioneerAnnotationUtils
 				.isAnnotationPresent(originalContext, getRestoreAnnotationType());
 
 		if (fullRestore) {

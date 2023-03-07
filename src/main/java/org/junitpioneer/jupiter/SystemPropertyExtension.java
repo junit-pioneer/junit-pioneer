@@ -67,8 +67,8 @@ class SystemPropertyExtension extends
 	@Override
 	protected Properties prepareToEnterRestorableContext() {
 
-		final Properties current = System.getProperties();
-		final Properties clone = createEffectiveClone(current);
+		Properties current = System.getProperties();
+		Properties clone = createEffectiveClone(current);
 
 		System.setProperties(clone);
 
@@ -76,7 +76,7 @@ class SystemPropertyExtension extends
 	}
 
 	@Override
-	protected void prepareToExitRestorableContext(final Properties properties) {
+	protected void prepareToExitRestorableContext(Properties properties) {
 		System.setProperties(properties);
 	}
 
@@ -90,8 +90,8 @@ class SystemPropertyExtension extends
 	 * @param original Properties to be cloned
 	 * @return A new Properties instance containing the same effective entries as the original.
 	 */
-	static Properties createEffectiveClone(final Properties original) {
-		final Properties clone = new Properties();
+	static Properties createEffectiveClone(Properties original) {
+		Properties clone = new Properties();
 
 		// This implementation used because:
 		// System.getProperties() returns the actual Properties object, not a copy.
