@@ -49,7 +49,7 @@ class SystemPropertyExtension extends
 	/**
 	 * This implementation uses the 'Preemptive swap' strategy.
 	 * <p>
-	 * Since {@link java.util.Properties} allows a wrapped default instance and Object values,
+	 * Since {@link Properties} allows a wrapped default instance and Object values,
 	 * cloning is difficult:
 	 * <ul>
 	 * <li>It is difficult to tell which values are defaults and which are 'top level',
