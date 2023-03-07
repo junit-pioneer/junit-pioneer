@@ -62,11 +62,10 @@ class SystemPropertyExtension extends
 	 * <p>
 	 * See {@link AbstractEntryBasedExtension#prepareToEnterRestorableContext} for more details.
 	 *
-	 * @return The original System.Properties object.
+	 * @return The original {@link System#getProperties} object
 	 */
 	@Override
 	protected Properties prepareToEnterRestorableContext() {
-
 		Properties current = System.getProperties();
 		Properties clone = createEffectiveClone(current);
 
@@ -81,19 +80,19 @@ class SystemPropertyExtension extends
 	}
 
 	/**
-	 * A clone of the String values of the passed Properties, including defaults.
+	 * A clone of the String values of the passed {@code Properties}, including defaults.
 	 * <p>
 	 * The clone will have the same effective values, but may not use the same nested
-	 * structure as the original.  Object values, which are technically possible,
+	 * structure as the original. Object values, which are technically possible,
 	 * are not included in the clone.
 	 *
 	 * @param original Properties to be cloned
-	 * @return A new Properties instance containing the same effective entries as the original.
+	 * @return A new Properties instance containing the same effective entries as the original
 	 */
 	static Properties createEffectiveClone(Properties original) {
 		Properties clone = new Properties();
 
-		// This implementation used because:
+		// This implementation is used because:
 		// System.getProperties() returns the actual Properties object, not a copy.
 		// Clone doesn't include nested defaults, but propertyNames() does.
 		original.propertyNames().asIterator().forEachRemaining(k -> {
