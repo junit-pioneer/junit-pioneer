@@ -57,8 +57,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * </p>
  *
  * <p><em>Note:</em> System properties are normally just a hashmap of strings, however, it is
- * technically possible to store non-string values and create nested Properties with inherited /
- * default values.  Within the context of an element annotated with {@link RestoreSystemProperties},
+ * technically possible to store non-string values and create nested {@code Properties} with inherited /
+ * default values. Within the context of an element annotated with {@link RestoreSystemProperties},
  * non-String values are not preserved and the structure of nested defaults are flattened.
  * After the annotated context is exited, the original Properties object is restored with
  * all its potential (non-standard) richness.</p>
