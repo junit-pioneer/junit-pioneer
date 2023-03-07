@@ -92,12 +92,12 @@ public class EnvironmentVariablesExtensionDemo {
 		class EnvironmentVarRestoreTest {
 
 			@BeforeAll
-			public void beforeAll() {
+			void beforeAll() {
 				setEnvVar("A", "A value");
 			}
 
 			@BeforeEach
-			public void beforeEach() {
+			void beforeEach() {
 				setEnvVar("B", "B value");
 			}
 

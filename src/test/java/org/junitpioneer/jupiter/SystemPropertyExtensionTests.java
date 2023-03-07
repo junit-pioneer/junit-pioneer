@@ -193,10 +193,10 @@ class SystemPropertyExtensionTests {
 	@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 	class CombinedClearSetRestoreTests {
 
-		Properties initialState; // stateful
+		Properties initialState; // Stateful
 
 		@BeforeAll
-		public void beforeAll() {
+		void beforeAll() {
 			initialState = System.getProperties();
 		}
 
@@ -211,7 +211,7 @@ class SystemPropertyExtensionTests {
 		class SetClearRestoreOnClass {
 
 			@AfterAll
-			public void afterAll() {
+			void afterAll() {
 				System.setProperties(new Properties()); // Really blow it up after this class
 			}
 
@@ -221,14 +221,13 @@ class SystemPropertyExtensionTests {
 			@ClearSystemProperty(key = "B")
 			@SetSystemProperty(key = "clear prop E", value = "new E")
 			void clearSetRestoreShouldBeCombinable() {
-
 				assertThat(System.getProperties())
 						.withFailMessage("Restore should swap out the Sys Properties instance")
 						.isNotSameAs(initialState);
 
-				// Direct modification
-				System.setProperty("Restore", "Restore Me"); // SHOULDN'T BE VISIBLE IN NEXT TEST
-				System.getProperties().put("XYZ", this); // SHOULDN'T BE VISIBLE IN NEXT TEST
+				// Direct modification - shouldn't be visible in next test
+				System.setProperty("Restore", "Restore Me");
+				System.getProperties().put("XYZ", this);
 
 				assertThat(System.getProperty("Restore")).isEqualTo("Restore Me");
 				assertThat(System.getProperties().get("XYZ")).isSameAs(this);
@@ -275,10 +274,10 @@ class SystemPropertyExtensionTests {
 		@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Uses instance state
 		class SetAndClearOnClass {
 
-			Properties initialState; // stateful
+			Properties initialState; // Stateful
 
 			@BeforeAll
-			public void beforeAll() {
+			void beforeAll() {
 				initialState = System.getProperties();
 			}
 
@@ -289,14 +288,13 @@ class SystemPropertyExtensionTests {
 			@SetSystemProperty(key = "clear prop E", value = "new E")
 			@RestoreSystemProperties
 			void clearSetRestoreShouldBeCombinable() {
-
 				assertThat(System.getProperties())
 						.withFailMessage("Restore should swap out the Sys Properties instance")
 						.isNotSameAs(initialState);
 
-				// Direct modification
-				System.setProperty("Restore", "Restore Me"); // SHOULDN'T BE VISIBLE IN NEXT TEST
-				System.getProperties().put("XYZ", this); // SHOULDN'T BE VISIBLE IN NEXT TEST
+				// Direct modification - shouldn't be visible in the next test
+				System.setProperty("Restore", "Restore Me");
+				System.getProperties().put("XYZ", this);
 
 				// All the others
 				assertThat(System.getProperty("A")).isNull();
@@ -329,7 +327,7 @@ class SystemPropertyExtensionTests {
 		SystemPropertyExtension spe;
 
 		@BeforeEach
-		public void beforeEach() {
+		void beforeEach() {
 			spe = new SystemPropertyExtension();
 		}
 
@@ -338,21 +336,21 @@ class SystemPropertyExtensionTests {
 		class BasicAttributesOfRestoreSystemProperties {
 
 			@Test
-			@DisplayName("Restore ann has correct markers")
-			public void restoreHasCorrectMarkers() {
+			@DisplayName("Restore annotation has correct markers")
+			void restoreHasCorrectMarkers() {
 				assertThat(RestoreSystemProperties.class).hasAnnotations(Inherited.class, WritesSystemProperty.class);
 			}
 
 			@Test
-			@DisplayName("Restore ann has correct retention")
-			public void restoreHasCorrectRetention() {
+			@DisplayName("Restore annotation has correct retention")
+			void restoreHasCorrectRetention() {
 				assertThat(RestoreSystemProperties.class.getAnnotation(Retention.class).value())
 						.isEqualTo(RetentionPolicy.RUNTIME);
 			}
 
 			@Test
-			@DisplayName("Restore ann has correct targets")
-			public void restoreHasCorrectTargets() {
+			@DisplayName("Restore annotation has correct targets")
+			void restoreHasCorrectTargets() {
 				assertThat(RestoreSystemProperties.class.getAnnotation(Target.class).value())
 						.containsExactlyInAnyOrder(ElementType.METHOD, ElementType.TYPE);
 			}
@@ -366,7 +364,7 @@ class SystemPropertyExtensionTests {
 			Properties outer; //Created w/ inner as nested defaults
 
 			@BeforeEach
-			public void beforeEach() {
+			void beforeEach() {
 				inner = new Properties();
 				outer = new Properties(inner);
 
@@ -502,8 +500,8 @@ class SystemPropertyExtensionTests {
 
 			@BeforeEach
 			void changeShouldBeVisible() {
-				// we already see "newest A" because BeforeEachCallBack is invoked before @BeforeEach
-				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				// We already see "newest A" because BeforeEachCallBack is invoked before @BeforeEach
+				// See https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
 				assertThat(System.getProperty("A")).isEqualTo("newest A");
 			}
 
@@ -516,8 +514,8 @@ class SystemPropertyExtensionTests {
 			@AfterEach
 			@ReadsSystemProperty
 			void resetAfterTestMethodExecution() {
-				// we still see "newest A" because AfterEachCallBack is invoked after @AfterEach
-				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				// We still see "newest A" because AfterEachCallBack is invoked after @AfterEach
+				// See https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
 				assertThat(System.getProperty("A")).isEqualTo("newest A");
 			}
 
@@ -636,10 +634,10 @@ class SystemPropertyExtensionTests {
 	@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Uses instance state
 	class InheritanceClearSetRestoreTests extends InheritanceClearSetRestoreBaseTest {
 
-		Properties initialState; // stateful
+		Properties initialState; // Stateful
 
 		@BeforeAll
-		public void beforeAll() {
+		void beforeAll() {
 			initialState = System.getProperties();
 		}
 
@@ -647,10 +645,9 @@ class SystemPropertyExtensionTests {
 		@Order(1)
 		@DisplayName("should inherit clear and set annotations")
 		void shouldInheritClearSetRestore() {
-
-			// Direct modification
-			System.setProperty("Restore", "Restore Me"); // SHOULDN'T BE VISIBLE IN NEXT TEST
-			System.getProperties().put("XYZ", this); // SHOULDN'T BE VISIBLE IN NEXT TEST
+			// Direct modification - shouldn't be visible in the next test
+			System.setProperty("Restore", "Restore Me");
+			System.getProperties().put("XYZ", this);
 
 			assertThat(System.getProperty("A")).isNull(); // The rest are checked elsewhere
 		}
@@ -682,7 +679,8 @@ class SystemPropertyExtensionTests {
 			void shouldInheritInNestedClass() {
 				assertThat(System.getProperty("A")).isNull();
 
-				System.setProperty("Restore", "Restore Me"); // SHOULDN'T BE VISIBLE IN NEXT TEST
+				// Shouldn't be visible in the next test
+				System.setProperty("Restore", "Restore Me");
 			}
 
 			@Test
@@ -703,7 +701,7 @@ class SystemPropertyExtensionTests {
 			@Test
 			@DisplayName("Inherit values and restore behavior")
 			void shouldInheritInNestedClass() {
-				assertThat(System.getProperty("RestoreAll")).isNull(); // should be restored
+				assertThat(System.getProperty("RestoreAll")).isNull(); // Should be restored
 			}
 
 		}

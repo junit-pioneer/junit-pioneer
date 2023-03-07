@@ -206,7 +206,7 @@ class EnvironmentVariableExtensionTests {
 		Map<String, String> initialState;
 
 		@BeforeAll
-		public void beforeAll() {
+		void beforeAll() {
 			HashMap<String, String> envVars = new HashMap<>();
 			envVars.putAll(System.getenv()); //detached
 
@@ -224,7 +224,7 @@ class EnvironmentVariableExtensionTests {
 		class SetClearRestoreOnClass {
 
 			@AfterAll // Can we restore from even this??
-			public void afterAll() {
+			void afterAll() {
 				EnvironmentVariableUtils.set("XXX", "XXX Value");
 			}
 
@@ -234,11 +234,9 @@ class EnvironmentVariableExtensionTests {
 			@ClearEnvironmentVariable(key = "set envvar B")
 			@SetEnvironmentVariable(key = "clear envvar E", value = "new E")
 			void clearSetRestoreShouldBeCombinable() {
+				// Direct modification - shouldn't be visible in the next test
+				EnvironmentVariableUtils.set("Restore", "Restore Me");
 
-				// Direct modification
-				EnvironmentVariableUtils.set("Restore", "Restore Me"); // SHOULDN'T BE VISIBLE IN NEXT TEST
-
-				// Verify Env Var state
 				assertThat(systemEnvironmentVariable("Restore")).isEqualTo("Restore Me");
 				assertThat(systemEnvironmentVariable("set envvar A")).isNull();
 				assertThat(systemEnvironmentVariable("set envvar B")).isNull();
@@ -250,8 +248,8 @@ class EnvironmentVariableExtensionTests {
 			}
 
 			@Test
-			@DisplayName("Restore from class should restore direct mods")
 			@Order(2)
+			@DisplayName("Restore from class should restore direct mods")
 			void restoreShouldHaveRevertedDirectModification() {
 				assertThat(systemEnvironmentVariable("Restore")).isNull();
 			}
@@ -261,12 +259,14 @@ class EnvironmentVariableExtensionTests {
 		@Nested
 		@Order(2)
 		@DisplayName("Prior nested class changes should be restored}")
-		class priorNestedChangesRestored {
+		class PriorNestedChangesRestored {
 
 			@Test
 			@DisplayName("Restore from class should restore direct mods")
 			void restoreShouldHaveRevertedDirectModification() {
-				assertThat(systemEnvironmentVariable("XXX")).isNull(); //set in prev. class
+				// Set in SetClearRestoreOnClass
+				assertThat(systemEnvironmentVariable("XXX")).isNull();
+
 				assertThat(System.getenv()).containsExactlyInAnyOrderEntriesOf(initialState);
 			}
 
@@ -284,7 +284,7 @@ class EnvironmentVariableExtensionTests {
 			Map<String, String> initialState;
 
 			@BeforeAll
-			public void beforeAll() {
+			void beforeAll() {
 				HashMap<String, String> envVars = new HashMap<>();
 				envVars.putAll(System.getenv()); //detached
 
@@ -298,11 +298,9 @@ class EnvironmentVariableExtensionTests {
 			@SetEnvironmentVariable(key = "clear envvar E", value = "new E")
 			@RestoreEnvironmentVariables
 			void clearSetRestoreShouldBeCombinable() {
+				// Direct modification - shouldn't be visible in the next test
+				EnvironmentVariableUtils.set("Restore", "Restore Me");
 
-				// Direct modification
-				EnvironmentVariableUtils.set("Restore", "Restore Me"); // SHOULDN'T BE VISIBLE IN NEXT TEST
-
-				// Verify Env Var state
 				assertThat(systemEnvironmentVariable("Restore")).isEqualTo("Restore Me");
 				assertThat(systemEnvironmentVariable("set envvar A")).isNull();
 				assertThat(systemEnvironmentVariable("set envvar B")).isNull();
@@ -314,8 +312,8 @@ class EnvironmentVariableExtensionTests {
 			}
 
 			@Test
-			@DisplayName("Restore from prior method should restore direct mods")
 			@Order(2)
+			@DisplayName("Restore from prior method should restore direct mods")
 			void restoreShouldHaveRevertedDirectModification() {
 				assertThat(systemEnvironmentVariable("Restore")).isNull();
 				assertThat(System.getenv()).containsExactlyInAnyOrderEntriesOf(initialState);
@@ -333,7 +331,7 @@ class EnvironmentVariableExtensionTests {
 		EnvironmentVariableExtension eve;
 
 		@BeforeEach
-		public void beforeEach() {
+		void beforeEach() {
 			eve = new EnvironmentVariableExtension();
 		}
 
@@ -342,22 +340,22 @@ class EnvironmentVariableExtensionTests {
 		class BasicAttributesOfRestoreEnvironmentVariables {
 
 			@Test
-			@DisplayName("Restore ann has correct markers")
-			public void restoreHasCorrectMarkers() {
+			@DisplayName("Restore annotation has correct markers")
+			void restoreHasCorrectMarkers() {
 				assertThat(RestoreEnvironmentVariables.class)
 						.hasAnnotations(Inherited.class, WritesEnvironmentVariable.class);
 			}
 
 			@Test
-			@DisplayName("Restore ann has correct retention")
-			public void restoreHasCorrectRetention() {
+			@DisplayName("Restore annotation has correct retention")
+			void restoreHasCorrectRetention() {
 				assertThat(RestoreEnvironmentVariables.class.getAnnotation(Retention.class).value())
 						.isEqualTo(RetentionPolicy.RUNTIME);
 			}
 
 			@Test
-			@DisplayName("Restore ann has correct targets")
-			public void restoreHasCorrectTargets() {
+			@DisplayName("Restore annotation has correct targets")
+			void restoreHasCorrectTargets() {
 				assertThat(RestoreEnvironmentVariables.class.getAnnotation(Target.class).value())
 						.containsExactlyInAnyOrder(ElementType.METHOD, ElementType.TYPE);
 			}
@@ -371,7 +369,6 @@ class EnvironmentVariableExtensionTests {
 			@Test
 			@DisplayName("Workflow of RestorableContext")
 			void workflowOfRestorableContexts() {
-
 				Properties initialEnvVars = new Properties();
 				initialEnvVars.putAll(System.getenv());
 
@@ -380,32 +377,32 @@ class EnvironmentVariableExtensionTests {
 
 					PropertiesAssert.assertThat(returnedFromPrepareToEnter).isStrictlyEqualTo(initialEnvVars);
 
-					// modify actual env vars
+					// Modify actual env vars
 					EnvironmentVariableUtils.clear("set envvar A");
 					EnvironmentVariableUtils.set("set envvar B", "XXX");
 					EnvironmentVariableUtils.set("NewEntry", "I am new");
 
-					// Sanity check:  Above changes should be visible in env vars
+					// Sanity check: Above changes should be visible in env vars
 					assertThat(System.getenv("set envvar A")).isNull();
 					assertThat(System.getenv("set envvar B")).isEqualTo("XXX");
 					assertThat(System.getenv("NewEntry")).isEqualTo("I am new");
 
-					// changes should not be reflected in detached clone
+					// Changes should not be reflected in detached clone
 					assertThat(returnedFromPrepareToEnter).contains(entry("set envvar A", "old A"));
 					assertThat(returnedFromPrepareToEnter).contains(entry("set envvar B", "old B"));
 					assertThat(returnedFromPrepareToEnter).doesNotContainKey("NewEntry");
 
-					// prepare to exit should restore original values
+					// Prepare to exit should restore original values
 					eve.prepareToExitRestorableContext(returnedFromPrepareToEnter);
 
-					// verify changed vals
+					// Verify changed vals
 					assertThat(System.getenv("set envvar A")).isEqualTo("old A");
 					assertThat(System.getenv("set envvar B")).isEqualTo("old B");
 					assertThat(System.getenv("NewEntry")).isNull();
 
 				}
 				finally {
-					// failsafe:  manually reset the values set in this method
+					// Failsafe: manually reset the values set in this method
 					EnvironmentVariableUtils.clear("NewEntry");
 				}
 			}
@@ -482,8 +479,8 @@ class EnvironmentVariableExtensionTests {
 			@BeforeEach
 			@ReadsEnvironmentVariable
 			void changeShouldBeVisible() {
-				// we already see "newest A" because BeforeEachCallBack is invoked before @BeforeEach
-				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				// We already see "newest A" because BeforeEachCallBack is invoked before @BeforeEach
+				// See https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
 				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
 			}
 
@@ -496,8 +493,8 @@ class EnvironmentVariableExtensionTests {
 			@AfterEach
 			@ReadsEnvironmentVariable
 			void resetAfterTestMethodExecution() {
-				// we still see "newest A" because AfterEachCallBack is invoked after @AfterEach
-				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				// We still see "newest A" because AfterEachCallBack is invoked after @AfterEach
+				// See https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
 				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
 			}
 
@@ -682,9 +679,9 @@ class EnvironmentVariableExtensionTests {
 		Map<String, String> initialState;
 
 		@BeforeAll
-		public void beforeAll() {
+		void beforeAll() {
 			HashMap<String, String> envVars = new HashMap<>();
-			envVars.putAll(System.getenv()); //detached
+			envVars.putAll(System.getenv()); // Detached
 
 			initialState = envVars;
 		}
@@ -693,9 +690,8 @@ class EnvironmentVariableExtensionTests {
 		@Order(1)
 		@DisplayName("should inherit clear and set annotations")
 		void shouldInheritClearSetRestore() {
-
-			// Direct modification
-			EnvironmentVariableUtils.set("Restore", "Restore Me"); // SHOULDN'T BE VISIBLE IN NEXT TEST
+			// Direct modification - shouldn't be visible in the next test
+			EnvironmentVariableUtils.set("Restore", "Restore Me");
 
 			assertThat(systemEnvironmentVariable("set envvar A")).isNull(); // The rest are checked elsewhere
 		}
@@ -726,7 +722,8 @@ class EnvironmentVariableExtensionTests {
 			void shouldInheritInNestedClass() {
 				assertThat(systemEnvironmentVariable("set envvar A")).isNull();
 
-				EnvironmentVariableUtils.set("Restore", "Restore Me"); // SHOULDN'T BE VISIBLE IN NEXT TEST
+				//  Shouldn't be visible in the next test
+				EnvironmentVariableUtils.set("Restore", "Restore Me");
 			}
 
 			@Test
@@ -747,7 +744,7 @@ class EnvironmentVariableExtensionTests {
 			@Test
 			@DisplayName("Inherit values and restore behavior")
 			void shouldInheritInNestedClass() {
-				assertThat(systemEnvironmentVariable("RestoreAll")).isNull(); // should be restored
+				assertThat(systemEnvironmentVariable("RestoreAll")).isNull(); // Should be restored
 			}
 
 		}

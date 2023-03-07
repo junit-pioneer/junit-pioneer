@@ -89,12 +89,12 @@ public class SystemPropertyExtensionDemo {
 		class MySystemPropertyRestoreTest {
 
 			@BeforeAll
-			public void beforeAll() {
+			void beforeAll() {
 				System.setProperty("A", "A value");
 			}
 
 			@BeforeEach
-			public void beforeEach() {
+			void beforeEach() {
 				System.setProperty("B", "B value");
 			}
 

@@ -18,10 +18,9 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /**
- * Allow comparisons of java.util.Properties with optional awareness of their structure,
+ * Allows comparison of {@link java.util.Properties} with optional awareness of their structure,
  * rather than just treating them as Maps.  Object values, which are marginally supported
- * by Properties, is supported in assertions.
- *
+ * by {@code Properties}, are supported in assertions.
  */
 public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Properties> {
 
@@ -46,11 +45,11 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	 * <p>
 	 * Properties are considered <em>effectively equal</em> if they have the same property
 	 * names returned by {@code Properties.propertyNames()} and the same values returned by
-	 * {@code getProperty(name)}.  Properties may come from the properties instance itself,
+	 * {@code getProperty(name)}. Properties may come from the properties instance itself,
 	 * or from a nested default instance, indiscriminately.
 	 * <p>
 	 * Properties partially supports object values, but return null for {@code getProperty(name)}
-	 * when the value is a non-string.  This assertion follows the same rules:  Any non-String
+	 * when the value is a non-string. This assertion follows the same rules:  Any non-String
 	 * value is considered null for comparison purposes.
 	 *
 	 * @param expected The actual is expected to be effectively the same as this Properties

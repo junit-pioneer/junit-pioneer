@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ import org.junit.jupiter.api.parallel.Execution;
 @ExtendWith(RestoreEnvironmentVariablesTests.VerifyEnvVarsExtension.class) // 1st: Order is important here
 @RestoreEnvironmentVariables
 @TestMethodOrder(OrderAnnotation.class)
-@Execution(SAME_THREAD) // Single thread.  See VerifyEnvVarsExtension inner class
+@Execution(SAME_THREAD) // Single thread. See VerifyEnvVarsExtension inner class
 class RestoreEnvironmentVariablesTests {
 
 	@BeforeAll
@@ -117,16 +118,16 @@ class RestoreEnvironmentVariablesTests {
 	/**
 	 * Extension that checks the before and after state of Environment Vars.
 	 * <p>
-	 * Must be registered before RestoreEnvironmentVariables.
+	 * Must be registered before {@code RestoreEnvironmentVariables}.
 	 * To avoid replicating the system being tested w/ the test itself, this class
-	 * uses static state rather than the extension store.  As a result, this test
+	 * uses static state rather than the extension store. As a result, this test
 	 * class is marked as single threaded.
 	 */
-	protected static class VerifyEnvVarsExtension
+	static class VerifyEnvVarsExtension
 			implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
 		/* Nested tests will push additional copies */
-		private static ArrayDeque<Map<String, String>> beforeAllState = new ArrayDeque<>();
+		private static Deque<Map<String, String>> beforeAllState = new ArrayDeque<>();
 
 		/* Only one test method happens at a time */
 		private static Map<String, String> beforeEachState;

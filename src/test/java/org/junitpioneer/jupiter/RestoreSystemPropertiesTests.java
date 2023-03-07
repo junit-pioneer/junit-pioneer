@@ -68,7 +68,7 @@ class RestoreSystemPropertiesTests {
 
 	@AfterAll
 	static void globalTearDown() {
-		// Can I break this??
+		// Can I 'break' system properties in @AfterAll??
 		// Restore should restore it after @AfterAll - will be verified in VerifySysPropsExtension
 		System.setProperties(new Properties());
 	}
@@ -88,9 +88,8 @@ class RestoreSystemPropertiesTests {
 		Properties inner1 = new Properties();
 		Properties inner2 = new Properties(inner1);
 		Properties outer = new Properties(inner2);
-		final Object B_OBJ = new Object();
-		final Object D_OBJ = new Object();
-		final Object F_OBJ = new Object();
+		Object B_OBJ = new Object();
+		Object F_OBJ = new Object();
 
 		inner1.setProperty("A", "is A");
 		inner1.put("B", B_OBJ);
@@ -222,7 +221,7 @@ class RestoreSystemPropertiesTests {
 	 * @return A detached clone of the original Props
 	 * @throws Exception Possibly due to reflection access
 	 */
-	static public Properties deepClone(Properties original) throws Exception {
+	static Properties deepClone(Properties original) throws Exception {
 
 		Properties clonedDefaults = null;
 		Properties defaults = getDefaultPropertiesInstance(original);
@@ -231,7 +230,7 @@ class RestoreSystemPropertiesTests {
 			clonedDefaults = deepClone(defaults);
 		}
 
-		final Properties clone = new Properties(clonedDefaults);
+		Properties clone = new Properties(clonedDefaults);
 
 		// Copy just the values directly in Map backing the Properties
 		original.keySet().forEach(k -> {
@@ -254,7 +253,7 @@ class RestoreSystemPropertiesTests {
 				.findFields(Properties.class, f -> f.getName().equals("defaults"), HierarchyTraversalMode.BOTTOM_UP)
 				.stream()
 				.findFirst()
-				.get();
+				.orElseThrow();
 
 		field.setAccessible(true);
 		Properties theDefault = (Properties) ReflectionSupport.tryToReadFieldValue(field, parent).get();
