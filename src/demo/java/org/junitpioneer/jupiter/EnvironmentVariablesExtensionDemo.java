@@ -86,7 +86,7 @@ public class EnvironmentVariablesExtensionDemo {
 
 		@Nested
 		@Order(1)
-		@TestInstance(TestInstance.Lifecycle.PER_CLASS)	// Allow non-static @BeforeAll
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Allow non-static @BeforeAll
 		// tag::environment_class_restore_setup[]
 		@RestoreEnvironmentVariables
 		class EnvironmentVarRestoreTest {
@@ -114,6 +114,7 @@ public class EnvironmentVariablesExtensionDemo {
 				//Class-level @RestoreEnvironmentVariables restores 'C' to original state
 				assertThat(System.getenv("C")).isNull();
 			}
+
 		}
 		// end::environment_class_restore_setup[]
 
@@ -123,6 +124,7 @@ public class EnvironmentVariablesExtensionDemo {
 		/* A test class that runs later... */
 		@ReadsEnvironmentVariable
 		class SomeOtherTestClass {
+
 			@Test
 			void isolatedTest() {
 				//Class-level @RestoreEnvironmentVariables restores all changes made in EnvironmentVarRestoreTest
@@ -130,8 +132,10 @@ public class EnvironmentVariablesExtensionDemo {
 				assertThat(System.getenv("B")).isNull();
 				assertThat(System.getenv("C")).isNull();
 			}
+
 			// Changes to A, B & C have been restored to their values prior to the above test
 		}
+
 		// end::environment_class_restore_isolated_class[]
 	}
 

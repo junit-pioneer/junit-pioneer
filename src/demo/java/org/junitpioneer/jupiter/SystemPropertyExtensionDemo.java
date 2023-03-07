@@ -120,17 +120,18 @@ public class SystemPropertyExtensionDemo {
 		// tag::systemproperty_class_restore_isolated_class[]
 		@ReadsSystemProperty
 		class SomeOtherTestClass {
+
 			@Test
 			void isolatedTest() {
 				assertThat(System.getProperty("A")).isNull();
 				assertThat(System.getProperty("B")).isNull();
 				assertThat(System.getProperty("C")).isNull();
 			}
+
 		}
+
 		// end::systemproperty_class_restore_isolated_class[]
 	}
-
-
 
 	// tag::systemproperty_method_combine_all_test[]
 	@ParameterizedTest
