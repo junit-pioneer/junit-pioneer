@@ -33,7 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * When placed on a test method, a snapshot of system properties is stored prior to that test.
  * The snapshot is created before any {@code @BeforeEach} blocks in scope and before any
  * {@link SetSystemProperty @SetSystemProperty} or {@link ClearSystemProperty @ClearSystemProperty}
- * annotations on that method.  After the test, system properties are restored from the
+ * annotations on that method. After the test, system properties are restored from the
  * snapshot after any {@code @AfterEach} have completed.
  *
  * <p>When placed on a test class, a snapshot of system properties is stored prior to any
