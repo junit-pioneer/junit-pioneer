@@ -57,15 +57,23 @@ In this example, `@RestoreSystemProperties` is used on a test method, ensuring a
 include::{demo}[tag=systemproperty_restore_test]
 ----
 
-When `@RestoreSystemProperties` is used on a test class, any system properties changes made during the entire lifecycle of a test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, is restored after the test class lifecycle is complete.
+When `@RestoreSystemProperties` is used on a test class, any system properties changes made during the entire lifecycle of the test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, are restored after the test class' lifecycle is complete.
 In addition, the annotation is inherited by each test method just as if each one was annotated with `@RestoreSystemProperties`.
 
-In the following example, `SomeOtherTest` is completely isolated from changes made in `MySystemPropertyRestoreTest` and `isolatedTest2` is isolated from changes made in `isolatedTest1`.
-Both `isolatedTest1` and `isolatedTest2` _will_ see system property values set in `@BeforeAll` and `@BeforeEach`.
+In the following example, both test methods see the system property changes made in `@BeforeAll` and `@BeforeEach`, however, the test methods are isolated from each other (`isolatedTest2` does not 'see' changes made in `isolatedTest1`).
+As shown in the second example below, the class-level `@RestoreSystemProperties` ensures that system property changes made within the annotated class are completely restored after the class's lifecycle, ensuring that changes are not visible to `SomeOtherTestClass`.
+Note that `SomeOtherTestClass` uses the `@ReadsSystemProperty` annotation:  This ensures that JUnit does not schedule the class to run during any test known to modify system properties (see <<Thread-Safety>>).
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=systemproperty_restore_class_level]
+include::{demo}[tag=systemproperty_class_restore_setup]
+----
+
+Some other test class, running later:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=systemproperty_class_restore_isolated_class]
 ----
 
 == Using `@ClearSystemProperty`, `@SetSystemProperty`, and `@RestoreSystemProperties` together

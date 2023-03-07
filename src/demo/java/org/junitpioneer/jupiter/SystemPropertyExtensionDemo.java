@@ -14,8 +14,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -75,41 +78,59 @@ public class SystemPropertyExtensionDemo {
 	// end::systemproperty_restore_test[]
 
 	@Nested
-	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-	// tag::systemproperty_restore_class_level[]
-	@RestoreSystemProperties
-	class MySystemPropertyRestoreTest {
+	@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+	class SystemPropertyRestoreExample {
 
-		@BeforeAll
-		public void beforeAll() {
-			System.setProperty("A", "A value");
+		@Nested
+		@Order(1)
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		// tag::systemproperty_class_restore_setup[]
+		@RestoreSystemProperties
+		class MySystemPropertyRestoreTest {
+
+			@BeforeAll
+			public void beforeAll() {
+				System.setProperty("A", "A value");
+			}
+
+			@BeforeEach
+			public void beforeEach() {
+				System.setProperty("B", "B value");
+			}
+
+			@Test
+			void isolatedTest1() {
+				System.setProperty("C", "C value");
+			}
+
+			@Test
+			void isolatedTest2() {
+				assertThat(System.getProperty("A")).isEqualTo("A value");
+				assertThat(System.getProperty("B")).isEqualTo("B value");
+
+				//Class-level @RestoreSystemProperties restores 'C' to original state
+				assertThat(System.getProperty("C")).isNull();
+			}
+
 		}
+		// end::systemproperty_class_restore_setup[]
 
-		@BeforeEach
-		public void beforeEach() {
-			System.setProperty("B", "B value");
+		@Nested
+		@Order(2)
+		// tag::systemproperty_class_restore_isolated_class[]
+		@ReadsSystemProperty
+		class SomeOtherTestClass {
+			@Test
+			void isolatedTest() {
+				assertThat(System.getProperty("A")).isNull();
+				assertThat(System.getProperty("B")).isNull();
+				assertThat(System.getProperty("C")).isNull();
+			}
 		}
-
-		@Test
-		void isolatedTest1() {
-			System.setProperty("C", "C value");
-		}
-
-		@Test
-		void isolatedTest2() {
-			assertThat(System.getProperty("A")).isEqualTo("A value");
-			assertThat(System.getProperty("B")).isEqualTo("B value");
-
-			//Class-level @RestoreSystemProperties restores 'C' to original state
-			assertThat(System.getProperty("C")).isNull();
-		}
-
+		// end::systemproperty_class_restore_isolated_class[]
 	}
 
-	class SomeOtherTest {
-		// Changes to A, B & C have been restored to their values prior to the above test
-	}
-	// end::systemproperty_restore_class_level[]
+
 
 	// tag::systemproperty_method_combine_all_test[]
 	@ParameterizedTest

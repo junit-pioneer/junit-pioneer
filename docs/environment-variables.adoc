@@ -70,15 +70,23 @@ Modifying environment variables of a running JVM requires several lines of code 
 The two `@RestoreEnvironmentVariables` examples leave out that detail and use a hypothetical `setEnvVar()` method.
 ====
 
-When `@RestoreEnvironmentVariables` is used on a test class, any environment variables changes made during the entire lifecycle of test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, is restored after the test class lifecycle is complete.
+When `@RestoreEnvironmentVariables` is used on a test class, any environment variable changes made during the entire lifecycle of the test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, are restored after the test class' lifecycle is complete.
 In addition, the annotation is inherited by each test method just as if each one was annotated with `@RestoreEnvironmentVariables`.
 
-In the following example, `SomeOtherTest` is completely isolated from changes made in `MyEnvironmentVariableRestoreTest` and `isolatedTest2` is isolated from changes made in `isolatedTest1`.
-Both `isolatedTest1` and `isolatedTest2` _will_ see environment variable values set in `@BeforeAll` and `@BeforeEach`.
+In the following example, both test methods see the environment variable changes made in `@BeforeAll` and `@BeforeEach`, however, the test methods are isolated from each other (`isolatedTest2` does not 'see' changes made in `isolatedTest1`).
+As shown in the second example below, the class-level `@RestoreEnvironmentVariables` ensures that environment variable changes made within the annotated class are completely restored after the class's lifecycle, ensuring that changes are not visible to `SomeOtherTestClass`.
+Note that `SomeOtherTestClass` uses the `@ReadsEnvironmentVariable` annotation:  This ensures that JUnit does not schedule the class to run during any test known to modify environment variables (see <<Thread-Safety>>).
 
 [source,java,indent=0]
 ----
-include::{demo}[tag=environment_class_restore]
+include::{demo}[tag=environment_class_restore_setup]
+----
+
+Some other test class, running later:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=environment_class_restore_isolated_class]
 ----
 
 == Using `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, and `@RestoreEnvironmentVariables` together
