@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
@@ -35,7 +36,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
-import org.junitpioneer.testkit.assertion.PropertiesAssert;
 
 /**
  * Verify proper behavior when annotated on a top level class
@@ -99,7 +99,7 @@ class RestoreSystemPropertiesTests {
 		outer.put("F", F_OBJ);
 
 		Properties cloned = deepClone(outer);
-		PropertiesAssert.assertThat(cloned).isStrictlyEqualTo(outer);
+		assertThat(cloned).isStrictlyEqualTo(outer);
 	}
 
 	@Test
@@ -186,8 +186,8 @@ class RestoreSystemPropertiesTests {
 			Properties actual = System.getProperties();
 
 			assertThat(preTest).isNotNull();
-			PropertiesAssert.assertThat(actual).isEffectivelyEqualsTo(preTest);
-			PropertiesAssert.assertThat(actual).isStrictlyEqualTo(preTest);
+			assertThat(actual).isEffectivelyEqualsTo(preTest);
+			assertThat(actual).isStrictlyEqualTo(preTest);
 		}
 
 		@Override
@@ -201,8 +201,8 @@ class RestoreSystemPropertiesTests {
 			Properties actual = System.getProperties();
 
 			assertThat(preTest).isNotNull();
-			PropertiesAssert.assertThat(actual).isEffectivelyEqualsTo(preTest);
-			PropertiesAssert.assertThat(actual).isStrictlyEqualTo(preTest);
+			assertThat(actual).isEffectivelyEqualsTo(preTest);
+			assertThat(actual).isStrictlyEqualTo(preTest);
 			beforeEachState = null;
 		}
 

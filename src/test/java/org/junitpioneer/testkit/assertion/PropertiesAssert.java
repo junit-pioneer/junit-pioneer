@@ -18,25 +18,14 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /**
- * Allows comparison of {@link java.util.Properties} with optional awareness of their structure,
+ * Allows comparison of {@link Properties} with optional awareness of their structure,
  * rather than just treating them as Maps.  Object values, which are marginally supported
- * by {@code Properties}, are supported in assertions.
+ * by {@code Properties}, are supported in assertions as much as possible.
  */
 public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Properties> {
 
-	/** No direct construction */
-	private PropertiesAssert(Properties actual) {
+	PropertiesAssert(Properties actual) {
 		super(actual, PropertiesAssert.class);
-	}
-
-	/**
-	 * Begin an assertion
-	 *
-	 * @param actual The value the assert is made WRT.
-	 * @return Assertion instance
-	 */
-	public static PropertiesAssert assertThat(Properties actual) {
-		return new PropertiesAssert(actual);
 	}
 
 	/**
@@ -147,7 +136,7 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 		Properties expectedDefault = getDefaultFieldValue(expected);
 
 		if (actualDefault != null && expectedDefault != null) {
-			return PropertiesAssert.assertThat(actualDefault).isStrictlyEqualTo(expectedDefault);
+			return new PropertiesAssert(actualDefault).isStrictlyEqualTo(expectedDefault);
 		} else if (actualDefault != null) {
 			throw failure("The actual Properties had non-null defaults, but none were expected");
 		} else if (expectedDefault != null) {

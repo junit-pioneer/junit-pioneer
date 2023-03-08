@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -46,7 +47,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.assertion.PropertiesAssert;
 
 @DisplayName("EnvironmentVariable extension")
 class EnvironmentVariableExtensionTests {
@@ -375,7 +375,7 @@ class EnvironmentVariableExtensionTests {
 				try {
 					Properties returnedFromPrepareToEnter = eve.prepareToEnterRestorableContext();
 
-					PropertiesAssert.assertThat(returnedFromPrepareToEnter).isStrictlyEqualTo(initialEnvVars);
+					assertThat(returnedFromPrepareToEnter).isStrictlyEqualTo(initialEnvVars);
 
 					// Modify actual env vars
 					EnvironmentVariableUtils.clear("set envvar A");
@@ -388,9 +388,9 @@ class EnvironmentVariableExtensionTests {
 					assertThat(System.getenv("NewEntry")).isEqualTo("I am new");
 
 					// Changes should not be reflected in detached clone
-					assertThat(returnedFromPrepareToEnter).contains(entry("set envvar A", "old A"));
-					assertThat(returnedFromPrepareToEnter).contains(entry("set envvar B", "old B"));
-					assertThat(returnedFromPrepareToEnter).doesNotContainKey("NewEntry");
+					Assertions.assertThat(returnedFromPrepareToEnter).contains(entry("set envvar A", "old A"));
+					Assertions.assertThat(returnedFromPrepareToEnter).contains(entry("set envvar B", "old B"));
+					Assertions.assertThat(returnedFromPrepareToEnter).doesNotContainKey("NewEntry");
 
 					// Prepare to exit should restore original values
 					eve.prepareToExitRestorableContext(returnedFromPrepareToEnter);
