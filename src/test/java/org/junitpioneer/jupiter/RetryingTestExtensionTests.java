@@ -31,6 +31,7 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.platform.testkit.engine.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+import org.opentest4j.AssertionFailedError;
 
 class RetryingTestExtensionTests {
 
@@ -295,6 +296,17 @@ class RetryingTestExtensionTests {
 		assertSuspendedFor(results, 0);
 	}
 
+	@Test
+	void retriesWithBeforeRetryMethod() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestWithBeforeRetryTests.class, "retry");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(2)
+				.hasNumberOfAbortedTests(1)
+				.hasNumberOfFailedTests(0)
+				.hasNumberOfSucceededTests(1);
+	}
+
 	private void assertSuspendedFor(ExecutionResults results, long greaterThanOrEqualTo) {
 		List<Execution> finishedExecutions = results.testEvents().executions().finished().list();
 		List<Execution> startedExecutions = results.testEvents().executions().started().list();
@@ -490,6 +502,30 @@ class RetryingTestExtensionTests {
 		@RetryingTest(maxAttempts = 3)
 		void failThreeTimesWithoutSuspend() {
 			throw new IllegalArgumentException();
+		}
+
+	}
+
+	@TestInstance(PER_CLASS)
+	static class RetryingTestWithBeforeRetryTests {
+
+		private int executionCount = 0;
+		private boolean retried = false;
+
+		@BeforeRetry
+		void beforeRetry() {
+			retried = true;
+		}
+
+		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
+		void retry() {
+			executionCount++;
+			if (executionCount == 1) {
+				throw new IllegalArgumentException();
+			}
+			if (!retried) {
+				throw new AssertionFailedError("Expected before retry to run but it did not.");
+			}
 		}
 
 	}

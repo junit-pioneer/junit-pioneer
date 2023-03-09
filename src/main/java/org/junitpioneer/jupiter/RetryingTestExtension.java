@@ -14,12 +14,17 @@ import static java.lang.String.format;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
+import static org.junit.platform.commons.support.HierarchyTraversalMode.TOP_DOWN;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -77,6 +82,8 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		private final int suspendForMs;
 		private final Class<? extends Throwable>[] expectedExceptions;
 		private final TestNameFormatter formatter;
+		private final List<Method> beforeRetry;
+		private final Optional<Object> testInstance;
 
 		private int retriesSoFar;
 		private int exceptionsSoFar;
@@ -84,7 +91,8 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		private boolean seenUnexpectedException;
 
 		private FailedTestRetrier(int maxRetries, int minSuccess, int suspendForMs,
-				Class<? extends Throwable>[] expectedExceptions, TestNameFormatter formatter) {
+				Class<? extends Throwable>[] expectedExceptions, TestNameFormatter formatter, List<Method> beforeRetry,
+				Optional<Object> testInstance) {
 			this.maxRetries = maxRetries;
 			this.minSuccess = minSuccess;
 			this.suspendForMs = suspendForMs;
@@ -92,12 +100,23 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
 			this.formatter = formatter;
+			this.beforeRetry = beforeRetry;
+			this.testInstance = testInstance;
 		}
 
 		static FailedTestRetrier createFor(Method test, ExtensionContext context) {
 			RetryingTest retryingTest = AnnotationSupport
 					.findAnnotation(test, RetryingTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."));
+			List<Method> beforeRetry = AnnotationSupport
+					.findAnnotatedMethods(context.getRequiredTestClass(), BeforeRetry.class, TOP_DOWN);
+			if (!beforeRetry
+					.stream()
+					.allMatch(method -> method
+							.getDeclaringClass()
+							.equals(beforeRetry.stream().findFirst().get().getDeclaringClass()))) {
+				throw new ExtensionConfigurationException("TODO"); // TODO
+			}
 
 			int maxAttempts = retryingTest.maxAttempts() != 0 ? retryingTest.maxAttempts() : retryingTest.value();
 			int minSuccess = retryingTest.minSuccess();
@@ -132,7 +151,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			}
 
 			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.suspendForMs(),
-				retryingTest.onExceptions(), formatter);
+				retryingTest.onExceptions(), formatter, beforeRetry, context.getTestInstance());
 		}
 
 		<E extends Throwable> void failed(E exception) throws E {
@@ -149,15 +168,28 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				throw exception;
 			}
 
-			if (hasNext())
+			if (hasNext()) {
+				if (!beforeRetry.isEmpty() && testInstance.isPresent())
+					beforeRetry.forEach(invokeSafely());
 				throw new TestAbortedException(
 					format("Test execution #%d (of up to %d) failed ~> will retry in %d ms...", retriesSoFar,
 						maxRetries, suspendForMs),
 					exception);
-			else
+			} else
 				throw new AssertionFailedError(format(
 					"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
 					retriesSoFar, maxRetries, minSuccess), exception);
+		}
+
+		private Consumer<Method> invokeSafely() {
+			return method -> {
+				try {
+					method.invoke(testInstance.get());
+				}
+				catch (IllegalAccessException | InvocationTargetException e) {
+					throw new RuntimeException(e);
+				}
+			};
 		}
 
 		private boolean expectedException(Throwable exception) {
