@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation indicating the name of the JSON property that should be extracted into the method parameter.
- *
+ * <p>
  * If the test code is compiled with the {@code -parameters} flag, and the test method parameter's name
  * matches the JSON property's name, this annotation is not needed.
  *

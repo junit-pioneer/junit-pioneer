@@ -31,11 +31,11 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 
 	/*
 	 * Basic approach:
-	 *  - in `handleTestExecutionException`: if need to deactivate other tests, add that info to the store
+	 *  - in `handleTestExecutionException`: if it needs to deactivate other tests, add that info to the store
 	 *  - in `evaluateExecutionCondition`: check store for that information
 	 *
 	 * Because the test method that failed and the ones that need to be disabled are different methods,
-	 * the information to disable can't be in a store that belongs to any specific test method. Instead
+	 * the information to disable can't be in a store that belongs to any specific test method. Instead,
 	 * add it to the store that belongs to the container where the extension is applied.
 	 *
 	 * Setting the information needs to be thread safe, so only positive results (i.e. tests must be disabled)
@@ -114,9 +114,7 @@ class DisableIfTestFailsExtension implements TestExecutionExceptionHandler, Exec
 
 		Stream<DisableIfTestFails> onElement = AnnotationSupport
 				.findAnnotation(element, DisableIfTestFails.class)
-				// turn Optional into Stream
-				.map(Stream::of)
-				.orElse(Stream.empty());
+				.stream();
 		Stream<DisableIfTestFails> onInterfaces = Arrays
 				.stream(element.getInterfaces())
 				.flatMap(DisableIfTestFailsExtension::findAnnotationOn);

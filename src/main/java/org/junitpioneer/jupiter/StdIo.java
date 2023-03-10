@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * Allows specifying the input that's read from {@code System.in} as well as capturing
  * lines read from {@code System.in} (with parameter {@link StdIn}) or
  * written to {@code System.out} (with parameter {@link StdOut StdOut}).
- *
+ * <p>
  * The annotated test method can have zero, one, or both parameters, but {@code StdIn} can only
  * be provided if {@link StdIo#value()} is used to specify input - otherwise an
  * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException ExtensionConfigurationException}

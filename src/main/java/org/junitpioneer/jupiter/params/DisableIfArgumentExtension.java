@@ -77,25 +77,22 @@ class DisableIfArgumentExtension implements InvocationInterceptor {
 		}
 	}
 
-	private static DisableIfAllArguments verifyNonEmptyInputs(DisableIfAllArguments annotation) {
+	private static void verifyNonEmptyInputs(DisableIfAllArguments annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
 			throw invalidInputs(DisableIfAllArguments.class);
-		return annotation;
 	}
 
-	private static DisableIfAnyArgument verifyNonEmptyInputs(DisableIfAnyArgument annotation) {
+	private static void verifyNonEmptyInputs(DisableIfAnyArgument annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
 			throw invalidInputs(DisableIfAnyArgument.class);
-		return annotation;
 	}
 
-	private static DisableIfArgument verifyNonEmptyInputs(DisableIfArgument annotation) {
+	private static void verifyNonEmptyInputs(DisableIfArgument annotation) {
 		if (annotation.contains().length > 0 == annotation.matches().length > 0)
 			throw invalidInputs(DisableIfArgument.class);
-		return annotation;
 	}
 
-	private static RuntimeException invalidInputs(Class<?> annotationClass) {
+	private static ExtensionConfigurationException invalidInputs(Class<?> annotationClass) {
 		return new ExtensionConfigurationException(
 			format("%s requires that either `contains` or `matches` is set.", annotationClass.getSimpleName()));
 	}

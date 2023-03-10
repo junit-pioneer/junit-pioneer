@@ -10,6 +10,7 @@
 
 package org.junitpioneer.internal;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.lang.annotation.Annotation;
@@ -34,7 +35,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 /**
  * Pioneer-internal utility class to handle annotations.
  * DO NOT USE THIS CLASS - IT MAY CHANGE SIGNIFICANTLY IN ANY MINOR UPDATE.
- *
+ * <p>
  * It uses the following terminology to describe annotations that are not
  * immediately present on an element:
  *
@@ -196,7 +197,7 @@ public class PioneerAnnotationUtils {
 		if (findRepeated)
 			return AnnotationSupport.findRepeatableAnnotations(element, annotationType);
 		else
-			return AnnotationSupport.findAnnotation(element, annotationType).map(List::of).orElse(List.of());
+			return AnnotationSupport.findAnnotation(element, annotationType).stream().collect(toUnmodifiableList());
 	}
 
 	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
@@ -221,7 +222,10 @@ public class PioneerAnnotationUtils {
 		if (findRepeated)
 			return AnnotationSupport.findRepeatableAnnotations(element, annotationType);
 
-		List<A> onElement = AnnotationSupport.findAnnotation(element, annotationType).map(List::of).orElse(List.of());
+		List<A> onElement = AnnotationSupport
+				.findAnnotation(element, annotationType)
+				.stream()
+				.collect(toUnmodifiableList());
 		List<A> onInterfaces = Arrays
 				.stream(element.getInterfaces())
 				.flatMap(clazz -> findOnType(clazz, annotationType, false, findAllEnclosing).stream())
@@ -248,7 +252,7 @@ public class PioneerAnnotationUtils {
 		return Arrays
 				.stream(testMethod.getParameters())
 				.map(PioneerAnnotationUtils::collectArgumentSources)
-				.filter(list -> !list.isEmpty())
+				.filter(not(List::isEmpty))
 				.map(annotations -> annotations.get(0))
 				.collect(toUnmodifiableList());
 	}

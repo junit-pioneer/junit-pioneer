@@ -15,7 +15,7 @@ import java.util.Objects;
 
 /**
  * Represents the execution result of test method, which is annotated with {@link org.junitpioneer.jupiter.Issue}.
- *
+ * <p>
  * Once Pioneer baselines against Java 17, this will be a record.
  *
  * @since 1.1

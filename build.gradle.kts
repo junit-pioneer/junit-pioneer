@@ -218,8 +218,6 @@ tasks {
 	// See https://docs.gradle.org/current/userguide/java_testing.html#sec:java_testing_modular_patching
 	val patchModuleArg = "--patch-module=$moduleName=${compileJava.get().destinationDirectory.asFile.get().path}"
 	val testJvmArgs = listOf(
-			// Ignore these options on Java 8
-			"-XX:+IgnoreUnrecognizedVMOptions",
 			// EnvironmentVariableUtils: make java.util.Map accessible
 			"--add-opens=java.base/java.util=$moduleName",
 			// EnvironmentVariableUtils: make java.lang.System accessible
@@ -294,7 +292,6 @@ tasks {
 							filter {
 								includeTestsMatching("*Demo")
 							}
-							jvmArgs(testJvmArgs)
 						}
 					}
 				}

@@ -383,7 +383,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		//  - test3 -> [C, A]
 		//
 		// If test1 gets A, then test2 gets B, and then test3 gets C, none of the tests can get the second lock
-		// they need and so they can also never give up the one they hold.
+		// they need, and so they can also never give up the one they hold.
 		//
 		// This is known as the Dining Philosophers Problem [1] and a solution is to order locks before acquiring them.
 		// In the above example, test3 would start with trying to get A and, since it can't, block on that. Then test2

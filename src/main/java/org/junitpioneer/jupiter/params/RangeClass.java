@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @interface RangeClass {
 
-	@SuppressWarnings("rawtypes")
-	Class<? extends Range> value();
+	Class<? extends Range<?>> value();
 
 }

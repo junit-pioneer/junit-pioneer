@@ -34,7 +34,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>The annotation can only be used on methods and as meta-annotation on other annotation types.
  * Similar to {@code @Disabled}, it has to be used in addition to a "testable" annotation, such
- * as {@link org.junit.jupiter.api.Test @Test}. Otherwise the annotation has no effect.
+ * as {@link org.junit.jupiter.api.Test @Test}. Otherwise, the annotation has no effect.
  *
  * <p><b>Important:</b> This annotation is <b>not</b> intended as a way to mark test methods
  * which intentionally cause exceptions. Such test methods should use
