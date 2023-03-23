@@ -116,6 +116,10 @@ Thank you for your efforts! 🙏
 
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
+#### 2023
+
+* [Florian Westreicher](https://github.com/meredrica) contributed to the JSON argument source extension.
+
 #### 2022
 
 * [Filip Hrisafov](https://github.com/filiphr) contributed the [JSON Argument Source](https://junit-pioneer.org/docs/json-argument-source/) support (#101 / #492)
