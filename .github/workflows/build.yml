@@ -198,7 +198,7 @@ jobs:
           # we build the Javadoc with JDK 17 (for better results),
           # so install that as well
           java-version: |
-            17
+            20
             11
           distribution: temurin
       - name: Perform release
