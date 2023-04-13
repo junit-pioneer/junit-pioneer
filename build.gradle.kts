@@ -4,14 +4,14 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "6.4.2"
+	id("com.diffplug.spotless") version "6.18.0"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "3.3"
-	id("org.shipkit.shipkit-changelog") version "1.1.15"
-	id("org.shipkit.shipkit-github-release") version "1.1.15"
-	id("com.github.ben-manes.versions") version "0.42.0"
-	id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-	id("org.gradlex.extra-java-module-info") version "1.0"
+	id("org.sonarqube") version "4.0.0.2929"
+	id("org.shipkit.shipkit-changelog") version "1.2.0"
+	id("org.shipkit.shipkit-github-release") version "1.2.0"
+	id("com.github.ben-manes.versions") version "0.46.0"
+	id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+	id("org.gradlex.extra-java-module-info") version "1.3"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -84,7 +84,7 @@ spotless {
 }
 
 checkstyle {
-	toolVersion = "10.2"
+	toolVersion = "10.9.3"
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
@@ -94,7 +94,7 @@ yamlValidator {
 }
 
 jacoco {
-	toolVersion = "0.8.8"
+	toolVersion = "0.8.9"
 }
 
 sonarqube {

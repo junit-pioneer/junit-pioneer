@@ -12,10 +12,10 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-
 import org.junit.jupiter.api.Test;
 import org.junit.platform.engine.TestExecutionResult.Status;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 public final class IssueTestCaseTests {
 
