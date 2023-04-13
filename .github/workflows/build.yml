@@ -65,7 +65,11 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: 11
+          # we build the Javadoc with JDK 17 (for better results),
+          # so install that as well
+          java-version: |
+            17
+            11
           distribution: temurin
           cache: 'gradle'
       - name: Cache SonarCloud results
