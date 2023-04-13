@@ -110,10 +110,8 @@ public class StdIoExtensionTests {
 		@StdIo({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
 		@DisplayName("returns correct length is available for non-empty input")
 		void everythingAvailableBeforeRead(StdIn in) throws IOException {
-			int inputLength = ("Doth homage to his new-appearing sight"
-					+ System.getProperty("line.separator")
-					+ "Serving with looks his sacred majesty;")
-					.getBytes().length;
+			int inputLength = ("Doth homage to his new-appearing sight" + System.getProperty("line.separator")
+					+ "Serving with looks his sacred majesty;").getBytes().length;
 
 			assertThat(in.available()).isEqualTo(inputLength);
 		}

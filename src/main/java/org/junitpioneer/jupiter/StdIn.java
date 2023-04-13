@@ -27,6 +27,9 @@ public class StdIn extends InputStream {
 	private final StringReader reader;
 	private final StringWriter writer = new StringWriter();
 
+	/**
+	 * Keeps track of number of bytes that are still available to {@link InputStream#read() read()}.
+	 */
 	private int availableBytes;
 
 	public StdIn(String[] values) {
