@@ -100,7 +100,7 @@ jacoco {
 	toolVersion = "0.8.9"
 }
 
-sonarqube {
+sonar {
 	// If you want to use this locally a sonarLogin has to be provided, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
 	properties {
@@ -200,7 +200,7 @@ tasks {
 		}
 	}
 	project(":demo") {
-		sonarqube {
+		sonar {
 			isSkipProject = true
 		}
 	}
