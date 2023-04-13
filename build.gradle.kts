@@ -165,7 +165,7 @@ publishing {
 }
 
 signing {
-	isRequired = releaseBuild
+	isRequired = releaseBuild && gradle.taskGraph.hasTask("publishToSonatype")
 	val signingKey: String? by project
 	val signingPassword: String? by project
 	useInMemoryPgpKeys(signingKey, signingPassword)
@@ -312,7 +312,8 @@ tasks {
 	javadoc {
 		if (releaseBuild) {
 			javadocTool.set(project.javaToolchains.javadocToolFor {
-				// Create Javadoc with at least Java 17 to get the latest features, e.g. search bar
+				// create Javadoc with least Java version to get all features
+				// (e.g. search result page on 20)
 				languageVersion.set(JavaLanguageVersion.of(maxOf(20)))
 			})
 		}
