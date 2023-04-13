@@ -313,7 +313,7 @@ tasks {
 		if (releaseBuild) {
 			javadocTool.set(project.javaToolchains.javadocToolFor {
 				// Create Javadoc with at least Java 17 to get the latest features, e.g. search bar
-				languageVersion.set(JavaLanguageVersion.of(maxOf(17, targetJavaVersion.majorVersion.toInt())))
+				languageVersion.set(JavaLanguageVersion.of(maxOf(20)))
 			})
 		}
 
