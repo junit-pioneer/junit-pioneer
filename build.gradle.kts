@@ -48,7 +48,10 @@ repositories {
 }
 
 val junitVersion : String by project
-val jacksonVersion: String = "2.13.2.2"
+val jacksonVersion: String = "2.14.2"
+val assertjVersion: String = "3.24.2"
+val log4jVersion: String = "2.20.0"
+val jimfsVersion: String = "1.2"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
@@ -61,13 +64,13 @@ dependencies {
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
-	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.22.0")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.4.0")
-	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.11.1")
+	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.11.0")
+	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.14.1")
 
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.2")
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.17.2")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = log4jVersion)
 }
 
 spotless {
@@ -278,9 +281,9 @@ tasks {
 			val demoTests by registering(JvmTestSuite::class) {
 				dependencies {
 					implementation(project(project.path))
-					implementation("com.google.jimfs:jimfs:1.2")
+					implementation("com.google.jimfs:jimfs:$jimfsVersion")
 					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-					implementation("org.assertj:assertj-core:3.22.0")
+					implementation("org.assertj:assertj-core:$assertjVersion")
 				}
 
 				sources {
