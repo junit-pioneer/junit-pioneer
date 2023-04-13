@@ -25,6 +25,7 @@ description = "JUnit 5 Extension Pack"
 
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
+val releaseBuild : Boolean = project.version != "unspecified"
 
 val targetJavaVersion = JavaVersion.VERSION_11
 
@@ -164,9 +165,7 @@ publishing {
 }
 
 signing {
-	setRequired({
-		project.version != "unspecified" && gradle.taskGraph.hasTask("publishToSonatype")
-	})
+	isRequired = releaseBuild
 	val signingKey: String? by project
 	val signingPassword: String? by project
 	useInMemoryPgpKeys(signingKey, signingPassword)
@@ -311,10 +310,12 @@ tasks {
 	}
 
 	javadoc {
-		javadocTool.set(project.javaToolchains.javadocToolFor {
-			// Create Javadoc with at least Java 17 to get the latest features, e.g. search bar
-			languageVersion.set(JavaLanguageVersion.of(maxOf(17, targetJavaVersion.majorVersion.toInt())))
-		})
+		if (releaseBuild) {
+			javadocTool.set(project.javaToolchains.javadocToolFor {
+				// Create Javadoc with at least Java 17 to get the latest features, e.g. search bar
+				languageVersion.set(JavaLanguageVersion.of(maxOf(17, targetJavaVersion.majorVersion.toInt())))
+			})
+		}
 
 		options {
 			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937
