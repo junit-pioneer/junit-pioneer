@@ -314,7 +314,7 @@ tasks {
 			javadocTool.set(project.javaToolchains.javadocToolFor {
 				// create Javadoc with least Java version to get all features
 				// (e.g. search result page on 20)
-				languageVersion.set(JavaLanguageVersion.of(maxOf(20)))
+				languageVersion.set(JavaLanguageVersion.of(20))
 			})
 		}
 
