@@ -88,10 +88,10 @@ public class TestNameFormatterTests {
 
 		assertThatThrownBy(
 			() -> formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
-					.isInstanceOf(ExtensionConfigurationException.class)
-					.hasCauseExactlyInstanceOf(IllegalArgumentException.class)
-					.hasMessageContaining("The display name pattern defined for the "
-							+ TestNameFormatter.class.getName() + " is invalid.");
+				.isInstanceOf(ExtensionConfigurationException.class)
+				.hasCauseExactlyInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining(
+					"The display name pattern defined for the " + TestNameFormatter.class.getName() + " is invalid.");
 	}
 
 }

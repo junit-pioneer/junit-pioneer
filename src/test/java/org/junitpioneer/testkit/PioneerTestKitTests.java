@@ -76,7 +76,7 @@ class PioneerTestKitTests {
 		void executeTestMethodWithParameterTypes_parameterArrayIsNull_NullPointerException() {
 			assertThatThrownBy(() -> PioneerTestKit
 					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", (Class<?>) null))
-							.isInstanceOf(NullPointerException.class);
+					.isInstanceOf(NullPointerException.class);
 		}
 
 		@Test
@@ -84,8 +84,8 @@ class PioneerTestKitTests {
 		void executeTestMethodWithParameterTypes_singleParameterIsNull_IllegalArgumentException() {
 			assertThatThrownBy(() -> PioneerTestKit
 					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", (Class<?>[]) null))
-							.isInstanceOf(IllegalArgumentException.class)
-							.hasMessage("methodParameterTypes must not be null");
+					.isInstanceOf(IllegalArgumentException.class)
+					.hasMessage("methodParameterTypes must not be null");
 		}
 
 	}
