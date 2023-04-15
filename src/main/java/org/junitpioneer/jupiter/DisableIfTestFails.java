@@ -36,7 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * </p>
  * <p>
  * But if a test fails in a specific class, only other tests in the corresponding container will
- * be disabled. That means if...
+ * be disabled. That means if...</p>
  *
  * <ul>
  *     <li>a class {@code SpecificTests} implements interface {@code Tests} and</li>
@@ -46,7 +46,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * ... then, only remaining tests in {@code SpecificTests} are disabled and other implementations
  * of {@code Tests} remain unaffected, i.e. their tests are not disabled.
- * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })

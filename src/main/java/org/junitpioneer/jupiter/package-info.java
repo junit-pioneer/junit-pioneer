@@ -1,7 +1,8 @@
 /**
  * Extensions to the JUnit Jupiter engine.
  *
- * <p>Check out the following types for details:
+ * <p>Check out the following types for details:</p>
+ *
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.ClearEnvironmentVariable} and {@link org.junitpioneer.jupiter.SetEnvironmentVariable}</li>
  *     <li>{@link org.junitpioneer.jupiter.ClearSystemProperty} and {@link org.junitpioneer.jupiter.SetSystemProperty}</li>
@@ -14,9 +15,10 @@
  *     <li>{@link org.junitpioneer.jupiter.StdIo}</li>
  *     <li>{@link org.junitpioneer.jupiter.Stopwatch}</li>
  * </ul>
- * </p>
+ *
  * <p>
  * Also check the following packages:
+ * </p>
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.cartesian cartesian}</li>
  *     <li>{@link org.junitpioneer.jupiter.issue issue}</li>
@@ -24,7 +26,7 @@
  *     <li>{@link org.junitpioneer.jupiter.params params}</li>
  *     <li>{@link org.junitpioneer.jupiter.resource resource}</li>
  * </ul>
- * </p>
+ *
  */
 
 package org.junitpioneer.jupiter;

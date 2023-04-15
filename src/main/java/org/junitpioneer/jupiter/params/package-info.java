@@ -1,18 +1,18 @@
 /**
  * Several extensions for working with {@code ParameterizedTest}s.
- *
- * Disable {@code @ParameterizedTest} executions based on conditions.
- * <p>Check out the following types for details:
+ * <p>
+ * Disable {@code @ParameterizedTest} executions based on conditions.</p>
+ * <p>Check out the following types for details:</p>
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.params.DisableIfDisplayName}</li>
  *     <li>{@link org.junitpioneer.jupiter.params.DisableIfAllArguments}</li>
  *     <li>{@link org.junitpioneer.jupiter.params.DisableIfAnyArgument}</li>
  *     <li>{@link org.junitpioneer.jupiter.params.DisableIfArgument}</li>
  * </ul>
- * </p>
+ *
  * <p>
- * Argument providers for a range of numbers.
- * <p>Check out the following types for details on providing values for parameterized tests:
+ * Argument providers for a range of numbers.</p>
+ * <p>Check out the following types for details on providing values for parameterized tests:</p>
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.params.ByteRangeSource}</li>
  *     <li>{@link org.junitpioneer.jupiter.params.ShortRangeSource}</li>
@@ -21,7 +21,7 @@
  *     <li>{@link org.junitpioneer.jupiter.params.FloatRangeSource}</li>
  *     <li>{@link org.junitpioneer.jupiter.params.DoubleRangeSource}</li>
  * </ul>
- * </p>
+ *
  */
 
 package org.junitpioneer.jupiter.params;
