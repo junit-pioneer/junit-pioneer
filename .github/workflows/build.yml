@@ -1,7 +1,7 @@
 name: Main build
 
 env:
-  EXPERIMENTAL_JAVA: 20
+  EXPERIMENTAL_JAVA: 21
 
 on:
   # We want to trigger our builds all the time for the default branch
@@ -116,8 +116,8 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 11, 17, 19 ]
-        junit-version: [ '5.9.0' ]
+        java: [ 11, 17, 20 ]
+        junit-version: [ '5.9.2' ]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
     steps:
@@ -145,7 +145,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        junit-version: [ '5.9.0' ]
+        junit-version: [ '5.9.2' ]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
     # Gradle doesn't work with JDK EA builds, so we launch it with a supported Java version,
@@ -195,7 +195,11 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: 11
+          # we build the Javadoc with JDK 17 (for better results),
+          # so install that as well
+          java-version: |
+            20
+            11
           distribution: temurin
       - name: Perform release
         uses: gradle/gradle-build-action@v2

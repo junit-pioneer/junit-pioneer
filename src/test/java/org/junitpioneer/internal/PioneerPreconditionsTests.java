@@ -128,8 +128,8 @@ class PioneerPreconditionsTests {
 		void emptyInput() {
 			assertThatThrownBy(
 				() -> PioneerPreconditions.notEmpty(Collections.emptySet(), "Collection must be provided"))
-						.isInstanceOf(PreconditionViolationException.class)
-						.hasMessage("Collection must be provided");
+					.isInstanceOf(PreconditionViolationException.class)
+					.hasMessage("Collection must be provided");
 		}
 
 		@Test
