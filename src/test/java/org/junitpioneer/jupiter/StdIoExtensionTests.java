@@ -108,7 +108,7 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
-		@DisplayName("returns correct length is available for non-empty input")
+		@DisplayName("for non-empty input, available() reports input's number of bytes")
 		void everythingAvailableBeforeRead(StdIn in) throws IOException {
 			int inputLength = ("Doth homage to his new-appearing sight" + System.getProperty("line.separator")
 					+ "Serving with looks his sacred majesty;").getBytes().length;
@@ -118,7 +118,7 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo({ "Doth homage to his new-appearing sight" })
-		@DisplayName("returns correct length is available for non-empty input after partial read")
+		@DisplayName("for non-empty input after partial read, available() reports correctly reduced number of bytes")
 		void somethingAvailableAfterRead(StdIn in) throws IOException {
 			int bytesToRead = 16;
 			app.read(bytesToRead);
@@ -129,7 +129,7 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo("")
-		@DisplayName("returns 0 is available for no empty input")
+		@DisplayName("for empty input, available() returns 0 available bytes")
 		void nothingAvailableWhenEmpty(StdIn in) throws IOException {
 			assertThat(in.available()).isEqualTo(0);
 		}
