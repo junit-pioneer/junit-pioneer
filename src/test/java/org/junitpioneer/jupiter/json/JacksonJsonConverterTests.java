@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class JacksonJsonConverterTest {
+class JacksonJsonConverterTests {
 
 	@Test
 	@DisplayName("throws exception if property is not none, list or all")
