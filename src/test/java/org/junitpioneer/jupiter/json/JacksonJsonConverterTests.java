@@ -35,10 +35,18 @@ class JacksonJsonConverterTests {
 	}
 
 	@ParameterizedTest
-	@DisplayName("does not throw for all, none or list properties")
-	@ValueSource(strings = { "all", "none", "list" })
+	@DisplayName("does not throw for all or none properties")
+	@ValueSource(strings = { "all", "none" })
 	void property(String property) {
 		assertDoesNotThrow(() -> new JacksonJsonConverter(new ObjectMapper(), property));
+	}
+
+	@Test
+	@DisplayName("throws JacksonModuleNotFoundException when list has incorrect module")
+	void property() {
+		Throwable thrown = catchThrowable(() -> new JacksonJsonConverter(new ObjectMapper(), "list"));
+
+		assertThat(thrown).isInstanceOf(JacksonModuleNotFoundException.class);
 	}
 
 }
