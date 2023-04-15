@@ -39,6 +39,8 @@ class JacksonJsonConverter implements JsonConverter {
 	private final ObjectMapper objectMapper;
 	private final ObjectMapper lenientObjectMapper;
 
+	private String type;
+
 	JacksonJsonConverter(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 		configure(this.objectMapper);
@@ -48,8 +50,19 @@ class JacksonJsonConverter implements JsonConverter {
 		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 	}
 
+	JacksonJsonConverter(ObjectMapper objectMapper, String type) {
+		this.type = type;
+		this.objectMapper = objectMapper;
+		configure(this.objectMapper);
+		this.lenientObjectMapper = this.objectMapper.copy();
+		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+	}
+
 	private void configure(ObjectMapper objectMapper) {
-		String type = PioneerPropertyUtils.property(PROPERTY_REGISTRATION).orElse(NONE);
+		if (type == null)
+			type = PioneerPropertyUtils.property(PROPERTY_REGISTRATION).orElse(NONE);
 		if (!type.equals(NONE)) {
 			switch (type) {
 				case ALL:
@@ -74,7 +87,7 @@ class JacksonJsonConverter implements JsonConverter {
 				objectMapper.registerModule(module.getDeclaredConstructor().newInstance());
 			}
 			catch (Exception exception) {
-				throw new RuntimeException("Failed loading jackson module " + name, exception);
+				throw new JacksonModuleNotFoundException("Failed loading jackson module " + name, exception);
 			}
 		};
 	}

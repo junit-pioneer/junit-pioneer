@@ -18,10 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-
 /**
- * Utils to read a property file.
+ * Utility class to read a property file.
  */
 public final class PioneerPropertyUtils {
 
@@ -38,7 +36,6 @@ public final class PioneerPropertyUtils {
 				}
 			}
 			catch (IOException e) {
-				throw new ExtensionConfigurationException("Property file not found! Debug only.");
 				// properties not found
 			}
 		}
