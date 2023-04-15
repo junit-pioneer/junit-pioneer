@@ -61,7 +61,7 @@ public class PioneerUtils {
 	 * interface and traversing its enclosing classes until such a method is
 	 * found or the top level class is reached.
 	 *
-	 * <p>The algorithm does not search for methods in {@link java.lang.Object}.
+	 * <p>The algorithm does not search for methods in {@link java.lang.Object}.</p>
 	 *
 	 * @param clazz the class or interface in which to find the method; never {@code null}
 	 * @param methodName the name of the method to find; never {@code null} or empty

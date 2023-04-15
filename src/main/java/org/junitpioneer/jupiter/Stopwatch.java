@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@code @Stopwatch} is a JUnit Jupiter extension to measure the elapsed time of a test execution.
  * It's based on the JUnit extension example.
  *
- * <p>{@code Stopwatch} is not repeatable. It can be used on the method and class level.
+ * <p>{@code Stopwatch} is not repeatable. It can be used on the method and class level.</p>
  *
  * @since 0.6
  */

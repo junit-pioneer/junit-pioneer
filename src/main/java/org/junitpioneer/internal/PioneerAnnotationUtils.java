@@ -49,6 +49,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
  * All of the above mechanisms apply recursively, meaning that, e.g., for an annotation to be
  * <em>meta-present</em> it can present on an annotation that is present on another annotation
  * that is present on the element.
+ * </p>
  */
 public class PioneerAnnotationUtils {
 

@@ -13,6 +13,7 @@
  *     <li>{@link org.junitpioneer.jupiter.json.JsonClasspathSource}</li>
  *     <li>{@link org.junitpioneer.jupiter.json.JsonFileSource}</li>
  * </ul>
+ * </p>
  */
 
 package org.junitpioneer.jupiter.json;

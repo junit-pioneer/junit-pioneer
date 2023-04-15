@@ -14,7 +14,8 @@
  *     <li>{@link org.junitpioneer.jupiter.StdIo}</li>
  *     <li>{@link org.junitpioneer.jupiter.Stopwatch}</li>
  * </ul>
- *
+ * </p>
+ * <p>
  * Also check the following packages:
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.cartesian cartesian}</li>
@@ -23,7 +24,7 @@
  *     <li>{@link org.junitpioneer.jupiter.params params}</li>
  *     <li>{@link org.junitpioneer.jupiter.resource resource}</li>
  * </ul>
- *
+ * </p>
  */
 
 package org.junitpioneer.jupiter;

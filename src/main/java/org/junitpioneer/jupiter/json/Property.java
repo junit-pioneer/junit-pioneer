@@ -21,6 +21,7 @@ import java.lang.annotation.Target;
  * <p>
  * If the test code is compiled with the {@code -parameters} flag, and the test method parameter's name
  * matches the JSON property's name, this annotation is not needed.
+ * </p>
  *
  * @since 1.7.0
  */
