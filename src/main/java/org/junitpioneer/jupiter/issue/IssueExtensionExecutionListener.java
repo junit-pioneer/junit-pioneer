@@ -14,12 +14,12 @@ import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.junit.platform.engine.TestExecutionResult.Status;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Stream;
 
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
@@ -27,6 +27,7 @@ import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 import org.junitpioneer.jupiter.IssueProcessor;
+import org.junitpioneer.jupiter.IssueTestCase;
 import org.junitpioneer.jupiter.IssueTestSuite;
 
 /**
@@ -93,23 +94,22 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 	}
 
 	List<IssueTestSuite> createIssueTestSuites() {
-		//@formatter:off
 		return testCases
-				.values().stream()
-				.collect(toMap(IssueTestCaseBuilder::getIssueId, builder -> new ArrayList<>(List.of(builder)),
-						(builders1, builders2) -> {
-							builders1.addAll(builders2);
-							return builders1;
-						}))
-				.entrySet().stream()
-				.map(issueIdWithTestCases -> new IssueTestSuite(
-						issueIdWithTestCases.getKey(),
-						issueIdWithTestCases
-								.getValue().stream()
-								.map(IssueTestCaseBuilder::build)
-								.collect(toUnmodifiableList())))
+				.values()
+				.stream()
+				.collect(toMap(IssueTestCaseBuilder::getIssueId, this::getIssueTestCases, this::mergeIssueTestCases))
+				.entrySet()
+				.stream()
+				.map(entry -> new IssueTestSuite(entry.getKey(), entry.getValue()))
 				.collect(toUnmodifiableList());
-		//@formatter:on
+	}
+
+	private List<IssueTestCase> getIssueTestCases(IssueTestCaseBuilder t) {
+		return List.of(t.build());
+	}
+
+	private List<IssueTestCase> mergeIssueTestCases(List<IssueTestCase> first, List<IssueTestCase> second) {
+		return Stream.concat(first.stream(), second.stream()).collect(toUnmodifiableList());
 	}
 
 }
