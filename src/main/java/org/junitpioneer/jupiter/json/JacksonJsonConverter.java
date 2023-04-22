@@ -42,14 +42,17 @@ class JacksonJsonConverter implements JsonConverter {
 	private String type;
 
 	JacksonJsonConverter(ObjectMapper objectMapper) {
-		this.objectMapper = objectMapper;
-		configure(this.objectMapper);
-		this.lenientObjectMapper = this.objectMapper.copy();
-		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
-		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		this(objectMapper, null);
 	}
 
+	/**
+	 * This constructor was intended to be used for testing purposes.
+	 * It could also be used to let users inject module registration key programmatically.
+	 *
+	 * @param objectMapper the object mapper
+	 * @param type the keyword for module registration, must be "all", "list" or "none"
+	 *				(or {@code null}, if we read it from the property file)
+	 */
 	JacksonJsonConverter(ObjectMapper objectMapper, String type) {
 		this.type = type;
 		this.objectMapper = objectMapper;
