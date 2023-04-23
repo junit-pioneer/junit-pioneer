@@ -104,8 +104,8 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 				.collect(toUnmodifiableList());
 	}
 
-	private List<IssueTestCase> getIssueTestCases(IssueTestCaseBuilder t) {
-		return List.of(t.build());
+	private List<IssueTestCase> getIssueTestCases(IssueTestCaseBuilder builder) {
+		return List.of(builder.build());
 	}
 
 	private List<IssueTestCase> mergeIssueTestCases(List<IssueTestCase> first, List<IssueTestCase> second) {
