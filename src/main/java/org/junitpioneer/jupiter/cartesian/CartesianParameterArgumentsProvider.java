@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * <p>
  * For more information, see
  * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
+ * </p>
  */
 public interface CartesianParameterArgumentsProvider<T> extends CartesianArgumentsProvider {
 
