@@ -53,6 +53,7 @@ public @interface JsonSource {
 	 * The JSON values to use as the source of arguments; must not be empty.
 	 * <p>
 	 * Each value can represent a single object, or a collection of objects.
+	 * </p>
 	 */
 	String[] value();
 

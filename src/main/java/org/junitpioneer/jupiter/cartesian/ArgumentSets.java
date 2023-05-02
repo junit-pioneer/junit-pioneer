@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.cartesian;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,7 +100,7 @@ public class ArgumentSets {
 	 * @return a new {@link ArgumentSets} object
 	 */
 	public static <T> ArgumentSets argumentsForFirstParameter(Stream<T> arguments) {
-		return new ArgumentSets(arguments.collect(toList()));
+		return new ArgumentSets(arguments.collect(toUnmodifiableList()));
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class ArgumentSets {
 	 * @return this {@link ArgumentSets} object, for fluent set definitions
 	 */
 	public final <T> ArgumentSets argumentsForNextParameter(Stream<T> arguments) {
-		return add(arguments.collect(toList()));
+		return add(arguments.collect(toUnmodifiableList()));
 	}
 
 	List<List<?>> getArguments() {

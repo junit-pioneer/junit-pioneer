@@ -102,7 +102,7 @@ public @interface RetryingTest {
 	 *
 	 * <p>Defaults to [{index}] {arguments}.</p>
 	 *
-	 * <p>Supported placeholders:<p>
+	 * <p>Supported placeholders:</p>
 	 *
 	 * - {@link org.junitpioneer.jupiter.RetryingTest#DISPLAY_NAME_PLACEHOLDER}
 	 * - {@link org.junitpioneer.jupiter.RetryingTest#INDEX_PLACEHOLDER}

@@ -16,14 +16,12 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -40,7 +38,7 @@ public class PioneerUtils {
 	}
 
 	/**
-	 * A {@link Collectors#toSet() toSet} collector that throws an {@link IllegalStateException}
+	 * A {@link java.util.stream.Collectors#toSet() toSet} collector that throws an {@link IllegalStateException}
 	 * on duplicate elements (according to {@link Object#equals(Object) equals}).
 	 */
 	public static <T> Collector<T, Set<T>, Set<T>> distinctToSet() {
@@ -63,7 +61,7 @@ public class PioneerUtils {
 	 * interface and traversing its enclosing classes until such a method is
 	 * found or the top level class is reached.
 	 *
-	 * <p>The algorithm does not search for methods in {@link java.lang.Object}.
+	 * <p>The algorithm does not search for methods in {@link java.lang.Object}.</p>
 	 *
 	 * @param clazz the class or interface in which to find the method; never {@code null}
 	 * @param methodName the name of the method to find; never {@code null} or empty
@@ -81,7 +79,7 @@ public class PioneerUtils {
 			// null checking done by ReflectionSupport.findMethod
 			method = findMethod(current, methodName, parameterTypes);
 			current = current.getEnclosingClass();
-		} while (!method.isPresent() && current != null);
+		} while (method.isEmpty() && current != null);
 		return method;
 	}
 
@@ -98,7 +96,7 @@ public class PioneerUtils {
 		List<ExtensionContext> parentContexts = context
 				.getParent()
 				.map(PioneerUtils::findAllContexts)
-				.orElse(Collections.emptyList());
+				.orElse(List.of());
 		allContexts.addAll(parentContexts);
 		return allContexts;
 	}
@@ -148,7 +146,7 @@ public class PioneerUtils {
 	public static List<List<?>> cartesianProduct(List<List<?>> lists) {
 		List<List<?>> resultLists = new ArrayList<>();
 		if (lists.isEmpty()) {
-			resultLists.add(Collections.emptyList());
+			resultLists.add(List.of());
 			return resultLists;
 		}
 		List<?> firstList = lists.get(0);

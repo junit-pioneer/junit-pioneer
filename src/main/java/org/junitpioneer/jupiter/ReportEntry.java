@@ -26,7 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@link org.junit.jupiter.api.extension.ExtensionContext#publishReportEntry(String, String) ExtensionContext::publishReportEntry}
  * from within the test method.
  *
- * <p>{@code ReportEntry} is repeatable and can be used on methods.
+ * <p>{@code ReportEntry} is repeatable and can be used on methods.</p>
  *
  * <p>This extension does not interact with
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>.

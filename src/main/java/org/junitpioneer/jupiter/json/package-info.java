@@ -7,12 +7,13 @@
  * <a href="https://junit-pioneer.org/docs/json-argument-source" target="_top">the documentation on <code>JSON tests</code></a>
  * </p>
  *
- * <p>Check out the following types for details on providing values for parameterized tests:
+ * <p>Check out the following types for details on providing values for parameterized tests:</p>
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.json.JsonSource}</li>
  *     <li>{@link org.junitpioneer.jupiter.json.JsonClasspathSource}</li>
  *     <li>{@link org.junitpioneer.jupiter.json.JsonFileSource}</li>
  * </ul>
+ *
  */
 
 package org.junitpioneer.jupiter.json;

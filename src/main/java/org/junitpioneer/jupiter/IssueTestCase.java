@@ -18,8 +18,9 @@ import org.junit.platform.engine.TestExecutionResult.Status;
 
 /**
  * Represents the execution result of test method, which is annotated with {@link Issue}.
- *
+ * <p>
  * Once Pioneer baselines against Java 17, this will be a record.
+ * </p>
  *
  * @since 1.1
  * @see Issue
@@ -52,9 +53,9 @@ public final class IssueTestCase {
 	}
 
 	/**
-	 * Returns the result of the test methods execution.
+	 * Returns the result of the test methods' execution.
 	 *
-	 * @return Result of the test methods execution.
+	 * @return Result of the test methods' execution.
 	 */
 	public Status result() {
 		return result;

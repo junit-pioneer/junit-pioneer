@@ -17,9 +17,10 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * Provides arguments for a single parameter of a {@link CartesianTest} method.
- *
+ * <p>
  * For more information, see
  * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
+ * </p>
  */
 public interface CartesianParameterArgumentsProvider<T> extends CartesianArgumentsProvider {
 

@@ -10,13 +10,14 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.platform.commons.PreconditionViolationException;
@@ -32,7 +33,7 @@ class JsonFileSourceArgumentsProvider extends AbstractJsonSourceBasedArgumentsPr
 	@Override
 	public void accept(JsonFileSource jsonSource) {
 		Stream<Source> files = Arrays.stream(jsonSource.value()).map(JsonFileSourceArgumentsProvider::fileResource);
-		accept(files.collect(Collectors.toList()), jsonSource.data());
+		accept(files.collect(toUnmodifiableList()), jsonSource.data());
 	}
 
 	private static Source fileResource(String file) {

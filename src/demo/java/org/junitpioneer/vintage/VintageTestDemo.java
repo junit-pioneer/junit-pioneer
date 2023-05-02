@@ -10,21 +10,21 @@
 
 package org.junitpioneer.vintage;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class VintageTestDemo {
 
 	// tag::vintage_test_indexoutofbound_exception[]
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void outOfBounds_passes() {
-		new ArrayList<Object>().get(1);
+		List.of().get(1);
 	}
 	// end::vintage_test_indexoutofbound_exception[]
 
 	// tag::vintage_test_runtime_exception[]
 	@Test(expected = RuntimeException.class)
 	public void outOfBounds_passes_too() {
-		new ArrayList<Object>().get(1);
+		List.of().get(1);
 	}
 	// end::vintage_test_runtime_exception[]
 
@@ -33,7 +33,7 @@ public class VintageTestDemo {
 		// tag::vintage_test_iae_exception[]
 		@Test(expected = IllegalArgumentException.class)
 		public void outOfBounds_fails() {
-			new ArrayList<Object>().get(1);
+			List.of().get(1);
 		}
 		// end::vintage_test_iae_exception[]
 
