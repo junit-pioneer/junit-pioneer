@@ -44,7 +44,7 @@ import java.util.List;
 public final class TemporaryDirectory implements ResourceFactory<Path> {
 
 	public TemporaryDirectory() {
-		// no-op constructor
+		// recreate default constructor to prevent compiler warning
 	}
 
 	@Override

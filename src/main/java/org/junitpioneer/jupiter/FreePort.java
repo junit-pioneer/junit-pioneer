@@ -20,7 +20,7 @@ import org.junitpioneer.jupiter.resource.ResourceFactory;
 public final class FreePort implements ResourceFactory<ServerSocket> {
 
 	public FreePort() {
-		// no-op constructor
+		// recreate default constructor to prevent compiler warning
 	}
 
 	@Override
