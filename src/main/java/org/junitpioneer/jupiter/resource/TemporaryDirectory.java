@@ -43,6 +43,10 @@ import java.util.List;
  */
 public final class TemporaryDirectory implements ResourceFactory<Path> {
 
+	public TemporaryDirectory() {
+		// no-op constructor
+	}
+
 	@Override
 	public Resource<Path> create(List<String> arguments) throws Exception {
 		if (arguments.size() >= 2) {

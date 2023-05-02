@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -12,33 +12,40 @@ package org.junitpioneer.jupiter;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.List;
 
-public final class FreePort {
+import org.junitpioneer.jupiter.resource.Resource;
+import org.junitpioneer.jupiter.resource.ResourceFactory;
 
-	private final int portNumber;
+public final class FreePort implements ResourceFactory<ServerSocket> {
 
-	public FreePort() throws IOException {
-		this.portNumber = getFreePortNumber();
+	public FreePort() {
+		// no-op constructor
 	}
 
-	private Integer getFreePortNumber() throws IOException {
-		ServerSocket socket = new ServerSocket(0);
-		int freePort = socket.getLocalPort();
-		socket.close();
-		return freePort;
+	@Override
+	public Resource<ServerSocket> create(List<String> arguments) throws Exception {
+		return new FreePortResource();
 	}
 
-	public int number() {
-		return portNumber;
-	}
+	private static final class FreePortResource implements Resource<ServerSocket> {
 
-	public boolean isFreeNow() {
-		try (ServerSocket ignored = new ServerSocket(portNumber)) {
-			return true;
+		private final ServerSocket serverSocket;
+
+		FreePortResource() throws IOException {
+			this.serverSocket = new ServerSocket(0);
 		}
-		catch (IOException exception) {
-			return false;
+
+		@Override
+		public ServerSocket get() {
+			return serverSocket;
 		}
+
+		@Override
+		public void close() throws IOException {
+			this.serverSocket.close();
+		}
+
 	}
 
 }
