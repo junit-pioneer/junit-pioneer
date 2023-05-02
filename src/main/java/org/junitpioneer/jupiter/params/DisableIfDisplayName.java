@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -32,9 +32,9 @@ import org.junit.jupiter.params.ParameterizedTest;
  * of dynamically registered parameterized tests.</p>
  *
  * <p>If neither {@link DisableIfDisplayName#contains() contains} nor
- * {@link DisableIfDisplayName#matches() matches} is configured, the extension will throw an exception.
- * It is possible to configure both, in which case the test gets disabled if at least one substring
- * was found <em>or</em> at least one regular expression matched.</p>
+ * {@link DisableIfDisplayName#matches() matches} is configured, or if both are present,
+ * the extension will throw an exception.
+ * </p>
  *
  * @since 0.7
  * @see DisableIfNameExtension

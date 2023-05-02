@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -45,7 +45,7 @@ public @interface DisableIfAnyArgument {
 
 	/**
 	 * Disable test cases if any argument (converted to String with {@link Object#toString()})
-	 * contains any of the the specified strings (according to {@link String#contains(CharSequence)}).
+	 * contains any of the specified strings (according to {@link String#contains(CharSequence)}).
 	 */
 	String[] contains() default {};
 

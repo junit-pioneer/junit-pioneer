@@ -4,14 +4,14 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "5.14.3"
+	id("com.diffplug.spotless") version "6.18.0"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "3.3"
-	id("org.moditect.gradleplugin") version "1.0.0-rc3"
-	id("org.shipkit.shipkit-changelog") version "1.1.15"
-	id("org.shipkit.shipkit-github-release") version "1.1.15"
-	id("com.github.ben-manes.versions") version "0.39.0"
-	id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+	id("org.sonarqube") version "4.0.0.2929"
+	id("org.shipkit.shipkit-changelog") version "1.2.0"
+	id("org.shipkit.shipkit-github-release") version "1.2.0"
+	id("com.github.ben-manes.versions") version "0.46.0"
+	id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+	id("org.gradlex.extra-java-module-info") version "1.3"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -23,24 +23,25 @@ plugins.withType<JavaPlugin>().configureEach {
 group = "org.junit-pioneer"
 description = "JUnit 5 Extension Pack"
 
-val modularBuild : String by project
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
+val releaseBuild : Boolean = project.version != "unspecified"
+
+val targetJavaVersion = JavaVersion.VERSION_11
 
 java {
 	if (experimentalBuild) {
 		toolchain {
-			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion))
+			languageVersion.set(JavaLanguageVersion.of(experimentalJavaVersion!!))
 		}
 	} else {
-		if (modularBuild.toBoolean()) {
-			sourceCompatibility = JavaVersion.VERSION_11
-		} else {
-			sourceCompatibility = JavaVersion.VERSION_1_8
-		}
+		sourceCompatibility = targetJavaVersion
 	}
 	withJavadocJar()
 	withSourcesJar()
+	registerFeature("jackson") {
+		usingSourceSet(sourceSets["main"])
+	}
 }
 
 repositories {
@@ -48,25 +49,29 @@ repositories {
 }
 
 val junitVersion : String by project
+val jacksonVersion: String = "2.14.2"
+val assertjVersion: String = "3.24.2"
+val log4jVersion: String = "2.20.0"
+val jimfsVersion: String = "1.2"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
 
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
-	implementation(group = "org.junit.platform", name = "junit-platform-commons")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
+	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
-	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.20.2")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "3.12.4")
-	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.7.1")
+	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.11.0")
+	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.14.1")
 
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.14.1")
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.14.1")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = log4jVersion)
 }
 
 spotless {
@@ -83,7 +88,7 @@ spotless {
 }
 
 checkstyle {
-	toolVersion = "7.8.2"
+	toolVersion = "10.9.3"
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
@@ -93,27 +98,17 @@ yamlValidator {
 }
 
 jacoco {
-	toolVersion = "0.8.6"
+	toolVersion = "0.8.9"
 }
 
-sonarqube {
-	// If you want to use this logcally a sonarLogin has to be provide, either via Username and Password
+sonar {
+	// If you want to use this locally a sonarLogin has to be provided, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
 	properties {
 		// Default properties if somebody wants to execute it locally
 		property("sonar.projectKey", "junit-pioneer_junit-pioneer") // needs to be changed
 		property("sonar.organization", "junit-pioneer-xp") // needs to be changed
 		property("sonar.host.url", "https://sonarcloud.io")
-	}
-}
-
-moditect {
-	addMainModuleInfo {
-		version = project.version
-		overwriteExistingFiles.set(true)
-		module {
-			moduleInfoFile = rootProject.file("src/main/module/module-info.java")
-		}
 	}
 }
 
@@ -152,7 +147,6 @@ publishing {
 				developers {
 					mapOf(
 						"nipafx" to "Nicolai Parlog",
-						"smoyer64" to "Steve Moyer",
 						"Bukama" to "Matthias Bünger",
 						"aepfli" to "Simon Schrottner",
 						"Michael1993" to "Mihály Verhás",
@@ -171,9 +165,7 @@ publishing {
 }
 
 signing {
-	setRequired({
-		project.version != "unspecified" && gradle.taskGraph.hasTask("publishToSonatype")
-	})
+	isRequired = releaseBuild && gradle.taskGraph.hasTask("publishToSonatype")
 	val signingKey: String? by project
 	val signingPassword: String? by project
 	useInMemoryPgpKeys(signingKey, signingPassword)
@@ -186,27 +178,78 @@ nexusPublishing {
 	}
 }
 
+extraJavaModuleInfo {
+	failOnMissingModuleInfo.set(false)
+	automaticModule("com.google.guava:failureaccess", "com.google.guava.failureaccess")
+	automaticModule("com.google.guava:listenablefuture", "com.google.guava.listenablefuture")
+	automaticModule("com.google.code.findbugs:jsr305", "com.google.code.findbugs.jsr305")
+	automaticModule("com.google.j2objc:j2objc-annotations", "com.google.j2objc.annotations")
+	automaticModule("com.google.jimfs:jimfs", "com.google.jimfs")
+}
+
 tasks {
 
 	sourceSets {
-		main {
-			if (modularBuild.toBoolean())
-				java.srcDir("src/main/module")
+		create("demo") {
+			java {
+				srcDir("src/demo/java")
+			}
+			compileClasspath += sourceSets.main.get().output
+			runtimeClasspath += sourceSets.main.get().output
 		}
 	}
+	project(":demo") {
+		sonar {
+			isSkipProject = true
+		}
+	}
+	// Adds all dependencies of main to demo sourceSet
+	configurations["demoImplementation"].extendsFrom(configurations.testImplementation.get())
+	// Ensures JUnit 5 engine is available to demo at runtime
+	configurations["demoRuntimeOnly"].extendsFrom(configurations.testImplementation.get())
 
 	compileJava {
 		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		// Do not break the build on "exports" warnings (see CONTRIBUTING.md for details)
+		options.compilerArgs.add("-Xlint:all,-exports")
+
+		if (project.version != "unspecified") {
+			// Add version to Java modules
+			options.javaModuleVersion.set(project.version.toString());
+		}
 	}
+
+	// Prepares test-related JVM args
+	val moduleName = "org.junitpioneer"
+	// See https://docs.gradle.org/current/userguide/java_testing.html#sec:java_testing_modular_patching
+	val patchModuleArg = "--patch-module=$moduleName=${compileJava.get().destinationDirectory.asFile.get().path}"
+	val testJvmArgs = listOf(
+			// Ignore these options on Java 8
+			"-XX:+IgnoreUnrecognizedVMOptions",
+			// EnvironmentVariableUtils: make java.util.Map accessible
+			"--add-opens=java.base/java.util=$moduleName",
+			// EnvironmentVariableUtils: make java.lang.System accessible
+			"--add-opens=java.base/java.lang=$moduleName",
+			patchModuleArg
+	)
 
 	compileTestJava {
 		options.encoding = "UTF-8"
+		options.compilerArgs.add("-Werror")
+		options.compilerArgs.add(patchModuleArg)
+		var xlintArg = "-Xlint:all"
+		xlintArg += ",-exports,-requires-automatic"
+		// missing-explicit-ctor was added in Java 16. This causes errors on test classes, which don't have one.
+		if (JavaVersion.current() >= JavaVersion.VERSION_16) {
+			xlintArg += ",-missing-explicit-ctor"
+		}
+		options.compilerArgs.add(xlintArg)
 	}
 
 	test {
-		
-    	    	configure<JacocoTaskExtension> {
-       		isEnabled = !experimentalBuild
+		configure<JacocoTaskExtension> {
+			isEnabled = !experimentalBuild
 		}
 		testLogging {
 			setExceptionFormat("full")
@@ -216,35 +259,98 @@ tasks {
 			includeTestsMatching("*Tests")
 		}
 		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
-		// `EnvironmentVariableExtension` uses reflection to change environment variables;
-		// this prevents the corresponding warning (and keeps working on Java 8)
-		// IF YOU ADD MORE OPTIONS; CONSIDER REPLACING `-XX:+IgnoreUnrecognizedVMOptions WITH A CONDITIONAL
-		jvmArgs(
-				"-XX:+IgnoreUnrecognizedVMOptions",
-				"--add-opens=java.base/java.util=ALL-UNNAMED")
+		// java.security.manager was added in Java 12 (see
+		// https://www.oracle.com/java/technologies/javase/12-relnote-issues.html#JDK-8191053). We have to explicitly
+		// set it to "allow" for EnvironmentVariableUtilsTests$With_SecurityManager.
+		if (JavaVersion.current() >= JavaVersion.VERSION_12)
+			systemProperty("java.security.manager", "allow")
+		// Disables Byte Buddy validation for the maximum supported class file version, since we are possibly using a
+		// Java EA release.
+		if (experimentalBuild)
+			systemProperty("net.bytebuddy.experimental", true)
+		jvmArgs(testJvmArgs)
+	}
+
+	testing {
+		suites {
+			val test by getting(JvmTestSuite::class) {
+				useJUnitJupiter()
+			}
+
+			val demoTests by registering(JvmTestSuite::class) {
+				dependencies {
+					implementation(project(project.path))
+					implementation("com.google.jimfs:jimfs:$jimfsVersion")
+					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+					implementation("org.assertj:assertj-core:$assertjVersion")
+				}
+
+				sources {
+					java {
+						srcDir("src/demo/java")
+					}
+					resources {
+						srcDir("src/demo/resources")
+					}
+				}
+
+				targets {
+					all {
+						testTask.configure {
+							shouldRunAfter(test)
+							filter {
+								includeTestsMatching("*Demo")
+							}
+							jvmArgs(testJvmArgs)
+						}
+					}
+				}
+			}
+		}
 	}
 
 	javadoc {
-		// of all the javadoc checks (accessibility, html, missing, reference, syntax; see
-		// https://docs.oracle.com/javase/8/docs/technotes/tools/unix/javadoc.html#BEJEFABE)
-		// disable the warning for missing comments and tags because they spam the output
-		// (it does often not make sense to comment every tag; e.g. the @return tag on annotations)
-		(options as CoreJavadocOptions).addStringOption("Xdoclint:accessibility,html,syntax,reference", "-quiet")
-		options.encoding = "UTF-8"
+		if (releaseBuild) {
+			javadocTool.set(project.javaToolchains.javadocToolFor {
+				// create Javadoc with least Java version to get all features
+				// (e.g. search result page on 20)
+				languageVersion.set(JavaLanguageVersion.of(20))
+			})
+		}
+
+		options {
+			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937
+			this as StandardJavadocDocletOptions
+
+			encoding = "UTF-8"
+			links = listOf("https://junit.org/junit5/docs/current/api/")
+
+			// Set javadoc `--release` flag (affects which warnings and errors are reported)
+			// (Note: Gradle adds one leading '-' to the option on its own)
+			// Have to use at least Java 9 to support modular build
+			addStringOption("-release", targetJavaVersion.majorVersion.toInt().toString())
+
+			// Enable doclint, but ignore warnings for missing tags, see
+			// https://docs.oracle.com/en/java/javase/17/docs/specs/man/javadoc.html#additional-options-provided-by-the-standard-doclet
+			// The Gradle option methods are rather misleading, but a boolean `true` value just makes sure the flag
+			// is passed to javadoc, see https://github.com/gradle/gradle/issues/2354
+			addBooleanOption("Xdoclint:all,-missing", true)
+		}
+
 		shouldRunAfter(test)
 	}
 
 	jacocoTestReport {
 		enabled = !experimentalBuild
 		reports {
-			xml.isEnabled = true
-			xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+			xml.required.set(true)
+			xml.outputLocation.set(file("${buildDir}/reports/jacoco/report.xml"))
 		}
 	}
 
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
-		dependsOn(javadoc, validateYaml)
+		dependsOn(javadoc, validateYaml, testing.suites.named("demoTests"))
 	}
 
 	withType<Jar>().configureEach {

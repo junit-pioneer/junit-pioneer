@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -53,6 +53,8 @@ class TimeoutExtension implements InvocationInterceptor {
 			format(TEST_RAN_TOO_LONG, extensionContext.getDisplayName(), timeout));
 	}
 
+	// vintage @Test is deprecated (not for removal)
+	@SuppressWarnings("deprecation")
 	private Optional<Long> annotatedTimeout(ExtensionContext context) {
 		return findAnnotation(context.getElement(), Test.class).map(Test::timeout).filter(timeout -> timeout != 0L);
 	}

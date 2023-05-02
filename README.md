@@ -3,18 +3,20 @@
 <img src="docs/project-logo.jpg" align="right" width="150px"/>
 
 [![Latest Junit Pioneer on Maven Central](https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat)](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer)
+[![Latest JUnit Pioneer Javadoc on javadoc.io](https://javadoc.io/badge2/org.junit-pioneer/junit-pioneer/javadoc.svg)](https://javadoc.io/doc/org.junit-pioneer/junit-pioneer)
 [![JUnit Pioneer build status](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml?branch=main)
+[![Contributor Covenant Code of Conduct](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 
 A melting pot for all kinds of extensions to
 [JUnit 5](https://github.com/junit-team/junit5), particular to its Jupiter API.
 
-Check out [junit-pioneer.org](http://junit-pioneer.org), particularly [the documentation section](http://junit-pioneer.org/docs).
+Check out [junit-pioneer.org](https://junit-pioneer.org/), particularly [the documentation section](https://junit-pioneer.org/docs/).
 
 
 ## A Pioneer's Mission
 
 JUnit Pioneer provides extensions for [JUnit 5](https://github.com/junit-team/junit5/) and its Jupiter API.
-It does not limit itself to proven ideas with wide application but is purposely open to experiments.
+It does not limit itself to proven ideas with wide application but is purposely open to experimentation.
 It aims to spin off successful and cohesive portions into sibling projects or back into the JUnit 5 code base.
 
 To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its infrastructure, from code style to build tool and configuration to continuous integration.
@@ -22,7 +24,7 @@ To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its i
 
 ## Getting on Board
 
-JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases) and [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.junit-pioneer%22%20a%3A%22junit-pioneer%22). Coordinates:
+JUnit Pioneer is released on [GitHub](https://github.com/junit-pioneer/junit-pioneer/releases) and [Maven Central](https://search.maven.org/artifact/org.junit-pioneer/junit-pioneer). Coordinates:
 
 * group ID: `org.junit-pioneer`
 * artifact ID: `junit-pioneer`
@@ -48,8 +50,8 @@ testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
 
 ## Dependencies
 
-JUnit Pioneer is built against Java 8, but comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
-That means it can be used on all Java versions 8 and higher on class path and module path.
+Starting with release 2.0, JUnit Pioneer is compiled against **Java 11** and comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
+That means it can be used on all Java versions 11 and higher on class path and module path.
 
 Pioneer does not only use JUnit 5's API, but also other artifacts from its ecosystem such as [`junit-platform-commons`](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons).
 To avoid dependency issues (e.g. in [junit-pioneer#343](https://github.com/junit-pioneer/junit-pioneer/issues/343)), you should add the JUnit 5 BOM ([`junit-bom`](https://mvnrepository.com/artifact/org.junit/junit-bom)) to your project instead of defining all dependency versions manually.
@@ -57,23 +59,27 @@ To avoid dependency issues (e.g. in [junit-pioneer#343](https://github.com/junit
 To not add to user's [JAR hell](https://nipafx.dev/jar-hell/), JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
 Pioneer always depends on the lowest JUnit 5 version that supports its feature set, but that should not keep you from using 5's latest and greatest.
 
+Since 1.7.0 we also have an **optional** runtime dependency on [Jackson](https://github.com/FasterXML/jackson), for our JSON-based extensions.
+You can read a bit more about our approach to dependencies in the [contribution guide](CONTRIBUTING.md#others).
+
 For our own infrastructure, we rely on the following compile and test dependencies:
 
-* JSR-305 (for static analysis)
 * AssertJ (assertions for our tests)
 * Mockito (mocking for our tests)
 * Log4J (to configure logging during test runs)
 * Jimfs (as an in-memory file system for our test)
+* Equalsverifier (for easier assertion of simple things)
+
 
 ## Contributing
 
 We welcome contributions of all shapes and forms! 🌞
 
 * If you have an idea for an extension, [open an issue](https://github.com/junit-pioneer/junit-pioneer/issues/new) and let's discuss.
-* If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly [unassigned ones](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aopen+is%3Aissue+no%3Aassignee) and those [marked as up for grabs](https://github.com/junit-pioneer/junit-pioneer/issues?q=is%3Aissue+is%3Aopen+label%3Aup-for-grabs).
-* If you want to have a chat about JUnit Pioneer, [join our discord](https://discord.gg/rHfJeCF) - we have a _#junit-pioneer_ channel. 😊
+* If you want to help but don't know how, have a look at [the existing issues](https://github.com/junit-pioneer/junit-pioneer/issues), particularly those marked [_up for grabs_](https://github.com/junit-pioneer/junit-pioneer/labels/%F0%9F%93%A2%20up%20for%20grabs) or [_good first issue_](https://github.com/junit-pioneer/junit-pioneer/labels/good%20first%20issue).
+* If you want to chat about JUnit Pioneer, [join our discord](https://discord.gg/rHfJeCF) - we have a _#junit-pioneer_ channel. 😊
 
-Before contributing, please read the [contribution guide](CONTRIBUTING.md).
+Before contributing, please read the [contribution guide](CONTRIBUTING.md) as well as [the code of conduct](CODE_OF_CONDUCT.md).
 
 ### Maintainers
 
@@ -94,16 +100,13 @@ In lexicographic order, these are:
 		A Hungarian Java developer who spends more time on Twitch than recommended by his doctors and used creative and diligent contributions to fool everyone into believing he is a decent enough guy to get promoted to maintainer (in November 2020).
 		</dd>
 	<dt>Nicolai Parlog aka <a href="https://github.com/nipafx">nipafx</a></dt>
-	<dd>Java enthusiast with a passion for learning and sharing.
-		He does that in blog posts, articles, newsletters, and books; in <a href="https://twitter.com/nipafx">tweets</a>, repos, videos, and streams; at conferences and in-house trainings - more on all of that on <a href="https://nipafx.dev">nipafx.dev</a>.
-		That aside, he's best known for his head decor.
-		He co-founded the project in November 2016 and has maintained it ever since (although often very negligently).</dd>
+	<dd>Java enthusiast with a passion for learning and sharing, best known for his head decor.
+		He's a Java Developer Advocate at Oracle, organizer of <a href="https://accento.dev/">Accento</a>, occasional streamer, and more - check <a href="https://nipafx.dev">nipafx.dev</a> for the full list.
+		He co-founded JUnit Pioneer in November 2016 and has maintained it ever since (although often very negligently).</dd>
 	<dt>Simon Schrottner aka <a href="https://github.com/aepfli">aepfli</a></dt>
 	<dd>Bearded guy in Lederhosen, who loves to code, and loves to explore code quality, testing, and other tools that can improve the live of a software craftsman.
 		<a href="https://www.couchsurfing.com/people/simmens">Passionated couchsurfer</a> and <a href="https://www.facebook.com/togtrama">hobby event planner</a>.
 		Maintainer since April 2020.</dd>
-	<dt>Steve Moyer aka <a href="https://github.com/smoyer64">smoyer64</a></dt>
-	<dd>Co-founded the project in November 2016.</dd>
 </dl>
 
 ### Contributors
@@ -113,15 +116,25 @@ Thank you for your efforts! 🙏
 
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
+#### 2022
+
+* [Filip Hrisafov](https://github.com/filiphr) contributed the [JSON Argument Source](https://junit-pioneer.org/docs/json-argument-source/) support (#101 / #492)
+* [Marcono1234](https://github.com/Marcono1234) contributed the [`@ExpectedToFail` extension](https://junit-pioneer.org/docs/expected-to-fail-tests/) (#551 / #676)
+* [Mathieu Fortin](https://github.com/mathieufortin01) contributed the `suspendForMs` attribute in [retrying tests](https://junit-pioneer.org/docs/retrying-test/) (#407 / #604)
+* [Pankaj Kumar](https://github.com/p1729) contributed towards improving GitHub actions (#587 / #611)
+* [Rob Spoor](https://github.com/robtimus) enabled non-static factory methods for `@CartesianTest.MethodFactory` (#628)
+* [Marc Wrobel](https://github.com/marcwrobel) improved the documentation (#692)
+
 #### 2021
 
 * [Cory Thomas](https://github.com/dump247) contributed the `minSuccess` attribute in [retrying tests](https://junit-pioneer.org/docs/retrying-test/) (#408 / #430)
 * [Daniel Kraus](https://github.com/beatngu13) fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more), revamped their annotation handling (#460 / #485), and improved the build process (#482 / #483) before becoming a maintainer
 * [Gabriel Diegel](https://github.com/gdiegel) contributed the `@DisabledUntil` extension in [Temporarily disable a test](https://junit-pioneer.org/docs/disabled-until/) (#366)
 * [John Lehne](https://github.com/johnlehne) resolved an issue with the latest build status not showing correctly in README.md (#530)
+* [Jonathan Bluett-Duncan](https://github.com/jbduncan) contributed a fix to `buildSrc/build.gradle` which was failing when a `.idea` directory did not contain a `vcs.xml` file (#532)
+* [Scott Leberknight](https://github.com/sleberknight) resolved a javadoc issue (#547 / #548)
 * [Slawomir Jaranowski](https://github.com/slawekjaranowski) Migrate to new Shipkit plugins (#410 / #419)
 * [Stefano Cordio](https://github.com/scordio) contributed [the Cartesian Enum source](https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource) (#379 / #409 and #414 / #453)
-* [Jonathan Bluett-Duncan](https://github.com/jbduncan) contributed a fix to `buildSrc/build.gradle` which was failing when a `.idea` directory did not contain a `vcs.xml` file (#532)
 
 #### 2020
 

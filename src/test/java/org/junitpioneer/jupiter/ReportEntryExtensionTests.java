@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -15,8 +15,13 @@ import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_ABORTED;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_SUCCESS;
+import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
@@ -31,7 +36,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.opentest4j.TestAbortedException;
 
 /**
  * Edgar Allan Poe: The Raven is in the public domain.
@@ -42,7 +46,7 @@ public class ReportEntryExtensionTests {
 	@Test
 	@DisplayName("reports given explicit key and value")
 	void explicitKey_keyAndValueAreReported() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "explicitKey");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntryTestCases.class, "explicitKey");
 
 		assertThat(results).hasSingleReportEntry().withKeyAndValue("Crow2", "While I pondered weak and weary");
 	}
@@ -50,7 +54,7 @@ public class ReportEntryExtensionTests {
 	@Test
 	@DisplayName("reports given explicit value with default key 'value'")
 	void implicitKey_keyIsNamedValue() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "implicitKey");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntryTestCases.class, "implicitKey");
 
 		assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "Once upon a midnight dreary");
 	}
@@ -58,7 +62,7 @@ public class ReportEntryExtensionTests {
 	@Test
 	@DisplayName("fails when given an empty key explicitly")
 	void emptyKey_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "emptyKey");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntryTestCases.class, "emptyKey");
 
 		assertThat(results)
 				.hasSingleFailedTest()
@@ -70,7 +74,7 @@ public class ReportEntryExtensionTests {
 	@Test
 	@DisplayName("fails when given an empty value")
 	void emptyValue_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "emptyValue");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntryTestCases.class, "emptyValue");
 
 		assertThat(results)
 				.hasSingleFailedTest()
@@ -82,12 +86,23 @@ public class ReportEntryExtensionTests {
 	@Test
 	@DisplayName("logs each value as individual entry when annotation is repeated")
 	void repeatedAnnotation_logEachKeyValuePairAsIndividualEntry() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "repeatedAnnotation");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntryTestCases.class, "repeatedAnnotation");
 
 		assertThat(results)
 				.hasNumberOfReportEntries(3)
 				.withValues("suddenly there came a tapping", "As if some one gently rapping",
 					"rapping at my chamber door");
+	}
+
+	@Test
+	@DisplayName("works as a meta-annotation")
+	void metaAnnotation() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ReportEntryTestCases.class, "with_composed_annotation");
+
+		assertThat(results)
+				.hasNumberOfReportEntries(1)
+				.withValues("“Though thy crest be shorn and shaven, thou,” I said, “art sure no craven,");
 	}
 
 	@Nested
@@ -96,12 +111,13 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to 'ALWAYS'")
-		class LogAlways {
+		class LogAlwaysTests {
 
 			@Test
 			@DisplayName("logs for successful test")
 			void successfulTest_logsMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_success");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntryTestCases.class, "always_success");
 
 				assertThat(results).hasSingleSucceededTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "'Tis some visitor', I muttered");
@@ -110,7 +126,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("logs for failed test")
 			void failingTest_logsMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_failure");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntryTestCases.class, "always_failure");
 
 				assertThat(results).hasSingleFailedTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "'Tapping at my chamber door' -");
@@ -119,7 +136,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("logs for aborted test")
 			void abortedTest_logsMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_aborted");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntryTestCases.class, "always_aborted");
 
 				assertThat(results).hasSingleAbortedTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "'Only this and nothing more.'");
@@ -128,7 +146,8 @@ public class ReportEntryExtensionTests {
 			@Test
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
-				ExecutionResults results = PioneerTestKit.executeTestMethod(ReportEntriesTest.class, "always_disabled");
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethod(ReportEntryTestCases.class, "always_disabled");
 
 				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
@@ -138,13 +157,13 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to 'ON_SUCCESS'")
-		class LogOnSuccess {
+		class LogOnSuccessTests {
 
 			@Test
 			@DisplayName("logs for successful test")
 			void successfulTest_logsMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onSuccess_success");
+						.executeTestMethod(ReportEntryTestCases.class, "onSuccess_success");
 
 				assertThat(results).hasSingleSucceededTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "it was in the bleak December");
@@ -154,7 +173,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("does not log for failed test")
 			void failedTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onSuccess_failure");
+						.executeTestMethod(ReportEntryTestCases.class, "onSuccess_failure");
 
 				assertThat(results).hasSingleFailedTest();
 				assertThat(results).hasNoReportEntries();
@@ -164,7 +183,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("does not log for aborted test")
 			void abortedTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onSuccess_aborted");
+						.executeTestMethod(ReportEntryTestCases.class, "onSuccess_aborted");
 
 				assertThat(results).hasSingleAbortedTest();
 				assertThat(results).hasNoReportEntries();
@@ -174,7 +193,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onSuccess_disabled");
+						.executeTestMethod(ReportEntryTestCases.class, "onSuccess_disabled");
 
 				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
@@ -184,13 +203,13 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to 'ON_FAILURE'")
-		class LogOnFailure {
+		class LogOnFailureTests {
 
 			@Test
 			@DisplayName("does not log for successful test")
 			void successfulTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onFailure_success");
+						.executeTestMethod(ReportEntryTestCases.class, "onFailure_success");
 
 				assertThat(results).hasSingleSucceededTest();
 				assertThat(results).hasNoReportEntries();
@@ -200,7 +219,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("logs for failed test")
 			void failedTest_logsMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onFailure_failure");
+						.executeTestMethod(ReportEntryTestCases.class, "onFailure_failure");
 
 				assertThat(results).hasSingleFailedTest();
 				assertThat(results).hasSingleReportEntry().withKeyAndValue("value", "Nameless here for evermore.");
@@ -210,7 +229,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("does not log for aborted test")
 			void abortedTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onFailure_aborted");
+						.executeTestMethod(ReportEntryTestCases.class, "onFailure_aborted");
 
 				assertThat(results).hasSingleAbortedTest();
 				assertThat(results).hasNoReportEntries();
@@ -220,7 +239,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onFailure_disabled");
+						.executeTestMethod(ReportEntryTestCases.class, "onFailure_disabled");
 
 				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
@@ -230,13 +249,13 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to 'ON_ABORTED'")
-		class LogOnAborted {
+		class LogOnAbortedTests {
 
 			@Test
 			@DisplayName("does not log for successful test")
 			void successfulTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onAborted_success");
+						.executeTestMethod(ReportEntryTestCases.class, "onAborted_success");
 
 				assertThat(results).hasSingleSucceededTest();
 				assertThat(results).hasNoReportEntries();
@@ -246,7 +265,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("does not log for failed test")
 			void failedTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onAborted_failure");
+						.executeTestMethod(ReportEntryTestCases.class, "onAborted_failure");
 
 				assertThat(results).hasSingleFailedTest();
 				assertThat(results).hasNoReportEntries();
@@ -256,7 +275,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("logs for aborted test")
 			void abortedTest_logsMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onAborted_aborted");
+						.executeTestMethod(ReportEntryTestCases.class, "onAborted_aborted");
 
 				assertThat(results)
 						.hasSingleReportEntry()
@@ -267,7 +286,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("does not log for disabled test")
 			void disabledTest_logsNoMessage() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "onAborted_disabled");
+						.executeTestMethod(ReportEntryTestCases.class, "onAborted_disabled");
 
 				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
@@ -277,13 +296,13 @@ public class ReportEntryExtensionTests {
 
 		@Nested
 		@DisplayName("to multiple conditions")
-		class LogOnMultipleConditions {
+		class LogOnMultipleConditionsTests {
 
 			@Test
 			@DisplayName("logs entries independently on success, based on publish condition")
 			void conditional_logOnSuccessIndependently() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "repeated_success");
+						.executeTestMethod(ReportEntryTestCases.class, "repeated_success");
 
 				assertThat(results).hasSingleSucceededTest();
 				assertThat(results)
@@ -296,7 +315,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("logs entries independently on failure, based on publish condition")
 			void conditional_logOnFailureIndependently() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "repeated_failure");
+						.executeTestMethod(ReportEntryTestCases.class, "repeated_failure");
 
 				assertThat(results).hasSingleFailedTest();
 				assertThat(results)
@@ -309,7 +328,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("logs entries independently on abortion, based on publish condition")
 			void conditional_logOnAbortedIndependently() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "repeated_aborted");
+						.executeTestMethod(ReportEntryTestCases.class, "repeated_aborted");
 
 				assertThat(results).hasSingleAbortedTest();
 				assertThat(results)
@@ -322,7 +341,7 @@ public class ReportEntryExtensionTests {
 			@DisplayName("does not log entries if disabled")
 			void conditional_doesNotLogOnDisabled() {
 				ExecutionResults results = PioneerTestKit
-						.executeTestMethod(ReportEntriesTest.class, "repeated_disabled");
+						.executeTestMethod(ReportEntryTestCases.class, "repeated_disabled");
 
 				assertThat(results).hasSingleSkippedTest();
 				assertThat(results).hasNoReportEntries();
@@ -340,7 +359,8 @@ public class ReportEntryExtensionTests {
 		@DisplayName("publishes the parameter")
 		void parameterized_publishes() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_basic", String.class);
+					.executeTestMethodWithParameterTypes(ReportEntryTestCases.class, "parameterized_basic",
+						String.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
 			assertThat(results)
@@ -353,7 +373,7 @@ public class ReportEntryExtensionTests {
 		@DisplayName("throws if there are unresolved (too many) parameter variables")
 		void parameterized_unresolvedVars() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_unresolved",
+					.executeTestMethodWithParameterTypes(ReportEntryTestCases.class, "parameterized_unresolved",
 						String.class);
 
 			assertThat(results).hasNumberOfFailedTests(1);
@@ -368,7 +388,7 @@ public class ReportEntryExtensionTests {
 		@DisplayName("throw if the key has a parameter variable")
 		void parameterized_keyCantBeParameterized() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_key_fail",
+					.executeTestMethodWithParameterTypes(ReportEntryTestCases.class, "parameterized_key_fail",
 						String.class);
 
 			assertThat(results).hasNoReportEntries();
@@ -382,7 +402,7 @@ public class ReportEntryExtensionTests {
 		@DisplayName("can publish multiple parameters")
 		void parameterized_multiple() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_multiple",
+					.executeTestMethodWithParameterTypes(ReportEntryTestCases.class, "parameterized_multiple",
 						String.class, int.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
@@ -396,7 +416,7 @@ public class ReportEntryExtensionTests {
 		@DisplayName("can publish null arguments")
 		void parameterized_with_nulls() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(ReportEntriesTest.class, "parameterized_with_nulls",
+					.executeTestMethodWithParameterTypes(ReportEntryTestCases.class, "parameterized_with_nulls",
 						String.class, String.class);
 
 			assertThat(results).hasSingleSucceededTest();
@@ -407,7 +427,7 @@ public class ReportEntryExtensionTests {
 
 	}
 
-	static class ReportEntriesTest {
+	static class ReportEntryTestCases {
 
 		@Test
 		@ReportEntry("Once upon a midnight dreary")
@@ -595,14 +615,21 @@ public class ReportEntryExtensionTests {
 		void parameterized_with_nulls(String line, String value) {
 		}
 
+		@Test
+		@ComposedEntry
+		void with_composed_annotation() {
+		}
+
 		private static Stream<Arguments> withNulls() {
 			return Stream.of(Arguments.of("By the grave and stern decorum of the countenance it wore,", null));
 		}
 
 	}
 
-	private static void abort() {
-		throw new TestAbortedException();
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@ReportEntry("“Though thy crest be shorn and shaven, thou,” I said, “art sure no craven,")
+	@interface ComposedEntry {
 	}
 
 }

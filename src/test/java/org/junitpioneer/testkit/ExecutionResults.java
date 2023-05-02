@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,6 +10,10 @@
 
 package org.junitpioneer.testkit;
 
+import java.util.List;
+import java.util.stream.StreamSupport;
+
+import org.junit.platform.engine.DiscoverySelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.testkit.engine.EngineExecutionResults;
 import org.junit.platform.testkit.engine.EngineTestKit;
@@ -27,9 +31,15 @@ public class ExecutionResults {
 	private static final String JUPITER_ENGINE_NAME = "junit-jupiter";
 
 	ExecutionResults(Class<?> testClass) {
-		executionResults = EngineTestKit
-				.engine(JUPITER_ENGINE_NAME)
-				.selectors(DiscoverySelectors.selectClass(testClass))
+		executionResults = getConfiguredJupiterEngine().selectors(DiscoverySelectors.selectClass(testClass)).execute();
+	}
+
+	ExecutionResults(Iterable<Class<?>> testClasses) {
+		executionResults = getConfiguredJupiterEngine()
+				.selectors(StreamSupport
+						.stream(testClasses.spliterator(), false)
+						.map(DiscoverySelectors::selectClass)
+						.toArray(DiscoverySelector[]::new))
 				.execute();
 	}
 
@@ -42,6 +52,29 @@ public class ExecutionResults {
 	ExecutionResults(Class<?> testClass, String testMethodName, String methodParameterTypes) {
 		executionResults = getConfiguredJupiterEngine()
 				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes))
+				.execute();
+	}
+
+	ExecutionResults(List<Class<?>> enclosingClasses, Class<?> testClass) {
+		executionResults = EngineTestKit
+				.engine(JUPITER_ENGINE_NAME)
+				.selectors(DiscoverySelectors.selectNestedClass(enclosingClasses, testClass))
+				.execute();
+	}
+
+	ExecutionResults(List<Class<?>> enclosingClasses, Class<?> testClass, String testMethodName) {
+		executionResults = EngineTestKit
+				.engine(JUPITER_ENGINE_NAME)
+				.selectors(DiscoverySelectors.selectNestedMethod(enclosingClasses, testClass, testMethodName))
+				.execute();
+	}
+
+	ExecutionResults(List<Class<?>> enclosingClasses, Class<?> testClass, String testMethodName,
+			String methodParameterTypes) {
+		executionResults = EngineTestKit
+				.engine(JUPITER_ENGINE_NAME)
+				.selectors(DiscoverySelectors
+						.selectNestedMethod(enclosingClasses, testClass, testMethodName, methodParameterTypes))
 				.execute();
 	}
 

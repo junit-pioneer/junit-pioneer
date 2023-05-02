@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,6 +10,7 @@
 
 package org.junitpioneer.testkit;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
@@ -31,6 +32,14 @@ class PioneerTestKitTests {
 	}
 
 	@Test
+	@DisplayName("all tests of all given classes")
+	void executeTestClasses() {
+		ExecutionResults results = PioneerTestKit.executeTestClasses(asList(DummyClass.class, SecondDummyClass.class));
+
+		assertThat(results).hasNumberOfStartedTests(2);
+	}
+
+	@Test
 	@DisplayName("a specific method")
 	void executeTestMethod() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(DummyClass.class, "nothing");
@@ -46,7 +55,7 @@ class PioneerTestKitTests {
 		@DisplayName(" where parameter is a single class")
 		void executeTestMethodWithParameterTypes_singleParameterType() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", String.class);
+					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", String.class);
 
 			assertThat(results).hasNumberOfStartedTests(1);
 		}
@@ -57,7 +66,7 @@ class PioneerTestKitTests {
 			Class<?>[] classes = { String.class };
 
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", classes);
+					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", classes);
 
 			assertThat(results).hasNumberOfStartedTests(1);
 		}
@@ -66,22 +75,22 @@ class PioneerTestKitTests {
 		@DisplayName("without parameter results in IllegalArgumentException")
 		void executeTestMethodWithParameterTypes_parameterArrayIsNull_NullPointerException() {
 			assertThatThrownBy(() -> PioneerTestKit
-					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", (Class<?>) null))
-							.isInstanceOf(NullPointerException.class);
+					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", (Class<?>) null))
+					.isInstanceOf(NullPointerException.class);
 		}
 
 		@Test
 		@DisplayName("without parameter results in IllegalArgumentException")
 		void executeTestMethodWithParameterTypes_singleParameterIsNull_IllegalArgumentException() {
 			assertThatThrownBy(() -> PioneerTestKit
-					.executeTestMethodWithParameterTypes(DummyParameterClass.class, "single", (Class<?>[]) null))
-							.isInstanceOf(IllegalArgumentException.class)
-							.hasMessage("methodParameterTypes must not be null");
+					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", (Class<?>[]) null))
+					.isInstanceOf(IllegalArgumentException.class)
+					.hasMessage("methodParameterTypes must not be null");
 		}
 
 	}
 
-	static class DummyParameterClass {
+	static class DummyPropertyClass {
 
 		@ParameterizedTest(name = "See if enabled with {0}")
 		@ValueSource(strings = { "parameter" })
@@ -92,6 +101,15 @@ class PioneerTestKitTests {
 	}
 
 	static class DummyClass {
+
+		@Test
+		void nothing() {
+			// Do nothing
+		}
+
+	}
+
+	static class SecondDummyClass {
 
 		@Test
 		void nothing() {

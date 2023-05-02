@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +47,7 @@ public class StdIoExtensionTests {
 	private final BasicCommandLineApp app = new BasicCommandLineApp();
 
 	private final static PrintStream STDOUT = System.out;
+	private final static PrintStream STDERR = System.err;
 	private final static InputStream STDIN = System.in;
 
 	@Nested
@@ -56,6 +61,28 @@ public class StdIoExtensionTests {
 			app.write();
 
 			assertThat(out.capturedLines())
+					.containsExactly("Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye");
+		}
+
+		@Test
+		@ComposedIo
+		@DisplayName("works if StdIo is a meta-annotation")
+		void catchesOutFromMeta(StdOut out) {
+			app.write();
+
+			assertThat(out.capturedLines())
+					.containsExactly("Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye");
+		}
+
+		@Test
+		@StdIo
+		@DisplayName("catches the output on the standard err as lines")
+		void catchesErr(StdErr err) {
+			app.writeErr();
+
+			assertThat(err.capturedLines())
 					.containsExactly("Lo! in the orient when the gracious light",
 						"Lifts up his burning head, each under eye");
 		}
@@ -80,6 +107,34 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
+		@StdIo({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
+		@DisplayName("for non-empty input, available() reports input's number of bytes")
+		void everythingAvailableBeforeRead(StdIn in) throws IOException {
+			int inputLength = ("Doth homage to his new-appearing sight" + System.getProperty("line.separator")
+					+ "Serving with looks his sacred majesty;").getBytes().length;
+
+			assertThat(in.available()).isEqualTo(inputLength);
+		}
+
+		@Test
+		@StdIo({ "Doth homage to his new-appearing sight" })
+		@DisplayName("for non-empty input after partial read, available() reports correctly reduced number of bytes")
+		void somethingAvailableAfterRead(StdIn in) throws IOException {
+			int bytesToRead = 16;
+			app.read(bytesToRead);
+			int remainingLength = "Doth homage to his new-appearing sight".getBytes().length - bytesToRead;
+
+			assertThat(in.available()).isEqualTo(remainingLength);
+		}
+
+		@Test
+		@StdIo("")
+		@DisplayName("for empty input, available() returns 0 available bytes")
+		void nothingAvailableWhenEmpty(StdIn in) throws IOException {
+			assertThat(in.available()).isEqualTo(0);
+		}
+
+		@Test
 		@StdIo({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
 		@DisplayName("catches the input from the standard in and the output on the standard out")
 		void catchesBoth(StdIn in, StdOut out) throws IOException {
@@ -100,7 +155,7 @@ public class StdIoExtensionTests {
 			app.read();
 
 			assertThat(app.lines)
-					.containsExactlyInAnyOrder("But when from highmost pitch, with weary car,",
+					.containsExactly("But when from highmost pitch, with weary car,",
 						"Like feeble age, he reeleth from the day,");
 		}
 
@@ -122,21 +177,23 @@ public class StdIoExtensionTests {
 		@Test
 		@ReadsStdIo
 		@Order(1)
-		@DisplayName("1: System.in and System.out is untouched")
+		@DisplayName("1: System.in, System.out and System.err is untouched")
 		void untouched() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
 		}
 
 		@Test
 		@StdIo({ "From his low tract, and look another way:", "So thou, thyself outgoing in thy noon" })
 		@Order(2)
-		@DisplayName("2: System.in and System.out is redirected")
-		void redirected(StdIn in, StdOut out) throws IOException {
+		@DisplayName("2: System.in, System.out and System.err is redirected")
+		void redirected(StdIn in, StdOut out, StdErr err) throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 			String line = reader.readLine();
 			System.out.println(line);
+			System.err.println(line);
 
 			// even though `BufferedReader::readLine` was called just once,
 			// both lines were read because the reader buffers
@@ -144,18 +201,21 @@ public class StdIoExtensionTests {
 					.containsExactlyInAnyOrder("From his low tract, and look another way:",
 						"So thou, thyself outgoing in thy noon");
 			assertThat(out.capturedLines()).containsExactlyInAnyOrder("From his low tract, and look another way:");
+			assertThat(err.capturedLines()).containsExactlyInAnyOrder("From his low tract, and look another way:");
 
 			assertThat(System.in).isNotEqualTo(STDIN);
 			assertThat(System.out).isNotEqualTo(STDOUT);
+			assertThat(System.err).isNotEqualTo(STDERR);
 		}
 
 		@Test
 		@ReadsStdIo
 		@Order(3)
-		@DisplayName("3: System.in and System.out is reset to their original value")
+		@DisplayName("3: System.in, System.out and System.err is reset to their original value")
 		void reset() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
 		}
 
 		@Test
@@ -176,10 +236,11 @@ public class StdIoExtensionTests {
 		@Test
 		@ReadsStdIo
 		@Order(5)
-		@DisplayName("5: System.in is reset, System.out is unaffected.")
+		@DisplayName("5: System.in is reset, System.out and System.err is unaffected.")
 		void reset_single_in() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
 		}
 
 		@Test
@@ -193,16 +254,43 @@ public class StdIoExtensionTests {
 			assertThat(out.capturedLines()).containsExactlyInAnyOrder("Shakespeare", "Sonnet VII");
 
 			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.err).isEqualTo(STDERR);
 			assertThat(System.out).isNotEqualTo(STDOUT);
 		}
 
 		@Test
 		@ReadsStdIo
 		@Order(7)
-		@DisplayName("7: System.out is reset, System.in is unaffected.")
+		@DisplayName("7: System.out is reset, System.in and System.err is unaffected.")
 		void reset_single_out() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
+		}
+
+		@Test
+		@StdIo
+		@Order(6)
+		@DisplayName("6: Only System.err is redirected.")
+		void redirected_single_err(StdErr err) {
+			System.err.println("Mortal beauty");
+			System.err.println("Gracious light");
+
+			assertThat(err.capturedLines()).containsExactlyInAnyOrder("Mortal beauty", "Gracious light");
+
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isNotEqualTo(STDERR);
+		}
+
+		@Test
+		@ReadsStdIo
+		@Order(7)
+		@DisplayName("7: System.err is reset, System.in and System.out is unaffected.")
+		void reset_single_err() {
+			assertThat(System.in).isEqualTo(STDIN);
+			assertThat(System.out).isEqualTo(STDOUT);
+			assertThat(System.err).isEqualTo(STDERR);
 		}
 
 	}
@@ -215,7 +303,7 @@ public class StdIoExtensionTests {
 		@WritesStdIo
 		@DisplayName("correctly, no exception is thrown")
 		void correctConfigurations() {
-			ExecutionResults results = executeTestClass(CorrectConfigurations.class);
+			ExecutionResults results = executeTestClass(CorrectConfigurationTestCases.class);
 
 			assertThat(results).hasNumberOfStartedTests(3).hasNumberOfSucceededTests(3);
 		}
@@ -223,7 +311,7 @@ public class StdIoExtensionTests {
 		@Test
 		@DisplayName("without input but StdIn parameter, an exception is thrown")
 		void withoutInputWithStdInParameter() {
-			ExecutionResults results = executeTestMethodWithParameterTypes(IllegalConfigurations.class,
+			ExecutionResults results = executeTestMethodWithParameterTypes(IllegalConfigurationTestCases.class,
 				"noInputButStdIn", StdIn.class);
 
 			assertThat(results).hasSingleFailedTest();
@@ -232,14 +320,14 @@ public class StdIoExtensionTests {
 		@Test
 		@DisplayName("without input and without parameters, an exception is thrown")
 		void withoutInputAndWithoutParameters() {
-			ExecutionResults results = executeTestMethod(IllegalConfigurations.class, "noParameterAndNoInput");
+			ExecutionResults results = executeTestMethod(IllegalConfigurationTestCases.class, "noParameterAndNoInput");
 
 			assertThat(results).hasSingleFailedTest();
 		}
 
 	}
 
-	static class CorrectConfigurations {
+	static class CorrectConfigurationTestCases {
 
 		@Test
 		@StdIo("Redirected output")
@@ -258,7 +346,7 @@ public class StdIoExtensionTests {
 
 	}
 
-	static class IllegalConfigurations {
+	static class IllegalConfigurationTestCases {
 
 		@Test
 		@StdIo
@@ -285,10 +373,22 @@ public class StdIoExtensionTests {
 			System.out.println("Lifts up his burning head, each under eye");
 		}
 
+		public void writeErr() {
+			System.err.print("Lo! in the orient ");
+			System.err.println("when the gracious light");
+			System.err.println("Lifts up his burning head, each under eye");
+		}
+
 		public void read() throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			lines.add(reader.readLine());
 			lines.add(reader.readLine());
+		}
+
+		public void read(int byteCount) throws IOException {
+			for (int i = 0; i < byteCount; i++) {
+				System.in.read();
+			}
 		}
 
 		public void readAndWrite() throws IOException {
@@ -299,6 +399,12 @@ public class StdIoExtensionTests {
 			System.out.println("Attending on his golden pilgrimage:");
 		}
 
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@StdIo
+	@interface ComposedIo {
 	}
 
 }

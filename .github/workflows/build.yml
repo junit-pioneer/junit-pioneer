@@ -1,24 +1,23 @@
 name: Main build
 
 env:
-  EXPERIMENTAL_JAVA: 18
+  EXPERIMENTAL_JAVA: 21
 
 on:
   # We want to trigger our builds all the time for the default branch
   # except when Shipkit creates a new version tag
   push:
-    branches: 'main'
-    tags-ignore: 
+    branches: ['main']
+    tags-ignore:
       - 'v**'
-  # Each pull request is important to us, doesnt matter from which branch.
+  # Each pull request is important to us, doesn't matter from which branch.
   # Furthermore, we do not want to build on just the default GitHub Action
   # events, we also want to react onto `labeled` events for our extended
   # build execution
   pull_request:
-    branches: '*'
     types: [labeled, opened, synchronize, reopened]
   # We also utilize this pipeline for releasing. By providing a `version`
-  # and setting releasing to `true`, we can trigger a release.
+  # and setting `releasing` to `true`, we can trigger a release.
   workflow_dispatch:
     inputs:
       version:
@@ -39,59 +38,38 @@ jobs:
     name: Gradle wrapper validation
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
   # Our basic build step as we want contributors to have a nice developer
   # experience with little build time and sufficient feedback. Therefore, we
   # only build this on our default Java version but for all operating systems
-  # we are supporting. This allows for a fast execution and fast feedback, the
-  # extended tests will run later under certain conditions.
+  # we are supporting. This allows for a fast execution and fast feedback. The
+  # extended tests will run later under certain conditions. If the OS is
+  # Ubuntu, we also run the SonarCloud analysis.
   basic:
     runs-on: ${{ matrix.os }}-latest
     needs: validation
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 8 ]
         os: [ubuntu, macos, windows]
-    name: with Java ${{ matrix.java }} on ${{ matrix.os }}
+    name: with Java 11 on ${{ matrix.os }}
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
-      - name: Set up Java
-        uses: actions/setup-java@v2
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: temurin
-          cache: 'gradle'
-      - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build
-
-  # SonarCloud analysis does not support Java 8, hence, we need to execute the
-  # analysis separately with Java 11. This is fine because we are done with the basic
-  # builds for the contributors.
-  sonarcloud:
-    runs-on: ubuntu-latest
-    needs: validation
-    timeout-minutes: 15
-    name: SonarCloud analysis
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # Sonar needs the whole Git history for issue assignment
           fetch-depth: 0
       - name: Set up Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: temurin
           cache: 'gradle'
       - name: Cache SonarCloud results
+        if: ${{ matrix.os == 'ubuntu' }}
         uses: actions/cache@v2
         with:
           path: ~/.sonar/cache/
@@ -99,37 +77,54 @@ jobs:
       - name: Gradle build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build
+          arguments: --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
       - name: SonarCloud analysis
+        if: ${{ matrix.os == 'ubuntu' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
         run: ./gradlew jacocoTestReport sonarqube --stacktrace -i
 
-  # Our full integration job, which will build for a matrix out of our supported
-  # Java versions, operating systems, modular or not, and of course JUnit versions.
-  # This build is executed on all tags and the default branch. Furthermore, we will
-  # also execute this for pull requests with the label `merge-ready`.
+  # Code format check
+  code-format-check:
+    runs-on: ubuntu-latest
+    needs: validation
+    timeout-minutes: 15
+    name: Code format check
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: temurin
+          cache: 'gradle'
+      - name: Spotless check
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: --scan spotlessCheck
+
+  # Our full integration job, which will build for a matrix out of our
+  # supported Java versions, operating systems and various JUnit versions.
+  # This build is executed on all tags and the default branch as well as
+  # for pull requests with the label `full-build`.
   full-featured:
-    if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
+    if: (contains(github.event.pull_request.labels.*.name, 'full-build') || !github.event.pull_request)
     needs: basic
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 8, 11, 17 ]
-        junit-version: [ '5.7.2', '5.8.1' ]
-        modular: [true, false]
+        java: [ 11, 17, 20 ]
+        junit-version: [ '5.9.2' ]
         os: [ubuntu, macos, windows]
-        exclude:
-          - java: 8
-            modular: true
-    name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }}, Modular ${{ matrix.modular }} on ${{ matrix.os }}
+    name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
@@ -137,40 +132,37 @@ jobs:
       - name: Gradle build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: --refresh-dependencies -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build
+          arguments: --refresh-dependencies -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build -x spotlessCheck
 
-  # We want to be up to date and know issues with future Java versions as soon as possible.
+  # We want to be up-to-date and know issues with future Java versions as soon as possible.
   # Furthermore, we also would love to see our build working with the latest Gradle version.
   # As those builds might fail, they are allowed to fail, and should not prevent merges.
   experimental:
-    if: (contains(github.event.pull_request.labels.*.name, 'merge-ready') || !github.event.pull_request)
+    if: (contains(github.event.pull_request.labels.*.name, 'full-build') || !github.event.pull_request)
     needs: full-featured
     runs-on: ${{ matrix.os }}-latest
     continue-on-error: true
     timeout-minutes: 15
     strategy:
       matrix:
-        junit-version: [ '5.7.2', '5.8.1' ]
-        modular: [true, false]
+        junit-version: [ '5.9.2' ]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
-    # Gradle doesn't work with JDK EA builds, so we start it with a supported Java version,
-    # but execute the build on the experimental version
+    # Gradle doesn't work with JDK EA builds, so we launch it with a supported Java version,
+    # but set the Gradle toolchain to use the experimental version.
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
-      - uses: sormuras/download-jdk@v1
+        uses: actions/checkout@v3
+      - name: Set up experimental Java
+        uses: oracle-actions/setup-java@v1
         with:
-          feature: ${{ env.EXPERIMENTAL_JAVA }}
-      - uses: actions/setup-java@v2
-        with:
-          java-version: ${{ env.JDK_VERSION }}
-          distribution: jdkfile
-          jdkFile: ${{ env.JDK_FILE }}
+          website: jdk.java.net
+          release: ${{ env.EXPERIMENTAL_JAVA }}
       - name: Prepare JDK_EXPERIMENTAL env var
         shell: bash
         run: echo "JDK_EXPERIMENTAL=$JAVA_HOME" >> $GITHUB_ENV
-      - uses: actions/setup-java@v2
+      - name: Set up supported Java
+        uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: temurin
@@ -179,15 +171,15 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: release-candidate
-          arguments: -Porg.gradle.java.installations.auto-download=false javaToolchains 
+          arguments: -Porg.gradle.java.installations.auto-download=false javaToolchains
       - name: Gradle build
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: release-candidate
-          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PmodularBuild=${{ matrix.modular }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build
+          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build -x spotlessCheck
 
-  # Releasing will be only done, if there is a version defined and `releasing` is set to true.
-  # If not this stage will be ignored.
+  # A release will be created if there is a `version` defined and `releasing` is set to `true`.
+  # If not, this stage will be ignored.
   release:
     if: github.event.inputs.version != '' && github.event.inputs.releasing == 'true'
     runs-on: ubuntu-latest
@@ -196,14 +188,18 @@ jobs:
     name: Release Pioneer into the wild
     steps:
       - name: Check out repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # Shipkit needs the whole Git history for changelog generation
           fetch-depth: 0
       - name: Set up Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
-          java-version: 8
+          # we build the Javadoc with JDK 17 (for better results),
+          # so install that as well
+          java-version: |
+            20
+            11
           distribution: temurin
       - name: Perform release
         uses: gradle/gradle-build-action@v2

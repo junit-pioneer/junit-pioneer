@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -24,27 +24,19 @@ import org.junit.platform.commons.support.AnnotationSupport;
 
 /**
  * This is basically an enhanced copy of Jupiter's {@code EnumArgumentsProvider},
- * except it does NOT support {@code @ParameterizedTest} and implements {@link CartesianArgumentsProvider}
- * for use with {@code @CartesianTest}.
- *
- * @implNote This class does not implement {@code ArgumentsProvider} since the Jupiter's {@code EnumSource}
- * should be used for that.
+ * except it does NOT support {@code @ParameterizedTest} and implements
+ * {@link CartesianParameterArgumentsProvider} for use with {@code @CartesianTest}.
  */
-class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianArgumentsProvider<E> {
+class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianParameterArgumentsProvider<E> {
 
 	@Override
 	public Stream<E> provideArguments(ExtensionContext context, Parameter parameter) {
-		Class<?> parameterType = parameter.getType();
-		if (!Enum.class.isAssignableFrom(parameterType))
-			throw new PreconditionViolationException(String
-					.format(
-						"Parameter of type %s must reference an Enum type (alternatively, use the annotation's 'value' attribute to specify the type explicitly)",
-						parameterType));
 		CartesianTest.Enum enumSource = AnnotationSupport
 				.findAnnotation(parameter, CartesianTest.Enum.class)
 				.orElseThrow(() -> new PreconditionViolationException(
 					"Parameter has to be annotated with " + CartesianTest.Enum.class.getName()));
 
+		Class<?> parameterType = parameter.getType();
 		Set<E> constants = getEnumConstants(enumSource, parameterType);
 		CartesianTest.Enum.Mode mode = enumSource.mode();
 		String[] declaredConstantNames = enumSource.names();
@@ -68,13 +60,15 @@ class CartesianEnumArgumentsProvider<E extends Enum<E>> implements CartesianArgu
 	private Class<E> determineEnumClass(CartesianTest.Enum enumSource, Class<?> parameterType) {
 		Class enumClass = enumSource.value();
 		if (enumClass.equals(NullEnum.class)) {
+			if (!Enum.class.isAssignableFrom(parameterType))
+				throw new PreconditionViolationException(
+					String.format("Parameter of type %s must reference an Enum type", parameterType));
 			enumClass = parameterType;
 		}
 		return enumClass;
 	}
 
 	enum NullEnum {
-
 	}
 
 }

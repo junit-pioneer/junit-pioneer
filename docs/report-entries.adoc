@@ -1,9 +1,10 @@
 :page-title: Publishing Report Entries
-:page-description: Extends JUnit Jupiter with `@ReportEntry`, which publishes report entries using `TestReporter`.
+:page-description: The JUnit 5 (Jupiter) extension `@ReportEntry` declaratively publishes report entries via the `TestReporter`
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/ReportEntryExtensionDemo.java
 
 You can use `@ReportEntry` as a simple way to declaratively add metadata to test methods.
-
-From the https://https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection[JUnit 5 documentation]:
+From the https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection[JUnit 5 documentation]:
 
 > In JUnit Jupiter you should use `TestReporter` where you used to print information to `stdout` or `stderr` in JUnit 4.
 > Using `@RunWith(JUnitPlatform.class)` will output all reported entries to `stdout`.
@@ -13,7 +14,7 @@ To see how `@ReportEntry` helps, let's first take a look at the conventional app
 
 == Standard Use of `TestReporter`
 
-From the https://https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection[JUnit 5 documentation]:
+From the https://junit.org/junit5/docs/current/user-guide/#writing-tests-dependency-injection[JUnit 5 documentation]:
 
 > If a constructor or method parameter is of type `TestReporter`, the `TestReporterParameterResolver` will supply an instance of `TestReporter`.
 > The `TestReporter` can be used to publish additional data about the current test run.
@@ -21,13 +22,9 @@ From the https://https://junit.org/junit5/docs/current/user-guide/#writing-tests
 
 So, you would use it like this:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-void reportingTest(TestReporter reporter) {
-	// YOUR TEST CODE HERE
-	reporter.publishEntry("Hello World!");
-}
+include::{demo}[tag=no_report_entry]
 ----
 
 You can have a look at https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/TestReporter.html[the official documentation for more details].
@@ -42,13 +39,9 @@ This is what this extension is for!
 
 You can write...
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ReportEntry("Hello World!")
-void reportingTest() {
-	// YOUR TEST CODE HERE
-}
+include::{demo}[tag=report_entry_basic]
 ----
 
 ...and the extension will publish your report entry for you after the test was executed!
@@ -57,28 +50,16 @@ void reportingTest() {
 
 You can declare multiple report entries on the same test (the annotation is repeatable).
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ReportEntry("foo")
-@ReportEntry("bar")
-void reportingTest() {
-	// YOUR TEST CODE HERE
-}
+include::{demo}[tag=report_entry_multiple]
 ----
 
 Just like `TestReporter::publishEntry` accepts a single string as value or a key/value pair, `@ReportEntry` accepts either a single string as value or a key/value pair:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ReportEntry(key = "line1",
-		value = "Once upon a midnight dreary")
-@ReportEntry(key = "line2",
-		value = "While I pondered weak and weary")
-void edgarAllanPoe() {
-	// YOUR TEST CODE HERE
-}
+include::{demo}[tag=report_entry_with_key]
 ----
 
 Again, just like `TestReporter::publishEntry`, if no key is given it defaults to `"value"` (yes, that's not a mixup).
@@ -88,16 +69,9 @@ Again, just like `TestReporter::publishEntry`, if no key is given it defaults to
 You can specify a `PublishCondition` parameter on the `@ReportEntry` annotation for better control when the extension should publish your entry.
 Just so:
 
-[source,java]
+[source,java,indent=0]
 ----
-@Test
-@ReportEntry(
-	key = "line",
-	value = "success entry",
-	when = ReportEntry.PublishCondition.ON_SUCCESS)
-void sufferingFromSuccess() {
-	// YOUR TEST CODE HERE
-}
+include::{demo}[tag=report_entry_publish_condition]
 ----
 
 The publish condition must be a value of the `ReportEntry.PublishCondition` enum, which has the following values:
@@ -125,19 +99,13 @@ This works just like arguments in https://docs.oracle.com/javase/8/docs/api/java
 Inside the report entry, the parameters can be referenced in any order and multiple times.
 For example, if you have a `@ParameterizedTest` like the following:
 
-[source, java]
+[source,java,indent=0]
 ----
-@ParameterizedTest
-@CsvSource({"Hello, 21", "World, 42"})
-@ReportEntry("{1} - {0} - {1}")
-void test(String line, int number) {
-    // YOUR TEST CODE HERE
-}
+include::{demo}[tag=report_entry_for_params]
 ----
 Then the extension will publish `"21 - Hello - 21"` and `"42 - World - 42"`.
 
 Accessing test parameters in the key of the report entry is unsupported.
-
 
 == Thread-Safety
 

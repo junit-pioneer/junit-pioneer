@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -28,10 +28,10 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * <a href="https://junit-pioneer.org/docs/range-sources/" target="_top">the documentation on <code>Range Sources</code></a>
  * </p>
  *
- * <p>This annotation is {@link Repeatable}, to make it usable with {@link org.junitpioneer.jupiter.CartesianProductTest}.
+ * <p>This annotation is {@link Repeatable}, to make it usable with {@link org.junitpioneer.jupiter.cartesian.CartesianTest}.
  * If used with {@link org.junit.jupiter.params.ParameterizedTest}, it can only be used once (because {@code ParameterizedTest}
  * can only take a single {@link ArgumentsSource}). Using it more than once will throw an {@link IllegalArgumentException}.
- * If used with {@link org.junitpioneer.jupiter.CartesianProductTest}, it can be repeated to provide arguments to
+ * If used with {@link org.junitpioneer.jupiter.cartesian.CartesianTest}, it can be repeated to provide arguments to
  * more than one parameter.
  * </p>
  *
@@ -47,7 +47,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * @since 0.5
  * @see ArgumentsSource
  * @see org.junit.jupiter.params.ParameterizedTest
- * @see org.junitpioneer.jupiter.CartesianProductTest
+ * @see org.junitpioneer.jupiter.cartesian.CartesianTest
  * @see org.junitpioneer.jupiter.cartesian.CartesianTest
  */
 @Target({ ElementType.METHOD, ElementType.PARAMETER })
@@ -78,6 +78,9 @@ public @interface ByteRangeSource {
 	 */
 	boolean closed() default false;
 
+	/**
+	 * Containing annotation of repeatable {@code ByteRangeSource}.
+	 */
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented

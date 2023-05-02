@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,28 +10,36 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.METHOD;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.platform.testkit.engine.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtensionTests {
+
+	private static final int SUSPEND_FOR = 10;
 
 	@Test
 	void invalidConfigurationWithTest() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "invalidConfigurationWithTest");
+				.executeTestMethod(RetryingTestTestCases.class, "invalidConfigurationWithTest");
 
 		assertThat(results).hasSingleDynamicallyRegisteredTest();
 		assertThat(results).hasNumberOfStartedTests(2).hasNumberOfSucceededTests(2);
@@ -40,14 +48,14 @@ class RetryingTestExtensionTests {
 	@Test
 	void executedOneEvenWithTwoTestTemplatesTest() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "executedOneEvenWithTwoTestTemplates");
+				.executeTestMethod(RetryingTestTestCases.class, "executedOneEvenWithTwoTestTemplates");
 
 		assertThat(results).hasSingleDynamicallyRegisteredTest().whichSucceeded();
 	}
 
 	@Test
 	void failsNever_executedOnce_passes() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsNever");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "failsNever");
 
 		assertThat(results).hasSingleDynamicallyRegisteredTest().whichSucceeded();
 	}
@@ -55,7 +63,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void failsOnlyOnFirstInvocation_executedTwice_passes() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocation");
+				.executeTestMethod(RetryingTestTestCases.class, "failsOnlyOnFirstInvocation");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(2)
@@ -64,9 +72,32 @@ class RetryingTestExtensionTests {
 	}
 
 	@Test
+	void hasAName_executedTwice_passes_publishesCustomName() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RetryingTestTestCases.class, "hasAName", TestInfo.class,
+					TestReporter.class);
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(2)
+				.hasNumberOfAbortedTests(1)
+				.hasNumberOfSucceededTests(1);
+		assertThat(results)
+				.hasNumberOfReportEntries(2)
+				.withValues("[1] retrying test invocation with custom name",
+					"[2] retrying test invocation with custom name");
+	}
+
+	@Test
+	void hasNoName_fails() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "hasNoName");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
 	void failsOnlyOnFirstInvocationWithExpectedException_executedTwice_passes() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocationWithExpectedException");
+				.executeTestMethod(RetryingTestTestCases.class, "failsOnlyOnFirstInvocationWithExpectedException");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(2)
@@ -77,7 +108,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void failsOnlyOnFirstInvocationWithUnexpectedException_executedOnce_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "failsOnlyOnFirstInvocationWithUnexpectedException");
+				.executeTestMethod(RetryingTestTestCases.class, "failsOnlyOnFirstInvocationWithUnexpectedException");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(1).hasNumberOfFailedTests(1);
 	}
@@ -85,7 +116,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void failsOnlyOnFirstInvocationWithUnexpectedException_executedTwice_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "failsFirstWithExpectedThenWithUnexpectedException");
+				.executeTestMethod(RetryingTestTestCases.class, "failsFirstWithExpectedThenWithUnexpectedException");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(2)
@@ -95,7 +126,7 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void failsAlways_executedThreeTimes_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsAlways");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "failsAlways");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(3)
@@ -105,7 +136,7 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void skipByAssumption_executedOnce_skipped() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "skipByAssumption");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "skipByAssumption");
 
 		assertThat(results).hasSingleDynamicallyRegisteredTest();
 		assertThat(results).hasSingleAbortedTest();
@@ -114,7 +145,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void failsFirstWithExpectedExceptionThenSkippedByAssumption_executedTwice_skipped() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class,
+				.executeTestMethod(RetryingTestTestCases.class,
 					"failsFirstWithExpectedExceptionThenSkippedByAssumption");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfAbortedTests(2);
@@ -122,7 +153,7 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void executesTwice_succeeds() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "executesTwice");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "executesTwice");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(2)
@@ -134,7 +165,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void executesTwiceWithTwoFails_succeeds() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "executesTwiceWithTwoFails");
+				.executeTestMethod(RetryingTestTestCases.class, "executesTwiceWithTwoFails");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(4)
@@ -146,7 +177,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void executesOnceWithThreeFails_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "executesOnceWithThreeFails");
+				.executeTestMethod(RetryingTestTestCases.class, "executesOnceWithThreeFails");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(4)
@@ -157,7 +188,7 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void failsThreeTimes_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "failsThreeTimes");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "failsThreeTimes");
 
 		assertThat(results)
 				.hasNumberOfDynamicallyRegisteredTests(3)
@@ -168,14 +199,14 @@ class RetryingTestExtensionTests {
 
 	@Test
 	void missingMaxAttempts_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "missingMaxAttempts");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "missingMaxAttempts");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
 
 	@Test
 	void valueLessThanOne_fails() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCase.class, "valueLessThanOne");
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "valueLessThanOne");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -183,7 +214,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void maxAttemptsLessThanOne_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsLessThanOne");
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsLessThanOne");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -191,7 +222,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void maxAttemptsAndValueSet_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsAndValueSet");
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsAndValueSet");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -199,7 +230,15 @@ class RetryingTestExtensionTests {
 	@Test
 	void maxAttemptsEqualsMinSuccess_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsEqualsMinSuccess");
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsEqualsMinSuccess");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
+	void maxAttemptsEqualsOne_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsEqualsOne");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -207,7 +246,7 @@ class RetryingTestExtensionTests {
 	@Test
 	void maxAttemptsLessThanMinSuccess_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "maxAttemptsLessThanMinSuccess");
+				.executeTestMethod(RetryingTestTestCases.class, "maxAttemptsLessThanMinSuccess");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
@@ -215,9 +254,65 @@ class RetryingTestExtensionTests {
 	@Test
 	void minSuccessLessThanOne_fails() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(RetryingTestTestCase.class, "minSuccessLessThanOne");
+				.executeTestMethod(RetryingTestTestCases.class, "minSuccessLessThanOne");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
+	void suspendForLessThanZero_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "suspendForLessThanZero");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
+	void failThreeTimesWithSuspend() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithSuspend");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(3)
+				.hasNumberOfAbortedTests(2)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+
+		assertSuspendedFor(results, SUSPEND_FOR);
+	}
+
+	@Test
+	void failThreeTimesWithoutSuspend() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithoutSuspend");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(3)
+				.hasNumberOfAbortedTests(2)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+
+		assertSuspendedFor(results, 0);
+	}
+
+	private void assertSuspendedFor(ExecutionResults results, long greaterThanOrEqualTo) {
+		List<Execution> finishedExecutions = results.testEvents().executions().finished().list();
+		List<Execution> startedExecutions = results.testEvents().executions().started().list();
+
+		// Compare 'finished' execution timestamp with follow-up 'started' execution,
+		// skipping the 1st 'started' and final 'finished'.
+		// This duration should be equals to or greater than 'suspendFor'.
+		for (int i = 0; i < finishedExecutions.size() - 1; i++) {
+			Execution finished = finishedExecutions.get(i);
+			Execution nextStarted = startedExecutions.get(i + 1);
+
+			Instant finishedAt = finished.getEndInstant();
+			Instant nextStartedAt = nextStarted.getStartInstant();
+
+			long suspendedFor = Duration.between(finishedAt, nextStartedAt).toMillis();
+
+			Assertions.assertThat(suspendedFor).isGreaterThanOrEqualTo(greaterThanOrEqualTo);
+		}
 	}
 
 	// TEST CASES -------------------------------------------------------------------
@@ -229,7 +324,7 @@ class RetryingTestExtensionTests {
 	// this lead to flaky tests under threading. Using a `PER_CLASS` lifecycle allows us to make it an
 	// instance field and that worked.
 	@TestInstance(PER_CLASS)
-	static class RetryingTestTestCase {
+	static class RetryingTestTestCases {
 
 		private int executionCount;
 
@@ -245,6 +340,20 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void failsNever() {
+		}
+
+		@RetryingTest(value = 3, name = "[{index}] retrying test invocation with custom name")
+		void hasAName(TestInfo info, TestReporter reporter) {
+			reporter.publishEntry(info.getDisplayName());
+			executionCount++;
+			if (executionCount == 1) {
+				throw new IllegalArgumentException();
+			}
+		}
+
+		@RetryingTest(value = 3, name = "")
+		void hasNoName() {
+			// Do nothing
 		}
 
 		@RetryingTest(3)
@@ -289,7 +398,7 @@ class RetryingTestExtensionTests {
 
 		@RetryingTest(3)
 		void skipByAssumption() {
-			throw new TestAbortedException();
+			abort();
 		}
 
 		@RetryingTest(value = 3, onExceptions = IllegalArgumentException.class)
@@ -299,7 +408,7 @@ class RetryingTestExtensionTests {
 				throw new IllegalArgumentException();
 			}
 			if (executionCount == 2) {
-				throw new TestAbortedException();
+				abort();
 			}
 		}
 
@@ -348,8 +457,13 @@ class RetryingTestExtensionTests {
 			// Do nothing
 		}
 
-		@RetryingTest(maxAttempts = 1, minSuccess = 1)
+		@RetryingTest(maxAttempts = 2, minSuccess = 2)
 		void maxAttemptsEqualsMinSuccess() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 1, minSuccess = 1)
+		void maxAttemptsEqualsOne() {
 			// Do nothing
 		}
 
@@ -363,9 +477,24 @@ class RetryingTestExtensionTests {
 			// Do nothing
 		}
 
+		@RetryingTest(suspendForMs = -1)
+		void suspendForLessThanZero() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 3, suspendForMs = SUSPEND_FOR)
+		void failThreeTimesWithSuspend() {
+			throw new IllegalArgumentException();
+		}
+
+		@RetryingTest(maxAttempts = 3)
+		void failThreeTimesWithoutSuspend() {
+			throw new IllegalArgumentException();
+		}
+
 	}
 
-	@Target({ METHOD, ANNOTATION_TYPE })
+	@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@TestTemplate
 	public @interface DummyTestTemplate {

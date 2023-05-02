@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -23,8 +23,10 @@ public interface TestCaseStartedAssert {
 
 	/**
 	 * Asserts that the test/container was aborted.
+	 *
+	 * @return a {@link TestCaseAbortedAssert} for further assertions.
 	 */
-	void whichAborted();
+	TestCaseAbortedAssert whichAborted();
 
 	/**
 	 * Asserts that the test/container has failed.

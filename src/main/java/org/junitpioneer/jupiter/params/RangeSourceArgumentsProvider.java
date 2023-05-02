@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -24,8 +24,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
-import org.junitpioneer.jupiter.CartesianAnnotationConsumer;
-import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
+import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
 /**
  * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.
@@ -45,7 +44,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsProvider;
  * @see FloatRangeSource
  */
 class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
-		implements ArgumentsProvider, CartesianAnnotationConsumer<Annotation>, CartesianArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
+		implements ArgumentsProvider, CartesianParameterArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
 
 	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
 	private Annotation argumentsSource;
@@ -92,11 +91,6 @@ class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 
 	private Stream<N> asStream(Range<N> range) {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(range, Spliterator.ORDERED), false);
-	}
-
-	@Override
-	public void accept(Annotation argumentsSource) {
-		this.argumentsSource = argumentsSource;
 	}
 
 }

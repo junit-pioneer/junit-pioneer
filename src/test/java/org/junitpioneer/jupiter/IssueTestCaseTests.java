@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -12,11 +12,10 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.engine.TestExecutionResult.Status;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 public final class IssueTestCaseTests {
 
@@ -31,7 +30,6 @@ public final class IssueTestCaseTests {
 	}
 
 	@Test
-	@Disabled("Don't use EqualsVerifier for a while - see #324")
 	public void equalsContract() {
 		EqualsVerifier.forClass(IssueTestCase.class).withNonnullFields("testId", "result").verify();
 	}

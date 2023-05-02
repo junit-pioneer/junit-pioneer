@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -163,11 +163,11 @@ class RangeSourceArgumentsProviderTests {
 	}
 
 	@Nested
-	class InvalidRangeTestCases {
+	class InvalidRangeTests {
 
 		@Test
 		void twoAnnotations() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "twoAnnotations");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRangeTestCases.class, "twoAnnotations");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -177,7 +177,7 @@ class RangeSourceArgumentsProviderTests {
 
 		@Test
 		void zeroStep() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "zeroStep");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRangeTestCases.class, "zeroStep");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -187,7 +187,7 @@ class RangeSourceArgumentsProviderTests {
 
 		@Test
 		void illegalStep() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "illegalStep");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRangeTestCases.class, "illegalStep");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -197,7 +197,7 @@ class RangeSourceArgumentsProviderTests {
 
 		@Test
 		void emptyRange() {
-			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRanges.class, "emptyRange");
+			ExecutionResults results = PioneerTestKit.executeTestMethod(InvalidRangeTestCases.class, "emptyRange");
 
 			assertThat(results)
 					.hasSingleFailedContainer()
@@ -207,7 +207,7 @@ class RangeSourceArgumentsProviderTests {
 
 	}
 
-	static class InvalidRanges {
+	static class InvalidRangeTestCases {
 
 		@IntRangeSource(from = 1, to = 2)
 		@LongRangeSource(from = 1L, to = 2L)

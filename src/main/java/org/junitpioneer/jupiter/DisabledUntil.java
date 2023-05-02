@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -26,12 +26,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * method is disabled.
  *
  * <p>{@code @DisabledUntil} can be used on the method and class level. It can only be used once per method or class,
- * but is inherited from higher level containers.</p>
+ * but is inherited from higher-level containers.</p>
  *
+ * <p><strong>WARNING:</strong> Applying {@code @DisabledUntil} can make the test suite non-reproducible. If a failing
+ * test is disabled during a build that then passes, rerunning that build after the "until" date would fail. A report
+ * entry is issued for every test that is disabled until a certain date.</p>
+ *
+ * @since 1.6.0
  * @see org.junit.jupiter.api.Disabled
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Inherited
 @ExtendWith(DisabledUntilExtension.class)
 public @interface DisabledUntil {

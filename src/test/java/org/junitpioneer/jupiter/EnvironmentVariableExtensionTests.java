@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -18,6 +18,7 @@ import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -26,13 +27,11 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
-@EnabledForJreRange(max = JRE.JAVA_16, disabledReason = "See: https://github.com/junit-pioneer/junit-pioneer/issues/509")
 @DisplayName("EnvironmentVariable extension")
 class EnvironmentVariableExtensionTests {
 
@@ -49,9 +48,9 @@ class EnvironmentVariableExtensionTests {
 
 	@AfterAll
 	static void globalTearDown() {
-		assertThat(systemEnvironmentVariable("set envvar A")).isEqualTo("old A");
-		assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("old B");
-		assertThat(systemEnvironmentVariable("set envvar C")).isEqualTo("old C");
+		EnvironmentVariableUtils.clear("set envvar A");
+		EnvironmentVariableUtils.clear("set envvar B");
+		EnvironmentVariableUtils.clear("set envvar C");
 
 		assertThat(systemEnvironmentVariable("clear envvar D")).isNull();
 		assertThat(systemEnvironmentVariable("clear envvar E")).isNull();
@@ -236,6 +235,73 @@ class EnvironmentVariableExtensionTests {
 	}
 
 	@Nested
+	@SetEnvironmentVariable(key = "set envvar A", value = "new A")
+	@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+	class ResettingEnvironmentVariableTests {
+
+		@Nested
+		@SetEnvironmentVariable(key = "set envvar A", value = "newer A")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingEnvironmentVariableAfterEachNestedTests {
+
+			@BeforeEach
+			@ReadsEnvironmentVariable
+			void changeShouldBeVisible() {
+				// we already see "newest A" because BeforeEachCallBack is invoked before @BeforeEach
+				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
+			}
+
+			@Test
+			@SetEnvironmentVariable(key = "set envvar A", value = "newest A")
+			void setForTestMethod() {
+				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
+			}
+
+			@AfterEach
+			@ReadsEnvironmentVariable
+			void resetAfterTestMethodExecution() {
+				// we still see "newest A" because AfterEachCallBack is invoked after @AfterEach
+				// see https://junit.org/junit5/docs/current/user-guide/#extensions-execution-order-overview
+				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
+			}
+
+		}
+
+		@Nested
+		@SetEnvironmentVariable(key = "set envvar A", value = "newer A")
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		class ResettingEnvironmentVariableAfterAllNestedTests {
+
+			@BeforeAll
+			@ReadsEnvironmentVariable
+			void changeShouldBeVisible() {
+				assertThat(System.getenv("set envvar A")).isEqualTo("newer A");
+			}
+
+			@Test
+			@SetEnvironmentVariable(key = "set envvar A", value = "newest A")
+			void setForTestMethod() {
+				assertThat(System.getenv("set envvar A")).isEqualTo("newest A");
+			}
+
+			@AfterAll
+			@ReadsEnvironmentVariable
+			void resetAfterTestMethodExecution() {
+				assertThat(System.getenv("set envvar A")).isEqualTo("newer A");
+			}
+
+		}
+
+		@AfterAll
+		@ReadsEnvironmentVariable
+		void resetAfterTestContainerExecution() {
+			assertThat(System.getenv("set envvar A")).isEqualTo("new A");
+		}
+
+	}
+
+	@Nested
 	@DisplayName("used with incorrect configuration")
 	class ConfigurationFailureTests {
 
@@ -308,7 +374,7 @@ class EnvironmentVariableExtensionTests {
 		void shouldReportWarningExactlyOnce() {
 			ExecutionResults results = executeTestClass(ReportWarningTestCases.class);
 
-			assertThat(results).hasSingleReportEntry();
+			assertThat(results).hasSingleReportEntry().withKeyAndValue(WARNING_KEY, WARNING_VALUE);
 		}
 
 	}

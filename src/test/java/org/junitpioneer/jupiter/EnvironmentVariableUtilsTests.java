@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -14,8 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.security.AccessControlException;
-import java.security.Policy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,13 +21,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
-@EnabledForJreRange(max = JRE.JAVA_16, disabledReason = "See: https://github.com/junit-pioneer/junit-pioneer/issues/509")
 @DisplayName("JUnitPioneer system environment utilities")
 @WritesEnvironmentVariable
 class EnvironmentVariableUtilsTests {
+
+	/*
+	 * These tests use classes from the `java.security` package that were deprecated in Java 17.
+	 * They need to be updated once the classes are removed. Until then, we reference them by
+	 * their fully-qualified name, so we can suppress deprecation warnings on specific methods.
+	 */
 
 	@AfterEach
 	void removeTestEnvVar() {
@@ -52,15 +53,18 @@ class EnvironmentVariableUtilsTests {
 	 * give access to the internals we need to change environment variables. These tests confirm that.
 	 */
 	@Nested
+	// classes related to `SecurityManager` will eventually be removed and so will these tests be
+	@SuppressWarnings("removal")
 	class With_SecurityManager {
 
 		@Test
 		@SetSystemProperty(key = "java.security.policy", value = "file:src/test/resources/default-testing.policy")
+		@SuppressWarnings("deprecated")
 		void shouldThrowAccessControlExceptionWithDefaultSecurityManager() {
 			//@formatter:off
 			executeWithSecurityManager(
 					() -> assertThatThrownBy(() -> EnvironmentVariableUtils.set("TEST", "test"))
-							.isInstanceOf(AccessControlException.class));
+							.isInstanceOf(java.security.AccessControlException.class));
 			//@formatter:on
 		}
 
@@ -77,8 +81,9 @@ class EnvironmentVariableUtilsTests {
 		 * This needs to be done during the execution of the test method and cannot be moved to setup/tear down
 		 * because junit uses reflection and the default SecurityManager prevents that.
 		 */
+		@SuppressWarnings("deprecated")
 		private void executeWithSecurityManager(Runnable runnable) {
-			Policy.getPolicy().refresh();
+			java.security.Policy.getPolicy().refresh();
 			SecurityManager original = System.getSecurityManager();
 			System.setSecurityManager(new SecurityManager());
 			try {

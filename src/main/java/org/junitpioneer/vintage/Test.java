@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -44,6 +44,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @org.junit.jupiter.api.Test
 public @interface Test {
 
+	/**
+	 * Dummy default class for the <code>expected</code> parameter.
+	 */
 	class None extends Throwable {
 
 		private static final long serialVersionUID = 1L;

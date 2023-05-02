@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2021 the original author or authors.
+ * Copyright 2016-2022 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -18,15 +18,15 @@ import java.lang.annotation.Target;
 
 /**
  * {@code @CartesianArgumentsSource} is an annotation
- * that is used to register {@linkplain CartesianArgumentsProvider cartesian argument providers}
- * for the annotated test parameter.
+ * that is used to register cartesian argument providers
+ * for the annotated test parameter in case of {@link CartesianParameterArgumentsProvider}
+ * or for all the test parameters in case of {@link CartesianMethodArgumentsProvider}.
  *
  * <p>{@code @CartesianArgumentsSource} may also be used as a meta-annotation in order to
  * create a custom <em>composed annotation</em> that inherits the semantics
  * of {@code @CartesianArgumentsSource}.
  *
- * This is similar to {@link org.junit.jupiter.params.provider.ArgumentsSource ArgumentsSource} and is used
- * to provide arguments for {@link CartesianTest}.
+ * This annotation is used to provide arguments for a {@link CartesianTest}.
  *
  * @see CartesianTest
  */
@@ -38,6 +38,7 @@ public @interface CartesianArgumentsSource {
 	/**
 	 * The type of {@link CartesianArgumentsProvider} to be used.
 	 */
+	@SuppressWarnings("rawtypes")
 	Class<? extends CartesianArgumentsProvider> value();
 
 }
