@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter.cartesian;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
 import static org.junitpioneer.internal.PioneerUtils.cartesianProduct;
 
@@ -164,7 +164,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 				// We like to keep arguments in the order in which they were listed
 				// in the annotation. Could use a set with defined iteration, but
 				// this is more explicit.
-				.collect(toList());
+				.collect(toUnmodifiableList());
 	}
 
 }

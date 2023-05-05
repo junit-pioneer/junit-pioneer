@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * <p>{@code @CartesianArgumentsSource} may also be used as a meta-annotation in order to
  * create a custom <em>composed annotation</em> that inherits the semantics
  * of {@code @CartesianArgumentsSource}.
- *
+ * </p>
  * This annotation is used to provide arguments for a {@link CartesianTest}.
  *
  * @see CartesianTest
@@ -38,7 +38,6 @@ public @interface CartesianArgumentsSource {
 	/**
 	 * The type of {@link CartesianArgumentsProvider} to be used.
 	 */
-	@SuppressWarnings("rawtypes")
 	Class<? extends CartesianArgumentsProvider> value();
 
 }

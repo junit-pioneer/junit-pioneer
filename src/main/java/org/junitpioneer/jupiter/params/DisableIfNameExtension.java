@@ -11,10 +11,10 @@
 package org.junitpioneer.jupiter.params;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
 
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
@@ -64,7 +64,7 @@ class DisableIfNameExtension implements ExecutionCondition {
 		String matches = Stream
 				.of(substrings)
 				.filter(displayName::contains)
-				.collect(Collectors.joining("', '"));
+				.collect(joining("', '"));
 		return matches.isEmpty()
 				? enabled(reason(displayName, "doesn't contain any substring."))
 				: disabled(reason(displayName, format("contains '%s'.", matches)));
@@ -76,7 +76,7 @@ class DisableIfNameExtension implements ExecutionCondition {
 		String matches = Stream
 				.of(regExps)
 				.filter(displayName::matches)
-				.collect(Collectors.joining("', '"));
+				.collect(joining("', '"));
 		return matches.isEmpty()
 				? enabled(reason(displayName, "doesn't match any regular expression."))
 				: disabled(reason(displayName, format("matches '%s'.",matches)));

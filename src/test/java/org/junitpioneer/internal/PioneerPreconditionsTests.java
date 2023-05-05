@@ -13,9 +13,8 @@ package org.junitpioneer.internal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -96,7 +95,7 @@ class PioneerPreconditionsTests {
 		@Test
 		@DisplayName("should throw violation exception if collection is empty")
 		void emptyInput() {
-			assertThatThrownBy(() -> PioneerPreconditions.notEmpty(Collections.emptySet(), "Value must be provided"))
+			assertThatThrownBy(() -> PioneerPreconditions.notEmpty(Set.of(), "Value must be provided"))
 					.isInstanceOf(PreconditionViolationException.class)
 					.hasMessage("Value must be provided");
 		}
@@ -104,8 +103,7 @@ class PioneerPreconditionsTests {
 		@Test
 		@DisplayName("should return collection if it is not empty")
 		void validInput() {
-			List<String> collection = new ArrayList<>();
-			collection.add("testValue");
+			List<String> collection = List.of("testValue");
 			assertThat(PioneerPreconditions.notEmpty(collection, "Value must be provided")).isSameAs(collection);
 		}
 
@@ -126,8 +124,7 @@ class PioneerPreconditionsTests {
 		@Test
 		@DisplayName("should throw violation exception if collection is empty")
 		void emptyInput() {
-			assertThatThrownBy(
-				() -> PioneerPreconditions.notEmpty(Collections.emptySet(), "Collection must be provided"))
+			assertThatThrownBy(() -> PioneerPreconditions.notEmpty(Set.of(), "Collection must be provided"))
 					.isInstanceOf(PreconditionViolationException.class)
 					.hasMessage("Collection must be provided");
 		}
@@ -135,8 +132,7 @@ class PioneerPreconditionsTests {
 		@Test
 		@DisplayName("should return collection if it is not empty")
 		void validInput() {
-			List<String> collection = new ArrayList<>();
-			collection.add("testValue");
+			List<String> collection = List.of("testValue");
 			assertThat(PioneerPreconditions.notEmpty(collection, "Collection must be provided")).isSameAs(collection);
 		}
 

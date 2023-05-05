@@ -4,10 +4,10 @@
  *
  * <p>Pioneer does not limit itself to proven ideas with wide application but is purposely open to
  * experimentation. It aims to spin off successful and cohesive portions into sibling projects or back
- * into the JUnit 5 code base.
+ * into the JUnit 5 code base.</p>
  *
  * <p>The dependencies on Jupiter modules could be marked as <code>transitive</code> but that would
- * allow users who depend on this module to not `require` org.junit.*, which would be backwards.
+ * allow users who depend on this module to not `require` org.junit.*, which would be backwards.</p>
  */
 module org.junitpioneer {
 	// see Javadoc for why these aren't transitive
