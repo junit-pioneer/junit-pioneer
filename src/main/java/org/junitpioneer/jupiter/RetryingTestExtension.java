@@ -15,6 +15,7 @@ import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -22,6 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
@@ -34,7 +36,8 @@ import org.junitpioneer.internal.TestNameFormatter;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
-class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
+class RetryingTestExtension
+		implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(RetryingTestExtension.class);
 
@@ -60,6 +63,42 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				.orElseThrow(() -> new IllegalStateException(
 					"Extension context \"" + context + "\" should have a parent context."));
 		retrierFor(templateContext).failed(throwable);
+	}
+
+	@Override
+	public void afterEach(ExtensionContext context) {
+		var resetMethodName = AnnotationSupport
+				.findAnnotation(context.getRequiredTestMethod(), RetryingTest.class)
+				.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."))
+				.resetMethod();
+
+		boolean resetConfigured = !resetMethodName.isBlank();
+		boolean inBetweenRetries = retrierFor(context).hasNext();
+		if (!resetConfigured || !inBetweenRetries)
+			return;
+
+		callResetMethod(context, resetMethodName);
+	}
+
+	private void callResetMethod(ExtensionContext context, String resetMethodName) {
+		try {
+			var resetMethod = context.getRequiredTestClass().getDeclaredMethod(resetMethodName);
+			resetMethod.setAccessible(true);
+			resetMethod.invoke(context.getRequiredTestInstance());
+		}
+		catch (NoSuchMethodException ex) {
+			throw new IllegalStateException("Couldn't find reset method even though it was present earlier.");
+		}
+		catch (IllegalAccessException ex) {
+			// TODO tell user what to do to fix this
+			var errorMessage = format("Reset method '%s' is not accessible.", resetMethodName);
+			throw new ExtensionConfigurationException(errorMessage, ex);
+		}
+		catch (InvocationTargetException ex) {
+			// TODO tell user what to do to fix this
+			var errorMessage = format("Invoking the reset method '%s' failed.", resetMethodName);
+			throw new ExtensionConfigurationException(errorMessage, ex);
+		}
 	}
 
 	private static FailedTestRetrier retrierFor(ExtensionContext context) {

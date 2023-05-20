@@ -162,4 +162,6 @@ public @interface RetryingTest {
 	// explanation in org.junit.jupiter.api.function.Executable
 	Class<? extends Throwable>[] onExceptions() default {};
 
+	String resetMethod() default "";
+
 }

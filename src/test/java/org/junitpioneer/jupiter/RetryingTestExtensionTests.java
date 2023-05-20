@@ -315,6 +315,18 @@ class RetryingTestExtensionTests {
 		}
 	}
 
+	@Test
+	void resetBetweenRetries() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "callsResetMethodBetweenRetries");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(3)
+				.hasNumberOfAbortedTests(2)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+	}
+
 	// TEST CASES -------------------------------------------------------------------
 
 	// Some tests require state to keep track of the number of test executions.
@@ -327,6 +339,7 @@ class RetryingTestExtensionTests {
 	static class RetryingTestTestCases {
 
 		private int executionCount;
+		private int resetCount;
 
 		@Test
 		@RetryingTest(3)
@@ -490,6 +503,21 @@ class RetryingTestExtensionTests {
 		@RetryingTest(maxAttempts = 3)
 		void failThreeTimesWithoutSuspend() {
 			throw new IllegalArgumentException();
+		}
+
+		// TODO: write tests that check expected exception in wrong method name (even if there's no retry!)
+
+		@RetryingTest(maxAttempts = 3, resetMethod = "reset")
+		void callsResetMethodBetweenRetries() {
+			executionCount++;
+
+			Assertions.assertThat(resetCount).isEqualTo(executionCount - 1);
+
+			throw new IllegalArgumentException();
+		}
+
+		void reset() {
+			resetCount++;
 		}
 
 	}
