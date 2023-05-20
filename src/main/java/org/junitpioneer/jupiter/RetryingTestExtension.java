@@ -15,15 +15,16 @@ import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
@@ -36,8 +37,7 @@ import org.junitpioneer.internal.TestNameFormatter;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
-class RetryingTestExtension
-		implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler, AfterEachCallback {
+class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
 
 	private static final Namespace NAMESPACE = Namespace.create(RetryingTestExtension.class);
 
@@ -62,43 +62,7 @@ class RetryingTestExtension
 				.getParent()
 				.orElseThrow(() -> new IllegalStateException(
 					"Extension context \"" + context + "\" should have a parent context."));
-		retrierFor(templateContext).failed(throwable);
-	}
-
-	@Override
-	public void afterEach(ExtensionContext context) {
-		var resetMethodName = AnnotationSupport
-				.findAnnotation(context.getRequiredTestMethod(), RetryingTest.class)
-				.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."))
-				.resetMethod();
-
-		boolean resetConfigured = !resetMethodName.isBlank();
-		boolean inBetweenRetries = retrierFor(context).hasNext();
-		if (!resetConfigured || !inBetweenRetries)
-			return;
-
-		callResetMethod(context, resetMethodName);
-	}
-
-	private void callResetMethod(ExtensionContext context, String resetMethodName) {
-		try {
-			var resetMethod = context.getRequiredTestClass().getDeclaredMethod(resetMethodName);
-			resetMethod.setAccessible(true);
-			resetMethod.invoke(context.getRequiredTestInstance());
-		}
-		catch (NoSuchMethodException ex) {
-			throw new IllegalStateException("Couldn't find reset method even though it was present earlier.");
-		}
-		catch (IllegalAccessException ex) {
-			// TODO tell user what to do to fix this
-			var errorMessage = format("Reset method '%s' is not accessible.", resetMethodName);
-			throw new ExtensionConfigurationException(errorMessage, ex);
-		}
-		catch (InvocationTargetException ex) {
-			// TODO tell user what to do to fix this
-			var errorMessage = format("Invoking the reset method '%s' failed.", resetMethodName);
-			throw new ExtensionConfigurationException(errorMessage, ex);
-		}
+		retrierFor(templateContext).failed(context.getRequiredTestInstance(), throwable);
 	}
 
 	private static FailedTestRetrier retrierFor(ExtensionContext context) {
@@ -116,6 +80,7 @@ class RetryingTestExtension
 		private final int suspendForMs;
 		private final Class<? extends Throwable>[] expectedExceptions;
 		private final TestNameFormatter formatter;
+		private final Optional<Method> resetMethod;
 
 		private int retriesSoFar;
 		private int exceptionsSoFar;
@@ -123,24 +88,26 @@ class RetryingTestExtension
 		private boolean seenUnexpectedException;
 
 		private FailedTestRetrier(int maxRetries, int minSuccess, int suspendForMs,
-				Class<? extends Throwable>[] expectedExceptions, TestNameFormatter formatter) {
+				Class<? extends Throwable>[] expectedExceptions, TestNameFormatter formatter,
+				Optional<Method> resetMethod) {
 			this.maxRetries = maxRetries;
 			this.minSuccess = minSuccess;
 			this.suspendForMs = suspendForMs;
 			this.expectedExceptions = expectedExceptions;
+			this.resetMethod = resetMethod;
 			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
 			this.formatter = formatter;
 		}
 
 		static FailedTestRetrier createFor(Method test, ExtensionContext context) {
-			RetryingTest retryingTest = AnnotationSupport
+			var retryingTest = AnnotationSupport
 					.findAnnotation(test, RetryingTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."));
 
 			int maxAttempts = retryingTest.maxAttempts() != 0 ? retryingTest.maxAttempts() : retryingTest.value();
 			int minSuccess = retryingTest.minSuccess();
-			String pattern = retryingTest.name();
+			var pattern = retryingTest.name();
 
 			if (maxAttempts == 0)
 				throw new ExtensionConfigurationException(
@@ -153,7 +120,7 @@ class RetryingTestExtension
 				throw new ExtensionConfigurationException(
 					"@RetryingTest requires that `minSuccess` be greater than or equal to 1.");
 			else if (maxAttempts <= minSuccess) {
-				String additionalMessage = maxAttempts == minSuccess
+				var additionalMessage = maxAttempts == minSuccess
 						? " Using @RepeatedTest is recommended as a replacement."
 						: "";
 				throw new ExtensionConfigurationException(
@@ -161,20 +128,45 @@ class RetryingTestExtension
 						minSuccess == 1 ? "1" : "`minSuccess`", additionalMessage));
 			}
 			if (pattern.isEmpty())
-				throw new ExtensionConfigurationException("RetryingTest can not have an empty display name.");
-			String displayName = context.getDisplayName();
-			TestNameFormatter formatter = new TestNameFormatter(pattern, displayName, RetryingTest.class);
+				throw new ExtensionConfigurationException("@RetryingTest can not have an empty display name.");
+			var displayName = context.getDisplayName();
+			var formatter = new TestNameFormatter(pattern, displayName, RetryingTest.class);
 
 			if (retryingTest.suspendForMs() < 0) {
 				throw new ExtensionConfigurationException(
 					"@RetryingTest requires that `suspendForMs` be greater than or equal to 0.");
 			}
 
+			var resetMethodName = retryingTest.resetMethod();
+			var resetMethod = getResetMethod(resetMethodName, context);
+
 			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.suspendForMs(),
-				retryingTest.onExceptions(), formatter);
+				retryingTest.onExceptions(), formatter, resetMethod);
 		}
 
-		<E extends Throwable> void failed(E exception) throws E {
+		private static Optional<Method> getResetMethod(String resetMethodName, ExtensionContext context) {
+			if (resetMethodName.isBlank())
+				return Optional.empty();
+
+			try {
+				// TODO: allow reset method to have boolean parameter that indicates whether the last test execution
+				//       was successful or not
+				var resetMethod = context.getRequiredTestClass().getDeclaredMethod(resetMethodName);
+				resetMethod.setAccessible(true);
+				return Optional.of(resetMethod);
+			}
+			catch (NoSuchMethodException ex) {
+				var errorMessage = format("Reset method `%s()` was not found.", resetMethodName);
+				throw new ExtensionConfigurationException(errorMessage);
+			}
+			catch (InaccessibleObjectException ex) {
+				// TODO tell user what to do to fix this
+				var errorMessage = format("Reset method `%s` is not accessible.", resetMethodName);
+				throw new ExtensionConfigurationException(errorMessage, ex);
+			}
+		}
+
+		<E extends Throwable> void failed(Object testInstance, E exception) throws E, InvocationTargetException {
 			exceptionsSoFar++;
 
 			if (exception instanceof TestAbortedException) {
@@ -188,15 +180,30 @@ class RetryingTestExtension
 				throw exception;
 			}
 
-			if (hasNext())
+			if (hasNext()) {
+				callResetMethod(testInstance);
 				throw new TestAbortedException(
 					format("Test execution #%d (of up to %d) failed ~> will retry in %d ms...", retriesSoFar,
 						maxRetries, suspendForMs),
 					exception);
-			else
+			} else
 				throw new AssertionFailedError(format(
 					"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
 					retriesSoFar, maxRetries, minSuccess), exception);
+		}
+
+		private void callResetMethod(Object testInstance) throws InvocationTargetException {
+			if (resetMethod.isEmpty())
+				return;
+
+			var method = resetMethod.get();
+			try {
+				method.invoke(testInstance);
+			}
+			catch (IllegalAccessException ex) {
+				var errorMessage = format("Reset method `%s` is not accessible.", method.getName());
+				throw new ExtensionConfigurationException(errorMessage, ex);
+			}
 		}
 
 		private boolean expectedException(Throwable exception) {

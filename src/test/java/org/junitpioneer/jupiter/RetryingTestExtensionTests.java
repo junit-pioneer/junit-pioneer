@@ -316,7 +316,24 @@ class RetryingTestExtensionTests {
 	}
 
 	@Test
-	void resetBetweenRetries() {
+	void missingResetMethod_fails() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(RetryingTestTestCases.class, "missingResetMethod");
+
+		assertThat(results).hasNumberOfFailedContainers(1);
+
+	}
+
+	@Test
+	void resetMethodWithParameters_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "resetMethodWithParameters");
+
+		assertThat(results).hasNumberOfFailedContainers(1);
+
+	}
+
+	@Test
+	void resetBetweenRetries_succeeds() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCases.class, "callsResetMethodBetweenRetries");
 
@@ -505,7 +522,15 @@ class RetryingTestExtensionTests {
 			throw new IllegalArgumentException();
 		}
 
-		// TODO: write tests that check expected exception in wrong method name (even if there's no retry!)
+		@RetryingTest(maxAttempts = 3, resetMethod = "doTheReset")
+		void missingResetMethod() {
+			throw new IllegalArgumentException();
+		}
+
+		@RetryingTest(maxAttempts = 3, resetMethod = "resetWithParameter")
+		void resetMethodWithParameters() {
+			throw new IllegalArgumentException();
+		}
 
 		@RetryingTest(maxAttempts = 3, resetMethod = "reset")
 		void callsResetMethodBetweenRetries() {
@@ -518,6 +543,10 @@ class RetryingTestExtensionTests {
 
 		void reset() {
 			resetCount++;
+		}
+
+		void resetWithParameter(String someParameter) {
+			// will never be called
 		}
 
 	}
