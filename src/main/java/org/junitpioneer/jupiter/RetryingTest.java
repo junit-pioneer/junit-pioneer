@@ -162,4 +162,13 @@ public @interface RetryingTest {
 	// explanation in org.junit.jupiter.api.function.Executable
 	Class<? extends Throwable>[] onExceptions() default {};
 
+	interface RetryInfo {
+
+		/**
+		 * @return the count of the current execution (1-based, i.e. returns 1 on first execution)
+		 */
+		int executionCount();
+
+	}
+
 }

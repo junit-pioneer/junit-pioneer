@@ -25,16 +25,21 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.TestNameFormatter;
+import org.junitpioneer.jupiter.RetryingTest.RetryInfo;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
-class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
+class RetryingTestExtension
+		implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler, ParameterResolver {
 
 	private static final Namespace NAMESPACE = Namespace.create(RetryingTestExtension.class);
 
@@ -68,6 +73,18 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				.getStore(NAMESPACE)
 				.getOrComputeIfAbsent(test.toString(), __ -> FailedTestRetrier.createFor(test, context),
 					FailedTestRetrier.class);
+	}
+
+	@Override
+	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+			throws ParameterResolutionException {
+		return parameterContext.getParameter().getType() == RetryInfo.class;
+	}
+
+	@Override
+	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+			throws ParameterResolutionException {
+		return retrierFor(extensionContext).createInfo();
 	}
 
 	private static class FailedTestRetrier implements Iterator<RetryingTestInvocationContext> {
@@ -213,6 +230,28 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			retriesSoFar++;
 
 			return new RetryingTestInvocationContext(formatter);
+		}
+
+		RetryInfo createInfo() {
+			// `retriesSoFar` increments as soon as the next RetryingTestInvocationContext
+			// is requested by JUnit Jupiter, which happens *before* the parameters are
+			// resolved and so `retriesSoFar` is effectively one-based, just like `executionCount`
+			return new SimpleRetryInfo(retriesSoFar);
+		}
+
+	}
+
+	private static class SimpleRetryInfo implements RetryInfo {
+
+		private final int executionCount;
+
+		private SimpleRetryInfo(int executionCount) {
+			this.executionCount = executionCount;
+		}
+
+		@Override
+		public int executionCount() {
+			return executionCount;
 		}
 
 	}

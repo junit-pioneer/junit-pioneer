@@ -29,6 +29,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.platform.testkit.engine.Execution;
+import org.junitpioneer.jupiter.RetryingTest.RetryInfo;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -295,6 +296,14 @@ class RetryingTestExtensionTests {
 		assertSuspendedFor(results, 0);
 	}
 
+	@Test
+	void correctlyCountRetries() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RetryingTestTestCases.class, "evaluateRetryInfo", RetryInfo.class);
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(3);
+	}
+
 	private void assertSuspendedFor(ExecutionResults results, long greaterThanOrEqualTo) {
 		List<Execution> finishedExecutions = results.testEvents().executions().finished().list();
 		List<Execution> startedExecutions = results.testEvents().executions().started().list();
@@ -490,6 +499,15 @@ class RetryingTestExtensionTests {
 		@RetryingTest(maxAttempts = 3)
 		void failThreeTimesWithoutSuspend() {
 			throw new IllegalArgumentException();
+		}
+
+		@RetryingTest(maxAttempts = 4, minSuccess = 3)
+		void evaluateRetryInfo(RetryInfo info) {
+			executionCount++;
+			if (executionCount == 1)
+				throw new IllegalStateException();
+
+			Assertions.assertThat(info.executionCount()).isEqualTo(executionCount);
 		}
 
 	}
