@@ -104,7 +104,7 @@ class EnvironmentVariableExtension extends
 		// Cannot remove in stream b/c the stream is based on the collection that needs to be modified
 		Set<String> entriesToClear = existingEnv.keySet().stream().filter(not(restoreMe::containsKey)).collect(toSet());
 
-		entriesToClear.stream().forEach(this::clearEntry);
+		entriesToClear.forEach(this::clearEntry);
 	}
 
 }
