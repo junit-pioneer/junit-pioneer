@@ -111,7 +111,7 @@ public class EnvironmentVariablesExtensionDemo {
 				assertThat(System.getenv("A")).isEqualTo("A value");
 				assertThat(System.getenv("B")).isEqualTo("B value");
 
-				//Class-level @RestoreEnvironmentVariables restores 'C' to original state
+				// Class-level @RestoreEnvironmentVariables restores "C" to original state
 				assertThat(System.getenv("C")).isNull();
 			}
 
@@ -121,19 +121,19 @@ public class EnvironmentVariablesExtensionDemo {
 		@Nested
 		@Order(2)
 		// tag::environment_class_restore_isolated_class[]
-		/* A test class that runs later... */
+		// A test class that runs later
 		@ReadsEnvironmentVariable
 		class SomeOtherTestClass {
 
 			@Test
 			void isolatedTest() {
-				//Class-level @RestoreEnvironmentVariables restores all changes made in EnvironmentVarRestoreTest
+				// Class-level @RestoreEnvironmentVariables restores all changes made in EnvironmentVarRestoreTest
 				assertThat(System.getenv("A")).isNull();
 				assertThat(System.getenv("B")).isNull();
 				assertThat(System.getenv("C")).isNull();
 			}
 
-			// Changes to A, B & C have been restored to their values prior to the above test
+			// Changes to A, B, C have been restored to their values prior to the above test
 		}
 
 		// end::environment_class_restore_isolated_class[]
@@ -146,7 +146,7 @@ public class EnvironmentVariablesExtensionDemo {
 	@SetEnvironmentVariable(key = "DISABLE_CACHE", value = "TRUE")
 	@ClearEnvironmentVariable(key = "COPYWRITE_OVERLAY_TEXT")
 	void imageGenerationTest(int imageSize) {
-		setEnvVar("IMAGE_SIZE", String.valueOf(imageSize)); // Requires Restore
+		setEnvVar("IMAGE_SIZE", String.valueOf(imageSize)); // Requires restore
 
 		// Test your image generation utility with the current environment variables
 	}

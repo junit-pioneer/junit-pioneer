@@ -32,7 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>{@code RestoreEnvironmentVariables} can be used on the method and on the class level.
  * When placed on a test method, environment variables are stored before the method is run and restored
- * after the method is complete.  Specifically, variables are stored after any {@code @BeforeAll}
+ * after the method is complete. Specifically, variables are stored after any {@code @BeforeAll}
  * methods have run and before any {@code @BeforeEach} methods.</p>
  *
  * <p>When placed on a test class, environment variables are stored before the test class runs and

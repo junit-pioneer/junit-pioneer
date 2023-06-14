@@ -19,7 +19,7 @@ import org.junit.platform.commons.support.ReflectionSupport;
 
 /**
  * Allows comparison of {@link Properties} with optional awareness of their structure,
- * rather than just treating them as Maps.  Object values, which are marginally supported
+ * rather than just treating them as Maps. Object values, which are marginally supported
  * by {@code Properties}, are supported in assertions as much as possible.
  */
 public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Properties> {

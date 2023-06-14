@@ -108,7 +108,7 @@ public class SystemPropertyExtensionDemo {
 				assertThat(System.getProperty("A")).isEqualTo("A value");
 				assertThat(System.getProperty("B")).isEqualTo("B value");
 
-				//Class-level @RestoreSystemProperties restores 'C' to original state
+				// Class-level @RestoreSystemProperties restores "C" to original state
 				assertThat(System.getProperty("C")).isNull();
 			}
 
@@ -140,9 +140,9 @@ public class SystemPropertyExtensionDemo {
 	@SetSystemProperty(key = "DISABLE_CACHE", value = "TRUE")
 	@ClearSystemProperty(key = "COPYWRITE_OVERLAY_TEXT")
 	void imageGenerationTest(int imageSize) {
-		System.setProperty("IMAGE_SIZE", String.valueOf(imageSize)); // Requires Restore
+		System.setProperty("IMAGE_SIZE", String.valueOf(imageSize)); // Requires restore
 
-		// Test your image generation utility with the current System Properties
+		// Test your image generation utility with the current system properties
 	}
 	// end::systemproperty_method_combine_all_test[]
 

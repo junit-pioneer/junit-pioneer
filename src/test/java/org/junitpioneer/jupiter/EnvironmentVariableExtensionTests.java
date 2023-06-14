@@ -722,7 +722,7 @@ class EnvironmentVariableExtensionTests {
 			void shouldInheritInNestedClass() {
 				assertThat(systemEnvironmentVariable("set envvar A")).isNull();
 
-				//  Shouldn't be visible in the next test
+				// Shouldn't be visible in the next test
 				EnvironmentVariableUtils.set("Restore", "Restore Me");
 			}
 

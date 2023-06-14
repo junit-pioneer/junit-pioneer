@@ -36,7 +36,10 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.parallel.Execution;
 
 /**
- * Verify proper behavior when annotated on a top level class
+ * <p>Verify proper behavior when annotated on a top level class.</p>
+ *
+ * <p>{@link VerifyEnvVarsExtension} is registered as an extension <em>before</em> {@code RestoreSystemProperties}. It
+ * stores the initial environment variables and verifies them at the end.
  */
 @DisplayName("RestoreEnvironmentVariables Annotation")
 @ExtendWith(RestoreEnvironmentVariablesTests.VerifyEnvVarsExtension.class) // 1st: Order is important here
@@ -116,20 +119,20 @@ class RestoreEnvironmentVariablesTests {
 	}
 
 	/**
-	 * Extension that checks the before and after state of Environment Vars.
-	 * <p>
-	 * Must be registered before {@code RestoreEnvironmentVariables}.
+	 * <p>Extension that checks the before and after state of environment variables.</p>
+	 *
+	 * <p>Must be registered before {@code RestoreEnvironmentVariables}.
 	 * To avoid replicating the system being tested w/ the test itself, this class
 	 * uses static state rather than the extension store. As a result, this test
-	 * class is marked as single threaded.
+	 * class is marked as single threaded.</p>
 	 */
 	static class VerifyEnvVarsExtension
 			implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
-		/* Nested tests will push additional copies */
+		// Nested tests will push additional copies
 		private static Deque<Map<String, String>> beforeAllState = new ArrayDeque<>();
 
-		/* Only one test method happens at a time */
+		// Only one test method happens at a time
 		private static Map<String, String> beforeEachState;
 
 		@Override

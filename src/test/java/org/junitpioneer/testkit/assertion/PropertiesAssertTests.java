@@ -20,13 +20,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
- * Verify proper behavior when annotated on a top level class.
+ * <p>Verify proper behavior when annotated on a top level class.</p>
  *
- * These tests include testing object values but not object keys.  Properties sort-of supports
- * object values, but dies on common operations w/ object keys (e.g. propertyNames() fails), thus
- * not testing.
+ * <p>These tests include testing object values but not object keys. {@code Properties} sort-of supports
+ * object values, but dies on common operations with object keys (e.g. {@code propertyNames()} fails), thus
+ * not testing.</p>
  *
- * Also, null keys and values are not allow in Properties.
+ * <p>Also, null keys and values are not allow in {@code Properties}.</p>
  *
  */
 @DisplayName("PropertiesAssert Tests")
@@ -43,7 +43,7 @@ class PropertiesAssertTests {
 	Properties strPropAB1;
 	Properties strPropAB2;
 
-	// Same as propAandB but 'B' comes from a default value
+	// Same as propAandB but "B" comes from a default value
 	Properties strPropAB1CDwDefaults;
 	Properties strPropAB2CDwDefaults;
 

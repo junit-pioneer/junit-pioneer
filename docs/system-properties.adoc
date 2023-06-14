@@ -62,7 +62,7 @@ In addition, the annotation is inherited by each test method just as if each one
 
 In the following example, both test methods see the system property changes made in `@BeforeAll` and `@BeforeEach`, however, the test methods are isolated from each other (`isolatedTest2` does not 'see' changes made in `isolatedTest1`).
 As shown in the second example below, the class-level `@RestoreSystemProperties` ensures that system property changes made within the annotated class are completely restored after the class's lifecycle, ensuring that changes are not visible to `SomeOtherTestClass`.
-Note that `SomeOtherTestClass` uses the `@ReadsSystemProperty` annotation:  This ensures that JUnit does not schedule the class to run during any test known to modify system properties (see <<Thread-Safety>>).
+Note that `SomeOtherTestClass` uses the `@ReadsSystemProperty` annotation: This ensures that JUnit does not schedule the class to run during any test known to modify system properties (see <<Thread-Safety>>).
 
 [source,java,indent=0]
 ----

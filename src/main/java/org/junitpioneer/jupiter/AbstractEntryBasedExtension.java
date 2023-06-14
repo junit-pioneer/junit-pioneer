@@ -53,10 +53,14 @@ import org.junitpioneer.internal.PioneerUtils;
 abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation, R extends Annotation>
 		implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
-	/** Key to indicate storage is for an incremental backup object */
+	/**
+	 * Key to indicate storage is for an incremental backup object.
+	 */
 	private static final String INCREMENTAL_KEY = "inc";
 
-	/** Key to indicate storage is for a complete backup object */
+	/**
+	 * Key to indicate storage is for a complete backup object.
+	 */
 	private static final String COMPLETE_KEY = "full";
 
 	@Override
@@ -178,7 +182,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 
 	/**
 	 * Restore the complete original state of the entries as they were prior to this {@code ExtensionContext},
-	 * if the complete state was initially stored in a BeforeXXX event.
+	 * if the complete state was initially stored in a before all/each event.
 	 *
 	 * @param context The {@code ExtensionContext} which may have a bulk backup stored.
 	 * @return true if a complete backup exists and was used to restore, false if not.
@@ -301,33 +305,34 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	/**
-	 * Prepare the entry-based environment for entering a context that must be restorable.
-	 * <p>
-	 * Implementations may choose one of two strategies:
+	 * <p>Prepare the entry-based environment for entering a context that must be restorable.</p>
+	 *
+	 * <p>Implementations may choose one of two strategies:
 	 * <ul>
-	 * <li>'Post Swap', where the original entry-based environment is left in place and a clone is returned.
+	 * <li><em>Post swap</em>, where the original entry-based environment is left in place and a clone is returned.
 	 * In this case {@link #prepareToExitRestorableContext} will restore the clone.
-	 * <li>'Preemptive swap', where the current entry-based environment is replaced with a clone and the
+	 * <li><em>Preemptive swap</em>, where the current entry-based environment is replaced with a clone and the
 	 * original is returned.
 	 * In this case the {@link #prepareToExitRestorableContext} will restore the original environment.</li>
 	 * </ul>
+	 * </p>
 	 *
-	 * The returned {@code Properties} must not be null and its key-value pairs must follow the rules for
-	 * entries of its type.  E.g., Environment vars contain only Strings while System {@code Properties}
-	 * may contain Objects.
+	 * <p>The returned {@code Properties} must not be null and its key-value pairs must follow the rules for
+	 * entries of its type. E.g., environment variables contain only Strings while System {@code Properties}
+	 * may contain Objects.</p>
 	 *
 	 * @return A non-null {@code Properties} that contains all entries of the entry environment.
 	 */
 	protected abstract Properties prepareToEnterRestorableContext();
 
 	/**
-	 * Prepare to exit a restorable context for the entry based environment.
-	 * <p>
-	 * The entry environment will be restored to the state passed in as {@code Properties}.
-	 * The {@code Properties} entries must follow the rules for entries of this environment,
-	 * e.g., environment vars contain only Strings while System {@code Properties} may contain Objects.
+	 * <p>Prepare to exit a restorable context for the entry based environment.</p>
 	 *
-	 * @param entries Not null.
+	 * <p>The entry environment will be restored to the state passed in as {@code Properties}.
+	 * The {@code Properties} entries must follow the rules for entries of this environment,
+	 * e.g., environment variables contain only Strings while System {@code Properties} may contain Objects.</p>
+	 *
+	 * @param entries A non-null {@code Properties} that contains all entries of the entry environment.
 	 */
 	protected abstract void prepareToExitRestorableContext(Properties entries);
 

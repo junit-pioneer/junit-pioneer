@@ -38,16 +38,16 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /**
- * Verify proper behavior when annotated on a top level class
+ * <p>Verify proper behavior when annotated on a top level class.</p>
  *
- * VerifySysPropsExtension is registered as an extension BEFORE RestoreSystemProperties.
- * VerifySysPropsExtension stores the initial Sys Props and verifies them at the end.
+ * <p>{@link VerifySysPropsExtension} is registered as an extension <em>before</em> {@code RestoreSystemProperties}. It
+ * stores the initial system properties and verifies them at the end.
  */
 @DisplayName("RestoreSystemProperties Annotation")
 @ExtendWith(RestoreSystemPropertiesTests.VerifySysPropsExtension.class) // 1st: Order is important here
 @RestoreSystemProperties // 2nd
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Execution(SAME_THREAD) // Single thread.  See VerifySysPropsExtension inner class
+@Execution(SAME_THREAD) // Single thread. See VerifySysPropsExtension inner class
 class RestoreSystemPropertiesTests {
 
 	@BeforeAll
@@ -68,7 +68,7 @@ class RestoreSystemPropertiesTests {
 
 	@AfterAll
 	static void globalTearDown() {
-		// Can I 'break' system properties in @AfterAll??
+		// Can I "break" system properties in @AfterAll??
 		// Restore should restore it after @AfterAll - will be verified in VerifySysPropsExtension
 		System.setProperties(new Properties());
 	}
@@ -114,7 +114,7 @@ class RestoreSystemPropertiesTests {
 		assertThat(System.getProperty("N")).isEqualTo("each sys N");
 		assertThat(System.getProperty("O")).isEqualTo("each sys O");
 
-		System.setProperty("X", "method X"); // SHOULDN'T BE VISIBLE IN NEXT TEST
+		System.setProperty("X", "method X"); // Shouldn't be visible in next test
 	}
 
 	@Test
@@ -163,16 +163,16 @@ class RestoreSystemPropertiesTests {
 	 * <p>
 	 * Must be registered before RestoreSystemProperties.
 	 * To avoid replicating the system being tested w/ the test itself, this class
-	 * uses static state rather than the extension store.  As a result, this test
+	 * uses static state rather than the extension store. As a result, this test
 	 * class is marked as single threaded.
 	 */
 	protected static class VerifySysPropsExtension
 			implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
-		/* Nested tests will push additional copies */
+		// Nested tests will push additional copies
 		private static ArrayDeque<Properties> beforeAllState = new ArrayDeque<>();
 
-		/* Only one test method happens at a time */
+		// Only one test method happens at a time
 		private static Properties beforeEachState;
 
 		@Override
@@ -209,17 +209,17 @@ class RestoreSystemPropertiesTests {
 	}
 
 	/**
-	 * This 'deep' clone method uses reflection to do a clone that preserves the structure
+	 * <p>This "deep" clone method uses reflection to do a clone that preserves the structure
 	 * (i.e. nested defaults) and potential non-string values of Properties.
 	 * This method is only used to ensure we have a 100% complete clone of original Sys Props for
-	 * comparison after restore.
-	 * <p>
-	 * The actual SystemProperties extension does an 'effective' clone which is simpler and doesn't
-	 * require reflection.
+	 * comparison after restore.</p>
 	 *
-	 * @param original Props to be cloned
-	 * @return A detached clone of the original Props
-	 * @throws Exception Possibly due to reflection access
+	 * <p>The actual SystemProperties extension does an 'effective' clone which is simpler and doesn't
+	 * require reflection.</p>
+	 *
+	 * @param original {@code Properties} to be cloned.
+	 * @return A detached clone of the original {@code Properties}.
+	 * @throws Exception Possibly due to reflection access.
 	 */
 	static Properties deepClone(Properties original) throws Exception {
 
@@ -241,12 +241,12 @@ class RestoreSystemPropertiesTests {
 	}
 
 	/**
-	 * Helper method for 'deepClone' that uses reflection to grab the 'defaults' properties field
-	 * within a Properties object.
+	 * Helper method for {@link #deepClone(Properties)} that uses reflection to grab the "defaults" properties field
+	 * within a {@code Properties} object.
 	 *
-	 * @param parent Instance to grab the 'defaults' field from
-	 * @return A Properties object, which may be null if the actual defaults are null.
-	 * @throws Exception Possibly due to reflection access
+	 * @param parent Instance to grab the "defaults" field from.
+	 * @return A {@code Properties} object, which may be null if the actual defaults are null.
+	 * @throws Exception Possibly due to reflection access.
 	 */
 	static public Properties getDefaultPropertiesInstance(Properties parent) throws Exception {
 		Field field = ReflectionSupport

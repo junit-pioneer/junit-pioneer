@@ -75,12 +75,12 @@ class EnvironmentVariableExtension extends
 	}
 
 	/**
-	 * This implementation uses the 'Post Swap' strategy, returning a clone of the environment vars
-	 * which will be restored in {@link AbstractEntryBasedExtension#prepareToExitRestorableContext}.
-	 * <p>
-	 * See {@link AbstractEntryBasedExtension#prepareToEnterRestorableContext} for more details.
+	 * <p>This implementation uses the "Post swap" strategy, returning a clone of the environment variables
+	 * which will be restored in {@link AbstractEntryBasedExtension#prepareToExitRestorableContext}.</p>
 	 *
-	 * @return A clone of the current System environment variables, as a Properties object.
+	 * <p>See {@link AbstractEntryBasedExtension#prepareToEnterRestorableContext} for more details.</p>
+	 *
+	 * @return A clone of the current environment variables, as a {@code Properties} object.
 	 */
 	@Override
 	protected Properties prepareToEnterRestorableContext() {
