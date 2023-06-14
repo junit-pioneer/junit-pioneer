@@ -749,13 +749,11 @@ class PropertiesAssertTests {
 					.withFailMessage("'Effective' should treat object values as null")
 					.isEffectivelyEqualsTo(objProp2wDefaults);
 
-			assertThatThrownBy(() -> {
-				new PropertiesAssert(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
-			}).isInstanceOf(AssertionError.class);
+			assertThatThrownBy(() -> new PropertiesAssert(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults))
+					.isInstanceOf(AssertionError.class);
 
-			assertThatThrownBy(() -> {
-				new PropertiesAssert(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults);
-			}).isInstanceOf(AssertionError.class);
+			assertThatThrownBy(() -> new PropertiesAssert(objProp1wDefaults).isNotEffectivelyEqualTo(objProp2wDefaults))
+					.isInstanceOf(AssertionError.class);
 
 			new PropertiesAssert(objProp1wDefaults).isNotStrictlyEqualTo(objProp2wDefaults);
 		}
