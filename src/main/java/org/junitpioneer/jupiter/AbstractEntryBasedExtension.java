@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -36,19 +37,31 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 
 /**
  * An abstract base class for entry-based extensions, where entries (key-value
- * pairs) can be cleared or set.
+ * pairs) can be cleared, set, or restored.
  *
  * @param <K> The entry key type.
  * @param <V> The entry value type.
  * @param <C> The clear annotation type.
  * @param <S> The set annotation type.
+ * @param <R> The restore annotation type.
  */
-abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation>
+abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation, R extends Annotation>
 		implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
+
+	/**
+	 * Key to indicate storage is for an incremental backup object.
+	 */
+	private static final String INCREMENTAL_KEY = "inc";
+
+	/**
+	 * Key to indicate storage is for a complete backup object.
+	 */
+	private static final String COMPLETE_KEY = "full";
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
@@ -61,6 +74,13 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void applyForAllContexts(ExtensionContext originalContext) {
+		boolean fullRestore = PioneerAnnotationUtils.isAnnotationPresent(originalContext, getRestoreAnnotationType());
+
+		if (fullRestore) {
+			Properties bulk = this.prepareToEnterRestorableContext();
+			storeOriginalCompleteEntries(originalContext, bulk);
+		}
+
 		/*
 		 * We cannot use PioneerAnnotationUtils#findAllEnclosingRepeatableAnnotations(ExtensionContext, Class) or the
 		 * like as clearing and setting might interfere. Therefore, we have to apply the extension from the outermost
@@ -68,10 +88,11 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		 */
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(originalContext);
 		Collections.reverse(contexts);
-		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext));
+		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext, !fullRestore));
 	}
 
-	private void clearAndSetEntries(ExtensionContext currentContext, ExtensionContext originalContext) {
+	private void clearAndSetEntries(ExtensionContext currentContext, ExtensionContext originalContext,
+			boolean doIncrementalBackup) {
 		currentContext.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
@@ -89,7 +110,12 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 				return;
 
 			reportWarning(currentContext);
-			storeOriginalEntries(originalContext, entriesToClear, entriesToSet.keySet());
+
+			// Only backup original values if we didn't already do bulk storage of the original state
+			if (doIncrementalBackup) {
+				storeOriginalIncrementalEntries(originalContext, entriesToClear, entriesToSet.keySet());
+			}
+
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
 		});
@@ -119,9 +145,19 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		return (Class<S>) getActualTypeArgumentAt(3);
 	}
 
+	@SuppressWarnings("unchecked")
+	private Class<R> getRestoreAnnotationType() {
+		return (Class<R>) getActualTypeArgumentAt(4);
+	}
+
 	private Type getActualTypeArgumentAt(int index) {
 		ParameterizedType abstractEntryBasedExtensionType = (ParameterizedType) getClass().getGenericSuperclass();
-		return abstractEntryBasedExtensionType.getActualTypeArguments()[index];
+		Type type = abstractEntryBasedExtensionType.getActualTypeArguments()[index];
+		if (type instanceof ParameterizedType) {
+			return ((ParameterizedType) type).getRawType();
+		} else {
+			return type;
+		}
 	}
 
 	private void preventClearAndSetSameEntries(Collection<K> entriesToClear, Collection<K> entriesToSet) {
@@ -135,9 +171,32 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 				"Cannot clear and set the following entries at the same time: " + duplicateEntries);
 	}
 
-	private void storeOriginalEntries(ExtensionContext context, Collection<K> entriesToClear,
+	private void storeOriginalIncrementalEntries(ExtensionContext context, Collection<K> entriesToClear,
 			Collection<K> entriesToSet) {
-		getStore(context).put(getStoreKey(context), new EntriesBackup(entriesToClear, entriesToSet));
+		getStore(context).put(getStoreKey(context, INCREMENTAL_KEY), new EntriesBackup(entriesToClear, entriesToSet));
+	}
+
+	private void storeOriginalCompleteEntries(ExtensionContext context, Properties originalEntries) {
+		getStore(context).put(getStoreKey(context, COMPLETE_KEY), originalEntries);
+	}
+
+	/**
+	 * Restore the complete original state of the entries as they were prior to this {@code ExtensionContext},
+	 * if the complete state was initially stored in a before all/each event.
+	 *
+	 * @param context The {@code ExtensionContext} which may have a bulk backup stored.
+	 * @return true if a complete backup exists and was used to restore, false if not.
+	 */
+	private boolean restoreOriginalCompleteEntries(ExtensionContext context) {
+		Properties bulk = getStore(context).get(getStoreKey(context, COMPLETE_KEY), Properties.class);
+
+		if (bulk == null) {
+			// No complete backup - false will let the caller know to continue w/ an incremental restore
+			return false;
+		} else {
+			this.prepareToExitRestorableContext(bulk);
+			return true;
+		}
 	}
 
 	private void clearEntries(Collection<K> entriesToClear) {
@@ -159,13 +218,18 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	private void restoreForAllContexts(ExtensionContext originalContext) {
-		// restore from innermost to outermost
-		PioneerUtils.findAllContexts(originalContext).forEach(__ -> restoreOriginalEntries(originalContext));
+		// Try a complete restore first
+		if (!restoreOriginalCompleteEntries(originalContext)) {
+			// A complete backup is not available, so restore incrementally from innermost to outermost
+			PioneerUtils
+					.findAllContexts(originalContext)
+					.forEach(__ -> restoreOriginalIncrementalEntries(originalContext));
+		}
 	}
 
-	private void restoreOriginalEntries(ExtensionContext originalContext) {
+	private void restoreOriginalIncrementalEntries(ExtensionContext originalContext) {
 		getStore(originalContext)
-				.getOrDefault(getStoreKey(originalContext), EntriesBackup.class, new EntriesBackup())
+				.getOrDefault(getStoreKey(originalContext, INCREMENTAL_KEY), EntriesBackup.class, new EntriesBackup())
 				.restoreBackup();
 	}
 
@@ -173,8 +237,8 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		return context.getStore(Namespace.create(getClass()));
 	}
 
-	private Object getStoreKey(ExtensionContext context) {
-		return context.getUniqueId();
+	private String getStoreKey(ExtensionContext context, String discriminator) {
+		return context.getUniqueId() + "-" + this.getClass().getSimpleName() + "-" + discriminator;
 	}
 
 	private class EntriesBackup {
@@ -239,5 +303,37 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	protected void reportWarning(ExtensionContext context) {
 		// nothing reported by default
 	}
+
+	/**
+	 * <p>Prepare the entry-based environment for entering a context that must be restorable.</p>
+	 *
+	 * <p>Implementations may choose one of two strategies:
+	 * <ul>
+	 * <li><em>Post swap</em>, where the original entry-based environment is left in place and a clone is returned.
+	 * In this case {@link #prepareToExitRestorableContext} will restore the clone.
+	 * <li><em>Preemptive swap</em>, where the current entry-based environment is replaced with a clone and the
+	 * original is returned.
+	 * In this case the {@link #prepareToExitRestorableContext} will restore the original environment.</li>
+	 * </ul>
+	 * </p>
+	 *
+	 * <p>The returned {@code Properties} must not be null and its key-value pairs must follow the rules for
+	 * entries of its type. E.g., environment variables contain only Strings while System {@code Properties}
+	 * may contain Objects.</p>
+	 *
+	 * @return A non-null {@code Properties} that contains all entries of the entry environment.
+	 */
+	protected abstract Properties prepareToEnterRestorableContext();
+
+	/**
+	 * <p>Prepare to exit a restorable context for the entry based environment.</p>
+	 *
+	 * <p>The entry environment will be restored to the state passed in as {@code Properties}.
+	 * The {@code Properties} entries must follow the rules for entries of this environment,
+	 * e.g., environment variables contain only Strings while System {@code Properties} may contain Objects.</p>
+	 *
+	 * @param entries A non-null {@code Properties} that contains all entries of the entry environment.
+	 */
+	protected abstract void prepareToExitRestorableContext(Properties entries);
 
 }

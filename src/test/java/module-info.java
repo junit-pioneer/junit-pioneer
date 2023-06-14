@@ -52,4 +52,6 @@ module org.junitpioneer {
 
 	opens org.junitpioneer.internal to org.junit.platform.commons;
 	opens org.junitpioneer.testkit to org.junit.platform.commons;
+	opens org.junitpioneer.testkit.assertion to org.junit.platform.commons;
+
 }

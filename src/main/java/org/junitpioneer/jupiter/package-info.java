@@ -4,8 +4,8 @@
  * <p>Check out the following types for details:</p>
  *
  * <ul>
- *     <li>{@link org.junitpioneer.jupiter.ClearEnvironmentVariable} and {@link org.junitpioneer.jupiter.SetEnvironmentVariable}</li>
- *     <li>{@link org.junitpioneer.jupiter.ClearSystemProperty} and {@link org.junitpioneer.jupiter.SetSystemProperty}</li>
+ *     <li>{@link org.junitpioneer.jupiter.ClearEnvironmentVariable}, {@link org.junitpioneer.jupiter.SetEnvironmentVariable}, and {@link org.junitpioneer.jupiter.RestoreEnvironmentVariables}</li>
+ *     <li>{@link org.junitpioneer.jupiter.ClearSystemProperty}, {@link org.junitpioneer.jupiter.SetSystemProperty}, and {@link org.junitpioneer.jupiter.RestoreSystemProperties}</li>
  *     <li>{@link org.junitpioneer.jupiter.DefaultLocale} and {@link org.junitpioneer.jupiter.DefaultTimeZone}</li>
  *     <li>{@link org.junitpioneer.jupiter.DisabledUntil}</li>
  *     <li>{@link org.junitpioneer.jupiter.DisableIfTestFails}</li>
