@@ -89,7 +89,7 @@ class PropertiesAssertTests {
 	}
 
 	@Test
-	public void fakeTest() {
+	void fakeTest() {
 
 	}
 
@@ -99,7 +99,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
-		public void compareIdentical() {
+		void compareIdentical() {
 			new PropertiesAssert(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
 			new PropertiesAssert(strPropAB1).isStrictlyEqualTo(strPropAB2);
 
@@ -114,7 +114,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for added actual value")
-		public void addedActualValue() {
+		void addedActualValue() {
 			strPropAB1.setProperty("C", "I am not in set 2");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
@@ -130,7 +130,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same added exp value")
-		public void addedExpectedValue() {
+		void addedExpectedValue() {
 			strPropAB2.setProperty("C", "I am not in set 1");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
@@ -146,7 +146,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same changed actual value")
-		public void changedActualValue() {
+		void changedActualValue() {
 			strPropAB1.setProperty("B", "I am different");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
@@ -162,7 +162,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for changed exp value")
-		public void changedExpectedValue() {
+		void changedExpectedValue() {
 			strPropAB2.setProperty("B", "I am different");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
@@ -178,7 +178,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for removed actual value")
-		public void removedActualValue() {
+		void removedActualValue() {
 			strPropAB1.remove("B");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
@@ -194,7 +194,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for removed exp value")
-		public void removedExpValue() {
+		void removedExpValue() {
 			strPropAB2.remove("B");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1).isEffectivelyEqualsTo(strPropAB2);
@@ -218,7 +218,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
-		public void compareIdentical() {
+		void compareIdentical() {
 			new PropertiesAssert(objProp1).isEffectivelyEqualsTo(objProp2);
 			new PropertiesAssert(objProp1).isStrictlyEqualTo(objProp2);
 
@@ -233,7 +233,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for added actual value")
-		public void addedActualValue() {
+		void addedActualValue() {
 			objProp1.put("Q", new Object());
 
 			new PropertiesAssert(objProp1)
@@ -253,7 +253,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same added exp value")
-		public void addedExpectedValue() {
+		void addedExpectedValue() {
 			objProp2.put("Q", new Object());
 
 			new PropertiesAssert(objProp1)
@@ -272,7 +272,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same changed actual value")
-		public void changedActualValue() {
+		void changedActualValue() {
 			objProp1.put("P", new Object());
 
 			new PropertiesAssert(objProp1)
@@ -291,7 +291,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for changed exp value")
-		public void changedExpectedValue() {
+		void changedExpectedValue() {
 			objProp2.put("P", new Object());
 
 			new PropertiesAssert(objProp1)
@@ -310,7 +310,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for removed actual value")
-		public void removedActualValue() {
+		void removedActualValue() {
 			objProp1.remove("P");
 
 			new PropertiesAssert(objProp1)
@@ -329,7 +329,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for removed exp value")
-		public void removedExpValue() {
+		void removedExpValue() {
 			objProp2.remove("P");
 
 			new PropertiesAssert(objProp1)
@@ -354,7 +354,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
-		public void compareIdentical() {
+		void compareIdentical() {
 			new PropertiesAssert(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
 			new PropertiesAssert(strPropAB1CDwDefaults).isStrictlyEqualTo(strPropAB2CDwDefaults);
 
@@ -369,7 +369,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for added actual default value")
-		public void addedActualValue() {
+		void addedActualValue() {
 			strPropAB1.setProperty("E", "I am not in '2' and set in the default prop instance");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
@@ -385,7 +385,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same added exp value")
-		public void addedExpectedValue() {
+		void addedExpectedValue() {
 			strPropAB2.setProperty("E", "I am not in '1' and set in the default prop instance");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
@@ -401,7 +401,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same changed actual value")
-		public void changedActualValue() {
+		void changedActualValue() {
 			strPropAB1.setProperty("B", "I am different than '2' and set in the default prop instance");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
@@ -417,7 +417,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for changed exp value")
-		public void changedExpectedValue() {
+		void changedExpectedValue() {
 			strPropAB2.setProperty("B", "I am different than '1' and set in the default prop instance");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
@@ -433,7 +433,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for removed actual value")
-		public void removedActualValue() {
+		void removedActualValue() {
 			strPropAB1.remove("B");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
@@ -449,7 +449,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for removed exp value")
-		public void removedExpValue() {
+		void removedExpValue() {
 			strPropAB2.remove("B");
 			assertThatThrownBy(() -> {
 				new PropertiesAssert(strPropAB1CDwDefaults).isEffectivelyEqualsTo(strPropAB2CDwDefaults);
@@ -465,7 +465,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Move actual value from default to top level")
-		public void moveActualValueFromDefaultToTopLevel() {
+		void moveActualValueFromDefaultToTopLevel() {
 			strPropAB1CDwDefaults.put("B", strPropAB1.getProperty("B"));
 			strPropAB1.remove("B");
 
@@ -484,7 +484,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Move actual value from top level to default")
-		public void moveActualValueFromTopLevelToDefault() {
+		void moveActualValueFromTopLevelToDefault() {
 			strPropAB1.put("D", strPropAB1CDwDefaults.getProperty("D"));
 			strPropAB1CDwDefaults.remove("D");
 
@@ -503,7 +503,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Move exp value from default to top level")
-		public void moveExpValueFromDefaultToTopLevel() {
+		void moveExpValueFromDefaultToTopLevel() {
 			strPropAB2CDwDefaults.put("B", strPropAB2.getProperty("B"));
 			strPropAB2.remove("B");
 
@@ -522,7 +522,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Move exp value from top level to default")
-		public void moveExpValueFromTopLevelToDefault() {
+		void moveExpValueFromTopLevelToDefault() {
 			strPropAB2.put("D", strPropAB2CDwDefaults.getProperty("D"));
 			strPropAB2CDwDefaults.remove("D");
 
@@ -547,7 +547,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Effectively and strictly same for identical")
-		public void compareIdentical() {
+		void compareIdentical() {
 			new PropertiesAssert(objProp1wDefaults).isEffectivelyEqualsTo(objProp2wDefaults);
 			new PropertiesAssert(objProp1wDefaults).isStrictlyEqualTo(objProp2wDefaults);
 
@@ -562,7 +562,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for added actual default value")
-		public void addedActualValue() {
+		void addedActualValue() {
 			objProp1.put("X", new Object());
 
 			new PropertiesAssert(objProp1wDefaults)
@@ -582,7 +582,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same added exp value")
-		public void addedExpectedValue() {
+		void addedExpectedValue() {
 			objProp2.put("X", new Object());
 
 			new PropertiesAssert(objProp1wDefaults)
@@ -602,7 +602,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same changed actual value")
-		public void changedActualValue() {
+		void changedActualValue() {
 			objProp1.put("P", new Object());
 
 			new PropertiesAssert(objProp1wDefaults)
@@ -621,7 +621,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for changed exp value")
-		public void changedExpectedValue() {
+		void changedExpectedValue() {
 			objProp2.put("P", new Object());
 
 			new PropertiesAssert(objProp1wDefaults)
@@ -640,7 +640,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for removed actual value")
-		public void removedActualValue() {
+		void removedActualValue() {
 			objProp1.remove("P");
 
 			new PropertiesAssert(objProp1wDefaults)
@@ -659,7 +659,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Not same for removed exp value")
-		public void removedExpValue() {
+		void removedExpValue() {
 			objProp2.remove("P");
 
 			new PropertiesAssert(objProp1wDefaults)
@@ -678,7 +678,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Move actual value from default to top level")
-		public void moveActualValueFromDefaultToTopLevel() {
+		void moveActualValueFromDefaultToTopLevel() {
 			objProp1wDefaults.put("P", objProp1.get("P"));
 			objProp1.remove("P");
 
@@ -699,7 +699,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Move actual value from top level to default")
-		public void moveActualValueFromTopLevelToDefault() {
+		void moveActualValueFromTopLevelToDefault() {
 			objProp1.put("R", objProp1wDefaults.get("R"));
 			objProp1wDefaults.remove("R");
 
@@ -720,7 +720,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Move exp value from default to top level")
-		public void moveExpValueFromDefaultToTopLevel() {
+		void moveExpValueFromDefaultToTopLevel() {
 			objProp2wDefaults.put("P", objProp2.get("P"));
 			objProp2.remove("P");
 
@@ -741,7 +741,7 @@ class PropertiesAssertTests {
 
 		@Test
 		@DisplayName("Move exp value from top level to default")
-		public void moveExpValueFromTopLevelToDefault() {
+		void moveExpValueFromTopLevelToDefault() {
 			objProp2.put("R", objProp2wDefaults.get("R"));
 			objProp2wDefaults.remove("R");
 
