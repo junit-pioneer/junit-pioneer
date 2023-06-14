@@ -16,6 +16,7 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Properties;
 
 import org.junit.jupiter.api.AfterAll;
@@ -170,7 +171,7 @@ class RestoreSystemPropertiesTests {
 			implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
 		// Nested tests will push additional copies
-		private static ArrayDeque<Properties> beforeAllState = new ArrayDeque<>();
+		private final static Deque<Properties> beforeAllState = new ArrayDeque<>();
 
 		// Only one test method happens at a time
 		private static Properties beforeEachState;

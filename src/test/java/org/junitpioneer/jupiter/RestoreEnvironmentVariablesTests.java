@@ -130,7 +130,7 @@ class RestoreEnvironmentVariablesTests {
 			implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
 
 		// Nested tests will push additional copies
-		private static Deque<Map<String, String>> beforeAllState = new ArrayDeque<>();
+		private static final Deque<Map<String, String>> beforeAllState = new ArrayDeque<>();
 
 		// Only one test method happens at a time
 		private static Map<String, String> beforeEachState;
