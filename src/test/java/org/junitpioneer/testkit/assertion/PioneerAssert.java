@@ -11,6 +11,7 @@
 package org.junitpioneer.testkit.assertion;
 
 import java.nio.file.Path;
+import java.util.Properties;
 
 import org.junitpioneer.testkit.ExecutionResults;
 
@@ -29,6 +30,16 @@ public class PioneerAssert {
 
 	public static PioneerPathAssert assertThat(Path actual) {
 		return new PioneerPathAssert(actual);
+	}
+
+	/**
+	 * Make an assertion on a {@link Properties} instance.
+	 *
+	 * @param actual The {@link Properties} instance the assertion is made with respect to
+	 * @return Assertion instance
+	 */
+	public static PropertiesAssert assertThat(Properties actual) {
+		return new PropertiesAssert(actual);
 	}
 
 }

@@ -27,14 +27,27 @@ public class StdIn extends InputStream {
 	private final StringReader reader;
 	private final StringWriter writer = new StringWriter();
 
+	/**
+	 * Keeps track of number of bytes that are still available to {@link InputStream#read() read()}.
+	 */
+	private int availableBytes;
+
 	public StdIn(String[] values) {
-		reader = new StringReader(String.join(StdIoExtension.SEPARATOR, values));
+		var mockedInput = String.join(StdIoExtension.SEPARATOR, values);
+		reader = new StringReader(mockedInput);
+		availableBytes = mockedInput.getBytes().length;
+	}
+
+	@Override
+	public int available() throws IOException {
+		return availableBytes;
 	}
 
 	@Override
 	public int read() throws IOException {
 		int reading = reader.read();
 		if (reading != -1) {
+			availableBytes--;
 			writer.write(reading);
 		}
 		return reading;

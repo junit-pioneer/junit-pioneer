@@ -5,9 +5,9 @@
     children:
       - title: "Cartesian Product of Parameters"
         url: /docs/cartesian-product/
-      - title: "Clearing or Setting System Properties"
+      - title: "Clear, Set, and Restore System Properties"
         url: /docs/system-properties/
-      - title: "Clearing or Setting Environment Variables"
+      - title: "Clear, Set, and Restore Environment Variables"
         url: /docs/environment-variables/
       - title: "Default Locale and TimeZone"
         url: /docs/default-locale-timezone/

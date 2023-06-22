@@ -10,6 +10,9 @@
 
 package org.junitpioneer.internal;
 
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
@@ -20,10 +23,8 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -34,9 +35,9 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 /**
  * Pioneer-internal utility class to handle annotations.
  * DO NOT USE THIS CLASS - IT MAY CHANGE SIGNIFICANTLY IN ANY MINOR UPDATE.
- *
+ * <p>
  * It uses the following terminology to describe annotations that are not
- * immediately present on an element:
+ * immediately present on an element:</p>
  *
  * <ul>
  *     <li><em>indirectly present</em> if a supertype of the element is annotated</li>
@@ -45,9 +46,11 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
  *     		{@link org.junit.jupiter.api.Nested @Nested}) is annotated</li>
  * </ul>
  *
+ * <p>
  * All of the above mechanisms apply recursively, meaning that, e.g., for an annotation to be
  * <em>meta-present</em> it can present on an annotation that is present on another annotation
  * that is present on the element.
+ * </p>
  */
 public class PioneerAnnotationUtils {
 
@@ -133,7 +136,7 @@ public class PioneerAnnotationUtils {
 				// flatten @Repeatable aggregator annotations
 				.flatMap(PioneerAnnotationUtils::flatten)
 				.filter(a -> !(findOnType(a.annotationType(), annotation, isRepeatable, false).isEmpty()))
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 	}
 
 	private static Stream<Annotation> flatten(Annotation annotation) {
@@ -183,7 +186,7 @@ public class PioneerAnnotationUtils {
 		List<A> onMethod = context
 				.getTestMethod()
 				.map(method -> findOnMethod(method, annotationType, findRepeated))
-				.orElse(Collections.emptyList());
+				.orElse(List.of());
 		if (!findAllEnclosing && !onMethod.isEmpty())
 			return onMethod.stream();
 		Stream<A> onClass = findOnOuterClasses(context.getTestClass(), annotationType, findRepeated, findAllEnclosing);
@@ -196,15 +199,12 @@ public class PioneerAnnotationUtils {
 		if (findRepeated)
 			return AnnotationSupport.findRepeatableAnnotations(element, annotationType);
 		else
-			return AnnotationSupport
-					.findAnnotation(element, annotationType)
-					.map(Collections::singletonList)
-					.orElse(Collections.emptyList());
+			return AnnotationSupport.findAnnotation(element, annotationType).stream().collect(toUnmodifiableList());
 	}
 
 	private static <A extends Annotation> Stream<A> findOnOuterClasses(Optional<Class<?>> type, Class<A> annotationType,
 			boolean findRepeated, boolean findAllEnclosing) {
-		if (!type.isPresent())
+		if (type.isEmpty())
 			return Stream.empty();
 
 		List<A> onThisClass = Arrays.asList(type.get().getAnnotationsByType(annotationType));
@@ -220,18 +220,18 @@ public class PioneerAnnotationUtils {
 	private static <A extends Annotation> List<A> findOnType(Class<?> element, Class<A> annotationType,
 			boolean findRepeated, boolean findAllEnclosing) {
 		if (element == null || element == Object.class)
-			return Collections.emptyList();
+			return List.of();
 		if (findRepeated)
 			return AnnotationSupport.findRepeatableAnnotations(element, annotationType);
 
 		List<A> onElement = AnnotationSupport
 				.findAnnotation(element, annotationType)
-				.map(Collections::singletonList)
-				.orElse(Collections.emptyList());
+				.stream()
+				.collect(toUnmodifiableList());
 		List<A> onInterfaces = Arrays
 				.stream(element.getInterfaces())
 				.flatMap(clazz -> findOnType(clazz, annotationType, false, findAllEnclosing).stream())
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 		if (!annotationType.isAnnotationPresent(Inherited.class)) {
 			if (!findAllEnclosing)
 				return onElement;
@@ -240,23 +240,23 @@ public class PioneerAnnotationUtils {
 						.of(onElement, onInterfaces)
 						.flatMap(Collection::stream)
 						.distinct()
-						.collect(Collectors.toList());
+						.collect(toUnmodifiableList());
 		}
 		List<A> onSuperclass = findOnType(element.getSuperclass(), annotationType, false, findAllEnclosing);
 		return Stream
 				.of(onElement, onInterfaces, onSuperclass)
 				.flatMap(Collection::stream)
 				.distinct()
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 	}
 
 	public static List<Annotation> findParameterArgumentsSources(Method testMethod) {
 		return Arrays
 				.stream(testMethod.getParameters())
 				.map(PioneerAnnotationUtils::collectArgumentSources)
-				.filter(list -> !list.isEmpty())
+				.filter(not(List::isEmpty))
 				.map(annotations -> annotations.get(0))
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 	}
 
 	private static List<Annotation> collectArgumentSources(Parameter parameter) {
@@ -274,7 +274,7 @@ public class PioneerAnnotationUtils {
 				.filter(annotation -> AnnotationSupport
 						.findAnnotation(annotation.annotationType(), CartesianArgumentsSource.class)
 						.isPresent())
-				.collect(Collectors.toList());
+				.collect(toUnmodifiableList());
 	}
 
 }

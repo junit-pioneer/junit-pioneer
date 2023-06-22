@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -56,7 +55,7 @@ class PioneerExecutionResultAssert extends AbstractAssert<PioneerExecutionResult
 			List<Map.Entry<String, String>> entryList = entries
 					.stream()
 					.flatMap(map -> map.entrySet().stream())
-					.collect(Collectors.toList());
+					.collect(toList());
 
 			return new ReportEntryAssertBase(entryList, expected);
 		}

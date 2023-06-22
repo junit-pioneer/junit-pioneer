@@ -107,6 +107,34 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
+		@StdIo({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
+		@DisplayName("for non-empty input, available() reports input's number of bytes")
+		void everythingAvailableBeforeRead(StdIn in) throws IOException {
+			int inputLength = ("Doth homage to his new-appearing sight" + System.getProperty("line.separator")
+					+ "Serving with looks his sacred majesty;").getBytes().length;
+
+			assertThat(in.available()).isEqualTo(inputLength);
+		}
+
+		@Test
+		@StdIo({ "Doth homage to his new-appearing sight" })
+		@DisplayName("for non-empty input after partial read, available() reports correctly reduced number of bytes")
+		void somethingAvailableAfterRead(StdIn in) throws IOException {
+			int bytesToRead = 16;
+			app.read(bytesToRead);
+			int remainingLength = "Doth homage to his new-appearing sight".getBytes().length - bytesToRead;
+
+			assertThat(in.available()).isEqualTo(remainingLength);
+		}
+
+		@Test
+		@StdIo("")
+		@DisplayName("for empty input, available() returns 0 available bytes")
+		void nothingAvailableWhenEmpty(StdIn in) throws IOException {
+			assertThat(in.available()).isEqualTo(0);
+		}
+
+		@Test
 		@StdIo({ "And having climbed the steep-up heavenly hill,", "Resembling strong youth in his middle age," })
 		@DisplayName("catches the input from the standard in and the output on the standard out")
 		void catchesBoth(StdIn in, StdOut out) throws IOException {
@@ -355,6 +383,12 @@ public class StdIoExtensionTests {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			lines.add(reader.readLine());
 			lines.add(reader.readLine());
+		}
+
+		public void read(int byteCount) throws IOException {
+			for (int i = 0; i < byteCount; i++) {
+				System.in.read();
+			}
 		}
 
 		public void readAndWrite() throws IOException {

@@ -29,7 +29,7 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 		invokeAndInvertResult(invocation, extensionContext);
 	}
 
-	private static <T> T invokeAndInvertResult(Invocation<T> invocation, ExtensionContext extensionContext)
+	private static void invokeAndInvertResult(Invocation<Void> invocation, ExtensionContext extensionContext)
 			throws Throwable {
 		try {
 			invocation.proceed();
@@ -50,7 +50,7 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 			throw new TestAbortedException(message, t);
 		}
 
-		return fail("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
+		fail("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
 	}
 
 	/**
@@ -59,11 +59,12 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 	 *
 	 * <p>This method is used for exceptions that abort test execution and should
 	 * have higher precedence than aborted exceptions thrown by this extension.
+	 * </p>
 	 */
 	private static boolean shouldPreserveException(Throwable t) {
 		// Note: Ideally would use the same logic JUnit uses to determine if exception is aborting
 		// execution, see its class OpenTest4JAndJUnit4AwareThrowableCollector
-		return TestAbortedException.class.isInstance(t);
+		return t instanceof TestAbortedException;
 	}
 
 	private static ExpectedToFail getExpectedToFailAnnotation(ExtensionContext context) {

@@ -10,10 +10,8 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableList;
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -21,7 +19,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -182,9 +179,9 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	private Resource<?> newResource(Object newOrSharedAnnotation, ResourceFactory<?> resourceFactory) {
 		List<String> arguments;
 		if (newOrSharedAnnotation instanceof New) {
-			arguments = unmodifiableList(asList(((New) newOrSharedAnnotation).arguments()));
+			arguments = List.of(((New) newOrSharedAnnotation).arguments());
 		} else {
-			arguments = Collections.emptyList();
+			arguments = List.of();
 		}
 
 		Resource<?> result;
@@ -386,7 +383,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		//  - test3 -> [C, A]
 		//
 		// If test1 gets A, then test2 gets B, and then test3 gets C, none of the tests can get the second lock
-		// they need and so they can also never give up the one they hold.
+		// they need, and so they can also never give up the one they hold.
 		//
 		// This is known as the Dining Philosophers Problem [1] and a solution is to order locks before acquiring them.
 		// In the above example, test3 would start with trying to get A and, since it can't, block on that. Then test2
@@ -404,16 +401,19 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private List<ReentrantLock> sortedLocksForSharedResources(Collection<Shared> sharedAnnotations,
 			ExtensionContext extensionContext) {
-		List<Shared> sortedAnnotations = sharedAnnotations.stream().sorted(comparing(Shared::name)).collect(toList());
+		List<Shared> sortedAnnotations = sharedAnnotations
+				.stream()
+				.sorted(comparing(Shared::name))
+				.collect(toUnmodifiableList());
 		List<ExtensionContext.Store> stores = //
 			sortedAnnotations
 					.stream() //
 					.map(shared -> scopedStore(extensionContext, shared.scope()))
-					.collect(toList());
+					.collect(toUnmodifiableList());
 		return IntStream
 				.range(0, sortedAnnotations.size()) //
 				.mapToObj(i -> findLockForShared(sortedAnnotations.get(i), stores.get(i)))
-				.collect(toList());
+				.collect(toUnmodifiableList());
 	}
 
 	private Method testFactoryMethod(ExtensionContext extensionContext) {
@@ -455,7 +455,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
-				.collect(toList());
+				.collect(toUnmodifiableList());
 	}
 
 	private void putNewLockForShared(Shared shared, ExtensionContext.Store store) {

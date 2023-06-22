@@ -116,6 +116,9 @@ Thank you for your efforts! 🙏
 
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
+#### 2023
+* [Eric Everman](https://github.com/eeverman) added `@RestoreSystemProperties` and `@RestoreEnvironmentVariables` annotations to the [System Properties](https://junit-pioneer.org/docs/system-properties/) and [Environment Variables](https://junit-pioneer.org/docs/environment-variables/) extensions (#574 / #700)
+
 #### 2022
 
 * [Filip Hrisafov](https://github.com/filiphr) contributed the [JSON Argument Source](https://junit-pioneer.org/docs/json-argument-source/) support (#101 / #492)

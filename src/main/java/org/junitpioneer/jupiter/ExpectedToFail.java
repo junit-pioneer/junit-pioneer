@@ -31,16 +31,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * annotation is that the developer is informed as soon as a test is successful again.
  * This helps to avoid creating duplicate tests by accident and counteracts the accumulation
  * of disabled tests over time.
+ * </p>
  *
  * <p>The annotation can only be used on methods and as meta-annotation on other annotation types.
  * Similar to {@code @Disabled}, it has to be used in addition to a "testable" annotation, such
  * as {@link org.junit.jupiter.api.Test @Test}. Otherwise the annotation has no effect.
+ * </p>
  *
  * <p><b>Important:</b> This annotation is <b>not</b> intended as a way to mark test methods
  * which intentionally cause exceptions. Such test methods should use
  * {@link org.junit.jupiter.api.Assertions#assertThrows(Class, org.junit.jupiter.api.function.Executable) assertThrows}
  * or similar means to explicitly test for a specific exception class being thrown by a
  * specific action.
+ * </p>
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/expected-to-fail-tests/" target="_top">the documentation on <code>@ExpectedToFail</code></a>.

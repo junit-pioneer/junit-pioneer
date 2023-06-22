@@ -32,7 +32,7 @@ public class PioneerPreconditions {
 	 * @return the supplied string
 	 */
 	public static String notBlank(String str, String message) {
-		if (str == null || str.trim().isEmpty()) {
+		if (str == null || str.isBlank()) {
 			throw new PreconditionViolationException(message);
 		}
 
@@ -46,7 +46,7 @@ public class PioneerPreconditions {
 	 * @return the supplied string
 	 */
 	public static String notBlank(String str, Supplier<String> messageSupplier) {
-		if (str == null || str.trim().isEmpty()) {
+		if (str == null || str.isBlank()) {
 			throw new PreconditionViolationException(messageSupplier.get());
 		}
 

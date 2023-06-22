@@ -10,13 +10,19 @@
 
 package org.junitpioneer.jupiter;
 
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-class EnvironmentVariableExtension
-		extends AbstractEntryBasedExtension<String, String, ClearEnvironmentVariable, SetEnvironmentVariable> {
+class EnvironmentVariableExtension extends
+		AbstractEntryBasedExtension<String, String, ClearEnvironmentVariable, SetEnvironmentVariable, RestoreEnvironmentVariables> {
 
 	// package visible to make accessible for tests
 	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
@@ -66,6 +72,39 @@ class EnvironmentVariableExtension
 	@Override
 	protected void setEntry(String key, String value) {
 		EnvironmentVariableUtils.set(key, value);
+	}
+
+	/**
+	 * <p>This implementation uses the "Post swap" strategy, returning a clone of the environment variables
+	 * which will be restored in {@link AbstractEntryBasedExtension#prepareToExitRestorableContext}.</p>
+	 *
+	 * <p>See {@link AbstractEntryBasedExtension#prepareToEnterRestorableContext} for more details.</p>
+	 *
+	 * @return A clone of the current environment variables, as a {@code Properties} object.
+	 */
+	@Override
+	protected Properties prepareToEnterRestorableContext() {
+		Properties clone = new Properties();
+		clone.putAll(System.getenv());
+		return clone;
+	}
+
+	@Override
+	protected void prepareToExitRestorableContext(Properties restoreMe) {
+		Map<String, String> existingEnv = System.getenv();
+
+		// Set all values, but only if different from actual value
+		restoreMe
+				.entrySet()
+				.stream()
+				.filter(e -> !e.getValue().equals(System.getenv(e.getKey().toString())))
+				.forEach(e -> setEntry(e.getKey().toString(), e.getValue().toString()));
+
+		// Find entries to remove.
+		// Cannot remove in stream b/c the stream is based on the collection that needs to be modified
+		Set<String> entriesToClear = existingEnv.keySet().stream().filter(not(restoreMe::containsKey)).collect(toSet());
+
+		entriesToClear.forEach(this::clearEntry);
 	}
 
 }

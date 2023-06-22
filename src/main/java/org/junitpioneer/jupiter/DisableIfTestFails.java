@@ -20,20 +20,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Disables all remaining tests in a container if one of them failed.
- *
+ * <p>
  * By default, all exceptions (including assertions, but exempting failed assumptions) will lead to
  * disabling the remaining tests. To configure this in more detail, see {@link #with()} and
  * {@link #onAssertion()}.
- *
+ * </p>
+ * <p>
  * This annotation can be (meta-)present on classes that contain a nested class. In that case, a
  * failing test in the outer class will disable the nested class (if it runs later) and vice versa.
- *
+ * </p>
+ * <p>
  * This annotation can be (meta-)present on a class and/or its super types (classes or interfaces).
  * In that case, the exception types given to {@link #with()} are merged and {@link #onAssertion()}
  * is or'ed.
- *
+ * </p>
+ * <p>
  * But if a test fails in a specific class, only other tests in the corresponding container will
- * be disabled. That means if...
+ * be disabled. That means if...</p>
  *
  * <ul>
  *     <li>a class {@code SpecificTests} implements interface {@code Tests} and</li>
@@ -52,19 +55,21 @@ public @interface DisableIfTestFails {
 
 	/**
 	 * Configure on which exceptions remaining tests are disabled (defaults to "any exception").
-	 *
+	 * <p>
 	 * If {@code @DisableIfTestFails} is present multiple times (e.g. on multiple super types),
 	 * these exceptions are collected across all annotations, meaning if any of the mentioned
 	 * exceptions are thrown, the remaining tests are disabled.
+	 * </p>
 	 */
 	Class<? extends Throwable>[] with() default {};
 
 	/**
 	 * Set to {@code false} if failed assertions should not lead to disabling remaining tests.
-	 *
+	 * <p>
 	 * If {@code @DisableIfTestFails} is present multiple times (e.g. on multiple super types),
 	 * this value is or'ed, meaning as soon as one annotation says to fail on assertion errors,
 	 * that's how the container will behave.
+	 * </p>
 	 */
 	boolean onAssertion() default true;
 

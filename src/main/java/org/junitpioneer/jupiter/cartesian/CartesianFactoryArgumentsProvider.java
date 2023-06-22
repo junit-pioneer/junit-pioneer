@@ -85,8 +85,7 @@ class CartesianFactoryArgumentsProvider
 	}
 
 	private static boolean factoryMustBeStatic(Method factory, Object testInstance, TestInstance.Lifecycle lifecycle) {
-		return testInstance == null || !factory.getDeclaringClass().isInstance(testInstance)
-				|| lifecycle != TestInstance.Lifecycle.PER_CLASS;
+		return !factory.getDeclaringClass().isInstance(testInstance) || lifecycle != TestInstance.Lifecycle.PER_CLASS;
 	}
 
 	private ArgumentSets invokeMethodFactory(Method testMethod, Method factory, Object testInstance) {

@@ -12,9 +12,19 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.ClassOrderer;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junitpioneer.jupiter.params.IntRangeSource;
 
 @EnabledForJreRange(max = JRE.JAVA_16, disabledReason = "See: https://github.com/junit-pioneer/junit-pioneer/issues/509")
 public class EnvironmentVariablesExtensionDemo {
@@ -59,5 +69,91 @@ public class EnvironmentVariablesExtensionDemo {
 
 	}
 	// end::environment_using_at_class_level[]
+
+	// tag::environment_method_restore_test[]
+	@ParameterizedTest
+	@ValueSource(strings = { "foo", "bar" })
+	@RestoreEnvironmentVariables
+	void parameterizedTest(String value) {
+		setEnvVar("some parameterized property", value);
+		setEnvVar("some other dynamic property", "my code calculates somehow");
+	}
+	// end::environment_method_restore_test[]
+
+	@Nested
+	@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+	class EnvironmentVariableRestoreExample {
+
+		@Nested
+		@Order(1)
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Allow non-static @BeforeAll
+		// tag::environment_class_restore_setup[]
+		@RestoreEnvironmentVariables
+		class EnvironmentVarRestoreTest {
+
+			@BeforeAll
+			void beforeAll() {
+				setEnvVar("A", "A value");
+			}
+
+			@BeforeEach
+			void beforeEach() {
+				setEnvVar("B", "B value");
+			}
+
+			@Test
+			void isolatedTest1() {
+				setEnvVar("C", "C value");
+			}
+
+			@Test
+			void isolatedTest2() {
+				assertThat(System.getenv("A")).isEqualTo("A value");
+				assertThat(System.getenv("B")).isEqualTo("B value");
+
+				// Class-level @RestoreEnvironmentVariables restores "C" to original state
+				assertThat(System.getenv("C")).isNull();
+			}
+
+		}
+		// end::environment_class_restore_setup[]
+
+		@Nested
+		@Order(2)
+		// tag::environment_class_restore_isolated_class[]
+		// A test class that runs later
+		@ReadsEnvironmentVariable
+		class SomeOtherTestClass {
+
+			@Test
+			void isolatedTest() {
+				// Class-level @RestoreEnvironmentVariables restores all changes made in EnvironmentVarRestoreTest
+				assertThat(System.getenv("A")).isNull();
+				assertThat(System.getenv("B")).isNull();
+				assertThat(System.getenv("C")).isNull();
+			}
+
+			// Changes to A, B, C have been restored to their values prior to the above test
+		}
+
+		// end::environment_class_restore_isolated_class[]
+	}
+
+	// tag::environment_method_combine_all_test[]
+	@ParameterizedTest
+	@IntRangeSource(from = 0, to = 10000, step = 500)
+	@RestoreEnvironmentVariables
+	@SetEnvironmentVariable(key = "DISABLE_CACHE", value = "TRUE")
+	@ClearEnvironmentVariable(key = "COPYWRITE_OVERLAY_TEXT")
+	void imageGenerationTest(int imageSize) {
+		setEnvVar("IMAGE_SIZE", String.valueOf(imageSize)); // Requires restore
+
+		// Test your image generation utility with the current environment variables
+	}
+	// end::environment_method_combine_all_test[]
+
+	public static void setEnvVar(String name, String value) {
+		EnvironmentVariableUtils.set(name, value);
+	}
 
 }

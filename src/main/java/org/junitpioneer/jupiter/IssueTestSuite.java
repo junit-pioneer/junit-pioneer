@@ -10,14 +10,14 @@
 
 package org.junitpioneer.jupiter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Represents the execution result of test method, which is annotated with {@link org.junitpioneer.jupiter.Issue}.
- *
+ * <p>
  * Once Pioneer baselines against Java 17, this will be a record.
+ * </p>
  *
  * @since 1.1
  * @see Issue
@@ -36,7 +36,7 @@ public final class IssueTestSuite {
 	 */
 	public IssueTestSuite(String issueId, List<IssueTestCase> tests) {
 		this.issueId = issueId;
-		this.tests = Collections.unmodifiableList(tests);
+		this.tests = List.copyOf(tests);
 	}
 
 	/**

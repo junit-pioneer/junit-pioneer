@@ -10,9 +10,10 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junitpioneer.internal.PioneerPreconditions;
@@ -30,7 +31,7 @@ class JsonClasspathSourceArgumentsProvider extends AbstractJsonSourceBasedArgume
 				.stream(jsonSource.value())
 				.map(JsonClasspathSourceArgumentsProvider::classpathResource);
 
-		accept(resources.collect(Collectors.toList()), jsonSource.data());
+		accept(resources.collect(toUnmodifiableList()), jsonSource.data());
 	}
 
 	private static Source classpathResource(String resource) {

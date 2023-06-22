@@ -22,10 +22,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * lines read from {@code System.in} (with parameter {@link StdIn}) or
  * written to {@code System.out} (with parameter {@link StdOut StdOut}).
  *
- * The annotated test method can have zero, one, or both parameters, but {@code StdIn} can only
+ * <p>The annotated test method can have zero, one, or both parameters, but {@code StdIn} can only
  * be provided if {@link StdIo#value()} is used to specify input - otherwise an
  * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException ExtensionConfigurationException}
  * will be thrown.
+ * </p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,

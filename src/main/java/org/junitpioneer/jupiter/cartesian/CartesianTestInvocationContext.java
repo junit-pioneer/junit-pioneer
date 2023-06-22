@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter.cartesian;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.extension.Extension;
@@ -34,7 +33,7 @@ class CartesianTestInvocationContext implements TestTemplateInvocationContext {
 
 	@Override
 	public List<Extension> getAdditionalExtensions() {
-		return Collections.singletonList(new CartesianProductResolver(parameters));
+		return List.of(new CartesianProductResolver(parameters));
 	}
 
 }

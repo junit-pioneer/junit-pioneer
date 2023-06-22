@@ -12,9 +12,17 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.ClassOrderer;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junitpioneer.jupiter.params.IntRangeSource;
 
 public class SystemPropertyExtensionDemo {
 
@@ -59,13 +67,83 @@ public class SystemPropertyExtensionDemo {
 	}
 	// end::systemproperty_using_at_class_level[]
 
-	// tag::systemproperty_parameter[]
+	// tag::systemproperty_restore_test[]
 	@ParameterizedTest
 	@ValueSource(strings = { "foo", "bar" })
-	@ClearSystemProperty(key = "some property")
+	@RestoreSystemProperties
 	void parameterizedTest(String value) {
-		System.setProperty("some property", value);
+		System.setProperty("some parameterized property", value);
+		System.setProperty("some other dynamic property", "my code calculates somehow");
 	}
-	// end::systemproperty_parameter[]
+	// end::systemproperty_restore_test[]
+
+	@Nested
+	@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+	class SystemPropertyRestoreExample {
+
+		@Nested
+		@Order(1)
+		@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+		// tag::systemproperty_class_restore_setup[]
+		@RestoreSystemProperties
+		class MySystemPropertyRestoreTest {
+
+			@BeforeAll
+			void beforeAll() {
+				System.setProperty("A", "A value");
+			}
+
+			@BeforeEach
+			void beforeEach() {
+				System.setProperty("B", "B value");
+			}
+
+			@Test
+			void isolatedTest1() {
+				System.setProperty("C", "C value");
+			}
+
+			@Test
+			void isolatedTest2() {
+				assertThat(System.getProperty("A")).isEqualTo("A value");
+				assertThat(System.getProperty("B")).isEqualTo("B value");
+
+				// Class-level @RestoreSystemProperties restores "C" to original state
+				assertThat(System.getProperty("C")).isNull();
+			}
+
+		}
+		// end::systemproperty_class_restore_setup[]
+
+		@Nested
+		@Order(2)
+		// tag::systemproperty_class_restore_isolated_class[]
+		@ReadsSystemProperty
+		class SomeOtherTestClass {
+
+			@Test
+			void isolatedTest() {
+				assertThat(System.getProperty("A")).isNull();
+				assertThat(System.getProperty("B")).isNull();
+				assertThat(System.getProperty("C")).isNull();
+			}
+
+		}
+
+		// end::systemproperty_class_restore_isolated_class[]
+	}
+
+	// tag::systemproperty_method_combine_all_test[]
+	@ParameterizedTest
+	@IntRangeSource(from = 0, to = 10000, step = 500)
+	@RestoreSystemProperties
+	@SetSystemProperty(key = "DISABLE_CACHE", value = "TRUE")
+	@ClearSystemProperty(key = "COPYWRITE_OVERLAY_TEXT")
+	void imageGenerationTest(int imageSize) {
+		System.setProperty("IMAGE_SIZE", String.valueOf(imageSize)); // Requires restore
+
+		// Test your image generation utility with the current system properties
+	}
+	// end::systemproperty_method_combine_all_test[]
 
 }

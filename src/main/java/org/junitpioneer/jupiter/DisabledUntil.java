@@ -23,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * essentially disabling a test temporarily. The date is given as an ISO 8601 string.
  *
  * <p>It may optionally be declared with a reason to document why the annotated test class or test
- * method is disabled.
+ * method is disabled.</p>
  *
  * <p>{@code @DisabledUntil} can be used on the method and class level. It can only be used once per method or class,
  * but is inherited from higher-level containers.</p>

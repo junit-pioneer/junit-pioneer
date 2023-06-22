@@ -10,16 +10,15 @@
 
 package org.junitpioneer.testkit.assertion;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.AbstractStringAssert;
@@ -56,10 +55,10 @@ class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase,
 		assertThat(actual).containsExactlyInAnyOrderElementsOf(asEntryList(keyAndValuePairs));
 	}
 
-	private Iterable<AbstractMap.SimpleEntry<String, String>> asEntryList(String... values) {
-		List<AbstractMap.SimpleEntry<String, String>> entryList = new ArrayList<>();
+	private Iterable<Map.Entry<String, String>> asEntryList(String... values) {
+		List<Map.Entry<String, String>> entryList = new ArrayList<>();
 		for (int i = 0; i < values.length; i += 2) {
-			entryList.add(new AbstractMap.SimpleEntry<>(values[i], values[i + 1]));
+			entryList.add(Map.entry(values[i], values[i + 1]));
 		}
 		return entryList;
 	}
@@ -75,11 +74,11 @@ class ReportEntryAssertBase extends AbstractPioneerAssert<ReportEntryAssertBase,
 	}
 
 	private List<String> getValues() {
-		return this.actual.stream().map(Map.Entry::getValue).collect(Collectors.toList());
+		return this.actual.stream().map(Map.Entry::getValue).collect(toList());
 	}
 
 	private List<String> getKeys() {
-		return this.actual.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+		return this.actual.stream().map(Map.Entry::getKey).collect(toList());
 	}
 
 	@Override
