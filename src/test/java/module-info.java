@@ -38,6 +38,10 @@ module org.junitpioneer {
 			with org.junitpioneer.jupiter.issue.StoringIssueProcessor;
 	uses org.junitpioneer.jupiter.IssueProcessor;
 
+	provides org.junitpioneer.jupiter.json.ObjectMapperProvider
+			with org.junitpioneer.jupiter.json.DefaultObjectMapperProvider;
+	uses org.junitpioneer.jupiter.json.ObjectMapperProvider;
+
 	requires org.junit.platform.testkit;
 	requires org.mockito;
 	requires org.assertj.core;

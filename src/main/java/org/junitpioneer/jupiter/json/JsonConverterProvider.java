@@ -24,9 +24,9 @@ class JsonConverterProvider {
 		}
 	}
 
-	static JsonConverter getJsonConverter() {
+	static JsonConverter getJsonConverter(String objectMapperId) {
 		if (JACKSON_PRESENT) {
-			return JacksonJsonConverter.getConverter();
+			return JacksonJsonConverter.getConverter(objectMapperId);
 		}
 
 		throw new NoJsonParserConfiguredException();
