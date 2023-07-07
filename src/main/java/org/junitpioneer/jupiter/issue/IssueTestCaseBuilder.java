@@ -19,12 +19,19 @@ class IssueTestCaseBuilder {
 	private String issueId;
 	private Status result;
 
+	private Long elapsedTime;
+
 	public IssueTestCaseBuilder(String testId) {
 		this.testId = testId;
 	}
 
 	public IssueTestCaseBuilder setResult(Status result) {
 		this.result = result;
+		return this;
+	}
+
+	public IssueTestCaseBuilder setElapsedTime(long elapsedTime) {
+		this.elapsedTime = elapsedTime;
 		return this;
 	}
 
@@ -38,7 +45,7 @@ class IssueTestCaseBuilder {
 	}
 
 	public IssueTestCase build() {
-		return new IssueTestCase(testId, result);
+		return new IssueTestCase(testId, result, elapsedTime);
 	}
 
 }

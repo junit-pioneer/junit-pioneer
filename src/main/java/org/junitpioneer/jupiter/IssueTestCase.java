@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.junit.platform.engine.TestExecutionResult.Status;
 
@@ -33,15 +34,18 @@ public final class IssueTestCase {
 	private final String testId;
 	private final Status result;
 
+	private final Long elapsedTime;
+
 	/**
 	 * Constructor with all attributes.
 	 *
 	 * @param testId Unique name of the test method
 	 * @param result Result of the execution
 	 */
-	public IssueTestCase(String testId, Status result) {
+	public IssueTestCase(String testId, Status result, Long elapsedTime) {
 		this.testId = requireNonNull(testId);
 		this.result = requireNonNull(result, NO_RESULT_EXCEPTION_MESSAGE);
+		this.elapsedTime = elapsedTime;
 	}
 
 	/**
@@ -61,6 +65,15 @@ public final class IssueTestCase {
 		return result;
 	}
 
+	/**
+	 * Returns the elapsed time since the start of test methods' execution in milliseconds.
+	 *
+	 * @return The elapsed time in ms.
+	 */
+	public Optional<Long> elapsedTime() {
+		return Optional.ofNullable(elapsedTime);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -68,16 +81,20 @@ public final class IssueTestCase {
 		if (!(o instanceof IssueTestCase))
 			return false;
 		IssueTestCase that = (IssueTestCase) o;
-		return testId.equals(that.testId) && result == that.result;
+		return testId.equals(that.testId) && result == that.result && Objects.equals(elapsedTime, that.elapsedTime);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(testId, result);
+		return Objects.hash(testId, result, elapsedTime);
 	}
 
 	@Override
 	public String toString() {
+		if (Objects.nonNull(elapsedTime)) {
+			return "IssueTestCase{" + "uniqueName='" + testId + '\'' + ", result='" + result + '\'' + ", elapsedTime='"
+					+ elapsedTime + " ms'}";
+		}
 		return "IssueTestCase{" + "uniqueName='" + testId + '\'' + ", result='" + result + '\'' + '}';
 	}
 

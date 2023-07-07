@@ -38,6 +38,8 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 	public static final String REPORT_ENTRY_KEY = "IssueExtension";
 
+	public static final String TIME_REPORT_KEY = "IssueExtensionTimeReport";
+
 	/**
 	 * This listener will be active as soon as Pioneer is on the class/module path, regardless of whether {@code @Issue} is actually used.
 	 * To prevent superfluous computation and memory use, we "deactivate" this listener if it is not needed.
@@ -61,8 +63,16 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 		if (messages.containsKey(REPORT_ENTRY_KEY)) {
 			String issueId = messages.get(REPORT_ENTRY_KEY);
-			// because test IDs are unique, there's no risk of overriding previously entered information
-			testCases.put(testId, new IssueTestCaseBuilder(testId).setIssueId(issueId));
+			// because test IDs are unique, we can be sure that the report entries belong to the same test
+			// but because we can't be sure which extension gets invoked first (stopwatch or issue)
+			// we have to make sure not to erase previously recorded information
+			testCases.computeIfPresent(testId, (__, builder) -> builder.setIssueId(issueId));
+			testCases.putIfAbsent(testId, new IssueTestCaseBuilder(testId).setIssueId(issueId));
+		}
+		if (messages.containsKey(TIME_REPORT_KEY)) {
+			long elapsedTime = Long.parseLong(messages.get(TIME_REPORT_KEY));
+			testCases.computeIfPresent(testId, (__, builder) -> builder.setElapsedTime(elapsedTime));
+			testCases.putIfAbsent(testId, new IssueTestCaseBuilder(testId).setElapsedTime(elapsedTime));
 		}
 	}
 
