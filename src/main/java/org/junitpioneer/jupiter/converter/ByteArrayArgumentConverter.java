@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.converter;
 
 import static java.lang.String.format;
+import static org.junitpioneer.jupiter.converter.ByteArrayConversion.ByteOrder.BIG_ENDIAN;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -52,14 +53,11 @@ class ByteArrayArgumentConverter extends TypedArgumentConverter<Number, byte[]>
 	}
 
 	private ByteOrder getByteOrder(ByteArrayConversion annotation) {
-		switch (annotation.byteOrder()) {
-			case BIG_ENDIAN:
-				return ByteOrder.BIG_ENDIAN;
-			case LITTLE_ENDIAN:
-				return ByteOrder.LITTLE_ENDIAN;
+		if (annotation.byteOrder() == BIG_ENDIAN) {
+			return ByteOrder.BIG_ENDIAN;
+		} else {
+			return ByteOrder.LITTLE_ENDIAN;
 		}
-		throw new IllegalStateException(
-			format("Unexpected byte order value in annotation: %s", annotation.byteOrder()));
 	}
 
 }
