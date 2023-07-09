@@ -23,7 +23,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.platform.engine.TestExecutionResult;
 import org.junitpioneer.jupiter.converter.ByteArrayConversion.ByteOrder;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -57,13 +56,13 @@ public class ByteArrayConversionTests {
 
 	@ParameterizedTest
 	@ValueSource(ints = { (256 * 256 * 6 + 256 * 36 + 66) })
-	void testBigEndianOrder(@ByteArrayConversion(byteOrder = ByteOrder.BIG_ENDIAN) byte[] byteArray) {
+	void testBigEndianOrder(@ByteArrayConversion(order = ByteOrder.BIG_ENDIAN) byte[] byteArray) {
 		assertThat(byteArray).hasSize(4).containsExactly(0, 6, 36, 66);
 	}
 
 	@ParameterizedTest
 	@ValueSource(ints = { (256 * 256 * 6 + 256 * 36 + 66) })
-	void testLittleEndianOrder(@ByteArrayConversion(byteOrder = ByteOrder.LITTLE_ENDIAN) byte[] byteArray) {
+	void testLittleEndianOrder(@ByteArrayConversion(order = ByteOrder.LITTLE_ENDIAN) byte[] byteArray) {
 		assertThat(byteArray).hasSize(4).containsExactly(66, 36, 6, 0);
 	}
 

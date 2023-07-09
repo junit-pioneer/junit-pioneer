@@ -53,7 +53,7 @@ class ByteArrayArgumentConverter extends TypedArgumentConverter<Number, byte[]>
 	}
 
 	private ByteOrder getByteOrder(ByteArrayConversion annotation) {
-		if (annotation.byteOrder() == BIG_ENDIAN) {
+		if (annotation.order() == BIG_ENDIAN) {
 			return ByteOrder.BIG_ENDIAN;
 		} else {
 			return ByteOrder.LITTLE_ENDIAN;

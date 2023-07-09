@@ -33,7 +33,7 @@ public @interface ByteArrayConversion {
 	 *
 	 * @return the byte order to use, either {@code BIG_ENDIAN} or {@code LITTLE_ENDIAN}.
 	 */
-	ByteOrder byteOrder() default ByteOrder.BIG_ENDIAN;
+	ByteOrder order() default ByteOrder.BIG_ENDIAN;
 
 	/**
 	 * Utility enum because {@link java.nio.ByteOrder} is not an enum.
