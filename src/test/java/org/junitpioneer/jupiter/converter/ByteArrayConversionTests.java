@@ -12,9 +12,22 @@ package org.junitpioneer.jupiter.converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.platform.engine.TestExecutionResult;
 import org.junitpioneer.jupiter.converter.ByteArrayConversion.ByteOrder;
+import org.junitpioneer.testkit.ExecutionResults;
+import org.junitpioneer.testkit.PioneerTestKit;
+import org.junitpioneer.testkit.assertion.PioneerAssert;
 
 public class ByteArrayConversionTests {
 
@@ -52,6 +65,36 @@ public class ByteArrayConversionTests {
 	@ValueSource(ints = { (256 * 256 * 6 + 256 * 36 + 66) })
 	void testLittleEndianOrder(@ByteArrayConversion(byteOrder = ByteOrder.LITTLE_ENDIAN) byte[] byteArray) {
 		assertThat(byteArray).hasSize(4).containsExactly(66, 36, 6, 0);
+	}
+
+	@Test
+	void throwsException() {
+		ExecutionResults result = PioneerTestKit
+				.executeTestMethodWithParameterTypes(UnsupportedTestCases.class, "throwsException", byte[].class);
+
+		PioneerAssert
+				.assertThat(result)
+				.hasSingleFailedTest()
+				.withExceptionInstanceOf(ParameterResolutionException.class)
+				.hasMessageContaining("Unsupported parameter type");
+	}
+
+	static class UnsupportedTestCases {
+
+		@ParameterizedTest
+		@ArgumentsSource(BigDecimalProvider.class)
+		void throwsException(@ByteArrayConversion byte[] byteArray) {
+		}
+
+	}
+
+	static class BigDecimalProvider implements ArgumentsProvider {
+
+		@Override
+		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+			return Stream.of(Arguments.of(BigDecimal.ONE));
+		}
+
 	}
 
 }
