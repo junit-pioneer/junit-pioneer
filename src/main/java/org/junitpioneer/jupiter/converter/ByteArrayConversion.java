@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.params;
+package org.junitpioneer.jupiter.converter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,8 +23,8 @@ import org.junit.jupiter.params.converter.ConvertWith;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(IntegralToBytesConverter.class)
-public @interface IntegralToBytesConversion {
+@ConvertWith(ByteArrayArgumentConverter.class)
+public @interface ByteArrayConversion {
 
 	/**
 	 * The byte order to use during the conversion.
@@ -34,5 +34,25 @@ public @interface IntegralToBytesConversion {
 	 * @return the byte order to use, either {@code BIG_ENDIAN} or {@code LITTLE_ENDIAN}.
 	 */
 	ByteOrder byteOrder() default ByteOrder.BIG_ENDIAN;
+
+	/**
+	 * Utility enum because {@link java.nio.ByteOrder} is not an enum.
+	 */
+	enum ByteOrder {
+
+		/**
+		 * Constant denoting big-endian byte order.
+		 * In this order, the bytes of a multibyte value are ordered from most significant to least significant.
+		 */
+		BIG_ENDIAN,
+
+		/**
+		 * Constant denoting little-endian byte order.
+		 * In this order, the bytes of a multibyte value are ordered from least significant to most significant.
+		 * This is a wrapper for {@code java.nio.ByteOrder.LITTLE_ENDIAN}.
+		 */
+		LITTLE_ENDIAN
+
+	}
 
 }
