@@ -18,9 +18,7 @@ import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
-import org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
 
 /**
  * The StopwatchExtension implements callback methods for the {@code @Stopwatch} annotation.
