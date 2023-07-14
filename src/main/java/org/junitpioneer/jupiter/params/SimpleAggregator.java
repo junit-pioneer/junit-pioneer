@@ -11,13 +11,13 @@
 package org.junitpioneer.jupiter.params;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -39,7 +39,7 @@ public class SimpleAggregator implements ArgumentsAggregator {
 		Set<Constructor<?>> constructors = Stream
 				.concat(Arrays.stream(type.getDeclaredConstructors()), Arrays.stream(type.getConstructors()))
 				.filter(constructor -> constructor.getParameterCount() == accessor.size())
-				.collect(Collectors.toUnmodifiableSet());
+				.collect(toUnmodifiableSet());
 		if (constructors.isEmpty())
 			throw new ArgumentsAggregationException(
 				format("No matching constructor found, mismatching parameter sizes, expected %d.", accessor.size()));

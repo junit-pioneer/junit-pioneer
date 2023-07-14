@@ -36,7 +36,7 @@ class SimpleAggregatorTests {
 	}
 
 	@ParameterizedTest
-	@ValueSource(ints = { 13, 17, 19})
+	@ValueSource(ints = { 13, 17, 19 })
 	void testBoxing(@Aggregate Boxed boxed) {
 		assertThat(boxed.value).isLessThan(20);
 	}
@@ -141,6 +141,7 @@ class SimpleAggregatorTests {
 	}
 
 	static class Boxed {
+
 		private final int value;
 
 		Boxed(int value) {
