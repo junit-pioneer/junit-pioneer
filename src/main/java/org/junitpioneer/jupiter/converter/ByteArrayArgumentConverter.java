@@ -48,6 +48,12 @@ class ByteArrayArgumentConverter extends TypedArgumentConverter<Number, byte[]>
 		} else if (source instanceof Long) {
 			var bytes = (long) source;
 			return ByteBuffer.allocate(Long.BYTES).order(order).putLong(bytes).array();
+		} else if (source instanceof Double) {
+			var bytes = (double) source;
+			return ByteBuffer.allocate(Double.BYTES).order(order).putDouble(bytes).array();
+		} else if (source instanceof Float) {
+			var bytes = (float) source;
+			return ByteBuffer.allocate(Float.BYTES).order(order).putFloat(bytes).array();
 		}
 		throw new ArgumentConversionException(format("Unsupported parameter type: %s", source.getClass()));
 	}

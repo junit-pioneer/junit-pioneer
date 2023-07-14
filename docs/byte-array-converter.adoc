@@ -1,0 +1,4 @@
+:page-title: Default Locale and TimeZone
+:page-description: The JUnit 5 (Jupiter) extensions `@DefaultLocale` and `@DefaultTimeZone` change the runtime's default locale and time zone as returned from `Locale.getDefault()` and `TimeZone.getDefault()` for the duration of a test
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/DefaultLocaleTimezoneExtensionDemo.java

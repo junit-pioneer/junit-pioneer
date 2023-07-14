@@ -32,7 +32,7 @@ public class ByteArrayConversionTests {
 
 	@ParameterizedTest
 	@ValueSource(ints = { Integer.MIN_VALUE, 0, 0xFF, 0xFFFF, 0xFFFFFF, Integer.MAX_VALUE })
-	void test(@ByteArrayConversion byte[] byteArray) {
+	void testInts(@ByteArrayConversion byte[] byteArray) {
 		assertThat(byteArray).hasSize(4);
 	}
 
@@ -64,6 +64,18 @@ public class ByteArrayConversionTests {
 	@ValueSource(ints = { (256 * 256 * 6 + 256 * 36 + 66) })
 	void testLittleEndianOrder(@ByteArrayConversion(order = ByteOrder.LITTLE_ENDIAN) byte[] byteArray) {
 		assertThat(byteArray).hasSize(4).containsExactly(66, 36, 6, 0);
+	}
+
+	@ParameterizedTest
+	@ValueSource(doubles = { Double.MIN_VALUE, 0.0, Double.MAX_VALUE })
+	void testDoubles(@ByteArrayConversion byte[] byteArray) {
+		assertThat(byteArray).hasSize(8);
+	}
+
+	@ParameterizedTest
+	@ValueSource(floats = { Float.MIN_VALUE, 0.0f, Float.MAX_VALUE })
+	void testFloats(@ByteArrayConversion byte[] byteArray) {
+		assertThat(byteArray).hasSize(4);
 	}
 
 	@Test
