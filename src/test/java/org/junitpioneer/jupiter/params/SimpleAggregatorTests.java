@@ -13,6 +13,11 @@ package org.junitpioneer.jupiter.params;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.ArgumentsAggregationException;
@@ -20,11 +25,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.assertion.PioneerAssert;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
 
 class SimpleAggregatorTests {
 
@@ -54,14 +54,14 @@ class SimpleAggregatorTests {
 	}
 
 	@ParameterizedTest
-	@CsvSource({"Speeding, 19:03:12", "Ran red light, 18:34:02", "Rolling stop, 07:12:12"})
+	@CsvSource({ "Speeding, 19:03:12", "Ran red light, 18:34:02", "Rolling stop, 07:12:12" })
 	void testLocalTime(@Aggregate Ticket ticket) {
 		assertThat(ticket.description).isNotBlank();
 		assertThat(ticket.time).isAfter(LocalTime.MIDNIGHT);
 	}
 
 	@ParameterizedTest
-	@CsvSource({"Fuzzy, 2010-10-10T12:20:09", "Unsure, 2022-12-11T07:12:15"})
+	@CsvSource({ "Fuzzy, 2010-10-10T12:20:09", "Unsure, 2022-12-11T07:12:15" })
 	void testLocalDateTime(@Aggregate Memory memory) {
 		assertThat(memory.description).isIn("Fuzzy", "Unsure");
 		assertThat(memory.occurred).isAfter(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0));
@@ -177,6 +177,7 @@ class SimpleAggregatorTests {
 	}
 
 	static class Human {
+
 		private final String name;
 		private final LocalDate birthday;
 
@@ -184,9 +185,11 @@ class SimpleAggregatorTests {
 			this.name = name;
 			this.birthday = birthday;
 		}
+
 	}
 
 	static class Ticket {
+
 		private final String description;
 		private final LocalTime time;
 
@@ -194,9 +197,11 @@ class SimpleAggregatorTests {
 			this.description = description;
 			this.time = time;
 		}
+
 	}
 
 	static class Memory {
+
 		private final String description;
 		private final LocalDateTime occurred;
 
@@ -204,5 +209,7 @@ class SimpleAggregatorTests {
 			this.description = description;
 			this.occurred = occurred;
 		}
+
 	}
+
 }
