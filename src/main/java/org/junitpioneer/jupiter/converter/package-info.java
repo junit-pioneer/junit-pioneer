@@ -4,7 +4,7 @@
  * <p>See the following types for details.</p>
  *
  * <ul>
- *     <li>{@link org.junitpioneer.jupiter.converter.ByteArrayConversion}</li>
+ *     <li>{@link org.junitpioneer.jupiter.converter.NumberToByteArrayConversion}</li>
  * </ul>
  *
  * @see org.junit.jupiter.params.converter.ArgumentConverter

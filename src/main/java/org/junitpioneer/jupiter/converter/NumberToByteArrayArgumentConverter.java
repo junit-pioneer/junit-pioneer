@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter.converter;
 
 import static java.lang.String.format;
-import static org.junitpioneer.jupiter.converter.ByteArrayConversion.ByteOrder.BIG_ENDIAN;
+import static org.junitpioneer.jupiter.converter.NumberToByteArrayConversion.ByteOrder.BIG_ENDIAN;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -20,17 +20,17 @@ import org.junit.jupiter.params.converter.ArgumentConversionException;
 import org.junit.jupiter.params.converter.TypedArgumentConverter;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 
-class ByteArrayArgumentConverter extends TypedArgumentConverter<Number, byte[]>
-		implements AnnotationConsumer<ByteArrayConversion> {
+class NumberToByteArrayArgumentConverter extends TypedArgumentConverter<Number, byte[]>
+		implements AnnotationConsumer<NumberToByteArrayConversion> {
 
 	private ByteOrder order;
 
-	public ByteArrayArgumentConverter() {
+	public NumberToByteArrayArgumentConverter() {
 		super(Number.class, byte[].class);
 	}
 
 	@Override
-	public void accept(ByteArrayConversion annotation) {
+	public void accept(NumberToByteArrayConversion annotation) {
 		this.order = getByteOrder(annotation);
 	}
 
@@ -58,7 +58,7 @@ class ByteArrayArgumentConverter extends TypedArgumentConverter<Number, byte[]>
 		throw new ArgumentConversionException(format("Unsupported parameter type: %s", source.getClass()));
 	}
 
-	private ByteOrder getByteOrder(ByteArrayConversion annotation) {
+	private ByteOrder getByteOrder(NumberToByteArrayConversion annotation) {
 		if (annotation.order() == BIG_ENDIAN) {
 			return ByteOrder.BIG_ENDIAN;
 		} else {

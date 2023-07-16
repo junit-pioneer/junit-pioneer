@@ -23,8 +23,8 @@ import org.junit.jupiter.params.converter.ConvertWith;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@ConvertWith(ByteArrayArgumentConverter.class)
-public @interface ByteArrayConversion {
+@ConvertWith(NumberToByteArrayArgumentConverter.class)
+public @interface NumberToByteArrayConversion {
 
 	/**
 	 * The byte order to use during the conversion.

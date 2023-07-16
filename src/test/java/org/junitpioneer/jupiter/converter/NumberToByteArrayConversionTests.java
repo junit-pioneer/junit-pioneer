@@ -23,58 +23,58 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junitpioneer.jupiter.converter.ByteArrayConversion.ByteOrder;
+import org.junitpioneer.jupiter.converter.NumberToByteArrayConversion.ByteOrder;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 import org.junitpioneer.testkit.assertion.PioneerAssert;
 
-public class ByteArrayConversionTests {
+public class NumberToByteArrayConversionTests {
 
 	@ParameterizedTest
 	@ValueSource(ints = { Integer.MIN_VALUE, 0, 0xFF, 0xFFFF, 0xFFFFFF, Integer.MAX_VALUE })
-	void testInts(@ByteArrayConversion byte[] byteArray) {
+	void testInts(@NumberToByteArrayConversion byte[] byteArray) {
 		assertThat(byteArray).hasSize(4);
 	}
 
 	@ParameterizedTest
 	@ValueSource(bytes = { Byte.MIN_VALUE, 0, Byte.MAX_VALUE })
-	void testBytes(@ByteArrayConversion byte[] byteArray) {
+	void testBytes(@NumberToByteArrayConversion byte[] byteArray) {
 		assertThat(byteArray).hasSize(1);
 	}
 
 	@ParameterizedTest
 	@ValueSource(shorts = { Short.MIN_VALUE, 0, Short.MAX_VALUE })
-	void testShorts(@ByteArrayConversion byte[] byteArray) {
+	void testShorts(@NumberToByteArrayConversion byte[] byteArray) {
 		assertThat(byteArray).hasSize(2);
 	}
 
 	@ParameterizedTest
 	@ValueSource(longs = { Long.MIN_VALUE, 0, Long.MAX_VALUE })
-	void testLongs(@ByteArrayConversion byte[] byteArray) {
+	void testLongs(@NumberToByteArrayConversion byte[] byteArray) {
 		assertThat(byteArray).hasSize(8);
 	}
 
 	@ParameterizedTest
 	@ValueSource(ints = { (256 * 256 * 6 + 256 * 36 + 66) })
-	void testBigEndianOrder(@ByteArrayConversion(order = ByteOrder.BIG_ENDIAN) byte[] byteArray) {
+	void testBigEndianOrder(@NumberToByteArrayConversion(order = ByteOrder.BIG_ENDIAN) byte[] byteArray) {
 		assertThat(byteArray).hasSize(4).containsExactly(0, 6, 36, 66);
 	}
 
 	@ParameterizedTest
 	@ValueSource(ints = { (256 * 256 * 6 + 256 * 36 + 66) })
-	void testLittleEndianOrder(@ByteArrayConversion(order = ByteOrder.LITTLE_ENDIAN) byte[] byteArray) {
+	void testLittleEndianOrder(@NumberToByteArrayConversion(order = ByteOrder.LITTLE_ENDIAN) byte[] byteArray) {
 		assertThat(byteArray).hasSize(4).containsExactly(66, 36, 6, 0);
 	}
 
 	@ParameterizedTest
 	@ValueSource(doubles = { Double.MIN_VALUE, 0.0, Double.MAX_VALUE })
-	void testDoubles(@ByteArrayConversion byte[] byteArray) {
+	void testDoubles(@NumberToByteArrayConversion byte[] byteArray) {
 		assertThat(byteArray).hasSize(8);
 	}
 
 	@ParameterizedTest
 	@ValueSource(floats = { Float.MIN_VALUE, 0.0f, Float.MAX_VALUE })
-	void testFloats(@ByteArrayConversion byte[] byteArray) {
+	void testFloats(@NumberToByteArrayConversion byte[] byteArray) {
 		assertThat(byteArray).hasSize(4);
 	}
 
@@ -94,7 +94,7 @@ public class ByteArrayConversionTests {
 
 		@ParameterizedTest
 		@ArgumentsSource(BigDecimalProvider.class)
-		void throwsException(@ByteArrayConversion byte[] byteArray) {
+		void throwsException(@NumberToByteArrayConversion byte[] byteArray) {
 		}
 
 	}
