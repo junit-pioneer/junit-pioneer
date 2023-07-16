@@ -21,6 +21,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.assertion.PioneerAssert;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+
 class SimpleAggregatorTests {
 
 	@ParameterizedTest
@@ -39,6 +44,27 @@ class SimpleAggregatorTests {
 	@ValueSource(ints = { 13, 17, 19 })
 	void testBoxing(@Aggregate Boxed boxed) {
 		assertThat(boxed.value).isLessThan(20);
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "John, 2023-07-16", "Bob, 1959-02-21", "Jane, 1977-05-03" })
+	void testLocalDate(@Aggregate Human human) {
+		assertThat(human.name).isNotBlank();
+		assertThat(human.birthday).isAfter(LocalDate.of(1900, 1, 1));
+	}
+
+	@ParameterizedTest
+	@CsvSource({"Speeding, 19:03:12", "Ran red light, 18:34:02", "Rolling stop, 07:12:12"})
+	void testLocalTime(@Aggregate Ticket ticket) {
+		assertThat(ticket.description).isNotBlank();
+		assertThat(ticket.time).isAfter(LocalTime.MIDNIGHT);
+	}
+
+	@ParameterizedTest
+	@CsvSource({"Fuzzy, 2010-10-10T12:20:09", "Unsure, 2022-12-11T07:12:15"})
+	void testLocalDateTime(@Aggregate Memory memory) {
+		assertThat(memory.description).isIn("Fuzzy", "Unsure");
+		assertThat(memory.occurred).isAfter(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0));
 	}
 
 	@Test
@@ -150,4 +176,33 @@ class SimpleAggregatorTests {
 
 	}
 
+	static class Human {
+		private final String name;
+		private final LocalDate birthday;
+
+		Human(String name, LocalDate birthday) {
+			this.name = name;
+			this.birthday = birthday;
+		}
+	}
+
+	static class Ticket {
+		private final String description;
+		private final LocalTime time;
+
+		Ticket(String description, LocalTime time) {
+			this.description = description;
+			this.time = time;
+		}
+	}
+
+	static class Memory {
+		private final String description;
+		private final LocalDateTime occurred;
+
+		Memory(String description, LocalDateTime occurred) {
+			this.description = description;
+			this.occurred = occurred;
+		}
+	}
 }
