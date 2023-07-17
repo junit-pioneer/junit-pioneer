@@ -17,6 +17,26 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.params.aggregator.AggregateWith;
 
+/**
+ * {@code @Aggregate} is a parameter annotation, used for simple argument aggregation.
+ *
+ * <p>The supplied values are expected to be able to be aggregated into a single argument,
+ * which is in turn supplied to the {@code @ParameterizedTest} method.</p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/simple-arguments-aggregator/" target="_top">the documentation on
+ * <code>Simple Arguments Aggregator</code></a>
+ * </p>
+ *
+ * <p>This annotation is not compatible with {@link org.junitpioneer.jupiter.cartesian.CartesianTest} as this expects
+ * a single parameter as opposed to {@link org.junitpioneer.jupiter.cartesian.CartesianTest} requiring
+ * multiple parameters.
+ * </p>
+ *
+ * @since 2.1
+ * @see org.junit.jupiter.params.aggregator.ArgumentsAggregator
+ * @see org.junitpioneer.jupiter.params.SimpleAggregator
+ */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @AggregateWith(SimpleAggregator.class)

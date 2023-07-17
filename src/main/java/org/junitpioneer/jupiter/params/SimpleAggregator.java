@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -26,7 +25,7 @@ import org.junit.jupiter.params.aggregator.ArgumentsAggregationException;
 import org.junit.jupiter.params.aggregator.ArgumentsAggregator;
 import org.junitpioneer.internal.PioneerUtils;
 
-public class SimpleAggregator implements ArgumentsAggregator {
+class SimpleAggregator implements ArgumentsAggregator {
 
 	public SimpleAggregator() {
 		// recreate default constructor to prevent compiler warning
@@ -36,8 +35,9 @@ public class SimpleAggregator implements ArgumentsAggregator {
 	public Object aggregateArguments(ArgumentsAccessor accessor, ParameterContext context)
 			throws ArgumentsAggregationException {
 		Class<?> type = context.getParameter().getType();
-		Set<Constructor<?>> constructors = Stream
-				.concat(Arrays.stream(type.getDeclaredConstructors()), Arrays.stream(type.getConstructors()))
+		Set<Constructor<?>> constructors = Arrays
+				.stream(type.getDeclaredConstructors())
+				// only if the constructor parameters and the supplied values are equal length
 				.filter(constructor -> constructor.getParameterCount() == accessor.size())
 				.collect(toUnmodifiableSet());
 		if (constructors.isEmpty())
@@ -67,7 +67,7 @@ public class SimpleAggregator implements ArgumentsAggregator {
 			throw new ArgumentsAggregationException(
 				"Could not aggregate arguments, no matching constructor was found.");
 		} else if (matchingConstructors.size() > 1) {
-			throw new ArgumentsAggregationException(format("Expected only one matching constructor but found %s: %s",
+			throw new ArgumentsAggregationException(format("Expected only one matching constructor but found %d: %s",
 				matchingConstructors.size(), matchingConstructors));
 		}
 		return value;
