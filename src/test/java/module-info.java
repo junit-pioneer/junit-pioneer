@@ -39,7 +39,9 @@ module org.junitpioneer {
 	uses org.junitpioneer.jupiter.IssueProcessor;
 
 	provides org.junitpioneer.jupiter.json.ObjectMapperProvider
-			with org.junitpioneer.jupiter.json.DefaultObjectMapperProvider;
+			with org.junitpioneer.jupiter.json.DefaultObjectMapperProvider,
+					org.junitpioneer.jupiter.json.ObjectMapperProviderTests.DummyObjectMapperProvider,
+					org.junitpioneer.jupiter.json.ObjectMapperProviderTests.ThrowingObjectMapperProvider;
 	uses org.junitpioneer.jupiter.json.ObjectMapperProvider;
 
 	requires org.junit.platform.testkit;

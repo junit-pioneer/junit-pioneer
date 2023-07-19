@@ -10,8 +10,13 @@
 
 package org.junitpioneer.jupiter.json;
 
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -56,11 +61,22 @@ public class ObjectMapperProviderTests {
 				.executeTestMethodWithParameterTypes(ObjectMapperProviderTests.ObjectMapperProviderTestCases.class,
 					"custom", String.class, int.class);
 
+		PioneerAssert.assertThat(results).hasNumberOfSucceededTests(2);
+	}
+
+	@Test
+	@DisplayName("loads from system property configuration")
+	void throwing() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypesAndConfigurationParameters(
+					Map.of("org.junitpioneer.jupiter.json.objectmapper", "throwing"),
+					ObjectMapperProviderTests.ObjectMapperProviderTestCases.class, "throwing", String.class, int.class);
+
 		PioneerAssert
 				.assertThat(results)
 				.hasSingleFailedContainer()
-				.withExceptionInstanceOf(PreconditionViolationException.class)
-				.hasMessageContaining("Could not find custom object mapper");
+				.withExceptionInstanceOf(ExtensionConfigurationException.class)
+				.hasMessageContaining("This is not implemented!");
 	}
 
 	static class ObjectMapperProviderTestCases {
@@ -81,6 +97,39 @@ public class ObjectMapperProviderTests {
 		@UseObjectMapper("dummy")
 		@JsonSource("[ { name: 'Luke', height: 172  }, { name: 'Yoda', height: 66 } ]")
 		void custom(@Property("name") String name, @Property("height") int height) {
+		}
+
+		@ParameterizedTest
+		@JsonSource("[ { name: 'Luke', height: 172  }, { name: 'Yoda', height: 66 } ]")
+		void throwing(@Property("name") String name, @Property("height") int height) {
+		}
+
+	}
+
+	public static class DummyObjectMapperProvider implements ObjectMapperProvider {
+
+		@Override
+		public ObjectMapper get() {
+			return new ObjectMapper();
+		}
+
+		@Override
+		public String id() {
+			return "dummy";
+		}
+
+	}
+
+	public static class ThrowingObjectMapperProvider implements ObjectMapperProvider {
+
+		@Override
+		public ObjectMapper get() {
+			throw new ExtensionConfigurationException("This is not implemented!");
+		}
+
+		@Override
+		public String id() {
+			return "throwing";
 		}
 
 	}
