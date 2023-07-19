@@ -14,6 +14,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -42,10 +43,11 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 	}
 
 	private Stream<Node> provideNodes(ExtensionContext context) {
+		String config = context.getConfigurationParameter("org.junitpioneer.jupiter.json.objectmapper").orElse("default");
 		String objectMapperId = AnnotationSupport
 				.findAnnotation(context.getRequiredTestMethod(), UseObjectMapper.class)
 				.map(UseObjectMapper::value)
-				.orElse("default");
+				.orElse(config);
 		PioneerPreconditions
 				.notBlank(objectMapperId, String.format("%s must not have a blank value", UseObjectMapper.class));
 		return provideNodes(context, JsonConverterProvider.getJsonConverter(objectMapperId));
