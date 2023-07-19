@@ -43,7 +43,9 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 	}
 
 	private Stream<Node> provideNodes(ExtensionContext context) {
-		String config = context.getConfigurationParameter("org.junitpioneer.jupiter.json.objectmapper").orElse("default");
+		String config = context
+				.getConfigurationParameter("org.junitpioneer.jupiter.json.objectmapper")
+				.orElse("default");
 		String objectMapperId = AnnotationSupport
 				.findAnnotation(context.getRequiredTestMethod(), UseObjectMapper.class)
 				.map(UseObjectMapper::value)
