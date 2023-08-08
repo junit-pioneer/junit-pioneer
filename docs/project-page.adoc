@@ -24,7 +24,7 @@ Maven:
 <dependency>
 	<groupId>org.junit-pioneer</groupId>
 	<artifactId>junit-pioneer</artifactId>
-	<version><!-- ... --><version>
+	<version><!-- ... --></version>
 	<scope>test</scope>
 </dependency>
 ----
