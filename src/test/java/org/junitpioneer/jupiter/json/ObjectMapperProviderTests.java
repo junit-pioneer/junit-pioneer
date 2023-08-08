@@ -10,6 +10,10 @@
 
 package org.junitpioneer.jupiter.json;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,6 +65,16 @@ public class ObjectMapperProviderTests {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethodWithParameterTypes(ObjectMapperProviderTests.ObjectMapperProviderTestCases.class,
 					"custom", String.class, int.class);
+
+		PioneerAssert.assertThat(results).hasNumberOfSucceededTests(2);
+	}
+
+	@Test
+	@DisplayName("works with a meta-annotation")
+	void meta() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(ObjectMapperProviderTests.ObjectMapperProviderTestCases.class,
+					"meta", String.class, int.class);
 
 		PioneerAssert.assertThat(results).hasNumberOfSucceededTests(2);
 	}
@@ -120,6 +134,11 @@ public class ObjectMapperProviderTests {
 		void throwing(@Property("name") String name, @Property("height") int height) {
 		}
 
+		@JsonTest
+		@JsonSource("[ { name: 'Luke', height: 172  }, { name: 'Yoda', height: 66 } ]")
+		void meta(@Property("name") String name, @Property("height") int height) {
+		}
+
 	}
 
 	public static class DummyObjectMapperProvider implements ObjectMapperProvider {
@@ -148,6 +167,13 @@ public class ObjectMapperProviderTests {
 			return "throwing";
 		}
 
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@UseObjectMapper("dummy")
+	@ParameterizedTest
+	@interface JsonTest {
 	}
 
 }
