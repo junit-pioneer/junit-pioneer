@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static java.lang.String.format;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -30,6 +32,8 @@ import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 		implements ArgumentsProvider, AnnotationConsumer<A>, CartesianParameterArgumentsProvider<Object> {
 
+	public static final String CONFIG_PARAM = "org.junitpioneer.jupiter.json.objectmapper";
+
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
 		Method method = context.getRequiredTestMethod();
@@ -42,15 +46,14 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 	}
 
 	private Stream<Node> provideNodes(ExtensionContext context) {
-		String config = context
-				.getConfigurationParameter("org.junitpioneer.jupiter.json.objectmapper")
-				.orElse("default");
+		String config = context.getConfigurationParameter(CONFIG_PARAM).orElse("default");
+		PioneerPreconditions
+				.notBlank(config, format("The configuration parameter %s must not have a blank value", CONFIG_PARAM));
 		String objectMapperId = AnnotationSupport
 				.findAnnotation(context.getRequiredTestMethod(), UseObjectMapper.class)
 				.map(UseObjectMapper::value)
 				.orElse(config);
-		PioneerPreconditions
-				.notBlank(objectMapperId, String.format("%s must not have a blank value", UseObjectMapper.class));
+		PioneerPreconditions.notBlank(objectMapperId, format("%s must not have a blank value", UseObjectMapper.class));
 		return provideNodes(context, JsonConverterProvider.getJsonConverter(objectMapperId));
 	}
 

@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter.json;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -79,6 +80,21 @@ public class ObjectMapperProviderTests {
 				.hasMessageContaining("This is not implemented!");
 	}
 
+	@Test
+	@DisplayName("loads from system property configuration")
+	void blankConfig() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypesAndConfigurationParameters(
+					Map.of("org.junitpioneer.jupiter.json.objectmapper", " "),
+					ObjectMapperProviderTests.ObjectMapperProviderTestCases.class, "throwing", String.class, int.class);
+
+		PioneerAssert
+				.assertThat(results)
+				.hasSingleFailedContainer()
+				.withExceptionInstanceOf(PreconditionViolationException.class)
+				.hasMessageContaining("must not have a blank value");
+	}
+
 	static class ObjectMapperProviderTestCases {
 
 		@ParameterizedTest
@@ -110,7 +126,7 @@ public class ObjectMapperProviderTests {
 
 		@Override
 		public ObjectMapper get() {
-			return new ObjectMapper();
+			return new JsonMapper();
 		}
 
 		@Override

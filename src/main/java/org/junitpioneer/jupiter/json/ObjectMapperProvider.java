@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * Service interface for providing a custom {@link com.fasterxml.jackson.databind.ObjectMapper} instance at runtime.
@@ -25,6 +26,16 @@ public interface ObjectMapperProvider {
 	ObjectMapper get();
 
 	default ObjectMapper getLenient() {
+		var mapper = get();
+		if (mapper instanceof JsonMapper) {
+			return ((JsonMapper) mapper)
+					.rebuild()
+					.enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES)
+					.enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
+					.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
+					.enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
+					.build();
+		}
 		return get()
 				.copyWith(JsonFactory
 						.builder()
