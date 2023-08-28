@@ -17,12 +17,28 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class ByteArrayConverterDemo {
 
-	// tag::byte_array_conversion[]
+	// tag::int_example[]
 	@ParameterizedTest
-	@ValueSource(ints = { 13, 17, 23, 29 })
-	void test(@NumberToByteArrayConversion byte[] bytes) {
-		assertThat(bytes).hasSize(4);
+	@ValueSource(ints = { 1025 })
+	void intExample(@NumberToByteArrayConversion byte[] bytes) {
+		assertThat(bytes).hasSize(4).containsExactly(0, 0, 4, 1);
 	}
-	// end::byte_array_conversion[]
+	// end::int_example[]
+
+	// tag::long_example[]
+	@ParameterizedTest
+	@ValueSource(longs = { 393796333641L })
+	void longExample(@NumberToByteArrayConversion byte[] bytes) {
+		assertThat(bytes).hasSize(8).containsExactly(0, 0, 0, 91, 176, 23, 48, 73);
+	}
+	// end::long_example[]
+
+	// tag::little_endian_order[]
+	@ParameterizedTest
+	@ValueSource(ints = { 1025 })
+	void test(@NumberToByteArrayConversion(order = NumberToByteArrayConversion.ByteOrder.LITTLE_ENDIAN) byte[] bytes) {
+		assertThat(bytes).hasSize(4).containsExactly(1, 4, 0, 0);
+	}
+	// end::little_endian_order[]
 
 }
