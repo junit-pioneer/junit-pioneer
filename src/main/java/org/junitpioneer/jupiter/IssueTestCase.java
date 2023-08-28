@@ -33,7 +33,6 @@ public final class IssueTestCase {
 
 	private final String testId;
 	private final Status result;
-
 	private final Long elapsedTime;
 
 	/**
@@ -41,6 +40,7 @@ public final class IssueTestCase {
 	 *
 	 * @param testId Unique name of the test method
 	 * @param result Result of the execution
+	 * @param elapsedTime The duration of test execution
 	 */
 	public IssueTestCase(String testId, Status result, Long elapsedTime) {
 		this.testId = requireNonNull(testId);
@@ -50,6 +50,7 @@ public final class IssueTestCase {
 
 	/**
 	 * Returns the unique name of the test method.
+	 *
 	 * @return Unique name of the test method
 	 */
 	public String testId() {
@@ -91,11 +92,11 @@ public final class IssueTestCase {
 
 	@Override
 	public String toString() {
+		String value = "IssueTestCase{" + "uniqueName='" + testId + '\'' + ", result='" + result + '\'';
 		if (Objects.nonNull(elapsedTime)) {
-			return "IssueTestCase{" + "uniqueName='" + testId + '\'' + ", result='" + result + '\'' + ", elapsedTime='"
-					+ elapsedTime + " ms'}";
+			value = value + ", elapsedTime='" + elapsedTime + " ms'";
 		}
-		return "IssueTestCase{" + "uniqueName='" + testId + '\'' + ", result='" + result + '\'' + '}';
+		return value + '}';
 	}
 
 }
