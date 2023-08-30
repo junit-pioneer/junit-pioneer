@@ -25,6 +25,7 @@
  *     <li>{@link org.junitpioneer.jupiter.json json}</li>
  *     <li>{@link org.junitpioneer.jupiter.params params}</li>
  *     <li>{@link org.junitpioneer.jupiter.resource resource}</li>
+ *     <li>{@link org.junitpioneer.jupiter.converter converter}</li>
  * </ul>
  *
  */
