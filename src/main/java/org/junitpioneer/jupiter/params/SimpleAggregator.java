@@ -36,7 +36,7 @@ class SimpleAggregator implements ArgumentsAggregator {
 			throws ArgumentsAggregationException {
 		Class<?> type = context.getParameter().getType();
 		Set<Constructor<?>> constructors = Arrays
-				.stream(type.getDeclaredConstructors())
+				.stream(type.getConstructors())
 				// only if the constructor parameters and the supplied values are equal length
 				.filter(constructor -> constructor.getParameterCount() == accessor.size())
 				.collect(toUnmodifiableSet());
@@ -53,7 +53,9 @@ class SimpleAggregator implements ArgumentsAggregator {
 			try {
 				Object[] arguments = new Object[accessor.size()];
 				for (int i = 0; i < accessor.size(); i++) {
-					// wrapping primitive types to avoid casting problems - Java does auto unboxing later
+					// can't just check against types explicitly because JUnit might be able to convert to
+					// the types that we need, so we have to "force" that by using ArgumentsAccessor::get
+					// we also wrap primitive types to avoid casting problems - Java does auto unboxing later
 					arguments[i] = accessor.get(i, PioneerUtils.wrap(constructor.getParameterTypes()[i]));
 				}
 				value = constructor.newInstance(arguments);

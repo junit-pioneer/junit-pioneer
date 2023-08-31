@@ -43,7 +43,7 @@ public class SimpleAggregatorDemo {
 	}
 
 	enum Gender {
-		F, M
+		F, M, X
 	}
 
 }

@@ -149,7 +149,7 @@ class SimpleAggregatorTests {
 	}
 
 	enum Gender {
-		M, F
+		M, F, X
 	}
 
 	static class Person {

@@ -23,7 +23,7 @@ import org.junit.jupiter.params.aggregator.AggregateWith;
  * <p>The supplied values are expected to be able to be aggregated into a single argument,
  * which is in turn supplied to the {@code @ParameterizedTest} method.</p>
  *
- * <p>For more details and examples, see
+ * <p>For more details (including its limitations) and examples, see
  * <a href="https://junit-pioneer.org/docs/simple-arguments-aggregator/" target="_top">the documentation on
  * <code>Simple Arguments Aggregator</code></a>
  * </p>
