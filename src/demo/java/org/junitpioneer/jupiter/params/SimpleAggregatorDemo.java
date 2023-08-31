@@ -33,7 +33,7 @@ public class SimpleAggregatorDemo {
 		private final LocalDate birthday;
 		// end::person_class[]
 
-		Person(String firstName, String lastName, Gender gender, LocalDate birthday) {
+		public Person(String firstName, String lastName, Gender gender, LocalDate birthday) {
 			this.firstName = firstName;
 			this.lastName = lastName;
 			this.gender = gender;

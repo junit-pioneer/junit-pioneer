@@ -134,12 +134,12 @@ class SimpleAggregatorTests {
 			private final String verse;
 			private final int line;
 
-			Verse(String verse, int line) {
+			public Verse(String verse, int line) {
 				this.verse = verse;
 				this.line = line;
 			}
 
-			Verse(String verse, Integer line) {
+			public Verse(String verse, Integer line) {
 				this.verse = verse;
 				this.line = line;
 			}
@@ -170,7 +170,7 @@ class SimpleAggregatorTests {
 
 		private final int value;
 
-		Boxed(int value) {
+		public Boxed(int value) {
 			this.value = value;
 		}
 
@@ -181,7 +181,7 @@ class SimpleAggregatorTests {
 		private final String name;
 		private final LocalDate birthday;
 
-		Human(String name, LocalDate birthday) {
+		public Human(String name, LocalDate birthday) {
 			this.name = name;
 			this.birthday = birthday;
 		}
@@ -193,7 +193,7 @@ class SimpleAggregatorTests {
 		private final String description;
 		private final LocalTime time;
 
-		Ticket(String description, LocalTime time) {
+		public Ticket(String description, LocalTime time) {
 			this.description = description;
 			this.time = time;
 		}
@@ -205,7 +205,7 @@ class SimpleAggregatorTests {
 		private final String description;
 		private final LocalDateTime occurred;
 
-		Memory(String description, LocalDateTime occurred) {
+		public Memory(String description, LocalDateTime occurred) {
 			this.description = description;
 			this.occurred = occurred;
 		}
