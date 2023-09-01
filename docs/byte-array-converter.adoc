@@ -1,5 +1,5 @@
 :page-title: Convert Number Argument to Byte Array
-:page-description: The JUnit 5 (Jupiter) extension `@NumberToByteArrayConversion` convert the number value of an argument to its byte array representation
+:page-description: The JUnit 5 (Jupiter) argument converter `@NumberToByteArrayConversion` converts the number value of an argument to its byte array representation
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/converter/ByteArrayConverterDemo.java
 
@@ -18,7 +18,7 @@ include::{demo}[tag=int_example]
 include::{demo}[tag=long_example]
 ----
 
-By default, the extension uses big endian order.
+By default, the argument converter uses big endian order.
 This can be configured in the annotation using `order`.
 
 [source,java,indent=0]
@@ -26,9 +26,9 @@ This can be configured in the annotation using `order`.
 include::{demo}[tag=little_endian_order]
 ----
 
-The extension will support `byte`, `short`, `int`, `long`, `double` and `float`.
+The argument converter will support `byte`, `short`, `int`, `long`, `double` and `float`.
 It does not support `String`.
 
 == Thread-Safety
 
-This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].
+This argument converter is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].
