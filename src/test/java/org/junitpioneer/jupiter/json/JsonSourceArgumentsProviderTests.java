@@ -145,6 +145,13 @@ class JsonSourceArgumentsProviderTests {
 			assertThat(customerName).isIn("Luke", "Yoda");
 		}
 
+		@ParameterizedTest
+		@JsonSource({ "{ name: 'Luke', height: 172, }", "{ name: 'Yoda', height: 66, }" })
+		void allowsTrailingComma(Customer customer) {
+			assertThat(Set.of(tuple(customer.getName(), customer.getHeight())))
+					.containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
+		}
+
 	}
 
 	@Nested
