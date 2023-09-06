@@ -1,0 +1,20 @@
+{%#block
+{%!#replaceLines replace="/^(.*)$/{%@ident {%@define VERSION=$1%}%}"
+{%#trimLines (trimVertical)
+    {%!#sort collator=semver
+        {%@comment
+            We replace the tag refs with just the version numbers
+        %}
+        {%!#replaceLines replace="/.*refs.tags.v(.*)/$1"
+            {%@comment
+                We keep only the version tag refs
+            %}
+            {%!#killLines pattern=.*refs.tags.v.* keep
+                {%@listDir ../../.git/refs/tags%}
+                {%@include [verbatim] ../../.git/packed-refs%}
+            %}
+        %}
+    %}
+%}%}
+{%@export VERSION%}
+%}

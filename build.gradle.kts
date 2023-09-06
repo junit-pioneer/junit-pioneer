@@ -211,7 +211,7 @@ tasks {
 	compileJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		// Do not break the build on "exports" warnings (see CONTRIBUTING.md for details)
+		// Do not break the build on "exports" warnings (see CONTRIBUTING.adoc for details)
 		options.compilerArgs.add("-Xlint:all,-exports")
 
 		if (project.version != "unspecified") {
