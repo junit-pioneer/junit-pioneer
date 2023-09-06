@@ -2,16 +2,11 @@
 = JUnit Pioneer
 :sectanchors:
 
-[.right]
 image::docs/project-logo.jpg[logo,150,role=thumb,float=right]
-[.left]
-image::https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat[Latest Junit Pioneer on Maven Central,link=https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer]
-[.left]
-image::https://javadoc.io/badge2/org.junit-pioneer/junit-pioneer/javadoc.svg[Latest JUnit Pioneer Javadoc on javadoc.io,link=https://javadoc.io/doc/org.junit-pioneer/junit-pioneer]
-[.left]
-image::https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml/badge.svg?branch=main[JUnit Pioneer build status,link=https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml?branch=main]
-[.left]
-image::https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg[Contributor Covenant Code of Conduct,link=CODE_OF_CONDUCT.adoc]
+image::https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat[Latest Junit Pioneer on Maven Central,link=https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer,float=left]
+image::https://javadoc.io/badge2/org.junit-pioneer/junit-pioneer/javadoc.svg[Latest JUnit Pioneer Javadoc on javadoc.io,link=https://javadoc.io/doc/org.junit-pioneer/junit-pioneer,float=left]
+image::https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml/badge.svg?branch=main[JUnit Pioneer build status,link=https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml?branch=main,float=left]
+image::https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg[Contributor Covenant Code of Conduct,link=CODE_OF_CONDUCT.adoc,float=left]
 {empty} +
 
 A melting pot for all kinds of extensions to
