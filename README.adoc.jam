@@ -2,11 +2,13 @@
 = JUnit Pioneer
 :sectanchors:
 
-image::docs/project-logo.jpg[logo,150,role=thumb,float=right]
-image::https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat[Latest Junit Pioneer on Maven Central,link=https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer,float=left]
-image::https://javadoc.io/badge2/org.junit-pioneer/junit-pioneer/javadoc.svg[Latest JUnit Pioneer Javadoc on javadoc.io,link=https://javadoc.io/doc/org.junit-pioneer/junit-pioneer,float=left]
-image::https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml/badge.svg?branch=main[JUnit Pioneer build status,link=https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml?branch=main,float=left]
-image::https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg[Contributor Covenant Code of Conduct,link=CODE_OF_CONDUCT.adoc,float=left]
+++++
+<img src="docs/project-logo.jpg" width="150" align="right" />
+<img src="https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat" align="left" />
+<img src="https://javadoc.io/badge2/org.junit-pioneer/junit-pioneer/javadoc.svg" align="left" />
+<img src="https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml/badge.svg?branch=main" align="left" />
+<img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" align="left" />
+++++
 {empty} +
 
 A melting pot for all kinds of extensions to
@@ -29,7 +31,7 @@ JUnit Pioneer is released on https://github.com/junit-pioneer/junit-pioneer/rele
 
 * group ID: `org.junit-pioneer`
 * artifact ID: `junit-pioneer`
-* version: https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat[![Latest Junit Pioneer on Maven Central]](https://mvnrepository.com/artifact/org.junit-pioneer/junit-pioneer)
+* version: `{%VERSION%}`
 
 For Maven:
 
