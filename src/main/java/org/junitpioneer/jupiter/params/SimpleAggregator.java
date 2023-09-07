@@ -41,8 +41,8 @@ class SimpleAggregator implements ArgumentsAggregator {
 				.filter(constructor -> constructor.getParameterCount() == accessor.size())
 				.collect(toUnmodifiableSet());
 		if (constructors.isEmpty())
-			throw new ArgumentsAggregationException(
-				format("No matching constructor found, mismatching parameter sizes, expected %d.", accessor.size()));
+			throw new ArgumentsAggregationException(format(
+				"Could not aggregate arguments, no public constructor with %d parameters was found.", accessor.size()));
 		return tryEachConstructor(constructors, accessor);
 	}
 
@@ -55,6 +55,7 @@ class SimpleAggregator implements ArgumentsAggregator {
 				for (int i = 0; i < accessor.size(); i++) {
 					// can't just check against types explicitly because JUnit might be able to convert to
 					// the types that we need, so we have to "force" that by using ArgumentsAccessor::get
+					// which invokes JUnit's built-in ArgumentConverter
 					// we also wrap primitive types to avoid casting problems - Java does auto unboxing later
 					arguments[i] = accessor.get(i, PioneerUtils.wrap(constructor.getParameterTypes()[i]));
 				}
@@ -62,16 +63,16 @@ class SimpleAggregator implements ArgumentsAggregator {
 				matchingConstructors.add(constructor);
 			}
 			catch (Exception ignored) {
-				// continue, we throw if no matching constructor is found
+				// continue, we throw an exception if no matching constructor is found
 			}
 		}
-		if (value == null) {
+		if (value == null)
 			throw new ArgumentsAggregationException(
-				"Could not aggregate arguments, no matching constructor was found.");
-		} else if (matchingConstructors.size() > 1) {
-			throw new ArgumentsAggregationException(format("Expected only one matching constructor but found %d: %s",
-				matchingConstructors.size(), matchingConstructors));
-		}
+				"Could not aggregate arguments, no matching public constructor was found.");
+		if (matchingConstructors.size() > 1)
+			throw new ArgumentsAggregationException(
+				format("Could not aggregate arguments. Expected only one matching public constructor but found %d: %s",
+					matchingConstructors.size(), matchingConstructors));
 		return value;
 	}
 

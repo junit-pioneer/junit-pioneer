@@ -25,17 +25,16 @@ import org.junit.jupiter.params.aggregator.AggregateWith;
  *
  * <p>For more details (including its limitations) and examples, see
  * <a href="https://junit-pioneer.org/docs/simple-arguments-aggregator/" target="_top">the documentation on
- * <code>Simple Arguments Aggregator</code></a>
+ * Simple Arguments Aggregator</a>
  * </p>
  *
- * <p>This annotation is not compatible with {@link org.junitpioneer.jupiter.cartesian.CartesianTest} as this expects
- * a single parameter as opposed to {@link org.junitpioneer.jupiter.cartesian.CartesianTest} requiring
- * multiple parameters.
+ * <p>This annotation is not compatible with {@link org.junitpioneer.jupiter.cartesian.CartesianTest} since
+ * this expects a single parameter as opposed to {@link org.junitpioneer.jupiter.cartesian.CartesianTest}
+ * requiring multiple parameters.
  * </p>
  *
  * @since 2.1
  * @see org.junit.jupiter.params.aggregator.ArgumentsAggregator
- * @see org.junitpioneer.jupiter.params.SimpleAggregator
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

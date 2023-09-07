@@ -20,7 +20,7 @@
  *     <li>{@link org.junitpioneer.jupiter.params.DoubleRangeSource}</li>
  * </ul>
  *
- * <p>Argument aggregator for simple use-cases.</p>
+ * <p>Argument aggregator for simple use cases.</p>
  * <p>Check out the following type for details:</p>
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.params.Aggregate}</li>

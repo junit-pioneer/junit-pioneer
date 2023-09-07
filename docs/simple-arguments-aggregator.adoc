@@ -16,7 +16,7 @@ include::{demo}[tag=basic_example]
 
 == Limitations
 
-The extension is meant to be used for simple use-cases, and has a couple of limitations.
+The extension is meant to be used for simple use cases and has a couple of limitations.
 
  - The parameter object must have a `public` constructor.
  - The arguments must be in the same order as the constructor parameters.

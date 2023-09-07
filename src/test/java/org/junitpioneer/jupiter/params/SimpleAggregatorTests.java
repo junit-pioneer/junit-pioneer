@@ -16,7 +16,6 @@ import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParam
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,7 +63,7 @@ class SimpleAggregatorTests {
 	@CsvSource({ "Fuzzy, 2010-10-10T12:20:09", "Unsure, 2022-12-11T07:12:15" })
 	void testLocalDateTime(@Aggregate Memory memory) {
 		assertThat(memory.description).isIn("Fuzzy", "Unsure");
-		assertThat(memory.occurred).isAfter(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0));
+		assertThat(memory.occurred).isIn("2010-10-10T12:20:09", "2022-12-11T07:12:15");
 	}
 
 	@Test
@@ -79,7 +78,8 @@ class SimpleAggregatorTests {
 						.allSatisfy(exception -> assertThat(exception)
 								.hasCauseInstanceOf(ArgumentsAggregationException.class)
 								.hasMessageContaining(
-									"No matching constructor found, mismatching parameter sizes, expected")));
+									"Could not aggregate arguments, no public constructor with %d parameters was found",
+									1)));
 	}
 
 	@Test
@@ -94,7 +94,7 @@ class SimpleAggregatorTests {
 						.allSatisfy(exception -> assertThat(exception)
 								.hasCauseInstanceOf(ArgumentsAggregationException.class)
 								.hasMessageContaining(
-									"Could not aggregate arguments, no matching constructor was found.")));
+									"Could not aggregate arguments, no matching public constructor was found.")));
 	}
 
 	@Test
@@ -108,7 +108,7 @@ class SimpleAggregatorTests {
 				.andThenCheckExceptions(exceptions -> assertThat(exceptions)
 						.allSatisfy(exception -> assertThat(exception)
 								.hasCauseInstanceOf(ArgumentsAggregationException.class)
-								.hasMessageContaining("Expected only one matching constructor")));
+								.hasMessageContaining("Expected only one matching public constructor")));
 	}
 
 	static class BadConfigurationTestCases {
