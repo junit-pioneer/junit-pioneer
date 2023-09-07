@@ -44,7 +44,7 @@ The reason is that it's not clear from reading the annotation whether it's *and*
 == DisableIfArgument
 
 This extension can be used to selectively disable parameterized tests based on their arguments (converted with `toString()`).
-The extension comes with three annotations, covering different use-cases:
+The extension comes with three annotations, covering different use cases:
 
 - `@DisableIfAnyArgument`, non-repeatable
 - `@DisableIfAllArguments`, non-repeatable
