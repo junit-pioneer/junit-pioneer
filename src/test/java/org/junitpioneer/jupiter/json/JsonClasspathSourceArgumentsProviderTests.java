@@ -96,10 +96,6 @@ class JsonClasspathSourceArgumentsProviderTests {
 		assertThat(displayNames.get("deconstructObjectsFromArray"))
 				.containsExactly("[1] Luke, 172", "[2] Luke, 66", "[3] Yoda, 172", "[4] Yoda, 66");
 
-		//assertThat(displayNames.get("customDataLocation"))
-		//		.containsExactly("[1] Snowspeeder, 4.5", "[2] Snowspeeder, 3", "[3] Imperial Speeder Bike, 4.5",
-		//			"[4] Imperial Speeder Bike, 3");
-
 		assertThat(displayNames.get("deconstructObjectsFromMultipleFiles"))
 				.containsExactly("[1] 66, Yoda", "[2] 66, Luke", "[3] 172, Yoda", "[4] 172, Luke");
 

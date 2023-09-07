@@ -10,30 +10,43 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.Map;
+import java.util.ServiceLoader;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junitpioneer.internal.PioneerPreconditions;
 
 /**
  * A {@link JsonConverter} using Jackson 2 {@link ObjectMapper} to perform the conversion
  */
 class JacksonJsonConverter implements JsonConverter {
 
-	private static final JacksonJsonConverter INSTANCE = new JacksonJsonConverter(new ObjectMapper());
+	private static final Map<String, ObjectMapperProvider> OBJECT_MAPPERS = loadObjectMappers();
 
 	private final ObjectMapper objectMapper;
+
 	private final ObjectMapper lenientObjectMapper;
 
-	JacksonJsonConverter(ObjectMapper objectMapper) {
-		this.objectMapper = objectMapper;
-		this.lenientObjectMapper = this.objectMapper.copy();
-		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
-		this.lenientObjectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+	JacksonJsonConverter(ObjectMapperProvider provider) {
+		PioneerPreconditions.notNull(provider, "Could not find custom object mapper.");
+		this.objectMapper = provider.get();
+		this.lenientObjectMapper = provider.getLenient();
+	}
+
+	private static Map<String, ObjectMapperProvider> loadObjectMappers() {
+		return ServiceLoader
+				.load(ObjectMapperProvider.class)
+				.stream()
+				.map(ServiceLoader.Provider::get)
+				.collect(toMap(ObjectMapperProvider::id, identity()));
 	}
 
 	@Override
@@ -62,8 +75,8 @@ class JacksonJsonConverter implements JsonConverter {
 		return lenient ? lenientObjectMapper : objectMapper;
 	}
 
-	static JacksonJsonConverter getConverter() {
-		return INSTANCE;
+	static JacksonJsonConverter getConverter(String objectMapperId) {
+		return new JacksonJsonConverter(OBJECT_MAPPERS.get(objectMapperId));
 	}
 
 }

@@ -10,7 +10,10 @@
 
 package org.junitpioneer.testkit;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.StreamSupport;
 
 import org.junit.platform.engine.DiscoverySelector;
@@ -26,56 +29,81 @@ import org.junit.platform.testkit.engine.Events;
  */
 public class ExecutionResults {
 
-	EngineExecutionResults executionResults;
+	private final EngineExecutionResults executionResults;
 
 	private static final String JUPITER_ENGINE_NAME = "junit-jupiter";
 
-	ExecutionResults(Class<?> testClass) {
-		executionResults = getConfiguredJupiterEngine().selectors(DiscoverySelectors.selectClass(testClass)).execute();
+	static class Builder {
+
+		private final Map<String, String> additionalProperties = new HashMap<>();
+		private final List<DiscoverySelector> selectors = new ArrayList<>();
+
+		Builder addConfigurationParameters(Map<String, String> additionalConfig) {
+			additionalProperties.putAll(additionalConfig);
+			return this;
+		}
+
+		Executor selectTestClass(Class<?> testClass) {
+			selectors.add(DiscoverySelectors.selectClass(testClass));
+			return new Executor();
+		}
+
+		Executor selectTestClasses(Iterable<Class<?>> testClasses) {
+			StreamSupport
+					.stream(testClasses.spliterator(), false)
+					.map(DiscoverySelectors::selectClass)
+					.forEach(selectors::add);
+			return new Executor();
+		}
+
+		Executor selectTestMethod(Class<?> testClass, String testMethodName) {
+			selectors.add(DiscoverySelectors.selectMethod(testClass, testMethodName));
+			return new Executor();
+		}
+
+		Executor selectTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
+				String methodParameterTypes) {
+			selectors.add(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes));
+			return new Executor();
+		}
+
+		Executor selectNestedTestClass(List<Class<?>> enclosingClasses, Class<?> testClass) {
+			selectors.add(DiscoverySelectors.selectNestedClass(enclosingClasses, testClass));
+			return new Executor();
+		}
+
+		Executor selectNestedTestMethod(List<Class<?>> enclosingClasses, Class<?> testClass, String testMethodName) {
+			selectors.add(DiscoverySelectors.selectNestedMethod(enclosingClasses, testClass, testMethodName));
+			return new Executor();
+		}
+
+		Executor selectNestedTestMethodWithParameterTypes(List<Class<?>> enclosingClasses, Class<?> testClass,
+				String testMethodName, String methodParameterTypes) {
+			selectors
+					.add(DiscoverySelectors
+							.selectNestedMethod(enclosingClasses, testClass, testMethodName, methodParameterTypes));
+			return new Executor();
+		}
+
+		class Executor {
+
+			ExecutionResults execute() {
+				return new ExecutionResults(Builder.this.additionalProperties, Builder.this.selectors);
+			}
+
+		}
+
 	}
 
-	ExecutionResults(Iterable<Class<?>> testClasses) {
-		executionResults = getConfiguredJupiterEngine()
-				.selectors(StreamSupport
-						.stream(testClasses.spliterator(), false)
-						.map(DiscoverySelectors::selectClass)
-						.toArray(DiscoverySelector[]::new))
+	private ExecutionResults(Map<String, String> additionalProperties, List<DiscoverySelector> selectors) {
+		this.executionResults = getConfiguredJupiterEngine()
+				.configurationParameters(additionalProperties)
+				.selectors(selectors.toArray(DiscoverySelector[]::new))
 				.execute();
 	}
 
-	ExecutionResults(Class<?> testClass, String testMethodName) {
-		executionResults = getConfiguredJupiterEngine()
-				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName))
-				.execute();
-	}
-
-	ExecutionResults(Class<?> testClass, String testMethodName, String methodParameterTypes) {
-		executionResults = getConfiguredJupiterEngine()
-				.selectors(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes))
-				.execute();
-	}
-
-	ExecutionResults(List<Class<?>> enclosingClasses, Class<?> testClass) {
-		executionResults = EngineTestKit
-				.engine(JUPITER_ENGINE_NAME)
-				.selectors(DiscoverySelectors.selectNestedClass(enclosingClasses, testClass))
-				.execute();
-	}
-
-	ExecutionResults(List<Class<?>> enclosingClasses, Class<?> testClass, String testMethodName) {
-		executionResults = EngineTestKit
-				.engine(JUPITER_ENGINE_NAME)
-				.selectors(DiscoverySelectors.selectNestedMethod(enclosingClasses, testClass, testMethodName))
-				.execute();
-	}
-
-	ExecutionResults(List<Class<?>> enclosingClasses, Class<?> testClass, String testMethodName,
-			String methodParameterTypes) {
-		executionResults = EngineTestKit
-				.engine(JUPITER_ENGINE_NAME)
-				.selectors(DiscoverySelectors
-						.selectNestedMethod(enclosingClasses, testClass, testMethodName, methodParameterTypes))
-				.execute();
+	static Builder builder() {
+		return new Builder();
 	}
 
 	private EngineTestKit.Builder getConfiguredJupiterEngine() {

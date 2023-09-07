@@ -37,4 +37,8 @@ module org.junitpioneer {
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
 	uses org.junitpioneer.jupiter.IssueProcessor;
+
+	provides org.junitpioneer.jupiter.json.ObjectMapperProvider
+			with org.junitpioneer.jupiter.json.DefaultObjectMapperProvider;
+	uses org.junitpioneer.jupiter.json.ObjectMapperProvider;
 }

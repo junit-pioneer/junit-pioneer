@@ -51,7 +51,8 @@ class JsonSourceArgumentsProviderTests {
 
 		assertThat(displayNames)
 				.containsOnlyKeys("deconstructCustomerFromArray", "deconstructCustomerMultipleValues",
-					"deconstructCustomerMultipleLinesComplexType", "singleCustomer", "singleCustomerName");
+					"deconstructCustomerMultipleLinesComplexType", "singleCustomer", "singleCustomerName",
+					"allowsTrailingComma");
 
 		assertThat(displayNames.get("deconstructCustomerFromArray")).containsExactly("[1] Luke, 172", "[2] Yoda, 66");
 
@@ -65,6 +66,9 @@ class JsonSourceArgumentsProviderTests {
 				.containsExactly("[1] Customer{name='Luke', height=172}", "[2] Customer{name='Yoda', height=66}");
 
 		assertThat(displayNames.get("singleCustomerName")).containsExactly("[1] Luke", "[2] Yoda");
+
+		assertThat(displayNames.get("allowsTrailingComma"))
+				.containsExactly("[1] Customer{name='Luke', height=172}", "[2] Customer{name='Yoda', height=66}");
 	}
 
 	@Test
@@ -143,6 +147,13 @@ class JsonSourceArgumentsProviderTests {
 		@JsonSource({ "{ name: 'Luke', height: 172 }", "{ name: 'Yoda', height: 66 }", })
 		void singleCustomerName(@Property("name") String customerName) {
 			assertThat(customerName).isIn("Luke", "Yoda");
+		}
+
+		@ParameterizedTest
+		@JsonSource({ "{ name: 'Luke', height: 172, }", "{ name: 'Yoda', height: 66, }" })
+		void allowsTrailingComma(Customer customer) {
+			assertThat(Set.of(tuple(customer.getName(), customer.getHeight())))
+					.containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 	}
