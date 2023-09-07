@@ -49,14 +49,14 @@ class SimpleAggregatorTests {
 	@CsvSource({ "John, 2023-07-16", "Bob, 1959-02-21", "Jane, 1977-05-03" })
 	void testLocalDate(@Aggregate Human human) {
 		assertThat(human.name).isNotBlank();
-		assertThat(human.birthday).isAfter(LocalDate.of(1900, 1, 1));
+		assertThat(human.birthday).isIn("2023-07-16", "1959-02-21", "1977-05-03");
 	}
 
 	@ParameterizedTest
 	@CsvSource({ "Speeding, 19:03:12", "Ran red light, 18:34:02", "Rolling stop, 07:12:12" })
 	void testLocalTime(@Aggregate Ticket ticket) {
 		assertThat(ticket.description).isNotBlank();
-		assertThat(ticket.time).isAfter(LocalTime.MIDNIGHT);
+		assertThat(ticket.time).isIn("19:03:12", "18:34:02", "07:12:12");
 	}
 
 	@ParameterizedTest
