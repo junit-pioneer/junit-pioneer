@@ -10,6 +10,10 @@
 
 package org.junitpioneer.jupiter.json;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
 
 import org.junit.jupiter.api.Nested;
@@ -126,5 +130,27 @@ class JsonArgumentSourceExtensionDemo {
 		// end::inline_source_deconstruct_from_array[]
 
 	}
+
+	static class Misc {
+
+		// tag::use_object_mapper_example[]
+		@ParameterizedTest
+		@UseObjectMapper("custom")
+		@JsonClasspathSource("jedis.json")
+		void singleJediProperty(@Property("name") String jediName) {
+			// YOUR TEST CODE HERE
+		}
+
+		// end::use_object_mapper_example[]
+	}
+
+	// tag::custom_annotation[]
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	@ParameterizedTest
+	@UseObjectMapper("custom")
+	public @interface JsonTest {
+	}
+	// end::custom_annotation[]
 
 }

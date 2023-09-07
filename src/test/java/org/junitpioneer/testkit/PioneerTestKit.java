@@ -14,6 +14,7 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 
 import java.util.List;
+import java.util.Map;
 
 import org.opentest4j.TestAbortedException;
 
@@ -26,7 +27,7 @@ public class PioneerTestKit {
 	 * @return The execution results
 	 */
 	public static ExecutionResults executeTestClass(Class<?> testClass) {
-		return new ExecutionResults(testClass);
+		return ExecutionResults.builder().selectTestClass(testClass).execute();
 	}
 
 	/**
@@ -36,7 +37,7 @@ public class PioneerTestKit {
 	 * @return The execution results
 	 */
 	public static ExecutionResults executeTestClasses(Iterable<Class<?>> testClasses) {
-		return new ExecutionResults(testClasses);
+		return ExecutionResults.builder().selectTestClasses(testClasses).execute();
 	}
 
 	/**
@@ -47,7 +48,7 @@ public class PioneerTestKit {
 	 * @return The execution results
 	 */
 	public static ExecutionResults executeTestMethod(Class<?> testClass, String testMethodName) {
-		return new ExecutionResults(testClass, testMethodName);
+		return ExecutionResults.builder().selectTestMethod(testClass, testMethodName).execute();
 	}
 
 	/**
@@ -66,7 +67,10 @@ public class PioneerTestKit {
 
 		String allTypeNames = toMethodParameterTypesString(methodParameterTypes);
 
-		return new ExecutionResults(testClass, testMethodName, allTypeNames);
+		return ExecutionResults
+				.builder()
+				.selectTestMethodWithParameterTypes(testClass, testMethodName, allTypeNames)
+				.execute();
 	}
 
 	/**
@@ -77,7 +81,7 @@ public class PioneerTestKit {
 	 * @return The execution results
 	 */
 	public static ExecutionResults executeNestedTestClass(List<Class<?>> enclosingClasses, Class<?> testClass) {
-		return new ExecutionResults(enclosingClasses, testClass);
+		return ExecutionResults.builder().selectNestedTestClass(enclosingClasses, testClass).execute();
 	}
 
 	/**
@@ -90,7 +94,7 @@ public class PioneerTestKit {
 	 */
 	public static ExecutionResults executeNestedTestMethod(List<Class<?>> enclosingClasses, Class<?> testClass,
 			String testMethodName) {
-		return new ExecutionResults(enclosingClasses, testClass, testMethodName);
+		return ExecutionResults.builder().selectNestedTestMethod(enclosingClasses, testClass, testMethodName).execute();
 	}
 
 	/**
@@ -110,7 +114,36 @@ public class PioneerTestKit {
 
 		String allTypeNames = toMethodParameterTypesString(methodParameterTypes);
 
-		return new ExecutionResults(enclosingClasses, testClass, testMethodName, allTypeNames);
+		return ExecutionResults
+				.builder()
+				.selectNestedTestMethodWithParameterTypes(enclosingClasses, testClass, testMethodName, allTypeNames)
+				.execute();
+	}
+
+	/**
+	 * Returns the execution results of the given method of a given test class
+	 * and passes the additional configuration parameters.
+	 *
+	 * @param configurationParameters additional configuration parameters
+	 * @param testClass The test class instance
+	 * @param testMethodName Name of the test method (of the given class)
+	 * @param methodParameterTypes Class type(s) of the parameter(s)
+	 * @return The execution results
+	 * @throws IllegalArgumentException when methodParameterTypes is null
+	 * 			This method only checks parameters which are not part of the underlying
+	 * 			Jupiter TestKit. The Jupiter TestKit may throw other exceptions!
+	 */
+	public static ExecutionResults executeTestMethodWithParameterTypesAndConfigurationParameters(
+			Map<String, String> configurationParameters, Class<?> testClass, String testMethodName,
+			Class<?>... methodParameterTypes) {
+
+		String allTypeNames = toMethodParameterTypesString(methodParameterTypes);
+
+		return ExecutionResults
+				.builder()
+				.addConfigurationParameters(configurationParameters)
+				.selectTestMethodWithParameterTypes(testClass, testMethodName, allTypeNames)
+				.execute();
 	}
 
 	private static String toMethodParameterTypesString(Class<?>... methodParameterTypes) {
