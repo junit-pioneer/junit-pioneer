@@ -66,6 +66,17 @@ public class StdIoExtensionTests {
 		}
 
 		@Test
+		@StdIo
+		@DisplayName("catches the output on the standard out as lines, including trailing/preceding empty lines")
+		void catchesOutWithEmptyLines(StdOut out) {
+			app.writeWithEmptyLines();
+
+			assertThat(out.capturedLines())
+					.containsExactly("", "", "Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye", "", "");
+		}
+
+		@Test
 		@ComposedIo
 		@DisplayName("works if StdIo is a meta-annotation")
 		void catchesOutFromMeta(StdOut out) {
@@ -371,6 +382,15 @@ public class StdIoExtensionTests {
 			System.out.print("Lo! in the orient ");
 			System.out.println("when the gracious light");
 			System.out.println("Lifts up his burning head, each under eye");
+		}
+
+		public void writeWithEmptyLines() {
+			System.out.println();
+			System.out.println();
+			System.out.println("Lo! in the orient when the gracious light");
+			System.out.println("Lifts up his burning head, each under eye");
+			System.out.println();
+			System.out.println();
 		}
 
 		public void writeErr() {
