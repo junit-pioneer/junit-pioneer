@@ -29,11 +29,17 @@ Documentation (new extension)
 * [ ] The `docs/docs-nav.yml` navigation has an entry for the new extension
 * [ ] The `package-info.java` contains information about the new extension
 
-Code
+Code (general)
 * [ ] Code adheres to code style, naming conventions etc.
 * [ ] Successful tests cover all changes
 * [ ] There are checks which validate correct / false usage / configuration of a functionality and there are tests to verify those checks
 * [ ] Tests use [AssertJ](https://assertj.github.io/doc/) or our own [PioneerAssert](https://github.com/junit-pioneer/junit-pioneer/blob/main/CONTRIBUTING.md#assertions) (which are based on AssertJ)
+
+Code (new package)
+* [ ] The new package is exported in `module-info.java`
+* [ ] The new package is also present in the tests
+* [ ] The new package is opened for reflection to JUnit 5 in `module-info.java`
+* [ ] The new package is listed in the contribution guide
 
 Contributing
 * [ ] A prepared commit message exists
