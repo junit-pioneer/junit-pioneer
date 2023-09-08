@@ -1,0 +1,38 @@
+:page-title: Simple Arguments Aggregator
+:page-description: The JUnit 5 (Jupiter) extension `@Aggregate` aggregates supplied values into a single parameter for a `@ParameterizedTest`
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/params/SimpleAggregatorDemo.java
+
+Annotating a test parameter with `@Aggregate` aggregates all the supplied arguments into a single object.
+
+== Usage
+
+`@Aggregate` can be applied to a parameter in a `@ParameterizedTest`.
+
+[source,java,indent=0]
+====
+include::{demo}[tag=basic_example]
+====
+
+== Limitations
+
+The extension is meant to be used for simple use cases and has a couple of limitations.
+
+ - The parameter object must have a `public` constructor.
+ - The arguments must be in the same order as the constructor parameters.
+ - The parameter object must be non-composite - it can not have another object(s) as fields.
+
+This last point has a few exceptions based on JUnit 5 support for https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-argument-conversion-implicit[implicit type conversions].
+In the example above, if we have the following fields in the `Person` class:
+
+[source,java,indent=0]
+====
+include::{demo}[tag=person_class]
+====
+
+Then JUnit 5 will take care of the conversion from `String` to `Gender` and `LocalDate`.
+If you need to supply more complex objects to your tests, see if link:/docs/json-argument-source.adoc[JSON arguments sources] cover your use case.
+
+== Thread-Safety
+
+This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

@@ -39,5 +39,7 @@
         url: /docs/retrying-test/
       - title: "Standard Input and Output"
         url: /docs/standard-input-output/
+      - title: "Simple Arguments Aggregator"
+        url: /docs/simple-arguments-aggregator/
       - title: "Vintage @Test"
         url: /docs/vintage-test/
