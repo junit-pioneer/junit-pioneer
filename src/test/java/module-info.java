@@ -55,6 +55,8 @@ module org.junitpioneer {
 	// via org.assertj.core
 	requires java.instrument;
 	requires jdk.unsupported;
+	// via org.mockito
+	requires jdk.attach;
 	// via nl.jqno.equalsverifier
 	requires java.sql;
 
