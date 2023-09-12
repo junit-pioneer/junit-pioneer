@@ -216,7 +216,7 @@ tasks {
 
 		if (project.version != "unspecified") {
 			// Add version to Java modules
-			options.javaModuleVersion.set(project.version.toString());
+			options.javaModuleVersion.set(project.version.toString())
 		}
 	}
 
