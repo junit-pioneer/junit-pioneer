@@ -535,7 +535,7 @@ Of course, we want to avoid our own dependency hell, so each dependency should s
 
 #### Updates
 
-To keep dependencies up to date, run `gradle dependencyUpdates`, which lists all dependencies for which a newer version exists.
+To keep dependencies up to date, run `./gradlew dependencyUpdates`, which lists all dependencies for which a newer version exists.
 Updates then need to be done manually.
 To keep the commit history clean, these should be done in bulk every few weeks.
 
