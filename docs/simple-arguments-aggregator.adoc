@@ -10,9 +10,9 @@ Annotating a test parameter with `@Aggregate` aggregates all the supplied argume
 `@Aggregate` can be applied to a parameter in a `@ParameterizedTest`.
 
 [source,java,indent=0]
-====
+----
 include::{demo}[tag=basic_example]
-====
+----
 
 == Limitations
 
@@ -26,9 +26,9 @@ This last point has a few exceptions based on JUnit 5 support for https://junit.
 In the example above, if we have the following fields in the `Person` class:
 
 [source,java,indent=0]
-====
+----
 include::{demo}[tag=person_class]
-====
+----
 
 Then JUnit 5 will take care of the conversion from `String` to `Gender` and `LocalDate`.
 If you need to supply more complex objects to your tests, see if link:/docs/json-argument-source.adoc[JSON arguments sources] cover your use case.
