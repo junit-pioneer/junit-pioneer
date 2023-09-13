@@ -38,7 +38,7 @@ jobs:
     name: Gradle wrapper validation
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
@@ -58,7 +58,7 @@ jobs:
     name: with Java 11 on ${{ matrix.os }}
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Sonar needs the whole Git history for issue assignment
           fetch-depth: 0
@@ -70,7 +70,7 @@ jobs:
           cache: 'gradle'
       - name: Cache SonarCloud results
         if: ${{ matrix.os == 'ubuntu' }}
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.sonar/cache/
           key: ubuntu-sonar
@@ -93,7 +93,7 @@ jobs:
     name: Code format check
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -117,12 +117,12 @@ jobs:
     strategy:
       matrix:
         java: [ 11, 17, 20 ]
-        junit-version: [ '5.9.2' ]
+        junit-version: [ '5.9.2', '5.10.0' ]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -145,14 +145,14 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        junit-version: [ '5.9.2' ]
+        junit-version: [ '5.9.2', '5.10.0' ]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
     # Gradle doesn't work with JDK EA builds, so we launch it with a supported Java version,
     # but set the Gradle toolchain to use the experimental version.
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up experimental Java
         uses: oracle-actions/setup-java@v1
         with:
@@ -188,7 +188,7 @@ jobs:
     name: Release Pioneer into the wild
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Shipkit needs the whole Git history for changelog generation
           fetch-depth: 0
@@ -225,7 +225,7 @@ jobs:
     name: Update website
     steps:
       - name: Trigger website build
-        uses: peter-evans/repository-dispatch@v1
+        uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.GH_WRITE_TOKEN }}
           repository: junit-pioneer/junit-pioneer.github.io

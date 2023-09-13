@@ -112,8 +112,12 @@ Classes usually belong into one of these packages:
 
 * `org.junitpioneer.internal` - code intended to be shared across various extensions
 * `org.junitpioneer.jupiter` - extensions to JUnit Jupiter
-	* `....issue` - implementation details of issue extension
-	* `....params` - extensions for Jupiter's `@ParameterizedTest`
+	* `...cartesian` - implementation details of Cartesian product extension
+	* `...converter` - argument converters for Jupiter's `ArgumentConverter`
+	* `...issue` - implementation details of issue extension
+	* `...json` - JSON argument sources for Jupiter's `@ParameterizedTest`
+	* `...params` - extensions for Jupiter's `@ParameterizedTest`
+	* `...resource` - extensions for injecting resources
 * `org.junitpioneer.vintage` - extensions to older JUnit versions
 
 If none of them is a good fit, we'll find one together.
@@ -535,7 +539,7 @@ Of course, we want to avoid our own dependency hell, so each dependency should s
 
 #### Updates
 
-To keep dependencies up to date, run `gradle dependencyUpdates`, which lists all dependencies for which a newer version exists.
+To keep dependencies up to date, run `./gradlew dependencyUpdates`, which lists all dependencies for which a newer version exists.
 Updates then need to be done manually.
 To keep the commit history clean, these should be done in bulk every few weeks.
 

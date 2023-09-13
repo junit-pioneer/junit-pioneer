@@ -4,14 +4,14 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "6.18.0"
+	id("com.diffplug.spotless") version "6.21.0"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "4.0.0.2929"
+	id("org.sonarqube") version "4.3.1.3277"
 	id("org.shipkit.shipkit-changelog") version "1.2.0"
 	id("org.shipkit.shipkit-github-release") version "1.2.0"
-	id("com.github.ben-manes.versions") version "0.46.0"
+	id("com.github.ben-manes.versions") version "0.48.0"
 	id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-	id("org.gradlex.extra-java-module-info") version "1.3"
+	id("org.gradlex.extra-java-module-info") version "1.4.2"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -52,7 +52,7 @@ val junitVersion : String by project
 val jacksonVersion: String = "2.14.2"
 val assertjVersion: String = "3.24.2"
 val log4jVersion: String = "2.20.0"
-val jimfsVersion: String = "1.2"
+val jimfsVersion: String = "1.3.0"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
@@ -66,9 +66,9 @@ dependencies {
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.11.0")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.5.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.14.1")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.15.1")
 
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = log4jVersion)
@@ -216,7 +216,7 @@ tasks {
 
 		if (project.version != "unspecified") {
 			// Add version to Java modules
-			options.javaModuleVersion.set(project.version.toString());
+			options.javaModuleVersion.set(project.version.toString())
 		}
 	}
 
@@ -341,7 +341,7 @@ tasks {
 		enabled = !experimentalBuild
 		reports {
 			xml.required.set(true)
-			xml.outputLocation.set(file("${buildDir}/reports/jacoco/report.xml"))
+			xml.outputLocation.set(file("${layout.buildDirectory}/reports/jacoco/report.xml"))
 		}
 	}
 
