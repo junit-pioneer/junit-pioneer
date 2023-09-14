@@ -194,7 +194,7 @@ public class StdIoExtensionTests {
 		@StdIo("")
 		@DisplayName("for empty input, available() returns 0 available bytes")
 		void nothingAvailableWhenEmpty(StdIn in) throws IOException {
-			assertThat(in.available()).isEqualTo(1);
+			assertThat(in.available()).isEqualTo(linesAsString("").length());
 		}
 
 		@Test
