@@ -13,7 +13,6 @@ package org.junitpioneer.jupiter;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 abstract class StdOutputStream extends OutputStream {
@@ -35,13 +34,18 @@ abstract class StdOutputStream extends OutputStream {
 	}
 
 	/**
+	 * @return the string that was written to {@code System.out} or {@code System.err}
+	 */
+	public String capturedString() {
+		return writer.toString();
+	}
+
+	/**
 	 * @return the lines that were written to {@code System.out} or {@code System.err}
 	 */
 	public String[] capturedLines() {
 		var lines = writer.toString().split(StdIoExtension.SEPARATOR, -1);
-		return lines[lines.length - 1].isEmpty()
-				? Arrays.copyOf(lines, lines.length - 1)
-				: lines;
+		return lines[lines.length - 1].isEmpty() ? Arrays.copyOf(lines, lines.length - 1) : lines;
 	}
 
 }

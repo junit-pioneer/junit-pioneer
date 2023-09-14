@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Arrays;
 
 /**
  * <p>For details and examples, see
@@ -32,8 +33,9 @@ public class StdIn extends InputStream {
 	 */
 	private int availableBytes;
 
-	public StdIn(String[] values) {
-		var mockedInput = String.join(StdIoExtension.SEPARATOR, values);
+	public StdIn(String[] lines) {
+		// console input is always newline-terminated, so append a line separator to every line
+		var mockedInput = String.join(StdIoExtension.SEPARATOR, lines) + StdIoExtension.SEPARATOR;
 		reader = new StringReader(mockedInput);
 		availableBytes = mockedInput.getBytes().length;
 	}
@@ -59,10 +61,18 @@ public class StdIn extends InputStream {
 	}
 
 	/**
+	 * @return the string that was read from {@code System.in}; note that buffering readers may read all lines eagerly
+	 */
+	public String capturedString() {
+		return writer.toString();
+	}
+
+	/**
 	 * @return the lines that were read from {@code System.in}; note that buffering readers may read all lines eagerly
 	 */
 	public String[] capturedLines() {
-		return writer.toString().split(StdIoExtension.SEPARATOR);
+		var lines = writer.toString().split(StdIoExtension.SEPARATOR, -1);
+		return lines[lines.length - 1].isEmpty() ? Arrays.copyOf(lines, lines.length - 1) : lines;
 	}
 
 }
