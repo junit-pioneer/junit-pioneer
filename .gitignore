@@ -41,3 +41,6 @@ hs_err_pid*
 
 # asdf-vm
 .tool-versions
+
+# AsciiDoc
+.asciidoctor/
