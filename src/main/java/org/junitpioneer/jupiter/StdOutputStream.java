@@ -38,10 +38,10 @@ abstract class StdOutputStream extends OutputStream {
 	 * @return the lines that were written to {@code System.out} or {@code System.err}
 	 */
 	public String[] capturedLines() {
-		var value = new ArrayList<>(Arrays.asList(writer.toString().split(StdIoExtension.SEPARATOR, -1)));
-		if (value.get(value.size() - 1).isEmpty())
-			value.remove(value.size() - 1);
-		return value.toArray(String[]::new);
+		var lines = writer.toString().split(StdIoExtension.SEPARATOR, -1);
+		return lines[lines.length - 1].isEmpty()
+				? Arrays.copyOf(lines, lines.length - 1)
+				: lines;
 	}
 
 }
