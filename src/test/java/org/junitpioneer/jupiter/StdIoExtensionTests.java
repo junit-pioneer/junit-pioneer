@@ -184,8 +184,8 @@ public class StdIoExtensionTests {
 		void somethingAvailableAfterRead(StdIn in) throws IOException {
 			int bytesToRead = 16;
 			app.read(bytesToRead);
-			int remainingLength = linesAsString("Doth homage to his new-appearing sight")
-					.getBytes().length - bytesToRead;
+			int remainingLength = linesAsString("Doth homage to his new-appearing sight").getBytes().length
+					- bytesToRead;
 
 			assertThat(in.available()).isEqualTo(remainingLength);
 		}
