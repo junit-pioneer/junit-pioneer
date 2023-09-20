@@ -30,7 +30,7 @@ JUnit Pioneer is released on https://github.com/junit-pioneer/junit-pioneer/rele
 
 * group ID: `org.junit-pioneer`
 * artifact ID: `junit-pioneer`
-* version: `2.0.1`
+* version: `...`
 
 For Maven:
 

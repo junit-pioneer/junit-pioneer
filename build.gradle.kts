@@ -220,10 +220,6 @@ tasks {
 		}
 	}
 
-	//withType<AbstractAsciidoctorTask>().configureEach {
-
-	//}
-
 	// Prepares test-related JVM args
 	val moduleName = "org.junitpioneer"
 	// See https://docs.gradle.org/current/userguide/java_testing.html#sec:java_testing_modular_patching
