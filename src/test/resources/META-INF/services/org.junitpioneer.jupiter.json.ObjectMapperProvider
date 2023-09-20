@@ -1,0 +1,2 @@
+org.junitpioneer.jupiter.json.ObjectMapperProviderTests$DummyObjectMapperProvider
+org.junitpioneer.jupiter.json.ObjectMapperProviderTests$ThrowingObjectMapperProvider
