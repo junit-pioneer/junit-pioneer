@@ -173,7 +173,7 @@ signing {
 }
 
 nexusPublishing {
-	repositories {
+	this.repositories {
 		sonatype()
 	}
 }
@@ -199,7 +199,7 @@ tasks {
 		}
 	}
 	project(":demo") {
-		sonar {
+		this.sonar {
 			isSkipProject = true
 		}
 	}
@@ -219,6 +219,10 @@ tasks {
 			options.javaModuleVersion.set(project.version.toString())
 		}
 	}
+
+	//withType<AbstractAsciidoctorTask>().configureEach {
+
+	//}
 
 	// Prepares test-related JVM args
 	val moduleName = "org.junitpioneer"
@@ -269,6 +273,7 @@ tasks {
 		jvmArgs(testJvmArgs)
 	}
 
+	@Suppress("UnstableApiUsage")
 	testing {
 		suites {
 			val test by getting(JvmTestSuite::class) {
@@ -345,6 +350,7 @@ tasks {
 		}
 	}
 
+	@Suppress("UnstableApiUsage")
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
 		dependsOn(javadoc, validateYaml, testing.suites.named("demoTests"))
