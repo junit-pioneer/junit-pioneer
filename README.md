@@ -120,6 +120,7 @@ The least we can do is to thank them and list some of their accomplishments here
 
 * [Eric Everman](https://github.com/eeverman) added `@RestoreSystemProperties` and `@RestoreEnvironmentVariables` annotations to the [System Properties](https://junit-pioneer.org/docs/system-properties/) and [Environment Variables](https://junit-pioneer.org/docs/environment-variables/) extensions (#574 / #700)
 * [Florian Westreicher](https://github.com/meredrica) contributed to the JSON argument source extension (#704 / #724)
+* [Pёtr Andreev](https://github.com/petrandreev) added back support for NULL values to `@CartesianTestExtension` (#764 / #765)
 
 #### 2022
 

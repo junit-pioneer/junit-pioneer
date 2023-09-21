@@ -471,6 +471,16 @@ public class CartesianTestExtensionTests {
 				assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
 			}
 
+			@Test
+			@DisplayName("when configured with NULL parameters")
+			void usesCustomCartesianArgumentsProviderWithNullArgumentOnParameters() {
+				ExecutionResults results = PioneerTestKit
+						.executeTestMethodWithParameterTypes(CustomCartesianArgumentsProviderTestCases.class,
+							"nullValuesCartesianArgumentProvider", String.class);
+
+				assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+			}
+
 		}
 
 	}
@@ -1190,6 +1200,11 @@ public class CartesianTestExtensionTests {
 			assertThat(source).hasSize(2);
 		}
 
+		@CartesianTest
+		void nullValuesCartesianArgumentProvider(@NullValues String string) {
+
+		}
+
 	}
 
 	private enum TestEnum implements TestInterface {
@@ -1262,6 +1277,21 @@ public class CartesianTestExtensionTests {
 		@Override
 		public Stream<String> provideArguments(ExtensionContext context, Parameter parameter) {
 			return Stream.of("1", "2");
+		}
+
+	}
+
+	@Target(ElementType.PARAMETER)
+	@Retention(RetentionPolicy.RUNTIME)
+	@CartesianArgumentsSource(NullValuesProvider.class)
+	@interface NullValues {
+	}
+
+	static class NullValuesProvider implements CartesianParameterArgumentsProvider<String> {
+
+		@Override
+		public Stream<String> provideArguments(ExtensionContext context, Parameter parameter) {
+			return Stream.of(null, "1", null, "2");
 		}
 
 	}
