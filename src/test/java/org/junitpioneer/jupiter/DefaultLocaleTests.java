@@ -364,4 +364,100 @@ class DefaultLocaleTests {
 
 	}
 
+	@Nested
+	@DisplayName("when used with a locale provider")
+	class LocaleProviderTests {
+
+		@Test
+		@DisplayName("can get a basic locale from provider")
+		@DefaultLocale(localeProvider = BasicLocaleProvider.class)
+		void canUseProvider() {
+			assertThat(Locale.getDefault()).isEqualTo(Locale.FRENCH);
+		}
+
+		@Test
+		@DisplayName("throws a NullPointerException with custom message if provider returns null")
+		void providerReturnsNull() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "returnsNull");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(NullPointerException.class)
+					.hasMessageContaining("LocaleProvider instance returned with null");
+		}
+
+		@Test
+		@DisplayName("throws an ExtensionConfigurationException if any other option is present")
+		void mutuallyExclusive() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "mutuallyExclusive");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining(
+						"can only be used with language tag if language, country, variant and provider are not set");
+		}
+
+		@Test
+		@DisplayName("throws an ExtensionConfigurationException if localeProvider can't be constructed")
+		void badConstructor() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "badConstructor");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("could not be constructed because of an exception");
+		}
+
+	}
+
+	static class BadProviderTestCases {
+
+		@Test
+		@DefaultLocale(value = "en", localeProvider = BasicLocaleProvider.class)
+		void mutuallyExclusive() {
+		}
+
+		@Test
+		@DefaultLocale(localeProvider = ReturnsNullLocaleProvider.class)
+		void returnsNull() {
+		}
+
+		@Test
+		@DefaultLocale(localeProvider = BadConstructorLocaleProvider.class)
+		void badConstructor() {
+		}
+
+	}
+
+	static class BasicLocaleProvider implements LocaleProvider {
+
+		@Override
+		public Locale get() {
+			return Locale.FRENCH;
+		}
+
+	}
+
+	static class ReturnsNullLocaleProvider implements LocaleProvider {
+
+		@Override
+		public Locale get() {
+			return null;
+		}
+
+	}
+
+	static class BadConstructorLocaleProvider implements LocaleProvider {
+
+		BadConstructorLocaleProvider(String unused) {
+		}
+
+		@Override
+		public Locale get() {
+			return Locale.GERMAN;
+		}
+
+	}
+
 }
