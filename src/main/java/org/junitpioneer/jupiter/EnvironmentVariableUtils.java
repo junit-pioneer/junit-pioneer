@@ -102,7 +102,7 @@ class EnvironmentVariableUtils {
 		}
 		catch (InaccessibleObjectException ex) {
 			throw new PreconditionViolationException(
-				"Cannot access Java runtime internals to modify environment variables. "
+				"Cannot access and modify JDK internals to modify environment variables. "
 						+ "Have a look at the documentation for possible solutions: "
 						+ "https://junit-pioneer.org/docs/environment-variables/#warnings-for-reflective-access",
 				ex);
