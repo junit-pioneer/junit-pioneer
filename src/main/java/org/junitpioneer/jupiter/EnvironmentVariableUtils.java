@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.platform.commons.PreconditionViolationException;
 
 /**
  * This class modifies the internals of the environment variables map with reflection.
@@ -100,7 +101,7 @@ class EnvironmentVariableUtils {
 			field.setAccessible(true); //NOSONAR illegal access required to implement the extension
 		}
 		catch (InaccessibleObjectException ex) {
-			throw new ExtensionConfigurationException(
+			throw new PreconditionViolationException(
 				"Cannot access Java runtime internals to modify environment variables. "
 						+ "Have a look at the documentation for possible solutions: "
 						+ "https://junit-pioneer.org/docs/environment-variables/#warnings-for-reflective-access",
