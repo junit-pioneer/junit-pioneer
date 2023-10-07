@@ -102,6 +102,16 @@ public class ExpectedToFailExtensionTests {
 	}
 
 	@Test
+	void failsOnTestThrowingUnexpectedException() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ExpectedToFailTestCases.class, "unexpectedException");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(AssertionError.class)
+				.hasMessage("Test marked as 'expected to fail' failed with an unexpected class java.lang.IllegalArgumentException exception");
+	}
+
+	@Test
 	void doesNotAbortOnBeforeEachTestFailure() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(ExpectedToFailFailureBeforeEachTestCases.class, "test");
@@ -217,6 +227,12 @@ public class ExpectedToFailExtensionTests {
 		@ExpectedToFail
 		void working() {
 			// Does not cause failure or error
+		}
+
+		@Test
+		@ExpectedToFail(onExceptions = UnsupportedOperationException.class)
+		void unexpectedException() {
+			throw new IllegalArgumentException();
 		}
 
 	}

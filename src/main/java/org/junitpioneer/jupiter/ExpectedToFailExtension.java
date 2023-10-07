@@ -42,7 +42,12 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 				throw t;
 			}
 
-			String message = getExpectedToFailAnnotation(extensionContext).value();
+			ExpectedToFail expectedToFail = getExpectedToFailAnnotation(extensionContext);
+			if (!expectedToFail.onExceptions()[0].isInstance(t)) {
+				fail("Test marked as 'expected to fail' failed with an unexpected " + t.getClass() + " exception");
+			}
+
+			String message = expectedToFail.value();
 			if (message.isEmpty()) {
 				message = "Test marked as temporarily 'expected to fail' failed as expected";
 			}

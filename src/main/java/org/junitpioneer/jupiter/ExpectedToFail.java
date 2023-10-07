@@ -72,4 +72,8 @@ public @interface ExpectedToFail {
 	 */
 	String value() default "";
 
+	/**
+	 * Specifies which exceptions are expected to be thrown.
+	 */
+	Class<? extends Throwable>[] onExceptions() default {Throwable.class};
 }
