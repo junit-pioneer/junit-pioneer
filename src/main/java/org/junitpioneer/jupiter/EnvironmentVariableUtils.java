@@ -15,7 +15,6 @@ import java.lang.reflect.InaccessibleObjectException;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.platform.commons.PreconditionViolationException;
 
 /**
