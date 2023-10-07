@@ -63,7 +63,7 @@ class EnvironmentVariableUtils {
 		}
 		catch (ReflectiveOperationException ex) {
 			ex.addSuppressed(processEnvironmentClassEx);
-			throw new ExtensionConfigurationException("Could not modify environment variables", ex);
+			throw new PreconditionViolationException("Could not modify environment variables", ex);
 		}
 	}
 
