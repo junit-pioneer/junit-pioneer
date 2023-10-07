@@ -136,9 +136,9 @@ In this case, we recommend using `--add-opens` to grant JUnit Pioneer access to 
 
 [source]
 ----
-# to access java.lang.ProcessEnvironment.theEnvironment
---add-opens java.base/java.util=$TARGET_MODULE
 # to access java.util.Collections$UnmodifiableMap.m
+--add-opens java.base/java.util=$TARGET_MODULE
+# to access java.lang.ProcessEnvironment.theEnvironment
 --add-opens java.base/java.lang=$TARGET_MODULE
 ----
 
