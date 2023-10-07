@@ -27,7 +27,9 @@ class EnvironmentVariableExtension extends
 	// package visible to make accessible for tests
 	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
 	static final String WARNING_KEY = EnvironmentVariableExtension.class.getSimpleName();
-	static final String WARNING_VALUE = "This extension uses reflection to mutate JDK-internal state, which is fragile. Check the Javadoc or documentation for more details.";
+	static final String WARNING_VALUE = "This extension uses reflection to access and modify JDK internals, which is fragile."
+			+ "Have a look at the documentation for further details:"
+			+ "https://junit-pioneer.org/docs/environment-variables/#warnings-for-reflective-access";
 
 	@Override
 	protected Function<ClearEnvironmentVariable, String> clearKeyMapper() {
