@@ -297,6 +297,7 @@ class DefaultTimeZoneTests {
 		}
 
 		@Test
+		@ReadsDefaultTimeZone
 		@DisplayName("throws ExtensionConfigurationException if properties are empty")
 		void throwsForEmptyOptions() {
 			ExecutionResults results = executeTestMethod(BadTimeZoneProviderCases.class, "empty");
@@ -308,6 +309,7 @@ class DefaultTimeZoneTests {
 		}
 
 		@Test
+		@ReadsDefaultTimeZone
 		@DisplayName("throws ExtensionConfigurationException if the provider does not have a suitable constructor")
 		void throwsForBadConstructor() {
 			ExecutionResults results = executeTestMethod(BadTimeZoneProviderCases.class, "noConstructor");

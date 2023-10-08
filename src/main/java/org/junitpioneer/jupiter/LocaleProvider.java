@@ -15,11 +15,7 @@ import java.util.function.Supplier;
 
 public interface LocaleProvider extends Supplier<Locale> {
 
-	abstract class NullLocaleProvider implements LocaleProvider {
-
-		NullLocaleProvider() {
-		}
-
+	interface NullLocaleProvider extends LocaleProvider {
 	}
 
 }

@@ -183,7 +183,7 @@ class DefaultLocaleTests {
 			}
 
 			@AfterAll
-			@ReadsDefaultTimeZone
+			@ReadsDefaultLocale
 			void resetAfterTestMethodExecution() {
 				assertThat(Locale.getDefault().getLanguage()).isEqualTo("custom");
 			}
@@ -191,7 +191,7 @@ class DefaultLocaleTests {
 		}
 
 		@AfterAll
-		@ReadsDefaultTimeZone
+		@ReadsDefaultLocale
 		void resetAfterTestMethodExecution() {
 			assertThat(Locale.getDefault().getLanguage()).isEqualTo("custom");
 		}
@@ -376,6 +376,7 @@ class DefaultLocaleTests {
 		}
 
 		@Test
+		@ReadsDefaultLocale
 		@DisplayName("throws a NullPointerException with custom message if provider returns null")
 		void providerReturnsNull() {
 			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "returnsNull");

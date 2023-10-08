@@ -15,11 +15,7 @@ import java.util.function.Supplier;
 
 public interface TimeZoneProvider extends Supplier<TimeZone> {
 
-	abstract class NullTimeZoneProvider implements TimeZoneProvider {
-
-		NullTimeZoneProvider() {
-		}
-
+	interface NullTimeZoneProvider extends TimeZoneProvider {
 	}
 
 }
