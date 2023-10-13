@@ -388,6 +388,7 @@ class DefaultLocaleTests {
 		}
 
 		@Test
+		@ReadsDefaultLocale
 		@DisplayName("throws an ExtensionConfigurationException if any other option is present")
 		void mutuallyExclusive() {
 			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "mutuallyExclusive");
@@ -400,6 +401,7 @@ class DefaultLocaleTests {
 		}
 
 		@Test
+		@ReadsDefaultLocale
 		@DisplayName("throws an ExtensionConfigurationException if localeProvider can't be constructed")
 		void badConstructor() {
 			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "badConstructor");

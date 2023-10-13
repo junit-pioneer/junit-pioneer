@@ -286,6 +286,7 @@ class DefaultTimeZoneTests {
 		}
 
 		@Test
+		@ReadsDefaultTimeZone
 		@DisplayName("throws ExtensionConfigurationException if the provider is not the only option")
 		void throwsForMutuallyExclusiveOptions() {
 			ExecutionResults results = executeTestMethod(BadTimeZoneProviderCases.class, "notExclusive");
