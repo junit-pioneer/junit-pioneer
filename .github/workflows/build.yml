@@ -1,7 +1,7 @@
 name: Main build
 
 env:
-  EXPERIMENTAL_JAVA: 21
+  EXPERIMENTAL_JAVA: 22
 
 on:
   # We want to trigger our builds all the time for the default branch
@@ -116,7 +116,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 11, 17, 20 ]
+        java: [ 11, 17, 21 ]
         junit-version: [ '5.9.2', '5.10.0' ]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
@@ -198,7 +198,7 @@ jobs:
           # we build the Javadoc with JDK 17 (for better results),
           # so install that as well
           java-version: |
-            20
+            21
             11
           distribution: temurin
       - name: Perform release
