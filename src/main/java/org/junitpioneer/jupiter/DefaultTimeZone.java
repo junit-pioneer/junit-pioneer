@@ -63,7 +63,7 @@ public @interface DefaultTimeZone {
 	String value() default "";
 
 	/**
-	 * A class implementing {@link TimeZoneProvider} to be used for custom{@code TimeZone} resolution.
+	 * A class implementing {@link TimeZoneProvider} to be used for custom {@code TimeZone} resolution.
 	 * This is mutually exclusive with other properties, if any other property is given a value it
 	 * will result in an {@link org.junit.jupiter.api.extension.ExtensionConfigurationException}.
 	 */

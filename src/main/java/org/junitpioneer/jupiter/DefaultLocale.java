@@ -102,7 +102,7 @@ public @interface DefaultLocale {
 	String variant() default "";
 
 	/**
-	 * A class implementing {@link LocaleProvider} to be used for custom{@code Locale} resolution.
+	 * A class implementing {@link LocaleProvider} to be used for custom {@code Locale} resolution.
 	 * This is mutually exclusive with other properties, if any other property is given a value it
 	 * will result in an {@link org.junit.jupiter.api.extension.ExtensionConfigurationException}.
 	 */
