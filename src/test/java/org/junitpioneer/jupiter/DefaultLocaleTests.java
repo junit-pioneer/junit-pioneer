@@ -390,14 +390,26 @@ class DefaultLocaleTests {
 		@Test
 		@ReadsDefaultLocale
 		@DisplayName("throws an ExtensionConfigurationException if any other option is present")
-		void mutuallyExclusive() {
-			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "mutuallyExclusive");
+		void mutuallyExclusiveWithValue() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "mutuallyExclusiveWithValue");
 
 			assertThat(results)
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
 					.hasMessageContaining(
 						"can only be used with language tag if language, country, variant and provider are not set");
+		}
+
+		@Test
+		@ReadsDefaultLocale
+		@DisplayName("throws an ExtensionConfigurationException if any other option is present")
+		void mutuallyExclusiveWithLanguage() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "mutuallyExclusiveWithLanguage");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("can only be used with language tag if provider is not set");
 		}
 
 		@Test
@@ -418,7 +430,12 @@ class DefaultLocaleTests {
 
 		@Test
 		@DefaultLocale(value = "en", localeProvider = BasicLocaleProvider.class)
-		void mutuallyExclusive() {
+		void mutuallyExclusiveWithValue() {
+		}
+
+		@Test
+		@DefaultLocale(language = "en", localeProvider = BasicLocaleProvider.class)
+		void mutuallyExclusiveWithLanguage() {
 		}
 
 		@Test
