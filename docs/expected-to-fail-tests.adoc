@@ -44,6 +44,18 @@ A custom message can be provided, explaining why the tested code is not working 
 include::{demo}[tag=expected_to_fail_message]
 ----
 
+In some cases it may be desirable to only have the test be aborted on certain exceptions.
+In the following example a test case for `productionFeature()` has been implemented. The test
+has been fully implemented, but the production code has not been implemented yet and throws an
+`UnsupportedOperationException` to indicate this. Once the production code has been implemented
+the test method will fail if the code were to return the wrong result and fail due to a failing
+assertion.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=expected_to_fail_onexception]
+----
+
 == Thread-Safety
 
 This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

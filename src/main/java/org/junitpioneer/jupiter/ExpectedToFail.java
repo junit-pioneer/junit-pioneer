@@ -37,7 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * to specific exceptions. I.e. only if the test method end up throwing one of the specified exceptions
  * will the test be aborted. This can, for example, be used when the production code temporarily throws
  * an {@link UnsupportedOperationException} because some feature has not been implemented yet, but the
- * test method is already implemented and should not be aborted on a failing assertion.
+ * test method is already implemented and should not fail on a failing assertion.
  * </p>
  *
  * <p>The annotation can only be used on methods and as meta-annotation on other annotation types.
