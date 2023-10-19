@@ -81,5 +81,6 @@ public @interface ExpectedToFail {
 	/**
 	 * Specifies which exceptions are expected to be thrown and will cause the test to be aborted rather than fail.
 	 */
-	Class<? extends Throwable>[] onExceptions() default {Throwable.class};
+	Class<? extends Throwable>[] onExceptions() default { Throwable.class };
+
 }

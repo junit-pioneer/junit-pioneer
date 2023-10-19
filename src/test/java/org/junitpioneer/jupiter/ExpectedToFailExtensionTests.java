@@ -114,7 +114,8 @@ public class ExpectedToFailExtensionTests {
 
 	@Test
 	void failsOnTestThrowingUnexpectedException() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(ExpectedToFailTestCases.class, "unexpectedException");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "unexpectedException");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichFailed()
@@ -242,7 +243,7 @@ public class ExpectedToFailExtensionTests {
 		}
 
 		@Test
-		@ExpectedToFail(onExceptions = {IllegalStateException.class, UnsupportedOperationException.class})
+		@ExpectedToFail(onExceptions = { IllegalStateException.class, UnsupportedOperationException.class })
 		void expectedException() {
 			throw new UnsupportedOperationException();
 		}
