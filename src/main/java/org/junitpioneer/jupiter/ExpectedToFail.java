@@ -35,7 +35,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>Further, the {@link #onExceptions()} attribute can be used to restrict the extension's behavior
  * to specific exceptions. I.e. only if the test method end up throwing one of the specified exceptions
- * will the test be aborted. This can for example be used when the production code temporarily throws
+ * will the test be aborted. This can, for example, be used when the production code temporarily throws
  * an {@link UnsupportedOperationException} because some feature has not been implemented yet, but the
  * test method is already implemented and should not be aborted on a failing assertion.
  * </p>
