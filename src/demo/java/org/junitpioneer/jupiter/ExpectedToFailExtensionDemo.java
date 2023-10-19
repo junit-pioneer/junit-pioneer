@@ -18,7 +18,7 @@ public class ExpectedToFailExtensionDemo {
 
 	// tag::expected_to_fail[]
 	@Test
-	@ExpectedToFail(onExceptions = Exception.class)
+	@ExpectedToFail
 	void test() {
 		int actual = brokenMethod();
 		assertEquals(10, actual);
