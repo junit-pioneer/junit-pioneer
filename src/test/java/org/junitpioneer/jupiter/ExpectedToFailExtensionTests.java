@@ -102,13 +102,23 @@ public class ExpectedToFailExtensionTests {
 	}
 
 	@Test
+	void doesNotAbortOnTestThrowingExpectedException() {
+		ExecutionResults results = PioneerTestKit.executeTestMethod(ExpectedToFailTestCases.class, "expectedException");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichAborted()
+				.withExceptionInstanceOf(TestAbortedException.class)
+				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected");
+	}
+
+	@Test
 	void failsOnTestThrowingUnexpectedException() {
 		ExecutionResults results = PioneerTestKit.executeTestMethod(ExpectedToFailTestCases.class, "unexpectedException");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichFailed()
-				.withExceptionInstanceOf(AssertionError.class)
-				.hasMessage("Test marked as 'expected to fail' failed with an unexpected class java.lang.IllegalArgumentException exception");
+				.withExceptionInstanceOf(AssertionFailedError.class)
+				.hasMessage("Test marked as 'expected to fail' failed with an unexpected exception");
 	}
 
 	@Test
@@ -230,9 +240,15 @@ public class ExpectedToFailExtensionTests {
 		}
 
 		@Test
+		@ExpectedToFail(onExceptions = {IllegalStateException.class, UnsupportedOperationException.class})
+		void expectedException() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Test
 		@ExpectedToFail(onExceptions = UnsupportedOperationException.class)
 		void unexpectedException() {
-			throw new IllegalArgumentException();
+			fail();
 		}
 
 	}

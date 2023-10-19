@@ -33,6 +33,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * of disabled tests over time.
  * </p>
  *
+ * <p>Further, the {@link #onExceptions()} attribute can be used to restrict the extension's behavior
+ * to specific exceptions. I.e. only if the test method end up throwing one of the specified exceptions
+ * will the test be aborted. This can for example be used when the production code temporarily throws
+ * an {@link UnsupportedOperationException} because some feature has not been implemented yet, but the
+ * test method is already implemented and should not be aborted on a failing assertion.
+ * </p>
+ *
  * <p>The annotation can only be used on methods and as meta-annotation on other annotation types.
  * Similar to {@code @Disabled}, it has to be used in addition to a "testable" annotation, such
  * as {@link org.junit.jupiter.api.Test @Test}. Otherwise the annotation has no effect.
@@ -41,8 +48,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p><b>Important:</b> This annotation is <b>not</b> intended as a way to mark test methods
  * which intentionally cause exceptions. Such test methods should use
  * {@link org.junit.jupiter.api.Assertions#assertThrows(Class, org.junit.jupiter.api.function.Executable) assertThrows}
- * or similar means to explicitly test for a specific exception class being thrown by a
- * specific action.
+ * or similar means to explicitly test for a specific exception class being thrown by a specific action.
  * </p>
  *
  * <p>For more details and examples, see
@@ -73,7 +79,7 @@ public @interface ExpectedToFail {
 	String value() default "";
 
 	/**
-	 * Specifies which exceptions are expected to be thrown.
+	 * Specifies which exceptions are expected to be thrown and will cause the test to be aborted rather than fail.
 	 */
 	Class<? extends Throwable>[] onExceptions() default {Throwable.class};
 }

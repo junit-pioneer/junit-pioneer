@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Method;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -43,8 +44,8 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 			}
 
 			ExpectedToFail expectedToFail = getExpectedToFailAnnotation(extensionContext);
-			if (!expectedToFail.onExceptions()[0].isInstance(t)) {
-				fail("Test marked as 'expected to fail' failed with an unexpected " + t.getClass() + " exception");
+			if (Stream.of(expectedToFail.onExceptions()).noneMatch(c -> c.isInstance(t))) {
+				fail("Test marked as 'expected to fail' failed with an unexpected exception");
 			}
 
 			String message = expectedToFail.value();
