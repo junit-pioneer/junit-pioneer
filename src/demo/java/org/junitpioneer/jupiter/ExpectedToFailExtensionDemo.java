@@ -32,11 +32,11 @@ public class ExpectedToFailExtensionDemo {
 		int actual = brokenMethod();
 		assertEquals(10, actual);
 	}
+	// end::expected_to_fail_message[]
 
 	private int brokenMethod() {
 		return 0;
 	}
-	// end::expected_to_fail_message[]
 
 	// tag::expected_to_fail_onexception[]
 	@Test
