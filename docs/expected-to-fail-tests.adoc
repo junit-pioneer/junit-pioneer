@@ -44,15 +44,25 @@ A custom message can be provided, explaining why the tested code is not working 
 include::{demo}[tag=expected_to_fail_message]
 ----
 
-In some cases it may be desirable to only have the test be aborted on certain exceptions.
+=== Only Abort on Expected Exceptions
+
+In some cases it may be desirable to only have the test be aborted on certain expected exceptions.
 In the following example a test case for `productionFeature()` has been implemented.
-The test has been fully implemented, but the production code has not been implemented yet and throws an `UnsupportedOperationException` to indicate this.
-Once the production code has been implemented the test method will fail if the code were to return the wrong result and fail due to a failing assertion.
+While the test is fully implemented, the production code has been stubbed and throws an `UnsupportedOperationException` to indicate this.
 
 [source,java,indent=0]
 ----
 include::{demo}[tag=expected_to_fail_onexception]
 ----
+
+Once `productionFeature()` is implemented, `@ExpectedToFail` will fail the test, as no `UnsupportedOperationException` is thrown anymore.
+By using `onExceptions` you can thus prevent "masking" a faulty implementation (e.g. when a value other rather than `10` is returned) with an aborted test (which would be the result when no `onExceptions` is set).
+
+[WARNING]
+====
+As stated in the introduction, this feature is _not_ intended as a mechanism to assert that a test method intentionally throws an exception.
+Instead, such test methods should use https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html#assertThrows(java.lang.Class,org.junit.jupiter.api.function.Executable)[JUnit's `assertThrows`] or similar.
+====
 
 == Thread-Safety
 
