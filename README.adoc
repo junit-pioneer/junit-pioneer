@@ -1,0 +1,175 @@
+= JUnit Pioneer
+:sectanchors:
+
+++++
+<img src="docs/project-logo.jpg" alt="JUnit Pioneer project logo" width="150" align="right" />
+<img src="https://maven-badges.herokuapp.com/maven-central/org.junit-pioneer/junit-pioneer/badge.svg?style=flat" alt="Maven Central badge" align="left" />
+<img src="https://javadoc.io/badge2/org.junit-pioneer/junit-pioneer/javadoc.svg" alt="Javadoc badge" align="left" />
+<img src="https://github.com/junit-pioneer/junit-pioneer/actions/workflows/build.yml/badge.svg?branch=main" alt="Main build badge" align="left" />
+<img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Contributor Covenant badge" align="left" />
+++++
+{empty} +
+
+A melting pot for all kinds of extensions to
+https://github.com/junit-team/junit5[JUnit 5], particular to its Jupiter API.
+
+Check out https://junit-pioneer.org/[junit-pioneer.org], particularly https://junit-pioneer.org/docs/[the documentation section].
+
+== A Pioneer's Mission
+
+JUnit Pioneer provides extensions for https://github.com/junit-team/junit5/[JUnit 5] and its Jupiter API.
+It does not limit itself to proven ideas with wide application but is purposely open to experimentation.
+It aims to spin off successful and cohesive portions into sibling projects or back into the JUnit 5 code base.
+
+To enable easy exchange of code with JUnit 5, JUnit Pioneer copies most of its infrastructure, from code style to build tool and configuration to continuous integration.
+
+
+== Getting on Board
+
+JUnit Pioneer is released on https://github.com/junit-pioneer/junit-pioneer/releases[GitHub] and https://search.maven.org/artifact/org.junit-pioneer/junit-pioneer[Maven Central]. Coordinates:
+
+* group ID: `org.junit-pioneer`
+* artifact ID: `junit-pioneer`
+* version: `...`
+
+For Maven:
+
+[source,xml]
+----
+<dependency>
+	<groupId>org.junit-pioneer</groupId>
+	<artifactId>junit-pioneer</artifactId>
+	<version><!--...--></version>
+	<scope>test</scope>
+</dependency>
+----
+
+For Gradle:
+
+[source,groovy]
+----
+testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
+----
+
+[#dependencies]
+== Dependencies
+
+Starting with release 2.0, JUnit Pioneer is compiled against **Java 11** and comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
+That means it can be used on all Java versions 11 and higher on class path and module path.
+
+Pioneer does not only use JUnit 5's API, but also other artifacts from its ecosystem such as https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons[`junit-platform-commons`].
+To avoid dependency issues (e.g. in https://github.com/junit-pioneer/junit-pioneer/issues/343[junit-pioneer#343]), you should add the JUnit 5 BOM (https://mvnrepository.com/artifact/org.junit/junit-bom[`junit-bom`]) to your project instead of defining all dependency versions manually.
+
+To not add to user's https://nipafx.dev/jar-hell/[JAR hell], JUnit Pioneer is not taking on any runtime dependencies besides JUnit 5.
+Pioneer always depends on the lowest JUnit 5 version that supports its feature set, but that should not keep you from using 5's latest and greatest.
+
+Since 1.7.0 we also have an **optional** runtime dependency on https://github.com/FasterXML/jackson[Jackson], for our JSON-based extensions.
+You can read a bit more about our approach to dependencies in the link:CONTRIBUTING.adoc#others[contribution guide].
+
+For our own infrastructure, we rely on the following compile and test dependencies:
+
+* AssertJ (assertions for our tests)
+* Mockito (mocking for our tests)
+* Log4J (to configure logging during test runs)
+* Jimfs (as an in-memory file system for our test)
+* Equalsverifier (for easier assertion of simple things)
+
+
+== Contributing
+
+We welcome contributions of all shapes and forms! ?
+
+* If you have an idea for an extension, https://github.com/junit-pioneer/junit-pioneer/issues/new[open an issue] and let's discuss.
+* If you want to help but don't know how, have a look at https://github.com/junit-pioneer/junit-pioneer/issues[the existing issues], particularly those marked https://github.com/junit-pioneer/junit-pioneer/labels/%F0%9F%93%A2%20up%20for%20grabs[_up for grabs_] or https://github.com/junit-pioneer/junit-pioneer/labels/good%20first%20issue[_good first issue_].
+* If you want to chat about JUnit Pioneer, https://discord.gg/rHfJeCF[join our discord] - we have a _#junit-pioneer_ channel. ?
+
+Before contributing, please read the link:CONTRIBUTING.adoc[contribution guide] as well as link:CODE_OF_CONDUCT.adoc[the code of conduct].
+
+=== Maintainers
+
+JUnit Pioneer is maintained by a small team of people who work on it in their free time - see link:CONTRIBUTING.adoc[`CONTRIBUTING.adoc`] for details on how they do that.
+In lexicographic order, these are:
+
+Daniel Kraus aka https://github.com/beatngu13[beatngu13]::
+Banking software by day, OSS by night.
+Punk rock enthusiast and passionate hiker.
+Into Java, software testing, and web services.
+https://twitter.com/beatngu1101[Tweets] occasionally.
+
+Matthias Bünger aka https://github.com/Bukama[Bukama]::
+(Always tries to become a better) Java developer, loves testing and reads https://twitter.com/bukamabish[tweets].
+Became a maintainer in April 2020 after he "caused" (authored) too many https://github.com/junit-pioneer/junit-pioneer/issues[bishues]
+
+Mihály Verhás aka https://github.com/Michael1993[Michael1993]::
+Not so witty, not so pretty, not really mean, not really cool bean.
+A Hungarian Java developer who spends more time on Twitch than recommended by his doctors and used creative and diligent contributions to fool everyone into believing he is a decent enough guy to get promoted to maintainer (in November 2020).
+
+Nicolai Parlog aka https://github.com/nipafx[nipafx]::
+Java enthusiast with a passion for learning and sharing, best known for his head decor.
+He's a Java Developer Advocate at Oracle, organizer of https://accento.dev[Accento], occasional streamer, and more - check https://nipafx.dev[nipafx.dev] for the full list.
+He co-founded JUnit Pioneer in November 2016 and has maintained it ever since (although often very negligently).
+
+Simon Schrottner aka https://github.com/aepfli[aepfli]::
+Bearded guy in Lederhosen, who loves to code, and loves to explore code quality, testing, and other tools that can improve the life of a software craftsman.
+https://www.couchsurfing.com/people/simmens[Passionated couchsurfer] and https://www.facebook.com/togtrama[hobby event planner].
+Maintainer since April 2020.
+
+=== Contributors
+
+JUnit Pioneer, as small as it is, would be much smaller without kind souls contributing their time, energy, and skills.
+Thank you for your efforts! ?
+
+The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
+
+==== 2023
+* https://github.com/eeverman[Eric Everman] added `@RestoreSystemProperties` and `@RestoreEnvironmentVariables` annotations to the https://junit-pioneer.org/docs/system-properties/[System Properties] and https://junit-pioneer.org/docs/environment-variables/[Environment Variables] extensions (#574 / #700)
+* https://github.com/meredrica[Florian Westreicher] contributed to the JSON argument source extension (#704 / #724)
+* https://github.com/petrandreev[Pёtr Andreev] added back support for NULL values to `@CartesianTestExtension` (#764 / #765)
+
+==== 2022
+
+* https://github.com/filiphr[Filip Hrisafov] contributed the https://junit-pioneer.org/docs/json-argument-source/[JSON Argument Source] support (#101 / #492)
+* https://github.com/Marcono1234[Marcono1234] contributed the https://junit-pioneer.org/docs/expected-to-fail-tests/[`@ExpectedToFail` extension] (#551 / #676)
+* https://github.com/mathieufortin01[Mathieu Fortin] contributed the `suspendForMs` attribute in https://junit-pioneer.org/docs/retrying-test/[retrying tests] (#407 / #604)
+* https://github.com/p1729[Pankaj Kumar] contributed towards improving GitHub actions (#587 / #611)
+* https://github.com/robtimus[Rob Spoor] enabled non-static factory methods for `@CartesianTest.MethodFactory` (#628)
+* https://github.com/marcwrobel[Marc Wrobel] improved the documentation (#692)
+
+==== 2021
+
+* https://github.com/dump247[Cory Thomas] contributed the `minSuccess` attribute in https://junit-pioneer.org/docs/retrying-test/[retrying tests] (#408 / #430)
+* https://github.com/beatngu13[Daniel Kraus] fixed bugs in the environment variable and system property extensions (#432 / #433, #448 / #449, and more), revamped their annotation handling (#460 / #485), and improved the build process (#482 / #483) before becoming a maintainer
+* https://github.com/gdiegel[Gabriel Diegel] contributed the `@DisabledUntil` extension in https://junit-pioneer.org/docs/disabled-until/[Temporarily disable a test] (#366)
+* https://github.com/johnlehne[John Lehne] resolved an issue with the latest build status not showing correctly in README.md (#530)
+* https://github.com/jbduncan[Jonathan Bluett-Duncan] contributed a fix to `buildSrc/build.gradle` which was failing when a `.idea` directory did not contain a `vcs.xml` file (#532)
+* https://github.com/sleberknight[Scott Leberknight] resolved a javadoc issue (#547 / #548)
+* https://github.com/slawekjaranowski[Slawomir Jaranowski] Migrate to new Shipkit plugins (#410 / #419)
+* https://github.com/scordio[Stefano Cordio] contributed https://junit-pioneer.org/docs/cartesian-product/#cartesianenumsource[the Cartesian Enum source] (#379 / #409 and #414 / #453)
+
+==== 2020
+
+* https://github.com/mureinik[Allon Murienik] contributed https://junit-pioneer.org/docs/range-sources/[the range sources] (#44 / #123)
+* https://github.com/hovinen[Bradford Hovinen] improved the execution of the EnvironmentVariableUtils on different OS (#287 / #288)
+* https://github.com/beatngu13[Daniel Kraus] contributed https://junit-pioneer.org/docs/system-properties/[the system property extension] (#129 / #133) and further improved it, also worked on the environment variable extension (#180 / #248), the Cartesian product extension (#358 / #372), and helped with build infrastructure (e.g. #269)
+* https://github.com/dwalluck[David Walluck] introduced JUnit 5 BOM (#343 / #346)
+* https://github.com/NPException[Dirk Witzel] improved the documentation (#149 / #271)
+* https://github.com/simonenkoi[Ignat Simonenko] fixed a noteworthy bug in the default locale extension (#146 / #161)
+* https://github.com/Hancho2009[Mark Rösler] contributed the https://junit-pioneer.org/docs/environment-variables/[environment variable extension] (#167 / #174 and #241 / #242)
+* https://github.com/Bukama[Matthias Bünger] opened, vetted, and groomed countless issues and PRs and contributed multiple refactorings (e.g. #165 / #168) and fixes (e.g. #190 / #200) before getting promoted to maintainer
+* https://github.com/Michael1993[Mihály Verhás] contributed https://junit-pioneer.org/docs/standard-input-output/[the StdIO extension] (#34 / #227), https://junit-pioneer.org/docs/report-entries/[the ReportEntryExtension] (#134, #179 / #183, #216, #294), https://junit-pioneer.org/docs/cartesian-product/[the CartesianProductTestExtension] (#321, #362 / #68, #354), https://junit-pioneer.org/docs/disable-parameterized-tests/[the DisableIfParameterExtension] (#313, #368) added tests to other extensions (#164 / #272), the Pioneer assertions and contributed to multiple issues (e.g. #217 / #298) and PRs (e.g. #253, #307)
+* https://github.com/nishantvas[Nishant Vashisth] contributed an https://junit-pioneer.org/docs/disable-if-display-name/[extension to disable parameterized tests] by display name (#163 / #175)
+* https://github.com/aepfli[Simon Schrottner] contributed to multiple issues and PRs and almost single-handedly revamped the build and QA process (e.g. #192 / #185) before getting promoted to maintainer
+* https://github.com/sullis[Sullis] improved GitHub Actions with Gradle Wrapper Validation check (#302)
+
+==== 2019
+
+* https://github.com/panchenko[Alex Panchenko] fixed a noteworthy bug in the `TempDirectory` extension (#140)
+* https://github.com/sormuras[Christian Stein] helped get the project back on track (yes, again, I told you Nicolai was negligent)
+* https://github.com/beatngu13[Daniel Kraus] improved Shipkit integration (#148 / #151)
+* https://github.com/marcphilipp[Marc Philipp] helped get the project back on track and converted `build.gradle` to Kotlin (#145)
+
+==== 2018
+
+* https://github.com/britter[Benedikt Ritter] contributed https://junit-pioneer.org/docs/default-locale-timezone/[the default locale and time zone extensions] (#103 / #104)
+* https://github.com/sormuras[Christian Stein] introduced Shipkit-based continuous delivery (#87) and build scans (#124 / #132)
+* https://github.com/marcphilipp[Marc Philipp] helped get the project back on track and contributed https://junit-pioneer.org/docs/temp-directory/[the `TempDirectory` extension] (#39 / #69)

@@ -110,7 +110,7 @@ public class ExecutionResults {
 		return EngineTestKit
 				.engine(JUPITER_ENGINE_NAME)
 				// to tease out concurrency-related bugs, we want parallel execution of our tests
-				// (for details, see section "Thread-safety" in CONTRIBUTING.md)
+				// (for details, see section "Thread-safety" in CONTRIBUTING.adoc)
 				.configurationParameter("junit.jupiter.execution.parallel.enabled", "true")
 				.configurationParameter("junit.jupiter.execution.parallel.mode.default", "concurrent")
 				// since we have full control over which tests we execute with this engine,
