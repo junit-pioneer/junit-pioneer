@@ -46,8 +46,7 @@ jobs:
   # experience with little build time and sufficient feedback. Therefore, we
   # only build this on our default Java version but for all operating systems
   # we are supporting. This allows for a fast execution and fast feedback. The
-  # extended tests will run later under certain conditions. If the OS is
-  # Ubuntu, we also run the SonarCloud analysis.
+  # extended tests will run later under certain conditions.
   basic:
     runs-on: ${{ matrix.os }}-latest
     needs: validation
@@ -59,17 +58,36 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-        with:
-          # Sonar needs the whole Git history for issue assignment
-          fetch-depth: 0
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: temurin
           cache: 'gradle'
+      - name: Gradle build
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
+
+  # SonarCloud analysis
+  sonar-cloud-analysis:
+    runs-on: ubuntu-latest
+    needs: validation
+    timeout-minutes: 15
+    name: SonarCloud analysis
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          # Sonar needs the whole Git history for issue assignment
+          fetch-depth: 0
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: 'gradle'
       - name: Cache SonarCloud results
-        if: ${{ matrix.os == 'ubuntu' }}
         uses: actions/cache@v3
         with:
           path: ~/.sonar/cache/
@@ -79,7 +97,6 @@ jobs:
         with:
           arguments: --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
       - name: SonarCloud analysis
-        if: ${{ matrix.os == 'ubuntu' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "61ab2579215aa8a0024a2f9368fc1298fdecfd18"
