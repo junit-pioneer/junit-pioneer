@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class StdInOutExtensionDemo {
@@ -86,6 +87,7 @@ public class StdInOutExtensionDemo {
 	}
 	// end::stdio_edge_cases_ExampleConsoleReader[]
 
+	@Nested
 	// tag::stdio_edge_cases_ConsoleReaderTest[]
 	class ConsoleReaderTest {
 

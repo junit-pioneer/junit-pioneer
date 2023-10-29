@@ -51,7 +51,7 @@ public class DisableIfTestFailsExtensionDemo {
 	// tag::disable_if_test_not_on_assertions[]
 	@DisableIfTestFails(onAssertion = false)
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-	static class ThreeTestsWithSecondFailingWithUnconfiguredAssertionTestCase {
+	class ThreeTestsWithSecondFailingWithUnconfiguredAssertionTestCase {
 
 		@Test
 		@Order(1)
@@ -76,7 +76,7 @@ public class DisableIfTestFailsExtensionDemo {
 	// tag::disable_if_test_with_given_exception[]
 	@DisableIfTestFails(with = IOException.class)
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-	static class ThreeTestsWithSecondThrowingConfiguredExceptionTestCase {
+	class ThreeTestsWithSecondThrowingConfiguredExceptionTestCase {
 
 		@Test
 		@Order(1)

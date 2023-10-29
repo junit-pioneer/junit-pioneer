@@ -131,7 +131,7 @@ class JsonArgumentSourceExtensionDemo {
 
 	}
 
-	static class Misc {
+	class Misc {
 
 		// tag::use_object_mapper_example[]
 		@ParameterizedTest

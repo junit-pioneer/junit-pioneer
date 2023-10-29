@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class StopwatchExtensionDemo {
@@ -22,6 +23,7 @@ public class StopwatchExtensionDemo {
 	}
 	// end::method[]
 
+	@Nested
 	// tag::class[]
 	@Stopwatch
 	class TestCases {
