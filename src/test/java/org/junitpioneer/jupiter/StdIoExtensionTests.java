@@ -80,6 +80,16 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo
+		@DisplayName("catches an empty line on the standard out")
+		void catchesEmptyLine(StdOut out) {
+			app.writeEmptyLine();
+
+			assertThat(out.capturedString()).isEqualTo("\n");
+			assertThat(out.capturedLines()).containsExactly("");
+		}
+
+		@Test
+		@StdIo
 		@DisplayName("catches the output on the standard out, including trailing/preceding empty lines")
 		void catchesOutWithEmptyLines(StdOut out) {
 			app.writeWithEmptyLines();
@@ -333,8 +343,8 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo
-		@Order(6)
-		@DisplayName("6: Only System.err is redirected.")
+		@Order(8)
+		@DisplayName("8: Only System.err is redirected.")
 		void redirected_single_err(StdErr err) {
 			System.err.println("Mortal beauty");
 			System.err.println("Gracious light");
@@ -348,8 +358,8 @@ public class StdIoExtensionTests {
 
 		@Test
 		@ReadsStdIo
-		@Order(7)
-		@DisplayName("7: System.err is reset, System.in and System.out is unaffected.")
+		@Order(9)
+		@DisplayName("9: System.err is reset, System.in and System.out is unaffected.")
 		void reset_single_err() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
@@ -434,6 +444,10 @@ public class StdIoExtensionTests {
 			System.out.print("Lo! in the orient ");
 			System.out.println("when the gracious light");
 			System.out.println("Lifts up his burning head, each under eye");
+		}
+
+		public void writeEmptyLine() {
+			System.out.println();
 		}
 
 		public void writeWithoutNewline() {
