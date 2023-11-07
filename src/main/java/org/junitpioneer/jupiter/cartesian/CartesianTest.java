@@ -32,23 +32,19 @@ import org.junitpioneer.jupiter.cartesian.CartesianEnumArgumentsProvider.NullEnu
  * {@code @CartesianTest} is a JUnit Jupiter extension that marks
  * a test to be executed with all possible input combinations.
  *
- * <p>Methods annotated with this annotation should not be annotated with {@code Test}.
- * </p>
+ * <p>Methods annotated with this annotation should not be annotated with {@code Test}.</p>
  *
  * <p>This annotation is somewhat similar to {@code @ParameterizedTest}, as in it also takes
  * arguments and can run the same test multiple times. With {@code @CartesianTest} you
  * don't specify the test cases themselves, though. Instead you specify possible values for
  * each test method parameter (for example with @{@link CartesianTest.Values}) by annotating the parameters
- * themselves and the extension runs the method with each possible combination.
- * </p>
+ * themselves and the extension runs the method with each possible combination.</p>
  *
  * <p>You can specify a custom Display Name for the tests ran by {@code @CartesianTest}.
- * By default it's [{index}] {arguments}.
- * </p>
+ * By default it's [{index}] {arguments}.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>@CartesianTest</code></a>.
- * </p>
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>@CartesianTest</code></a>.</p>
  *
  * @since 1.5.0
  */
@@ -87,23 +83,22 @@ public @interface CartesianTest {
 	String ARGUMENTS_PLACEHOLDER = TestNameFormatter.ARGUMENTS_PLACEHOLDER;
 
 	/**
-	 * <p>The display name to be used for individual invocations of the
+	 * The display name to be used for individual invocations of the
 	 * parameterized test; never blank or consisting solely of whitespace.
-	 * </p>
 	 *
-	 * <p>Defaults to [{index}] {arguments}.
-	 * </p>
-	 * <p>
-	 * Supported placeholders:
-	 * <p>
-	 * - {@link org.junitpioneer.jupiter.cartesian.CartesianTest#DISPLAY_NAME_PLACEHOLDER}
-	 * - {@link org.junitpioneer.jupiter.cartesian.CartesianTest#INDEX_PLACEHOLDER}
-	 * - {@link org.junitpioneer.jupiter.cartesian.CartesianTest#ARGUMENTS_PLACEHOLDER}
-	 * - <code>{0}</code>, <code>{1}</code>, etc.: an individual argument (0-based)
+	 * <p>Defaults to [{index}] {arguments}.</p>
+	 *
+	 * <p>Supported placeholders:</p>
+	 *
+	 * <ul>
+	 * <li>{@link org.junitpioneer.jupiter.cartesian.CartesianTest#DISPLAY_NAME_PLACEHOLDER}</li>
+	 * <li>{@link org.junitpioneer.jupiter.cartesian.CartesianTest#INDEX_PLACEHOLDER}</li>
+	 * <li>{@link org.junitpioneer.jupiter.cartesian.CartesianTest#ARGUMENTS_PLACEHOLDER}</li>
+	 * <li><code>{0}</code>, <code>{1}</code>, etc.: an individual argument (0-based)</li>
+	 * </ul>
 	 *
 	 * <p>For the latter, you may use {@link java.text.MessageFormat} patterns
-	 * to customize formatting.
-	 * </p>
+	 * to customize formatting.</p>
 	 *
 	 * @since 1.5
 	 * @see java.text.MessageFormat

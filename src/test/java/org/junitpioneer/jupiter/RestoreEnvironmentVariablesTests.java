@@ -36,7 +36,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.parallel.Execution;
 
 /**
- * <p>Verify proper behavior when annotated on a top level class.</p>
+ * Verify proper behavior when annotated on a top level class.
  *
  * <p>{@link VerifyEnvVarsExtension} is registered as an extension <em>before</em> {@code RestoreSystemProperties}. It
  * stores the initial environment variables and verifies them at the end.
@@ -119,7 +119,7 @@ class RestoreEnvironmentVariablesTests {
 	}
 
 	/**
-	 * <p>Extension that checks the before and after state of environment variables.</p>
+	 * Extension that checks the before and after state of environment variables.
 	 *
 	 * <p>Must be registered before {@code RestoreEnvironmentVariables}.
 	 * To avoid replicating the system being tested w/ the test itself, this class

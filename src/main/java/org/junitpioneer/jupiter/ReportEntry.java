@@ -19,22 +19,18 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Publish the specified key-value pair to be consumed by an
- * {@code org.junit.platform.engine.EngineExecutionListener}
- * in order to supply additional information to the reporting
- * infrastructure. This is functionally identical to calling
+ * Publish the specified key-value pair to be consumed by an {@code org.junit.platform.engine.EngineExecutionListener}
+ * in order to supply additional information to the reporting infrastructure. This is functionally identical to calling
  * {@link org.junit.jupiter.api.extension.ExtensionContext#publishReportEntry(String, String) ExtensionContext::publishReportEntry}
  * from within the test method.
  *
  * <p>{@code ReportEntry} is repeatable and can be used on methods.</p>
  *
  * <p>This extension does not interact with
- * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>.
- * </p>
+ * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/report-entries/" target="_top">the documentation on <code>Report entries</code></a>.
- * </p>
+ * <a href="https://junit-pioneer.org/docs/report-entries/" target="_top">the documentation on report entries</a>.</p>
  *
  * @since 0.5.6
  */

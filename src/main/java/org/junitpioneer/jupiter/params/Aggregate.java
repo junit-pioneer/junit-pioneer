@@ -24,14 +24,12 @@ import org.junit.jupiter.params.aggregator.AggregateWith;
  * which is in turn supplied to the {@code @ParameterizedTest} method.</p>
  *
  * <p>For more details (including its limitations) and examples, see
- * <a href="https://junit-pioneer.org/docs/simple-arguments-aggregator/" target="_top">the documentation on
- * Simple Arguments Aggregator</a>
- * </p>
+ * <a href="https://junit-pioneer.org/docs/simple-arguments-aggregator/" target="_top">the documentation on the
+ * simple arguments aggregator</a>.</p>
  *
  * <p>This annotation is not compatible with {@link org.junitpioneer.jupiter.cartesian.CartesianTest} since
  * this expects a single parameter as opposed to {@link org.junitpioneer.jupiter.cartesian.CartesianTest}
- * requiring multiple parameters.
- * </p>
+ * requiring multiple parameters.</p>
  *
  * @since 2.1
  * @see org.junit.jupiter.params.aggregator.ArgumentsAggregator

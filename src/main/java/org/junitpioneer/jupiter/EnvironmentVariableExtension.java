@@ -77,8 +77,8 @@ class EnvironmentVariableExtension extends
 	}
 
 	/**
-	 * <p>This implementation uses the "Post swap" strategy, returning a clone of the environment variables
-	 * which will be restored in {@link AbstractEntryBasedExtension#prepareToExitRestorableContext}.</p>
+	 * This implementation uses the "Post swap" strategy, returning a clone of the environment variables
+	 * which will be restored in {@link AbstractEntryBasedExtension#prepareToExitRestorableContext}.
 	 *
 	 * <p>See {@link AbstractEntryBasedExtension#prepareToEnterRestorableContext} for more details.</p>
 	 *

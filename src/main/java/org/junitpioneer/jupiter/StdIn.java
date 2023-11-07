@@ -16,9 +16,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 /**
- * <p>For details and examples, see
- * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>
- * </p>
+ * For details and examples, see
+ * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on standard input/output</a>.
  *
  * @see StdIo
  */

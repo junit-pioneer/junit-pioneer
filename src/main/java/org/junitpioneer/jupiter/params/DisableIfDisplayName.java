@@ -33,8 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
  *
  * <p>If neither {@link DisableIfDisplayName#contains() contains} nor
  * {@link DisableIfDisplayName#matches() matches} is configured, or if both are present,
- * the extension will throw an exception.
- * </p>
+ * the extension will throw an exception.</p>
  *
  * @since 0.7
  * @see DisableIfNameExtension
