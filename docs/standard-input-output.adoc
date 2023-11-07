@@ -27,7 +27,7 @@ With `System.out.print("Hello")` and `System.out.println("World")` (note that th
 
 === Captured strings and lines
 
-Since the strings passed to `@StdIo` or `System.out.print/println` don't need to end with a line separator, the question arises how they are separated for the purpose of `capturedString()`, i.e. how does the method's return distinguish between `println("Hello"); println("World");` and `print("Hello"); println("World");`?
+Since the strings passed to `@StdIo` or `System.out/err.print/println` don't need to end with a line separator, the question arises how they are separated for the purpose of `capturedString()`, i.e. how does the method's return distinguish between `println("Hello"); println("World");` and `print("Hello"); println("World");`?
 
 [IMPORTANT]
 ====
@@ -36,11 +36,11 @@ This is not the case for strings passed to `System.out.print` and `System.err.pr
 ====
 
 The classes `StdIn`, `StdOut`, and `StdErr` also offer a method `String[] capturedLines()`, which divides the captured string on the line separator and includes leading, inner, and trailing empty lines but does not include the potential empty string that comes after a trailing line separator.
-(The exact algorithm is based on but does more than a `String::split`.)
+(The exact algorithm is based on but behaves differently from `String::split`.)
 
 [WARNING]
 ====
-The combination of these two approaches leads to the unfortunate situation that `capturedLines()` can't be used to distinguish the case where the last line was created by a `print` or a `println` (see the first two lines in the table below) because regardless of whether the string ends with a line separator or not, there will be no trailing empty string in the array.
+The combination of these two approaches leads to the unfortunate situation that `capturedLines()` can't be used to distinguish the cases where the last line was created by a `print` or a `println` (see the first two lines in the table below) because regardless of whether the string ends with a line separator or not, there will be no trailing empty string in the array.
 Use `capturedString()` to distinguish these cases.
 ====
 
