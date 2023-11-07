@@ -31,7 +31,6 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.TestNameFormatter;
-import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
@@ -155,9 +154,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 						maxRetries, suspendForMs),
 					exception);
 			else
-				throw new AssertionFailedError(format(
-					"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
-					retriesSoFar, maxRetries, minSuccess), exception);
+				throw exception;
 		}
 
 		private boolean expectedException(Throwable exception) {
