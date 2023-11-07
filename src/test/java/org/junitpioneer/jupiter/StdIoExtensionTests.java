@@ -84,7 +84,7 @@ public class StdIoExtensionTests {
 		void catchesEmptyLine(StdOut out) {
 			app.writeEmptyLine();
 
-			assertThat(out.capturedString()).isEqualTo("\n");
+			assertThat(out.capturedString()).isEqualTo(StdIoExtension.SEPARATOR);
 			assertThat(out.capturedLines()).containsExactly("");
 		}
 
@@ -483,7 +483,7 @@ public class StdIoExtensionTests {
 		}
 
 		public void readAndWrite() throws IOException {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			var reader = new BufferedReader(new InputStreamReader(System.in));
 			lines.add(reader.readLine());
 			System.out.println("Yet mortal looks adore his beauty still,");
 			lines.add(reader.readLine());
