@@ -56,10 +56,61 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo
-		@DisplayName("catches the output on the standard out as lines")
+		@DisplayName("catches the output on the standard out")
 		void catchesOut(StdOut out) {
 			app.write();
 
+			assertThat(out.capturedString())
+					.isEqualTo(linesAsString("Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye"));
+			assertThat(out.capturedLines())
+					.containsExactly("Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye");
+		}
+
+		@Test
+		@StdIo
+		@DisplayName("catches no output if none was written")
+		void catchesEmptyOut(StdOut out) {
+			// don't write anything
+
+			assertThat(out.capturedString()).isEqualTo("");
+			assertThat(out.capturedLines()).isEmpty();
+		}
+
+		@Test
+		@StdIo
+		@DisplayName("catches an empty line on the standard out")
+		void catchesEmptyLine(StdOut out) {
+			app.writeEmptyLine();
+
+			assertThat(out.capturedString()).isEqualTo(StdIoExtension.SEPARATOR);
+			assertThat(out.capturedLines()).containsExactly("");
+		}
+
+		@Test
+		@StdIo
+		@DisplayName("catches the output on the standard out, including trailing/preceding empty lines")
+		void catchesOutWithEmptyLines(StdOut out) {
+			app.writeWithEmptyLines();
+
+			assertThat(out.capturedString())
+					.isEqualTo(linesAsString("", "", "Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye", "", ""));
+			assertThat(out.capturedLines())
+					.containsExactly("", "", "Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye", "", "");
+		}
+
+		@Test
+		@StdIo
+		@DisplayName("catches the output on the standard out, including a line that doesn't end with a newline")
+		void catchesOutWithoutTrailingNewline(StdOut out) {
+			app.writeWithoutNewline();
+
+			assertThat(out.capturedString())
+					.isEqualTo(linesAsStringWithoutTrailingNewline("Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye"));
 			assertThat(out.capturedLines())
 					.containsExactly("Lo! in the orient when the gracious light",
 						"Lifts up his burning head, each under eye");
@@ -78,10 +129,13 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo
-		@DisplayName("catches the output on the standard err as lines")
+		@DisplayName("catches the output on the standard err")
 		void catchesErr(StdErr err) {
 			app.writeErr();
 
+			assertThat(err.capturedString())
+					.isEqualTo(linesAsString("Lo! in the orient when the gracious light",
+						"Lifts up his burning head, each under eye"));
 			assertThat(err.capturedLines())
 					.containsExactly("Lo! in the orient when the gracious light",
 						"Lifts up his burning head, each under eye");
@@ -93,6 +147,9 @@ public class StdIoExtensionTests {
 		void catchesIn(StdIn in) throws IOException {
 			app.read();
 
+			assertThat(in.capturedString())
+					.isEqualTo(linesAsString("Doth homage to his new-appearing sight",
+						"Serving with looks his sacred majesty;"));
 			assertThat(in.capturedLines())
 					.containsExactly("Doth homage to his new-appearing sight",
 						"Serving with looks his sacred majesty;");
@@ -101,17 +158,32 @@ public class StdIoExtensionTests {
 		@Test
 		@StdIo("")
 		@DisplayName("catches empty input and reads nothing")
-		void catchesNothing(StdIn in) {
+		void catchesEmptyIn(StdIn in) {
 			assertThatCode(app::read).doesNotThrowAnyException();
+			assertThat(in.capturedString()).isEqualTo(StdIoExtension.SEPARATOR);
 			assertThat(in.capturedLines()).containsExactly("");
+		}
+
+		@Test
+		@StdIo({ "", "", "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;", "", "" })
+		@DisplayName("catches the input from the standard in, including trailing/preceding empty lines")
+		void catchesInWithEmptyLines(StdIn in) throws IOException {
+			app.read();
+
+			assertThat(in.capturedString())
+					.isEqualTo(linesAsString("", "", "Doth homage to his new-appearing sight",
+						"Serving with looks his sacred majesty;", "", ""));
+			assertThat(in.capturedLines())
+					.containsExactly("", "", "Doth homage to his new-appearing sight",
+						"Serving with looks his sacred majesty;", "", "");
 		}
 
 		@Test
 		@StdIo({ "Doth homage to his new-appearing sight", "Serving with looks his sacred majesty;" })
 		@DisplayName("for non-empty input, available() reports input's number of bytes")
 		void everythingAvailableBeforeRead(StdIn in) throws IOException {
-			int inputLength = ("Doth homage to his new-appearing sight" + System.getProperty("line.separator")
-					+ "Serving with looks his sacred majesty;").getBytes().length;
+			int inputLength = linesAsString("Doth homage to his new-appearing sight",
+				"Serving with looks his sacred majesty;").getBytes().length;
 
 			assertThat(in.available()).isEqualTo(inputLength);
 		}
@@ -122,7 +194,8 @@ public class StdIoExtensionTests {
 		void somethingAvailableAfterRead(StdIn in) throws IOException {
 			int bytesToRead = 16;
 			app.read(bytesToRead);
-			int remainingLength = "Doth homage to his new-appearing sight".getBytes().length - bytesToRead;
+			int remainingLength = linesAsString("Doth homage to his new-appearing sight").getBytes().length
+					- bytesToRead;
 
 			assertThat(in.available()).isEqualTo(remainingLength);
 		}
@@ -131,7 +204,7 @@ public class StdIoExtensionTests {
 		@StdIo("")
 		@DisplayName("for empty input, available() returns 0 available bytes")
 		void nothingAvailableWhenEmpty(StdIn in) throws IOException {
-			assertThat(in.available()).isEqualTo(0);
+			assertThat(in.available()).isEqualTo(linesAsString("").length());
 		}
 
 		@Test
@@ -156,7 +229,7 @@ public class StdIoExtensionTests {
 
 			assertThat(app.lines)
 					.containsExactly("But when from highmost pitch, with weary car,",
-						"Like feeble age, he reeleth from the day,");
+						"Like feeble age, he reeleth from the day,", "The eyes, 'fore duteous, now converted are");
 		}
 
 		@Test
@@ -270,8 +343,8 @@ public class StdIoExtensionTests {
 
 		@Test
 		@StdIo
-		@Order(6)
-		@DisplayName("6: Only System.err is redirected.")
+		@Order(8)
+		@DisplayName("8: Only System.err is redirected.")
 		void redirected_single_err(StdErr err) {
 			System.err.println("Mortal beauty");
 			System.err.println("Gracious light");
@@ -285,8 +358,8 @@ public class StdIoExtensionTests {
 
 		@Test
 		@ReadsStdIo
-		@Order(7)
-		@DisplayName("7: System.err is reset, System.in and System.out is unaffected.")
+		@Order(9)
+		@DisplayName("9: System.err is reset, System.in and System.out is unaffected.")
 		void reset_single_err() {
 			assertThat(System.in).isEqualTo(STDIN);
 			assertThat(System.out).isEqualTo(STDOUT);
@@ -373,6 +446,25 @@ public class StdIoExtensionTests {
 			System.out.println("Lifts up his burning head, each under eye");
 		}
 
+		public void writeEmptyLine() {
+			System.out.println();
+		}
+
+		public void writeWithoutNewline() {
+			System.out.print("Lo! in the orient ");
+			System.out.println("when the gracious light");
+			System.out.print("Lifts up his burning head, each under eye");
+		}
+
+		public void writeWithEmptyLines() {
+			System.out.println();
+			System.out.println();
+			System.out.println("Lo! in the orient when the gracious light");
+			System.out.println("Lifts up his burning head, each under eye");
+			System.out.println();
+			System.out.println();
+		}
+
 		public void writeErr() {
 			System.err.print("Lo! in the orient ");
 			System.err.println("when the gracious light");
@@ -381,8 +473,7 @@ public class StdIoExtensionTests {
 
 		public void read() throws IOException {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-			lines.add(reader.readLine());
-			lines.add(reader.readLine());
+			reader.lines().forEach(lines::add);
 		}
 
 		public void read(int byteCount) throws IOException {
@@ -392,13 +483,21 @@ public class StdIoExtensionTests {
 		}
 
 		public void readAndWrite() throws IOException {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			var reader = new BufferedReader(new InputStreamReader(System.in));
 			lines.add(reader.readLine());
 			System.out.println("Yet mortal looks adore his beauty still,");
 			lines.add(reader.readLine());
 			System.out.println("Attending on his golden pilgrimage:");
 		}
 
+	}
+
+	private static String linesAsString(String... lines) {
+		return String.join(StdIoExtension.SEPARATOR, lines) + StdIoExtension.SEPARATOR;
+	}
+
+	private static String linesAsStringWithoutTrailingNewline(String... lines) {
+		return String.join(StdIoExtension.SEPARATOR, lines);
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
