@@ -20,13 +20,13 @@ on:
   # and setting `releasing` to `true`, we can trigger a release.
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version string, e.g. 1.4.0'
-        required: true
       releasing:
-        description: "Is this a release build? true/false"
+        description: "Release build"
+        type: boolean
+        default: false
+      version:
+        description: 'Version string, e.g. 2.3.1:'
         required: true
-        default: "false"
 
 jobs:
   # Basic Gradle wrapper validation. This step is run first, due to security
