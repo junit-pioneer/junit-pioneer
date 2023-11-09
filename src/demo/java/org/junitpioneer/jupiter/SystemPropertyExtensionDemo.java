@@ -54,6 +54,7 @@ public class SystemPropertyExtensionDemo {
 	}
 	// end::systemproperty_using_set_and_clear[]
 
+	@Nested
 	// tag::systemproperty_using_at_class_level[]
 	@ClearSystemProperty(key = "some property")
 	class MySystemPropertyTest {

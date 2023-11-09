@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class DisableUntilExtensionDemo {
@@ -30,6 +31,7 @@ public class DisableUntilExtensionDemo {
 	}
 	// end::disable_until_with_reason[]
 
+	@Nested
 	// tag::disable_until_at_class_level[]
 	@DisabledUntil(date = "2022-01-01")
 	class TestClass {
