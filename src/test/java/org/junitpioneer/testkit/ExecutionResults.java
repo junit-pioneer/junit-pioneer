@@ -24,8 +24,8 @@ import org.junit.platform.testkit.engine.Events;
 
 /**
  * Pioneers' class to handle JUnit Jupiter's {@link org.junit.platform.testkit.engine.EngineExecutionResults}.
- * <p>
- * Instantiate with the static factory methods in {@link PioneerTestKit}.
+ *
+ * <p>Instantiate with the static factory methods in {@link PioneerTestKit}.
  */
 public class ExecutionResults {
 

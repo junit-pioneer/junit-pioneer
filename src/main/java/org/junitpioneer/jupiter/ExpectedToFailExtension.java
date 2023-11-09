@@ -58,8 +58,7 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 	 * of considering it an 'expected to fail' exception.
 	 *
 	 * <p>This method is used for exceptions that abort test execution and should
-	 * have higher precedence than aborted exceptions thrown by this extension.
-	 * </p>
+	 * have higher precedence than aborted exceptions thrown by this extension.</p>
 	 */
 	private static boolean shouldPreserveException(Throwable t) {
 		// Note: Ideally would use the same logic JUnit uses to determine if exception is aborting

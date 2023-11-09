@@ -305,9 +305,10 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	/**
-	 * <p>Prepare the entry-based environment for entering a context that must be restorable.</p>
+	 * Prepare the entry-based environment for entering a context that must be restorable.
 	 *
-	 * <p>Implementations may choose one of two strategies:
+	 * <p>Implementations may choose one of two strategies:</p>
+	 *
 	 * <ul>
 	 * <li><em>Post swap</em>, where the original entry-based environment is left in place and a clone is returned.
 	 * In this case {@link #prepareToExitRestorableContext} will restore the clone.
@@ -315,7 +316,6 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	 * original is returned.
 	 * In this case the {@link #prepareToExitRestorableContext} will restore the original environment.</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * <p>The returned {@code Properties} must not be null and its key-value pairs must follow the rules for
 	 * entries of its type. E.g., environment variables contain only Strings while System {@code Properties}
@@ -326,7 +326,7 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	protected abstract Properties prepareToEnterRestorableContext();
 
 	/**
-	 * <p>Prepare to exit a restorable context for the entry based environment.</p>
+	 * Prepare to exit a restorable context for the entry based environment.
 	 *
 	 * <p>The entry environment will be restored to the state passed in as {@code Properties}.
 	 * The {@code Properties} entries must follow the rules for entries of this environment,

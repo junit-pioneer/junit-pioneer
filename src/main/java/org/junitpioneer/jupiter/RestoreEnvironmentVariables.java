@@ -27,8 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * or in {@code @BeforeAll} / {@code @BeforeEach} blocks.
  * To simply set or clear an environment variable, consider
  * {@link SetEnvironmentVariable @SetEnvironmentVariable} or
- * {@link ClearEnvironmentVariable @ClearEnvironmentVariable} instead.
- * </p>
+ * {@link ClearEnvironmentVariable @ClearEnvironmentVariable} instead.</p>
  *
  * <p>{@code RestoreEnvironmentVariables} can be used on the method and on the class level.
  * When placed on a test method, environment variables are stored before the method is run and restored
@@ -54,13 +53,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
  * all tests annotated with {@link RestoreEnvironmentVariables}, {@link SetEnvironmentVariable},
  * {@link ReadsEnvironmentVariable}, and {@link WritesEnvironmentVariable}
- * are scheduled in a way that guarantees correctness under mutation of shared global state.
- * </p>
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.</p>
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on
- * <code>@ClearEnvironmentVariable, @SetEnvironmentVariable and @RestoreEnvironmentVariables</code></a>.
- * </p>
+ * <code>@ClearEnvironmentVariable</code>, <code>@SetEnvironmentVariable</code>, and <code>@RestoreEnvironmentVariables</code></a>.</p>
  *
  * @since 2.0.0
  */

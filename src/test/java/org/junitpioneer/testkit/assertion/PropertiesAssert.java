@@ -31,13 +31,13 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	/**
 	 * Assert Properties has the same effective values as the passed instance, but not
 	 * the same nested default structure.
-	 * <p>
-	 * Properties are considered <em>effectively equal</em> if they have the same property
+	 *
+	 * <p>Properties are considered <em>effectively equal</em> if they have the same property
 	 * names returned by {@code Properties.propertyNames()} and the same values returned by
 	 * {@code getProperty(name)}. Properties may come from the properties instance itself,
 	 * or from a nested default instance, indiscriminately.
-	 * <p>
-	 * Properties partially supports object values, but return null for {@code getProperty(name)}
+	 *
+	 * <p>Properties partially supports object values, but return null for {@code getProperty(name)}
 	 * when the value is a non-string. This assertion follows the same rules:  Any non-String
 	 * value is considered null for comparison purposes.
 	 *

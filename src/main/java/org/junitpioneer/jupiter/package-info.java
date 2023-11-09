@@ -16,9 +16,9 @@
  *     <li>{@link org.junitpioneer.jupiter.Stopwatch}</li>
  * </ul>
  *
- * <p>
- * Also check the following packages:
- * </p>
+ *
+ * <p>Also check the following packages:</p>
+ *
  * <ul>
  *     <li>{@link org.junitpioneer.jupiter.cartesian cartesian}</li>
  *     <li>{@link org.junitpioneer.jupiter.issue issue}</li>

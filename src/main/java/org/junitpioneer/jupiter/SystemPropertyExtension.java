@@ -47,16 +47,18 @@ class SystemPropertyExtension extends
 	}
 
 	/**
-	 * <p>This implementation uses the "Preemptive swap" strategy.</p>
+	 * This implementation uses the "Preemptive swap" strategy.
 	 *
 	 * <p>Since {@link Properties} allows a wrapped default instance and Object values,
-	 * cloning is difficult:
+	 * cloning is difficult:</p>
+	 *
 	 * <ul>
 	 * <li>It is difficult to tell which values are defaults and which are "top level",
 	 * thus a clone might contain the same effective values, but be flattened without defaults.</li>
 	 * <li>Object values in a wrapped default instance cannot be accessed without reflection.</li>
 	 * </ul>
-	 * The "Preemptive swap" strategy ensure that the original Properties are restored, however
+	 *
+	 * <p>The "Preemptive swap" strategy ensure that the original Properties are restored, however
 	 * complex they were. Any artifacts resulting from a flattened default structure are limited
 	 * to the context of the test.</p>
 	 *
@@ -80,7 +82,7 @@ class SystemPropertyExtension extends
 	}
 
 	/**
-	 * <p>A clone of the String values of the passed {@code Properties}, including defaults.</p>
+	 * A clone of the String values of the passed {@code Properties}, including defaults.
 	 *
 	 * <p>The clone will have the same effective values, but may not use the same nested
 	 * structure as the original. Object values, which are technically possible,

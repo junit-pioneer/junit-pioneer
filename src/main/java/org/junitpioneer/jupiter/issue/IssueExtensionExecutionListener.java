@@ -31,8 +31,8 @@ import org.junitpioneer.jupiter.IssueTestCase;
 import org.junitpioneer.jupiter.IssueTestSuite;
 
 /**
- * <p>This listener collects the names and results of all tests, which are annotated with the {@link org.junitpioneer.jupiter.Issue @Issue} annotation.
- * After all tests are finished the results are provided to an {@link IssueProcessor} for further processing.</p>
+ * This listener collects the names and results of all tests, which are annotated with the {@link org.junitpioneer.jupiter.Issue @Issue} annotation.
+ * After all tests are finished the results are provided to an {@link IssueProcessor} for further processing.
  */
 public class IssueExtensionExecutionListener implements TestExecutionListener {
 
