@@ -10,14 +10,14 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 public class ResourceExtensionDemo {
 
