@@ -16,8 +16,10 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -31,6 +33,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.TestNameFormatter;
+import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
@@ -81,6 +84,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		private int exceptionsSoFar;
 		private boolean seenFailedAssumption;
 		private boolean seenUnexpectedException;
+		private final List<String> unexpectedErrors = new ArrayList<>();
 
 		private FailedTestRetrier(int maxRetries, int minSuccess, int suspendForMs,
 				Class<? extends Throwable>[] expectedExceptions, TestNameFormatter formatter) {
@@ -145,16 +149,20 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 
 			if (!expectedException(exception)) {
 				seenUnexpectedException = true;
+				unexpectedErrors.add(exception.getMessage());
 				throw exception;
 			}
 
-			if (hasNext())
+			if (hasNext()) {
+				unexpectedErrors.add(exception.getMessage());
 				throw new TestAbortedException(
 					format("Test execution #%d (of up to %d) failed ~> will retry in %d ms...", retriesSoFar,
 						maxRetries, suspendForMs),
 					exception);
-			else
-				throw exception;
+			} else
+				throw new AssertionFailedError(exception.getMessage() + "\n\nList of previous unexpected errors: \n"
+						+ String.join("\n\n", unexpectedErrors) + "\n",
+					exception);
 		}
 
 		private boolean expectedException(Throwable exception) {
