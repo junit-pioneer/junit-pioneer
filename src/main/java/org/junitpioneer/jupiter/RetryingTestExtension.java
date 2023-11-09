@@ -158,7 +158,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				// and include the test execution number, to make it easier to correlate the
 				// failure with a specific execution
 				var testAbortedException = new TestAbortedException(
-					format("%s\nTest execution #%d (of up to %d) failed ~> will retry in %d ms...",
+					format("%s%nTest execution #%d (of up to %d) failed ~> will retry in %d ms...",
 						exception.getMessage(), retriesSoFar, maxRetries, suspendForMs),
 					exception);
 				seenExceptions.add(testAbortedException);
