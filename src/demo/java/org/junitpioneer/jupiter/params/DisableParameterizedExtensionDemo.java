@@ -126,6 +126,7 @@ public class DisableParameterizedExtensionDemo {
 	}
 	// end::disable_parameterized_matches_all_arguments[]
 
+	// these tests fail intentionally ~> no @Nested
 	class TheseTestsWillFailIntentionally {
 
 		// tag::disable_parameterized_named_parameter_contains[]
