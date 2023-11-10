@@ -33,7 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@link DisableIfAnyArgument#matches() matches} is configured.</p>
  *
  * <p>For more information how the extension resolves the annotations, check
- * <a href="https://junit-pioneer.org/docs/disable-parameterized-tests/" target="_top">the documentation.</a></p>
+ * <a href="https://junit-pioneer.org/docs/disable-parameterized-tests/" target="_top">the documentation on disabling parameterized tests</a>.</p>
  *
  * @see DisableIfArgumentExtension
  * @since 1.5.0

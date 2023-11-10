@@ -29,6 +29,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 /**
  * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.
  * Such an annotation should have the following properties:
+ *
  * <ul>
  *     <li>{@code from} a primitive value for the "start" of the range.</li>
  *     <li>{@code to} a primitive value for the "end" of the range. {@code to} must have the same type as {@code from}.</li>

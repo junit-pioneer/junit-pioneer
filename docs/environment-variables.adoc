@@ -11,10 +11,10 @@ Other environment variables that are changed during the test, are *not* restored
 
 [WARNING]
 ====
-Java considers environment variables to be immutable, so this extension uses reflection to change them.
-This requires that the `SecurityManager` allows modifications and can potentially break on different operating systems and Java versions.
+Java considers environment variables to be immutable, which is why this extension uses reflection to change them.
+This requires the `SecurityManager` to allow modifications and may break on different operating systems and/or Java versions.
 Be aware that this is a fragile solution and consider finding a better one for your specific situation.
-For more details, see <<Warnings for Reflective Access>>.
+For more details and workarounds on Java 17+, see <<Warnings for Reflective Access>>.
 ====
 
 For example, clearing a environment variable for a test execution can be done as follows:
@@ -112,11 +112,11 @@ On Java 9 to 16, this leads to a warning like the following:
 
 [source]
 ----
-[ERROR] WARNING: An illegal reflective access operation has occurred
-[ERROR] WARNING: Illegal reflective access by org.junitpioneer.jupiter.EnvironmentVariableUtils [...] to field [...]
-[ERROR] WARNING: Please consider reporting this to the maintainers of org.junitpioneer.jupiter.EnvironmentVariableUtils
-[ERROR] WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
-[ERROR] WARNING: All illegal access operations will be denied in a future release
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.junitpioneer.jupiter.EnvironmentVariableUtils [...] to field [...]
+WARNING: Please consider reporting this to the maintainers of org.junitpioneer.jupiter.EnvironmentVariableUtils
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
 ----
 
 On Java 17 and later, you get this error instead:
@@ -127,20 +127,49 @@ java.lang.reflect.InaccessibleObjectException: Unable to make field [...] access
 module java.base does not "opens java.lang" to unnamed module [...]
 ----
 
+This is because https://docs.oracle.com/en/java/javase/17/migrate/migrating-jdk-8-later-jdk-releases.html#GUID-7BB28E4D-99B3-4078-BDC4-FC24180CE82B[Java 17 is strongly encapsulated] and the reflective access to JDK internals is no longer permitted.
+(For further details, see also https://openjdk.org/jeps/403[JEP 403].)
+
 The best way to prevent these warnings/errors, is to change the code under test, so this extension is no longer needed.
-The next best thing is to allow access to that specific package:
+However, some tests require environment variables to be cleared, set, or restored.
+In this case, we recommend using `--add-opens` to grant JUnit Pioneer access to the aforementiond internals:
 
 [source]
 ----
+# to access java.util.Collections$UnmodifiableMap.m
 --add-opens java.base/java.util=$TARGET_MODULE
+# to access java.lang.ProcessEnvironment.theEnvironment
 --add-opens java.base/java.lang=$TARGET_MODULE
 ----
 
 Where `$TARGET_MODULE` equals `ALL-UNNAMED` if you place JUnit Pioneer on the class path, or `org.junitpioneer` if you place JUnit Pioneer on the module path.
 These command line options need to be added to the JVM that executes the tests:
 
-* https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html[Gradle]
-* https://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#argLine[Maven basics] and https://nipafx.dev/maven-on-java-9/[advanced]
+* https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html#org.gradle.api.tasks.testing.Test:jvmArgs(java.lang.Iterable)[Gradle Test Task]
+* https://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#argLine[Maven Surefire Plugin]
+
+For instance, if you are using Maven and test on the class path, your Surefire configuration may look like this:
+
+[source,xml]
+----
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-surefire-plugin</artifactId>
+	<version><!--...--></version>
+	<configuration>
+		<argLine>
+			--add-opens java.base/java.util=ALL-UNNAMED
+			--add-opens java.base/java.lang=ALL-UNNAMED
+		</argLine>
+	</configuration>
+</plugin>
+----
+
+[NOTE]
+====
+Depending on your IDE, these settings may not be picked up.
+Therefore, you possibly also have to include `--add-opens` in your test's run configuration.
+====
 
 == Thread-Safety
 

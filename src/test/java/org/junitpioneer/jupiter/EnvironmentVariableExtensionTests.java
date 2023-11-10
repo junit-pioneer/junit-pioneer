@@ -590,7 +590,7 @@ class EnvironmentVariableExtensionTests {
 			ExecutionResults results = executeTestMethod(ReportWarningTestCases.class, "testWithoutExtension");
 
 			assertThat(results).hasNoReportEntries();
-			assertThat(out.capturedLines()).containsExactly("");
+			assertThat(out.capturedLines()).isEmpty();
 		}
 
 		@Test

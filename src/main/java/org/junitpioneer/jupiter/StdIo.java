@@ -25,18 +25,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>The annotated test method can have zero, one, or both parameters, but {@code StdIn} can only
  * be provided if {@link StdIo#value()} is used to specify input - otherwise an
  * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException ExtensionConfigurationException}
- * will be thrown.
- * </p>
+ * will be thrown.</p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
  * all tests annotated with {@link StdIo}, {@link ReadsStdIo}, and {@link WritesStdIo}
- * are scheduled in a way that guarantees correctness under mutation of shared global state.
- * </p>
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>.
- * </p>
+ * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on standard input/output</a>.</p>
  *
  * @since 0.7
  */

@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class DefaultLocaleTimezoneExtensionDemo {
@@ -48,6 +49,7 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	}
 	// end::default_locale_language_alternatives[]
 
+	@Nested
 	// tag::default_locale_class_level[]
 	@DefaultLocale(language = "fr")
 	class MyLocaleTests {
@@ -80,6 +82,7 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	}
 	// end::default_timezone_zone[]
 
+	@Nested
 	// tag::default_timezone_class_level[]
 	@DefaultTimeZone("CET")
 	class MyTimeZoneTests {

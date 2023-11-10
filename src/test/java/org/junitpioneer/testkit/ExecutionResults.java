@@ -24,8 +24,8 @@ import org.junit.platform.testkit.engine.Events;
 
 /**
  * Pioneers' class to handle JUnit Jupiter's {@link org.junit.platform.testkit.engine.EngineExecutionResults}.
- * <p>
- * Instantiate with the static factory methods in {@link PioneerTestKit}.
+ *
+ * <p>Instantiate with the static factory methods in {@link PioneerTestKit}.
  */
 public class ExecutionResults {
 
@@ -110,7 +110,7 @@ public class ExecutionResults {
 		return EngineTestKit
 				.engine(JUPITER_ENGINE_NAME)
 				// to tease out concurrency-related bugs, we want parallel execution of our tests
-				// (for details, see section "Thread-safety" in CONTRIBUTING.md)
+				// (for details, see section "Thread-safety" in CONTRIBUTING.adoc)
 				.configurationParameter("junit.jupiter.execution.parallel.enabled", "true")
 				.configurationParameter("junit.jupiter.execution.parallel.mode.default", "concurrent")
 				// since we have full control over which tests we execute with this engine,

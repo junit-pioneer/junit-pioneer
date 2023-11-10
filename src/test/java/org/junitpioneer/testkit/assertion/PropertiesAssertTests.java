@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
- * <p>Verify proper behavior when annotated on a top level class.</p>
+ * Verify proper behavior when annotated on a top level class.
  *
  * <p>These tests include testing object values but not object keys. {@code Properties} sort-of supports
  * object values, but dies on common operations with object keys (e.g. {@code propertyNames()} fails), thus

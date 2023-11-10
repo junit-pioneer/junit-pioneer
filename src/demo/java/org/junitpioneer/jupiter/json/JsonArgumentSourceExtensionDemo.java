@@ -131,7 +131,8 @@ class JsonArgumentSourceExtensionDemo {
 
 	}
 
-	static class Misc {
+	// these tests fail intentionally ~> no @Nested
+	class Failing {
 
 		// tag::use_object_mapper_example[]
 		@ParameterizedTest

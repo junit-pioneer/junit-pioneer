@@ -26,8 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>Use this annotation when there is a need programmatically modify system properties in a test
  * method or in {@code @BeforeAll} / {@code @BeforeEach} blocks.
  * To simply set or clear a system property, consider {@link SetSystemProperty @SetSystemProperty} or
- * {@link ClearSystemProperty @ClearSystemProperty} instead.
- * </p>
+ * {@link ClearSystemProperty @ClearSystemProperty} instead.</p>
  *
  * <p>{@code RestoreSystemProperties} can be used on the method and on the class level.
  * When placed on a test method, a snapshot of system properties is stored prior to that test.
@@ -48,13 +47,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
  * all tests annotated with {@link RestoreSystemProperties}, {@link SetSystemProperty},
  * {@link ReadsSystemProperty}, and {@link WritesSystemProperty}
- * are scheduled in a way that guarantees correctness under mutation of shared global state.
- * </p>
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.</p>
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on
- * <code>@ClearSystemProperty, @SetSystemProperty and @RestoreSystemProperties</code></a>.
- * </p>
+ * <code>@ClearSystemProperty</code>, <code>@SetSystemProperty</code>, and <code>@RestoreSystemProperties</code></a>.</p>
  *
  * <p><em>Note:</em> System properties are normally just a hashmap of strings, however, it is
  * technically possible to store non-string values and create nested {@code Properties} with inherited /

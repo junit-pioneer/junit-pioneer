@@ -57,6 +57,7 @@ public class EnvironmentVariablesExtensionDemo {
 	}
 	// end::environment_using_set_and_clear[]
 
+	@Nested
 	// tag::environment_using_at_class_level[]
 	@ClearEnvironmentVariable(key = "some variable")
 	class MyEnvironmentVariableTest {

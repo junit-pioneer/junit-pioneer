@@ -25,8 +25,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * <p>The supplied values will be provided as arguments to the annotated {@code @ParameterizedTest} method.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/range-sources/" target="_top">the documentation on <code>Range Sources</code></a>
- * </p>
+ * <a href="https://junit-pioneer.org/docs/range-sources/" target="_top">the documentation on range sources</a>.</p>
  *
  * <p>This annotation is {@link Repeatable}, to make it usable with {@link org.junitpioneer.jupiter.cartesian.CartesianTest}.
  * If used with {@link org.junit.jupiter.params.ParameterizedTest}, it can only be used once (because {@code ParameterizedTest}
@@ -38,10 +37,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
  * {@link org.junitpioneer.jupiter.cartesian.CartesianTest}. If used with {@link org.junit.jupiter.params.ParameterizedTest},
  * the annotation has to be on the method itself as any other {@link ArgumentsSource}.
  *
- * <p>
- * For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on <code>Cartesian product tests</code></a>
- * </p>
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the documentation on Cartesian product tests</a>.</p>
  *
  * @since 0.5
  * @see ArgumentsSource

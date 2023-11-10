@@ -39,7 +39,7 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
 
 /**
- * <p>Verify proper behavior when annotated on a top level class.</p>
+ * Verify proper behavior when annotated on a top level class.
  *
  * <p>{@link VerifySysPropsExtension} is registered as an extension <em>before</em> {@code RestoreSystemProperties}. It
  * stores the initial system properties and verifies them at the end.
@@ -161,8 +161,8 @@ class RestoreSystemPropertiesTests {
 
 	/**
 	 * Extension that checks the before and after state of SysProps.
-	 * <p>
-	 * Must be registered before RestoreSystemProperties.
+	 *
+	 * <p>Must be registered before RestoreSystemProperties.
 	 * To avoid replicating the system being tested w/ the test itself, this class
 	 * uses static state rather than the extension store. As a result, this test
 	 * class is marked as single threaded.
@@ -210,10 +210,10 @@ class RestoreSystemPropertiesTests {
 	}
 
 	/**
-	 * <p>This "deep" clone method uses reflection to do a clone that preserves the structure
+	 * This "deep" clone method uses reflection to do a clone that preserves the structure
 	 * (i.e. nested defaults) and potential non-string values of Properties.
 	 * This method is only used to ensure we have a 100% complete clone of original Sys Props for
-	 * comparison after restore.</p>
+	 * comparison after restore.
 	 *
 	 * <p>The actual SystemProperties extension does an 'effective' clone which is simpler and doesn't
 	 * require reflection.</p>

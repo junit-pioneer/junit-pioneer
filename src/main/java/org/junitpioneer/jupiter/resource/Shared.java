@@ -78,12 +78,12 @@ public @interface Shared {
 	enum Scope {
 
 		/**
-		 * <p>At this scope, a shared resource will last as long as the entire test suite.</p>
+		 * At this scope, a shared resource will last as long as the entire test suite.
 		 */
 		GLOBAL,
 
 		/**
-		 * <p>At this scope, a shared resource will last as long as the test file it is defined in.</p>
+		 * At this scope, a shared resource will last as long as the test file it is defined in.
 		 */
 		SOURCE_FILE
 

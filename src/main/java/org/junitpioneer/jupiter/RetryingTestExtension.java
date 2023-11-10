@@ -16,8 +16,10 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -31,7 +33,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.TestNameFormatter;
-import org.opentest4j.AssertionFailedError;
+import org.opentest4j.MultipleFailuresError;
 import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtension implements TestTemplateInvocationContextProvider, TestExecutionExceptionHandler {
@@ -47,7 +49,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		FailedTestRetrier retrier = retrierFor(context);
+		var retrier = retrierFor(context);
 		return stream(spliteratorUnknownSize(retrier, ORDERED), false);
 	}
 
@@ -55,7 +57,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 	public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
 		// this `context` (M) is a child of the context passed to `provideTestTemplateInvocationContexts` (T),
 		// which means M's store content is invisible to T's store; this can be fixed by using T's store here
-		ExtensionContext templateContext = context
+		var templateContext = context
 				.getParent()
 				.orElseThrow(() -> new IllegalStateException(
 					"Extension context \"" + context + "\" should have a parent context."));
@@ -63,10 +65,10 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 	}
 
 	private static FailedTestRetrier retrierFor(ExtensionContext context) {
-		Method test = context.getRequiredTestMethod();
+		var testMethod = context.getRequiredTestMethod();
 		return context
 				.getStore(NAMESPACE)
-				.getOrComputeIfAbsent(test.toString(), __ -> FailedTestRetrier.createFor(test, context),
+				.getOrComputeIfAbsent(testMethod.toString(), __ -> FailedTestRetrier.createFor(testMethod, context),
 					FailedTestRetrier.class);
 	}
 
@@ -76,6 +78,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		private final int minSuccess;
 		private final int suspendForMs;
 		private final Class<? extends Throwable>[] expectedExceptions;
+		private final List<TestAbortedException> seenExceptions;
 		private final TestNameFormatter formatter;
 
 		private int retriesSoFar;
@@ -89,19 +92,20 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			this.minSuccess = minSuccess;
 			this.suspendForMs = suspendForMs;
 			this.expectedExceptions = expectedExceptions;
+			this.seenExceptions = new ArrayList<>();
 			this.retriesSoFar = 0;
 			this.exceptionsSoFar = 0;
 			this.formatter = formatter;
 		}
 
 		static FailedTestRetrier createFor(Method test, ExtensionContext context) {
-			RetryingTest retryingTest = AnnotationSupport
+			var retryingTest = AnnotationSupport
 					.findAnnotation(test, RetryingTest.class)
 					.orElseThrow(() -> new IllegalStateException("@RetryingTest is missing."));
 
 			int maxAttempts = retryingTest.maxAttempts() != 0 ? retryingTest.maxAttempts() : retryingTest.value();
 			int minSuccess = retryingTest.minSuccess();
-			String pattern = retryingTest.name();
+			var pattern = retryingTest.name();
 
 			if (maxAttempts == 0)
 				throw new ExtensionConfigurationException(
@@ -114,7 +118,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				throw new ExtensionConfigurationException(
 					"@RetryingTest requires that `minSuccess` be greater than or equal to 1.");
 			else if (maxAttempts <= minSuccess) {
-				String additionalMessage = maxAttempts == minSuccess
+				var additionalMessage = maxAttempts == minSuccess
 						? " Using @RepeatedTest is recommended as a replacement."
 						: "";
 				throw new ExtensionConfigurationException(
@@ -123,8 +127,8 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			}
 			if (pattern.isEmpty())
 				throw new ExtensionConfigurationException("RetryingTest can not have an empty display name.");
-			String displayName = context.getDisplayName();
-			TestNameFormatter formatter = new TestNameFormatter(pattern, displayName, RetryingTest.class);
+			var displayName = context.getDisplayName();
+			var formatter = new TestNameFormatter(pattern, displayName, RetryingTest.class);
 
 			if (retryingTest.suspendForMs() < 0) {
 				throw new ExtensionConfigurationException(
@@ -149,15 +153,20 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				throw exception;
 			}
 
-			if (hasNext())
-				throw new TestAbortedException(
-					format("Test execution #%d (of up to %d) failed ~> will retry in %d ms...", retriesSoFar,
-						maxRetries, suspendForMs),
+			if (hasNext()) {
+				// put the original exception's message first, so tools can parse it correctly
+				// and include the test execution number, to make it easier to correlate the
+				// failure with a specific execution
+				var testAbortedException = new TestAbortedException(
+					format("%s%nTest execution #%d (of up to %d) failed ~> will retry in %d ms...",
+						exception.getMessage(), retriesSoFar, maxRetries, suspendForMs),
 					exception);
-			else
-				throw new AssertionFailedError(format(
+				seenExceptions.add(testAbortedException);
+				throw testAbortedException;
+			} else
+				throw new MultipleFailuresError(format(
 					"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
-					retriesSoFar, maxRetries, minSuccess), exception);
+					retriesSoFar, maxRetries, minSuccess), seenExceptions);
 		}
 
 		private boolean expectedException(Throwable exception) {

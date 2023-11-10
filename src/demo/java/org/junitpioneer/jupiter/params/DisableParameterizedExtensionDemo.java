@@ -78,55 +78,56 @@ public class DisableParameterizedExtensionDemo {
 	}
 	// end::disable_parameterized_different_rules_for_different_parameters_matches[]
 
+	// tag::disable_parameterized_contains_in_all_tokens[]
+	@DisableIfAllArguments(contains = "the")
+	@ParameterizedTest
+	@CsvSource(value = { "If the swift moment I entreat:;Tarry a while! You are so fair!",
+			"Then forge the shackles to my feet,;Then I will gladly perish there!",
+			"Then let them toll the passing-bell,;Then of your servitude be free,",
+			"The clock may stop, its hands fall still,;And time be over then for me!" }, delimiter = ';')
+	void disableAllContains(String line, String line2) {
+		// ...
+	}
+	// end::disable_parameterized_contains_in_all_tokens[]
+
+	// tag::disable_parameterized_contains_in_any_token[]
+	@DisableIfAnyArgument(contains = "Then")
+	@ParameterizedTest
+	@CsvSource(value = { "If the swift moment I entreat:;Tarry a while! You are so fair!",
+			"Then forge the shackles to my feet,;Then I will gladly perish there!",
+			"Then let them toll the passing-bell,;Then of your servitude be free,",
+			"The clock may stop, its hands fall still,;And time be over then for me!" }, delimiter = ';')
+	void disableAnyContains(String line, String line2) {
+		// ...
+	}
+	// end::disable_parameterized_contains_in_any_token[]
+
+	// tag::disable_parameterized_contains_multiple_arguments[]
+	@DisableIfAnyArgument(contains = { "Then", "then" })
+	@ParameterizedTest
+	@CsvSource(value = { "If the swift moment I entreat:;Tarry a while! You are so fair!",
+			"Then forge the shackles to my feet,;Then I will gladly perish there!",
+			"Then let them toll the passing-bell,;Then of your servitude be free,",
+			"The clock may stop, its hands fall still,;And time be over then for me!" }, delimiter = ';')
+	void disableAnyContainsMultipleArguments(String line, String line2) {
+		// [...]
+	}
+	// end::disable_parameterized_contains_multiple_arguments[]
+
+	// tag::disable_parameterized_matches_all_arguments[]
+	@DisableIfAllArguments(matches = ".*\\s[a-z]{3}\\s.*")
+	@ParameterizedTest
+	@CsvSource(value = { "If the swift moment I entreat:;Tarry a while! You are so fair!",
+			"Then forge the shackles to my feet,;Then I will gladly perish there!",
+			"Then let them toll the passing-bell,;Then of your servitude be free,",
+			"The clock may stop, its hands fall still,;And time be over then for me!" }, delimiter = ';')
+	void interceptMatchesAny(String line, String line2) {
+		// [...]
+	}
+	// end::disable_parameterized_matches_all_arguments[]
+
+	// these tests fail intentionally ~> no @Nested
 	class TheseTestsWillFailIntentionally {
-
-		// tag::disable_parameterized_contains_in_all_tokens[]
-		@DisableIfAllArguments(contains = "the")
-		@ParameterizedTest
-		@CsvSource(value = { "If the swift moment I entreat:;Tarry a while! You are so fair!",
-				"Then forge the shackles to my feet,;Then I will gladly perish there!",
-				"Then let them toll the passing-bell,;Then of your servitude be free,",
-				"The clock may stop, its hands fall still,;And time be over then for me!" }, delimiter = ';')
-		void disableAllContains(String line, String line2) {
-			// ...
-		}
-		// end::disable_parameterized_contains_in_all_tokens[]
-
-		// tag::disable_parameterized_contains_in_any_token[]
-		@DisableIfAnyArgument(contains = "Then")
-		@ParameterizedTest
-		@CsvSource(value = { "If the swift moment I entreat:;Tarry a while! You are so fair!",
-				"Then forge the shackles to my feet,;Then I will gladly perish there!",
-				"Then let them toll the passing-bell,;Then of your servitude be free,",
-				"The clock may stop, its hands fall still,;And time be over then for me!" }, delimiter = ';')
-		void disableAnyContains(String line, String line2) {
-			// ...
-		}
-		// end::disable_parameterized_contains_in_any_token[]
-
-		// tag::disable_parameterized_contains_multiple_arguments[]
-		@DisableIfAnyArgument(contains = { "Then", "then" })
-		@ParameterizedTest
-		@CsvSource(value = { "If the swift moment I entreat:;Tarry a while! You are so fair!",
-				"Then forge the shackles to my feet,;Then I will gladly perish there!",
-				"Then let them toll the passing-bell,;Then of your servitude be free,",
-				"The clock may stop, its hands fall still,;And time be over then for me!" }, delimiter = ';')
-		void disableAnyContainsMultipleArguments(String line, String line2) {
-			// [...]
-		}
-		// end::disable_parameterized_contains_multiple_arguments[]
-
-		// tag::disable_parameterized_matches_all_arguments[]
-		@DisableIfAllArguments(matches = ".*\\s[a-z]{3}\\s.*")
-		@ParameterizedTest
-		@CsvSource(value = { "If the swift moment I entreat:;Tarry a while! You are so fair!",
-				"Then forge the shackles to my feet,;Then I will gladly perish there!",
-				"Then let them toll the passing-bell,;Then of your servitude be free,",
-				"The clock may stop, its hands fall still,;And time be over then for me!" }, delimiter = ';')
-		void interceptMatchesAny(String line, String line2) {
-			// [...]
-		}
-		// end::disable_parameterized_matches_all_arguments[]
 
 		// tag::disable_parameterized_named_parameter_contains[]
 		@DisableIfArgument(name = "line2", contains = "swift")
