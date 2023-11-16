@@ -15,7 +15,6 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.junit.platform.engine.TestExecutionResult.Status;
 
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -60,7 +59,8 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 		var messages = entry.getKeyValuePairs();
 		var testId = testIdentifier.getUniqueId();
 		// because test IDs are unique, we can be sure that the report entries belong to the same test
-		var testCaseBuilder = testCases.getOrDefault(testId, new IssueTestCaseBuilder(testId));
+		testCases.putIfAbsent(testId, new IssueTestCaseBuilder(testId));
+		var testCaseBuilder = testCases.get(testId);
 
 		if (messages.containsKey(REPORT_ENTRY_KEY)) {
 			var issueId = messages.get(REPORT_ENTRY_KEY);
