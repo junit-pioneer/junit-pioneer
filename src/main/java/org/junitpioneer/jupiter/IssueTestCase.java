@@ -97,7 +97,7 @@ public final class IssueTestCase {
 			return true;
 		if (!(o instanceof IssueTestCase))
 			return false;
-		IssueTestCase that = (IssueTestCase) o;
+		var that = (IssueTestCase) o;
 		return testId.equals(that.testId) && result == that.result && Objects.equals(elapsedTime, that.elapsedTime);
 	}
 
@@ -108,9 +108,9 @@ public final class IssueTestCase {
 
 	@Override
 	public String toString() {
-		String value = "IssueTestCase{" + "uniqueName='" + testId + '\'' + ", result='" + result + '\'';
+		var value = "IssueTestCase{" + "uniqueName='" + testId + '\'' + ", result='" + result + '\'';
 		if (elapsedTime.isPresent()) {
-			value = value + ", elapsedTime='" + elapsedTime.get() + " ms'";
+			value += ", elapsedTime='" + elapsedTime.get() + " ms'";
 		}
 		return value + '}';
 	}
