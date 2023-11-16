@@ -360,7 +360,7 @@ tasks {
 	}
 
 	generateChangelog {
-		dependsOn(nexusPublishing)
+		dependsOn(":closeAndReleaseSonatypeStagingRepository")
 		val gitFetchRecentTag = Runtime.getRuntime().exec("git describe --tags --abbrev=0")
 		val recentTag = gitFetchRecentTag.inputStream.bufferedReader().readText().trim()
 		previousRevision = recentTag
