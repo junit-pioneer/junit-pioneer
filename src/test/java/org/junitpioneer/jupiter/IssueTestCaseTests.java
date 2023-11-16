@@ -22,7 +22,7 @@ public final class IssueTestCaseTests {
 	@Test
 	void testToString() {
 		String expected = "IssueTestCase{uniqueName='myName', result='SUCCESSFUL'}";
-		IssueTestCase sut = new IssueTestCase("myName", Status.SUCCESSFUL, null);
+		IssueTestCase sut = new IssueTestCase("myName", Status.SUCCESSFUL);
 
 		String result = sut.toString();
 

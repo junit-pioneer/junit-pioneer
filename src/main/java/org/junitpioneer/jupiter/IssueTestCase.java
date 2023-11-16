@@ -33,19 +33,35 @@ public final class IssueTestCase {
 
 	private final String testId;
 	private final Status result;
-	private final Long elapsedTime;
+	// no `OptionalLong` because its API doesn't have `map`
+	private final Optional<Long> elapsedTime;
 
 	/**
-	 * Constructor with all attributes.
-	 *
+	 * @param testId Unique name of the test method
+	 * @param result Result of the execution
+	 * @param elapsedTime The (optional) duration of test execution
+	 */
+	public IssueTestCase(String testId, Status result, Optional<Long> elapsedTime) {
+		this.testId = requireNonNull(testId);
+		this.result = requireNonNull(result, NO_RESULT_EXCEPTION_MESSAGE);
+		this.elapsedTime = elapsedTime;
+	}
+
+	/**
+	 * @param testId Unique name of the test method
+	 * @param result Result of the execution
+	 */
+	public IssueTestCase(String testId, Status result) {
+		this(testId, result, Optional.empty());
+	}
+
+	/**
 	 * @param testId Unique name of the test method
 	 * @param result Result of the execution
 	 * @param elapsedTime The duration of test execution
 	 */
-	public IssueTestCase(String testId, Status result, Long elapsedTime) {
-		this.testId = requireNonNull(testId);
-		this.result = requireNonNull(result, NO_RESULT_EXCEPTION_MESSAGE);
-		this.elapsedTime = elapsedTime;
+	public IssueTestCase(String testId, Status result, long elapsedTime) {
+		this(testId, result, Optional.of(elapsedTime));
 	}
 
 	/**
@@ -72,7 +88,7 @@ public final class IssueTestCase {
 	 * @return The elapsed time in ms.
 	 */
 	public Optional<Long> elapsedTime() {
-		return Optional.ofNullable(elapsedTime);
+		return elapsedTime;
 	}
 
 	@Override
@@ -93,8 +109,8 @@ public final class IssueTestCase {
 	@Override
 	public String toString() {
 		String value = "IssueTestCase{" + "uniqueName='" + testId + '\'' + ", result='" + result + '\'';
-		if (Objects.nonNull(elapsedTime)) {
-			value = value + ", elapsedTime='" + elapsedTime + " ms'";
+		if (elapsedTime.isPresent()) {
+			value = value + ", elapsedTime='" + elapsedTime.get() + " ms'";
 		}
 		return value + '}';
 	}

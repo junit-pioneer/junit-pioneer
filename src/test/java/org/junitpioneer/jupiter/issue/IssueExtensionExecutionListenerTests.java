@@ -94,7 +94,7 @@ public class IssueExtensionExecutionListenerTests {
 			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(1));
 
 		assertThat(issueTestSuite.tests())
-				.containsExactly(new IssueTestCase("[test:aborted-test]", Status.ABORTED, null));
+				.containsExactly(new IssueTestCase("[test:aborted-test]", Status.ABORTED));
 	}
 
 	@Test
@@ -121,8 +121,8 @@ public class IssueExtensionExecutionListenerTests {
 			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(2));
 
 		assertThat(issueTestSuite.tests())
-				.containsExactlyInAnyOrder(new IssueTestCase("[test:successful-test]", Status.SUCCESSFUL, null),
-					new IssueTestCase("[test:aborted-test]", Status.ABORTED, null));
+				.containsExactlyInAnyOrder(new IssueTestCase("[test:successful-test]", Status.SUCCESSFUL),
+					new IssueTestCase("[test:aborted-test]", Status.ABORTED));
 	}
 
 }

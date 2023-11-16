@@ -13,12 +13,15 @@ package org.junitpioneer.jupiter.issue;
 import org.junit.platform.engine.TestExecutionResult.Status;
 import org.junitpioneer.jupiter.IssueTestCase;
 
+import java.util.Optional;
+
 class IssueTestCaseBuilder {
 
 	private final String testId;
+
+	// all of these can be null
 	private String issueId;
 	private Status result;
-
 	private Long elapsedTime;
 
 	public IssueTestCaseBuilder(String testId) {
@@ -45,7 +48,7 @@ class IssueTestCaseBuilder {
 	}
 
 	public IssueTestCase build() {
-		return new IssueTestCase(testId, result, elapsedTime);
+		return new IssueTestCase(testId, result, Optional.ofNullable(elapsedTime));
 	}
 
 }
