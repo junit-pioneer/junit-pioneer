@@ -10,10 +10,10 @@
 
 package org.junitpioneer.jupiter.issue;
 
+import java.util.Optional;
+
 import org.junit.platform.engine.TestExecutionResult.Status;
 import org.junitpioneer.jupiter.IssueTestCase;
-
-import java.util.Optional;
 
 class IssueTestCaseBuilder {
 

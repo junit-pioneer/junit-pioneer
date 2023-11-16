@@ -93,8 +93,7 @@ public class IssueExtensionExecutionListenerTests {
 		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("#123"),
 			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(1));
 
-		assertThat(issueTestSuite.tests())
-				.containsExactly(new IssueTestCase("[test:aborted-test]", Status.ABORTED));
+		assertThat(issueTestSuite.tests()).containsExactly(new IssueTestCase("[test:aborted-test]", Status.ABORTED));
 	}
 
 	@Test
