@@ -59,8 +59,7 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 		var messages = entry.getKeyValuePairs();
 		var testId = testIdentifier.getUniqueId();
 		// because test IDs are unique, we can be sure that the report entries belong to the same test
-		testCases.putIfAbsent(testId, new IssueTestCaseBuilder(testId));
-		var testCaseBuilder = testCases.get(testId);
+		var testCaseBuilder = testCases.computeIfAbsent(testId, IssueTestCaseBuilder::new);
 
 		if (messages.containsKey(REPORT_ENTRY_KEY)) {
 			var issueId = messages.get(REPORT_ENTRY_KEY);
