@@ -46,7 +46,12 @@ include::{demo}[tag=expected_to_fail_message]
 
 === Only Abort on Expected Exceptions
 
-In some cases it may be desirable to only have the test be aborted on certain expected exceptions.
+A test that is `@ExpectedToFail` will change its behavior by starting to actually fail, once the code under test behaves correctly.
+If the underlying failure changes, though, for example from an assertion error to an exception or from an `UnsupportedOperationException` of a formerly missing implementation to a runtime exception of buggy implementation, the `@ExpectedToFail`-test will keep passing.
+
+To better react to such changes, `@ExpectedToFail` has an attribute `onExceptions` that can be used to enumerate the exceptions which when thrown will result in an aborted (and thus passing) test.
+Any other exception thrown by the code under test will result in a failing test.
+
 In the following example a test case for `productionFeature()` has been implemented.
 While the test is fully implemented, the production code has been stubbed and throws an `UnsupportedOperationException` to indicate this.
 
