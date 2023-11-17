@@ -54,6 +54,20 @@ The implementing class must be registered as a service.
 For further information about that, see https://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html[the `ServiceLoader` documentation].
 ====
 
+The exact API has two classes:
+
+- `IssueTestSuite`, which represents a single issue and all related tests.
+- `IssueTestCase`, which represents a single test.
+
+`IssueTestCase` contains:
+
+- the result of the test
+- the unique identifier of the test
+- the time it took to execute the test (optionally)
+
+The time information is only available if the test is annotated with `@Stopwatch`.
+For more information, see the link:/docs/stopwatch.adoc[@Stopwatch documentation].
+
 == Thread-Safety
 
 This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

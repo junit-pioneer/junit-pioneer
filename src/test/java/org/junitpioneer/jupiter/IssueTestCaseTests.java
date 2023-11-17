@@ -30,8 +30,18 @@ public final class IssueTestCaseTests {
 	}
 
 	@Test
+	void testToStringWithTime() {
+		String expected = "IssueTestCase{uniqueName='myName', result='SUCCESSFUL', elapsedTime='0 ms'}";
+		IssueTestCase sut = new IssueTestCase("myName", Status.SUCCESSFUL, 0L);
+
+		String result = sut.toString();
+
+		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test
 	public void equalsContract() {
-		EqualsVerifier.forClass(IssueTestCase.class).withNonnullFields("testId", "result").verify();
+		EqualsVerifier.forClass(IssueTestCase.class).withNonnullFields("testId", "result", "elapsedTime").verify();
 	}
 
 }

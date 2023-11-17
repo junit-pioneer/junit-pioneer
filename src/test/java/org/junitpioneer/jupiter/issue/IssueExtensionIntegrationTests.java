@@ -27,6 +27,8 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junitpioneer.jupiter.Issue;
 import org.junitpioneer.jupiter.IssueTestCase;
 import org.junitpioneer.jupiter.IssueTestSuite;
+import org.junitpioneer.jupiter.Stopwatch;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Mary Elizabeth Fyre: Do Not Stand at My Grave and Weep is in the public domain.
@@ -44,10 +46,17 @@ public class IssueExtensionIntegrationTests {
 
 		List<IssueTestSuite> issueTestSuites = StoringIssueProcessor.ISSUE_TEST_SUITES;
 
-		assertThat(issueTestSuites).hasSize(3);
+		assertThat(issueTestSuites).hasSize(4);
 		assertThat(issueTestSuites)
 				.extracting(IssueTestSuite::issueId)
-				.containsExactlyInAnyOrder("Poem #1", "Poem #2", "Poem #3");
+				.containsExactlyInAnyOrder("Poem #1", "Poem #2", "Poem #3", "Poem #5");
+		IssueTestSuite firstSuite = issueTestSuites
+				.stream()
+				.filter(issueTestSuite -> issueTestSuite.issueId().equals("Poem #1"))
+				.findFirst()
+				.orElseThrow(AssertionFailedError::new);
+
+		assertThat(firstSuite.tests()).hasSize(2);
 		assertThat(issueTestSuites)
 				.allSatisfy(issueTestSuite -> assertThat(issueTestSuite.tests())
 						.allSatisfy(IssueExtensionIntegrationTests::assertStatus));
@@ -60,39 +69,51 @@ public class IssueExtensionIntegrationTests {
 			assertThat(testCase.result()).isEqualTo(Status.ABORTED);
 		if (testCase.testId().contains("failing"))
 			assertThat(testCase.result()).isEqualTo(Status.FAILED);
+		if (testCase.testId().contains("Stopwatch")) {
+			assertThat(testCase.elapsedTime()).isNotEmpty();
+		} else {
+			assertThat(testCase.elapsedTime()).isEmpty();
+		}
 	}
 
 	static class IssueIntegrationTestCases {
 
 		@Test
 		@Issue("Poem #1")
-		@DisplayName("Do not stand at my grave and weep. I am not there. I do not sleep.")
+		@DisplayName("Do not stand at my grave and weep.")
 		void successfulTest() {
 		}
 
 		@Test
+		@Stopwatch
 		@Issue("Poem #1")
+		@DisplayName("I am not there. I do not sleep.")
+		void successfulWithStopwatch() {
+		}
+
+		@Test
+		@Issue("Poem #2")
 		@DisplayName("I am a thousand winds that blow. I am the diamond glints on snow.")
 		void failingTest() {
 			fail("supposed to fail");
 		}
 
 		@Test
-		@Issue("Poem #2")
+		@Issue("Poem #3")
 		@DisplayName("I am the sunlight on ripened grain. I am the gentle autumn rain.")
 		void abortedTest() {
 			abort();
 		}
 
 		@Test
-		@Issue("Poem #2")
+		@Issue("Poem #4")
 		@Disabled("skipped")
 		@DisplayName("When you awaken in the morning's hush, I am the swift uplifting rush")
 		void skippedTest() {
 		}
 
 		@Test
-		@Issue("Poem #3")
+		@Issue("Poem #5")
 		@DisplayName("Of quiet birds in circled flight. I am the soft stars that shine at night.")
 		void publishingTest(TestReporter reporter) {
 			reporter.publishEntry("Issue", "reporting test");
