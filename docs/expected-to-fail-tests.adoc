@@ -58,12 +58,6 @@ include::{demo}[tag=expected_to_fail_withexception]
 Once `productionFeature()` is implemented, `@ExpectedToFail` will fail the test, as no `UnsupportedOperationException` is thrown anymore.
 By using `withExceptions` you can thus prevent "masking" a faulty implementation (e.g. when a value other rather than `10` is returned) with an aborted test (which would be the result when no `withExceptions` is set).
 
-[WARNING]
-====
-As stated in the introduction, this feature is _not_ intended as a mechanism to assert that a test method intentionally throws an exception.
-Instead, such test methods should use https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html#assertThrows(java.lang.Class,org.junit.jupiter.api.function.Executable)[JUnit's `assertThrows`] or similar.
-====
-
 == Thread-Safety
 
 This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].
