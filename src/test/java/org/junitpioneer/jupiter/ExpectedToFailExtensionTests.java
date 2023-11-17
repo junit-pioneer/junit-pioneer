@@ -243,13 +243,13 @@ public class ExpectedToFailExtensionTests {
 		}
 
 		@Test
-		@ExpectedToFail(onExceptions = { IllegalStateException.class, UnsupportedOperationException.class })
+		@ExpectedToFail(withExceptions = { IllegalStateException.class, UnsupportedOperationException.class })
 		void expectedException() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Test
-		@ExpectedToFail(onExceptions = UnsupportedOperationException.class)
+		@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
 		void unexpectedException() {
 			fail();
 		}

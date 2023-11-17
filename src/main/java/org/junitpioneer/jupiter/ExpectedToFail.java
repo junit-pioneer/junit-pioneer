@@ -32,7 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * This helps to avoid creating duplicate tests by accident and counteracts the accumulation
  * of disabled tests over time.</p>
  *
- * <p>Further, the {@link #onExceptions()} attribute can be used to restrict the extension's behavior
+ * <p>Further, the {@link #withExceptions()} attribute can be used to restrict the extension's behavior
  * to specific exceptions. That is, only if the test method ends up throwing one of the specified exceptions
  * will the test be aborted. This can, for example, be used when the production code temporarily throws
  * an {@link UnsupportedOperationException} because some feature has not been implemented yet, but the
@@ -78,6 +78,6 @@ public @interface ExpectedToFail {
 	/**
 	 * Specifies which exceptions are expected to be thrown and will cause the test to be aborted rather than fail.
 	 */
-	Class<? extends Throwable>[] onExceptions() default { Throwable.class };
+	Class<? extends Throwable>[] withExceptions() default { Throwable.class };
 
 }

@@ -38,9 +38,9 @@ public class ExpectedToFailExtensionDemo {
 		return 0;
 	}
 
-	// tag::expected_to_fail_onexception[]
+	// tag::expected_to_fail_withexception[]
 	@Test
-	@ExpectedToFail(onExceptions = UnsupportedOperationException.class)
+	@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
 	void testProductionFeature() {
 		int actual = productionFeature();
 		assertEquals(10, actual);
@@ -49,6 +49,6 @@ public class ExpectedToFailExtensionDemo {
 	private int productionFeature() {
 		throw new UnsupportedOperationException("productionFeature() is not yet implemented");
 	}
-	// end::expected_to_fail_onexception[]
+	// end::expected_to_fail_withexception[]
 
 }
