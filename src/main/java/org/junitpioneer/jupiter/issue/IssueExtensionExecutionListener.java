@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,18 +10,15 @@
 
 package org.junitpioneer.jupiter.issue;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.junit.platform.engine.TestExecutionResult.Status;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Stream;
 
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
@@ -29,15 +26,17 @@ import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 import org.junitpioneer.jupiter.IssueProcessor;
+import org.junitpioneer.jupiter.IssueTestCase;
 import org.junitpioneer.jupiter.IssueTestSuite;
 
 /**
- * <p>This listener collects the names and results of all tests, which are annotated with the {@link org.junitpioneer.jupiter.Issue @Issue} annotation.
- * After all tests are finished the results are provided to an {@link IssueProcessor} for further processing.</p>
+ * This listener collects the names and results of all tests, which are annotated with the {@link org.junitpioneer.jupiter.Issue @Issue} annotation.
+ * After all tests are finished the results are provided to an {@link IssueProcessor} for further processing.
  */
 public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 	public static final String REPORT_ENTRY_KEY = "IssueExtension";
+	public static final String TIME_REPORT_KEY = "IssueExtensionTimeReport";
 
 	/**
 	 * This listener will be active as soon as Pioneer is on the class/module path, regardless of whether {@code @Issue} is actually used.
@@ -57,13 +56,18 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 		if (!active)
 			return;
 
-		String testId = testIdentifier.getUniqueId();
-		Map<String, String> messages = entry.getKeyValuePairs();
+		var messages = entry.getKeyValuePairs();
+		var testId = testIdentifier.getUniqueId();
+		// because test IDs are unique, we can be sure that the report entries belong to the same test
+		var testCaseBuilder = testCases.computeIfAbsent(testId, IssueTestCaseBuilder::new);
 
 		if (messages.containsKey(REPORT_ENTRY_KEY)) {
-			String issueId = messages.get(REPORT_ENTRY_KEY);
-			// because test IDs are unique, there's no risk of overriding previously entered information
-			testCases.put(testId, new IssueTestCaseBuilder(testId).setIssueId(issueId));
+			var issueId = messages.get(REPORT_ENTRY_KEY);
+			testCaseBuilder.setIssueId(issueId);
+		}
+		if (messages.containsKey(TIME_REPORT_KEY)) {
+			var elapsedTime = Long.parseLong(messages.get(TIME_REPORT_KEY));
+			testCaseBuilder.setElapsedTime(elapsedTime);
 		}
 	}
 
@@ -95,24 +99,22 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 	}
 
 	List<IssueTestSuite> createIssueTestSuites() {
-		//@formatter:off
-		List<IssueTestSuite> suites = testCases
-				.values().stream()
-				.collect(toMap(IssueTestCaseBuilder::getIssueId, builder -> new ArrayList<>(Arrays.asList(builder)),
-						(builders1, builders2) -> {
-							builders1.addAll(builders2);
-							return builders1;
-						}))
-				.entrySet().stream()
-				.map(issueIdWithTestCases -> new IssueTestSuite(
-						issueIdWithTestCases.getKey(),
-						issueIdWithTestCases
-								.getValue().stream()
-								.map(IssueTestCaseBuilder::build)
-								.collect(toList())))
-				.collect(toList());
-		//@formatter:on
-		return Collections.unmodifiableList(suites);
+		return testCases
+				.values()
+				.stream()
+				.collect(toMap(IssueTestCaseBuilder::getIssueId, this::getIssueTestCases, this::mergeIssueTestCases))
+				.entrySet()
+				.stream()
+				.map(entry -> new IssueTestSuite(entry.getKey(), entry.getValue()))
+				.collect(toUnmodifiableList());
+	}
+
+	private List<IssueTestCase> getIssueTestCases(IssueTestCaseBuilder builder) {
+		return List.of(builder.build());
+	}
+
+	private List<IssueTestCase> mergeIssueTestCases(List<IssueTestCase> first, List<IssueTestCase> second) {
+		return Stream.concat(first.stream(), second.stream()).collect(toUnmodifiableList());
 	}
 
 }

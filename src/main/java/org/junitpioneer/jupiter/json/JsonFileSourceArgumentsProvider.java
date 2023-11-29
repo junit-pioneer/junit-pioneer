@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,13 +10,14 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.platform.commons.PreconditionViolationException;
@@ -32,7 +33,7 @@ class JsonFileSourceArgumentsProvider extends AbstractJsonSourceBasedArgumentsPr
 	@Override
 	public void accept(JsonFileSource jsonSource) {
 		Stream<Source> files = Arrays.stream(jsonSource.value()).map(JsonFileSourceArgumentsProvider::fileResource);
-		accept(files.collect(Collectors.toList()), jsonSource.data());
+		accept(files.collect(toUnmodifiableList()), jsonSource.data());
 	}
 
 	private static Source fileResource(String file) {

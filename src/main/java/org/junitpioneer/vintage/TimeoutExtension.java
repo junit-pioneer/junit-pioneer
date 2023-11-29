@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
  *
  * <p>Note that this is different from JUnit 4's {@code @Test} parameter, which would abandon the test if it ran to
  * long and continue with the remainder of the suite. As Jupiter's extension API is currently not powerful enough
- * to interact with its threading model, this could not be implemented.
+ * to interact with its threading model, this could not be implemented.</p>
  */
 class TimeoutExtension implements InvocationInterceptor {
 

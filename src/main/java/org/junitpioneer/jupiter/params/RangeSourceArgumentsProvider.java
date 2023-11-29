@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -29,6 +29,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 /**
  * Provides a range of {@link Number}s, as defined by an annotation which is its {@link ArgumentsSource}.
  * Such an annotation should have the following properties:
+ *
  * <ul>
  *     <li>{@code from} a primitive value for the "start" of the range.</li>
  *     <li>{@code to} a primitive value for the "end" of the range. {@code to} must have the same type as {@code from}.</li>

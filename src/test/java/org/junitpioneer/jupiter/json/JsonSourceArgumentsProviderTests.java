@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,14 +10,16 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,13 +46,13 @@ class JsonSourceArgumentsProviderTests {
 		Map<String, List<String>> displayNames = results
 				.dynamicallyRegisteredEvents()
 				.map(Event::getTestDescriptor)
-				.collect(Collectors
-						.groupingBy(JsonSourceArgumentsProviderTests::testSourceMethodName,
-							Collectors.mapping(TestDescriptor::getDisplayName, Collectors.toList())));
+				.collect(groupingBy(JsonSourceArgumentsProviderTests::testSourceMethodName,
+					mapping(TestDescriptor::getDisplayName, toList())));
 
 		assertThat(displayNames)
 				.containsOnlyKeys("deconstructCustomerFromArray", "deconstructCustomerMultipleValues",
-					"deconstructCustomerMultipleLinesComplexType", "singleCustomer", "singleCustomerName");
+					"deconstructCustomerMultipleLinesComplexType", "singleCustomer", "singleCustomerName",
+					"allowsTrailingComma");
 
 		assertThat(displayNames.get("deconstructCustomerFromArray")).containsExactly("[1] Luke, 172", "[2] Yoda, 66");
 
@@ -64,6 +66,9 @@ class JsonSourceArgumentsProviderTests {
 				.containsExactly("[1] Customer{name='Luke', height=172}", "[2] Customer{name='Yoda', height=66}");
 
 		assertThat(displayNames.get("singleCustomerName")).containsExactly("[1] Luke", "[2] Yoda");
+
+		assertThat(displayNames.get("allowsTrailingComma"))
+				.containsExactly("[1] Customer{name='Luke', height=172}", "[2] Customer{name='Yoda', height=66}");
 	}
 
 	@Test
@@ -72,9 +77,8 @@ class JsonSourceArgumentsProviderTests {
 		Map<String, List<String>> displayNames = results
 				.dynamicallyRegisteredEvents()
 				.map(Event::getTestDescriptor)
-				.collect(Collectors
-						.groupingBy(JsonSourceArgumentsProviderTests::testSourceMethodName,
-							Collectors.mapping(TestDescriptor::getDisplayName, Collectors.toList())));
+				.collect(groupingBy(JsonSourceArgumentsProviderTests::testSourceMethodName,
+					mapping(TestDescriptor::getDisplayName, toList())));
 
 		assertThat(displayNames)
 				.containsOnlyKeys("extractPropertyFromArray", "extractPropertyFromMultipleValues",
@@ -113,13 +117,13 @@ class JsonSourceArgumentsProviderTests {
 		@ParameterizedTest
 		@JsonSource("[ { name: 'Luke', height: 172  }, { name: 'Yoda', height: 66 } ]")
 		void deconstructCustomerFromArray(@Property("name") String name, @Property("height") int height) {
-			assertThat(Collections.singleton(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
+			assertThat(Set.of(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 		@ParameterizedTest
 		@JsonSource({ "{ name: 'Yoda', height: 66 }", "{ name: 'Luke', height: 172 }", })
 		void deconstructCustomerMultipleValues(@Property("height") int height, @Property("name") String name) {
-			assertThat(Collections.singleton(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
+			assertThat(Set.of(tuple(name, height))).containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 		@ParameterizedTest
@@ -128,14 +132,14 @@ class JsonSourceArgumentsProviderTests {
 		void deconstructCustomerMultipleLinesComplexType(@Property("name") String name,
 				@Property("location") Location location) {
 
-			assertThat(Collections.singleton(tuple(name, location.getName())))
+			assertThat(Set.of(tuple(name, location.getName())))
 					.containsAnyOf(tuple("Luke", "Tatooine"), tuple("Yoda", "unknown"));
 		}
 
 		@ParameterizedTest
 		@JsonSource("[ { name: 'Luke', height: 172  }, { name: 'Yoda', height: 66 } ]")
 		void singleCustomer(Customer customer) {
-			assertThat(Collections.singleton(tuple(customer.getName(), customer.getHeight())))
+			assertThat(Set.of(tuple(customer.getName(), customer.getHeight())))
 					.containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
@@ -143,6 +147,13 @@ class JsonSourceArgumentsProviderTests {
 		@JsonSource({ "{ name: 'Luke', height: 172 }", "{ name: 'Yoda', height: 66 }", })
 		void singleCustomerName(@Property("name") String customerName) {
 			assertThat(customerName).isIn("Luke", "Yoda");
+		}
+
+		@ParameterizedTest
+		@JsonSource({ "{ name: 'Luke', height: 172, }", "{ name: 'Yoda', height: 66, }" })
+		void allowsTrailingComma(Customer customer) {
+			assertThat(Set.of(tuple(customer.getName(), customer.getHeight())))
+					.containsAnyOf(tuple("Luke", 172), tuple("Yoda", 66));
 		}
 
 	}
@@ -155,7 +166,7 @@ class JsonSourceArgumentsProviderTests {
 		void extractPropertyFromArray(
 				@JsonSource("[ { name: 'Luke', height: 172  }, { name: 'Yoda', height: 66 } ]") @Property("name") String name,
 				@JsonSource("[ { name: 'Luke', height: 172  }, { name: 'Yoda', height: 66 } ]") @Property("height") int height) {
-			assertThat(Collections.singleton(tuple(name, height)))
+			assertThat(Set.of(tuple(name, height)))
 					.containsAnyOf(tuple("Luke", 172), tuple("Luke", 66), tuple("Yoda", 172), tuple("Yoda", 66));
 		}
 
@@ -166,7 +177,7 @@ class JsonSourceArgumentsProviderTests {
 						"{ name: 'Luke', height: 172 }", }) @Property("height") int height,
 				@JsonSource({ "{ name: 'Yoda', height: 66 }",
 						"{ name: 'Luke', height: 172 }", }) @Property("name") String name) {
-			assertThat(Collections.singleton(tuple(name, height)))
+			assertThat(Set.of(tuple(name, height)))
 					.containsAnyOf(tuple("Luke", 172), tuple("Luke", 66), tuple("Yoda", 172), tuple("Yoda", 66));
 		}
 
@@ -178,7 +189,7 @@ class JsonSourceArgumentsProviderTests {
 				@JsonSource({ "{ name: 'Yoda', height: 66, location: { name: 'unknown' } }",
 						"{ name: 'Luke', height: 172, location: { name: 'Tatooine' } }", }) @Property("location") Location location) {
 
-			assertThat(Collections.singleton(tuple(name, location.getName())))
+			assertThat(Set.of(tuple(name, location.getName())))
 					.containsAnyOf(tuple("Luke", "Tatooine"), tuple("Luke", "unknown"), tuple("Yoda", "Tatooine"),
 						tuple("Yoda", "unknown"));
 		}

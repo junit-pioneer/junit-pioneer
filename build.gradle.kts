@@ -4,14 +4,14 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "6.4.2"
+	id("com.diffplug.spotless") version "6.21.0"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "3.3"
-	id("org.shipkit.shipkit-changelog") version "1.1.15"
-	id("org.shipkit.shipkit-github-release") version "1.1.15"
-	id("com.github.ben-manes.versions") version "0.42.0"
-	id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-	id("org.gradlex.extra-java-module-info") version "1.0"
+	id("org.sonarqube") version "4.3.1.3277"
+	id("org.shipkit.shipkit-changelog") version "1.2.0"
+	id("org.shipkit.shipkit-github-release") version "1.2.0"
+	id("com.github.ben-manes.versions") version "0.48.0"
+	id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+	id("org.gradlex.extra-java-module-info") version "1.4.2"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -25,6 +25,7 @@ description = "JUnit 5 Extension Pack"
 
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
+val releaseBuild : Boolean = project.version != "unspecified"
 
 val targetJavaVersion = JavaVersion.VERSION_11
 
@@ -48,7 +49,10 @@ repositories {
 }
 
 val junitVersion : String by project
-val jacksonVersion: String = "2.13.2.2"
+val jacksonVersion: String = "2.14.2"
+val assertjVersion: String = "3.24.2"
+val log4jVersion: String = "2.20.0"
+val jimfsVersion: String = "1.3.0"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
@@ -61,13 +65,13 @@ dependencies {
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
-	testImplementation(group = "org.assertj", name = "assertj-core", version = "3.22.0")
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.4.0")
-	testImplementation(group = "com.google.jimfs", name = "jimfs", version = "1.2")
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.11.1")
+	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.5.0")
+	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.15.1")
 
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = "2.17.2")
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = "2.17.2")
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
+	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = log4jVersion)
 }
 
 spotless {
@@ -84,7 +88,7 @@ spotless {
 }
 
 checkstyle {
-	toolVersion = "10.2"
+	toolVersion = "10.12.3"
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
@@ -94,10 +98,10 @@ yamlValidator {
 }
 
 jacoco {
-	toolVersion = "0.8.8"
+	toolVersion = "0.8.9"
 }
 
-sonarqube {
+sonar {
 	// If you want to use this locally a sonarLogin has to be provided, either via Username and Password
 	// or via token, https://docs.sonarqube.org/latest/analysis/analysis-parameters/
 	properties {
@@ -161,9 +165,7 @@ publishing {
 }
 
 signing {
-	setRequired({
-		project.version != "unspecified" && gradle.taskGraph.hasTask("publishToSonatype")
-	})
+	isRequired = releaseBuild && gradle.taskGraph.hasTask("publishToSonatype")
 	val signingKey: String? by project
 	val signingPassword: String? by project
 	useInMemoryPgpKeys(signingKey, signingPassword)
@@ -171,7 +173,7 @@ signing {
 }
 
 nexusPublishing {
-	repositories {
+	this.repositories {
 		sonatype()
 	}
 }
@@ -197,7 +199,7 @@ tasks {
 		}
 	}
 	project(":demo") {
-		sonarqube {
+		this.sonar {
 			isSkipProject = true
 		}
 	}
@@ -209,12 +211,12 @@ tasks {
 	compileJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		// Do not break the build on "exports" warnings (see CONTRIBUTING.md for details)
+		// Do not break the build on "exports" warnings (see CONTRIBUTING.adoc for details)
 		options.compilerArgs.add("-Xlint:all,-exports")
 
 		if (project.version != "unspecified") {
 			// Add version to Java modules
-			options.javaModuleVersion.set(project.version.toString());
+			options.javaModuleVersion.set(project.version.toString())
 		}
 	}
 
@@ -223,8 +225,6 @@ tasks {
 	// See https://docs.gradle.org/current/userguide/java_testing.html#sec:java_testing_modular_patching
 	val patchModuleArg = "--patch-module=$moduleName=${compileJava.get().destinationDirectory.asFile.get().path}"
 	val testJvmArgs = listOf(
-			// Ignore these options on Java 8
-			"-XX:+IgnoreUnrecognizedVMOptions",
 			// EnvironmentVariableUtils: make java.util.Map accessible
 			"--add-opens=java.base/java.util=$moduleName",
 			// EnvironmentVariableUtils: make java.lang.System accessible
@@ -269,6 +269,7 @@ tasks {
 		jvmArgs(testJvmArgs)
 	}
 
+	@Suppress("UnstableApiUsage")
 	testing {
 		suites {
 			val test by getting(JvmTestSuite::class) {
@@ -278,9 +279,9 @@ tasks {
 			val demoTests by registering(JvmTestSuite::class) {
 				dependencies {
 					implementation(project(project.path))
-					implementation("com.google.jimfs:jimfs:1.2")
+					implementation("com.google.jimfs:jimfs:$jimfsVersion")
 					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-					implementation("org.assertj:assertj-core:3.22.0")
+					implementation("org.assertj:assertj-core:$assertjVersion")
 				}
 
 				sources {
@@ -299,7 +300,6 @@ tasks {
 							filter {
 								includeTestsMatching("*Demo")
 							}
-							jvmArgs(testJvmArgs)
 						}
 					}
 				}
@@ -308,10 +308,13 @@ tasks {
 	}
 
 	javadoc {
-		javadocTool.set(project.javaToolchains.javadocToolFor {
-			// Create Javadoc with at least Java 17 to get the latest features, e.g. search bar
-			languageVersion.set(JavaLanguageVersion.of(maxOf(17, targetJavaVersion.majorVersion.toInt())))
-		})
+		if (releaseBuild) {
+			javadocTool.set(project.javaToolchains.javadocToolFor {
+				// create Javadoc with least Java version to get all features
+				// (e.g. search result page on 20)
+				languageVersion.set(JavaLanguageVersion.of(21))
+			})
+		}
 
 		options {
 			// Cast to standard doclet options, see https://github.com/gradle/gradle/issues/7038#issuecomment-448294937
@@ -339,10 +342,11 @@ tasks {
 		enabled = !experimentalBuild
 		reports {
 			xml.required.set(true)
-			xml.outputLocation.set(file("${buildDir}/reports/jacoco/report.xml"))
+			xml.outputLocation.set(file("${layout.buildDirectory}/reports/jacoco/report.xml"))
 		}
 	}
 
+	@Suppress("UnstableApiUsage")
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
 		dependsOn(javadoc, validateYaml, testing.suites.named("demoTests"))
@@ -356,6 +360,7 @@ tasks {
 	}
 
 	generateChangelog {
+		dependsOn(":closeAndReleaseSonatypeStagingRepository")
 		val gitFetchRecentTag = Runtime.getRuntime().exec("git describe --tags --abbrev=0")
 		val recentTag = gitFetchRecentTag.inputStream.bufferedReader().readText().trim()
 		previousRevision = recentTag

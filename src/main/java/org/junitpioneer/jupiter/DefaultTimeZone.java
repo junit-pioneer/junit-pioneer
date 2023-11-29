@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -38,12 +38,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
  * all tests annotated with {@link DefaultTimeZone}, {@link ReadsDefaultTimeZone}, and {@link WritesDefaultTimeZone}
- * are scheduled in a way that guarantees correctness under mutation of shared global state.
- * </p>
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale and @DefaultTimeZone</code></a>.
- * </p>
+ * <a href="https://junit-pioneer.org/docs/default-locale-timezone/" target="_top">the documentation on <code>@DefaultLocale</code> and <code>@DefaultTimeZone</code></a>.</p>
  *
  * @since 0.2
  * @see java.util.TimeZone#getDefault()

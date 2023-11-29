@@ -2,7 +2,7 @@ rootProject.name = "junit-pioneer"
 include("demo")
 
 plugins {
-	id("com.gradle.enterprise") version "3.2"
+	id("com.gradle.enterprise") version "3.14.1"
 }
 
 gradleEnterprise { 

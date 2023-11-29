@@ -10,18 +10,54 @@ It redirects the original input/output streams to make predefined lines readable
 ====
 Depending on the configuration, the extension redirects the standard input and/or output, in which case nothing gets forwarded to the original `System.in` and/or `System.out` / `System.err`.
 This becomes particularly important when running tests in parallel, where other tests may interfere with tests annotated with `@StdIo`.
+More on that in the section _Thread-Safety_.
 ====
 
 == Basic use
 
 The extension consists of two parts:
 
-* The annotation `@StdIo`. It allows defining input that is read from `System.in` without having to wait for user input.
-* Parameters `StdIn`, `StdOut`, and `StdErr`, which you can have injected into your test.
-  Their `capturedLines()` methods allow you to access lines read from `System.in` or written to `System.out` or `System.err`, so you can verify them with common assertions.
+* The annotation `@StdIo` enables the extension and optionally defines input that is read from `System.in` without having to wait for user input.
+* The parameters `StdIn`, `StdOut`, and `StdErr` can be injected into your test.
+  Their `capturedString()` and `capturedLines()` methods allow you to access the strings read from `System.in` or written to `System.out` or `System.err`, so you can verify them with common assertions.
 
-For example, after calling `System.out.println("Hello")` and `System.out.println("World")`,  the `StdOut::capturedLines` method would return an array ["Hello", "World"].
-With `System.out.print("Hello")` and `System.out.println("World")` (note that the first method does not print a line break), it would return `["HelloWorld"]`.
+For example, after calling `System.out.println("Hello")` and `System.out.println("World")`, `StdOut::capturedString` would return `"Hello%nWorld%n"`.
+With `System.out.print("Hello")` and `System.out.println("World")` (note that the first method does not print a line break), the method would return `"HelloWorld%n"`.
+(In both cases, `%n` corresponds to `System.getProperty("line.separator")`.)
+
+=== Captured strings and lines
+
+Since the strings passed to `@StdIo` or `System.out/err.print/println` don't need to end with a line separator, the question arises how they are separated for the purpose of `capturedString()`, i.e. how does the method's return distinguish between `println("Hello"); println("World");` and `print("Hello"); println("World");`?
+
+[IMPORTANT]
+====
+This extension operates under the basic assumption that every string passed to `@StdIo`, `System.out.println`, or `System.err.println` implicitly ends with a line separator and hence adds it explicitly to the string returned by `capturedString()`.
+This is not the case for strings passed to `System.out.print` and `System.err.print`.
+====
+
+The classes `StdIn`, `StdOut`, and `StdErr` also offer a method `String[] capturedLines()`, which divides the captured string on the line separator and includes leading, inner, and trailing empty lines but does not include the potential empty string that comes after a trailing line separator.
+(The exact algorithm is based on but behaves differently from `String::split`.)
+
+[WARNING]
+====
+The combination of these two approaches leads to the unfortunate situation that `capturedLines()` can't be used to distinguish the cases where the last line was created by a `print` or a `println` (see the first two lines in the table below) because regardless of whether the string ends with a line separator or not, there will be no trailing empty string in the array.
+Use `capturedString()` to distinguish these cases.
+====
+
+Here are some examples to illustrate this behavior (`%n` corresponds to `System.getProperty("line.separator")`):
+
+|===
+| prints | `capturedString()` | `capturedLines()`
+
+| `println("A");`                              | `"A%n"`        | `["A"]`
+| `print("A");`                                | `"A"`          | `["A"]`
+| `print("A");` `println("B");`                | `"AB%n"`       | `["AB"]`
+| `println("A");` `println("B");`              | `"A%nB%n"`     | `["A", "B"]`
+| `println("A");` `println();` `println("B");` | `"A%n%nB%n"`   | `["A", "", "B"]`
+| `println();` `println("A");` `println();`    | `"%nA%n%n"`    | `["", "A", ""]`
+|===
+
+=== Valid configurations
 
 Here are the valid combinations of the annotation (with or without values for the read lines) and parameters:
 
@@ -75,8 +111,8 @@ Since `System.in` and `System.out` are global state, reading and writing them du
 The `@StdIo` extension is prepared for that and tests annotated with it will never execute in parallel (thanks to https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/parallel/ResourceLock.html[resource locks]) to guarantee correct test results.
 
 However, this does not cover all possible cases.
-Tested code that reads `System.in` or `System.out` or calls `System.setIn()` or `System.setOut()` _independently_ of the extensions can still run in parallel to them and may thus behave erratically when, for example, it unexpectedly uses `System.out` that was set by the extension in another thread.
-Tests that cover code that reads or writes `System.in` or `System.out` need to be annotated with the respective annotation:
+Tested code that reads `System.in` or `System.out` or calls `System.setIn()` or `System.setOut()` _independently_ of the extensions can still run in parallel to them and may thus behave erratically if, for example, it unexpectedly uses `System.out` that was set by the extension in another thread.
+Tests that cover code that reads or writes `System.in`, `System.out`, or `System.err` need to be annotated with the respective annotation:
 
 * `@ReadsStdIo`
 * `@WritesStdIo`

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.cartesian;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.junit.platform.commons.support.AnnotationSupport.findAnnotation;
 import static org.junitpioneer.internal.PioneerUtils.cartesianProduct;
@@ -20,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -164,7 +166,7 @@ class CartesianTestExtension implements TestTemplateInvocationContextProvider {
 				// We like to keep arguments in the order in which they were listed
 				// in the annotation. Could use a set with defined iteration, but
 				// this is more explicit.
-				.collect(toList());
+				.collect(collectingAndThen(toList(), Collections::unmodifiableList));
 	}
 
 }

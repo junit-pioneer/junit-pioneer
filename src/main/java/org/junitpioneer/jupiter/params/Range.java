@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -19,13 +19,13 @@ import java.util.NoSuchElementException;
  */
 abstract class Range<N extends Number & Comparable<N>> implements Iterator<N> {
 
-	private N from;
-	private N to;
-	private N step;
-	private boolean closed;
+	private final N from;
+	private final N to;
+	private final N step;
+	private final boolean closed;
 	private N current;
-	private int sign;
-	private N zero;
+	private final int sign;
+	private final N zero;
 
 	Range(N from, N to, N step, boolean closed, N zero) {
 		this.from = from;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class DisableUntilExtensionDemo {
@@ -30,6 +31,7 @@ public class DisableUntilExtensionDemo {
 	}
 	// end::disable_until_with_reason[]
 
+	@Nested
 	// tag::disable_until_at_class_level[]
 	@DisabledUntil(date = "2022-01-01")
 	class TestClass {

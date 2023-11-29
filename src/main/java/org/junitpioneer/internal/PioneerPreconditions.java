@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -32,7 +32,7 @@ public class PioneerPreconditions {
 	 * @return the supplied string
 	 */
 	public static String notBlank(String str, String message) {
-		if (str == null || str.trim().isEmpty()) {
+		if (str == null || str.isBlank()) {
 			throw new PreconditionViolationException(message);
 		}
 
@@ -46,7 +46,7 @@ public class PioneerPreconditions {
 	 * @return the supplied string
 	 */
 	public static String notBlank(String str, Supplier<String> messageSupplier) {
-		if (str == null || str.trim().isEmpty()) {
+		if (str == null || str.isBlank()) {
 			throw new PreconditionViolationException(messageSupplier.get());
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -102,7 +102,7 @@ public @interface RetryingTest {
 	 *
 	 * <p>Defaults to [{index}] {arguments}.</p>
 	 *
-	 * <p>Supported placeholders:<p>
+	 * <p>Supported placeholders:</p>
 	 *
 	 * - {@link org.junitpioneer.jupiter.RetryingTest#DISPLAY_NAME_PLACEHOLDER}
 	 * - {@link org.junitpioneer.jupiter.RetryingTest#INDEX_PLACEHOLDER}

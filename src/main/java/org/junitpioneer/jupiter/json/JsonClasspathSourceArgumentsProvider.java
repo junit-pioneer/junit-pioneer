@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,9 +10,10 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junitpioneer.internal.PioneerPreconditions;
@@ -30,7 +31,7 @@ class JsonClasspathSourceArgumentsProvider extends AbstractJsonSourceBasedArgume
 				.stream(jsonSource.value())
 				.map(JsonClasspathSourceArgumentsProvider::classpathResource);
 
-		accept(resources.collect(Collectors.toList()), jsonSource.data());
+		accept(resources.collect(toUnmodifiableList()), jsonSource.data());
 	}
 
 	private static Source classpathResource(String resource) {

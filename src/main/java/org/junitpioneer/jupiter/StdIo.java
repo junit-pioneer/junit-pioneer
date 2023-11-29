@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -22,20 +22,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * lines read from {@code System.in} (with parameter {@link StdIn}) or
  * written to {@code System.out} (with parameter {@link StdOut StdOut}).
  *
- * The annotated test method can have zero, one, or both parameters, but {@code StdIn} can only
+ * <p>The annotated test method can have zero, one, or both parameters, but {@code StdIn} can only
  * be provided if {@link StdIo#value()} is used to specify input - otherwise an
  * {@link org.junit.jupiter.api.extension.ExtensionConfigurationException ExtensionConfigurationException}
- * will be thrown.
+ * will be thrown.</p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
  * all tests annotated with {@link StdIo}, {@link ReadsStdIo}, and {@link WritesStdIo}
- * are scheduled in a way that guarantees correctness under mutation of shared global state.
- * </p>
+ * are scheduled in a way that guarantees correctness under mutation of shared global state.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on <code>Standard input/output</code></a>.
- * </p>
+ * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on standard input/output</a>.</p>
  *
  * @since 0.7
  */

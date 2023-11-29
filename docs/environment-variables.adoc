@@ -1,19 +1,20 @@
-:page-title: Clearing or Setting Environment Variables
-:page-description: The JUnit 5 (Jupiter) extensions `@ClearEnvironmentVariable`/`@SetEnvironmentVariable` clear/set the values of environment variables for the duration of a test
+:page-title: Clear, Set, and Restore Environment Variables
+:page-description: The JUnit 5 (Jupiter) extensions `@ClearEnvironmentVariable`, `@SetEnvironmentVariable` and `@RestoreEnvironmentVariables` clear/set/restore the values of environment variables for the duration of a test, and/or restore them after
 :xp-demo-dir: ../src/demo/java
 :demo: {xp-demo-dir}/org/junitpioneer/jupiter/EnvironmentVariablesExtensionDemo.java
 
+== `@ClearEnvironmentVariable` and `@SetEnvironmentVariable`
 The `@ClearEnvironmentVariable` and `@SetEnvironmentVariable` annotations can be used to clear and set, respectively, the values of environment variables for a test execution.
 Both annotations work on the test method and class level, are repeatable, combinable, and inherited from higher-level containers.
 After the annotated method has been executed, the variables mentioned in the annotation will be restored to their original value or the value of the higher-level container, or will be cleared if they didn't have one before.
-Other environment variables that are changed during the test, are *not* restored.
+Other environment variables that are changed during the test, are *not* restored (unless the `@RestoreEnvironmentVariables` is used).
 
 [WARNING]
 ====
-Java considers environment variables to be immutable, so this extension uses reflection to change them.
-This requires that the `SecurityManager` allows modifications and can potentially break on different operating systems and Java versions.
+Java considers environment variables to be immutable, which is why this extension uses reflection to change them.
+This requires the `SecurityManager` to allow modifications and may break on different operating systems and/or Java versions.
 Be aware that this is a fragile solution and consider finding a better one for your specific situation.
-For more details, see <<Warnings for Reflective Access>>.
+For more details and workarounds on Java 17+, see <<Warnings for Reflective Access>>.
 ====
 
 For example, clearing a environment variable for a test execution can be done as follows:
@@ -51,6 +52,59 @@ Method-level configurations are visible in both `@BeforeEach` setup methods and 
 Since v1.7.0, a class-level configuration means that the specified environment variables are cleared/set before and reset after each individual test in the annotated class.
 ====
 
+== `@RestoreEnvironmentVariables`
+`@RestoreEnvironmentVariables` can be used to restore changes to environment variables made directly in code.
+While `@ClearEnvironmentVariable` and `@SetEnvironmentVariable` set or clear specific variables and values, they don't allow values to be calculated or parameterized, thus there are times you may want to directly set them in your test code.
+`@RestoreEnvironmentVariables` can be placed on test methods or test classes and will completely restore all environment variables to their original state after a test or test class is complete.
+
+In this example, `@RestoreEnvironmentVariables` is used on a test method, ensuring any changes made in that method are restored:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=environment_method_restore_test]
+----
+
+[NOTE]
+====
+Modifying environment variables of a running JVM requires several lines of code and the Java reflection API.
+The two `@RestoreEnvironmentVariables` examples leave out that detail and use a hypothetical `setEnvVar()` method.
+====
+
+When `@RestoreEnvironmentVariables` is used on a test class, any environment variable changes made during the entire lifecycle of the test class, including test methods, `@BeforeAll`, `@BeforeEach` and 'after' methods, are restored after the test class' lifecycle is complete.
+In addition, the annotation is inherited by each test method just as if each one was annotated with `@RestoreEnvironmentVariables`.
+
+In the following example, both test methods see the environment variable changes made in `@BeforeAll` and `@BeforeEach`, however, the test methods are isolated from each other (`isolatedTest2` does not 'see' changes made in `isolatedTest1`).
+As shown in the second example below, the class-level `@RestoreEnvironmentVariables` ensures that environment variable changes made within the annotated class are completely restored after the class's lifecycle, ensuring that changes are not visible to `SomeOtherTestClass`.
+Note that `SomeOtherTestClass` uses the `@ReadsEnvironmentVariable` annotation: This ensures that JUnit does not schedule the class to run during any test known to modify environment variables (see <<Thread-Safety>>).
+
+[source,java,indent=0]
+----
+include::{demo}[tag=environment_class_restore_setup]
+----
+
+Some other test class, running later:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=environment_class_restore_isolated_class]
+----
+
+== Using `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, and `@RestoreEnvironmentVariables` together
+All three annotations can be combined, which could be used when some environment values are parameterized (i.e. need to be set in code) and others are not.
+For instance, imagine testing an image generation utility that takes configuration from environment variables.
+Basic configuration can be specified using `Set` and `Clear` and the image size parameterized:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=environment_method_combine_all_test]
+----
+
+[NOTE]
+====
+Using `@RestoreEnvironmentVariables` is not necessary to restore environment variables modified via `@ClearEnvironmentVariable` or `@SetEnvironmentVariable` - they each automatically restore the referenced variables.
+'Restore', is only needed if environment variables are modified in some way _other than_ Clear and Set during a test.
+====
+
 == Warnings for Reflective Access
 
 As explained above, this extension uses reflective access to change the otherwise immutable environment variables.
@@ -58,11 +112,11 @@ On Java 9 to 16, this leads to a warning like the following:
 
 [source]
 ----
-[ERROR] WARNING: An illegal reflective access operation has occurred
-[ERROR] WARNING: Illegal reflective access by org.junitpioneer.jupiter.EnvironmentVariableUtils [...] to field [...]
-[ERROR] WARNING: Please consider reporting this to the maintainers of org.junitpioneer.jupiter.EnvironmentVariableUtils
-[ERROR] WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
-[ERROR] WARNING: All illegal access operations will be denied in a future release
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.junitpioneer.jupiter.EnvironmentVariableUtils [...] to field [...]
+WARNING: Please consider reporting this to the maintainers of org.junitpioneer.jupiter.EnvironmentVariableUtils
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
 ----
 
 On Java 17 and later, you get this error instead:
@@ -73,31 +127,60 @@ java.lang.reflect.InaccessibleObjectException: Unable to make field [...] access
 module java.base does not "opens java.lang" to unnamed module [...]
 ----
 
+This is because https://docs.oracle.com/en/java/javase/17/migrate/migrating-jdk-8-later-jdk-releases.html#GUID-7BB28E4D-99B3-4078-BDC4-FC24180CE82B[Java 17 is strongly encapsulated] and the reflective access to JDK internals is no longer permitted.
+(For further details, see also https://openjdk.org/jeps/403[JEP 403].)
+
 The best way to prevent these warnings/errors, is to change the code under test, so this extension is no longer needed.
-The next best thing is to allow access to that specific package:
+However, some tests require environment variables to be cleared, set, or restored.
+In this case, we recommend using `--add-opens` to grant JUnit Pioneer access to the aforementiond internals:
 
 [source]
 ----
+# to access java.util.Collections$UnmodifiableMap.m
 --add-opens java.base/java.util=$TARGET_MODULE
+# to access java.lang.ProcessEnvironment.theEnvironment
 --add-opens java.base/java.lang=$TARGET_MODULE
 ----
 
 Where `$TARGET_MODULE` equals `ALL-UNNAMED` if you place JUnit Pioneer on the class path, or `org.junitpioneer` if you place JUnit Pioneer on the module path.
 These command line options need to be added to the JVM that executes the tests:
 
-* https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html[Gradle]
-* https://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#argLine[Maven basics] and https://nipafx.dev/maven-on-java-9/[advanced]
+* https://docs.gradle.org/current/dsl/org.gradle.api.tasks.testing.Test.html#org.gradle.api.tasks.testing.Test:jvmArgs(java.lang.Iterable)[Gradle Test Task]
+* https://maven.apache.org/surefire/maven-surefire-plugin/test-mojo.html#argLine[Maven Surefire Plugin]
+
+For instance, if you are using Maven and test on the class path, your Surefire configuration may look like this:
+
+[source,xml]
+----
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-surefire-plugin</artifactId>
+	<version><!--...--></version>
+	<configuration>
+		<argLine>
+			--add-opens java.base/java.util=ALL-UNNAMED
+			--add-opens java.base/java.lang=ALL-UNNAMED
+		</argLine>
+	</configuration>
+</plugin>
+----
+
+[NOTE]
+====
+Depending on your IDE, these settings may not be picked up.
+Therefore, you possibly also have to include `--add-opens` in your test's run configuration.
+====
 
 == Thread-Safety
 
 Since environment variables are global state, reading and writing them during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution] can lead to unpredictable results and flaky tests.
-The environment variable extension is prepared for that and tests annotated with `@ClearEnvironmentVariable` or `@SetEnvironmentVariable` will never execute in parallel (thanks to https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/parallel/ResourceLock.html[resource locks]) to guarantee correct test results.
+The environment variable extension is prepared for that and tests annotated with `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, or `@RestoreEnvironmentVariables` will never execute in parallel (thanks to https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/parallel/ResourceLock.html[resource locks]) to guarantee correct test results.
 
 However, this does not cover all possible cases.
 Tested code that reads or writes environment variables _independently_ of the extension can still run in parallel to it and may thus behave erratically when, for example, it unexpectedly reads a variable set by the extension in another thread.
 Tests that cover code that reads or writes environment variables need to be annotated with the respective annotation:
 
 * `@ReadsEnvironmentVariable`
-* `@WritesEnvironmentVariable`
+* `@WritesEnvironmentVariable` (though consider using `@RestoreEnvironmentVariables` instead)
 
-Tests annotated in this way will never execute in parallel with tests annotated with `@ClearEnvironmentVariable` or `@SetEnvironmentVariable`.
+Tests annotated in this way will never execute in parallel with tests annotated with `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, or `@RestoreEnvironmentVariables`.

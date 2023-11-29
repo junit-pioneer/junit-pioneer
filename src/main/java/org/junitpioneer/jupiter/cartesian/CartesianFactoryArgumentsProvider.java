@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -85,8 +85,7 @@ class CartesianFactoryArgumentsProvider
 	}
 
 	private static boolean factoryMustBeStatic(Method factory, Object testInstance, TestInstance.Lifecycle lifecycle) {
-		return testInstance == null || !factory.getDeclaringClass().isInstance(testInstance)
-				|| lifecycle != TestInstance.Lifecycle.PER_CLASS;
+		return !factory.getDeclaringClass().isInstance(testInstance) || lifecycle != TestInstance.Lifecycle.PER_CLASS;
 	}
 
 	private ArgumentSets invokeMethodFactory(Method testMethod, Method factory, Object testInstance) {

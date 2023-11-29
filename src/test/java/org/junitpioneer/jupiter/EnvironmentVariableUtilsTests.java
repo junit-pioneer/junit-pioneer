@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
@@ -44,7 +43,7 @@ class EnvironmentVariableUtilsTests {
 		/* By using this method, the entire environment is read and copied from the field
 		   ProcessEnvironment.theEnvironment. If that field is corrupted by a String having been stored
 		   as key or value, this copy operation will fail with a ClassCastException. */
-		Map<String, String> environmentCopy = new HashMap<>(System.getenv());
+		Map<String, String> environmentCopy = Map.copyOf(System.getenv());
 		assertThat(environmentCopy.get("TEST")).isEqualTo("test");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * essentially disabling a test temporarily. The date is given as an ISO 8601 string.
  *
  * <p>It may optionally be declared with a reason to document why the annotated test class or test
- * method is disabled.
+ * method is disabled.</p>
  *
  * <p>{@code @DisabledUntil} can be used on the method and class level. It can only be used once per method or class,
  * but is inherited from higher-level containers.</p>

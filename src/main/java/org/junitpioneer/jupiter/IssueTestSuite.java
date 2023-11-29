@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,14 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Represents the execution result of test method, which is annotated with {@link org.junitpioneer.jupiter.Issue}.
  *
- * Once Pioneer baselines against Java 17, this will be a record.
+ * <p>Once Pioneer baselines against Java 17, this will be a record.</p>
  *
  * @since 1.1
  * @see Issue
@@ -36,7 +35,7 @@ public final class IssueTestSuite {
 	 */
 	public IssueTestSuite(String issueId, List<IssueTestCase> tests) {
 		this.issueId = issueId;
-		this.tests = Collections.unmodifiableList(tests);
+		this.tests = List.copyOf(tests);
 	}
 
 	/**

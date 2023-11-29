@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -22,9 +22,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@code @Issue} is a JUnit Jupiter extension to mark tests that
  * exist to cover an issue, like a requirement or a bugfix.
  *
- * The annotated issue ID will be published as a report entry - where
+ * <p>The annotated issue ID will be published as a report entry - where
  * this information will be visible, depends on the tool used to
- * execute the tests.
+ * execute the tests.</p>
  *
  * <p>{@code @Issue} can be used on the method and class level.
  * Warning: If you place it on class level, make sure to not mix tests which belong to the issue and those which don't!</p>

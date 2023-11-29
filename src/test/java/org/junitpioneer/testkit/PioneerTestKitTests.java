@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -76,7 +76,7 @@ class PioneerTestKitTests {
 		void executeTestMethodWithParameterTypes_parameterArrayIsNull_NullPointerException() {
 			assertThatThrownBy(() -> PioneerTestKit
 					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", (Class<?>) null))
-							.isInstanceOf(NullPointerException.class);
+					.isInstanceOf(NullPointerException.class);
 		}
 
 		@Test
@@ -84,8 +84,8 @@ class PioneerTestKitTests {
 		void executeTestMethodWithParameterTypes_singleParameterIsNull_IllegalArgumentException() {
 			assertThatThrownBy(() -> PioneerTestKit
 					.executeTestMethodWithParameterTypes(DummyPropertyClass.class, "single", (Class<?>[]) null))
-							.isInstanceOf(IllegalArgumentException.class)
-							.hasMessage("methodParameterTypes must not be null");
+					.isInstanceOf(IllegalArgumentException.class)
+					.hasMessage("methodParameterTypes must not be null");
 		}
 
 	}

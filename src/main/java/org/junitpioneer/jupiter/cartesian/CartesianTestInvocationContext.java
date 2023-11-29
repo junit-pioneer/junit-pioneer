@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,7 +10,6 @@
 
 package org.junitpioneer.jupiter.cartesian;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.extension.Extension;
@@ -34,7 +33,7 @@ class CartesianTestInvocationContext implements TestTemplateInvocationContext {
 
 	@Override
 	public List<Extension> getAdditionalExtensions() {
-		return Collections.singletonList(new CartesianProductResolver(parameters));
+		return List.of(new CartesianProductResolver(parameters));
 	}
 
 }

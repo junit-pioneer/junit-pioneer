@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -33,8 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
  *
  * <p>If neither {@link DisableIfDisplayName#contains() contains} nor
  * {@link DisableIfDisplayName#matches() matches} is configured, or if both are present,
- * the extension will throw an exception.
- * </p>
+ * the extension will throw an exception.</p>
  *
  * @since 0.7
  * @see DisableIfNameExtension

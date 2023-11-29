@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class StdInOutExtensionDemo {
@@ -86,6 +87,7 @@ public class StdInOutExtensionDemo {
 	}
 	// end::stdio_edge_cases_ExampleConsoleReader[]
 
+	@Nested
 	// tag::stdio_edge_cases_ConsoleReaderTest[]
 	class ConsoleReaderTest {
 

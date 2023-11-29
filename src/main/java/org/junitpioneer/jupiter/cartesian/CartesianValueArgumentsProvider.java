@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.cartesian;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Parameter;
@@ -51,7 +51,7 @@ class CartesianValueArgumentsProvider
 						source.classes()
 				)
 				.filter(array -> Array.getLength(array) > 0)
-				.collect(toList());
+				.collect(toUnmodifiableList());
 		// @formatter:on
 
 		if (arrays.size() != 1)

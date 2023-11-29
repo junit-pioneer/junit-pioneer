@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -10,13 +10,13 @@
 
 package org.junitpioneer.jupiter.params;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -62,7 +62,7 @@ class RangeSourceArgumentsProviderTests {
 				.dynamicallyRegisteredEvents()
 				.map(e -> e.getTestDescriptor().getDisplayName())
 				.map(RangeSourceArgumentsProviderTests::displayNameToNumber)
-				.collect(Collectors.toList());
+				.collect(toList());
 
 		assertThat(actualValues).containsExactlyInAnyOrder(expectedValues);
 	}

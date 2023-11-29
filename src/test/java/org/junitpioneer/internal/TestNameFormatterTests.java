@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -88,10 +88,10 @@ public class TestNameFormatterTests {
 
 		assertThatThrownBy(
 			() -> formatter.format(0, Arrays.asList(Boolean.class, new int[] { 1, 2, 3 }, "enigma").toArray()))
-					.isInstanceOf(ExtensionConfigurationException.class)
-					.hasCauseExactlyInstanceOf(IllegalArgumentException.class)
-					.hasMessageContaining("The display name pattern defined for the "
-							+ TestNameFormatter.class.getName() + " is invalid.");
+				.isInstanceOf(ExtensionConfigurationException.class)
+				.hasCauseExactlyInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining(
+					"The display name pattern defined for the " + TestNameFormatter.class.getName() + " is invalid.");
 	}
 
 }

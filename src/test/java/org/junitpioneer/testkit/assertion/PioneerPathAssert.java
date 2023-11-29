@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,11 +11,11 @@
 package org.junitpioneer.testkit.assertion;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 import org.assertj.core.api.PathAssert;
@@ -39,7 +39,7 @@ public class PioneerPathAssert extends PathAssert {
 
 		String expectedText = "some-text";
 		try {
-			Files.write(textFile, singletonList(expectedText));
+			Files.write(textFile, List.of(expectedText));
 		}
 		catch (IOException e) {
 			throw failure("Cannot write to a file");

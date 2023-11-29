@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -11,10 +11,11 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.platform.commons.PreconditionViolationException;
 
 /**
  * This class modifies the internals of the environment variables map with reflection.
@@ -61,7 +62,7 @@ class EnvironmentVariableUtils {
 		}
 		catch (ReflectiveOperationException ex) {
 			ex.addSuppressed(processEnvironmentClassEx);
-			throw new ExtensionConfigurationException("Could not modify environment variables", ex);
+			throw new PreconditionViolationException("Could not modify environment variables", ex);
 		}
 	}
 
@@ -98,15 +99,12 @@ class EnvironmentVariableUtils {
 		try {
 			field.setAccessible(true); //NOSONAR illegal access required to implement the extension
 		}
-		catch (RuntimeException ex) {
-			// Java 9 added InaccessibleObjectException, but we compile against Java 8.
-			if (ex.getClass().getName().equals("java.lang.reflect.InaccessibleObjectException"))
-				throw new ExtensionConfigurationException(
-					"Cannot access Java runtime internals to modify environment variables. "
-							+ "Have a look at the documentation for possible solutions: "
-							+ "https://junit-pioneer.org/docs/environment-variables/#warnings-for-reflective-access",
-					ex);
-			throw ex;
+		catch (InaccessibleObjectException ex) {
+			throw new PreconditionViolationException(
+				"Cannot access and modify JDK internals to modify environment variables. "
+						+ "Have a look at the documentation for possible solutions: "
+						+ "https://junit-pioneer.org/docs/environment-variables/#warnings-for-reflective-access",
+				ex);
 		}
 		return (Map<String, String>) field.get(object);
 	}
