@@ -103,7 +103,8 @@ public class ExpectedToFailExtensionTests {
 
 	@Test
 	void doesNotAbortOnTestThrowingExpectedException() {
-		ExecutionResults results = PioneerTestKit.executeTestMethod(ExpectedToFailTestCases.class, "expectedException");
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsExpected");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichAborted()
@@ -115,13 +116,35 @@ public class ExpectedToFailExtensionTests {
 	@Test
 	void failsOnTestThrowingUnexpectedException() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethod(ExpectedToFailTestCases.class, "unexpectedException");
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsUnexpected");
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichFailed()
 				.withExceptionInstanceOf(AssertionFailedError.class)
 				.hasMessage("Test marked as 'expected to fail' failed with an unexpected exception")
 				.hasCauseInstanceOf(AssertionFailedError.class);
+	}
+
+	@Test
+	void failsOnWorkingTestWithExpectedException() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsWorking");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(AssertionFailedError.class)
+				.hasMessage("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
+	}
+
+	@Test
+	void failsOnWorkingTestWithEmptyExpectedExceptions() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsEmpty");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(AssertionFailedError.class)
+				.hasMessage("@ExpectedToFail withExceptions must not be empty");
 	}
 
 	@Test
@@ -244,14 +267,24 @@ public class ExpectedToFailExtensionTests {
 
 		@Test
 		@ExpectedToFail(withExceptions = { IllegalStateException.class, UnsupportedOperationException.class })
-		void expectedException() {
+		void withExceptionsExpected() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Test
 		@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
-		void unexpectedException() {
+		void withExceptionsUnexpected() {
 			fail();
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
+		void withExceptionsWorking() {
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = {})
+		void withExceptionsEmpty() {
 		}
 
 	}

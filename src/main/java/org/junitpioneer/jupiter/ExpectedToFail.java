@@ -77,6 +77,8 @@ public @interface ExpectedToFail {
 
 	/**
 	 * Specifies which exceptions are expected to be thrown and will cause the test to be aborted rather than fail.
+	 * An empty array is considered a configuration error and will cause the test to fail. Instead, consider leaving
+	 * the attribute set to the default value when any exception should cause the test to be aborted.
 	 */
 	Class<? extends Throwable>[] withExceptions() default { Throwable.class };
 

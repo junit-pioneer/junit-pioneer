@@ -32,6 +32,11 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 
 	private static void invokeAndInvertResult(Invocation<Void> invocation, ExtensionContext extensionContext)
 			throws Throwable {
+		ExpectedToFail expectedToFail = getExpectedToFailAnnotation(extensionContext);
+		if (expectedToFail.withExceptions().length == 0) {
+			fail("@ExpectedToFail withExceptions must not be empty");
+		}
+
 		try {
 			invocation.proceed();
 			// at this point, the invocation succeeded, so we'd want to call `fail(...)`,
@@ -43,7 +48,6 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 				throw t;
 			}
 
-			ExpectedToFail expectedToFail = getExpectedToFailAnnotation(extensionContext);
 			if (Stream.of(expectedToFail.withExceptions()).noneMatch(clazz -> clazz.isInstance(t))) {
 				fail("Test marked as 'expected to fail' failed with an unexpected exception", t);
 			}
