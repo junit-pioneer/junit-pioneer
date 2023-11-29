@@ -49,7 +49,7 @@ include::{demo}[tag=expected_to_fail_message]
 A test that is `@ExpectedToFail` will change its behavior by starting to actually fail, once the code under test behaves correctly.
 If the underlying failure changes, though, for example from an assertion error to an exception or from an `UnsupportedOperationException` of a formerly missing implementation to a runtime exception of buggy implementation, the `@ExpectedToFail`-test will keep passing.
 
-To better react to such changes, `@ExpectedToFail` has an attribute `onExceptions` that can be used to enumerate the exceptions which when thrown will result in an aborted (and thus passing) test.
+To better react to such changes, `@ExpectedToFail` has an attribute `withExceptions` that can be used to enumerate the exceptions which when thrown will result in an aborted (and thus passing) test.
 Any other exception thrown by the code under test will result in a failing test.
 
 In the following example a test case for `productionFeature()` has been implemented.
