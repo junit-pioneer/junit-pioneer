@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,8 +20,6 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
-
-import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
@@ -32,14 +32,6 @@ public @interface Flaky {
 
 	int value() default 0;
 
-	int maxAttempts() default 0;
-
-	int minSuccess() default 1;
-
-	int suspendForMs() default 0;
-
 	String name() default "[{index}]";
-
-	Class<? extends Throwable>[] onExceptions() default {};
 
 }

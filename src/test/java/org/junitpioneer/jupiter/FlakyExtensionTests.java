@@ -17,7 +17,6 @@ public class FlakyExtensionTests {
 	@Test
 	@Flaky(value = 3)
 	void test() {
-		//throw new IllegalStateException("Oops, all failure!");
 	}
 
 }
