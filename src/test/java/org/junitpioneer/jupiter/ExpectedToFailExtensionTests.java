@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 import org.opentest4j.AssertionFailedError;
@@ -143,7 +144,7 @@ public class ExpectedToFailExtensionTests {
 		assertThat(results)
 				.hasSingleStartedTest()
 				.whichFailed()
-				.withExceptionInstanceOf(AssertionFailedError.class)
+				.withExceptionInstanceOf(ExtensionConfigurationException.class)
 				.hasMessage("@ExpectedToFail withExceptions must not be empty");
 	}
 
