@@ -95,4 +95,19 @@ public class PioneerPreconditions {
 		return collection;
 	}
 
+	/**
+	 * Assert that the supplied {@code predicate} is {@code true}.
+	 *
+	 * @param predicate the predicate to check
+	 * @param messageSupplier precondition violation message supplier
+	 * @throws PreconditionViolationException if the predicate is {@code false}
+	 */
+	public static void condition(boolean predicate, Supplier<String> messageSupplier)
+			throws PreconditionViolationException {
+
+		if (!predicate) {
+			throw new PreconditionViolationException(messageSupplier.get());
+		}
+	}
+
 }
