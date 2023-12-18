@@ -75,13 +75,11 @@ class MethodParameterProvider implements CartesianParameterArgumentsProvider<Obj
 		Method testMethod = context.getRequiredTestMethod();
 		Object testInstance = context.getTestInstance().orElse(null);
 		String[] methodNames = methodSource.value();
-		// @formatter:off
-        return stream(methodNames)
-            .map(factoryMethodName -> findFactoryMethod(testClass, testMethod, factoryMethodName))
-            .map(factoryMethod -> validateFactoryMethod(factoryMethod, testInstance))
-            .map(factoryMethod -> context.getExecutableInvoker().invoke(factoryMethod, testInstance))
-            .flatMap(MethodParameterProvider::toStream);
-        // @formatter:on
+		return stream(methodNames)
+				.map(factoryMethodName -> findFactoryMethod(testClass, testMethod, factoryMethodName))
+				.map(factoryMethod -> validateFactoryMethod(factoryMethod, testInstance))
+				.map(factoryMethod -> context.getExecutableInvoker().invoke(factoryMethod, testInstance))
+				.flatMap(MethodParameterProvider::toStream);
 	}
 
 	/**
