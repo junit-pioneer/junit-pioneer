@@ -147,8 +147,8 @@ class MethodParameterProvider implements CartesianParameterArgumentsProvider<Obj
 		String className = methodParts[0];
 		String methodName = methodParts[1];
 		String methodParameters = methodParts[2];
-		// ClassLoader classLoader = ClassLoaderUtils.getClassLoader(testClass);
-		Class<?> clazz = loadRequiredClass(className); // , classLoader);
+		ClassLoader classLoader = getClassLoader(testClass);
+		Class<?> clazz = loadRequiredClass(className, classLoader);
 
 		// Attempt to find an exact match first.
 		Method factoryMethod = ReflectionSupport.findMethod(clazz, methodName, methodParameters).orElse(null);
@@ -213,11 +213,10 @@ class MethodParameterProvider implements CartesianParameterArgumentsProvider<Obj
 				|| isAnnotated(candidate, TestFactory.class);
 	}
 
-	private static Class<?> loadRequiredClass(String className) { //, ClassLoader classLoader) {
+	private static Class<?> loadRequiredClass(String className, ClassLoader classLoader) {
 		return ReflectionSupport
-				.tryToLoadClass(className)
-				.getOrThrow( //, classLoader).getOrThrow(
-					cause -> new JUnitException(format("Could not load class [%s]", className), cause));
+				.tryToLoadClass(className, classLoader)
+				.getOrThrow(cause -> new JUnitException(format("Could not load class [%s]", className), cause));
 	}
 
 	private static Method validateFactoryMethod(Method factoryMethod, Object testInstance) {
@@ -364,6 +363,39 @@ class MethodParameterProvider implements CartesianParameterArgumentsProvider<Obj
 			}
 		}
 		return new String[] { className, methodName, methodParameters };
+	}
+
+	/**
+	 * Get the {@link ClassLoader} for the supplied {@link Class}, falling back
+	 * to the {@link #getDefaultClassLoader() default class loader} if the class
+	 * loader for the supplied class is {@code null}.
+	 * @param clazz the class for which to retrieve the class loader; never {@code null}
+	 */
+	public static ClassLoader getClassLoader(Class<?> clazz) {
+		PioneerPreconditions.notNull(clazz, "Class must not be null");
+		ClassLoader classLoader = clazz.getClassLoader();
+		return (classLoader != null) ? classLoader : getDefaultClassLoader();
+	}
+
+	public static ClassLoader getDefaultClassLoader() {
+		try {
+			ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+			if (contextClassLoader != null) {
+				return contextClassLoader;
+			}
+		}
+		catch (Throwable t) {
+			if (t instanceof OutOfMemoryError) {
+				throwAs(t);
+			}
+			/* otherwise ignore */
+		}
+		return ClassLoader.getSystemClassLoader();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Throwable> void throwAs(Throwable t) throws T {
+		throw (T) t;
 	}
 
 }
