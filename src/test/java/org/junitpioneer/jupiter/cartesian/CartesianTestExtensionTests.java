@@ -431,8 +431,8 @@ public class CartesianTestExtensionTests {
 		@DisplayName("single use of @MethodParameterSource with single method, as only parameter")
 		void testMethodParameterSourceSimplestCase() {
 			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
-							"simplestCase", String.class);
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class, "simplestCase",
+						String.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
 		}
@@ -442,7 +442,7 @@ public class CartesianTestExtensionTests {
 		void testMethodParameterSourceMultipleMethods() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
-							"multipleMethods", String.class);
+						"multipleMethods", String.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
 		}
@@ -452,7 +452,7 @@ public class CartesianTestExtensionTests {
 		void testMethodParameterSourceMultipleParameters() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
-							"multipleParameters", String.class, String.class);
+						"multipleParameters", String.class, String.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(9).hasNumberOfSucceededTests(9);
 		}
@@ -1079,18 +1079,15 @@ public class CartesianTestExtensionTests {
 	static class CartesianMethodParameterSourceTestCases {
 
 		@CartesianTest
-		void simplestCase(
-				@CartesianTest.MethodParameterSource("abc") String value) {
+		void simplestCase(@CartesianTest.MethodParameterSource("abc") String value) {
 		}
 
 		@CartesianTest
-		void multipleMethods(
-				@CartesianTest.MethodParameterSource({"abc", "oneTwoThree"}) String value) {
+		void multipleMethods(@CartesianTest.MethodParameterSource({ "abc", "oneTwoThree" }) String value) {
 		}
 
 		@CartesianTest
-		void multipleParameters(
-				@CartesianTest.MethodParameterSource("abc") String value1,
+		void multipleParameters(@CartesianTest.MethodParameterSource("abc") String value1,
 				@CartesianTest.MethodParameterSource("oneTwoThree") String value2) {
 		}
 
