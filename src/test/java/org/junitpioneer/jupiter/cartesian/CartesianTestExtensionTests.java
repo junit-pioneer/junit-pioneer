@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.platform.commons.JUnitException;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode;
@@ -864,6 +865,40 @@ public class CartesianTestExtensionTests {
 									.matches("^.* does not implement CartesianMethodArgumentsProvider interface\\.$")));
 		}
 
+		@Test
+		@DisplayName("@MethodParameterSource with invalid simple method name")
+		void testMethodParameterSourceSimpleCase() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"noSuchMethodSimple", String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message
+									.equals(
+										"Could not find factory method [doesNotExist] in class [org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases]")));
+		}
+
+		@Test
+		@DisplayName("@MethodParameterSource with invalid fully qualified method name")
+		void testMethodParameterSourceSimpleCaseFullyQualified() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"noSuchMethodFullyQualified", String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(JUnitException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message.equals("Could not load class [a.b.C]")));
+		}
+
 	}
 
 	static class BasicConfigurationTestCases {
@@ -1104,6 +1139,14 @@ public class CartesianTestExtensionTests {
 		@CartesianTest
 		void multipleParameters(@CartesianTest.MethodParameterSource("abc") String value1,
 				@CartesianTest.MethodParameterSource("oneTwoThree") String value2) {
+		}
+
+		@CartesianTest
+		void noSuchMethodSimple(@CartesianTest.MethodParameterSource("doesNotExist") String value) {
+		}
+
+		@CartesianTest
+		void noSuchMethodFullyQualified(@CartesianTest.MethodParameterSource("a.b.C#doesNotExist") String value) {
 		}
 
 		static List<String> abc() {
