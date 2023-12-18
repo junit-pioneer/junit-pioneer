@@ -326,13 +326,19 @@ public @interface CartesianTest {
 	/**
 	 * Analogue to {@link org.junit.jupiter.params.provider.MethodSource},
 	 * but for {@link CartesianTest}. Provides values for a single parameter
-	 * from a factory method.
+	 * from factory methods.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 	@CartesianArgumentsSource(MethodParameterProvider.class)
 	@interface MethodParameterSource {
 
+		/**
+		 * Methods that back this source. See {@link org.junit.jupiter.params.provider.MethodSource#value}
+		 * for the full specification of allowed values.
+		 *
+		 * @return method strings
+		 */
 		String[] value() default {};
 
 	}

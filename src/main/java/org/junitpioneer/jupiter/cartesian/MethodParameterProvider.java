@@ -43,6 +43,9 @@ import org.junit.platform.commons.support.HierarchyTraversalMode;
 import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerPreconditions;
 
+/**
+ * {@link CartesianParameterArgumentsProvider} implementation for {@link CartesianTest.MethodParameterSource}.
+ */
 class MethodParameterProvider implements CartesianParameterArgumentsProvider<Object>,
 		AnnotationConsumer<CartesianTest.MethodParameterSource> {
 
