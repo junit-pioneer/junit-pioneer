@@ -19,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -424,6 +425,36 @@ public class CartesianTestExtensionTests {
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(4).hasNumberOfSucceededTests(4);
 			assertThat(results).hasNumberOfReportEntries(4).withValues("13", "14", "23", "24");
+		}
+
+		@Test
+		@DisplayName("single use of @MethodParameterSource with single method, as only parameter")
+		void testMethodParameterSourceSimplestCase() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+							"simplestCase", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+		}
+
+		@Test
+		@DisplayName("single use of @MethodParameterSource with multiple methods, as only parameter")
+		void testMethodParameterSourceMultipleMethods() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+							"multipleMethods", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
+		}
+
+		@Test
+		@DisplayName("multiple uses of @MethodParameterSource with single method, as only parameters")
+		void testMethodParameterSourceMultipleParameters() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+							"multipleParameters", String.class, String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(9).hasNumberOfSucceededTests(9);
 		}
 
 		@Nested
@@ -1041,6 +1072,34 @@ public class CartesianTestExtensionTests {
 		@CartesianTest
 		void wrongAllPatternWithOmittedType(
 				@CartesianTest.Enum(names = { "T.*", "[" }, mode = Mode.MATCH_ALL) TestEnum e1) {
+		}
+
+	}
+
+	static class CartesianMethodParameterSourceTestCases {
+
+		@CartesianTest
+		void simplestCase(
+				@CartesianTest.MethodParameterSource("abc") String value) {
+		}
+
+		@CartesianTest
+		void multipleMethods(
+				@CartesianTest.MethodParameterSource({"abc", "oneTwoThree"}) String value) {
+		}
+
+		@CartesianTest
+		void multipleParameters(
+				@CartesianTest.MethodParameterSource("abc") String value1,
+				@CartesianTest.MethodParameterSource("oneTwoThree") String value2) {
+		}
+
+		static List<String> abc() {
+			return Arrays.asList("a", "b", "c");
+		}
+
+		static List<String> oneTwoThree() {
+			return Arrays.asList("one", "two", "three");
 		}
 
 	}
