@@ -867,7 +867,7 @@ public class CartesianTestExtensionTests {
 
 		@Test
 		@DisplayName("@MethodParameterSource with invalid simple method name")
-		void testMethodParameterSourceSimpleCase() {
+		void testMethodParameterSourceNoSuchMethodSimple() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
 						"noSuchMethodSimple", String.class);
@@ -885,7 +885,7 @@ public class CartesianTestExtensionTests {
 
 		@Test
 		@DisplayName("@MethodParameterSource with invalid fully qualified method name")
-		void testMethodParameterSourceSimpleCaseFullyQualified() {
+		void testMethodParameterSourceNoSuchMethodFullyQualified() {
 			ExecutionResults results = PioneerTestKit
 					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
 						"noSuchMethodFullyQualified", String.class);
