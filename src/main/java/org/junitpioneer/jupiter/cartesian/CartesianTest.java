@@ -334,8 +334,13 @@ public @interface CartesianTest {
 	@interface MethodParameterSource {
 
 		/**
-		 * Methods that back this source. See {@link org.junit.jupiter.params.provider.MethodSource#value}
-		 * for the full specification of allowed values.
+		 * Methods that back this source.
+		 *
+		 * <p>Methods may be referenced by their simple name if in the same class,
+		 * or by fully qualified name otherwise (i.e. {@code a.b.c.SomeClass#someMethod}).</p>
+		 *
+		 * <p>Methods should return a {@link java.util.stream.Stream}, {@link Iterable}, {@link java.util.Iterator},
+		 * or array of values.</p>
 		 *
 		 * @return method strings
 		 */
