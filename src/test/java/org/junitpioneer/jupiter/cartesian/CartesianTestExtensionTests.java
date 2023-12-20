@@ -894,6 +894,24 @@ public class CartesianTestExtensionTests {
 					.hasSingleFailedContainer()
 					.andThenCheckException(exception -> assertThat(exception)
 							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message
+									.equals(
+										"Could not find factory method [doesNotExist] in class [org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases]")));
+		}
+
+		@Test
+		@DisplayName("@MethodParameterSource with invalid fully qualified method name (no such class)")
+		void testMethodParameterSourceNoSuchClass() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class, "noSuchClass",
+						String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
 							.isExactlyInstanceOf(JUnitException.class)
 							.extracting(Throwable::getMessage)
 							.matches(message -> message.equals("Could not load class [a.b.C]")));
@@ -1146,7 +1164,12 @@ public class CartesianTestExtensionTests {
 		}
 
 		@CartesianTest
-		void noSuchMethodFullyQualified(@CartesianTest.MethodParameterSource("a.b.C#doesNotExist") String value) {
+		void noSuchMethodFullyQualified(
+				@CartesianTest.MethodParameterSource("org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases#doesNotExist") String value) {
+		}
+
+		@CartesianTest
+		void noSuchClass(@CartesianTest.MethodParameterSource("a.b.C#doesNotExist") String value) {
 		}
 
 		static List<String> abc() {
