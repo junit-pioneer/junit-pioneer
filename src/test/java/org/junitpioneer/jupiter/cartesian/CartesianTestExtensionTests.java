@@ -439,6 +439,16 @@ public class CartesianTestExtensionTests {
 		}
 
 		@Test
+		@DisplayName("single use of @MethodParameterSource with single method, as only parameter, with parenthesis")
+		void testMethodParameterSourceSimpleCaseWithParens() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"simpleCaseWithParens", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+		}
+
+		@Test
 		@DisplayName("single use of @MethodParameterSource with single method (fully qualified), as only parameter")
 		void testMethodParameterSourceSimpleCaseFullyQualified() {
 			ExecutionResults results = PioneerTestKit
@@ -1161,6 +1171,10 @@ public class CartesianTestExtensionTests {
 
 		@CartesianTest
 		void simpleCase(@CartesianTest.MethodParameterSource("abc") String value) {
+		}
+
+		@CartesianTest
+		void simpleCaseWithParens(@CartesianTest.MethodParameterSource("abc()") String value) {
 		}
 
 		@CartesianTest
