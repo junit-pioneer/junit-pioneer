@@ -917,6 +917,24 @@ public class CartesianTestExtensionTests {
 							.matches(message -> message.equals("Could not load class [a.b.C]")));
 		}
 
+		@Test
+		@DisplayName("@MethodParameterSource with invalid method (@Test method)")
+		void testMethodParameterSourceInvalidFactoryTest() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"factoryIsTestMethod", String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message
+									.equals(
+										"Could not find valid factory method [invalidFactoryTest] for test class [org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases] but found the following invalid candidate: java.util.List org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases.invalidFactoryTest()")));
+		}
+
 	}
 
 	static class BasicConfigurationTestCases {
@@ -1170,6 +1188,15 @@ public class CartesianTestExtensionTests {
 
 		@CartesianTest
 		void noSuchClass(@CartesianTest.MethodParameterSource("a.b.C#doesNotExist") String value) {
+		}
+
+		@CartesianTest
+		void factoryIsTestMethod(@CartesianTest.MethodParameterSource("invalidFactoryTest") String value) {
+		}
+
+		@Test
+		List<String> invalidFactoryTest() {
+			return abc();
 		}
 
 		static List<String> abc() {
