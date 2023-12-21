@@ -212,7 +212,8 @@ Let's look at an example.
 include::{demo}[tag=cartesian_parameter_source_basic]
 ----
 
-In this example, the test method would be invoked 12 times. To demonstrate with a table:
+In this example, the test method would be invoked 12 times.
+To demonstrate with a table:
 
 |===
 | # of test | value of `name` | value of `points`
