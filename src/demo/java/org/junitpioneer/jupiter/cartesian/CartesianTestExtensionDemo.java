@@ -23,9 +23,11 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +37,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodParameterSource;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.junitpioneer.jupiter.params.LongRangeSource;
 import org.junitpioneer.jupiter.params.ShortRangeSource;
@@ -177,6 +180,21 @@ public class CartesianTestExtensionDemo {
 				.argumentsForNextParameter(1, 12, 144);
 	}
 	// end::cartesian_argument_sets_reuse[]
+
+	// tag::cartesian_parameter_source_basic[]
+	@CartesianTest
+	void testScores(@MethodParameterSource("names") String name, @MethodParameterSource("points") int points) {
+		// test code
+	}
+
+	static List<String> names() {
+		return List.of("John", "Annie", "Bob", "Sofia");
+	}
+
+	static IntStream points() {
+		return IntStream.of(12, 18, 22);
+	}
+	// end::cartesian_parameter_source_basic[]
 
 	static class MisconfiguredExamples {
 
