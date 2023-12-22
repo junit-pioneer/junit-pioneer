@@ -344,7 +344,7 @@ public @interface CartesianTest {
 		 *
 		 * @return method strings
 		 */
-		String[] value() default {};
+		String[] value();
 
 	}
 
