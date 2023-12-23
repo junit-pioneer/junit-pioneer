@@ -36,6 +36,7 @@ import org.junit.platform.commons.JUnitException;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode;
+import org.junitpioneer.jupiter.cartesian.CartesianTest.MethodParameterSource;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Values;
 import org.junitpioneer.jupiter.params.ByteRangeSource;
 import org.junitpioneer.jupiter.params.DoubleRangeSource;
@@ -1188,46 +1189,46 @@ public class CartesianTestExtensionTests {
 	static class CartesianMethodParameterSourceTestCases {
 
 		@CartesianTest
-		void simpleCase(@CartesianTest.MethodParameterSource("abc") String value) {
+		void simpleCase(@MethodParameterSource("abc") String value) {
 		}
 
 		@CartesianTest
-		void simpleCaseWithParens(@CartesianTest.MethodParameterSource("abc()") String value) {
+		void simpleCaseWithParens(@MethodParameterSource("abc()") String value) {
 		}
 
 		@CartesianTest
 		void simpleCaseFullyQualified(
-				@CartesianTest.MethodParameterSource("org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases#abc") String value) {
+				@MethodParameterSource("org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases#abc") String value) {
 		}
 
 		@CartesianTest
-		void multipleMethods(@CartesianTest.MethodParameterSource({ "abc", "oneTwoThree" }) String value) {
+		void multipleMethods(@MethodParameterSource({ "abc", "oneTwoThree" }) String value) {
 		}
 
 		@CartesianTest
-		void multipleParameters(@CartesianTest.MethodParameterSource("abc") String value1,
-				@CartesianTest.MethodParameterSource("oneTwoThree") String value2) {
+		void multipleParameters(@MethodParameterSource("abc") String value1,
+				@MethodParameterSource("oneTwoThree") String value2) {
 		}
 
 		@CartesianTest
-		void noSuchMethodSimple(@CartesianTest.MethodParameterSource("doesNotExist") String value) {
+		void noSuchMethodSimple(@MethodParameterSource("doesNotExist") String value) {
 		}
 
 		@CartesianTest
 		void noSuchMethodFullyQualified(
-				@CartesianTest.MethodParameterSource("org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases#doesNotExist") String value) {
+				@MethodParameterSource("org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases#doesNotExist") String value) {
 		}
 
 		@CartesianTest
-		void noSuchClass(@CartesianTest.MethodParameterSource("a.b.C#doesNotExist") String value) {
+		void noSuchClass(@MethodParameterSource("a.b.C#doesNotExist") String value) {
 		}
 
 		@CartesianTest
-		void factoryIsTestMethod(@CartesianTest.MethodParameterSource("invalidFactoryTest") String value) {
+		void factoryIsTestMethod(@MethodParameterSource("invalidFactoryTest") String value) {
 		}
 
 		@CartesianTest
-		void invalidFactoryReturnType(@CartesianTest.MethodParameterSource("invalidFactoryReturnType") String value) {
+		void invalidFactoryReturnType(@MethodParameterSource("invalidFactoryReturnType") String value) {
 		}
 
 		@Test
