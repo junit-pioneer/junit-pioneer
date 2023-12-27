@@ -310,7 +310,7 @@ tasks {
 	javadoc {
 		if (releaseBuild) {
 			javadocTool.set(project.javaToolchains.javadocToolFor {
-				// create Javadoc with least Java version to get all features
+				// create Javadoc with the last Java version to get all features
 				// (e.g. search result page on 20)
 				languageVersion.set(JavaLanguageVersion.of(21))
 			})
@@ -342,7 +342,7 @@ tasks {
 		enabled = !experimentalBuild
 		reports {
 			xml.required.set(true)
-			xml.outputLocation.set(file("${layout.buildDirectory}/reports/jacoco/report.xml"))
+			xml.outputLocation.set(layout.buildDirectory.file("/reports/jacoco/report.xml"))
 		}
 	}
 

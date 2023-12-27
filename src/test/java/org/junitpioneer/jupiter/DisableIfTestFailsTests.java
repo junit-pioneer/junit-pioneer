@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junitpioneer.testkit.PioneerTestKit.abort;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
@@ -153,7 +153,7 @@ class DisableIfTestFailsTests {
 		@Test
 		@Order(2)
 		void test2() {
-			fail();
+			fail("");
 		}
 
 		@Test
@@ -176,7 +176,7 @@ class DisableIfTestFailsTests {
 		@Order(2)
 		void test2() {
 			// fail test with assertion
-			fail();
+			fail("");
 		}
 
 		@Test

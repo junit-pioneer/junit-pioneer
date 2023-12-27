@@ -10,8 +10,8 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ public class DisableIfTestFailsExtensionDemo {
 		@Test
 		@Order(2)
 		void test2() {
-			fail();
+			fail("fails");
 		}
 
 		@Test
@@ -64,7 +64,7 @@ public class DisableIfTestFailsExtensionDemo {
 		@Order(2)
 		void test2() {
 			// fails test with assertion
-			assertTrue(false);
+			assertThat(false).isTrue();
 		}
 
 		@Test

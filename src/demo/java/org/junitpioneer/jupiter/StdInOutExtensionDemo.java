@@ -101,10 +101,10 @@ public class StdInOutExtensionDemo {
 			String[] lines = in.capturedLines();
 
 			// This is failing
-			// assertEquals(lines, "line1", "line2");
+			// assertThat(lines).containsExactly("line1", "line2");
 
 			// This is passing
-			// assertEquals(lines, "line1", "line2", "line3");
+			// assertThat(lines).containsExactly("line1", "line2", "line3");
 		}
 
 	}

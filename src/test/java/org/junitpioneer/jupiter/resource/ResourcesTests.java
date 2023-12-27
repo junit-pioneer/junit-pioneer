@@ -10,14 +10,10 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.platform.testkit.engine.EventConditions.finished;
-import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
-import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;
-import static org.junit.platform.testkit.engine.TestExecutionResultConditions.message;
-import static org.junit.platform.testkit.engine.TestExecutionResultConditions.throwable;
+import static org.assertj.core.api.Assertions.fail;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestClasses;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.io.IOException;
@@ -30,8 +26,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junitpioneer.testkit.ExecutionResults;
-import org.junitpioneer.testkit.PioneerTestKit;
 
 @DisplayName("Resources extension")
 class ResourcesTests {
@@ -43,9 +37,9 @@ class ResourcesTests {
 		@DisplayName("then ::create is called")
 		@Test
 		void thenCreateIsCalled() {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(CountingResourceFactory1TestCases.class);
-			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(1);
+			var results = executeTestClass(CountingResourceFactory1TestCases.class);
+
+			assertThat(results).hasSingleSucceededTest();
 			assertThat(CountingResourceFactory1.createCalls).isEqualTo(1);
 		}
 
@@ -56,21 +50,16 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is wrapped and propagated")
 			@Test
 			void thenThrownExceptionIsWrappedAndPropagated() {
-				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRFCreateTestCases.class);
-				executionResults
-						.allEvents()
-						.debug()
-						.assertThatEvents()
-						.haveExactly( //
-							1, //
-							finished( //
-								throwable( //
-									instanceOf(ParameterResolutionException.class), //
-									message("Unable to create a resource from `"
-											+ ThrowOnRFCreateResourceFactory.class.getTypeName() + "`"), //
-									cause( //
-										instanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass()), //
-										message(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage())))));
+				var results = executeTestClass(ThrowOnNewRFCreateTestCases.class);
+
+				assertThat(results)
+						.hasSingleFailedTest()
+						.withExceptionInstanceOf(ParameterResolutionException.class)
+						.hasMessage("Unable to create a resource from `"
+								+ ThrowOnRFCreateResourceFactory.class.getTypeName() + "`")
+						.cause()
+						.isInstanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass())
+						.hasMessage(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage());
 			}
 
 		}
@@ -82,17 +71,12 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is propagated")
 			@Test
 			void thenThrownExceptionIsPropagated() {
-				ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRFCloseTestCases.class);
-				executionResults
-						.allEvents()
-						.debug()
-						.assertThatEvents()
-						.haveExactly( //
-							1, //
-							finished( //
-								throwable( //
-									instanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass()), //
-									message(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage()))));
+				var results = executeTestClass(ThrowOnNewRFCloseTestCases.class);
+
+				assertThat(results)
+						.hasSingleFailedTest()
+						.withExceptionInstanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass())
+						.hasMessage(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage());
 			}
 
 		}
@@ -104,18 +88,12 @@ class ResourcesTests {
 			@DisplayName("then a proper exception is thrown")
 			@Test
 			void thenProperExceptionIsThrown() {
-				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(NewRFCreateReturnsNullTestCases.class);
-				executionResults
-						.allEvents()
-						.debug()
-						.assertThatEvents()
-						.haveExactly( //
-							1, //
-							finished( //
-								throwable( //
-									instanceOf(ParameterResolutionException.class), //
-									message(message -> message.matches(".*`Resource` instance.*was null.*")))));
+				var results = executeTestClass(NewRFCreateReturnsNullTestCases.class);
+
+				assertThat(results)
+						.hasSingleFailedTest()
+						.withExceptionInstanceOf(ParameterResolutionException.class)
+						.hasMessageMatching(".*`Resource` instance.*was null.*");
 			}
 
 		}
@@ -131,21 +109,16 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is wrapped and propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					ExecutionResults executionResults = PioneerTestKit.executeTestClass(ThrowOnNewRGetTestCases.class);
-					executionResults
-							.allEvents()
-							.debug()
-							.assertThatEvents()
-							.haveExactly( //
-								1, //
-								finished( //
-									throwable( //
-										instanceOf(ParameterResolutionException.class), //
-										message("Unable to get the contents of the resource created by `"
-												+ ThrowOnRGetResourceFactory.class.getTypeName() + "`"), //
-										cause( //
-											instanceOf(EXPECTED_THROW_ON_R_GET_EXCEPTION.getClass()), //
-											message(EXPECTED_THROW_ON_R_GET_EXCEPTION.getMessage())))));
+					var results = executeTestClass(ThrowOnNewRGetTestCases.class);
+
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withExceptionInstanceOf(ParameterResolutionException.class)
+							.hasMessage("Unable to get the contents of the resource created by `"
+									+ ThrowOnRGetResourceFactory.class.getTypeName() + "`")
+							.cause()
+							.isInstanceOf(EXPECTED_THROW_ON_R_GET_EXCEPTION.getClass())
+							.hasMessage(EXPECTED_THROW_ON_R_GET_EXCEPTION.getMessage());
 				}
 
 			}
@@ -157,18 +130,12 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					ExecutionResults executionResults = PioneerTestKit
-							.executeTestClass(ThrowOnNewRCloseTestCases.class);
-					executionResults
-							.allEvents()
-							.debug()
-							.assertThatEvents()
-							.haveExactly( //
-								1, //
-								finished( //
-									throwable( //
-										instanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass()), //
-										message(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage()))));
+					var results = executeTestClass(ThrowOnNewRCloseTestCases.class);
+
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withExceptionInstanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass())
+							.hasMessage(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage());
 				}
 
 			}
@@ -180,18 +147,29 @@ class ResourcesTests {
 				@DisplayName("then a proper exception is thrown")
 				@Test
 				void thenProperExceptionIsThrown() {
-					ExecutionResults executionResults = PioneerTestKit
-							.executeTestClass(NewRGetReturnsNullTestCases.class);
-					executionResults
-							.allEvents()
-							.debug()
-							.assertThatEvents()
-							.haveExactly( //
-								1, //
-								finished( //
-									throwable( //
-										instanceOf(ParameterResolutionException.class),
-										message(message -> message.matches(".*resource.*was null.*")))));
+					var results = executeTestClass(NewRGetReturnsNullTestCases.class);
+
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withExceptionInstanceOf(ParameterResolutionException.class)
+							.hasMessageMatching(".*resource.*was null.*");
+				}
+
+			}
+
+			@DisplayName("and the resource returned can't be cast to the parameter type")
+			@Nested
+			class AndResourceReturnedIsNotOfCorrectTypeTests {
+
+				@DisplayName("then a proper exception is thrown")
+				@Test
+				void thenProperExceptionIsThrown() {
+					var results = executeTestClass(TestMethodWithMismatchedParamsTestCases.class);
+
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withExceptionInstanceOf(ParameterResolutionException.class)
+							.hasMessageMatching("Parameter.*is not of the correct target type.*");
 				}
 
 			}
@@ -394,11 +372,11 @@ class ResourcesTests {
 		@DisplayName("then an exception is thrown")
 		@Test
 		void thenExceptionIsThrown() throws Exception {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class);
+			var results = executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class);
 			Method failingTest = TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class
 					.getDeclaredMethod("test", String.class);
-			assertThat(executionResults)
+
+			assertThat(results)
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ParameterResolutionException.class)
 					.hasMessage("Parameter [%s] in method [%s] is annotated with both @New and @Shared",
@@ -436,39 +414,25 @@ class ResourcesTests {
 		@DisplayName("then it throws an exception")
 		@Test
 		void thenItThrowsAnException() {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(SingleTestMethodWithParamsWithSharedSameNameButDifferentTypesTestCases.class);
-			executionResults
-					.allEvents()
-					.debug()
-					.assertThatEvents()
-					.haveExactly( //
-						1, //
-						finished( //
-							throwable( //
-								instanceOf(ParameterResolutionException.class), //
-								message(String
-										.format(
-											"Two or more parameters are annotated with @Shared annotations with the "
-													+ "name \"%s\" but with different factory classes",
-											"some-name")))));
+			var results = executeTestClass(
+				SingleTestMethodWithParamsWithSharedSameNameButDifferentTypesTestCases.class);
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
+					.hasMessage(String
+							.format("Two or more parameters are annotated with @Shared annotations with the "
+									+ "name \"%s\" but with different factory classes",
+								"some-name"));
 
-			executionResults = PioneerTestKit
-					.executeTestClass(TwoTestMethodsWithParamsWithSharedSameNameButDifferentTypesTestCases.class);
-			executionResults
-					.allEvents()
-					.debug()
-					.assertThatEvents()
-					.haveExactly( //
-						1, //
-						finished( //
-							throwable( //
-								instanceOf(ParameterResolutionException.class), //
-								message(String
-										.format(
-											"Two or more parameters are annotated with @Shared annotations with the "
-													+ "name \"%s\" but with different factory classes",
-											"some-name")))));
+			results = executeTestClass(TwoTestMethodsWithParamsWithSharedSameNameButDifferentTypesTestCases.class);
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
+					.hasMessage(String
+							.format("Two or more parameters are annotated with @Shared annotations with the "
+									+ "name \"%s\" but with different factory classes",
+								"some-name"));
 		}
 
 	}
@@ -501,7 +465,7 @@ class ResourcesTests {
 
 		@Override
 		public Resource<String> create(List<String> arguments) {
-			return () -> null;
+			return () -> "other";
 		}
 
 	}
@@ -516,38 +480,27 @@ class ResourcesTests {
 		@DisplayName("then it throws an exception")
 		@Test
 		void thenItThrowsAnException() {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(TwoTestMethodsWithParamsWithSharedSameNameButDifferentScopesTestCases.class);
-			executionResults
-					.allEvents()
-					.debug()
-					.assertThatEvents()
-					.haveExactly( //
-						1, //
-						finished( //
-							throwable( //
-								instanceOf(ParameterResolutionException.class), //
-								message(String
-										.format("Two or more parameters are annotated with @Shared annotations with "
-												+ "the name \"%s\" but with different scopes",
-											"some-name-1")))));
+			var results = executeTestClass(TwoTestMethodsWithParamsWithSharedSameNameButDifferentScopesTestCases.class);
 
-			executionResults = PioneerTestKit
-					.executeTestClasses(asList(TestMethodWithParamsWithSharedSameNameButDifferentScopesTestCases1.class,
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
+					.hasMessage(String
+							.format("Two or more parameters are annotated with @Shared annotations with "
+									+ "the name \"%s\" but with different scopes",
+								"some-name-1"));
+
+			results = executeTestClasses(List
+					.of(TestMethodWithParamsWithSharedSameNameButDifferentScopesTestCases1.class,
 						TestMethodWithParamsWithSharedSameNameButDifferentScopesTestCases2.class));
-			executionResults
-					.allEvents()
-					.debug()
-					.assertThatEvents()
-					.haveExactly( //
-						1, //
-						finished( //
-							throwable( //
-								instanceOf(ParameterResolutionException.class), //
-								message(String
-										.format("Two or more parameters are annotated with @Shared annotations with "
-												+ "the name \"%s\" but with different scopes",
-											"some-name-2")))));
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
+					.hasMessage(String
+							.format("Two or more parameters are annotated with @Shared annotations with "
+									+ "the name \"%s\" but with different scopes",
+								"some-name-2"));
 		}
 
 	}
@@ -588,6 +541,15 @@ class ResourcesTests {
 
 	}
 
+	static class TestMethodWithMismatchedParamsTestCases {
+
+		@Test
+		void test(@New(DummyResourceFactory.class) Number number) {
+			fail("We should not get this far.");
+		}
+
+	}
+
 	// ---
 
 	@DisplayName("when a test method has two parameters annotated with "
@@ -598,19 +560,13 @@ class ResourcesTests {
 		@DisplayName("then it throws an exception")
 		@Test
 		void thenItThrowsAnException() {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(TestMethodWithTwoParamsWithSameSharedAnnotationTestCases.class);
-			executionResults
-					.allEvents()
-					.debug()
-					.assertThatEvents()
-					.haveExactly( //
-						1, //
-						finished( //
-							throwable( //
-								instanceOf(ParameterResolutionException.class), //
-								message("A test method has 2 parameters annotated with @Shared with the same "
-										+ "factory type and name; this is redundant, so it is not allowed"))));
+			var results = executeTestClass(TestMethodWithTwoParamsWithSameSharedAnnotationTestCases.class);
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ParameterResolutionException.class)
+					.hasMessage("A test method has 2 parameters annotated with @Shared with the same "
+							+ "factory type and name; this is redundant, so it is not allowed");
 		}
 
 	}
@@ -634,9 +590,8 @@ class ResourcesTests {
 		@DisplayName("then ::create is called")
 		@Test
 		void thenCreateIsCalled() {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(CountingResourceFactory2TestCases.class);
-			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(1);
+			var results = executeTestClass(CountingResourceFactory2TestCases.class);
+			assertThat(results).hasSingleSucceededTest();
 		}
 
 		@DisplayName("and the factory throws on ::create")
@@ -646,22 +601,16 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is wrapped and propagated")
 			@Test
 			void thenThrownExceptionIsWrappedAndPropagated() {
-				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(ThrowOnSharedRFCreateTestCases.class);
-				executionResults
-						.allEvents()
-						.debug()
-						.assertThatEvents()
-						.haveExactly( //
-							1, //
-							finished( //
-								throwable( //
-									instanceOf(ParameterResolutionException.class), //
-									message("Unable to create a resource from `"
-											+ ThrowOnRFCreateResourceFactory.class.getTypeName() + "`"), //
-									cause( //
-										instanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass()), //
-										message(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage())))));
+				var results = executeTestClass(ThrowOnSharedRFCreateTestCases.class);
+
+				assertThat(results)
+						.hasSingleFailedTest()
+						.withExceptionInstanceOf(ParameterResolutionException.class)
+						.hasMessage("Unable to create a resource from `"
+								+ ThrowOnRFCreateResourceFactory.class.getTypeName() + "`")
+						.cause()
+						.isInstanceOf(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getClass())
+						.hasMessage(EXPECTED_THROW_ON_RF_CREATE_EXCEPTION.getMessage());
 			}
 
 		}
@@ -673,18 +622,12 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is propagated")
 			@Test
 			void thenThrownExceptionIsPropagated() {
-				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(ThrowOnSharedRFCloseTestCases.class);
-				executionResults
-						.allEvents()
-						.debug()
-						.assertThatEvents()
-						.haveExactly( //
-							1, //
-							finished( //
-								throwable( //
-									instanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass()), //
-									message(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage()))));
+				var results = executeTestClass(ThrowOnSharedRFCloseTestCases.class);
+
+				assertThat(results)
+						.hasSingleFailedContainer()
+						.withExceptionInstanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass())
+						.hasMessage(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage());
 			}
 
 		}
@@ -696,18 +639,12 @@ class ResourcesTests {
 			@DisplayName("then a proper exception is thrown")
 			@Test
 			void thenProperExceptionIsThrown() {
-				ExecutionResults executionResults = PioneerTestKit
-						.executeTestClass(SharedRFCreateReturnsNullTestCases.class);
-				executionResults
-						.allEvents()
-						.debug()
-						.assertThatEvents()
-						.haveExactly( //
-							1, //
-							finished( //
-								throwable( //
-									instanceOf(ParameterResolutionException.class), //
-									message(message -> message.matches(".*`Resource` instance.*was null.*")))));
+				var results = executeTestClass(SharedRFCreateReturnsNullTestCases.class);
+
+				assertThat(results)
+						.hasSingleFailedTest()
+						.withExceptionInstanceOf(ParameterResolutionException.class)
+						.hasMessageMatching(".*`Resource` instance.*was null.*");
 			}
 
 		}
@@ -723,22 +660,16 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is wrapped and propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					ExecutionResults executionResults = PioneerTestKit
-							.executeTestClass(ThrowOnSharedRGetTestCases.class);
-					executionResults
-							.allEvents()
-							.debug()
-							.assertThatEvents()
-							.haveExactly( //
-								1, //
-								finished( //
-									throwable( //
-										instanceOf(ParameterResolutionException.class), //
-										message("Unable to get the contents of the resource created by `"
-												+ ThrowOnRGetResourceFactory.class + "`"), //
-										cause( //
-											instanceOf(EXPECTED_THROW_ON_R_GET_EXCEPTION.getClass()), //
-											message(EXPECTED_THROW_ON_R_GET_EXCEPTION.getMessage())))));
+					var results = executeTestClass(ThrowOnSharedRGetTestCases.class);
+
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withExceptionInstanceOf(ParameterResolutionException.class)
+							.hasMessage("Unable to get the contents of the resource created by `"
+									+ ThrowOnRGetResourceFactory.class + "`")
+							.cause()
+							.isInstanceOf(EXPECTED_THROW_ON_R_GET_EXCEPTION.getClass())
+							.hasMessage(EXPECTED_THROW_ON_R_GET_EXCEPTION.getMessage());
 				}
 
 			}
@@ -750,18 +681,12 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					ExecutionResults executionResults = PioneerTestKit
-							.executeTestClass(ThrowOnSharedRCloseTestCases.class);
-					executionResults
-							.allEvents()
-							.debug()
-							.assertThatEvents()
-							.haveExactly( //
-								1, //
-								finished( //
-									throwable( //
-										instanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass()), //
-										message(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage()))));
+					var results = executeTestClass(ThrowOnSharedRCloseTestCases.class);
+
+					assertThat(results)
+							.hasSingleFailedContainer()
+							.withExceptionInstanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass())
+							.hasMessage(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage());
 				}
 
 			}
@@ -773,18 +698,12 @@ class ResourcesTests {
 				@DisplayName("then a proper exception is thrown")
 				@Test
 				void thenProperExceptionIsThrown() {
-					ExecutionResults executionResults = PioneerTestKit
-							.executeTestClass(SharedRGetReturnsNullTestCases.class);
-					executionResults
-							.allEvents()
-							.debug()
-							.assertThatEvents()
-							.haveExactly( //
-								1, //
-								finished( //
-									throwable( //
-										instanceOf(ParameterResolutionException.class), //
-										message(message -> message.matches(".*resource.*was null.*")))));
+					var results = executeTestClass(SharedRGetReturnsNullTestCases.class);
+
+					assertThat(results)
+							.hasSingleFailedTest()
+							.withExceptionInstanceOf(ParameterResolutionException.class)
+							.hasMessageMatching(".*resource.*was null.*");
 				}
 
 			}
@@ -884,9 +803,9 @@ class ResourcesTests {
 		@DisplayName("then ::create is called only once")
 		@Test
 		void thenCreateIsCalledOnlyOnce() {
-			ExecutionResults executionResults = PioneerTestKit
-					.executeTestClass(CountingResourceFactory3TestCases.class);
-			assertThat(executionResults.testEvents().debug().succeeded().count()).isEqualTo(2);
+			var results = executeTestClass(CountingResourceFactory3TestCases.class);
+
+			assertThat(results).hasNumberOfSucceededTests(2);
 			assertThat(CountingResourceFactory3.createCalls).isEqualTo(1);
 		}
 

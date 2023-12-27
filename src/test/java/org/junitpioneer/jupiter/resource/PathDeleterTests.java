@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -40,8 +40,9 @@ class PathDeleterTests {
 	@Test
 	void deletingNonExistentFileProducesNoIOException() throws IOException {
 		try (FileSystem fileSystem = Jimfs.newFileSystem(Configuration.unix())) {
-			assertDoesNotThrow(
-				() -> PathDeleter.INSTANCE.visitFile(fileSystem.getPath("some", "arbitrary", "file.txt"), null));
+			assertThatCode(
+				() -> PathDeleter.INSTANCE.visitFile(fileSystem.getPath("some", "arbitrary", "file.txt"), null))
+					.doesNotThrowAnyException();
 		}
 	}
 
@@ -75,8 +76,9 @@ class PathDeleterTests {
 	@Test
 	void deletingNonExistentDirectoryProducesNoIOException() throws IOException {
 		try (FileSystem fileSystem = Jimfs.newFileSystem(Configuration.unix())) {
-			assertDoesNotThrow(() -> PathDeleter.INSTANCE
-					.postVisitDirectory(fileSystem.getPath("some", "arbitrary", "directory"), null));
+			assertThatCode(() -> PathDeleter.INSTANCE
+					.postVisitDirectory(fileSystem.getPath("some", "arbitrary", "directory"), null))
+					.doesNotThrowAnyException();
 		}
 	}
 

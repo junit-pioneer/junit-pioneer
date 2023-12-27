@@ -17,6 +17,7 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+// implementation example, does not contain tests
 public class BitArgumentProvider {
 
 	// tag::cartesian_bit_source_annotation[]
