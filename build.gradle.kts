@@ -342,7 +342,7 @@ tasks {
 		enabled = !experimentalBuild
 		reports {
 			xml.required.set(true)
-			xml.outputLocation.set(layout.buildDirectory.file("/reports/jacoco/report.xml"))
+			xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/report.xml"))
 		}
 	}
 
