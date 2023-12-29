@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -24,9 +24,9 @@ import java.lang.annotation.Target;
  *
  * <p>{@code @CartesianArgumentsSource} may also be used as a meta-annotation in order to
  * create a custom <em>composed annotation</em> that inherits the semantics
- * of {@code @CartesianArgumentsSource}.
- * </p>
- * This annotation is used to provide arguments for a {@link CartesianTest}.
+ * of {@code @CartesianArgumentsSource}.</p>
+ *
+ * <p>This annotation is used to provide arguments for a {@link CartesianTest}.</p>
  *
  * @see CartesianTest
  */

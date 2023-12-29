@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -22,16 +22,10 @@ import java.util.stream.Stream;
  * Class for defining sets to a {@code CartesianTest} execution with arguments for each parameter
  * in the order in which they appear in the test method.
  *
- * <p>Use the static factory method
- * {@link ArgumentSets#argumentsForFirstParameter(Object[]) argumentsForFirstParameter}
- * to create an instance and call
- * {@link ArgumentSets#argumentsForNextParameter(Object[]) argumentsForNextParameter}
- * for each parameter after the first.
- * Alternatively, call the static factory method
- * {@link ArgumentSets#create() create}
- * to create an instance call {@code argumentsForNextParameter}
- * for each parameter.
- * </p>
+ * <p>Use the static factory method {@link ArgumentSets#argumentsForFirstParameter(Object[]) argumentsForFirstParameter}
+ * to create an instance and call {@link ArgumentSets#argumentsForNextParameter(Object[]) argumentsForNextParameter}
+ * for each parameter after the first. Alternatively, call the static factory method
+ * {@link ArgumentSets#create() create} to create an instance call {@code argumentsForNextParameter} for each parameter.</p>
  */
 public class ArgumentSets {
 
@@ -63,8 +57,8 @@ public class ArgumentSets {
 	 * {@link Object#equals(Object) equals}) for the first parameter of
 	 * a {@code CartesianTest} from the elements of the passed
 	 * {@link java.util.Collection Collection}.
-	 * <p>
-	 * The passed argument does not have to be an instance of {@link java.util.Set Set}.
+	 *
+	 * <p>The passed argument does not have to be an instance of {@link java.util.Set Set}.</p>
 	 *
 	 * @param arguments the objects that should be passed to the parameter
 	 * @return a new {@link ArgumentSets} object
@@ -108,8 +102,8 @@ public class ArgumentSets {
 	 * {@link Object#equals(Object) equals}) for the next parameter of
 	 * a {@code CartesianTest} from the elements of the passed
 	 * {@link Collection Collection}.
-	 * <p>
-	 * The passed argument does not have to be an instance of {@link java.util.Set Set}.
+	 *
+	 * <p>The passed argument does not have to be an instance of {@link java.util.Set Set}.</p>
 	 *
 	 * @param arguments the objects that should be passed to the parameter
 	 * @return this {@link ArgumentSets} object, for fluent set definitions

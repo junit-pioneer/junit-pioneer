@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -15,9 +15,8 @@ import java.util.Objects;
 
 /**
  * Represents the execution result of test method, which is annotated with {@link org.junitpioneer.jupiter.Issue}.
- * <p>
- * Once Pioneer baselines against Java 17, this will be a record.
- * </p>
+ *
+ * <p>Once Pioneer baselines against Java 17, this will be a record.</p>
  *
  * @since 1.1
  * @see Issue

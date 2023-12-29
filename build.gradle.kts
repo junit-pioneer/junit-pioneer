@@ -4,14 +4,14 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "6.18.0"
+	id("com.diffplug.spotless") version "6.21.0"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "4.0.0.2929"
+	id("org.sonarqube") version "4.3.1.3277"
 	id("org.shipkit.shipkit-changelog") version "1.2.0"
 	id("org.shipkit.shipkit-github-release") version "1.2.0"
-	id("com.github.ben-manes.versions") version "0.46.0"
+	id("com.github.ben-manes.versions") version "0.48.0"
 	id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-	id("org.gradlex.extra-java-module-info") version "1.3"
+	id("org.gradlex.extra-java-module-info") version "1.4.2"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -52,7 +52,7 @@ val junitVersion : String by project
 val jacksonVersion: String = "2.14.2"
 val assertjVersion: String = "3.24.2"
 val log4jVersion: String = "2.20.0"
-val jimfsVersion: String = "1.2"
+val jimfsVersion: String = "1.3.0"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
@@ -66,9 +66,9 @@ dependencies {
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "4.11.0")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.5.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.14.1")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.15.1")
 
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
 	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = log4jVersion)
@@ -88,7 +88,7 @@ spotless {
 }
 
 checkstyle {
-	toolVersion = "10.9.3"
+	toolVersion = "10.12.3"
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
@@ -173,7 +173,7 @@ signing {
 }
 
 nexusPublishing {
-	repositories {
+	this.repositories {
 		sonatype()
 	}
 }
@@ -199,7 +199,7 @@ tasks {
 		}
 	}
 	project(":demo") {
-		sonar {
+		this.sonar {
 			isSkipProject = true
 		}
 	}
@@ -211,12 +211,12 @@ tasks {
 	compileJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
-		// Do not break the build on "exports" warnings (see CONTRIBUTING.md for details)
+		// Do not break the build on "exports" warnings (see CONTRIBUTING.adoc for details)
 		options.compilerArgs.add("-Xlint:all,-exports")
 
 		if (project.version != "unspecified") {
 			// Add version to Java modules
-			options.javaModuleVersion.set(project.version.toString());
+			options.javaModuleVersion.set(project.version.toString())
 		}
 	}
 
@@ -269,6 +269,7 @@ tasks {
 		jvmArgs(testJvmArgs)
 	}
 
+	@Suppress("UnstableApiUsage")
 	testing {
 		suites {
 			val test by getting(JvmTestSuite::class) {
@@ -311,7 +312,7 @@ tasks {
 			javadocTool.set(project.javaToolchains.javadocToolFor {
 				// create Javadoc with least Java version to get all features
 				// (e.g. search result page on 20)
-				languageVersion.set(JavaLanguageVersion.of(20))
+				languageVersion.set(JavaLanguageVersion.of(21))
 			})
 		}
 
@@ -341,10 +342,11 @@ tasks {
 		enabled = !experimentalBuild
 		reports {
 			xml.required.set(true)
-			xml.outputLocation.set(file("${buildDir}/reports/jacoco/report.xml"))
+			xml.outputLocation.set(file("${layout.buildDirectory}/reports/jacoco/report.xml"))
 		}
 	}
 
+	@Suppress("UnstableApiUsage")
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
 		dependsOn(javadoc, validateYaml, testing.suites.named("demoTests"))
@@ -358,6 +360,7 @@ tasks {
 	}
 
 	generateChangelog {
+		dependsOn(":closeAndReleaseSonatypeStagingRepository")
 		val gitFetchRecentTag = Runtime.getRuntime().exec("git describe --tags --abbrev=0")
 		val recentTag = gitFetchRecentTag.inputStream.bufferedReader().readText().trim()
 		previousRevision = recentTag

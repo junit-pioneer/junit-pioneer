@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -33,7 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * {@link DisableIfAllArguments#matches() matches} is configured.</p>
  *
  * <p>For more information how the extension resolves the annotations, check
- * <a href="https://junit-pioneer.org/docs/disable-parameterized-tests/" target="_top">the documentation.</a></p>
+ * <a href="https://junit-pioneer.org/docs/disable-parameterized-tests/" target="_top">the documentation on disabling parameterized tests</a>.</p>
  *
  * @see DisableIfArgumentExtension
  * @since 1.5.0

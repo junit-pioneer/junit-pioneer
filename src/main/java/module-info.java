@@ -24,6 +24,7 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.params;
 	exports org.junitpioneer.jupiter.json;
 	exports org.junitpioneer.jupiter.resource;
+	exports org.junitpioneer.jupiter.converter;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter to org.junit.platform.commons;
@@ -32,8 +33,13 @@ module org.junitpioneer {
 	opens org.junitpioneer.jupiter.params to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.resource to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.json to org.junit.platform.commons, com.fasterxml.jackson.databind;
+	opens org.junitpioneer.jupiter.converter to org.junit.platform.commons;
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
 	uses org.junitpioneer.jupiter.IssueProcessor;
+
+	provides org.junitpioneer.jupiter.json.ObjectMapperProvider
+			with org.junitpioneer.jupiter.json.DefaultObjectMapperProvider;
+	uses org.junitpioneer.jupiter.json.ObjectMapperProvider;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -24,9 +24,9 @@ class JsonConverterProvider {
 		}
 	}
 
-	static JsonConverter getJsonConverter() {
+	static JsonConverter getJsonConverter(String objectMapperId) {
 		if (JACKSON_PRESENT) {
-			return JacksonJsonConverter.getConverter();
+			return JacksonJsonConverter.getConverter(objectMapperId);
 		}
 
 		throw new NoJsonParserConfiguredException();

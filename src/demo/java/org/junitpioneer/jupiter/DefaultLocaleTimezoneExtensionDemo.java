@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class DefaultLocaleTimezoneExtensionDemo {
@@ -48,6 +49,7 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	}
 	// end::default_locale_language_alternatives[]
 
+	@Nested
 	// tag::default_locale_class_level[]
 	@DefaultLocale(language = "fr")
 	class MyLocaleTests {
@@ -80,6 +82,7 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	}
 	// end::default_timezone_zone[]
 
+	@Nested
 	// tag::default_timezone_class_level[]
 	@DefaultTimeZone("CET")
 	class MyTimeZoneTests {

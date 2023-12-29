@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -17,10 +17,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
  * Provides arguments for a single parameter of a {@link CartesianTest} method.
- * <p>
- * For more information, see
- * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.
- * </p>
+ *
+ * <p>For more information, see
+ * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.</p>
  */
 public interface CartesianParameterArgumentsProvider<T> extends CartesianArgumentsProvider {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -9,6 +9,8 @@
  */
 
 package org.junitpioneer.jupiter.json;
+
+import static java.lang.String.format;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -20,6 +22,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
+import org.junit.platform.commons.support.AnnotationSupport;
+import org.junitpioneer.internal.PioneerPreconditions;
 import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 
 /**
@@ -27,6 +31,8 @@ import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
  */
 abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 		implements ArgumentsProvider, AnnotationConsumer<A>, CartesianParameterArgumentsProvider<Object> {
+
+	public static final String CONFIG_PARAM = "org.junitpioneer.jupiter.json.objectmapper";
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
@@ -40,7 +46,15 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 	}
 
 	private Stream<Node> provideNodes(ExtensionContext context) {
-		return provideNodes(context, JsonConverterProvider.getJsonConverter());
+		String config = context.getConfigurationParameter(CONFIG_PARAM).orElse("default");
+		PioneerPreconditions
+				.notBlank(config, format("The configuration parameter %s must not have a blank value", CONFIG_PARAM));
+		String objectMapperId = AnnotationSupport
+				.findAnnotation(context.getRequiredTestMethod(), UseObjectMapper.class)
+				.map(UseObjectMapper::value)
+				.orElse(config);
+		PioneerPreconditions.notBlank(objectMapperId, format("%s must not have a blank value", UseObjectMapper.class));
+		return provideNodes(context, JsonConverterProvider.getJsonConverter(objectMapperId));
 	}
 
 	protected abstract Stream<Node> provideNodes(ExtensionContext context, JsonConverter jsonConverter);

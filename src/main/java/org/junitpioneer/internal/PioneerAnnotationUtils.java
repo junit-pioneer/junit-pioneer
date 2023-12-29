@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -35,8 +35,8 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
 /**
  * Pioneer-internal utility class to handle annotations.
  * DO NOT USE THIS CLASS - IT MAY CHANGE SIGNIFICANTLY IN ANY MINOR UPDATE.
- * <p>
- * It uses the following terminology to describe annotations that are not
+ *
+ * <p>It uses the following terminology to describe annotations that are not
  * immediately present on an element:</p>
  *
  * <ul>
@@ -46,11 +46,10 @@ import org.junitpioneer.jupiter.cartesian.CartesianArgumentsSource;
  *     		{@link org.junit.jupiter.api.Nested @Nested}) is annotated</li>
  * </ul>
  *
- * <p>
- * All of the above mechanisms apply recursively, meaning that, e.g., for an annotation to be
+ * <p>All of the above mechanisms apply recursively, meaning that, e.g., for an annotation to be
  * <em>meta-present</em> it can present on an annotation that is present on another annotation
- * that is present on the element.
- * </p>
+ * that is present on the element.</p>
+ *
  */
 public class PioneerAnnotationUtils {
 

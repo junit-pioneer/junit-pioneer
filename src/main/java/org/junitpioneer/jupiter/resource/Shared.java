@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -78,12 +78,12 @@ public @interface Shared {
 	enum Scope {
 
 		/**
-		 * <p>At this scope, a shared resource will last as long as the entire test suite.</p>
+		 * At this scope, a shared resource will last as long as the entire test suite.
 		 */
 		GLOBAL,
 
 		/**
-		 * <p>At this scope, a shared resource will last as long as the test file it is defined in.</p>
+		 * At this scope, a shared resource will last as long as the test file it is defined in.
 		 */
 		SOURCE_FILE
 

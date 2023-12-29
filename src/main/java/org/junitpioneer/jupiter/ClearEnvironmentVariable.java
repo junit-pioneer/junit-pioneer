@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2023 the original author or authors.
  *
  * All rights reserved. This program and the accompanying materials are
  * made available under the terms of the Eclipse Public License v2.0 which
@@ -43,12 +43,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
  * all tests annotated with {@link ClearEnvironmentVariable}, {@link SetEnvironmentVariable}, {@link ReadsEnvironmentVariable}, and {@link WritesEnvironmentVariable}
- * are executed sequentially to guarantee correctness under mutation of shared global state.
- * </p>
+ * are executed sequentially to guarantee correctness under mutation of shared global state.</p>
  *
  * <p>For more details and examples, see
- * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable and @SetEnvironmentVariable</code></a>.
- * </p>
+ * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable and @SetEnvironmentVariable</code></a>.</p>
  *
  * @since 0.6
  */

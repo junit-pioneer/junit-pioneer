@@ -23,6 +23,7 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.cartesian;
 	exports org.junitpioneer.jupiter.params;
 	exports org.junitpioneer.jupiter.json;
+	exports org.junitpioneer.jupiter.converter;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter to org.junit.platform.commons, nl.jqno.equalsverifier;
@@ -31,12 +32,19 @@ module org.junitpioneer {
 	opens org.junitpioneer.jupiter.params to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.resource to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.json to org.junit.platform.commons, com.fasterxml.jackson.databind;
+	opens org.junitpioneer.jupiter.converter to org.junit.platform.commons;
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
 	provides org.junitpioneer.jupiter.IssueProcessor
 			with org.junitpioneer.jupiter.issue.StoringIssueProcessor;
 	uses org.junitpioneer.jupiter.IssueProcessor;
+
+	provides org.junitpioneer.jupiter.json.ObjectMapperProvider
+			with org.junitpioneer.jupiter.json.DefaultObjectMapperProvider,
+					org.junitpioneer.jupiter.json.ObjectMapperProviderTests.DummyObjectMapperProvider,
+					org.junitpioneer.jupiter.json.ObjectMapperProviderTests.ThrowingObjectMapperProvider;
+	uses org.junitpioneer.jupiter.json.ObjectMapperProvider;
 
 	requires org.junit.platform.testkit;
 	requires org.mockito;
@@ -47,9 +55,13 @@ module org.junitpioneer {
 	// via org.assertj.core
 	requires java.instrument;
 	requires jdk.unsupported;
+	// via org.mockito
+	requires jdk.attach;
 	// via nl.jqno.equalsverifier
 	requires java.sql;
 
 	opens org.junitpioneer.internal to org.junit.platform.commons;
 	opens org.junitpioneer.testkit to org.junit.platform.commons;
+	opens org.junitpioneer.testkit.assertion to org.junit.platform.commons;
+
 }

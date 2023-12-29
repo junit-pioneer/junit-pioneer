@@ -169,32 +169,83 @@ If your project does not already depend on a supported JSON parser, you can add 
 Gradle offers two ways to pull in a parser.
 The recommended one is to use https://docs.gradle.org/current/userguide/feature_variants.html[feature variants]:
 
-```kotlin
+[source,kotlin]
+----
 testRuntimeOnly("org.junit-pioneer:junit-pioneer") {
     capabilities {
         requireCapability("org.junit-pioneer:junit-pioneer-jackson")
     }
 }
-```
+----
 
 Alternatively, the dependency can be added directly:
 
-```kotlin
+[source,kotlin]
+----
 testImplementation("com.fasterxml.jackson.core:jackson-databind:$CURRENT_VERSION")
-```
+----
 
 === Maven
 
 In Maven, add the parser as a test dependency:
 
-```xml
+[source,xml]
+----
 <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-databind</artifactId>
     <version>$CURRENT_VERSION</version>
     <scope>test</scope>
 </dependency>
-```
+----
+
+=== Custom `ObjectMapper` for Jackson
+
+By default, Jackson does not support complex fields (e.g.: `LocalDate`).
+It uses an extension/module system for additional capabilities.
+You have to register these modules on the `ObjectMapper` instance you want to use.
+
+Pioneer provides the service interface `ObjectMapperProvider` for you to be able to provide your own `ObjectMapper` instance (_and register modules on it_).
+This interface has three methods:
+
+ - `get()` for supplying an `ObjectMapper`.
+ - `getLenient()` this is a `default` method that copies the value from `get` and enables some convenience features.
+The `ObjectMapper` provided by this method is the one Pioneer uses to parse your JSON.
+If you use your own custom `ObjectMapper` implementation, you might have to override this method.
+ - `id()` to identify the `ObjectMapperProvider`.
+This has to be a unique `String`.
+The `ObjectMapperProvider` used by Pioneer has the id *"default"*.
+
+Pioneer uses `ServiceLoader` to load in your implementation of `ObjectMapperProvider`.
+You can tell Pioneer to use your implementation in one of two ways.
+
+ - By using `@UseObjectMapper` on your test.
+This will make that single test use the `ObjectMapper` provided by the `ObjectMapperProvider` with the id specified.
+You can also add `@UseObjectMapper` to your own annotation as meta-annotation.
+
+.Annotating your test
+[source,java,indent=0]
+----
+include::{json-demo}[tag=use_object_mapper_example]
+----
+
+.Creating your own annotation
+[source,java,indent=0]
+----
+include::{json-demo}[tag=custom_annotation]
+----
+
+ - By supplying the id of an `ObjectMapperProvider` implementation as a https://junit.org/junit5/docs/current/user-guide/#running-tests-config-params[configuration parameter].
+The configuration parameter is `org.junitpioneer.jupiter.json.objectmapper`.
+All tests will use the `ObjectMapper` provided by the `ObjectMapperProvider` with the id specified.
+
+.Configuration parameter example
+[source]
+----
+org.junitpioneer.jupiter.json.objectmapper=custom
+----
+
+If both the configuration parameter and the `@UseObjectMapper` annotation is present, the annotation value will be used.
 
 === Java Modules
 
