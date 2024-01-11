@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.resource;
 
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
@@ -18,7 +18,6 @@ import java.net.ServerSocket;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.resource.New;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("Free port extension")
@@ -34,7 +33,7 @@ public class FreePortExtensionTests {
 	static class FreePortTestCase {
 
 		@Test
-		void testFreePortParameterResolution(@New(FreePort.class) ServerSocket port) {
+		void testFreePortParameterResolution(@NewPort ServerSocket port) {
 			Assertions.assertThat(port).isNotNull();
 		}
 

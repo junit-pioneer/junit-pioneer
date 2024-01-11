@@ -8,14 +8,11 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.resource;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
-
-import org.junitpioneer.jupiter.resource.Resource;
-import org.junitpioneer.jupiter.resource.ResourceFactory;
 
 public final class FreePort implements ResourceFactory<ServerSocket> {
 

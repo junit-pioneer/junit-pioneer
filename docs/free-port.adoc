@@ -1,5 +1,7 @@
 :page-title: Free Port
 :page-description: Extends JUnit Jupiter with `@FreePort` to get a free port.
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/resource/FreePortDemo.java
 
 == Introduction
 
@@ -17,13 +19,5 @@ To get the `FreePort` as an argument on a test just add the annotation to your t
 
 [source,java]
 ----
-
-@ExtendWith(FreePortExtension.class)
-class ServerTest {
-
-    @Test
-    void test(FreePort port) {
-        // use port.number() or check before using port.isFreeNow()
-    }
-}
+include::{demo}[tag=basic_free_port_example]
 ----
