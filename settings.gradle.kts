@@ -1,7 +1,7 @@
 rootProject.name = "junit-pioneer"
 
 plugins {
-	id("com.gradle.enterprise") version "3.14.1"
+	id("com.gradle.enterprise") version "3.16.2"
 }
 
 gradleEnterprise { 

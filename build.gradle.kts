@@ -4,14 +4,14 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "6.21.0"
+	id("com.diffplug.spotless") version "6.25.0"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "4.3.1.3277"
-	id("org.shipkit.shipkit-changelog") version "1.2.0"
-	id("org.shipkit.shipkit-github-release") version "1.2.0"
-	id("com.github.ben-manes.versions") version "0.48.0"
-	id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-	id("org.gradlex.extra-java-module-info") version "1.4.2"
+	id("org.sonarqube") version "4.4.1.3373"
+	id("org.shipkit.shipkit-changelog") version "2.0.1"
+	id("org.shipkit.shipkit-github-release") version "2.0.1"
+	id("com.github.ben-manes.versions") version "0.51.0"
+	id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-1"
+	id("org.gradlex.extra-java-module-info") version "1.7"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
