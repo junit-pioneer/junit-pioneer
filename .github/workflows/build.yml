@@ -149,7 +149,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Gradle build
-        run: ./gradlew --refresh-dependencies -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build -x spotlessCheck
+        env:
+          ORG_GRADLE_PROJECT_junitVersion: ${{ matrix.junit-version }}
+        run: ./gradlew --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
 
   # We want to be up-to-date and know issues with future Java versions as soon as possible.
   # Furthermore, we also would love to see our build working with the latest Gradle version.
@@ -192,9 +194,15 @@ jobs:
       - name: Gradle version
         run: gradle --version
       - name: Gradle toolchains
-        run: gradle -Porg.gradle.java.installations.auto-download=false javaToolchains
+        env:
+          ORG_GRADLE_PROJECT_org.gradle.java.installations.auto-download: false
+        run: gradle javaToolchains
       - name: Gradle build
-        run: gradle --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build -x spotlessCheck
+        env:
+          ORG_GRADLE_PROJECT_experimentalJavaVersion: ${{ env.EXPERIMENTAL_JAVA }}
+          ORG_GRADLE_PROJECT_junitVersion: ${{ matrix.junit-version }}
+          ORG_GRADLE_PROJECT_org.gradle.java.installations.auto-download: false 
+        run: gradle --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
 
   # A release will be created if there is a `version` defined and `releasing` is set to `true`.
   # If not, this stage will be ignored.
