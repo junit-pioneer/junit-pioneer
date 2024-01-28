@@ -184,7 +184,6 @@ extraJavaModuleInfo {
 	automaticModule("com.google.guava:listenablefuture", "com.google.guava.listenablefuture")
 	automaticModule("com.google.code.findbugs:jsr305", "com.google.code.findbugs.jsr305")
 	automaticModule("com.google.j2objc:j2objc-annotations", "com.google.j2objc.annotations")
-	automaticModule("com.google.jimfs:jimfs", "com.google.jimfs")
 }
 
 tasks {
