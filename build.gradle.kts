@@ -198,11 +198,6 @@ tasks {
 			runtimeClasspath += sourceSets.main.get().output
 		}
 	}
-	project(":demo") {
-		this.sonar {
-			isSkipProject = true
-		}
-	}
 	// Adds all dependencies of main to demo sourceSet
 	configurations["demoImplementation"].extendsFrom(configurations.testImplementation.get())
 	// Ensures JUnit 5 engine is available to demo at runtime
