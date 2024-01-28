@@ -63,7 +63,6 @@ jobs:
         with:
           java-version: 11
           distribution: temurin
-          cache: 'gradle'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Gradle build
@@ -86,7 +85,6 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-          cache: 'gradle'
       - name: Cache SonarCloud results
         uses: actions/cache@v3
         with:
@@ -116,7 +114,6 @@ jobs:
         with:
           java-version: 11
           distribution: temurin
-          cache: 'gradle'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Spotless check
@@ -145,7 +142,6 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
-          cache: 'gradle'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Gradle build
@@ -185,7 +181,6 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-          cache: 'gradle'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
