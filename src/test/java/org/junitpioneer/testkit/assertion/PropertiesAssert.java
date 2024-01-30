@@ -33,7 +33,7 @@ public class PropertiesAssert extends AbstractAssert<PropertiesAssert, Propertie
 	 * the same nested default structure.
 	 *
 	 * <p>Properties are considered <em>effectively equal</em> if they have the same property
-	 * names returned by {@code Properties.propertyNames()} and the same values returned by
+	 * names returned by {@link Properties#propertyNames()} and the same values returned by
 	 * {@code getProperty(name)}. Properties may come from the properties instance itself,
 	 * or from a nested default instance, indiscriminately.
 	 *

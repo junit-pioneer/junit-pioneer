@@ -34,7 +34,7 @@ abstract class StdOutputStream extends OutputStream {
 	}
 
 	/**
-	 * @return the string that was written to {@code System.out} or {@code System.err}
+	 * @return the string that was written to {@link System#out} or {@link System#err}
 	 */
 	public String capturedString() {
 		return writer.toString();
@@ -52,7 +52,7 @@ abstract class StdOutputStream extends OutputStream {
 	 * {@code println}. For more details and examples on this, see
 	 * <a href="https://junit-pioneer.org/docs/standard-input-output/" target="_top">the documentation on standard input/output</a>.</p>
 	 *
-	 * @return the lines that were written to {@code System.out} or {@code System.err}
+	 * @return the lines that were written to {@link System#out} or {@link System#err}
 	 */
 	public String[] capturedLines() {
 		var lines = writer.toString().split(StdIoExtension.SEPARATOR, -1);

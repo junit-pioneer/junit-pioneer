@@ -21,8 +21,8 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.api.parallel.Resources;
 
 /**
- * Marks tests that call {@code System.setIn()}, {@code System.setOut()} or {@code System.setErr()} to
- * set the static fields {@code System.in}/{@code System.out}/{@code System.err}.
+ * Marks tests that call {@link System#setIn()}, {@link System#setOut()} or {@link System#setErr()} to
+ * set the static fields {@link System#in}/{@link System#out}/{@link System#err}.
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,

@@ -43,14 +43,14 @@ public @interface NumberToByteArrayConversion {
 		/**
 		 * Constant denoting big-endian byte order.
 		 * In this order, the bytes of a multibyte value are ordered from most significant to least significant.
-		 * This is the logical equivalent of {@code java.nio.ByteOrder.BIG_ENDIAN}
+		 * This is the logical equivalent of {@link java.nio.ByteOrder.BIG_ENDIAN}
 		 */
 		BIG_ENDIAN,
 
 		/**
 		 * Constant denoting little-endian byte order.
 		 * In this order, the bytes of a multibyte value are ordered from least significant to most significant.
-		 * This is the logical equivalent of {@code java.nio.ByteOrder.LITTLE_ENDIAN}.
+		 * This is the logical equivalent of {@link java.nio.ByteOrder.LITTLE_ENDIAN}.
 		 */
 		LITTLE_ENDIAN
 

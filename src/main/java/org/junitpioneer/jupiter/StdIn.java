@@ -60,14 +60,14 @@ public class StdIn extends InputStream {
 	}
 
 	/**
-	 * @return the string that was read from {@code System.in}; note that buffering readers may read all lines eagerly
+	 * @return the string that was read from {@link System#in}; note that buffering readers may read all lines eagerly
 	 */
 	public String capturedString() {
 		return writer.toString();
 	}
 
 	/**
-	 * @return the lines that were read from {@code System.in}; note that buffering readers may read all lines eagerly
+	 * @return the lines that were read from {@link System#in}; note that buffering readers may read all lines eagerly
 	 */
 	public String[] capturedLines() {
 		var lines = writer.toString().split(StdIoExtension.SEPARATOR, -1);

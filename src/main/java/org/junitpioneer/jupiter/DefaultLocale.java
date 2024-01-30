@@ -36,7 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *     </li>
  * </ul>
  *
- * <p>Please keep in mind the the {@code Locale.Builder} does a syntax check, if you use a variant!
+ * <p>Please keep in mind the the {@link java.util.Locale.Builder} does a syntax check, if you use a variant!
  * The given string must match the BCP 47 (or more detailed <a href="https://www.rfc-editor.org/rfc/rfc5646.html">RFC 5646</a>) syntax.</p>
  *
  * <p>If a language tag is set, none of the other fields must be set. Otherwise an
@@ -44,14 +44,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * be thrown. Specifying a {@link #country()} but no {@link #language()}, or a
  * {@link #variant()} but no {@link #country()} and {@link #language()} will
  * also cause an {@code ExtensionConfigurationException}. After the annotated
- * element has been executed, the default {@code Locale} will be restored to
+ * element has been executed, the default {@link java.util.Locale} will be restored to
  * its original value.</p>
  *
  * <p>{@code @DefaultLocale} can be used on the method and on the class level. It
  * is inherited from higher-level containers, but can only be used once per method
- * or class. If a class is annotated, the configured {@code Locale} will be the
- * default {@code Locale} for all tests inside that class. Any method level
- * configurations will override the class level default {@code Locale}.</p>
+ * or class. If a class is annotated, the configured {@link java.util.Locale} will be the
+ * default {@link java.util.Locale} for all tests inside that class. Any method level
+ * configurations will override the class level default {@link java.util.Locale}.</p>
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
@@ -97,7 +97,7 @@ public @interface DefaultLocale {
 
 	/**
 	 * An IETF BCP 47 language string that matches the <a href="https://www.rfc-editor.org/rfc/rfc5646.html">RFC 5646</a> syntax.
-	 * It's validated by the {@code Locale.Builder}, using {@code sun.util.locale.LanguageTag#isVariant}.
+	 * It's validated by the {@link java.util.Locale.Builder}, using {@link sun.util.locale.LanguageTag#isVariant}.
 	 */
 	String variant() default "";
 

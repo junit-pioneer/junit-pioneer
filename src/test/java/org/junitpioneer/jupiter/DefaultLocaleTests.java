@@ -85,7 +85,7 @@ class DefaultLocaleTests {
 		 * This means "en-EN" is a valid languageTag, but not a valid IETF BCP 47 variant subtag.
 		 * <br>
 		 * This is very confusing as the <a href="https://www.oracle.com/java/technologies/javase/jdk11-suported-locales.html">official page for supported locales</a> shows that japanese locales return {@code *} or {@code JP} as a variant.
-		 * Even more confusing the enum values {@code Locale.JAPAN} and {@code Locale.JAPANESE} don't return a variant.
+		 * Even more confusing the enum values {@link Locale.JAPAN} and {@link Locale.JAPANESE} don't return a variant.
 		 *
 		 * @see <a href="https://www.rfc-editor.org/rfc/rfc5646.html">RFC 5646</a>
 		 */

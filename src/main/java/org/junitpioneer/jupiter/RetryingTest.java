@@ -46,12 +46,12 @@ import org.junitpioneer.internal.TestNameFormatter;
  *
  * <ul>
  *     <li>it can only be applied to methods</li>
- *     <li>methods annotated with this annotation <b>MUST NOT</b> be annotated with {@code @Test}
+ *     <li>methods annotated with this annotation <b>MUST NOT</b> be annotated with {@link org.junit.jupiter.api.Test @Test}
  *         to avoid multiple executions!</li>
  *     <li>it can't be used with other {@link TestTemplate}-based mechanisms
- *         like {@code org.junit.jupiter.api.RepeatedTest @RepeatedTest} or
- *         {@code org.junit.jupiter.params.ParameterizedTest @ParameterizedTest}</li>
- *     <li>it can't be used with {@code org.junit.jupiter.api.DynamicTest @DynamicTest}</li>
+ *         like {@link org.junit.jupiter.api.RepeatedTest @RepeatedTest} or
+ *         {@link org.junit.jupiter.params.ParameterizedTest @ParameterizedTest}</li>
+ *     <li>it can't be used with {@link org.junit.jupiter.api.DynamicTest @DynamicTest}</li>
  *     <li>all retries are run sequentially, even when used with
  *         <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution">parallel test execution</a></li>
  * </ul>
