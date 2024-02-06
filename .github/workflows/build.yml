@@ -63,11 +63,10 @@ jobs:
         with:
           java-version: 11
           distribution: temurin
-          cache: 'gradle'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
+        run: ./gradlew --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
 
   # SonarCloud analysis
   sonar-cloud-analysis:
@@ -86,16 +85,15 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-          cache: 'gradle'
       - name: Cache SonarCloud results
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache/
           key: ubuntu-sonar
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
+        run: ./gradlew --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
       - name: SonarCloud analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -116,11 +114,10 @@ jobs:
         with:
           java-version: 11
           distribution: temurin
-          cache: 'gradle'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Spotless check
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --scan spotlessCheck
+        run: ./gradlew --scan spotlessCheck
 
   # Our full integration job, which will build for a matrix out of our
   # supported Java versions, operating systems and various JUnit versions.
@@ -145,11 +142,12 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
-          cache: 'gradle'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: --refresh-dependencies -PjunitVersion=${{ matrix.junit-version }} --stacktrace --scan clean build -x spotlessCheck
+        env:
+          ORG_GRADLE_PROJECT_junitVersion: ${{ matrix.junit-version }}
+        run: ./gradlew --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
 
   # We want to be up-to-date and know issues with future Java versions as soon as possible.
   # Furthermore, we also would love to see our build working with the latest Gradle version.
@@ -183,17 +181,23 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-          cache: 'gradle'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: release-candidate
+
+      - name: Gradle version
+        run: gradle --version
       - name: Gradle toolchains
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: release-candidate
-          arguments: -Porg.gradle.java.installations.auto-download=false javaToolchains
+        env:
+          ORG_GRADLE_PROJECT_org.gradle.java.installations.auto-download: false
+        run: gradle javaToolchains
       - name: Gradle build
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: release-candidate
-          arguments: --refresh-dependencies -PexperimentalJavaVersion=${{ env.EXPERIMENTAL_JAVA }} -PjunitVersion=${{ matrix.junit-version }} -Porg.gradle.java.installations.auto-download=false --stacktrace --scan clean build -x spotlessCheck
+        env:
+          ORG_GRADLE_PROJECT_experimentalJavaVersion: ${{ env.EXPERIMENTAL_JAVA }}
+          ORG_GRADLE_PROJECT_junitVersion: ${{ matrix.junit-version }}
+          ORG_GRADLE_PROJECT_org.gradle.java.installations.auto-download: false 
+        run: gradle --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
 
   # A release will be created if there is a `version` defined and `releasing` is set to `true`.
   # If not, this stage will be ignored.
@@ -218,8 +222,9 @@ jobs:
             21
             11
           distribution: temurin
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Perform release
-        uses: gradle/gradle-build-action@v2
         env:
           # used to trigger website build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -231,8 +236,7 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
           # defines released version according to GitHub Action input
           ORG_GRADLE_PROJECT_version: ${{ github.event.inputs.version }}
-        with:
-          arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository githubRelease
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository githubRelease
 
   # After our release, we also need to trigger an update for our website build
   update-website:
