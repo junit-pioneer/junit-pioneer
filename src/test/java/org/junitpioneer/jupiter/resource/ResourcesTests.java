@@ -373,7 +373,8 @@ class ResourcesTests {
 		@DisplayName("then an exception is thrown")
 		@Test
 		void thenExceptionIsThrown() throws Exception {
-			ExecutionResults results = executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class);
+			ExecutionResults results = executeTestClass(
+				TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class);
 			Method failingTest = TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class
 					.getDeclaredMethod("test", String.class);
 
@@ -481,7 +482,8 @@ class ResourcesTests {
 		@DisplayName("then it throws an exception")
 		@Test
 		void thenItThrowsAnException() {
-			ExecutionResults results = executeTestClass(TwoTestMethodsWithParamsWithSharedSameNameButDifferentScopesTestCases.class);
+			ExecutionResults results = executeTestClass(
+				TwoTestMethodsWithParamsWithSharedSameNameButDifferentScopesTestCases.class);
 
 			assertThat(results)
 					.hasSingleFailedTest()
