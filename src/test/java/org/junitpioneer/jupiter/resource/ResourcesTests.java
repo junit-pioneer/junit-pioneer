@@ -26,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("Resources extension")
 class ResourcesTests {
@@ -37,7 +38,7 @@ class ResourcesTests {
 		@DisplayName("then ::create is called")
 		@Test
 		void thenCreateIsCalled() {
-			var results = executeTestClass(CountingResourceFactory1TestCases.class);
+			ExecutionResults results = executeTestClass(CountingResourceFactory1TestCases.class);
 
 			assertThat(results).hasSingleSucceededTest();
 			assertThat(CountingResourceFactory1.createCalls).isEqualTo(1);
@@ -50,7 +51,7 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is wrapped and propagated")
 			@Test
 			void thenThrownExceptionIsWrappedAndPropagated() {
-				var results = executeTestClass(ThrowOnNewRFCreateTestCases.class);
+				ExecutionResults results = executeTestClass(ThrowOnNewRFCreateTestCases.class);
 
 				assertThat(results)
 						.hasSingleFailedTest()
@@ -71,7 +72,7 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is propagated")
 			@Test
 			void thenThrownExceptionIsPropagated() {
-				var results = executeTestClass(ThrowOnNewRFCloseTestCases.class);
+				ExecutionResults results = executeTestClass(ThrowOnNewRFCloseTestCases.class);
 
 				assertThat(results)
 						.hasSingleFailedTest()
@@ -88,7 +89,7 @@ class ResourcesTests {
 			@DisplayName("then a proper exception is thrown")
 			@Test
 			void thenProperExceptionIsThrown() {
-				var results = executeTestClass(NewRFCreateReturnsNullTestCases.class);
+				ExecutionResults results = executeTestClass(NewRFCreateReturnsNullTestCases.class);
 
 				assertThat(results)
 						.hasSingleFailedTest()
@@ -109,7 +110,7 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is wrapped and propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					var results = executeTestClass(ThrowOnNewRGetTestCases.class);
+					ExecutionResults results = executeTestClass(ThrowOnNewRGetTestCases.class);
 
 					assertThat(results)
 							.hasSingleFailedTest()
@@ -130,7 +131,7 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					var results = executeTestClass(ThrowOnNewRCloseTestCases.class);
+					ExecutionResults results = executeTestClass(ThrowOnNewRCloseTestCases.class);
 
 					assertThat(results)
 							.hasSingleFailedTest()
@@ -147,7 +148,7 @@ class ResourcesTests {
 				@DisplayName("then a proper exception is thrown")
 				@Test
 				void thenProperExceptionIsThrown() {
-					var results = executeTestClass(NewRGetReturnsNullTestCases.class);
+					ExecutionResults results = executeTestClass(NewRGetReturnsNullTestCases.class);
 
 					assertThat(results)
 							.hasSingleFailedTest()
@@ -164,7 +165,7 @@ class ResourcesTests {
 				@DisplayName("then a proper exception is thrown")
 				@Test
 				void thenProperExceptionIsThrown() {
-					var results = executeTestClass(TestMethodWithMismatchedParamsTestCases.class);
+					ExecutionResults results = executeTestClass(TestMethodWithMismatchedParamsTestCases.class);
 
 					assertThat(results)
 							.hasSingleFailedTest()
@@ -372,7 +373,7 @@ class ResourcesTests {
 		@DisplayName("then an exception is thrown")
 		@Test
 		void thenExceptionIsThrown() throws Exception {
-			var results = executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class);
+			ExecutionResults results = executeTestClass(TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class);
 			Method failingTest = TestMethodWithParameterAnnotatedWithBothNewAndSharedTestCases.class
 					.getDeclaredMethod("test", String.class);
 
@@ -414,7 +415,7 @@ class ResourcesTests {
 		@DisplayName("then it throws an exception")
 		@Test
 		void thenItThrowsAnException() {
-			var results = executeTestClass(
+			ExecutionResults results = executeTestClass(
 				SingleTestMethodWithParamsWithSharedSameNameButDifferentTypesTestCases.class);
 			assertThat(results)
 					.hasSingleFailedTest()
@@ -480,7 +481,7 @@ class ResourcesTests {
 		@DisplayName("then it throws an exception")
 		@Test
 		void thenItThrowsAnException() {
-			var results = executeTestClass(TwoTestMethodsWithParamsWithSharedSameNameButDifferentScopesTestCases.class);
+			ExecutionResults results = executeTestClass(TwoTestMethodsWithParamsWithSharedSameNameButDifferentScopesTestCases.class);
 
 			assertThat(results)
 					.hasSingleFailedTest()
@@ -560,7 +561,7 @@ class ResourcesTests {
 		@DisplayName("then it throws an exception")
 		@Test
 		void thenItThrowsAnException() {
-			var results = executeTestClass(TestMethodWithTwoParamsWithSameSharedAnnotationTestCases.class);
+			ExecutionResults results = executeTestClass(TestMethodWithTwoParamsWithSameSharedAnnotationTestCases.class);
 
 			assertThat(results)
 					.hasSingleFailedTest()
@@ -590,7 +591,7 @@ class ResourcesTests {
 		@DisplayName("then ::create is called")
 		@Test
 		void thenCreateIsCalled() {
-			var results = executeTestClass(CountingResourceFactory2TestCases.class);
+			ExecutionResults results = executeTestClass(CountingResourceFactory2TestCases.class);
 			assertThat(results).hasSingleSucceededTest();
 		}
 
@@ -601,7 +602,7 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is wrapped and propagated")
 			@Test
 			void thenThrownExceptionIsWrappedAndPropagated() {
-				var results = executeTestClass(ThrowOnSharedRFCreateTestCases.class);
+				ExecutionResults results = executeTestClass(ThrowOnSharedRFCreateTestCases.class);
 
 				assertThat(results)
 						.hasSingleFailedTest()
@@ -622,7 +623,7 @@ class ResourcesTests {
 			@DisplayName("then the thrown exception is propagated")
 			@Test
 			void thenThrownExceptionIsPropagated() {
-				var results = executeTestClass(ThrowOnSharedRFCloseTestCases.class);
+				ExecutionResults results = executeTestClass(ThrowOnSharedRFCloseTestCases.class);
 
 				assertThat(results)
 						.hasSingleFailedContainer()
@@ -639,7 +640,7 @@ class ResourcesTests {
 			@DisplayName("then a proper exception is thrown")
 			@Test
 			void thenProperExceptionIsThrown() {
-				var results = executeTestClass(SharedRFCreateReturnsNullTestCases.class);
+				ExecutionResults results = executeTestClass(SharedRFCreateReturnsNullTestCases.class);
 
 				assertThat(results)
 						.hasSingleFailedTest()
@@ -660,7 +661,7 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is wrapped and propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					var results = executeTestClass(ThrowOnSharedRGetTestCases.class);
+					ExecutionResults results = executeTestClass(ThrowOnSharedRGetTestCases.class);
 
 					assertThat(results)
 							.hasSingleFailedTest()
@@ -681,7 +682,7 @@ class ResourcesTests {
 				@DisplayName("then the thrown exception is propagated")
 				@Test
 				void thenThrownExceptionIsWrappedAndPropagated() {
-					var results = executeTestClass(ThrowOnSharedRCloseTestCases.class);
+					ExecutionResults results = executeTestClass(ThrowOnSharedRCloseTestCases.class);
 
 					assertThat(results)
 							.hasSingleFailedContainer()
@@ -698,7 +699,7 @@ class ResourcesTests {
 				@DisplayName("then a proper exception is thrown")
 				@Test
 				void thenProperExceptionIsThrown() {
-					var results = executeTestClass(SharedRGetReturnsNullTestCases.class);
+					ExecutionResults results = executeTestClass(SharedRGetReturnsNullTestCases.class);
 
 					assertThat(results)
 							.hasSingleFailedTest()
@@ -803,7 +804,7 @@ class ResourcesTests {
 		@DisplayName("then ::create is called only once")
 		@Test
 		void thenCreateIsCalledOnlyOnce() {
-			var results = executeTestClass(CountingResourceFactory3TestCases.class);
+			ExecutionResults results = executeTestClass(CountingResourceFactory3TestCases.class);
 
 			assertThat(results).hasNumberOfSucceededTests(2);
 			assertThat(CountingResourceFactory3.createCalls).isEqualTo(1);
