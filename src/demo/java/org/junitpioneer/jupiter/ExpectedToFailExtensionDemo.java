@@ -38,4 +38,17 @@ public class ExpectedToFailExtensionDemo {
 		return 0;
 	}
 
+	// tag::expected_to_fail_withexception[]
+	@Test
+	@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
+	void testProductionFeature() {
+		int actual = productionFeature();
+		assertThat(actual).isEqualTo(10);
+	}
+
+	private int productionFeature() {
+		throw new UnsupportedOperationException("productionFeature() is not yet implemented");
+	}
+	// end::expected_to_fail_withexception[]
+
 }

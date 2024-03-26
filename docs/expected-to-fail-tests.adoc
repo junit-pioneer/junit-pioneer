@@ -44,6 +44,25 @@ A custom message can be provided, explaining why the tested code is not working 
 include::{demo}[tag=expected_to_fail_message]
 ----
 
+=== Only Abort on Expected Exceptions
+
+A test that is `@ExpectedToFail` will change its behavior by starting to actually fail, once the code under test behaves correctly.
+If the underlying failure changes, though, for example from an assertion error to an exception or from an `UnsupportedOperationException` of a formerly missing implementation to a runtime exception of buggy implementation, the `@ExpectedToFail`-test will keep passing.
+
+To better react to such changes, `@ExpectedToFail` has an attribute `withExceptions` that can be used to enumerate the exceptions which when thrown will result in an aborted (and thus passing) test.
+Any other exception thrown by the code under test will result in a failing test.
+
+In the following example a test case for `productionFeature()` has been implemented.
+While the test is fully implemented, the production code has been stubbed and throws an `UnsupportedOperationException` to indicate this.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=expected_to_fail_withexception]
+----
+
+Once `productionFeature()` is implemented, `@ExpectedToFail` will fail the test, as no `UnsupportedOperationException` is thrown anymore.
+By using `withExceptions` you can thus prevent "masking" a faulty implementation (e.g. when a value other rather than `10` is returned) with an aborted test (which would be the result when no `withExceptions` is set).
+
 == Thread-Safety
 
 This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 import org.opentest4j.TestAbortedException;
@@ -98,6 +99,52 @@ public class ExpectedToFailExtensionTests {
 				.whichFailed()
 				.withExceptionInstanceOf(AssertionError.class)
 				.hasMessage("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
+	}
+
+	@Test
+	void doesNotAbortOnTestThrowingExpectedException() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsExpected");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichAborted()
+				.withExceptionInstanceOf(TestAbortedException.class)
+				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected")
+				.hasCauseInstanceOf(UnsupportedOperationException.class);
+	}
+
+	@Test
+	void failsOnTestThrowingUnexpectedException() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsUnexpected");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(AssertionError.class)
+				.hasMessage("Test marked as temporarily 'expected to fail' failed with an unexpected exception")
+				.hasCauseInstanceOf(IllegalStateException.class);
+	}
+
+	@Test
+	void failsOnWorkingTestWithExpectedException() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsWorking");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(AssertionError.class)
+				.hasMessage("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
+	}
+
+	@Test
+	void failsOnWorkingTestWithEmptyExpectedExceptions() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsEmpty");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(ExtensionConfigurationException.class)
+				.hasMessage("@ExpectedToFail withExceptions must not be empty");
 	}
 
 	@Test
@@ -216,6 +263,28 @@ public class ExpectedToFailExtensionTests {
 		@ExpectedToFail
 		void working() {
 			// Does not cause failure or error
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = { IllegalStateException.class, UnsupportedOperationException.class })
+		void withExceptionsExpected() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
+		void withExceptionsUnexpected() {
+			throw new IllegalStateException();
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
+		void withExceptionsWorking() {
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = {})
+		void withExceptionsEmpty() {
 		}
 
 	}

@@ -11,8 +11,10 @@
 package org.junitpioneer.jupiter;
 
 import java.lang.reflect.Method;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.Extension;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
@@ -30,6 +32,11 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 
 	private static void invokeAndInvertResult(Invocation<Void> invocation, ExtensionContext extensionContext)
 			throws Throwable {
+		ExpectedToFail expectedToFail = getExpectedToFailAnnotation(extensionContext);
+		if (expectedToFail.withExceptions().length == 0) {
+			throw new ExtensionConfigurationException("@ExpectedToFail withExceptions must not be empty");
+		}
+
 		try {
 			invocation.proceed();
 			// at this point, the invocation succeeded, so we'd want to call `fail(...)`,
@@ -41,7 +48,12 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 				throw t;
 			}
 
-			String message = getExpectedToFailAnnotation(extensionContext).value();
+			if (Stream.of(expectedToFail.withExceptions()).noneMatch(clazz -> clazz.isInstance(t))) {
+				throw new AssertionFailedError(
+					"Test marked as temporarily 'expected to fail' failed with an unexpected exception", t);
+			}
+
+			String message = expectedToFail.value();
 			if (message.isEmpty()) {
 				message = "Test marked as temporarily 'expected to fail' failed as expected";
 			}
