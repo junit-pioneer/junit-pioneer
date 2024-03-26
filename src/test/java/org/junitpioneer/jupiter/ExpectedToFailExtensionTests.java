@@ -122,7 +122,7 @@ public class ExpectedToFailExtensionTests {
 				.hasSingleStartedTest()
 				.whichFailed()
 				.withExceptionInstanceOf(AssertionFailedError.class)
-				.hasMessage("Test marked as 'expected to fail' failed with an unexpected exception")
+				.hasMessage("Test marked as temporarily 'expected to fail' failed with an unexpected exception")
 				.hasCauseInstanceOf(AssertionFailedError.class);
 	}
 
