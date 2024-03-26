@@ -50,7 +50,7 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 			}
 
 			if (Stream.of(expectedToFail.withExceptions()).noneMatch(clazz -> clazz.isInstance(t))) {
-				fail("Test marked as 'expected to fail' failed with an unexpected exception", t);
+				fail("Test marked as temporarily 'expected to fail' failed with an unexpected exception", t);
 			}
 
 			String message = expectedToFail.value();
