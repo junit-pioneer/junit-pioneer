@@ -32,11 +32,7 @@ public class PioneerPreconditions {
 	 * @return the supplied string
 	 */
 	public static String notBlank(String str, String message) {
-		if (str == null || str.isBlank()) {
-			throw new PreconditionViolationException(message);
-		}
-
-		return str;
+		return notBlank(str, () -> message);
 	}
 
 	/**
@@ -60,10 +56,7 @@ public class PioneerPreconditions {
 	 * @return the supplied object
 	 */
 	public static <T> T notNull(T object, String message) {
-		if (object == null) {
-			throw new PreconditionViolationException(message);
-		}
-		return object;
+		return notNull(object, () -> message);
 	}
 
 	/**
@@ -86,10 +79,7 @@ public class PioneerPreconditions {
 	 * @return the supplied string
 	 */
 	public static <T extends Collection<?>> T notEmpty(T collection, String message) {
-		if (collection == null || collection.isEmpty()) {
-			throw new PreconditionViolationException(message);
-		}
-		return collection;
+		return notEmpty(collection, () -> message);
 	}
 
 	/**

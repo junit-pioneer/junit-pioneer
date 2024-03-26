@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.params;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.util.Arrays;

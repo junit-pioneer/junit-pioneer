@@ -11,7 +11,7 @@
 package org.junitpioneer.jupiter.resource;
 
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.platform.testkit.engine.EventConditions.finished;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.cause;
 import static org.junit.platform.testkit.engine.TestExecutionResultConditions.instanceOf;

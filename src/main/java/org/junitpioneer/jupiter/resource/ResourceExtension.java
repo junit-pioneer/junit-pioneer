@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter.resource;
 
+import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -50,7 +51,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		if (parameterContext.isAnnotated(New.class) && parameterContext.isAnnotated(Shared.class)) {
 			// @formatter:off
 			String message =
-					String.format(
+					format(
 							"Parameter [%s] in %s is annotated with both @New and @Shared",
 							parameterContext.getParameter(), testMethodDescription(extensionContext));
 			// @formatter:on
@@ -79,7 +80,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		}
 
 		// @formatter:off
-		String message = String.format(
+		String message = format(
 				"Parameter [%s] in %s is not annotated with @New or @Shared",
 				parameterContext.getParameter(), testMethodDescription(extensionContext));
 		// @formatter:on
@@ -88,7 +89,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private <T> T checkType(Object resource, Class<T> type) {
 		if (!type.isInstance(resource)) {
-			String message = String.format("Parameter [%s] is not of the correct target type %s", resource, type);
+			String message = format("Parameter [%s] is not of the correct target type %s", resource, type);
 			throw new ParameterResolutionException(message);
 		}
 		return type.cast(resource);
@@ -107,7 +108,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		}
 		catch (Exception ex) {
 			// @formatter:off
-			String message = String.format(
+			String message = format(
 					"Unable to get the contents of the resource created by `%s`",
 					resourceFactory.getClass().getTypeName());
 			// @formatter:on
@@ -116,7 +117,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 		if (result == null) {
 			// @formatter:off
-			String message = String.format(
+			String message = format(
 					"The resource returned by [%s] was null, which is not allowed",
 					getMethod(resource.getClass(), "get"));
 			// @formatter:on
@@ -153,7 +154,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			}
 			catch (Exception ex) {
 				// @formatter:off
-				String message = String.format(
+				String message = format(
 						"Unable to get the contents of the resource created by `%s`",
 						sharedAnnotation.factory());
 				// @formatter:on
@@ -162,7 +163,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 			if (result == null) {
 				// @formatter:off
-				String message = String.format(
+				String message = format(
 						"The resource returned by [%s] was null, which is not allowed",
 						getMethod(resource.getClass(), "get"));
 				// @formatter:on
@@ -190,13 +191,13 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		}
 		catch (Exception ex) {
 			String message = //
-				String.format("Unable to create a resource from `%s`", resourceFactory.getClass().getTypeName());
+				format("Unable to create a resource from `%s`", resourceFactory.getClass().getTypeName());
 			throw new ParameterResolutionException(message, ex);
 		}
 
 		if (result == null) {
 			// @formatter:off
-			String message = String.format(
+			String message = format(
 					"The `Resource` instance returned by the factory method [%s] with arguments %s was null, which is not allowed",
 					getMethod(resourceFactory.getClass(), "create", List.class),
 					arguments);
@@ -222,7 +223,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 					&& !sharedAnnotation.factory().equals(presentResourceFactory.getClass())) {
 				// @formatter:off
 				String message =
-						String.format(
+						format(
 								"Two or more parameters are annotated with @Shared annotations with the name \"%s\" "
 										+ "but with different factory classes",
 								sharedAnnotation.name());
@@ -244,7 +245,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 					&& !presentSharedAnnotation.scope().equals(sharedAnnotation.scope())) {
 				// @formatter:off
 				String message =
-						String.format(
+						format(
 								"Two or more parameters are annotated with @Shared annotations with the name " +
 										"\"%s\" but with different scopes",
 								sharedAnnotation.name());
@@ -260,7 +261,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		if (parameterCount > 1) {
 			// @formatter:off
 			String message =
-					String.format(
+					format(
 							"A test method has %d parameters annotated with @Shared with the same factory type "
 									+ "and name; this is redundant, so it is not allowed",
 							parameterCount);
@@ -306,13 +307,10 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	}
 
 	private Method getMethod(Class<?> clazz, String method, Class<?>... parameterTypes) {
-		try {
-			return clazz.getMethod(method, parameterTypes);
-		}
-		catch (NoSuchMethodException e) {
-			throw new IllegalStateException(
-				String.format("There should be a `%s` method on class `%s`", method, clazz.getTypeName()), e);
-		}
+		return ReflectionSupport
+				.findMethod(clazz, method, parameterTypes)
+				.orElseThrow(() -> new IllegalStateException(
+					format("There should be a `%s` method on class `%s`", method, clazz.getTypeName())));
 	}
 
 	@Override
@@ -463,13 +461,10 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	}
 
 	private ReentrantLock findLockForShared(Shared shared, ExtensionContext.Store store) {
-		// @formatter:off
-		return Optional.ofNullable(store.get(resourceLockKey(shared), ReentrantLock.class))
-				.orElseThrow(() -> {
-					String message = String.format("There should be a shared resource for the name %s", shared.name());
-					return new IllegalStateException(message);
-				});
-		// @formatter:on
+		return Optional
+				.ofNullable(store.get(resourceLockKey(shared), ReentrantLock.class))
+				.orElseThrow(() -> new IllegalStateException(
+					format("There should be a shared resource for the name %s", shared.name())));
 	}
 
 	private <T> T invokeWithLocks(Invocation<T> invocation, List<ReentrantLock> locks) throws Throwable {

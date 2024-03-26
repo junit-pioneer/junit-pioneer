@@ -5,6 +5,7 @@
 
 	<allow pkg=".*" regex="true" />
 	<disallow pkg="com.fasterxml.jackson.*" regex="true"/>
+	<disallow pkg="org.junit.jupiter.api.Assertions.*" regex="true"/>
 
 	<subpackage name="jupiter.json">
 		<file name="JacksonNode.java">
