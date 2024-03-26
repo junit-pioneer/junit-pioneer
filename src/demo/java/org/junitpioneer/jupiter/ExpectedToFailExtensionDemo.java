@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ public class ExpectedToFailExtensionDemo {
 	@ExpectedToFail
 	void test() {
 		int actual = brokenMethod();
-		assertEquals(10, actual);
+		assertThat(actual).isEqualTo(10);
 	}
 	// end::expected_to_fail[]
 
@@ -30,7 +30,7 @@ public class ExpectedToFailExtensionDemo {
 	@ExpectedToFail("Implementation bug in brokenMethod()")
 	void doSomething() {
 		int actual = brokenMethod();
-		assertEquals(10, actual);
+		assertThat(actual).isEqualTo(10);
 	}
 	// end::expected_to_fail_message[]
 
@@ -43,7 +43,7 @@ public class ExpectedToFailExtensionDemo {
 	@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
 	void testProductionFeature() {
 		int actual = productionFeature();
-		assertEquals(10, actual);
+		assertThat(actual).isEqualTo(10);
 	}
 
 	private int productionFeature() {

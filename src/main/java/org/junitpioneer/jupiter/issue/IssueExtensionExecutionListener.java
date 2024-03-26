@@ -15,7 +15,6 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.junit.platform.engine.TestExecutionResult.Status;
 
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -37,6 +36,7 @@ import org.junitpioneer.jupiter.IssueTestSuite;
 public class IssueExtensionExecutionListener implements TestExecutionListener {
 
 	public static final String REPORT_ENTRY_KEY = "IssueExtension";
+	public static final String TIME_REPORT_KEY = "IssueExtensionTimeReport";
 
 	/**
 	 * This listener will be active as soon as Pioneer is on the class/module path, regardless of whether {@code @Issue} is actually used.
@@ -56,13 +56,18 @@ public class IssueExtensionExecutionListener implements TestExecutionListener {
 		if (!active)
 			return;
 
-		String testId = testIdentifier.getUniqueId();
-		Map<String, String> messages = entry.getKeyValuePairs();
+		var messages = entry.getKeyValuePairs();
+		var testId = testIdentifier.getUniqueId();
+		// because test IDs are unique, we can be sure that the report entries belong to the same test
+		var testCaseBuilder = testCases.computeIfAbsent(testId, IssueTestCaseBuilder::new);
 
 		if (messages.containsKey(REPORT_ENTRY_KEY)) {
-			String issueId = messages.get(REPORT_ENTRY_KEY);
-			// because test IDs are unique, there's no risk of overriding previously entered information
-			testCases.put(testId, new IssueTestCaseBuilder(testId).setIssueId(issueId));
+			var issueId = messages.get(REPORT_ENTRY_KEY);
+			testCaseBuilder.setIssueId(issueId);
+		}
+		if (messages.containsKey(TIME_REPORT_KEY)) {
+			var elapsedTime = Long.parseLong(messages.get(TIME_REPORT_KEY));
+			testCaseBuilder.setElapsedTime(elapsedTime);
 		}
 	}
 

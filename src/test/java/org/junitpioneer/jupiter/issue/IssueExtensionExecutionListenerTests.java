@@ -11,8 +11,8 @@
 package org.junitpioneer.jupiter.issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener.REPORT_ENTRY_KEY;
+import static org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener.TIME_REPORT_KEY;
 import static org.junitpioneer.jupiter.issue.TestPlanHelper.createTestIdentifier;
 import static org.mockito.Mockito.mock;
 
@@ -51,10 +51,12 @@ public class IssueExtensionExecutionListenerTests {
 	@Test
 	void issueTestCasesCreated() {
 		ReportEntry issueEntry = ReportEntry.from(REPORT_ENTRY_KEY, "#123");
+		ReportEntry timeEntry = ReportEntry.from(TIME_REPORT_KEY, "6");
 		TestIdentifier successfulTest = createTestIdentifier("successful-test");
 
 		executionListener.testPlanExecutionStarted(testPlan);
 		executionListener.reportingEntryPublished(successfulTest, issueEntry);
+		executionListener.reportingEntryPublished(successfulTest, timeEntry);
 		executionListener.executionStarted(successfulTest);
 		executionListener.executionFinished(successfulTest, TestExecutionResult.successful());
 		executionListener.testPlanExecutionFinished(testPlan);
@@ -64,11 +66,11 @@ public class IssueExtensionExecutionListenerTests {
 		assertThat(allTests.size()).isEqualTo(1);
 
 		IssueTestSuite issueTestSuite = allTests.get(0);
-		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("#123"),
-			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(1));
+		assertThat(issueTestSuite.issueId()).isEqualTo("#123");
+		assertThat(issueTestSuite.tests()).hasSize(1);
 
 		assertThat(issueTestSuite.tests())
-				.containsExactly(new IssueTestCase("[test:successful-test]", Status.SUCCESSFUL));
+				.containsExactly(new IssueTestCase("[test:successful-test]", Status.SUCCESSFUL, 6L));
 	}
 
 	@Test
@@ -87,8 +89,8 @@ public class IssueExtensionExecutionListenerTests {
 		assertThat(allTests.size()).isEqualTo(1);
 
 		IssueTestSuite issueTestSuite = allTests.get(0);
-		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("#123"),
-			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(1));
+		assertThat(issueTestSuite.issueId()).isEqualTo("#123");
+		assertThat(issueTestSuite.tests()).hasSize(1);
 
 		assertThat(issueTestSuite.tests()).containsExactly(new IssueTestCase("[test:aborted-test]", Status.ABORTED));
 	}
@@ -113,8 +115,8 @@ public class IssueExtensionExecutionListenerTests {
 		assertThat(allTests.size()).isEqualTo(1);
 
 		IssueTestSuite issueTestSuite = allTests.get(0);
-		assertAll(() -> assertThat(issueTestSuite.issueId()).isEqualTo("#123"),
-			() -> assertThat(issueTestSuite.tests().size()).isEqualTo(2));
+		assertThat(issueTestSuite.issueId()).isEqualTo("#123");
+		assertThat(issueTestSuite.tests()).hasSize(2);
 
 		assertThat(issueTestSuite.tests())
 				.containsExactlyInAnyOrder(new IssueTestCase("[test:successful-test]", Status.SUCCESSFUL),

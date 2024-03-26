@@ -121,7 +121,12 @@ Thank you for your efforts! ?
 
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
+==== 2024
+
+* https://github.com/TWiStErRob[Papp Róbert (TWiStErRob)] updated Gradle and GitHub Actions tooling to latest. (#803 / #804 / #805)
+
 ==== 2023
+
 * https://github.com/eeverman[Eric Everman] added `@RestoreSystemProperties` and `@RestoreEnvironmentVariables` annotations to the https://junit-pioneer.org/docs/system-properties/[System Properties] and https://junit-pioneer.org/docs/environment-variables/[Environment Variables] extensions (#574 / #700)
 * https://github.com/meredrica[Florian Westreicher] contributed to the JSON argument source extension (#704 / #724)
 * https://github.com/IlyasYOY[Ilya Ilyinykh] found unused demo tests (#791)

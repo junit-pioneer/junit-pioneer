@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 
+// implementation example, does not contain tests
 public class PeopleProviderSources {
 
 	// tag::cartesian_people_provider_with_CartesianParameterArgumentsProvider[]
@@ -36,7 +37,7 @@ public class PeopleProviderSources {
 
 	}
 
-	class PeopleProvider implements CartesianParameterArgumentsProvider {
+	class PeopleProvider implements CartesianParameterArgumentsProvider<Person> {
 
 		@Override
 		public Stream<Person> provideArguments(ExtensionContext context, Parameter parameter) {
@@ -49,7 +50,7 @@ public class PeopleProviderSources {
 	}
 	// end::cartesian_people_provider_with_CartesianParameterArgumentsProvider[]
 
-	class Person {
+	static class Person {
 
 		String name;
 		int age;
@@ -63,7 +64,7 @@ public class PeopleProviderSources {
 
 	// tag::cartesian_people_provider_with_AnnotationConsumer[]
 	class PeopleProviderWithAnnotationConsumer
-			implements CartesianParameterArgumentsProvider, AnnotationConsumer<People> {
+			implements CartesianParameterArgumentsProvider<Person>, AnnotationConsumer<People> {
 
 		private People source;
 

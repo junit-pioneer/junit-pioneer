@@ -10,12 +10,12 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class ResourceExtensionDemo {
@@ -24,7 +24,7 @@ public class ResourceExtensionDemo {
 	@Test
 	void test1(@New(TemporaryDirectory.class) Path tempDir) {
 		// Test code goes here, e.g.,
-		assertTrue(Files.exists(tempDir));
+		assertThat(tempDir).exists();
 	}
 
 	@Test
@@ -37,7 +37,7 @@ public class ResourceExtensionDemo {
 	@Test
 	void dirTest1(@Dir Path tempDir) {
 		// Test code goes here, e.g.,
-		assertTrue(Files.exists(tempDir));
+		assertThat(tempDir).exists();
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class ResourceExtensionDemo {
 			Path tempDir) {
 		// Test code goes here, e.g.,
 		Path rootTempDir = Paths.get(System.getProperty("java.io.tmpdir"));
-		assertTrue(rootTempDir.relativize(tempDir).toString().startsWith("customPrefix"));
+		assertThat(rootTempDir.relativize(tempDir)).asString().startsWith("customPrefix");
 	}
 	// end::create_new_resource_with_arg_demo[]
 	// @formatter:on
@@ -66,7 +66,7 @@ public class ResourceExtensionDemo {
 			@Shared(factory = TemporaryDirectory.class, name = "sharedTempDir")
 			Path sharedTempDir) {
 		// Test code goes here, e.g.,
-		assertTrue(Files.exists(sharedTempDir));
+		assertThat(sharedTempDir).exists();
 	}
 
 	@Test
@@ -105,40 +105,42 @@ public class ResourceExtensionDemo {
 	// end::create_multiple_shared_resources_demo[]
 	// @formatter:on
 
-}
+	@Nested
+	// @formatter:off
+	// tag::create_global_shared_resource_demo_first[]
+	class FirstTest {
 
-// @formatter:off
-// tag::create_global_shared_resource_demo_first[]
-class FirstTest {
+		@Test
+		void test(
+				@Shared(
+						factory = TemporaryDirectory.class,
+						name = "globalTempDir",
+						scope = Shared.Scope.GLOBAL)
+				Path tempDir) {
+			// Test code using the global shared resource...
+		}
 
-	@Test
-	void test(
-			@Shared(
-					factory = TemporaryDirectory.class,
-					name = "globalTempDir",
-					scope = Shared.Scope.GLOBAL)
-			Path tempDir) {
-		// Test code using the global shared resource...
 	}
+	// end::create_global_shared_resource_demo_first[]
+	// @formatter:on
 
-}
-// end::create_global_shared_resource_demo_first[]
-// @formatter:on
+	@Nested
+	// @formatter:off
+	// tag::create_global_shared_resource_demo_second[]
+	class SecondTest {
 
-// @formatter:off
-// tag::create_global_shared_resource_demo_second[]
-class SecondTest {
+		@Test
+		void test(
+				@Shared(
+						factory = TemporaryDirectory.class,
+						name = "globalTempDir",
+						scope = Shared.Scope.GLOBAL)
+				Path tempDir) {
+			// Test code using the global shared resource...
+		}
 
-	@Test
-	void test(
-			@Shared(
-					factory = TemporaryDirectory.class,
-					name = "globalTempDir",
-					scope = Shared.Scope.GLOBAL)
-			Path tempDir) {
-		// Test code using the global shared resource...
 	}
+	// end::create_global_shared_resource_demo_second[]
+	// @formatter:on
 
 }
-// end::create_global_shared_resource_demo_second[]
-// @formatter:on

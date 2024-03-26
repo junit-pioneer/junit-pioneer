@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ALWAYS;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_ABORTED;
 import static org.junitpioneer.jupiter.ReportEntry.PublishCondition.ON_FAILURE;
@@ -464,7 +464,7 @@ public class ReportEntryExtensionTests {
 		@Test
 		@ReportEntry(value = "'Tapping at my chamber door' -", when = ALWAYS)
 		void always_failure() {
-			fail();
+			fail("");
 		}
 
 		@Test
@@ -487,7 +487,7 @@ public class ReportEntryExtensionTests {
 		@Test
 		@ReportEntry(value = "And each separate dying ember wrought its ghost upon the floor.", when = ON_SUCCESS)
 		void onSuccess_failure() {
-			fail();
+			fail("");
 		}
 
 		@Test
@@ -510,7 +510,7 @@ public class ReportEntryExtensionTests {
 		@Test
 		@ReportEntry(value = "Nameless here for evermore.", when = ON_FAILURE)
 		void onFailure_failure() {
-			fail();
+			fail("");
 		}
 
 		@Test
@@ -533,7 +533,7 @@ public class ReportEntryExtensionTests {
 		@Test
 		@ReportEntry(value = "Tis some visitor entreating entrance at my chamber door—", when = ON_ABORTED)
 		void onAborted_failure() {
-			fail();
+			fail("");
 		}
 
 		@Test
@@ -562,7 +562,7 @@ public class ReportEntryExtensionTests {
 		@ReportEntry(value = "murmured back the word, “Lenore!”—", when = ON_FAILURE)
 		@ReportEntry(value = "Merely this and nothing more.", when = ON_ABORTED)
 		void repeated_failure() {
-			fail();
+			fail("");
 		}
 
 		@Test

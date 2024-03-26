@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 
+// implementation example, does not contain tests
 // tag::in_memory_directory[]
-
 public final class InMemoryDirectory implements ResourceFactory<Path> {
 
 	private static final AtomicInteger DIRECTORY_NAME = new AtomicInteger();
@@ -42,16 +42,16 @@ public final class InMemoryDirectory implements ResourceFactory<Path> {
 		Path newInMemoryDirectory = this.fileSystem.getPath("/" + directoryPrefix + DIRECTORY_NAME.getAndIncrement());
 		Files.createDirectory(newInMemoryDirectory);
 
-		return new Resource<Path>() {
+		return new Resource<>() {
 
 			@Override
-			public Path get() throws Exception {
+			public Path get() {
 				return newInMemoryDirectory;
 			}
 
 			@Override
 			public void close() throws Exception {
-				Files.walkFileTree(newInMemoryDirectory, new SimpleFileVisitor<Path>() {
+				Files.walkFileTree(newInMemoryDirectory, new SimpleFileVisitor<>() {
 
 					@Override
 					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

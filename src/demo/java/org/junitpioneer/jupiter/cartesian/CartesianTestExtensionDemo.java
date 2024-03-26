@@ -23,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -178,6 +179,7 @@ public class CartesianTestExtensionDemo {
 	}
 	// end::cartesian_argument_sets_reuse[]
 
+	// these tests fail intentionally ~> no @Nested
 	static class MisconfiguredExamples {
 
 		// tag::cartesian_bad_examples[]
@@ -236,7 +238,7 @@ public class CartesianTestExtensionDemo {
 
 	// tag::cartesian_argument_sets_int_argument_provider[]
 	class IntArgumentsProvider
-			implements CartesianParameterArgumentsProvider {
+			implements CartesianParameterArgumentsProvider<Integer> {
 
 		@Override
 		public Stream<Integer> provideArguments(
@@ -281,6 +283,14 @@ public class CartesianTestExtensionDemo {
 
 	}
 	// end::cartesian_argument_sets_with_non_static_factory[]
+
+	static class MyTestReporter implements TestReporter {
+
+		@Override
+		public void publishEntry(Map<String, String> map) {
+		}
+
+	}
 
 }
 // @formatter:on

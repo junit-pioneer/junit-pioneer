@@ -10,8 +10,6 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
@@ -21,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
 class ExpectedToFailExtension implements Extension, InvocationInterceptor {
@@ -50,7 +49,8 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 			}
 
 			if (Stream.of(expectedToFail.withExceptions()).noneMatch(clazz -> clazz.isInstance(t))) {
-				fail("Test marked as temporarily 'expected to fail' failed with an unexpected exception", t);
+				throw new AssertionFailedError(
+					"Test marked as temporarily 'expected to fail' failed with an unexpected exception", t);
 			}
 
 			String message = expectedToFail.value();
@@ -61,7 +61,7 @@ class ExpectedToFailExtension implements Extension, InvocationInterceptor {
 			throw new TestAbortedException(message, t);
 		}
 
-		fail("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
+		throw new AssertionFailedError("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
 	}
 
 	/**

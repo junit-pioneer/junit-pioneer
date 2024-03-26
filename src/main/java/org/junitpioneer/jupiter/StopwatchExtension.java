@@ -10,12 +10,15 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener.TIME_REPORT_KEY;
+
 import java.time.Clock;
 
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junitpioneer.internal.PioneerAnnotationUtils;
 
 /**
  * The StopwatchExtension implements callback methods for the {@code @Stopwatch} annotation.
@@ -33,7 +36,16 @@ class StopwatchExtension implements BeforeTestExecutionCallback, AfterTestExecut
 
 	@Override
 	public void afterTestExecution(ExtensionContext context) {
-		calculateAndReportElapsedTime(context);
+		long elapsedTime = calculateElapsedTime(context);
+		reportElapsedTime(context, elapsedTime);
+	}
+
+	private static void reportElapsedTime(ExtensionContext context, long elapsedTime) {
+		String message = String.format("Execution of '%s' took [%d] ms.", context.getDisplayName(), elapsedTime);
+		context.publishReportEntry(STORE_KEY, message);
+		if (PioneerAnnotationUtils.isAnnotationPresent(context, Issue.class)) {
+			context.publishReportEntry(TIME_REPORT_KEY, String.valueOf(elapsedTime));
+		}
 	}
 
 	private void storeNowAsLaunchTime(ExtensionContext context) {
@@ -44,12 +56,9 @@ class StopwatchExtension implements BeforeTestExecutionCallback, AfterTestExecut
 		return context.getStore(NAMESPACE).get(context.getUniqueId(), long.class);
 	}
 
-	private void calculateAndReportElapsedTime(ExtensionContext context) {
+	private long calculateElapsedTime(ExtensionContext context) {
 		long launchTime = loadLaunchTime(context);
-		long elapsedTime = clock.instant().toEpochMilli() - launchTime;
-
-		String message = String.format("Execution of '%s' took [%d] ms.", context.getDisplayName(), elapsedTime);
-		context.publishReportEntry(STORE_KEY, message);
+		return clock.instant().toEpochMilli() - launchTime;
 	}
 
 }
