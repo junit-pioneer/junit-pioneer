@@ -32,6 +32,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * This helps to avoid creating duplicate tests by accident and counteracts the accumulation
  * of disabled tests over time.</p>
  *
+ * <p>Further, the {@link #withExceptions()} attribute can be used to restrict the extension's behavior
+ * to specific exceptions. That is, only if the test method ends up throwing one of the specified exceptions
+ * will the test be aborted. This can, for example, be used when the production code temporarily throws
+ * an {@link UnsupportedOperationException} because some feature has not been implemented yet, but the
+ * test method is already implemented and should not fail on a failing assertion.
+ * </p>
+ *
  * <p>The annotation can only be used on methods and as meta-annotation on other annotation types.
  * Similar to {@code @Disabled}, it has to be used in addition to a "testable" annotation, such
  * as {@link org.junit.jupiter.api.Test @Test}. Otherwise the annotation has no effect.</p>
@@ -67,5 +74,12 @@ public @interface ExpectedToFail {
 	 * An empty string (the default) causes a generic default message to be used.
 	 */
 	String value() default "";
+
+	/**
+	 * Specifies which exceptions are expected to be thrown and will cause the test to be aborted rather than fail.
+	 * An empty array is considered a configuration error and will cause the test to fail. Instead, consider leaving
+	 * the attribute set to the default value when any exception should cause the test to be aborted.
+	 */
+	Class<? extends Throwable>[] withExceptions() default { Throwable.class };
 
 }

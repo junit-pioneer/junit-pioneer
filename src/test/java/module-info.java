@@ -51,7 +51,7 @@ module org.junitpioneer {
 	requires org.mockito;
 	requires org.assertj.core;
 	requires nl.jqno.equalsverifier;
-	requires com.google.jimfs;
+	requires com.google.common.jimfs;
 
 	// via org.assertj.core
 	requires java.instrument;

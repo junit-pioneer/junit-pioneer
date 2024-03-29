@@ -12,7 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.annotation.Retention;
@@ -26,9 +26,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
 @DisplayName("ExpectedToFail extension")
@@ -42,7 +42,7 @@ public class ExpectedToFailExtensionTests {
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
 				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected")
-				.hasCause(new AssertionFailedError("failed"));
+				.hasCause(new AssertionError("failed"));
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class ExpectedToFailExtensionTests {
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
 				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected")
-				.hasCause(new AssertionFailedError("failed"));
+				.hasCause(new AssertionError("failed"));
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class ExpectedToFailExtensionTests {
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
 				.hasMessage("Custom message")
-				.hasCause(new AssertionFailedError("failed"));
+				.hasCause(new AssertionError("failed"));
 	}
 
 	@Test
@@ -102,6 +102,52 @@ public class ExpectedToFailExtensionTests {
 	}
 
 	@Test
+	void doesNotAbortOnTestThrowingExpectedException() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsExpected");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichAborted()
+				.withExceptionInstanceOf(TestAbortedException.class)
+				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected")
+				.hasCauseInstanceOf(UnsupportedOperationException.class);
+	}
+
+	@Test
+	void failsOnTestThrowingUnexpectedException() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsUnexpected");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(AssertionError.class)
+				.hasMessage("Test marked as temporarily 'expected to fail' failed with an unexpected exception")
+				.hasCauseInstanceOf(IllegalStateException.class);
+	}
+
+	@Test
+	void failsOnWorkingTestWithExpectedException() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsWorking");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(AssertionError.class)
+				.hasMessage("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it");
+	}
+
+	@Test
+	void failsOnWorkingTestWithEmptyExpectedExceptions() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(ExpectedToFailTestCases.class, "withExceptionsEmpty");
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(ExtensionConfigurationException.class)
+				.hasMessage("@ExpectedToFail withExceptions must not be empty");
+	}
+
+	@Test
 	void doesNotAbortOnBeforeEachTestFailure() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(ExpectedToFailFailureBeforeEachTestCases.class, "test");
@@ -120,7 +166,7 @@ public class ExpectedToFailExtensionTests {
 				.withExceptionInstanceOf(AssertionError.class)
 				.hasMessage("Test marked as 'expected to fail' succeeded; remove @ExpectedToFail from it")
 				// Note: This check for suppressed exception actually tests JUnit platform behavior
-				.hasSuppressedException(new AssertionFailedError("after each"));
+				.hasSuppressedException(new AssertionError("after each"));
 	}
 
 	@Test
@@ -142,7 +188,7 @@ public class ExpectedToFailExtensionTests {
 				.whichAborted()
 				.withExceptionInstanceOf(TestAbortedException.class)
 				.hasMessage("Test marked as temporarily 'expected to fail' failed as expected")
-				.hasCause(new AssertionFailedError("failed"))
+				.hasCause(new AssertionError("failed"))
 				// Note: This check for suppressed exception actually tests JUnit platform behavior
 				.has(new Condition<>((Throwable throwable) -> {
 					Throwable[] suppressed = throwable.getSuppressed();
@@ -217,6 +263,28 @@ public class ExpectedToFailExtensionTests {
 		@ExpectedToFail
 		void working() {
 			// Does not cause failure or error
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = { IllegalStateException.class, UnsupportedOperationException.class })
+		void withExceptionsExpected() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
+		void withExceptionsUnexpected() {
+			throw new IllegalStateException();
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = UnsupportedOperationException.class)
+		void withExceptionsWorking() {
+		}
+
+		@Test
+		@ExpectedToFail(withExceptions = {})
+		void withExceptionsEmpty() {
 		}
 
 	}

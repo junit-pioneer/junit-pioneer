@@ -19,6 +19,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.support.AnnotationConsumer;
 
+// implementation example, does not contain tests
 public class NumberArgumentProvider {
 
 	// tag::cartesian_number_argument_provider[]
@@ -31,7 +32,7 @@ public class NumberArgumentProvider {
 
 	}
 
-	class NumberArgumentsProvider implements CartesianMethodArgumentsProvider, AnnotationConsumer<NumberSource> {
+	static class NumberArgumentsProvider implements CartesianMethodArgumentsProvider, AnnotationConsumer<NumberSource> {
 
 		private int[] numbers;
 
