@@ -20,10 +20,19 @@ public class FreePortDemo {
 
 	// tag::basic_free_port_example[]
 	@Test
-	void testFreePort(@NewPort ServerSocket port) {
+	void testFreePort(@New(FreePort.class) ServerSocket port) {
 		assertThat(port).isNotNull();
 		assertThat(port.isClosed()).isFalse();
 	}
 	// end::basic_free_port_example[]
+
+	// tag::specific_port_example[]
+	@Test
+	void testSpecificPort(@New(value = FreePort.class, arguments = "1234") ServerSocket port) {
+		assertThat(port).isNotNull();
+		assertThat(port.isClosed()).isFalse();
+		assertThat(port.getLocalPort()).isEqualTo(1234);
+	}
+	// end::specific_port_example[]
 
 }

@@ -89,4 +89,10 @@ public @interface Shared {
 
 	}
 
+	@interface Named {
+
+		String value();
+
+	}
+
 }

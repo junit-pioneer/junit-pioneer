@@ -26,15 +26,21 @@ public class FreePortExtensionTests {
 	@Test
 	@DisplayName("resolve FreePort parameter successfully")
 	void testFreePortParameterResolution() {
-		ExecutionResults results = executeTestClass(FreePortTestCase.class);
+		ExecutionResults results = executeTestClass(FreePortTestCaseTests.class);
 		assertThat(results).hasSingleSucceededTest();
 	}
 
-	static class FreePortTestCase {
+	static class FreePortTestCaseTests {
 
 		@Test
-		void testFreePortParameterResolution(@NewPort ServerSocket port) {
+		void testFreePortParameterResolution(@New(FreePort.class) ServerSocket port) {
 			Assertions.assertThat(port).isNotNull();
+		}
+
+		@Test
+		void testFreePortArgumentResolution(@New(value = FreePort.class, arguments = "1334") ServerSocket port) {
+			Assertions.assertThat(port).isNotNull();
+			Assertions.assertThat(port.getLocalPort()).isEqualTo(1334);
 		}
 
 	}

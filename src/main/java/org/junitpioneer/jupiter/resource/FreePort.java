@@ -10,9 +10,14 @@
 
 package org.junitpioneer.jupiter.resource;
 
+import static java.lang.String.format;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
+
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junitpioneer.internal.PioneerPreconditions;
 
 public final class FreePort implements ResourceFactory<ServerSocket> {
 
@@ -22,7 +27,18 @@ public final class FreePort implements ResourceFactory<ServerSocket> {
 
 	@Override
 	public Resource<ServerSocket> create(List<String> arguments) throws Exception {
-		return new FreePortResource();
+		if (arguments.isEmpty())
+			return new FreePortResource();
+		else {
+			try {
+				int port = Integer.parseInt(arguments.get(0));
+				return new FreePortResource(port);
+			}
+			catch (NumberFormatException exception) {
+				throw new ExtensionConfigurationException(
+					format("Could not parse port number %s for opening a socket", arguments.get(0)));
+			}
+		}
 	}
 
 	private static final class FreePortResource implements Resource<ServerSocket> {
@@ -31,6 +47,10 @@ public final class FreePort implements ResourceFactory<ServerSocket> {
 
 		FreePortResource() throws IOException {
 			this.serverSocket = new ServerSocket(0);
+		}
+
+		FreePortResource(int port) throws IOException {
+			this.serverSocket = new ServerSocket(port);
 		}
 
 		@Override
