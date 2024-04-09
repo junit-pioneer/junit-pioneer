@@ -43,8 +43,8 @@ public class ExecutionResults {
 			return this;
 		}
 
-		Executor selectTestClass(Class<?> testClass) {
-			selectors.add(DiscoverySelectors.selectClass(testClass));
+		Executor selectTestClass(TestSelector testSelector) {
+			selectors.add(DiscoverySelectors.selectClass(testSelector.getTestClass()));
 			return new Executor();
 		}
 
@@ -56,32 +56,43 @@ public class ExecutionResults {
 			return new Executor();
 		}
 
-		Executor selectTestMethod(Class<?> testClass, String testMethodName) {
-			selectors.add(DiscoverySelectors.selectMethod(testClass, testMethodName));
+		Executor selectTestMethod(TestSelector testSelector) {
+			selectors
+					.add(
+						DiscoverySelectors.selectMethod(testSelector.getTestClass(), testSelector.getTestMethodName()));
 			return new Executor();
 		}
 
-		Executor selectTestMethodWithParameterTypes(Class<?> testClass, String testMethodName,
-				String methodParameterTypes) {
-			selectors.add(DiscoverySelectors.selectMethod(testClass, testMethodName, methodParameterTypes));
-			return new Executor();
-		}
-
-		Executor selectNestedTestClass(List<Class<?>> enclosingClasses, Class<?> testClass) {
-			selectors.add(DiscoverySelectors.selectNestedClass(enclosingClasses, testClass));
-			return new Executor();
-		}
-
-		Executor selectNestedTestMethod(List<Class<?>> enclosingClasses, Class<?> testClass, String testMethodName) {
-			selectors.add(DiscoverySelectors.selectNestedMethod(enclosingClasses, testClass, testMethodName));
-			return new Executor();
-		}
-
-		Executor selectNestedTestMethodWithParameterTypes(List<Class<?>> enclosingClasses, Class<?> testClass,
-				String testMethodName, String methodParameterTypes) {
+		Executor selectTestMethodWithParameterTypes(TestSelector testSelector) {
 			selectors
 					.add(DiscoverySelectors
-							.selectNestedMethod(enclosingClasses, testClass, testMethodName, methodParameterTypes));
+							.selectMethod(testSelector.getTestClass(), testSelector.getTestMethodName(),
+								testSelector.getMethodParameterTypes()));
+			return new Executor();
+		}
+
+		Executor selectNestedTestClass(NestedTestSelector nestedTestSelector) {
+			selectors
+					.add(DiscoverySelectors
+							.selectNestedClass(nestedTestSelector.getEnclosingClasses(),
+								nestedTestSelector.getTestClass()));
+			return new Executor();
+		}
+
+		Executor selectNestedTestMethod(NestedTestSelector nestedTestSelector) {
+			selectors
+					.add(DiscoverySelectors
+							.selectNestedMethod(nestedTestSelector.getEnclosingClasses(),
+								nestedTestSelector.getTestClass(), nestedTestSelector.getTestMethodName()));
+			return new Executor();
+		}
+
+		Executor selectNestedTestMethodWithParameterTypes(NestedTestSelector nestedTestSelector) {
+			selectors
+					.add(DiscoverySelectors
+							.selectNestedMethod(nestedTestSelector.getEnclosingClasses(),
+								nestedTestSelector.getTestClass(), nestedTestSelector.getTestMethodName(),
+								nestedTestSelector.getMethodParameterTypes()));
 			return new Executor();
 		}
 

@@ -27,7 +27,7 @@ public class PioneerTestKit {
 	 * @return The execution results
 	 */
 	public static ExecutionResults executeTestClass(Class<?> testClass) {
-		return ExecutionResults.builder().selectTestClass(testClass).execute();
+		return ExecutionResults.builder().selectTestClass(new TestSelector(testClass, null, null)).execute();
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class PioneerTestKit {
 	 * @return The execution results
 	 */
 	public static ExecutionResults executeTestMethod(Class<?> testClass, String testMethodName) {
-		return ExecutionResults.builder().selectTestMethod(testClass, testMethodName).execute();
+		return ExecutionResults.builder().selectTestMethod(new TestSelector(testClass, testMethodName, null)).execute();
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class PioneerTestKit {
 
 		return ExecutionResults
 				.builder()
-				.selectTestMethodWithParameterTypes(testClass, testMethodName, allTypeNames)
+				.selectTestMethodWithParameterTypes(new TestSelector(testClass, testMethodName, allTypeNames))
 				.execute();
 	}
 
@@ -81,7 +81,10 @@ public class PioneerTestKit {
 	 * @return The execution results
 	 */
 	public static ExecutionResults executeNestedTestClass(List<Class<?>> enclosingClasses, Class<?> testClass) {
-		return ExecutionResults.builder().selectNestedTestClass(enclosingClasses, testClass).execute();
+		return ExecutionResults
+				.builder()
+				.selectNestedTestClass(new NestedTestSelector(enclosingClasses, testClass, null, null))
+				.execute();
 	}
 
 	/**
@@ -94,7 +97,10 @@ public class PioneerTestKit {
 	 */
 	public static ExecutionResults executeNestedTestMethod(List<Class<?>> enclosingClasses, Class<?> testClass,
 			String testMethodName) {
-		return ExecutionResults.builder().selectNestedTestMethod(enclosingClasses, testClass, testMethodName).execute();
+		return ExecutionResults
+				.builder()
+				.selectNestedTestMethod(new NestedTestSelector(enclosingClasses, testClass, testMethodName, null))
+				.execute();
 	}
 
 	/**
@@ -116,7 +122,8 @@ public class PioneerTestKit {
 
 		return ExecutionResults
 				.builder()
-				.selectNestedTestMethodWithParameterTypes(enclosingClasses, testClass, testMethodName, allTypeNames)
+				.selectNestedTestMethodWithParameterTypes(
+					new NestedTestSelector(enclosingClasses, testClass, testMethodName, allTypeNames))
 				.execute();
 	}
 
@@ -142,7 +149,7 @@ public class PioneerTestKit {
 		return ExecutionResults
 				.builder()
 				.addConfigurationParameters(configurationParameters)
-				.selectTestMethodWithParameterTypes(testClass, testMethodName, allTypeNames)
+				.selectTestMethodWithParameterTypes(new TestSelector(testClass, testMethodName, allTypeNames))
 				.execute();
 	}
 
