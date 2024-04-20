@@ -10,6 +10,7 @@
  *     <li>{@link org.junitpioneer.jupiter.DisabledUntil}</li>
  *     <li>{@link org.junitpioneer.jupiter.DisableIfTestFails}</li>
  *     <li>{@link org.junitpioneer.jupiter.ExpectedToFail}</li>
+ *     <li>{@link org.junitpioneer.jupiter.FailAt}</li>
  *     <li>{@link org.junitpioneer.jupiter.ReportEntry}</li>
  *     <li>{@link org.junitpioneer.jupiter.RetryingTest}</li>
  *     <li>{@link org.junitpioneer.jupiter.StdIo}</li>
