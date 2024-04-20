@@ -12,23 +12,31 @@ package org.junitpioneer.jupiter;
 
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
 import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
 import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
-class DisabledIfNotReachableExtension implements ExecutionCondition {
+class DisableIfNotReachableExtension implements ExecutionCondition {
 
-	private static final Namespace NAMESPACE = Namespace.create(DisabledIfNotReachableExtension.class);
+	private static final Namespace NAMESPACE = Namespace.create(DisableIfNotReachableExtension.class);
 	private static final String DISABLED_KEY = "DISABLED_KEY";
 	private static final String DISABLED_VALUE = "";
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-		var optAnnotation = findClosestEnclosingAnnotation(context, DisabledIfNotReachable.class);
+		var optAnnotation = findClosestEnclosingAnnotation(context, DisableIfNotReachable.class);
 
 		if (optAnnotation.isEmpty()) {
 			return enabled("No @DisabledIfNotReachable annotation found.");
@@ -36,6 +44,7 @@ class DisabledIfNotReachableExtension implements ExecutionCondition {
 
 		var config = readConfigurationFromAnnotation(optAnnotation.get());
 
+		return pingUrl(config, context);
 	}
 
 	/**
@@ -44,56 +53,63 @@ class DisabledIfNotReachableExtension implements ExecutionCondition {
 	 *
 	 * Based on <a href="https://stackoverflow.com/users/157882/balusc">BalusC</a>'s answer on StackOverflow to
 	 * <a href="https://stackoverflow.com/a/3584332/2525313">Preferred Java way to ping an HTTP URL for availability</a>
-	 * but with JDK 11 HTTP-Client.
+	 * but with <a href="https://openjdk.org/groups/net/httpclient/intro.html">JDK 11 HTTP-Client</a>.
 	 *
 	 * @param config
 	 *  Configuration, including the url and a timeout value, based on annotation value
 	 * @param context
 	 * 	Extension context to get the unique ID of the test to be executed
 	 *
-	 *
 	 * @return {@code true} if the given HTTP URL has returned response
 	 * code 200-399 on a HEAD request within the given timeout, otherwise
 	 * {@code false}.
 	 */
-	private static ConditionEvaluationResult pingUrl(DisabledIfNotReachableConfiguration config, ExtensionContext context) {
-
-		String url = config.getUrl();
-		int timeout = config.getTimeOut();
-
-		https: //openjdk.org/groups/net/httpclient/intro.html
+	private static ConditionEvaluationResult pingUrl(DisabledIfNotReachableConfiguration config,
+			ExtensionContext context) {
 
 		boolean reachable = false;
+
+		try (HttpClient client = HttpClient
+				.newBuilder()
+				.version(HttpClient.Version.HTTP_2)
+				.followRedirects(HttpClient.Redirect.NORMAL)
+				.build()) {
+
+			HttpRequest request = HttpRequest
+					.newBuilder()
+					.uri(URI.create(config.url))
+					.timeout(Duration.ofMillis(config.getTimeout()))
+					.GET()
+					.build();
+
+			int responseCode = client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode();
+
+			// We consider the target reachable if we get an HTTP response code which does not indicate an error.
+			reachable = (200 <= responseCode && responseCode <= 399);
+		}
+		catch (IOException | InterruptedException e) {
+			// Nothing to do, as the reachable variable is initialized with false anyway.
+			// The return statement is not placed here as the responseCode is also inspected for the final result.
+		}
 
 		if (reachable) {
 			return enabled(format("%s is enabled because %s is reachable", context.getUniqueId(), config.getUrl()));
 		} else {
 			return disabled(format("%s is disabled because %s could not be reached in %dms", context.getUniqueId(),
-					config.getUrl(), config.getTimeOut()));
+				config.getUrl(), config.getTimeout()));
 		}
-
-
-//	 * @param config
-//				* 		The HTTP URL to be pinged.
-//				* @param timeoutMillis
-//				* 		The timeout in millis for both the connection timeout and the
-//	 * 		response read timeout. Note that the total timeout is effectively
-//				* 		two times the given timeout.
-		//		// Otherwise an exception may be thrown on invalid SSL certificates
-		//		String httpUrl = url.replaceFirst("^https", "http");
-		//		try {
-		//			HttpURLConnection connection = (HttpURLConnection) new URL(httpUrl).openConnection();
-		//			connection.setConnectTimeout(timeoutMillis);
-		//			connection.setReadTimeout(timeoutMillis);
-		//			connection.setRequestMethod("HEAD");
-		//			int responseCode = connection.getResponseCode();
-		//			return (200 <= responseCode && responseCode <= 399);
-		//		} catch (IOException exception) {
-		//			return false;
-		//		}
 	}
 
-	private DisabledIfNotReachableConfiguration readConfigurationFromAnnotation(DisabledIfNotReachable annotation) {
+	private DisabledIfNotReachableConfiguration readConfigurationFromAnnotation(DisableIfNotReachable annotation) {
+
+		if (null == annotation.url()) {
+			throw new ExtensionConfigurationException("URL must not be null");
+		}
+
+		if (annotation.timeoutMillis() <= 0) {
+			throw new ExtensionConfigurationException("Timeout must be greater than zero");
+		}
+
 		return new DisabledIfNotReachableConfiguration(annotation.url(), annotation.timeoutMillis());
 	}
 
@@ -102,17 +118,17 @@ class DisabledIfNotReachableExtension implements ExecutionCondition {
 	 */
 	private class DisabledIfNotReachableConfiguration {
 
-		// Change to record when after migrating to Java 16+
+		// Change to record after migrating to Java 16+
 		private final String url;
-		private final int timeOut;
+		private final int timeout;
 
-		public DisabledIfNotReachableConfiguration(String url, int timeOut) {
+		public DisabledIfNotReachableConfiguration(String url, int timeout) {
 			this.url = url;
-			this.timeOut = timeOut;
+			this.timeout = timeout;
 		}
 
-		public int getTimeOut() {
-			return timeOut;
+		public int getTimeout() {
+			return timeout;
 		}
 
 		public String getUrl() {
