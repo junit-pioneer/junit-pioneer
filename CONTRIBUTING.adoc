@@ -77,9 +77,7 @@ Where to put types and how to name them.
 
 ==== Naming Convention
 
-If not explicit mentioned differently, we follow the https://en.wikipedia.org/wiki/Camel_case[`camelCase`] convention for naming classes and methods.
-This means that everything is written without spaces, but every word starts with an upper letter, e.g. `DisableIfTestFailsExtension` (class name) or `handleTestExecutionException` (method name).
-
+If not explicit mentioned differently, we follow the https://www.oracle.com/java/technologies/javase/codeconventions-namingconventions.html[`Java naming conventions`].
 
 ==== Package Structure
 
