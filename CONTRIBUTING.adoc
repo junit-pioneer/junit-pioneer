@@ -75,6 +75,12 @@ Everything related to branches, commits, and more is described #fixing-bugs-deve
 
 Where to put types and how to name them.
 
+==== Naming Convention
+
+If not explicit mentioned differently, we follow the https://en.wikipedia.org/wiki/Camel_case[`camelCase`] convention for naming classes and methods.
+This means that everything is written without spaces, but every word starts with an upper letter, e.g. `DisableIfTestFailsExtension` (class name) or `handleTestExecutionException` (method name).
+
+
 ==== Package Structure
 
 Classes usually belong into one of these packages:
