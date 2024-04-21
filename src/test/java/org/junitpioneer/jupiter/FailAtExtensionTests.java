@@ -90,16 +90,6 @@ class FailAtExtensionTests {
 
 		}
 
-		// How can we test today? This way gives "attribute must be constant compile error"
-		//
-		//		private static final String DATE_NOW = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
-		//
-		//		@Test
-		//		@FailAt(reason = "Everything was better yesterday!", date = DATE_NOW)
-		//		void testIsAnnotatedWithDateToday() {
-		//
-		//		}
-
 		@Test
 		@FailAt(reason = "Keep on running!", date = "2199-01-01")
 		void testIsAnnotatedWithDateInTheFuture() {
