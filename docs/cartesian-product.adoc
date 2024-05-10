@@ -197,6 +197,41 @@ To demonstrate with a table:
 
 For more information, please see the link:/docs/range-sources[separate documentation about range sources].
 
+=== `@CartesianTest.MethodParameterSource`
+
+`@CartesianTest.MethodParameterSource` can be used to specify factory methods that supply arguments for a single parameter of a `@CartesianTest`.
+
+Similar to https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-MethodSource[JUnit's `@MethodSource`], methods can be specified with their simple name when in the same class, (i.e. `methodName`), or their fully qualified name otherwise (i.e. `com.example.Class#methodName`).
+Methods must be static, except for methods in the same class when the test class is annotated with `@TestInstance(Lifecycle.PER_CLASS)`.
+Methods may return a `Stream` (including the primitive-specialized variants), `Iterable`, `Iterator`, or array of values.
+
+Let's look at an example.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=cartesian_parameter_source_basic]
+----
+
+In this example, the test method would be invoked 12 times.
+To demonstrate with a table:
+
+|===
+| # of test | value of `name` | value of `points`
+
+| 1st test   | "John"         | 12
+| 2nd test   | "John"         | 18
+| 3rd test   | "John"         | 22
+| 4th test   | "Annie"        | 12
+| 5th test   | "Annie"        | 18
+| 6th test   | "Annie"        | 22
+| 7th test   | "Bob"          | 12
+| 8th test   | "Bob"          | 18
+| 9th test   | "Bob"          | 22
+| 10th test  | "Sofia"        | 12
+| 11th test  | "Sofia"        | 18
+| 12th test  | "Sofia"        | 22
+|===
+
 == Defining arguments with factories
 
 You can annotate your test method to supply arguments to all parameters simultaneously.
@@ -205,7 +240,7 @@ You can annotate your test method to supply arguments to all parameters simultan
 
 `@CartesianTest.MethodFactory` can be used to name a factory method that supplies your arguments.
 The `value` annotation parameter is mandatory.
-Just like with JUnit's `@MethodSource`, you can specify the factory method with its fully-qualified name (including the class), e.g. `com.example.Class#factory`.
+Just like with https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-sources-MethodSource[JUnit's `@MethodSource`], you can specify the factory method with its fully-qualified name (including the class), e.g. `com.example.Class#factory`.
 This method must return `ArgumentSets`.
 
 `ArgumentSets` is a helper class, specifically for creating sets for `@CartesianTest`.
