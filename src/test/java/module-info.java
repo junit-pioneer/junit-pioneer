@@ -24,13 +24,14 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.params;
 	exports org.junitpioneer.jupiter.json;
 	exports org.junitpioneer.jupiter.converter;
+	exports org.junitpioneer.jupiter.resource;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter to org.junit.platform.commons, nl.jqno.equalsverifier;
 	opens org.junitpioneer.jupiter.cartesian to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.issue to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.params to org.junit.platform.commons;
-	opens org.junitpioneer.jupiter.resource to org.junit.platform.commons;
+	opens org.junitpioneer.jupiter.resource to nl.jqno.equalsverifier, org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.json to org.junit.platform.commons, com.fasterxml.jackson.databind;
 	opens org.junitpioneer.jupiter.converter to org.junit.platform.commons;
 

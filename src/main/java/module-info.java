@@ -23,6 +23,7 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.cartesian;
 	exports org.junitpioneer.jupiter.params;
 	exports org.junitpioneer.jupiter.json;
+	exports org.junitpioneer.jupiter.resource;
 	exports org.junitpioneer.jupiter.converter;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
