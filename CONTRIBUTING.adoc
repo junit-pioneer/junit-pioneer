@@ -75,6 +75,10 @@ Everything related to branches, commits, and more is described #fixing-bugs-deve
 
 Where to put types and how to name them.
 
+==== Naming Convention
+
+If not explicit mentioned differently, we follow the https://www.oracle.com/java/technologies/javase/codeconventions-namingconventions.html[`Java naming conventions`].
+
 ==== Package Structure
 
 Classes usually belong into one of these packages:
