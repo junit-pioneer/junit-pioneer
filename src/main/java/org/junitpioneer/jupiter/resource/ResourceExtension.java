@@ -56,7 +56,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 							parameterContext.getParameter(), testMethodDescription(extensionContext));
 			// @formatter:on
 			throw new ParameterResolutionException(message);
-		} else if (parameterContext.isAnnotated(Shared.Named.class) && findSharedOnClass(extensionContext).isPresent()) {
+		} else if (parameterContext.isAnnotated(Shared.Named.class)
+				&& findSharedOnClass(extensionContext).isPresent()) {
 			throw new ParameterResolutionException(format(
 				"Parameter [%s] in %s is annotated with @Shared.Named but the resource has not been created. Are you missing a @Shared annotation on your test class?",
 				parameterContext.getParameter(), testMethodDescription(extensionContext)));

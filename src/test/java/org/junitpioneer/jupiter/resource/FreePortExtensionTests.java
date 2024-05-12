@@ -27,7 +27,7 @@ public class FreePortExtensionTests {
 	@DisplayName("resolve FreePort parameter successfully")
 	void testFreePortParameterResolution() {
 		ExecutionResults results = executeTestClass(FreePortTestCaseTests.class);
-		assertThat(results).hasSingleSucceededTest();
+		assertThat(results).hasNumberOfSucceededTests(2);
 	}
 
 	static class FreePortTestCaseTests {

@@ -33,3 +33,5 @@ If you need a specific port open, you can supply your arguments in the annotatio
 ----
 include::{demo}[tag=specific_port_example]
 ----
+
+WARNING: The extension makes no guarantees that the port will still be available by the time you use it!

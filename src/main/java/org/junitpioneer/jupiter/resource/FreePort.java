@@ -17,10 +17,27 @@ import java.net.ServerSocket;
 import java.util.List;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junitpioneer.internal.PioneerPreconditions;
 
+/**
+ * Resource factory for creating a {@link ServerSocket}.
+ * This can be done via the {@link Shared} or {@link New} annotations.
+ *
+ * <p>For more details and examples, see
+ * <a href="https://junit-pioneer.org/docs/free-port/" target="_top">the documentation on the FreePort extension</a>.</p>
+ *
+ * <p>This extension is based on the JUnit Pioneer abstract extension for resources.</p>
+ * <p>For more information about that, see
+ * <a href="https://junit-pioneer.org/docs/resources/" target="_top">the documentation on the resource extension.</a>.</p>
+ *
+ * @see Shared
+ * @see New
+ */
 public final class FreePort implements ResourceFactory<ServerSocket> {
 
+	/**
+	 * Resource factories should not be instantiated directly, only
+	 * by using {@code @New} or {@code @Shared}.
+	 */
 	public FreePort() {
 		// recreate default constructor to prevent compiler warning
 	}
@@ -41,6 +58,15 @@ public final class FreePort implements ResourceFactory<ServerSocket> {
 		}
 	}
 
+	/**
+	 * Wrapper/resource class for creating a {@link ServerSocket} on a specific port.
+	 * If no port number is specified then the port number is automatically allocated,
+	 * typically from an ephemeral port range.
+	 *
+	 * <p>ServerSocket instances get closed automatically by the resource extension.</p>
+	 *
+	 * @see ServerSocket#ServerSocket(int)
+	 */
 	private static final class FreePortResource implements Resource<ServerSocket> {
 
 		private final ServerSocket serverSocket;
