@@ -33,6 +33,7 @@ module org.junitpioneer {
 	opens org.junitpioneer.jupiter.resource to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.json to org.junit.platform.commons, com.fasterxml.jackson.databind;
 	opens org.junitpioneer.jupiter.converter to org.junit.platform.commons;
+	opens org.junitpioneer.jupiter.displaynamegenerator to org.junit.platform.commons;
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
