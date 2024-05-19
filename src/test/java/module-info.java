@@ -24,6 +24,7 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.params;
 	exports org.junitpioneer.jupiter.json;
 	exports org.junitpioneer.jupiter.converter;
+	exports org.junitpioneer.jupiter.displaynamegenerator;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter to org.junit.platform.commons, nl.jqno.equalsverifier;
