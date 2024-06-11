@@ -60,6 +60,8 @@ public interface TestSuiteTestsAssert {
 	 */
 	TestSuiteTestsAssert hasNumberOfDynamicallyRegisteredTests(int expected);
 
+	TestSuiteTestsFailureAssert asFailureAssert();
+
 	interface TestSuiteTestsFailureAssert extends TestSuiteTestsAssert, TestSuiteFailureAssert {
 	}
 

@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.ListAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.platform.testkit.engine.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+import org.opentest4j.MultipleFailuresError;
 
 class RetryingTestExtensionTests {
 
@@ -132,6 +134,10 @@ class RetryingTestExtensionTests {
 				.hasNumberOfDynamicallyRegisteredTests(3)
 				.hasNumberOfAbortedTests(2)
 				.hasNumberOfFailedTests(1);
+
+		assertThat(results)
+				.asFailureAssert()
+				.andThenCheckExceptions(throwables -> assertLastExceptionFailures(throwables).hasSize(3));
 	}
 
 	@Test
@@ -184,6 +190,11 @@ class RetryingTestExtensionTests {
 				.hasNumberOfAbortedTests(2)
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(1);
+
+		assertThat(results)
+				.asFailureAssert()
+				.andThenCheckExceptions(throwables -> assertLastExceptionFailures(throwables).hasSize(3));
+
 	}
 
 	@Test
@@ -313,6 +324,12 @@ class RetryingTestExtensionTests {
 
 			Assertions.assertThat(suspendedFor).isGreaterThanOrEqualTo(greaterThanOrEqualTo);
 		}
+	}
+
+	private ListAssert<Throwable> assertLastExceptionFailures(List<Throwable> exceptions) {
+		Throwable throwable = exceptions.get(exceptions.size() - 1);
+		Assertions.assertThat(throwable).isInstanceOf(MultipleFailuresError.class);
+		return Assertions.assertThat(((MultipleFailuresError) throwable).getFailures());
 	}
 
 	// TEST CASES -------------------------------------------------------------------
