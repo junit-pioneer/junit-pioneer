@@ -165,7 +165,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				throw testAbortedException;
 			} else {
 				var testAbortedException = new TestAbortedException(
-					format("%s%nTest execution #%d (of up to %d) failed ~> no more retries",
+					format("%s%nTest execution #%d (of up to %d) failed ~> will not retry any more",
 						exception.getMessage(), retriesSoFar, maxRetries),
 					exception);
 				seenExceptions.add(testAbortedException);
