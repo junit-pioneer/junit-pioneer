@@ -163,10 +163,16 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 					exception);
 				seenExceptions.add(testAbortedException);
 				throw testAbortedException;
-			} else
+			} else {
+				var testAbortedException = new TestAbortedException(
+					format("%s%nTest execution #%d (of up to %d) failed ~> no more retries",
+						exception.getMessage(), retriesSoFar, maxRetries),
+					exception);
+				seenExceptions.add(testAbortedException);
 				throw new MultipleFailuresError(format(
 					"Test execution #%d (of up to %d with at least %d successes) failed ~> test fails - see cause for details",
 					retriesSoFar, maxRetries, minSuccess), seenExceptions);
+			}
 		}
 
 		private boolean expectedException(Throwable exception) {
