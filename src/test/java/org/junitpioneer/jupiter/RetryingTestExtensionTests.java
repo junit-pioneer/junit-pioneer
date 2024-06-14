@@ -114,6 +114,7 @@ class RetryingTestExtensionTests {
 				.executeTestMethod(RetryingTestTestCases.class, "failsOnlyOnFirstInvocationWithUnexpectedException");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(1).hasNumberOfFailedTests(1);
+		assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(NullPointerException.class);
 	}
 
 	@Test
@@ -125,6 +126,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfDynamicallyRegisteredTests(2)
 				.hasNumberOfAbortedTests(1)
 				.hasNumberOfFailedTests(1);
+
 		assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(NullPointerException.class);
 	}
 
@@ -204,6 +206,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfAbortedTests(2)
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(0);
+
 		assertFailedTest(results);
 	}
 
