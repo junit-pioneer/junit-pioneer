@@ -23,7 +23,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.ListAssert;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
@@ -33,6 +33,7 @@ import org.junit.platform.testkit.engine.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 import org.opentest4j.MultipleFailuresError;
+import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtensionTests {
 
@@ -124,6 +125,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfDynamicallyRegisteredTests(2)
 				.hasNumberOfAbortedTests(1)
 				.hasNumberOfFailedTests(1);
+		assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(NullPointerException.class);
 	}
 
 	@Test
@@ -135,9 +137,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfAbortedTests(2)
 				.hasNumberOfFailedTests(1);
 
-		assertThat(results)
-				.asFailureAssert()
-				.andThenCheckExceptions(throwables -> assertLastExceptionFailures(throwables).hasSize(3));
+		assertFailedTest(results);
 	}
 
 	@Test
@@ -191,9 +191,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(1);
 
-		assertThat(results)
-				.asFailureAssert()
-				.andThenCheckExceptions(throwables -> assertLastExceptionFailures(throwables).hasSize(3));
+		assertFailedTest(results);
 
 	}
 
@@ -206,6 +204,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfAbortedTests(2)
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(0);
+		assertFailedTest(results);
 	}
 
 	@Test
@@ -290,6 +289,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfSucceededTests(0);
 
 		assertSuspendedFor(results, SUSPEND_FOR);
+		assertFailedTest(results);
 	}
 
 	@Test
@@ -304,6 +304,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfSucceededTests(0);
 
 		assertSuspendedFor(results, 0);
+		assertFailedTest(results);
 	}
 
 	private void assertSuspendedFor(ExecutionResults results, long greaterThanOrEqualTo) {
@@ -326,10 +327,15 @@ class RetryingTestExtensionTests {
 		}
 	}
 
-	private ListAssert<Throwable> assertLastExceptionFailures(List<Throwable> exceptions) {
-		Throwable throwable = exceptions.get(exceptions.size() - 1);
-		Assertions.assertThat(throwable).isInstanceOf(MultipleFailuresError.class);
-		return Assertions.assertThat(((MultipleFailuresError) throwable).getFailures());
+	private void assertFailedTest(ExecutionResults results) {
+		assertThat(results)
+				.hasSingleFailedTest()
+				.withExceptionInstanceOf(MultipleFailuresError.class)
+				.extracting(MultipleFailuresError::getFailures, InstanceOfAssertFactories.list(Throwable.class))
+				.hasSize(3)
+				.hasOnlyElementsOfType(TestAbortedException.class)
+				.extracting(Throwable::getCause)
+				.hasOnlyElementsOfType(IllegalArgumentException.class);
 	}
 
 	// TEST CASES -------------------------------------------------------------------

@@ -210,11 +210,6 @@ class PioneerExecutionResultAssert extends AbstractAssert<PioneerExecutionResult
 		return hasNumberOfSpecificTests(actual.testEvents().dynamicallyRegistered().count(), expected);
 	}
 
-	@Override
-	public TestSuiteTestsFailureAssert asFailureAssert() {
-		return this;
-	}
-
 	private TestSuiteTestsFailureAssert hasNumberOfSpecificTests(long tests, int expected) {
 		try {
 			Assertions.assertThat(tests).isEqualTo(expected);
