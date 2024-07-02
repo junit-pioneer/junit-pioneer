@@ -3,6 +3,8 @@
 #  * the entries are sorted lexicographically by their title (i.e. not their slug)
   - title: JUnit Pioneer Extensions
     children:
+      - title: "Displayname generator ReplaceCamelCaseAndUnderscoreAndNumber extending org.junit.jupiter.api.DisplayNameGenerator.Standard to support CamelCase, underscores and numbers"
+        url: /docs/replace-camelcase-and-underscore-and-number/
       - title: "Cartesian Product of Parameters"
         url: /docs/cartesian-product/
       - title: "Clear, Set, and Restore System Properties"
