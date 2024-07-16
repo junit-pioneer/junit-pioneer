@@ -43,51 +43,35 @@ class ReplaceCamelCaseAndUnderscoreAndNumberTests extends ReplaceCamelCaseAndUnd
     @DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)
     static class ReplaceCamelCaseAndUnderscoreAndNumberStyleTestCase {
         @Test
-        void shouldReturnErrorWhen_maxResults_IsNegative() {
-        }
+        void shouldReturnErrorWhen_maxResults_IsNegative() {}
 
         @ParameterizedTest
         @ValueSource(strings = {"", "  "})
-        void shouldCreateLimitWithRange(String input) {
-            methodNotAnnotatedWithTestOrParameterizedTest();
-        }
+        void shouldCreateLimitWithRange(String input) {}
 
         @ParameterizedTest
         @ValueSource(ints = {5, 23})
-        void shouldReturn5Errors(int input) {
-        }
+        void shouldReturn5Errors(int input) {}
 
         @Test
-        void shouldReturn5errors() {
-            methodNotAnnotatedWithTestOrParameterizedTest();
-        }
+        void shouldReturn5errors() {}
 
         @Test
-        void shouldReturn23Errors() {
-            methodNotAnnotatedWithTestOrParameterizedTest();
-        }
+        void shouldReturn23Errors() {}
 
         @Test
-        void shouldReturnTheValueOf_maxResults() {
-            methodNotAnnotatedWithTestOrParameterizedTest();
-        }
+        void shouldReturnTheValueOf_maxResults() {}
 
         @ParameterizedTest
         @ValueSource(strings = {"", "  "})
-        void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo5(String input) {
-        }
+        void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo5(String input) {}
 
         @Test
-        void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15() {
-        }
-
-        private void methodNotAnnotatedWithTestOrParameterizedTest() {
-        }
+        void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15() {}
 
         @DisplayName("@DisplayName prevails")
         @Test
-        void testDisplayNamePrevails() {
-        }
+        void testDisplayNamePrevails() {}
 
     }
 }

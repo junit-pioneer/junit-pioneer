@@ -102,18 +102,7 @@ Generated display name: `Should return the number of errors as numberOfErrors in
 include::{demo}[tag=shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15]
 ----
 
-
 === Method 9
-
-Nothing will be generated because it's not a test method.
-
-[source,java,indent=0]
-----
-include::{demo}[tag=methodNotAnnotatedWithTestOrParameterizedTest]
-----
-
-
-=== Method 10
 
 Generated display name: `@DisplayName prevails`
 

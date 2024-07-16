@@ -30,9 +30,7 @@ public class ReplaceCamelCaseAndUnderscoreAndNumberDemo {
 		// tag::shouldCreateLimitWithRange[]
 		@ParameterizedTest
 		@ValueSource(strings = {"", "  "})
-		void shouldCreateLimitWithRange(String input) {
-			methodNotAnnotatedWithTestOrParameterizedTest();
-		}
+		void shouldCreateLimitWithRange(String input) {}
 		// end::shouldCreateLimitWithRange[]
 
 		// tag::shouldReturn5Errors[]
@@ -43,23 +41,17 @@ public class ReplaceCamelCaseAndUnderscoreAndNumberDemo {
 
 		// tag::shouldReturn5errors_no_params[]
 		@Test
-		void shouldReturn5errors() {
-			methodNotAnnotatedWithTestOrParameterizedTest();
-		}
+		void shouldReturn5errors() {}
 		// end::shouldReturn5errors_no_params[]
 
 		// tag::shouldReturn23Errors[]
 		@Test
-		void shouldReturn23Errors() {
-			methodNotAnnotatedWithTestOrParameterizedTest();
-		}
+		void shouldReturn23Errors() {}
 		// end::shouldReturn23Errors[]
 
 		// tag::shouldReturnTheValueOf_maxResults[]
 		@Test
-		void shouldReturnTheValueOf_maxResults() {
-			methodNotAnnotatedWithTestOrParameterizedTest();
-		}
+		void shouldReturnTheValueOf_maxResults() {}
 		// end::shouldReturnTheValueOf_maxResults[]
 
 		// tag::shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo5[]
@@ -72,10 +64,6 @@ public class ReplaceCamelCaseAndUnderscoreAndNumberDemo {
 		@Test
 		void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15() {}
 		// end::shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15[]
-
-		// tag::methodNotAnnotatedWithTestOrParameterizedTest[]
-		private void methodNotAnnotatedWithTestOrParameterizedTest() {}
-		// end::methodNotAnnotatedWithTestOrParameterizedTest[]
 
 		// tag::testDisplayNamePrevails[]
 		@DisplayName("@DisplayName prevails")
