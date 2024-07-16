@@ -1,0 +1,123 @@
+:page-title: ReplaceCamelCaseAndUnderscoreAndNumber
+:page-description:  New display name generator extending `org.junit.jupiter.api.DisplayNameGenerator.Standard` to support CamelCase, underscores and numbers
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/displaynamegenerator/ReplaceCamelCaseAndUnderscoreAndNumberDemo.java
+
+The aim is to simplify unit test display names for method names combining CamelCase, underscore and numbers.
+Instead of using this method annotation `org.junit.jupiter.api.DisplayName`, we can just use this class annotation `org.junit.jupiter.api.DisplayNameGeneration` and use that method annotation if needed.
+This generator extends `org.junit.jupiter.api.DisplayNameGenerator.Standard`.
+
+Applying `@DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)` to the test class will provide human-readable descriptions for test methods not annotated with `@DisplayName`.
+
+=== 3 key rules:
+* Each uppercase letter is turned into its lowercase value prepended by space.
+* Each underscore is turned into space. Words bounded by underscores or just starting with underscore are not transformed. Usually these words represent classes, variables...
+* Each number is prepended by space.
+
+== `@DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)`
+
+Usage Example:
+
+[source,java,indent=0]
+----
+include::{demo}[tag=class_using_replace_camel_case_and_underscore_and_number_generator]
+----
+
+=== Method 1
+
+Generated display name: `Should return error when maxResults is negative`
+
+[source,java,indent=0]
+----
+include::{demo}[tag=shouldReturnErrorWhen_maxResults_IsNegative]
+----
+
+
+=== Method 2
+
+Generated display name: `Should create limit with range (String)`
+
+[source,java,indent=0]
+----
+include::{demo}[tag=shouldCreateLimitWithRange]
+----
+
+
+=== Method 3
+
+Generated display name: `Should return 5 errors (int)`
+
+[source,java,indent=0]
+----
+include::{demo}[tag=shouldReturn5Errors]
+----
+
+
+=== Method 4
+
+Generated display name: `Should return 5 errors`
+
+[source,java,indent=0]
+----
+include::{demo}[tag=shouldReturn5errors_no_params]
+----
+
+
+=== Method 5
+
+Generated display name: `Should return 23 errors`
+
+[source,java,indent=0]
+----
+include::{demo}[tag=shouldReturn23Errors]
+----
+
+
+=== Method 6
+
+Generated display name: `Should return the value of maxResults`
+
+[source,java,indent=0]
+----
+include::{demo}[tag=shouldReturnTheValueOf_maxResults]
+----
+
+
+=== Method 7
+
+Generated display name: `Should return the number of errors as numberOfErrors inferior or equal to 5 (String)`
+
+[source,java,indent=0]
+----
+include::{demo}[tag=shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo5]
+----
+
+
+=== Method 8
+
+Generated display name: `Should return the number of errors as numberOfErrors inferior or equal to 15`
+
+[source,java,indent=0]
+----
+include::{demo}[tag=shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15]
+----
+
+
+=== Method 9
+
+Nothing will be generated because it's not a test method.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=methodNotAnnotatedWithTestOrParameterizedTest]
+----
+
+
+=== Method 10
+
+Generated display name: `@DisplayName prevails`
+
+[source,java,indent=0]
+----
+include::{demo}[tag=testDisplayNamePrevails]
+----
