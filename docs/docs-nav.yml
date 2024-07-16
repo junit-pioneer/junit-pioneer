@@ -21,6 +21,8 @@
         url: /docs/disable-parameterized-tests/
       - title: "Expected-to-Fail Tests"
         url: /docs/expected-to-fail-tests/
+      - title: "Fail Test at a Date"
+        url: /docs/fail-at/
       - title: "Injecting Resources"
         url: /docs/resources/
       - title: "Injecting Temporary Directories"
