@@ -124,6 +124,7 @@ The least we can do is to thank them and list some of their accomplishments here
 ==== 2024
 
 * https://github.com/TWiStErRob[Papp Róbert (TWiStErRob)] updated Gradle and GitHub Actions tooling to latest. (#803 / #804 / #805)
+* https://github.com/boris-faniuk-n26[Boris Faniuk] contributed to `@RetryingTest` extension (#821)
 
 ==== 2023
 
