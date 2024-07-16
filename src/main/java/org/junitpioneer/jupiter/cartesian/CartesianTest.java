@@ -323,4 +323,29 @@ public @interface CartesianTest {
 
 	}
 
+	/**
+	 * Analogue to {@link org.junit.jupiter.params.provider.MethodSource},
+	 * but for {@link CartesianTest}. Provides values for a single parameter
+	 * from factory methods.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
+	@CartesianArgumentsSource(MethodParameterProvider.class)
+	@interface MethodParameterSource {
+
+		/**
+		 * Methods that back this source.
+		 *
+		 * <p>Methods may be referenced by their simple name if in the same class,
+		 * or by fully qualified name otherwise (i.e. {@code a.b.c.SomeClass#someMethod}).</p>
+		 *
+		 * <p>Methods should return a {@link java.util.stream.Stream}, {@link Iterable}, {@link java.util.Iterator},
+		 * or array of values.</p>
+		 *
+		 * @return method strings
+		 */
+		String[] value();
+
+	}
+
 }
