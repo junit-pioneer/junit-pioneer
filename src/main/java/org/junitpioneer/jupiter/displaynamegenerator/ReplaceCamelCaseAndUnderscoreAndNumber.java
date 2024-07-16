@@ -33,9 +33,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
  * <p>
  * Usage example:
  *
- * <pre>
- *
- *     {@code
+ * <pre> {@code
  *
  * @DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)
  * class ExampleTest {
