@@ -69,6 +69,13 @@ import java.lang.reflect.Method;
  *     void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15() {
  *       ...
  *     }
+ *
+ *     //The class annotation has no effect here
+ *     @DisplayName("@DisplayName prevails")
+ *     @Test
+ *     void testDisplayNamePrevails() {
+ *
+ *     }
  * }
  *
  *     }
