@@ -80,7 +80,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
  *     }
  * </pre>
  *
- * @since
+ * @since 2.3.0
  * @see org.junit.jupiter.api.DisplayNameGenerator.Standard
  */
 public class ReplaceCamelCaseAndUnderscoreAndNumber extends DisplayNameGenerator.Standard {
