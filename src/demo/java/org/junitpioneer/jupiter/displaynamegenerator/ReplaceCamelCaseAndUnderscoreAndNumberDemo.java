@@ -22,53 +22,63 @@ public class ReplaceCamelCaseAndUnderscoreAndNumberDemo {
 
 	@DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)
 	class ReplaceCamelCaseAndUnderscoreAndNumberStyleTest {
+
 		// tag::shouldReturnErrorWhen_maxResults_IsNegative[]
 		@Test
-		void shouldReturnErrorWhen_maxResults_IsNegative() {}
+		void shouldReturnErrorWhen_maxResults_IsNegative() {
+		}
 		// end::shouldReturnErrorWhen_maxResults_IsNegative[]
 
 		// tag::shouldCreateLimitWithRange[]
 		@ParameterizedTest
-		@ValueSource(strings = {"", "  "})
-		void shouldCreateLimitWithRange(String input) {}
+		@ValueSource(strings = { "", "  " })
+		void shouldCreateLimitWithRange(String input) {
+		}
 		// end::shouldCreateLimitWithRange[]
 
 		// tag::shouldReturn5Errors[]
 		@ParameterizedTest
-		@ValueSource(ints = {5, 23})
-		void shouldReturn5Errors(int input) {}
+		@ValueSource(ints = { 5, 23 })
+		void shouldReturn5Errors(int input) {
+		}
 		// end::shouldReturn5Errors[]
 
 		// tag::shouldReturn5errors_no_params[]
 		@Test
-		void shouldReturn5errors() {}
+		void shouldReturn5errors() {
+		}
 		// end::shouldReturn5errors_no_params[]
 
 		// tag::shouldReturn23Errors[]
 		@Test
-		void shouldReturn23Errors() {}
+		void shouldReturn23Errors() {
+		}
 		// end::shouldReturn23Errors[]
 
 		// tag::shouldReturnTheValueOf_maxResults[]
 		@Test
-		void shouldReturnTheValueOf_maxResults() {}
+		void shouldReturnTheValueOf_maxResults() {
+		}
 		// end::shouldReturnTheValueOf_maxResults[]
 
 		// tag::shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo5[]
 		@ParameterizedTest
-		@ValueSource(strings = {"", "  "})
-		void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo5(String input) {}
+		@ValueSource(strings = { "", "  " })
+		void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo5(String input) {
+		}
 		// end::shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo5[]
 
 		// tag::shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15[]
 		@Test
-		void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15() {}
+		void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15() {
+		}
 		// end::shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15[]
 
 		// tag::testDisplayNamePrevails[]
 		@DisplayName("@DisplayName prevails")
 		@Test
-		void testDisplayNamePrevails() {}
+		void testDisplayNamePrevails() {
+		}
 		// end::testDisplayNamePrevails[]
 
 	}
