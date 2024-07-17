@@ -63,7 +63,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
  *     void testDisplayNamePrevails() {}
  * }
  *
- *     
+ *
  * </pre>
  *
  * @since 2.3.0
