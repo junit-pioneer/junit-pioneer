@@ -33,49 +33,37 @@ import org.junit.jupiter.api.DisplayNameGenerator;
  * <p>
  * Usage example:
  *
- * <pre> {@code
+ * <pre>
  *
- * @DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)
+ * {@code @DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)}
  * class ExampleTest {
- *     @Test
+ *     {@code @Test}
  *     //Equivalent of @DisplayName("Should return error when maxResults is negative")
- *     void shouldReturnErrorWhen_maxResults_IsNegative() {
- *       ...
- *     }
- *     @Test
+ *     void shouldReturnErrorWhen_maxResults_IsNegative() {}
+ *     {@code @Test}
  *     //Equivalent of @DisplayName("Should create limit with range")
- *     void shouldCreateLimitWithRange() {
- *       ...
- *     }
+ *     void shouldCreateLimitWithRange() {}
  *
- *     @Test
+ *     {@code @Test}
  *     //Equivalent of @DisplayName("Should return 5 errors")
- *     void shouldReturn5Errors() {
- *       ...
- *     }
+ *     void shouldReturn5Errors() {}
  *
- *     @ParameterizedTest
- *     @ValueSource(strings = {"job", "player"})
+ *     {@code @ParameterizedTest}
+ *     {@code @ValueSource(strings = {"job", "player"})}
  *     //Equivalent of @DisplayName("Should return the value of maxResults (String)")
- *     void shouldReturnTheValueOf_maxResults(String input) {
- *       ...
- *     }
+ *     void shouldReturnTheValueOf_maxResults(String input) {}
  *
- *     @Test
+ *     {@code @Test}
  *     //Equivalent of @DisplayName("Should return the number of errors as numberOfErrors inferior or equal to 15")
- *     void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15() {
- *       ...
- *     }
+ *     void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15() {}
  *
  *     //The class annotation has no effect here
- *     @DisplayName("@DisplayName prevails")
- *     @Test
- *     void testDisplayNamePrevails() {
- *
- *     }
+ *     {@code @DisplayName("@DisplayName prevails")}
+ *     {@code @Test}
+ *     void testDisplayNamePrevails() {}
  * }
  *
- *     }
+ *     
  * </pre>
  *
  * @since 2.3.0
