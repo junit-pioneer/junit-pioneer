@@ -21,27 +21,30 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.engine.TestDescriptor;
 
+/**
+ * Testing {@linkplain ReplaceCamelCaseAndUnderscoreAndNumber} by extending this custom engine {@linkplain ReplaceCamelCaseAndUnderscoreAndNumberTestEngine}
+ * instead of {@linkplain org.junit.jupiter.engine.JupiterTestEngine } because it is internal to JUnit
+ * */
+
 class ReplaceCamelCaseAndUnderscoreAndNumberTests extends ReplaceCamelCaseAndUnderscoreAndNumberTestEngine {
 
 	@Test
 	void replaceCamelCaseAndUnderscoreAndNumberGenerator() {
-		check(ReplaceCamelCaseAndUnderscoreAndNumberStyleTestCase.class, //
-			"CONTAINER: ReplaceCamelCaseAndUnderscoreAndNumberTests$ReplaceCamelCaseAndUnderscoreAndNumberStyleTestCase", //
-			"TEST: @DisplayName prevails", //
-			"TEST: Should return error when maxResults is negative", //
-			"TEST: Should create limit with range (String)", //
-			"TEST: Should return 5 errors (int)", //
-			"TEST: Should return 5errors", //
-			"TEST: Should return 23 errors", //
-			"TEST: Should return the value of maxResults", //
-			"TEST: Should return the number of errors as numberOfErrors inferior or equal to 5 (String)", //
-			"TEST: Should return the number of errors as numberOfErrors inferior or equal to 15" //
-		);
+		check(
+			"CONTAINER: ReplaceCamelCaseAndUnderscoreAndNumberTests$ReplaceCamelCaseAndUnderscoreAndNumberStyleTestCase",
+			"TEST: @DisplayName prevails", "TEST: Should return error when maxResults is negative",
+			"TEST: Should create limit with range (String)", "TEST: Should return 5 errors (int)",
+			"TEST: Should return 5errors", "TEST: Should return 23 errors",
+			"TEST: Should return the value of maxResults",
+			"TEST: Should return the number of errors as numberOfErrors inferior or equal to 5 (String)",
+			"TEST: Should return the number of errors as numberOfErrors inferior or equal to 15");
 
 	}
 
-	private void check(Class<?> testClass, String... expectedDisplayNames) {
-		var request = request().selectors(selectClass(testClass)).build();
+	private void check(String... expectedDisplayNames) {
+		var request = request()
+				.selectors(selectClass(ReplaceCamelCaseAndUnderscoreAndNumberStyleTestCase.class))
+				.build();
 		var descriptors = discoverTests(request).getDescendants();
 		assertThat(descriptors).map(this::describe).containsExactlyInAnyOrder(expectedDisplayNames);
 	}
