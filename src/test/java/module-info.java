@@ -24,6 +24,7 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.params;
 	exports org.junitpioneer.jupiter.json;
 	exports org.junitpioneer.jupiter.converter;
+	exports org.junitpioneer.jupiter.displaynamegenerator;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter to org.junit.platform.commons, nl.jqno.equalsverifier;
@@ -33,6 +34,7 @@ module org.junitpioneer {
 	opens org.junitpioneer.jupiter.resource to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.json to org.junit.platform.commons, com.fasterxml.jackson.databind;
 	opens org.junitpioneer.jupiter.converter to org.junit.platform.commons;
+	opens org.junitpioneer.jupiter.displaynamegenerator to org.junit.platform.commons;
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;

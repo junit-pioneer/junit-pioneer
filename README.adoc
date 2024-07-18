@@ -123,6 +123,7 @@ The least we can do is to thank them and list some of their accomplishments here
 
 ==== 2024
 
+* https://github.com/FanJups[Fanon Jupkwo (FanJups)] added a new display name generator extending `org.junit.jupiter.api.DisplayNameGenerator.Standard` to support CamelCase, underscores and numbers: https://junit-pioneer.org/docs/replace-camelcase-and-underscore-and-number/[ReplaceCamelCaseAndUnderscoreAndNumber] (#793 / #819)
 * https://github.com/TWiStErRob[Papp Róbert (TWiStErRob)] updated Gradle and GitHub Actions tooling to latest. (#803 / #804 / #805)
 * https://github.com/boris-faniuk-n26[Boris Faniuk] contributed to `@RetryingTest` extension (#821)
 
