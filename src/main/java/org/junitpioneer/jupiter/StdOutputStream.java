@@ -12,7 +12,6 @@ package org.junitpioneer.jupiter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 abstract class StdOutputStream extends OutputStream {
