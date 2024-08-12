@@ -245,7 +245,7 @@ public class StdIoExtensionTests {
 		@DisplayName("handles Unicode properly")
 		void handlesUnicode(StdOut out) {
 			String s = "■━━━".repeat(100);
-			System.out.println(s);
+			assertThatCode(() -> System.out.println(s)).doesNotThrowAnyException();
 		}
 
 	}
