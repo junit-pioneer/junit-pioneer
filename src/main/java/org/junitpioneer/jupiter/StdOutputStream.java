@@ -10,14 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 abstract class StdOutputStream extends OutputStream {
 
-	private final StringWriter writer = new StringWriter();
+	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 	public StdOutputStream() {
 		// recreate default constructor to prevent compiler warning
@@ -25,19 +24,19 @@ abstract class StdOutputStream extends OutputStream {
 
 	@Override
 	public void write(int i) {
-		writer.write(i);
+		out.write(i);
 	}
 
 	@Override
 	public final void write(byte[] b, int off, int len) {
-		writer.write(new String(b, Charset.defaultCharset()), off, len);
+		out.write(b, off, len);
 	}
 
 	/**
 	 * @return the string that was written to {@code System.out} or {@code System.err}
 	 */
 	public String capturedString() {
-		return writer.toString();
+		return out.toString();
 	}
 
 	/**
@@ -55,7 +54,7 @@ abstract class StdOutputStream extends OutputStream {
 	 * @return the lines that were written to {@code System.out} or {@code System.err}
 	 */
 	public String[] capturedLines() {
-		var lines = writer.toString().split(StdIoExtension.SEPARATOR, -1);
+		var lines = out.toString().split(StdIoExtension.SEPARATOR, -1);
 		return lines[lines.length - 1].isEmpty() ? Arrays.copyOf(lines, lines.length - 1) : lines;
 	}
 
