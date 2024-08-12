@@ -37,7 +37,7 @@ abstract class StdOutputStream extends OutputStream {
 	 * @return the string that was written to {@code System.out} or {@code System.err}
 	 */
 	public String capturedString() {
-		return out.toString(Charset.defaultCharset());
+		return out.toString();
 	}
 
 	/**
@@ -55,7 +55,7 @@ abstract class StdOutputStream extends OutputStream {
 	 * @return the lines that were written to {@code System.out} or {@code System.err}
 	 */
 	public String[] capturedLines() {
-		var lines = out.toString(Charset.defaultCharset()).split(StdIoExtension.SEPARATOR, -1);
+		var lines = out.toString().split(StdIoExtension.SEPARATOR, -1);
 		return lines[lines.length - 1].isEmpty() ? Arrays.copyOf(lines, lines.length - 1) : lines;
 	}
 
