@@ -19,17 +19,12 @@ import org.junit.platform.engine.support.descriptor.MethodSource;
 
 public class MethodTestDescriptor extends AbstractTestDescriptor {
 
-	private final Class<?> testClass;
-	private final Method testMethod;
-
 	public MethodTestDescriptor(UniqueId uniqueId, Class<?> testClass, Method testMethod) {
 		super(uniqueId,
 			testMethod.isAnnotationPresent(DisplayName.class) ? testMethod.getAnnotation(DisplayName.class).value()
 					: ReplaceCamelCaseAndUnderscoreAndNumber.INSTANCE
 							.generateDisplayNameForMethod(testClass, testMethod),
 			MethodSource.from(testClass, testMethod));
-		this.testClass = testClass;
-		this.testMethod = testMethod;
 	}
 
 	@Override
