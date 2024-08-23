@@ -5,7 +5,6 @@
 
 The aim is to simplify unit test display names for method names combining CamelCase, underscore and numbers.
 Instead of using this method annotation `org.junit.jupiter.api.DisplayName`, we can just use this class annotation `org.junit.jupiter.api.DisplayNameGeneration` and use that method annotation if needed.
-This generator extends `org.junit.jupiter.api.DisplayNameGenerator.Standard`.
 
 Applying `@DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)` to the test class will provide human-readable descriptions for test methods not annotated with `@DisplayName`.
 
