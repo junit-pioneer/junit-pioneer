@@ -11,6 +11,8 @@
 package org.junitpioneer.jupiter.displaynamegenerator;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayNameGenerator;
 
@@ -59,69 +61,26 @@ public class ReplaceCamelCaseAndUnderscoreAndNumber extends DisplayNameGenerator
 	}
 
 	private String replaceCamelCaseAndUnderscoreAndNumber(String input) {
-		StringBuilder result = new StringBuilder();
-		/*
-		 * Each method name starts with "should" then the displayed name starts with "Should"
-		 * */
-		result.append(Character.toUpperCase(input.charAt(0)));
-
-		/*
-		 * There are 2 groups of method name: with and without underscore
-		 * */
-		if (input.contains("_")) {
-			boolean insideUnderscores = false;
-			for (int i = 1; i < input.length(); i++) {
-				char currentChar = input.charAt(i);
-				if (currentChar == '_') {
-					result.append(' ');
-					/*
-					 * If the current char is an underscore and insideUnderscores is true,
-					 * it means there is an opening underscore and this one is the closing one
-					 * then we set insideUnderscores to false.
-					 * */
-					/*
-					 * If the current char is an underscore and insideUnderscores is false,
-					 * it means there is not an opening underscore and this one is the opening one
-					 * then we set insideUnderscores to true.
-					 * */
-					insideUnderscores = !insideUnderscores;
-				} else {
-					/*
-					 * If the character is inside underscores, we append the character as it is.
-					 * */
-					if (insideUnderscores) {
-						result.append(currentChar);
-					} else {
-						//CamelCase handling for method name containing "_"
-						if (Character.isUpperCase(currentChar)) {
-							//We already replace "_" with " ". If the previous character is "_", we will not add extra space
-							if (input.charAt(i - 1) != '_') {
-								result.append(' ');
-							}
-							result.append(Character.toLowerCase(currentChar));
-						} else {
-							result.append(currentChar);
-						}
-					}
-				}
-			}
-		} else {
-			//CamelCase handling for method name not containing "_"
-			for (int i = 1; i < input.length(); i++) {
-				if (Character.isUpperCase(input.charAt(i))) {
-					result.append(' ');
-					result.append(Character.toLowerCase(input.charAt(i)));
-				} else {
-					result.append(input.charAt(i));
-				}
+		// Remove leading underscore(s)
+		var sanitized = input.replaceAll("^_+(.*)$", "$1");
+		List<String> list = new ArrayList<>();
+		String[] split = sanitized.split("_");
+		for (int i = 0; i < split.length; i++) {
+			if (i % 2 == 1) {
+				// If parity is odd, we are between two underscores, no formatting necessary
+				list.add(split[i]);
+			} else {
+				list.add(formatCamelCase(split[i]));
 			}
 		}
+		// Some cases can lead to double spaces - i.e.: underscore (closing) followed by capital letter
+		var joined = String.join(" ", list).replaceAll("\\s{2}", " ");
+		// Capitalize the first letter
+		return joined.substring(0, 1).toUpperCase() + joined.substring(1);
+	}
 
-		/*Add space before all numbers
-		 * Nothing is done after number because each number must be followed by an uppercase letter. Thus, there will be space between these two.
-		 * In case of a lowercase letter following number, this will be considered as the user's choice. Thus, there will be no space between these two.
-		 * */
-		return result.toString().replaceAll("(\\d+)", " $1");
+	private String formatCamelCase(String in) {
+		return in.replaceAll("(\\d+)", " $1").replaceAll("([A-Z]+)", " $1").toLowerCase();
 	}
 
 	private boolean hasParameters(Method method) {
