@@ -36,34 +36,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
  * <pre>
  *
  * {@code @DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)}
- * class ExampleTest {
- *     {@code @Test}
- *     //Equivalent of @DisplayName("Should return error when maxResults is negative")
- *     void shouldReturnErrorWhen_maxResults_IsNegative() {}
- *     {@code @Test}
- *     //Equivalent of @DisplayName("Should create limit with range")
- *     void shouldCreateLimitWithRange() {}
- *
- *     {@code @Test}
- *     //Equivalent of @DisplayName("Should return 5 errors")
- *     void shouldReturn5Errors() {}
- *
- *     {@code @ParameterizedTest}
- *     {@code @ValueSource(strings = {"job", "player"})}
- *     //Equivalent of @DisplayName("Should return the value of maxResults (String)")
- *     void shouldReturnTheValueOf_maxResults(String input) {}
- *
- *     {@code @Test}
- *     //Equivalent of @DisplayName("Should return the number of errors as numberOfErrors inferior or equal to 15")
- *     void shouldReturnTheNumberOfErrorsAs_numberOfErrors_InferiorOrEqualTo15() {}
- *
- *     //The class annotation has no effect here
- *     {@code @DisplayName("@DisplayName prevails")}
- *     {@code @Test}
- *     void testDisplayNamePrevails() {}
- * }
- *
- *
+ * class ExampleTest {}
  * </pre>
  *
  * @since 2.3.0
