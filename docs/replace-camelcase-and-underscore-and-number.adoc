@@ -9,9 +9,9 @@ Instead of using the method annotation `org.junit.jupiter.api.DisplayName`, we c
 Applying `@DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)` to the test class will provide human-readable descriptions for test methods not annotated with `@DisplayName`.
 
 === 3 key rules:
-* Each uppercase letter is turned into its lowercase value prepended by space.
-* Each underscore is turned into space. Words bounded by underscores or just starting with underscore are not transformed. Usually these words represent classes, variables...
-* Each number is prepended by space.
+* Each uppercase letter is turned into its lowercase value prepended by a space.
+* Each underscore is turned into a space. Words bounded by underscores or just starting with underscore are not transformed. Usually, these words represent classes or variables.
+* Each number is prepended by a space.
 
 == `@DisplayNameGeneration(ReplaceCamelCaseAndUnderscoreAndNumber.class)`
 
