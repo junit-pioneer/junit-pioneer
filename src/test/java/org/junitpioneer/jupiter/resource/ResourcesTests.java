@@ -26,6 +26,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.platform.commons.JUnitException;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("Resources extension")
@@ -76,7 +77,10 @@ class ResourcesTests {
 
 				assertThat(results)
 						.hasSingleFailedTest()
-						.withExceptionInstanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass())
+						.withExceptionInstanceOf(JUnitException.class)
+						.hasMessage("Failed to close extension context")
+						.cause()
+						.isInstanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass())
 						.hasMessage(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage());
 			}
 
@@ -135,7 +139,10 @@ class ResourcesTests {
 
 					assertThat(results)
 							.hasSingleFailedTest()
-							.withExceptionInstanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass())
+							.withExceptionInstanceOf(JUnitException.class)
+							.hasMessage("Failed to close extension context")
+							.cause()
+							.isInstanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass())
 							.hasMessage(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage());
 				}
 
@@ -629,7 +636,10 @@ class ResourcesTests {
 
 				assertThat(results)
 						.hasSingleFailedContainer()
-						.withExceptionInstanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass())
+						.withExceptionInstanceOf(JUnitException.class)
+						.hasMessage("Failed to close extension context")
+						.cause()
+						.isInstanceOf(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getClass())
 						.hasMessage(EXPECTED_THROW_ON_RF_CLOSE_EXCEPTION.getMessage());
 			}
 
@@ -688,7 +698,10 @@ class ResourcesTests {
 
 					assertThat(results)
 							.hasSingleFailedContainer()
-							.withExceptionInstanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass())
+							.withExceptionInstanceOf(JUnitException.class)
+							.hasMessage("Failed to close extension context")
+							.cause()
+							.isInstanceOf(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getClass())
 							.hasMessage(EXPECTED_THROW_ON_R_CLOSE_EXCEPTION.getMessage());
 				}
 

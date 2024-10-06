@@ -83,6 +83,8 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
+          # Sonar needs Java 17
+          # See https://docs.sonarsource.com/sonarcloud/appendices/scanner-environment/
           java-version: 17
           distribution: temurin
       - name: Cache SonarCloud results
@@ -130,8 +132,10 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        java: [ 11, 17, 21 ]
-        junit-version: [ '5.9.2', '5.10.0' ]
+        # Pioneer, latest LTS, latest stable
+        java: [ 11, 21, 23 ]
+        # Pioneer = latest stable
+        junit-version: [ '5.11.2' ]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
     steps:
@@ -160,7 +164,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        junit-version: [ '5.9.2', '5.10.0' ]
+        junit-version: [ '5.11.2' ]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
     # Gradle doesn't work with JDK EA builds, so we launch it with a supported Java version,
@@ -179,7 +183,7 @@ jobs:
       - name: Set up supported Java
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 23
           distribution: temurin
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -216,10 +220,10 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          # we build the Javadoc with JDK 17 (for better results),
+          # we build the Javadoc with JDK 23 (for better results),
           # so install that as well
           java-version: |
-            21
+            23
             11
           distribution: temurin
       - name: Set up Gradle
