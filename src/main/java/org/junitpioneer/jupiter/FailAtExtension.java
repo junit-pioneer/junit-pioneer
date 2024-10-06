@@ -58,20 +58,23 @@ class FailAtExtension implements ExecutionCondition {
 		LocalDate today = LocalDate.now();
 		boolean isBefore = today.isBefore(failAtDate);
 
+		String failAtDateString = failAtDate.format(ISO_8601);
+		String todayDateString = today.format(ISO_8601);
+
 		if (isBefore) {
 			String reportEntry = format(
 				"The `date` %s is after the current date %s, so `@FailAt` did not fail the test \"%s\". It will do so when the date is reached.",
-				failAtDate.format(ISO_8601), today.format(ISO_8601), context.getUniqueId());
+					failAtDateString, todayDateString, context.getUniqueId());
 			context.publishReportEntry("FailAt", reportEntry);
 			return enabled(reportEntry);
 		} else {
 			String reportEntry = format(
 				"The current date %s is after or on the `date` %s, so `@FailAt` fails the test \"%s\". Please remove the annotation.",
-				failAtDate.format(ISO_8601), today.format(ISO_8601), context.getUniqueId());
+					failAtDateString, todayDateString, context.getUniqueId());
 			context.publishReportEntry(FailAtExtension.class.getSimpleName(), reportEntry);
 
-			String message = format("The current date %s is after or on the `date` %s", today.format(ISO_8601),
-				failAtDate.format(ISO_8601));
+			String message = format("The current date %s is after or on the `date` %s", todayDateString,
+					failAtDateString);
 
 			throw new ExtensionConfigurationException(message);
 		}

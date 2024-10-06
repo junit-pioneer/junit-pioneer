@@ -10,13 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 @DisplayName("Tests for the FailAt extension")
 class FailAtExtensionTests {
@@ -62,7 +62,7 @@ class FailAtExtensionTests {
 	}
 
 	@Test
-	@DisplayName("Should fail nested test with `date` in the past when meta annotated by higher level container")
+	@DisplayName("Should fail nested test with `date` in the past when meta annotated by higher-level container")
 	void shouldFailNestedTestWithFailAtDateInThPastWhenMetaAnnotated() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(FailAtTestCases.NestedTestCases.class, "shouldRetrieveFromClass");
