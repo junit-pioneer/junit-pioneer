@@ -9,6 +9,12 @@
  *     <li>{@link org.junitpioneer.jupiter.resource.Dir}</li>
  * </ul>
  *
+ * <p>Check out the following types for details on the "free port/server socket" extension:</p>
+ *
+ * <ul>
+ *     <li>{@link org.junitpioneer.jupiter.resource.FreePort}</li>
+ * </ul>
+ *
  * <p>Check out the following types for details on resources in general:</p>
  *
  * <ul>

@@ -56,8 +56,17 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 							parameterContext.getParameter(), testMethodDescription(extensionContext));
 			// @formatter:on
 			throw new ParameterResolutionException(message);
+		} else if (parameterContext.isAnnotated(Shared.Named.class)
+				&& findSharedOnClass(extensionContext).isPresent()) {
+			throw new ParameterResolutionException(format(
+				"Parameter [%s] in %s is annotated with @Shared.Named but the resource has not been created. Are you missing a @Shared annotation on your test class?",
+				parameterContext.getParameter(), testMethodDescription(extensionContext)));
 		}
 		return parameterContext.isAnnotated(New.class) || parameterContext.isAnnotated(Shared.class);
+	}
+
+	private Optional<Shared> findSharedOnClass(ExtensionContext extensionContext) {
+		return AnnotationSupport.findAnnotation(extensionContext.getTestClass(), Shared.class);
 	}
 
 	@Override
@@ -79,9 +88,18 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			return checkType(resource, parameterContext.getParameter().getType());
 		}
 
+		Optional<Shared.Named> namedAnnotation = parameterContext.findAnnotation(Shared.Named.class);
+		if (namedAnnotation.isPresent()) {
+			// This is checked earlier in supportsParameter
+			Shared.Scope scope = findSharedOnClass(extensionContext).orElseThrow().scope();
+			ExtensionContext.Store store = scopedStore(extensionContext, scope);
+			Object resource = store.get(resourceKey(namedAnnotation.get().value()));
+			return checkType(resource, parameterContext.getParameter().getType());
+		}
+
 		// @formatter:off
 		String message = format(
-				"Parameter [%s] in %s is not annotated with @New or @Shared",
+				"Parameter [%s] in %s is not annotated with @New, @Shared or @Named",
 				parameterContext.getParameter(), testMethodDescription(extensionContext));
 		// @formatter:on
 		throw new ParameterResolutionException(message);
@@ -143,7 +161,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 						ResourceFactory.class);
 			Resource<?> resource = scopedStore
 					.getOrComputeIfAbsent( //
-						resourceKey(sharedAnnotation), //
+						resourceKey(sharedAnnotation.name()), //
 						__ -> newResource(sharedAnnotation, resourceFactory), //
 						Resource.class);
 			putNewLockForShared(sharedAnnotation, scopedStore);
@@ -286,8 +304,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return sharedAnnotation.name() + " resource factory";
 	}
 
-	private String resourceKey(Shared sharedAnnotation) {
-		return sharedAnnotation.name() + " resource";
+	private String resourceKey(String sharedAnnotationName) {
+		return sharedAnnotationName + " resource";
 	}
 
 	private String resourceLockKey(Shared sharedAnnotation) {
