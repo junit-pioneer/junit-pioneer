@@ -6,20 +6,21 @@
 It's sometimes useful to fail a test after a certain date.
 One can imagine many reasons for doing so, maybe a remote dependency of the test is not licenced anymore.
 
-The `@FailAt` annotation is perfectly adequate to use in such cases.
+The `@FailAt` annotation is perfectly suited for such cases.
 The test will fail when the given date is reached.
 
 [WARNING]
 ====
 This annotation allows the user to move an https://junit.org/junit5/docs/current/user-guide/#writing-tests-assumptions[assumption] out of one or multiple test method's code into the annotation.
-But this comes at a cost - applying `@FailAt` can make the test suite non-reproducible.
-If a passing test is run again after the "failAt" date that build would fail.
+But this comes at a cost:
+Applying `@FailAt` can make the test suite non-reproducible.
+If a passing test is run again after the specified date, that build would fail.
 A report entry is issued for every test that does not fail until a certain date.
 ====
 
 == Usage
 
-To mark a test to fail at a given date add the `@FailAt` annotation like so:
+To mark a test to fail at a given date, add the `@FailAt` annotation like so:
 
 [source,java,indent=0]
 ----
@@ -29,14 +30,14 @@ include::{demo}[tag=fail_at_simple]
 The `date` parameter must be a string in the date format specified by https://en.m.wikipedia.org/wiki/ISO_8601[ISO 8601], e.g. "1985-10-26".
 Invalid or unparsable date strings lead to an `ExtensionConfigurationException`.
 
-The `@FailAt annotation may optionally be declared with a reason to document why the annotated test class or test method fails as soon as the date is reached:
+The `@FailAt` annotation may optionally be declared with a reason to document why the annotated test class or test method fails as soon as the date is reached:
 
 [source,java,indent=0]
 ----
 include::{demo}[tag=fail_at_with_reason]
 ----
 
-The `@FailAt` annotation can be used on the class and method level, it will be inherited from higher level containers:
+The `@FailAt` annotation can be used on the class and method level, it will be inherited from higher-level containers:
 
 [source,java,indent=0]
 ----
@@ -47,7 +48,7 @@ The `@FailAt` annotation can only be used once per class or method.
 
 == Before and After
 
-The test will be executed normally if the date specified by `date` is the future but a warning entry will be published to the https://junit-pioneer.org/docs/report-entries[test report] to indicate that there might be a problem in the future.
+The test will be executed normally if the date specified by `date` is in the future, but a warning entry will be published to the https://junit-pioneer.org/docs/report-entries[test report] to indicate that there might be a problem in the future.
 
 If `date` is today or in the past, the test will fail as the execution condition is not fulfilled anymore.
 

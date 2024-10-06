@@ -32,7 +32,7 @@ include::{demo}[tag=disable_until_simple]
 The `date` parameter must be a string in the date format specified by https://en.m.wikipedia.org/wiki/ISO_8601[ISO 8601], e.g. "1985-10-26".
 Invalid or unparsable date strings lead to an `ExtensionConfigurationException`.
 
-The `@DisabledUntil annotation may optionally be declared with a reason to document why the annotated test class or test method is disabled:
+The `@DisabledUntil` annotation may optionally be declared with a reason to document why the annotated test class or test method is disabled:
 
 [source,java,indent=0]
 ----
