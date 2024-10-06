@@ -6,12 +6,12 @@ plugins {
 	signing
 	id("com.diffplug.spotless") version "6.25.0"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "4.4.1.3373"
+	id("org.sonarqube") version "5.1.0.4882"
 	id("org.shipkit.shipkit-changelog") version "2.0.1"
 	id("org.shipkit.shipkit-github-release") version "2.0.1"
 	id("com.github.ben-manes.versions") version "0.51.0"
-	id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-2"
-	id("org.gradlex.extra-java-module-info") version "1.7"
+	id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+	id("org.gradlex.extra-java-module-info") version "1.9"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -88,7 +88,7 @@ spotless {
 }
 
 checkstyle {
-	toolVersion = "10.12.3"
+	toolVersion = "10.18.2"
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
@@ -98,7 +98,7 @@ yamlValidator {
 }
 
 jacoco {
-	toolVersion = "0.8.9"
+	toolVersion = "0.8.12"
 }
 
 sonar {
