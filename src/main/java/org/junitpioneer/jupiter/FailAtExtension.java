@@ -10,19 +10,20 @@
 
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.extension.ConditionEvaluationResult;
-import org.junit.jupiter.api.extension.ExecutionCondition;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import static java.lang.String.format;
+import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
+import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
-import static java.lang.String.format;
-import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
-import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
+import org.junit.jupiter.api.extension.ConditionEvaluationResult;
+import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * This class implements the functionality for the {@code @FailAt} annotation.
@@ -64,19 +65,19 @@ class FailAtExtension implements ExecutionCondition {
 		if (isBefore) {
 			String reportEntry = format(
 				"The `date` %s is after the current date %s, so `@FailAt` did not fail the test \"%s\". It will do so when the date is reached.",
-					failAtDateString, todayDateString, context.getUniqueId());
+				failAtDateString, todayDateString, context.getUniqueId());
 			context.publishReportEntry("FailAt", reportEntry);
 			return enabled(reportEntry);
 		} else {
 			String reportEntry = format(
 				"The current date %s is after or on the `date` %s, so `@FailAt` fails the test \"%s\". Please remove the annotation.",
-					failAtDateString, todayDateString, context.getUniqueId());
+				failAtDateString, todayDateString, context.getUniqueId());
 			context.publishReportEntry(FailAtExtension.class.getSimpleName(), reportEntry);
 
 			String message = format("The current date %s is after or on the `date` %s", todayDateString,
-					failAtDateString);
+				failAtDateString);
 
-			throw new ExtensionConfigurationException(message);
+			throw new AssertionFailedError(message);
 		}
 	}
 

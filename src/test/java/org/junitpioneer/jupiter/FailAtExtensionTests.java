@@ -10,13 +10,15 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
-
-import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
+import org.opentest4j.AssertionFailedError;
 
 @DisplayName("Tests for the FailAt extension")
 class FailAtExtensionTests {
@@ -36,9 +38,15 @@ class FailAtExtensionTests {
 	void shouldEnableTestWithUnparsableUntilDateString() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(FailAtTestCases.class, "testUnparsableUntilDateString");
-		assertThat(results).hasSingleStartedTest();
-		assertThat(results).hasSingleFailedTest();
+
 		assertThat(results).hasNoReportEntries();
+
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withException()
+				.hasCauseExactlyInstanceOf(ExtensionConfigurationException.class)
+				.hasMessageEndingWith("is not a valid ISO-8601 string.");
 	}
 
 	@Test
@@ -46,9 +54,14 @@ class FailAtExtensionTests {
 	void shouldFailTestWithFailAtDateInThePast() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(FailAtTestCases.class, "testIsAnnotatedWithDateInThePast");
-		assertThat(results).hasSingleStartedTest();
-		assertThat(results).hasSingleFailedTest();
+
 		assertThat(results).hasSingleReportEntry().firstValue().contains("is after or on the `date`");
+
+		assertThat(results)
+				.hasSingleStartedTest()
+				.whichFailed()
+				.withExceptionInstanceOf(AssertionFailedError.class)
+				.hasMessageContaining("is after or on the `date`");
 
 	}
 
@@ -58,7 +71,7 @@ class FailAtExtensionTests {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(FailAtTestCases.class, "testIsAnnotatedWithDateInTheFuture");
 		assertThat(results).hasSingleSucceededTest();
-		assertThat(results).hasSingleReportEntry().firstValue().contains("2199-01-01", "did not fails the test");
+		assertThat(results).hasSingleReportEntry().firstValue().contains("2199-01-01", "did not fail the test");
 	}
 
 	@Test
@@ -66,9 +79,13 @@ class FailAtExtensionTests {
 	void shouldFailNestedTestWithFailAtDateInThPastWhenMetaAnnotated() {
 		final ExecutionResults results = PioneerTestKit
 				.executeTestMethod(FailAtTestCases.NestedTestCases.class, "shouldRetrieveFromClass");
-		assertThat(results).hasSingleFailedContainer();
+
 		assertThat(results).hasNumberOfStartedTests(0);
-		assertThat(results).hasSingleReportEntry().firstValue().contains("is after or on the `date`");
+		assertThat(results)
+				.hasSingleFailedContainer()
+				.withExceptionInstanceOf(AssertionFailedError.class)
+				.hasMessageContaining("is after or on the `date`");
+
 	}
 
 	static class FailAtTestCases {
