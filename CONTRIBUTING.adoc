@@ -91,6 +91,7 @@ Classes usually belong into one of these packages:
 	* `...json` - JSON argument sources for Jupiter's `@ParameterizedTest`
 	* `...params` - extensions for Jupiter's `@ParameterizedTest`
 	* `...resource` - extensions for injecting resources
+	* `...displaynamegenerator` - implementations of `org.junit.jupiter.api.DisplayNameGenerator`
 * `org.junitpioneer.vintage` - extensions to older JUnit versions
 
 If none of them is a good fit, we'll find one together.
