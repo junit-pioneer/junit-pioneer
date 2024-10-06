@@ -51,7 +51,7 @@ class FailAtExtension implements ExecutionCondition {
 		}
 		catch (DateTimeParseException ex) {
 			throw new ExtensionConfigurationException(
-				"The `failAtDate` string '" + dateString + "' is not a valid ISO-8601 string.", ex);
+				"The `failAtDate` string '" + dateString + "' is not a valid ISO 8601 string.", ex);
 		}
 	}
 

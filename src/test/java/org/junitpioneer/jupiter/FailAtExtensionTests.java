@@ -46,7 +46,7 @@ class FailAtExtensionTests {
 				.whichFailed()
 				.withException()
 				.hasCauseExactlyInstanceOf(ExtensionConfigurationException.class)
-				.hasMessageEndingWith("is not a valid ISO-8601 string.");
+				.hasMessageEndingWith("is not a valid ISO 8601 string.");
 	}
 
 	@Test
