@@ -49,7 +49,7 @@ repositories {
 }
 
 val junitVersion : String by project
-val jacksonVersion: String = "2.14.2"
+val jacksonVersion: String = "2.18.0"
 val assertjVersion: String = "3.26.3"
 val log4jVersion: String = "2.24.1"
 val jimfsVersion: String = "1.3.0"
