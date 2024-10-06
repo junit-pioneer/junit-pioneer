@@ -187,7 +187,6 @@ extraJavaModuleInfo {
 }
 
 tasks {
-
 	sourceSets {
 		create("demo") {
 			java {
