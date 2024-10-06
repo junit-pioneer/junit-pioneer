@@ -10,13 +10,13 @@
 
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * {@code @FailAt} is a JUnit Jupiter extension to mark tests that shouldn't be executed after a given date,
@@ -29,8 +29,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * but is inherited from higher-level containers.</p>
  *
  * <p><strong>WARNING:</strong> This annotation allows the user to move an assumption out of one or multiple test
- * method's code into an annotation. But this comes at a cost - applying {@code @FailAt} can make the test suite
- * non-reproducible. If a passing test is run again after the "failAt" date that build would fail. A report entry is
+ * method's code into an annotation. But this comes at a cost: Applying {@code @FailAt} can make the test suite
+ * non-reproducible. If a passing test is run again after the specified date, that build would fail. A report entry is
  * issued for every test that does not fail until a certain date.</p>
  *
  * @since 2.3.0
@@ -48,8 +48,7 @@ public @interface FailAt {
 
 	/**
 	 * The date from which this annotated test class or test method should fail as an ISO 8601 string in the
-	 * format yyyy-MM-dd, e.g. 2023-05-28.
-	 * The test will be executed regularly if that date is not yet reached.
+	 * format yyyy-MM-dd, e.g. 2023-05-28. The test will be executed regularly if that date is not yet reached.
 	 */
 	String date();
 

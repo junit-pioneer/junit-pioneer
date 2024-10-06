@@ -25,9 +25,9 @@ public class FailAtExtensionDemo {
 
 	// tag::fail_at_with_reason[]
 	@Test
-	@DisabledUntil(reason = "We are not allowed to call that method anymore", date = "2025-01-01")
+	@FailAt(reason = "We are not allowed anymore", date = "2025-01-01")
 	void testWithReason() {
-		// Test will fail as soon as 1st of January 2025 is reached.
+		// Test will fail with the given reason as soon as 1st of January 2025 is reached.
 	}
 	// end::fail_at_with_reason[]
 

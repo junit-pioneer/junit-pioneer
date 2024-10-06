@@ -10,19 +10,19 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.String.format;
-import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
-import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
+import org.junit.jupiter.api.extension.ConditionEvaluationResult;
+import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
-import org.junit.jupiter.api.extension.ConditionEvaluationResult;
-import org.junit.jupiter.api.extension.ExecutionCondition;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import static java.lang.String.format;
+import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
+import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 /**
  * This class implements the functionality for the {@code @FailAt} annotation.
@@ -37,7 +37,7 @@ class FailAtExtension implements ExecutionCondition {
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
 		return getFailAtDateFromAnnotation(context)
 				.map(failAtDate -> evaluateFailAtDate(context, failAtDate))
-				.orElse(enabled("No @FailAt annotation found on element"));
+				.orElse(enabled("No @FailAt annotation found on element."));
 	}
 
 	private Optional<LocalDate> getFailAtDateFromAnnotation(ExtensionContext context) {
@@ -50,7 +50,7 @@ class FailAtExtension implements ExecutionCondition {
 		}
 		catch (DateTimeParseException ex) {
 			throw new ExtensionConfigurationException(
-				"The `failAtDate` string '" + dateString + "' is no valid ISO-8601 string.", ex);
+				"The `failAtDate` string '" + dateString + "' is not a valid ISO-8601 string.", ex);
 		}
 	}
 
@@ -60,7 +60,7 @@ class FailAtExtension implements ExecutionCondition {
 
 		if (isBefore) {
 			String reportEntry = format(
-				"The `date` %s is after the current date %s, so `@FailAt` did not fails the test \"%s\". It will do so when the date is reached.",
+				"The `date` %s is after the current date %s, so `@FailAt` did not fail the test \"%s\". It will do so when the date is reached.",
 				failAtDate.format(ISO_8601), today.format(ISO_8601), context.getUniqueId());
 			context.publishReportEntry("FailAt", reportEntry);
 			return enabled(reportEntry);
