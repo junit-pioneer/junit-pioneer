@@ -43,6 +43,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
  *
  * @since 2.3.0
  * @see org.junit.jupiter.api.DisplayNameGenerator.Standard
+ * @see <a href="https://junit-pioneer.org/docs/replace-camelcase-and-underscore-and-number">Usage example of ReplaceCamelCaseAndUnderscoreAndNumber</a>
  */
 public class ReplaceCamelCaseAndUnderscoreAndNumber extends DisplayNameGenerator.Standard {
 
