@@ -51,7 +51,6 @@ repositories {
 val junitVersion : String by project
 val jacksonVersion: String = "2.18.0"
 val assertjVersion: String = "3.26.3"
-val log4jVersion: String = "2.24.1"
 val jimfsVersion: String = "1.3.0"
 
 dependencies {
@@ -69,9 +68,6 @@ dependencies {
 	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.14.1")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
 	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.17.1")
-
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = log4jVersion)
 }
 
 spotless {
@@ -249,7 +245,6 @@ tasks {
 		filter {
 			includeTestsMatching("*Tests")
 		}
-		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
 		// java.security.manager was added in Java 12 (see
 		// https://www.oracle.com/java/technologies/javase/12-relnote-issues.html#JDK-8191053). We have to explicitly
 		// set it to "allow" for EnvironmentVariableUtilsTests$With_SecurityManager.

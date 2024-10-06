@@ -70,7 +70,6 @@ For our own infrastructure, we rely on the following compile and test dependenci
 
 * AssertJ (assertions for our tests)
 * Mockito (mocking for our tests)
-* Log4J (to configure logging during test runs)
 * Jimfs (as an in-memory file system for our test)
 * Equalsverifier (for easier assertion of simple things)
 
