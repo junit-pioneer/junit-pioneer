@@ -40,7 +40,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v2
+        uses: gradle/wrapper-validation-action@v3
 
   # Our basic build step as we want contributors to have a nice developer
   # experience with little build time and sufficient feedback. Therefore, we
@@ -64,7 +64,7 @@ jobs:
           java-version: 11
           distribution: temurin
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
       - name: Gradle build
         run: ./gradlew --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
 
@@ -93,7 +93,7 @@ jobs:
           path: ~/.sonar/cache/
           key: ubuntu-sonar
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
       - name: Gradle build
         run: ./gradlew --refresh-dependencies --stacktrace --scan clean build -x spotlessCheck
       - name: SonarCloud analysis
@@ -117,7 +117,7 @@ jobs:
           java-version: 11
           distribution: temurin
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
       - name: Spotless check
         run: ./gradlew --scan spotlessCheck
 
@@ -147,7 +147,7 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: temurin
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
       - name: Gradle build
         env:
           ORG_GRADLE_PROJECT_junitVersion: ${{ matrix.junit-version }}
@@ -186,7 +186,7 @@ jobs:
           java-version: 23
           distribution: temurin
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: release-candidate
 
@@ -227,7 +227,7 @@ jobs:
             11
           distribution: temurin
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
       - name: Perform release
         env:
           # used to trigger website build
@@ -250,7 +250,7 @@ jobs:
     name: Update website
     steps:
       - name: Trigger website build
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.GH_WRITE_TOKEN }}
           repository: junit-pioneer/junit-pioneer.github.io

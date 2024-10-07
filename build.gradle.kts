@@ -6,12 +6,12 @@ plugins {
 	signing
 	id("com.diffplug.spotless") version "6.25.0"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "4.4.1.3373"
+	id("org.sonarqube") version "5.1.0.4882"
 	id("org.shipkit.shipkit-changelog") version "2.0.1"
 	id("org.shipkit.shipkit-github-release") version "2.0.1"
 	id("com.github.ben-manes.versions") version "0.51.0"
-	id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-2"
-	id("org.gradlex.extra-java-module-info") version "1.7"
+	id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+	id("org.gradlex.extra-java-module-info") version "1.9"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -49,9 +49,8 @@ repositories {
 }
 
 val junitVersion : String by project
-val jacksonVersion: String = "2.14.2"
-val assertjVersion: String = "3.24.2"
-val log4jVersion: String = "2.20.0"
+val jacksonVersion: String = "2.18.0"
+val assertjVersion: String = "3.26.3"
 val jimfsVersion: String = "1.3.0"
 
 dependencies {
@@ -66,12 +65,9 @@ dependencies {
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.5.0")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.14.1")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.15.1")
-
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = log4jVersion)
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.17.1")
 }
 
 spotless {
@@ -88,7 +84,7 @@ spotless {
 }
 
 checkstyle {
-	toolVersion = "10.12.3"
+	toolVersion = "10.18.2"
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
@@ -98,7 +94,7 @@ yamlValidator {
 }
 
 jacoco {
-	toolVersion = "0.8.9"
+	toolVersion = "0.8.12"
 }
 
 sonar {
@@ -249,7 +245,6 @@ tasks {
 		filter {
 			includeTestsMatching("*Tests")
 		}
-		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
 		// java.security.manager was added in Java 12 (see
 		// https://www.oracle.com/java/technologies/javase/12-relnote-issues.html#JDK-8191053). We have to explicitly
 		// set it to "allow" for EnvironmentVariableUtilsTests$With_SecurityManager.
