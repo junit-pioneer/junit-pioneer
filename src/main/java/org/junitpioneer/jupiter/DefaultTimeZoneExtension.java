@@ -10,6 +10,7 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.Optional;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -18,7 +19,9 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
+import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.jupiter.TimeZoneProvider.NullTimeZoneProvider;
 
 class DefaultTimeZoneExtension implements BeforeEachCallback, AfterEachCallback {
 
@@ -34,12 +37,26 @@ class DefaultTimeZoneExtension implements BeforeEachCallback, AfterEachCallback 
 	}
 
 	private void setDefaultTimeZone(Store store, DefaultTimeZone annotation) {
-		TimeZone defaultTimeZone = createTimeZone(annotation.value());
+		validateCorrectConfiguration(annotation);
+		TimeZone defaultTimeZone;
+		if (annotation.timeZoneProvider() != NullTimeZoneProvider.class)
+			defaultTimeZone = createTimeZone(annotation.timeZoneProvider());
+		else
+			defaultTimeZone = createTimeZone(annotation.value());
 		// defer storing the current default time zone until the new time zone could be created from the configuration
 		// (this prevents cases where misconfigured extensions store default time zone now and restore it later,
 		// which leads to race conditions in our tests)
 		storeDefaultTimeZone(store);
 		TimeZone.setDefault(defaultTimeZone);
+	}
+
+	private static void validateCorrectConfiguration(DefaultTimeZone annotation) {
+		boolean noValue = annotation.value().isEmpty();
+		boolean noProvider = annotation.timeZoneProvider() == NullTimeZoneProvider.class;
+		if (noValue == noProvider)
+			throw new ExtensionConfigurationException(
+				"Either a valid time zone id or a TimeZoneProvider must be provided to "
+						+ DefaultTimeZone.class.getSimpleName());
 	}
 
 	private static TimeZone createTimeZone(String timeZoneId) {
@@ -53,6 +70,17 @@ class DefaultTimeZoneExtension implements BeforeEachCallback, AfterEachCallback 
 						timeZoneId));
 		}
 		return configuredTimeZone;
+	}
+
+	private static TimeZone createTimeZone(Class<? extends TimeZoneProvider> providerClass) {
+		try {
+			TimeZoneProvider provider = ReflectionSupport.newInstance(providerClass);
+			return Optional.ofNullable(provider.get()).orElse(TimeZone.getTimeZone("GMT"));
+		}
+		catch (Exception exception) {
+			throw new ExtensionConfigurationException("Could not instantiate TimeZoneProvider because of exception",
+				exception);
+		}
 	}
 
 	private void storeDefaultTimeZone(Store store) {
