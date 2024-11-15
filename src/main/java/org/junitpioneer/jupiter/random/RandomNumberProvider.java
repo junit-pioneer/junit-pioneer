@@ -92,7 +92,7 @@ public abstract class RandomNumberProvider<T extends Number> extends RandomParam
 	}
 
 	private Predicate<? super Long> withinRange() {
-		return number -> number >= defaultMaxValue && number < defaultMaxValue;
+		return number -> number >= defaultMinValue && number < defaultMaxValue;
 	}
 
 	public abstract T getDefaultRandomNumber();
