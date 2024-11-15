@@ -20,7 +20,7 @@ import jakarta.validation.constraints.Min;
 public class RandomTests {
 
 	@Test
-	void testPrimitive(@Random(seed = 11) @Min(100) @Max(100) int primitive) {
+	void testPrimitive(@Random(seed = 11) @Min(100) @Max(101) int primitive) {
 		System.out.println(primitive);
 	}
 
