@@ -25,6 +25,7 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.json;
 	exports org.junitpioneer.jupiter.converter;
 	exports org.junitpioneer.jupiter.displaynamegenerator;
+	exports org.junitpioneer.jupiter.random;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter to org.junit.platform.commons, nl.jqno.equalsverifier;
@@ -35,6 +36,7 @@ module org.junitpioneer {
 	opens org.junitpioneer.jupiter.json to org.junit.platform.commons, com.fasterxml.jackson.databind;
 	opens org.junitpioneer.jupiter.converter to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.displaynamegenerator to org.junit.platform.commons;
+	opens org.junitpioneer.jupiter.random to org.junit.platform.commons;
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
@@ -65,5 +67,13 @@ module org.junitpioneer {
 	opens org.junitpioneer.internal to org.junit.platform.commons;
 	opens org.junitpioneer.testkit to org.junit.platform.commons;
 	opens org.junitpioneer.testkit.assertion to org.junit.platform.commons;
+
+	requires jakarta.validation;
+
+	uses org.junitpioneer.jupiter.random.RandomParameterProvider;
+	provides org.junitpioneer.jupiter.random.RandomParameterProvider
+		with org.junitpioneer.jupiter.random.RandomIntegerParameterProvider,
+			org.junitpioneer.jupiter.random.RandomBooleanParameterProvider,
+			org.junitpioneer.jupiter.random.RandomDoubleParameterProvider;
 
 }

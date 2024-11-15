@@ -16,19 +16,24 @@ import static java.util.stream.Collectors.toList;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.ServiceLoader;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
-import org.junit.platform.commons.support.ReflectionSupport;
-import org.junitpioneer.internal.PioneerRandomUtils;
+import org.junitpioneer.internal.FieldFinder;
+import org.junitpioneer.jupiter.random.RandomParameterProvider;
 
 class RandomParameterExtension implements ParameterResolver {
+
+	private List<RandomParameterProvider> providers;
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
@@ -39,53 +44,76 @@ class RandomParameterExtension implements ParameterResolver {
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
+		this.providers = ServiceLoader
+				.load(RandomParameterProvider.class)
+				.stream()
+				.map(ServiceLoader.Provider::get)
+				.collect(toList());
 		long seed = parameterContext.findAnnotation(org.junitpioneer.jupiter.Random.class).get().seed();
-		return instantiate(parameterContext.getParameter().getType(), seed);
+		var random = new Random(seed);
+		this.providers.forEach(provider -> provider.init(random));
+		return instantiate(parameterContext.getParameter());
 	}
 
-	private static Object instantiate(Class<?> type, long seed) {
-		Random random = new Random(seed);
-		return instantiateComplexType(type, random);
+	private Object instantiate(Parameter parameter) {
+		return instantiateComplexType(parameter, -1, null);
 	}
 
-	private static Object instantiateComplexType(Class<?> type, Random random) {
+	private Object instantiateComplexType(Parameter parameter, int constructorIndex, Class<?> clazz) {
 		try {
-			if (isSimpleParameterType(type)) {
-				return createRandomParameter(type, random);
+			if (isSupportedParameterType(parameter.getType())) {
+				Field correspondingField = null;
+				if (constructorIndex != -1) {
+					correspondingField = FieldFinder.getMatchingField(clazz, parameter, constructorIndex);
+				}
+				return createRandomParameter(parameter, correspondingField);
 			}
-			var allArgsConstructor = findAllArgsConstructor(type);
-			var noArgsConstructor = findNoArgsConstructor(type);
+			var allArgsConstructor = findAllArgsConstructor(parameter.getType());
+			var noArgsConstructor = findNoArgsConstructor(parameter.getType());
 			if (allArgsConstructor.isPresent()) {
 				// instantiate all fields
-				var args = Arrays
-						.stream(allArgsConstructor.get().getParameters())
-						.map(parameter -> createRandomParameter(parameter.getType(), random))
-						.toArray();
+				var parameters = allArgsConstructor.get().getParameters();
+				Object[] args = new Object[parameters.length];
+				for (int i = 0; i < parameters.length; i++) {
+					args[i] = instantiateComplexType(parameters[i], i, parameter.getType());
+				}
 				return allArgsConstructor.get().newInstance(args);
 			}
 			if (noArgsConstructor.isPresent()) {
 
 			}
-			throw new ExtensionConfigurationException(
-				format("No suitable constructor was found for instantiating %s through @Random", type));
+			throw new ExtensionConfigurationException(format(
+				"No suitable constructor was found for instantiating %s through @Random (could be a missing random parameter provider).",
+				parameter.getType()));
 		}
 		catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private static boolean isSimpleParameterType(Class<?> type) {
-		return PioneerRandomUtils.isSupportedType(type);
+	private boolean isSupportedParameterType(Class<?> type) {
+		return providers.stream().anyMatch(provider -> supportsParameterType(provider, type));
 	}
 
-	private static Object createRandomParameter(Class<?> parameterType, Random random) {
-		return PioneerRandomUtils.randomObject(parameterType, random);
+	private Object createRandomParameter(Parameter parameter, Field correspondingField) {
+		return providers
+				.stream()
+				.filter(provider -> supportsParameterType(provider, parameter.getType()))
+				.map(provider -> provider.provideRandomParameter(parameter, correspondingField))
+				.findFirst()
+				.orElseThrow(() -> new ParameterResolutionException(
+					format("Unable to instantiate random parameter %s, there was a problem with the providers.",
+						parameter.getType())));
+	}
+
+	private boolean supportsParameterType(RandomParameterProvider provider, Class<?> type) {
+		return provider.getSupportedParameterTypes().stream().anyMatch(supported -> supported.isAssignableFrom(type));
 	}
 
 	private static Optional<Constructor<?>> findAllArgsConstructor(Class<?> type) {
 		var fields = Arrays.stream(type.getDeclaredFields()).map(Field::getType).collect(toList());
 		return Arrays
-				.stream(type.getDeclaredConstructors())
+				.stream(type.getConstructors())
 				.filter(constructor -> Arrays
 						.stream(constructor.getParameters())
 						.allMatch(parameter -> fields.contains(parameter.getType())))
@@ -94,7 +122,7 @@ class RandomParameterExtension implements ParameterResolver {
 
 	private static Optional<Constructor<?>> findNoArgsConstructor(Class<?> type) {
 		try {
-			return Optional.of(type.getDeclaredConstructor());
+			return Optional.of(type.getConstructor());
 		}
 		catch (NoSuchMethodException e) {
 			return Optional.empty();
