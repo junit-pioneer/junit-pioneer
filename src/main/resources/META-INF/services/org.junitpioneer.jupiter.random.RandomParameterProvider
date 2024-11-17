@@ -1,3 +1,5 @@
 org.junitpioneer.jupiter.random.RandomIntegerParameterProvider
 org.junitpioneer.jupiter.random.RandomBooleanParameterProvider
 org.junitpioneer.jupiter.random.RandomDoubleParameterProvider
+org.junitpioneer.jupiter.random.RandomFloatParameterProvider
+org.junitpioneer.jupiter.random.RandomLongParameterProvider

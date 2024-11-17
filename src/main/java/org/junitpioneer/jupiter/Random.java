@@ -22,6 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith(RandomParameterExtension.class)
 public @interface Random {
 
-	long seed() default 110011011L;
+	long seed() default 0L;
 
 }

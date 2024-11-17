@@ -16,6 +16,8 @@ import static java.util.stream.Collectors.toList;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
@@ -49,23 +51,19 @@ class RandomParameterExtension implements ParameterResolver {
 				.stream()
 				.map(ServiceLoader.Provider::get)
 				.collect(toList());
-		long seed = parameterContext.findAnnotation(org.junitpioneer.jupiter.Random.class).get().seed();
+		var seed = parameterContext.findAnnotation(org.junitpioneer.jupiter.Random.class).get().seed();
 		var random = new Random(seed);
 		this.providers.forEach(provider -> provider.init(random));
 		return instantiate(parameterContext.getParameter());
 	}
 
 	private Object instantiate(Parameter parameter) {
-		return instantiateComplexType(parameter, -1, null);
+		return instantiateComplexType(parameter, null);
 	}
 
-	private Object instantiateComplexType(Parameter parameter, int constructorIndex, Class<?> clazz) {
+	private Object instantiateComplexType(Parameter parameter, Field correspondingField) {
 		try {
 			if (isSupportedParameterType(parameter.getType())) {
-				Field correspondingField = null;
-				if (constructorIndex != -1) {
-					correspondingField = FieldFinder.getMatchingField(clazz, parameter, constructorIndex);
-				}
 				return createRandomParameter(parameter, correspondingField);
 			}
 			var allArgsConstructor = findAllArgsConstructor(parameter.getType());
@@ -73,14 +71,23 @@ class RandomParameterExtension implements ParameterResolver {
 			if (allArgsConstructor.isPresent()) {
 				// instantiate all fields
 				var parameters = allArgsConstructor.get().getParameters();
-				Object[] args = new Object[parameters.length];
+				var args = new Object[parameters.length];
 				for (int i = 0; i < parameters.length; i++) {
-					args[i] = instantiateComplexType(parameters[i], i, parameter.getType());
+					Field field = FieldFinder.getMatchingField(parameter.getType(), parameters[i], i);
+					args[i] = instantiateComplexType(parameters[i], field);
 				}
 				return allArgsConstructor.get().newInstance(args);
 			}
 			if (noArgsConstructor.isPresent()) {
-
+				var result = noArgsConstructor.get().newInstance();
+				Field[] fields = parameter.getType().getDeclaredFields();
+				for (Field field : fields) {
+					var setter = hasSetterMethod(field, parameter.getType());
+					var setterParam = setter.getParameters()[0];
+					var arg = instantiateComplexType(setterParam, field);
+					setter.invoke(result, arg);
+				}
+				return result;
 			}
 			throw new ExtensionConfigurationException(format(
 				"No suitable constructor was found for instantiating %s through @Random (could be a missing random parameter provider).",
@@ -89,6 +96,24 @@ class RandomParameterExtension implements ParameterResolver {
 		catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private Method hasSetterMethod(Field field, Class<?> type) {
+		String name = normalize(field.getName());
+		Class<?> fieldType = field.getType();
+		try {
+			return type.getMethod("set" + name, fieldType);
+		}
+		catch (Exception exception) {
+			throw new ParameterResolutionException(
+				format("Could not instantiate %s because setter was not found for %s", type.getSimpleName(),
+					field.getName()),
+				exception);
+		}
+	}
+
+	private String normalize(String name) {
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 
 	private boolean isSupportedParameterType(Class<?> type) {
@@ -111,13 +136,15 @@ class RandomParameterExtension implements ParameterResolver {
 	}
 
 	private static Optional<Constructor<?>> findAllArgsConstructor(Class<?> type) {
-		var fields = Arrays.stream(type.getDeclaredFields()).map(Field::getType).collect(toList());
-		return Arrays
-				.stream(type.getConstructors())
-				.filter(constructor -> Arrays
-						.stream(constructor.getParameters())
-						.allMatch(parameter -> fields.contains(parameter.getType())))
-				.findFirst();
+		return Arrays.stream(type.getConstructors()).filter(RandomParameterExtension::isAllArgsConstructor).findFirst();
+	}
+
+	private static boolean isAllArgsConstructor(Constructor<?> constructor) {
+		var fieldCount = Arrays
+				.stream(constructor.getDeclaringClass().getDeclaredFields())
+				.filter(field -> !Modifier.isStatic(field.getModifiers()))
+				.count();
+		return constructor.getParameters().length == fieldCount;
 	}
 
 	private static Optional<Constructor<?>> findNoArgsConstructor(Class<?> type) {
