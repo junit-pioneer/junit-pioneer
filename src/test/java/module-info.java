@@ -74,6 +74,8 @@ module org.junitpioneer {
 	provides org.junitpioneer.jupiter.random.RandomParameterProvider
 		with org.junitpioneer.jupiter.random.RandomIntegerParameterProvider,
 			org.junitpioneer.jupiter.random.RandomBooleanParameterProvider,
-			org.junitpioneer.jupiter.random.RandomDoubleParameterProvider;
+			org.junitpioneer.jupiter.random.RandomDoubleParameterProvider,
+			org.junitpioneer.jupiter.random.RandomLongParameterProvider,
+			org.junitpioneer.jupiter.random.RandomFloatParameterProvider;
 
 }

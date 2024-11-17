@@ -17,7 +17,10 @@ import java.util.Arrays;
 /**
  * Utility class for finding the corresponding field to a constructor parameter.
  */
-public class FieldFinder {
+public final class FieldFinder {
+
+	private FieldFinder() {
+	}
 
 	public static Field getMatchingField(Class<?> clazz, Parameter parameter, int constructorIndex) {
 		String paramName = parameter.getName();
@@ -35,11 +38,7 @@ public class FieldFinder {
 		}
 
 		field = findFieldByIndex(clazz, paramType, constructorIndex);
-		if (field != null) {
-			return field;
-		}
-
-		return null;
+		return field;
 	}
 
 	private static Field findFieldByIndex(Class<?> clazz, Class<?> paramType, int constructorIndex) {
