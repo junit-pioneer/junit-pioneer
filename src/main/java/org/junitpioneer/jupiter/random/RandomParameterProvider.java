@@ -28,6 +28,7 @@ public abstract class RandomParameterProvider {
 	protected Random random;
 
 	public RandomParameterProvider() {
+		// recreate default constructor to prevent compiler warning
 	}
 
 	static boolean isJakartaValidationClassPresent() {
@@ -56,7 +57,7 @@ public abstract class RandomParameterProvider {
 
 	/**
 	 * Convenience method for classes extending {@code RandomParameterProvider}.
-	 * Can be used that only one of the optional annotations passed to this method are present.
+	 * Can be used to verify that at most one of the optional annotations passed to this method are present.
 	 *
 	 * @param annotations a vararg array of {@link Optional} annotations, only one can be present.
 	 */
