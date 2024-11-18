@@ -22,6 +22,7 @@ import jakarta.validation.constraints.AssertTrue;
 public class RandomBooleanParameterProvider extends RandomParameterProvider {
 
 	public RandomBooleanParameterProvider() {
+		// recreate default constructor to prevent compiler warning
 	}
 
 	@Override

@@ -51,8 +51,11 @@ class RandomParameterExtension implements ParameterResolver {
 				.stream()
 				.map(ServiceLoader.Provider::get)
 				.collect(toList());
-		var seed = parameterContext.findAnnotation(org.junitpioneer.jupiter.Random.class).get().seed();
-		var random = new Random(seed);
+		var randomAnnotation = parameterContext.findAnnotation(org.junitpioneer.jupiter.Random.class);
+		if (randomAnnotation.isEmpty()) {
+			throw new ExtensionConfigurationException("No @Random found on parameter");
+		}
+		var random = new Random(randomAnnotation.get().seed());
 		this.providers.forEach(provider -> provider.init(random));
 		return instantiate(parameterContext.getParameter());
 	}
@@ -94,7 +97,7 @@ class RandomParameterExtension implements ParameterResolver {
 				parameter.getType()));
 		}
 		catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e);
+			throw new ParameterResolutionException("Unexpected error while creating random parameter.", e);
 		}
 	}
 
