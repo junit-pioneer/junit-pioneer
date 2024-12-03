@@ -156,6 +156,18 @@ It usually makes sense to store them in a static final field.
 
 How to write the code itself.
 
+==== Formatting
+
+This project uses https://github.com/diffplug/spotless[Spotless] to apply and verify code formatting.
+As builds break if the formatting is off, you should run it before committing.
+You can execute it manually by `./gradlew spotlessApply`.
+But you can also automate this by enabling a pre-commit hook:
+
+```bash
+git config --local core.hooksPath .githooks/
+```
+
+
 ==== `Optional`
 https://nipafx.dev/intention-revealing-code-java-8-optional/[There shall be no `null` - use `Optional` instead]:
 
