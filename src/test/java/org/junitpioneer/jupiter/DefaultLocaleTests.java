@@ -183,7 +183,7 @@ class DefaultLocaleTests {
 			}
 
 			@AfterAll
-			@ReadsDefaultTimeZone
+			@ReadsDefaultLocale
 			void resetAfterTestMethodExecution() {
 				assertThat(Locale.getDefault().getLanguage()).isEqualTo("custom");
 			}
@@ -191,7 +191,7 @@ class DefaultLocaleTests {
 		}
 
 		@AfterAll
-		@ReadsDefaultTimeZone
+		@ReadsDefaultLocale
 		void resetAfterTestMethodExecution() {
 			assertThat(Locale.getDefault().getLanguage()).isEqualTo("custom");
 		}
@@ -361,6 +361,122 @@ class DefaultLocaleTests {
 
 	@DefaultLocale(language = "fr", country = "FR")
 	static class InheritanceBaseTest {
+
+	}
+
+	@Nested
+	@DisplayName("when used with a locale provider")
+	class LocaleProviderTests {
+
+		@Test
+		@DisplayName("can get a basic locale from provider")
+		@DefaultLocale(localeProvider = BasicLocaleProvider.class)
+		void canUseProvider() {
+			assertThat(Locale.getDefault()).isEqualTo(Locale.FRENCH);
+		}
+
+		@Test
+		@ReadsDefaultLocale
+		@DisplayName("throws a NullPointerException with custom message if provider returns null")
+		void providerReturnsNull() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "returnsNull");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(NullPointerException.class)
+					.hasMessageContaining("LocaleProvider instance returned with null");
+		}
+
+		@Test
+		@ReadsDefaultLocale
+		@DisplayName("throws an ExtensionConfigurationException if any other option is present")
+		void mutuallyExclusiveWithValue() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "mutuallyExclusiveWithValue");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining(
+						"can only be used with language tag if language, country, variant and provider are not set");
+		}
+
+		@Test
+		@ReadsDefaultLocale
+		@DisplayName("throws an ExtensionConfigurationException if any other option is present")
+		void mutuallyExclusiveWithLanguage() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "mutuallyExclusiveWithLanguage");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("can only be used with language tag if provider is not set");
+		}
+
+		@Test
+		@ReadsDefaultLocale
+		@DisplayName("throws an ExtensionConfigurationException if localeProvider can't be constructed")
+		void badConstructor() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "badConstructor");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("could not be constructed because of an exception");
+		}
+
+	}
+
+	static class BadProviderTestCases {
+
+		@Test
+		@DefaultLocale(value = "en", localeProvider = BasicLocaleProvider.class)
+		void mutuallyExclusiveWithValue() {
+		}
+
+		@Test
+		@DefaultLocale(language = "en", localeProvider = BasicLocaleProvider.class)
+		void mutuallyExclusiveWithLanguage() {
+		}
+
+		@Test
+		@DefaultLocale(localeProvider = ReturnsNullLocaleProvider.class)
+		void returnsNull() {
+		}
+
+		@Test
+		@DefaultLocale(localeProvider = BadConstructorLocaleProvider.class)
+		void badConstructor() {
+		}
+
+	}
+
+	static class BasicLocaleProvider implements LocaleProvider {
+
+		@Override
+		public Locale get() {
+			return Locale.FRENCH;
+		}
+
+	}
+
+	static class ReturnsNullLocaleProvider implements LocaleProvider {
+
+		@Override
+		public Locale get() {
+			return null;
+		}
+
+	}
+
+	static class BadConstructorLocaleProvider implements LocaleProvider {
+
+		BadConstructorLocaleProvider(String unused) {
+		}
+
+		@Override
+		public Locale get() {
+			return Locale.GERMAN;
+		}
 
 	}
 
