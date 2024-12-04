@@ -10,6 +10,7 @@
 
 package org.junitpioneer.internal;
 
+import static java.lang.String.format;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toUnmodifiableList;
 
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -295,6 +297,21 @@ public class PioneerAnnotationUtils {
 						.findAnnotation(annotation.annotationType(), CartesianArgumentsSource.class)
 						.isPresent())
 				.collect(toUnmodifiableList());
+	}
+
+	/**
+	 * Verifies that at most one of the optional annotations passed to this method are present.
+	 *
+	 * @param annotations a vararg array of {@link Optional} annotations, only one can be present.
+	 * @throws ExtensionConfigurationException if more than one annotation is present
+	 */
+	@SafeVarargs
+	public static void isAtMostOneAnnotationIsActive(Optional<? extends Annotation>... annotations) {
+		var all = Arrays.asList(annotations);
+		if (all.stream().filter(Optional::isPresent).count() > 1) {
+			throw new ExtensionConfigurationException(
+				format("At most one of these annotations can be present on a given field or parameter: %s", all));
+		}
 	}
 
 }

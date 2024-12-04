@@ -24,6 +24,10 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 
 public abstract class RandomParameterProvider {
 
+	/**
+	 * Can be used by extending classes to check if jakarta validation is present.
+	 * Check the documentation to see how default implementations use this field in Pioneer.
+	 */
 	protected static final boolean IS_JAKARTA_VALIDATION_PRESENT = isJakartaValidationClassPresent();
 	protected Random random;
 
@@ -48,27 +52,16 @@ public abstract class RandomParameterProvider {
 	public abstract List<Class<?>> getSupportedParameterTypes();
 
 	/**
-	 * TODO needs proper documentation!
-	 * @param parameter parameter
-	 * @param field field
+	 * Creates a random parameter for a type given in {@link  RandomParameterProvider#getSupportedParameterTypes}.
+	 * Based on the injection method the {@code Parameter} can be a constructor, setter or test parameter.
+	 * If possible, (i.e.: can be found) the {@code Field} is the field corresponding to the setter/constructor
+	 * parameter.
+	 *
+	 * @param parameter the parameter of the test method or the parameter of the setter/constructor
+	 *                  if the test parameter is a more complex type
+	 * @param field     the field corresponding to the parameter, could be {@code null}
 	 * @return a random parameter
 	 */
 	public abstract Object provideRandomParameter(Parameter parameter, Field field);
-
-	/**
-	 * Convenience method for classes extending {@code RandomParameterProvider}.
-	 * Can be used to verify that at most one of the optional annotations passed to this method are present.
-	 *
-	 * @param annotations a vararg array of {@link Optional} annotations, only one can be present.
-	 */
-	@SafeVarargs
-	@SuppressWarnings("varargs")
-	protected static void ensureAtMostOneConstraintIsActive(Optional<? extends Annotation>... annotations) {
-		var all = Arrays.asList(annotations);
-		if (all.stream().filter(Optional::isPresent).count() > 1) {
-			throw new ExtensionConfigurationException(
-				format("At most one of these annotations can be present on a given field or parameter: %s", all));
-		}
-	}
 
 }
