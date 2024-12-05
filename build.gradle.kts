@@ -48,10 +48,11 @@ repositories {
 	mavenCentral()
 }
 
-val junitVersion : String by project
+val junitVersion: String by project
 val jacksonVersion: String = "2.18.0"
 val assertjVersion: String = "3.26.3"
 val jimfsVersion: String = "1.3.0"
+val jakartaValidationVersion: String = "3.1.0"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
@@ -60,6 +61,7 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
 	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
+	implementation(group = "jakarta.validation", name = "jakarta.validation-api", version = jakartaValidationVersion)
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
