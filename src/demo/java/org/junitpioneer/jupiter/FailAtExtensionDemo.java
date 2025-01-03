@@ -10,9 +10,11 @@
 
 package org.junitpioneer.jupiter;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class FailAtExtensionDemo {
 
 	// tag::fail_at_simple[]

@@ -18,6 +18,12 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 
+/**
+ * Pioneer-internal utility class.
+ * DO NOT USE THIS CLASS - IT MAY CHANGE SIGNIFICANTLY IN ANY MINOR UPDATE.
+ * <br/>
+ * A (slightly refactored) copy of {@code org.junit.jupiter.params.ParameterizedTestNameFormatter}.
+ */
 public final class TestNameFormatter {
 
 	// This code is a slightly refactored variant of the JUnit Jupiter class

@@ -47,21 +47,16 @@ import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
 class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 		implements ArgumentsProvider, CartesianParameterArgumentsProvider<N> { //NOSONAR deprecated interface use will be removed in later release
 
-	// Once the CartesianAnnotationConsumer is removed we can make this provider stateless.
-	private Annotation argumentsSource;
-
 	@Override
 	public Stream<N> provideArguments(ExtensionContext context, Parameter parameter) throws Exception {
-		initArgumentsSource(parameter);
+		Annotation argumentsSource = initArgumentsSource(parameter);
 		return provideArguments(argumentsSource);
 	}
 
 	@Override
 	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-		// argumentSource is present if fed through the CartesianAnnotationConsumer interface
-		if (argumentsSource == null)
-			// since it's a method annotation, the element will always be present
-			initArgumentsSource(context.getRequiredTestMethod());
+		// since it's a method annotation, the element will always be present
+		Annotation argumentsSource = initArgumentsSource(context.getRequiredTestMethod());
 
 		return provideArguments(argumentsSource).map(Arguments::of);
 	}
@@ -76,7 +71,7 @@ class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 		return asStream(range);
 	}
 
-	private void initArgumentsSource(AnnotatedElement element) {
+	private Annotation initArgumentsSource(AnnotatedElement element) {
 		List<Annotation> argumentsSources = PioneerAnnotationUtils
 				.findAnnotatedAnnotations(element, ArgumentsSource.class);
 
@@ -87,7 +82,7 @@ class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 			throw new IllegalArgumentException(message);
 		}
 
-		argumentsSource = argumentsSources.get(0);
+		return argumentsSources.get(0);
 	}
 
 	private Stream<N> asStream(Range<N> range) {
