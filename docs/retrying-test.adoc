@@ -137,4 +137,4 @@ This is most likely unwanted and thus the engine warns:
 == Thread-Safety
 
 This extension is thread-safe.
-During https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution], all repetitions of a `@RepeatFailedTest` are executed sequentially.
+During https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution], all repetitions of a `@RetryingTest` are executed sequentially.
