@@ -52,8 +52,9 @@ class EnvironmentVariableUtilsTests {
 	 * give access to the internals we need to change environment variables. These tests confirm that.
 	 */
 	@Nested
+	@SuppressWarnings("removal")
 	// classes related to `SecurityManager` will eventually be removed and so will these tests be
-    class With_SecurityManager {
+	class With_SecurityManager {
 
 		@Test
 		@SetSystemProperty(key = "java.security.policy", value = "file:src/test/resources/default-testing.policy")
