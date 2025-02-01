@@ -53,8 +53,7 @@ class EnvironmentVariableUtilsTests {
 	 */
 	@Nested
 	// classes related to `SecurityManager` will eventually be removed and so will these tests be
-	@SuppressWarnings("removal")
-	class With_SecurityManager {
+    class With_SecurityManager {
 
 		@Test
 		@SetSystemProperty(key = "java.security.policy", value = "file:src/test/resources/default-testing.policy")
@@ -82,14 +81,16 @@ class EnvironmentVariableUtilsTests {
 		 */
 		@SuppressWarnings("deprecated")
 		private void executeWithSecurityManager(Runnable runnable) {
-			java.security.Policy.getPolicy().refresh();
-			SecurityManager original = System.getSecurityManager();
-			System.setSecurityManager(new SecurityManager());
-			try {
-				runnable.run();
-			}
-			finally {
-				System.setSecurityManager(original);
+			if (Runtime.version().feature() < 24) {
+				java.security.Policy.getPolicy().refresh();
+				SecurityManager original = System.getSecurityManager();
+				System.setSecurityManager(new SecurityManager());
+				try {
+					runnable.run();
+				}
+				finally {
+					System.setSecurityManager(original);
+				}
 			}
 		}
 

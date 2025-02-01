@@ -248,7 +248,7 @@ tasks {
 		// java.security.manager was added in Java 12 (see
 		// https://www.oracle.com/java/technologies/javase/12-relnote-issues.html#JDK-8191053). We have to explicitly
 		// set it to "allow" for EnvironmentVariableUtilsTests$With_SecurityManager.
-		if (JavaVersion.current() >= JavaVersion.VERSION_12)
+		if (JavaVersion.current() >= JavaVersion.VERSION_12 && JavaVersion.current() < JavaVersion.VERSION_24)
 			systemProperty("java.security.manager", "allow")
 		// Disables Byte Buddy validation for the maximum supported class file version, since we are possibly using a
 		// Java EA release.
