@@ -92,8 +92,8 @@ public class PioneerUtils {
 	 */
 	public static List<ExtensionContext> findAllContexts(ExtensionContext context) {
 		List<ExtensionContext> allContexts = new ArrayList<>();
-		for (var c = Optional.of(context); c.isPresent(); c = c.get().getParent()) {
-			allContexts.add(c.get());
+		for (var c = context; c != null; c = c.getParent().orElse(null)) {
+			allContexts.add(c);
 		}
 		return allContexts;
 	}
