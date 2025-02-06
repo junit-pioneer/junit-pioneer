@@ -92,12 +92,9 @@ public class PioneerUtils {
 	 */
 	public static List<ExtensionContext> findAllContexts(ExtensionContext context) {
 		List<ExtensionContext> allContexts = new ArrayList<>();
-		allContexts.add(context);
-		List<ExtensionContext> parentContexts = context
-				.getParent()
-				.map(PioneerUtils::findAllContexts)
-				.orElse(List.of());
-		allContexts.addAll(parentContexts);
+		for (var c = context; c != null; c = c.getParent().orElse(null)) {
+			allContexts.add(c);
+		}
 		return allContexts;
 	}
 
@@ -133,7 +130,6 @@ public class PioneerUtils {
 
 	/**
 	 * Replaces all primitive types with the appropriate wrapper types.
-	 * Returns the passed argument if it's not a primitive according to {@link Class#isPrimitive()}.
 	 *
 	 * @return the wrapped class of the primitive type, or the passed class
 	 * @see MethodType#wrap()

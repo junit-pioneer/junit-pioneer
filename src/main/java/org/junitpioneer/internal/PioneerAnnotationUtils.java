@@ -153,8 +153,27 @@ public class PioneerAnnotationUtils {
 		}
 	}
 
+	/**
+	 * Checks whether a given annotation is a container annotation.
+	 * Checks only the necessary parts, i.e.:
+	 * <ul>
+	 *     <li>the annotation has a 'value' method</li>
+	 *     <li>the 'value' method has annotation array as return type</li>
+	 *     <li>the return type annotation is annotated with {@link Repeatable}, referencing this annotation</li>
+	 * </ul>
+	 * Does not check (this would mean a compile-time error):
+	 * <ul>
+	 *     <li>{@link java.lang.annotation.Retention}</li>
+	 *     <li>{@link java.lang.annotation.Target}</li>
+	 *     <li>{@link java.lang.annotation.Documented}</li>
+	 *     <li>{@link Inherited}</li>
+	 * </ul>
+	 *
+	 * @param annotation the annotation to check
+	 * @return {@code true} if the given annotation is a container annotation, {@code false} otherwise
+	 * @see <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6.3">Relevant section of the JLS</a>
+	 */
 	public static boolean isContainerAnnotation(Annotation annotation) {
-		// See https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.6.3
 		try {
 			Method value = annotation.annotationType().getDeclaredMethod("value");
 			return value.getReturnType().isArray() && value.getReturnType().getComponentType().isAnnotation()
@@ -249,6 +268,7 @@ public class PioneerAnnotationUtils {
 				.collect(toUnmodifiableList());
 	}
 
+	// Explicitly used by CartesianTestExtension.
 	public static List<Annotation> findParameterArgumentsSources(Method testMethod) {
 		return Arrays
 				.stream(testMethod.getParameters())
@@ -267,6 +287,7 @@ public class PioneerAnnotationUtils {
 		return annotations;
 	}
 
+	// Explicitly used by CartesianTestExtension.
 	public static List<Annotation> findMethodArgumentsSources(Method testMethod) {
 		return Arrays
 				.stream(testMethod.getAnnotations())
