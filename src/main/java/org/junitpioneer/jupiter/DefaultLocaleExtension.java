@@ -17,8 +17,10 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
+import org.junitpioneer.jupiter.LocaleProvider.NullLocaleProvider;
 
 class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 
@@ -49,20 +51,26 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 	private static Locale createLocale(DefaultLocale annotation) {
 		if (!annotation.value().isEmpty()) {
 			return createFromLanguageTag(annotation);
-		} else {
+		} else if (!annotation.language().isEmpty()) {
 			return createFromParts(annotation);
+		} else {
+			return getFromProvider(annotation);
 		}
 	}
 
 	private static Locale createFromLanguageTag(DefaultLocale annotation) {
-		if (!annotation.language().isEmpty() || !annotation.country().isEmpty() || !annotation.variant().isEmpty()) {
+		if (!annotation.language().isEmpty() || !annotation.country().isEmpty() || !annotation.variant().isEmpty()
+				|| annotation.localeProvider() != NullLocaleProvider.class) {
 			throw new ExtensionConfigurationException(
-				"@DefaultLocale can only be used with language tag if language, country, and variant are not set");
+				"@DefaultLocale can only be used with language tag if language, country, variant and provider are not set");
 		}
 		return Locale.forLanguageTag(annotation.value());
 	}
 
 	private static Locale createFromParts(DefaultLocale annotation) {
+		if (annotation.localeProvider() != NullLocaleProvider.class)
+			throw new ExtensionConfigurationException(
+				"@DefaultLocale can only be used with language tag if provider is not set");
 		String language = annotation.language();
 		String country = annotation.country();
 		String variant = annotation.variant();
@@ -75,8 +83,28 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 		} else {
 			throw new ExtensionConfigurationException(
 				"@DefaultLocale not configured correctly. When not using a language tag, specify either"
-						+ "language, or language and country, or language and country and variant.");
+						+ " language, or language and country, or language and country and variant.");
 		}
+	}
+
+	private static Locale getFromProvider(DefaultLocale annotation) {
+		if (!annotation.value().isEmpty() || !annotation.language().isEmpty() || !annotation.country().isEmpty()
+				|| !annotation.variant().isEmpty())
+			throw new ExtensionConfigurationException(
+				"@DefaultLocale can only be used with a provider if value, language, country and variant are not set.");
+		var providerClass = annotation.localeProvider();
+		LocaleProvider provider;
+		try {
+			provider = ReflectionSupport.newInstance(providerClass);
+		}
+		catch (Exception exception) {
+			throw new ExtensionConfigurationException(
+				"LocaleProvider instance could not be constructed because of an exception", exception);
+		}
+		var locale = provider.get();
+		if (locale == null)
+			throw new NullPointerException("LocaleProvider instance returned with null");
+		return locale;
 	}
 
 	@Override
