@@ -55,7 +55,7 @@ class RandomParameterExtension implements ParameterResolver {
 		if (randomAnnotation.isEmpty()) {
 			throw new ExtensionConfigurationException("No @Random found on parameter");
 		}
-		var random = new Random(randomAnnotation.get().seed());
+		var random = new Random(randomAnnotation.get().seed()); //NOSONAR should only be used for testing
 		this.providers.forEach(provider -> provider.init(random));
 		return instantiate(parameterContext.getParameter());
 	}
