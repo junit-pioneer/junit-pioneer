@@ -15,6 +15,7 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junitpioneer.jupiter.Random;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -22,6 +23,7 @@ import org.junitpioneer.testkit.PioneerTestKit;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 
 @DisplayName("Random parameter extension")
 public class RandomParameterExtensionTests {
@@ -37,10 +39,19 @@ public class RandomParameterExtensionTests {
 	}
 
 	@Test
-	@DisplayName("should work with javax/jakarta validation annotations on parameter types")
+	@DisplayName("should work with javax/jakarta validation annotations on primitive parameter types")
 	void shouldWorkWithValidationOnParameter() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "primitive", int.class);
+
+		assertThat(results).hasSingleSucceededTest();
+	}
+
+	@Test
+	@DisplayName("should work with javax/jakarta validation annotations on String parameter types")
+	void shouldWorkWithValidationOnStringParameter() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "randomString", String.class);
 
 		assertThat(results).hasSingleSucceededTest();
 	}
@@ -78,6 +89,11 @@ public class RandomParameterExtensionTests {
 		@Test
 		void primitive(@Random(seed = 11) @Min(100) @Max(101) int primitive) {
 			Assertions.assertThat(primitive).isEqualTo(100);
+		}
+
+		@Test
+		void randomString(@Random String randomString) {
+			Assertions.assertThat(randomString).isNotBlank().hasSizeBetween(3, 10);
 		}
 
 		@Test

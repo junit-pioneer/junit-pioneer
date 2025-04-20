@@ -26,11 +26,6 @@ public class RandomIntegerParameterProvider extends RandomBoundedParameterProvid
 	}
 
 	@Override
-	public Integer getDefaultRandomNumber() {
-		return this.random.nextInt();
-	}
-
-	@Override
 	public Integer provideRandomNumber(Long min, Long max) {
 		return PioneerRandomUtils.boundedNextInt(random, min.intValue(), max.intValue());
 	}

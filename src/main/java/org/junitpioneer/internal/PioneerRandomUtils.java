@@ -107,4 +107,9 @@ public class PioneerRandomUtils {
 		return r;
 	}
 
+	public static String randomAlphanumericCharacter(Random rng) {
+		var alphanumerics = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		return String.valueOf(alphanumerics.charAt(PioneerRandomUtils.boundedNextInt(rng, 0, alphanumerics.length())));
+	}
+
 }

@@ -26,11 +26,6 @@ public class RandomDoubleParameterProvider extends RandomBoundedParameterProvide
 	}
 
 	@Override
-	public Double getDefaultRandomNumber() {
-		return PioneerRandomUtils.boundedNextDouble(random, Double.MIN_VALUE, Double.MAX_VALUE);
-	}
-
-	@Override
 	public Double provideRandomNumber(Long min, Long max) {
 		return PioneerRandomUtils.boundedNextDouble(random, min, max);
 	}

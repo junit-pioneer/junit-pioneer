@@ -14,7 +14,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import jakarta.validation.constraints.Size;
+
+import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerRandomUtils;
 
 public class RandomStringParameterProvider extends RandomParameterProvider {
@@ -30,13 +35,21 @@ public class RandomStringParameterProvider extends RandomParameterProvider {
 
 	@Override
 	public Object provideRandomParameter(Parameter parameter, Field field) {
+		int min = 3;
+		int max = 10;
 		if (IS_JAKARTA_VALIDATION_PRESENT) {
-			// validation stuff
+			var sizeConstraint = AnnotationSupport.findAnnotation(parameter, Size.class)
+				.or(() -> AnnotationSupport.findAnnotation(field, Size.class));
+			if (sizeConstraint.isPresent()) {
+				var size = sizeConstraint.get();
+				min = size.min();
+				max = size.max() + 1; // Size.max is inclusive, but boundedNextInt is exclusive
+			}
 		}
-		int length = PioneerRandomUtils.boundedNextInt(random, 3, 8);
-		byte[] bytes = new byte[length];
-		random.nextBytes(bytes);
-		return new String(bytes, StandardCharsets.UTF_8);
+		int length = PioneerRandomUtils.boundedNextInt(random, min, max);
+		return IntStream.range(0, length)
+			.mapToObj(ignored -> PioneerRandomUtils.randomAlphanumericCharacter(random))
+			.collect(Collectors.joining());
 	}
 
 }

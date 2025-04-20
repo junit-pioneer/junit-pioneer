@@ -26,11 +26,6 @@ public class RandomLongParameterProvider extends RandomBoundedParameterProvider<
 	}
 
 	@Override
-	public Long getDefaultRandomNumber() {
-		return this.random.nextLong();
-	}
-
-	@Override
 	public Long provideRandomNumber(Long min, Long max) {
 		return PioneerRandomUtils.boundedNextLong(random, min, max);
 	}

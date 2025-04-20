@@ -21,11 +21,6 @@ public class RandomShortParameterProvider extends RandomBoundedParameterProvider
 	}
 
 	@Override
-	public Short getDefaultRandomNumber() {
-		return (short) PioneerRandomUtils.boundedNextInt(random, Short.MIN_VALUE, Short.MAX_VALUE);
-	}
-
-	@Override
 	public Short provideRandomNumber(Long min, Long max) {
 		int shortMin = (int) Math.max(min, Short.MIN_VALUE);
 		int shortMax = (int) Math.min(max, Short.MAX_VALUE);

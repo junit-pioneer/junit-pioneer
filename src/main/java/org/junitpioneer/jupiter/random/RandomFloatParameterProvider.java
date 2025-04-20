@@ -26,11 +26,6 @@ public class RandomFloatParameterProvider extends RandomBoundedParameterProvider
 	}
 
 	@Override
-	public Float getDefaultRandomNumber() {
-		return this.random.nextFloat();
-	}
-
-	@Override
 	public Float provideRandomNumber(Long min, Long max) {
 		return PioneerRandomUtils.boundedNextFloat(random, min, max);
 	}

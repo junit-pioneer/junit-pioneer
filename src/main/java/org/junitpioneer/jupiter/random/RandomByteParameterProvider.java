@@ -26,11 +26,6 @@ public class RandomByteParameterProvider extends RandomBoundedParameterProvider<
 	}
 
 	@Override
-	public Byte getDefaultRandomNumber() {
-		return (byte) PioneerRandomUtils.boundedNextLong(random, Byte.MIN_VALUE, Byte.MAX_VALUE);
-	}
-
-	@Override
 	public Byte provideRandomNumber(Long min, Long max) {
 		return (byte) PioneerRandomUtils.boundedNextLong(random, min, max);
 	}

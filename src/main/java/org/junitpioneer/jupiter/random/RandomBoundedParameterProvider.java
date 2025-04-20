@@ -96,7 +96,9 @@ public abstract class RandomBoundedParameterProvider<T> extends RandomParameterP
 		return number -> number >= defaultMinValue && number < defaultMaxValue;
 	}
 
-	public abstract T getDefaultRandomNumber();
+	public T getDefaultRandomNumber() {
+		return provideRandomNumber(defaultMinValue, defaultMaxValue);
+	};
 
 	public abstract T provideRandomNumber(Long min, Long max);
 

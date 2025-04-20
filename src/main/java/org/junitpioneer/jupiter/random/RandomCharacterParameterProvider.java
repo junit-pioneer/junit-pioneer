@@ -17,17 +17,12 @@ import org.junitpioneer.internal.PioneerRandomUtils;
 public class RandomCharacterParameterProvider extends RandomBoundedParameterProvider<Character> {
 
 	public RandomCharacterParameterProvider() {
-		super((long) 'a', (long) 'z');
+		super((long) 'a', (long) 'z' + 1);
 	}
 
 	@Override
 	public List<Class<?>> getSupportedParameterTypes() {
 		return List.of(char.class, Character.class);
-	}
-
-	@Override
-	public Character getDefaultRandomNumber() {
-		return (char) PioneerRandomUtils.boundedNextInt(random, 'a', 'z' + 1);
 	}
 
 	@Override
