@@ -64,7 +64,7 @@ public class PioneerRandomUtils {
 				r = (r & m) + origin;
 			} else if (n > 0) {
 				// It is case (3): need to reject over-represented candidates.
-				for (int u = r >>> 1; u + m - (r = u % n) < 0; u = rng.nextInt() >>> 1)
+				for (int u = r >>> 1; u + m - (r = u % n) < 0; u = rng.nextInt() >>> 1) //NOSONAR this is copy-pasted from Java 17 proper
 					;
 				r += origin;
 			} else {
@@ -94,7 +94,7 @@ public class PioneerRandomUtils {
 				   which is concisely but cryptically performed
 				   within the while-condition of a body-less for loop. */
 				for (long u = r >>> 1; // ensure nonnegative
-						u + m - (r = u % n) < 0L; // rejection check
+						u + m - (r = u % n) < 0L; // rejection check //NOSONAR this is copy-pasted from Java 17 proper
 						u = rng.nextLong() >>> 1) // retry
 					;
 				r += origin;

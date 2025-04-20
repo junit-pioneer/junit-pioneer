@@ -65,7 +65,6 @@ public class RandomParameterExtensionTests {
 
 	@Test
 	void withSetters(@Random(seed = 12312) WithSetters withSetters) {
-		System.out.println(withSetters.isBool());
 		Assertions.assertThat(withSetters).hasNoNullFieldsOrProperties();
 	}
 
