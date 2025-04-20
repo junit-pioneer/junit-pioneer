@@ -61,10 +61,12 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
 	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
-	implementation(group = "jakarta.validation", name = "jakarta.validation-api", version = jakartaValidationVersion)
+	compileOnly(group = "jakarta.validation", name = "jakarta.validation-api", version = jakartaValidationVersion)
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
+
+	testImplementation(group = "jakarta.validation", name = "jakarta.validation-api", version = jakartaValidationVersion)
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
 	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.14.1")
@@ -346,7 +348,8 @@ tasks {
 
 	generateChangelog {
 		dependsOn(":closeAndReleaseSonatypeStagingRepository")
-		val gitFetchRecentTag = Runtime.getRuntime().exec("git describe --tags --abbrev=0")
+		val cmd = arrayOf("git", "describe", "--tags", "--abbrev=0")
+		val gitFetchRecentTag = Runtime.getRuntime().exec(cmd)
 		val recentTag = gitFetchRecentTag.inputStream.bufferedReader().readText().trim()
 		previousRevision = recentTag
 		githubToken = System.getenv("GITHUB_TOKEN")
