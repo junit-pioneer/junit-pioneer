@@ -25,12 +25,12 @@ public class RandomDoubleParameterProvider extends RandomNumberProvider<Double> 
 
 	@Override
 	public Double getDefaultRandomNumber() {
-		return this.random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+		return PioneerRandomUtils.boundedNextDouble(random, Double.MIN_VALUE, Double.MAX_VALUE);
 	}
 
 	@Override
 	public Double provideRandomNumber(Long min, Long max) {
-		return this.random.nextDouble(min, max);
+		return PioneerRandomUtils.boundedNextDouble(random, min, max);
 	}
 
 }

@@ -30,7 +30,7 @@ public class RandomIntegerParameterProvider extends RandomNumberProvider<Integer
 
 	@Override
 	public Integer provideRandomNumber(Long min, Long max) {
-		return this.random.nextInt(min.intValue(), max.intValue());
+		return PioneerRandomUtils.boundedNextInt(random, min.intValue(), max.intValue());
 	}
 
 }

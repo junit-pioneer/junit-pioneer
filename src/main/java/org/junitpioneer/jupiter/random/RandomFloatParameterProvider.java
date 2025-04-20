@@ -30,7 +30,7 @@ public class RandomFloatParameterProvider extends RandomNumberProvider<Float> {
 
 	@Override
 	public Float provideRandomNumber(Long min, Long max) {
-		return this.random.nextFloat(min, max);
+		return PioneerRandomUtils.boundedNextFloat(random, min, max);
 	}
 
 }

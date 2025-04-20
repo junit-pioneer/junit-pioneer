@@ -30,7 +30,7 @@ public class RandomLongParameterProvider extends RandomNumberProvider<Long> {
 
 	@Override
 	public Long provideRandomNumber(Long min, Long max) {
-		return this.random.nextLong(min, max);
+		return PioneerRandomUtils.boundedNextLong(random, min, max);
 	}
 
 }
