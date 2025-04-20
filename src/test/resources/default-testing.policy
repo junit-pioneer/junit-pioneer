@@ -1,4 +1,0 @@
-grant {
-	// necessary for gradle
-	permission javax.management.MBeanServerPermission "createMBeanServer";
-};
