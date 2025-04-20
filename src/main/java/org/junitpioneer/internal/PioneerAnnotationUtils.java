@@ -305,8 +305,7 @@ public class PioneerAnnotationUtils {
 	 * @param annotations a vararg array of {@link Optional} annotations, only one can be present.
 	 * @throws ExtensionConfigurationException if more than one annotation is present
 	 */
-	@SafeVarargs
-	public static void isAtMostOneAnnotationIsActive(Optional<? extends Annotation>... annotations) {
+	public static void isAtMostOneAnnotationIsActive(Optional<?>... annotations) {
 		var all = Arrays.asList(annotations);
 		if (all.stream().filter(Optional::isPresent).count() > 1) {
 			throw new ExtensionConfigurationException(

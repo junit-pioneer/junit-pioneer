@@ -68,8 +68,7 @@ public abstract class RandomNumberProvider<T extends Number> extends RandomParam
 			var negative = findAnnotation(parameter, Negative.class).or(() -> findAnnotation(field, Negative.class));
 			var negativeOrZero = findAnnotation(parameter, NegativeOrZero.class)
 					.or(() -> findAnnotation(field, NegativeOrZero.class));
-			PioneerAnnotationUtils
-					.isAtMostOneAnnotationIsActive(positive, positiveOrZero, negative, negativeOrZero);
+			PioneerAnnotationUtils.isAtMostOneAnnotationIsActive(positive, positiveOrZero, negative, negativeOrZero);
 			if (max <= min) {
 				throw new ParameterResolutionException(
 					"Invalid range between @Max and @Min. Note that @Min is inclusive and @Max is exclusive.");
