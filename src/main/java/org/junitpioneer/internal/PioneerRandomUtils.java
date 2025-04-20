@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter.random;
+package org.junitpioneer.internal;
 
 import java.util.Random;
 

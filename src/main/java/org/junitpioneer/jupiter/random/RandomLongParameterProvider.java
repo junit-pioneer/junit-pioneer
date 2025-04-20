@@ -12,6 +12,8 @@ package org.junitpioneer.jupiter.random;
 
 import java.util.List;
 
+import org.junitpioneer.internal.PioneerRandomUtils;
+
 public class RandomLongParameterProvider extends RandomNumberProvider<Long> {
 
 	public RandomLongParameterProvider() {
