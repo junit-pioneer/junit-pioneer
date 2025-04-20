@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.junitpioneer.internal.PioneerRandomUtils;
 
-public class RandomLongParameterProvider extends RandomNumberProvider<Long> {
+public class RandomLongParameterProvider extends RandomBoundedParameterProvider<Long> {
 
 	public RandomLongParameterProvider() {
 		super(Long.MIN_VALUE, Long.MAX_VALUE);

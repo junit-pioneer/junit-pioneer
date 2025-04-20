@@ -27,12 +27,12 @@ import jakarta.validation.constraints.NegativeOrZero;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-public abstract class RandomNumberProvider<T extends Number> extends RandomParameterProvider {
+public abstract class RandomBoundedParameterProvider<T> extends RandomParameterProvider {
 
 	private final Long defaultMinValue;
 	private final Long defaultMaxValue;
 
-	public RandomNumberProvider(Long defaultMinValue, Long defaultMaxValue) {
+	public RandomBoundedParameterProvider(Long defaultMinValue, Long defaultMaxValue) {
 		this.defaultMinValue = defaultMinValue;
 		this.defaultMaxValue = defaultMaxValue;
 	}

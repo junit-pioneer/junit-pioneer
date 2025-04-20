@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.junitpioneer.internal.PioneerRandomUtils;
 
-public class RandomFloatParameterProvider extends RandomNumberProvider<Float> {
+public class RandomFloatParameterProvider extends RandomBoundedParameterProvider<Float> {
 
 	public RandomFloatParameterProvider() {
 		super(Long.MIN_VALUE, Long.MAX_VALUE);

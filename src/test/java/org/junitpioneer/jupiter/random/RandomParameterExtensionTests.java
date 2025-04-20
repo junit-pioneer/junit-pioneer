@@ -30,7 +30,7 @@ public class RandomParameterExtensionTests {
 	@DisplayName("should work with all the types included in SupportedTypes class")
 	void shouldWorkWithAllSupportedTypes() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "allSupportedTypes",
+				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "allSupportedTypes",
 					SupportedTypes.class);
 
 		assertThat(results).hasSingleSucceededTest();
@@ -40,7 +40,7 @@ public class RandomParameterExtensionTests {
 	@DisplayName("should work with javax/jakarta validation annotations on parameter types")
 	void shouldWorkWithValidationOnParameter() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "primitive", int.class);
+				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "primitive", int.class);
 
 		assertThat(results).hasSingleSucceededTest();
 	}
@@ -49,7 +49,7 @@ public class RandomParameterExtensionTests {
 	@DisplayName("should work with javax/jakarta validation annotations on fields in the parameter type")
 	void shouldWorkWithSimpleTypesWithJakartaValidationOnFields() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "simpleType", Simple.class);
+				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "simpleType", Simple.class);
 
 		assertThat(results).hasSingleSucceededTest();
 	}
@@ -58,7 +58,7 @@ public class RandomParameterExtensionTests {
 	@DisplayName("should work with javax/jakarta validation annotations on nested types in the parameter type")
 	void shouldHaveValidFields() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "complexType", Complex.class);
+				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "complexType", Complex.class);
 
 		assertThat(results).hasSingleSucceededTest();
 	}
@@ -68,7 +68,7 @@ public class RandomParameterExtensionTests {
 		Assertions.assertThat(withSetters).hasNoNullFieldsOrProperties();
 	}
 
-	static class RandomParameterTestCases {
+	static class RandomParameterTests {
 
 		@Test
 		void allSupportedTypes(@Random SupportedTypes supportedTypes) {
@@ -161,13 +161,19 @@ public class RandomParameterExtensionTests {
 		private final boolean b;
 		private final float f;
 		private final long l;
+		private final short s;
+		private final char c;
+		private final byte by;
 
-		public SupportedTypes(int i, double d, boolean b, float f, long l) {
+		public SupportedTypes(int i, double d, boolean b, float f, long l, short s, char c, byte by) {
 			this.i = i;
 			this.d = d;
 			this.b = b;
 			this.f = f;
 			this.l = l;
+			this.s = s;
+			this.c = c;
+			this.by = by;
 		}
 
 		public int getI() {
@@ -188,6 +194,18 @@ public class RandomParameterExtensionTests {
 
 		public long getL() {
 			return l;
+		}
+
+		public short getS() {
+			return s;
+		}
+
+		public char getC() {
+			return c;
+		}
+
+		public byte getBy() {
+			return by;
 		}
 
 	}

@@ -94,7 +94,7 @@ class RandomParameterExtension implements ParameterResolver {
 			}
 			throw new ExtensionConfigurationException(format(
 				"No suitable constructor was found for instantiating %s through @Random (could be a missing random parameter provider).",
-				parameter.getType()));
+				parameter.getType().getSimpleName()));
 		}
 		catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new ParameterResolutionException("Unexpected error while creating random parameter.", e);
