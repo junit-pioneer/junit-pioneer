@@ -10,17 +10,17 @@
 
 package org.junitpioneer.jupiter.random;
 
+import static java.util.stream.Collectors.joining;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import jakarta.validation.constraints.Size;
 
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerRandomUtils;
+
+import jakarta.validation.constraints.Size;
 
 public class RandomStringParameterProvider extends RandomParameterProvider {
 
@@ -38,8 +38,9 @@ public class RandomStringParameterProvider extends RandomParameterProvider {
 		int min = 3;
 		int max = 10;
 		if (IS_JAKARTA_VALIDATION_PRESENT) {
-			var sizeConstraint = AnnotationSupport.findAnnotation(parameter, Size.class)
-				.or(() -> AnnotationSupport.findAnnotation(field, Size.class));
+			var sizeConstraint = AnnotationSupport
+					.findAnnotation(parameter, Size.class)
+					.or(() -> AnnotationSupport.findAnnotation(field, Size.class));
 			if (sizeConstraint.isPresent()) {
 				var size = sizeConstraint.get();
 				min = size.min();
@@ -47,9 +48,10 @@ public class RandomStringParameterProvider extends RandomParameterProvider {
 			}
 		}
 		int length = PioneerRandomUtils.boundedNextInt(random, min, max);
-		return IntStream.range(0, length)
-			.mapToObj(ignored -> PioneerRandomUtils.randomAlphanumericCharacter(random))
-			.collect(Collectors.joining());
+		return IntStream
+				.range(0, length)
+				.mapToObj(ignored -> PioneerRandomUtils.randomAlphanumericCharacter(random))
+				.collect(joining());
 	}
 
 }

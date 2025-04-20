@@ -15,7 +15,6 @@ import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junitpioneer.jupiter.Random;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -23,7 +22,6 @@ import org.junitpioneer.testkit.PioneerTestKit;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
 
 @DisplayName("Random parameter extension")
 public class RandomParameterExtensionTests {

@@ -28,7 +28,7 @@ public class RandomBigDecimalParameterProvider extends RandomBoundedParameterPro
 
 	@Override
 	public BigDecimal provideRandomNumber(Long min, Long max) {
-        return BigDecimal.valueOf(PioneerRandomUtils.boundedNextLong(random, min, max));
+		return BigDecimal.valueOf(PioneerRandomUtils.boundedNextLong(random, min, max));
 	}
 
 	@Override
