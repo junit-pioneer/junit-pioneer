@@ -147,7 +147,7 @@ class RandomParameterExtension implements ParameterResolver {
 				.stream(constructor.getDeclaringClass().getDeclaredFields())
 				.filter(field -> !Modifier.isStatic(field.getModifiers()))
 				.count();
-		return constructor.getParameters().length == fieldCount;
+		return constructor.getParameters().length >= fieldCount;
 	}
 
 	private static Optional<Constructor<?>> findNoArgsConstructor(Class<?> type) {

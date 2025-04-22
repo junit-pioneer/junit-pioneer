@@ -12,14 +12,19 @@ package org.junitpioneer.jupiter.random;
 
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
+import java.math.BigDecimal;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junitpioneer.jupiter.Random;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
 import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
@@ -27,10 +32,19 @@ import jakarta.validation.constraints.Min;
 public class RandomParameterExtensionTests {
 
 	@Test
+	void complexType(@Random Person person) {
+		Assertions.assertThat(person).usingRecursiveAssertion().hasNoNullFields();
+		Assertions.assertThat(person.getName()).hasSizeBetween(7, 21);
+		Assertions.assertThat(person.getName().split(" ")).hasSize(2);
+		Assertions.assertThat(person.getName().split(" ")[0]).hasSizeBetween(3, 10);
+		Assertions.assertThat(person.getName().split(" ")[1]).hasSizeBetween(3, 10);
+	}
+
+	@Test
 	@DisplayName("should work with all the types included in SupportedTypes class")
 	void shouldWorkWithAllSupportedTypes() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "allSupportedTypes",
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "allSupportedTypes",
 					SupportedTypes.class);
 
 		assertThat(results).hasSingleSucceededTest();
@@ -40,7 +54,7 @@ public class RandomParameterExtensionTests {
 	@DisplayName("should work with javax/jakarta validation annotations on primitive parameter types")
 	void shouldWorkWithValidationOnParameter() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "primitive", int.class);
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "primitive", int.class);
 
 		assertThat(results).hasSingleSucceededTest();
 	}
@@ -49,7 +63,7 @@ public class RandomParameterExtensionTests {
 	@DisplayName("should work with javax/jakarta validation annotations on String parameter types")
 	void shouldWorkWithValidationOnStringParameter() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "randomString", String.class);
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "randomString", String.class);
 
 		assertThat(results).hasSingleSucceededTest();
 	}
@@ -58,7 +72,7 @@ public class RandomParameterExtensionTests {
 	@DisplayName("should work with javax/jakarta validation annotations on fields in the parameter type")
 	void shouldWorkWithSimpleTypesWithJakartaValidationOnFields() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "simpleType", Simple.class);
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "simpleType", Simple.class);
 
 		assertThat(results).hasSingleSucceededTest();
 	}
@@ -67,17 +81,52 @@ public class RandomParameterExtensionTests {
 	@DisplayName("should work with javax/jakarta validation annotations on nested types in the parameter type")
 	void shouldHaveValidFields() {
 		ExecutionResults results = PioneerTestKit
-				.executeTestMethodWithParameterTypes(RandomParameterTests.class, "complexType", Complex.class);
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "complexType", Complex.class);
 
 		assertThat(results).hasSingleSucceededTest();
 	}
 
 	@Test
-	void withSetters(@Random(seed = 12312) WithSetters withSetters) {
-		Assertions.assertThat(withSetters).hasNoNullFieldsOrProperties();
+	@DisplayName("should find fields by name")
+	void shouldFindFieldsByName() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "fieldsByName", ByName.class);
+
+		assertThat(results).hasSingleSucceededTest();
 	}
 
-	static class RandomParameterTests {
+	@Test
+	@DisplayName("should find fields by index")
+	void shouldFindFieldsByIndex() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "fieldsByIndex", ByIndex.class);
+
+		assertThat(results).hasSingleSucceededTest();
+	}
+
+	@Test
+	@DisplayName("should be able to set fields with setters")
+	void shouldWorkWithSetters() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "withSetters", WithSetters.class);
+
+		assertThat(results).hasSingleSucceededTest();
+	}
+
+	@Test
+	@DisplayName("should not allow contradicting constraint annotations")
+	void doesNotAllowContradictingConstraints() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "cantBeBoth", boolean.class);
+
+		assertThat(results)
+				.hasSingleFailedTest()
+				.withExceptionInstanceOf(ParameterResolutionException.class)
+				.hasCauseInstanceOf(ExtensionConfigurationException.class)
+				.hasMessageContaining("At most one of these can be present");
+	}
+
+	static class RandomParameterTestCases {
 
 		@Test
 		void allSupportedTypes(@Random SupportedTypes supportedTypes) {
@@ -106,6 +155,26 @@ public class RandomParameterExtensionTests {
 			Assertions.assertThat(complex).usingRecursiveAssertion().hasNoNullFields();
 			Assertions.assertThat(complex.getSimple().getI()).isBetween(1, 999);
 			Assertions.assertThat(complex.getSimple().isBool()).isFalse();
+		}
+
+		@Test
+		void fieldsByName(@Random ByName byName) {
+			Assertions.assertThat(byName).usingRecursiveAssertion().hasNoNullFields();
+		}
+
+		@Test
+		void fieldsByIndex(@Random ByIndex byIndex) {
+			Assertions.assertThat(byIndex).usingRecursiveAssertion().hasNoNullFields();
+		}
+
+		@Test
+		void withSetters(@Random WithSetters withSetters) {
+			Assertions.assertThat(withSetters).hasNoNullFieldsOrProperties();
+		}
+
+		@Test
+		void cantBeBoth(@Random @AssertFalse @AssertTrue boolean b) {
+			// always fails
 		}
 
 	}
@@ -178,8 +247,9 @@ public class RandomParameterExtensionTests {
 		private final short s;
 		private final char c;
 		private final byte by;
+		private final BigDecimal bd;
 
-		public SupportedTypes(int i, double d, boolean b, float f, long l, short s, char c, byte by) {
+		public SupportedTypes(int i, double d, boolean b, float f, long l, short s, char c, byte by, BigDecimal bd) {
 			this.i = i;
 			this.d = d;
 			this.b = b;
@@ -188,6 +258,7 @@ public class RandomParameterExtensionTests {
 			this.s = s;
 			this.c = c;
 			this.by = by;
+			this.bd = bd;
 		}
 
 		public int getI() {
@@ -220,6 +291,77 @@ public class RandomParameterExtensionTests {
 
 		public byte getBy() {
 			return by;
+		}
+
+		public BigDecimal getBd() {
+			return bd;
+		}
+
+	}
+
+	public static class ByName {
+
+		private final int three;
+		private final String one;
+		private final String two;
+
+		public ByName(int three, String one, String two) {
+			this.one = one;
+			this.two = two;
+			this.three = three;
+		}
+
+		public String getOne() {
+			return one;
+		}
+
+		public String getTwo() {
+			return two;
+		}
+
+		public int getThree() {
+			return three;
+		}
+
+	}
+
+	public static class ByIndex {
+
+		private final String one;
+		private final String two;
+
+		public ByIndex(String a, String b) {
+			this.one = a;
+			this.two = b;
+		}
+
+		public String getOne() {
+			return one;
+		}
+
+		public String getTwo() {
+			return two;
+		}
+
+	}
+
+	public static class Person {
+
+		private final String name;
+		private final int age;
+
+		public Person(String first, String last, int age) {
+			this.name = first + " " + last;
+			this.age = age;
+			//this.two = b;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public int getAge() {
+			return age;
 		}
 
 	}

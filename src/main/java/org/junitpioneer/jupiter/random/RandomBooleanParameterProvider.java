@@ -16,7 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.util.List;
 
-import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.PioneerPreconditions;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
@@ -39,7 +39,7 @@ public class RandomBooleanParameterProvider extends RandomParameterProvider {
 					.or(() -> findAnnotation(field, AssertTrue.class));
 			var mustBeFalse = findAnnotation(parameter, AssertFalse.class)
 					.or(() -> findAnnotation(field, AssertFalse.class));
-			PioneerAnnotationUtils.isAtMostOneAnnotationIsActive(mustBeFalse, mustBeTrue);
+			PioneerPreconditions.isAtMostOnePresent(mustBeFalse, mustBeTrue);
 			if (mustBeTrue.isPresent()) {
 				return true;
 			} else if (mustBeFalse.isPresent()) {

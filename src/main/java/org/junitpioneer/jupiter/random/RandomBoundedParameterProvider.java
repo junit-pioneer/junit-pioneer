@@ -18,7 +18,7 @@ import java.lang.reflect.Parameter;
 import java.util.function.Predicate;
 
 import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junitpioneer.internal.PioneerAnnotationUtils;
+import org.junitpioneer.internal.PioneerPreconditions;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -39,8 +39,10 @@ public abstract class RandomBoundedParameterProvider<T> extends RandomParameterP
 
 	@Override
 	public Object provideRandomParameter(Parameter parameter, Field field) {
+		var min = defaultMinValue;
+		var max = defaultMaxValue;
 		if (IS_JAKARTA_VALIDATION_PRESENT) {
-			var min = findRepeatableAnnotations(parameter, Min.class)
+			min = findRepeatableAnnotations(parameter, Min.class)
 					.stream()
 					.map(Min::value)
 					.filter(withinRange())
@@ -51,7 +53,7 @@ public abstract class RandomBoundedParameterProvider<T> extends RandomParameterP
 							.filter(withinRange())
 							.reduce(Math::min))
 					.orElse(defaultMinValue);
-			var max = findRepeatableAnnotations(parameter, Max.class)
+			max = findRepeatableAnnotations(parameter, Max.class)
 					.stream()
 					.map(Max::value)
 					.filter(withinRange())
@@ -68,7 +70,7 @@ public abstract class RandomBoundedParameterProvider<T> extends RandomParameterP
 			var negative = findAnnotation(parameter, Negative.class).or(() -> findAnnotation(field, Negative.class));
 			var negativeOrZero = findAnnotation(parameter, NegativeOrZero.class)
 					.or(() -> findAnnotation(field, NegativeOrZero.class));
-			PioneerAnnotationUtils.isAtMostOneAnnotationIsActive(positive, positiveOrZero, negative, negativeOrZero);
+			PioneerPreconditions.isAtMostOnePresent(positive, positiveOrZero, negative, negativeOrZero);
 			if (max <= min) {
 				throw new ParameterResolutionException(
 					"Invalid range between @Max and @Min. Note that @Min is inclusive and @Max is exclusive.");
@@ -87,18 +89,13 @@ public abstract class RandomBoundedParameterProvider<T> extends RandomParameterP
 				max = 0L;
 			}
 
-			return provideRandomNumber(min, max);
 		}
-		return getDefaultRandomNumber();
+		return provideRandomNumber(min, max);
 	}
 
 	private Predicate<? super Long> withinRange() {
 		return number -> number >= defaultMinValue && number < defaultMaxValue;
 	}
-
-	public T getDefaultRandomNumber() {
-		return provideRandomNumber(defaultMinValue, defaultMaxValue);
-	};
 
 	public abstract T provideRandomNumber(Long min, Long max);
 
