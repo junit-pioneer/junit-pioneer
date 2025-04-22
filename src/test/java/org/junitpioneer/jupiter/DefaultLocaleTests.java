@@ -421,7 +421,8 @@ class DefaultLocaleTests {
 			assertThat(results)
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageContaining("can only be used with a provider if value, language, country and variant are not set.");
+					.hasMessageContaining(
+						"can only be used with a provider if value, language, country and variant are not set.");
 		}
 
 		@Test
@@ -433,7 +434,8 @@ class DefaultLocaleTests {
 			assertThat(results)
 					.hasSingleFailedTest()
 					.withExceptionInstanceOf(ExtensionConfigurationException.class)
-					.hasMessageContaining("can only be used with a provider if value, language, country and variant are not set.");
+					.hasMessageContaining(
+						"can only be used with a provider if value, language, country and variant are not set.");
 		}
 
 		@Test
