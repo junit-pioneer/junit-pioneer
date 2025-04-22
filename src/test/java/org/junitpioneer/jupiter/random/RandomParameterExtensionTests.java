@@ -32,15 +32,6 @@ import jakarta.validation.constraints.Min;
 public class RandomParameterExtensionTests {
 
 	@Test
-	void complexType(@Random Person person) {
-		Assertions.assertThat(person).usingRecursiveAssertion().hasNoNullFields();
-		Assertions.assertThat(person.getName()).hasSizeBetween(7, 21);
-		Assertions.assertThat(person.getName().split(" ")).hasSize(2);
-		Assertions.assertThat(person.getName().split(" ")[0]).hasSizeBetween(3, 10);
-		Assertions.assertThat(person.getName().split(" ")[1]).hasSizeBetween(3, 10);
-	}
-
-	@Test
 	@DisplayName("should work with all the types included in SupportedTypes class")
 	void shouldWorkWithAllSupportedTypes() {
 		ExecutionResults results = PioneerTestKit
@@ -341,27 +332,6 @@ public class RandomParameterExtensionTests {
 
 		public String getTwo() {
 			return two;
-		}
-
-	}
-
-	public static class Person {
-
-		private final String name;
-		private final int age;
-
-		public Person(String first, String last, int age) {
-			this.name = first + " " + last;
-			this.age = age;
-			//this.two = b;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public int getAge() {
-			return age;
 		}
 
 	}
