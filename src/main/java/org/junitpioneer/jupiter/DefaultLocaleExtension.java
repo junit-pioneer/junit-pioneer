@@ -88,8 +88,7 @@ class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 	}
 
 	private static Locale getFromProvider(DefaultLocale annotation) {
-		if (!annotation.value().isEmpty() || !annotation.language().isEmpty() || !annotation.country().isEmpty()
-				|| !annotation.variant().isEmpty())
+		if (!annotation.country().isEmpty() || !annotation.variant().isEmpty())
 			throw new ExtensionConfigurationException(
 				"@DefaultLocale can only be used with a provider if value, language, country and variant are not set.");
 		var providerClass = annotation.localeProvider();
