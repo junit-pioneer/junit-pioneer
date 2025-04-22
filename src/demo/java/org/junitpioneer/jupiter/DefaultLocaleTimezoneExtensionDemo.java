@@ -12,6 +12,7 @@ package org.junitpioneer.jupiter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.ZoneOffset;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -68,6 +69,23 @@ public class DefaultLocaleTimezoneExtensionDemo {
 	}
 	// end::default_locale_class_level[]
 
+	// tag::default_locale_with_provider[]
+	@Test
+	@DefaultLocale(localeProvider = EnglishProvider.class)
+	void test_with_locale_provider() {
+		assertThat(Locale.getDefault()).isEqualTo(new Locale.Builder().setLanguage("en").build());
+	}
+
+	static class EnglishProvider implements LocaleProvider {
+
+		@Override
+		public Locale get() {
+			return Locale.ENGLISH;
+		}
+
+	}
+	// end::default_locale_with_provider[]
+
 	// tag::default_timezone_zone[]
 	@Test
 	@DefaultTimeZone("CET")
@@ -100,5 +118,22 @@ public class DefaultLocaleTimezoneExtensionDemo {
 
 	}
 	// end::default_timezone_class_level[]
+
+	// tag::default_time_zone_with_provider[]
+	@Test
+	@DefaultTimeZone(timeZoneProvider = UtcTimeZoneProvider.class)
+	void test_with_time_zone_provider() {
+		assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("UTC"));
+	}
+
+	static class UtcTimeZoneProvider implements TimeZoneProvider {
+
+		@Override
+		public TimeZone get() {
+			return TimeZone.getTimeZone(ZoneOffset.UTC);
+		}
+
+	}
+	// end::default_time_zone_with_provider[]
 
 }

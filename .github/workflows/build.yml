@@ -40,7 +40,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v3
+        uses: gradle/actions/wrapper-validation@v4
 
   # Our basic build step as we want contributors to have a nice developer
   # experience with little build time and sufficient feedback. Therefore, we

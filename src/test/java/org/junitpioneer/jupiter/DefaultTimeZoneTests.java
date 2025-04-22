@@ -267,4 +267,115 @@ class DefaultTimeZoneTests {
 
 	}
 
+	@Nested
+	@DisplayName("used with TimeZoneProvider")
+	class ProviderTests {
+
+		@Test
+		@DisplayName("can get a basic time zone")
+		@DefaultTimeZone(timeZoneProvider = BasicTimeZoneProvider.class)
+		void canGetBasicTimeZone() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("Europe/Prague"));
+		}
+
+		@Test
+		@DisplayName("defaults to GMT if the provider returns null")
+		@DefaultTimeZone(timeZoneProvider = NullProvider.class)
+		void defaultToGmt() {
+			assertThat(TimeZone.getDefault()).isEqualTo(TimeZone.getTimeZone("GMT"));
+		}
+
+		@Test
+		@ReadsDefaultTimeZone
+		@DisplayName("throws ExtensionConfigurationException if the provider is not the only option")
+		void throwsForMutuallyExclusiveOptions() {
+			ExecutionResults results = executeTestMethod(BadTimeZoneProviderTestCases.class, "notExclusive");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Either a valid time zone id or a TimeZoneProvider must be provided");
+		}
+
+		@Test
+		@ReadsDefaultTimeZone
+		@DisplayName("throws ExtensionConfigurationException if properties are empty")
+		void throwsForEmptyOptions() {
+			ExecutionResults results = executeTestMethod(BadTimeZoneProviderTestCases.class, "empty");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Either a valid time zone id or a TimeZoneProvider must be provided");
+		}
+
+		@Test
+		@ReadsDefaultTimeZone
+		@DisplayName("throws ExtensionConfigurationException if the provider does not have a suitable constructor")
+		void throwsForBadConstructor() {
+			ExecutionResults results = executeTestMethod(BadTimeZoneProviderTestCases.class, "noConstructor");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("Could not instantiate TimeZoneProvider because of exception");
+		}
+
+	}
+
+	static class BadTimeZoneProviderTestCases {
+
+		@Test
+		@DefaultTimeZone(value = "GMT", timeZoneProvider = BasicTimeZoneProvider.class)
+		void notExclusive() {
+			// can't have both a time zone value and a provider
+		}
+
+		@Test
+		@DefaultTimeZone
+		void empty() {
+			// must have a provider or a time zone
+		}
+
+		@Test
+		@DefaultTimeZone(timeZoneProvider = ComplicatedProvider.class)
+		void noConstructor() {
+			// provider has to have a no-args constructor
+		}
+
+	}
+
+	static class BasicTimeZoneProvider implements TimeZoneProvider {
+
+		@Override
+		public TimeZone get() {
+			return TimeZone.getTimeZone("Europe/Prague");
+		}
+
+	}
+
+	static class NullProvider implements TimeZoneProvider {
+
+		@Override
+		public TimeZone get() {
+			return null;
+		}
+
+	}
+
+	static class ComplicatedProvider implements TimeZoneProvider {
+
+		private final String timeZoneString;
+
+		public ComplicatedProvider(String timeZoneString) {
+			this.timeZoneString = timeZoneString;
+		}
+
+		@Override
+		public TimeZone get() {
+			return TimeZone.getTimeZone(timeZoneString);
+		}
+
+	}
+
 }

@@ -60,6 +60,13 @@ public @interface DefaultTimeZone {
 	 * "GMT-8:00". Note that the support of abbreviations is for JDK 1.1.x
 	 * compatibility only and full names should be used.
 	 */
-	String value();
+	String value() default "";
+
+	/**
+	 * A class implementing {@link TimeZoneProvider} to be used for custom {@code TimeZone} resolution.
+	 * This is mutually exclusive with other properties, if any other property is given a value it
+	 * will result in an {@link org.junit.jupiter.api.extension.ExtensionConfigurationException}.
+	 */
+	Class<? extends TimeZoneProvider> timeZoneProvider() default TimeZoneProvider.NullTimeZoneProvider.class;
 
 }
