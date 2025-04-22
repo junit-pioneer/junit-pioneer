@@ -289,7 +289,7 @@ class DefaultTimeZoneTests {
 		@ReadsDefaultTimeZone
 		@DisplayName("throws ExtensionConfigurationException if the provider is not the only option")
 		void throwsForMutuallyExclusiveOptions() {
-			ExecutionResults results = executeTestMethod(BadTimeZoneProviderCases.class, "notExclusive");
+			ExecutionResults results = executeTestMethod(BadTimeZoneProviderTestCases.class, "notExclusive");
 
 			assertThat(results)
 					.hasSingleFailedTest()
@@ -301,7 +301,7 @@ class DefaultTimeZoneTests {
 		@ReadsDefaultTimeZone
 		@DisplayName("throws ExtensionConfigurationException if properties are empty")
 		void throwsForEmptyOptions() {
-			ExecutionResults results = executeTestMethod(BadTimeZoneProviderCases.class, "empty");
+			ExecutionResults results = executeTestMethod(BadTimeZoneProviderTestCases.class, "empty");
 
 			assertThat(results)
 					.hasSingleFailedTest()
@@ -313,7 +313,7 @@ class DefaultTimeZoneTests {
 		@ReadsDefaultTimeZone
 		@DisplayName("throws ExtensionConfigurationException if the provider does not have a suitable constructor")
 		void throwsForBadConstructor() {
-			ExecutionResults results = executeTestMethod(BadTimeZoneProviderCases.class, "noConstructor");
+			ExecutionResults results = executeTestMethod(BadTimeZoneProviderTestCases.class, "noConstructor");
 
 			assertThat(results)
 					.hasSingleFailedTest()
@@ -323,21 +323,24 @@ class DefaultTimeZoneTests {
 
 	}
 
-	static class BadTimeZoneProviderCases {
+	static class BadTimeZoneProviderTestCases {
 
 		@Test
 		@DefaultTimeZone(value = "GMT", timeZoneProvider = BasicTimeZoneProvider.class)
 		void notExclusive() {
+			// can't have both a time zone value and a provider
 		}
 
 		@Test
 		@DefaultTimeZone
 		void empty() {
+			// must have a provider or a time zone
 		}
 
 		@Test
 		@DefaultTimeZone(timeZoneProvider = ComplicatedProvider.class)
 		void noConstructor() {
+			// provider has to have a no-args constructor
 		}
 
 	}
@@ -362,12 +365,15 @@ class DefaultTimeZoneTests {
 
 	static class ComplicatedProvider implements TimeZoneProvider {
 
-		private ComplicatedProvider(String value) {
+		private final String timeZoneString;
+
+		public ComplicatedProvider(String timeZoneString) {
+			this.timeZoneString = timeZoneString;
 		}
 
 		@Override
 		public TimeZone get() {
-			return TimeZone.getTimeZone("Europe/Prague");
+			return TimeZone.getTimeZone(timeZoneString);
 		}
 
 	}

@@ -431,21 +431,25 @@ class DefaultLocaleTests {
 		@Test
 		@DefaultLocale(value = "en", localeProvider = BasicLocaleProvider.class)
 		void mutuallyExclusiveWithValue() {
+			// can't have both a value and a provider
 		}
 
 		@Test
 		@DefaultLocale(language = "en", localeProvider = BasicLocaleProvider.class)
 		void mutuallyExclusiveWithLanguage() {
+			// can't have both a language property and a provider
 		}
 
 		@Test
 		@DefaultLocale(localeProvider = ReturnsNullLocaleProvider.class)
 		void returnsNull() {
+			// provider should not return 'null'
 		}
 
 		@Test
 		@DefaultLocale(localeProvider = BadConstructorLocaleProvider.class)
 		void badConstructor() {
+			// provider has to have a no-args constructor
 		}
 
 	}
@@ -470,12 +474,15 @@ class DefaultLocaleTests {
 
 	static class BadConstructorLocaleProvider implements LocaleProvider {
 
-		BadConstructorLocaleProvider(String unused) {
+		private final String language;
+
+		BadConstructorLocaleProvider(String language) {
+			this.language = language;
 		}
 
 		@Override
 		public Locale get() {
-			return Locale.GERMAN;
+			return Locale.forLanguageTag(language);
 		}
 
 	}
