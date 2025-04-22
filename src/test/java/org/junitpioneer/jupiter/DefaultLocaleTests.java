@@ -414,6 +414,30 @@ class DefaultLocaleTests {
 
 		@Test
 		@ReadsDefaultLocale
+		@DisplayName("throws an ExtensionConfigurationException if any other option is present")
+		void mutuallyExclusiveWithCountry() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "mutuallyExclusiveWithCountry");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("can only be used with a provider if value, language, country and variant are not set.");
+		}
+
+		@Test
+		@ReadsDefaultLocale
+		@DisplayName("throws an ExtensionConfigurationException if any other option is present")
+		void mutuallyExclusiveWithVariant() {
+			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "mutuallyExclusiveWithVariant");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withExceptionInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageContaining("can only be used with a provider if value, language, country and variant are not set.");
+		}
+
+		@Test
+		@ReadsDefaultLocale
 		@DisplayName("throws an ExtensionConfigurationException if localeProvider can't be constructed")
 		void badConstructor() {
 			ExecutionResults results = executeTestMethod(BadProviderTestCases.class, "badConstructor");
@@ -438,6 +462,18 @@ class DefaultLocaleTests {
 		@DefaultLocale(language = "en", localeProvider = BasicLocaleProvider.class)
 		void mutuallyExclusiveWithLanguage() {
 			// can't have both a language property and a provider
+		}
+
+		@Test
+		@DefaultLocale(country = "EN", localeProvider = BasicLocaleProvider.class)
+		void mutuallyExclusiveWithCountry() {
+			// can't have both a country property and a provider
+		}
+
+		@Test
+		@DefaultLocale(variant = "japanese", localeProvider = BasicLocaleProvider.class)
+		void mutuallyExclusiveWithVariant() {
+			// can't have both a variant property and a provider
 		}
 
 		@Test
