@@ -55,8 +55,7 @@ class RangeSourceArgumentsProvider<N extends Number & Comparable<N>>
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context)
-			throws Exception {
+	public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
 		// since it's a method annotation, the element will always be present
 		Annotation argumentsSource = initArgumentsSource(context.getRequiredTestMethod());
 
