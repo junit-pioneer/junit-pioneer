@@ -295,7 +295,7 @@ tasks {
 		if (releaseBuild) {
 			javadocTool.set(project.javaToolchains.javadocToolFor {
 				// create Javadoc with the minimum Java version needed for our desired features (e.g. search)
-				languageVersion.set(JavaLanguageVersion.of(23))
+				languageVersion.set(JavaLanguageVersion.of(24))
 			})
 		}
 
