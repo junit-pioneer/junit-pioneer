@@ -53,7 +53,7 @@ public class ReplaceCamelCaseAndUnderscoreAndNumber extends DisplayNameGenerator
 	}
 
 	@Override
-	public String generateDisplayNameForMethod(Class<?> testClass, Method testMethod) {
+	public String generateDisplayNameForMethod(List<Class<?>> enclosingInstanceTypes, Class<?> testClass, Method testMethod) {
 		if (hasParameters(testMethod)) {
 			return replaceCamelCaseAndUnderscoreAndNumber(testMethod.getName()) + " "
 					+ DisplayNameGenerator.parameterTypesAsString(testMethod);

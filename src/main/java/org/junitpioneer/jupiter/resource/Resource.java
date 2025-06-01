@@ -29,7 +29,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * @since 1.9.0
  * @see ResourceFactory
  */
-public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
+public interface Resource<T> extends AutoCloseable {
 
 	/**
 	 * Returns the contents of the resource.
