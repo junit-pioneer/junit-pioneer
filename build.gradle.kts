@@ -4,14 +4,14 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "6.25.0"
+	id("com.diffplug.spotless") version "7.0.4"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "5.1.0.4882"
+	id("org.sonarqube") version "6.2.0.5505"
 	id("org.shipkit.shipkit-changelog") version "2.0.1"
 	id("org.shipkit.shipkit-github-release") version "2.0.1"
-	id("com.github.ben-manes.versions") version "0.51.0"
+	id("com.github.ben-manes.versions") version "0.52.0"
 	id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-	id("org.gradlex.extra-java-module-info") version "1.9"
+	id("org.gradlex.extra-java-module-info") version "1.12"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -50,7 +50,7 @@ repositories {
 
 val junitVersion : String by project
 val jacksonVersion: String = "2.18.0"
-val assertjVersion: String = "3.26.3"
+val assertjVersion: String = "3.27.3"
 val jimfsVersion: String = "1.3.0"
 
 dependencies {
@@ -65,9 +65,9 @@ dependencies {
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.14.1")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.18.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.17.1")
+	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.19.4")
 }
 
 spotless {
