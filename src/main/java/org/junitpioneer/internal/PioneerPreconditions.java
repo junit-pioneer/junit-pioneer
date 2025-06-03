@@ -103,11 +103,11 @@ public class PioneerPreconditions {
 	/**
 	 * Verifies that, at most, one of the optionals passed to this method are present.
 	 *
-	 * @param annotations a vararg array of {@link Optional}, only one can be present.
+	 * @param optionals a vararg array of {@link Optional}s, only one can be present.
 	 * @throws ExtensionConfigurationException if more than one {@code Optional} is present
 	 */
-	public static void isAtMostOnePresent(Optional<?>... annotations) {
-		var all = Arrays.asList(annotations);
+	public static void isAtMostOnePresent(Optional<?>... optionals) {
+		var all = Arrays.asList(optionals);
 		if (all.stream().filter(Optional::isPresent).count() > 1) {
 			throw new ExtensionConfigurationException(format("At most one of these can be present: %s", all));
 		}
