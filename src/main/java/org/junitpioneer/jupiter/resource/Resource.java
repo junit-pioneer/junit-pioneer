@@ -29,7 +29,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * @since 1.9.0
  * @see ResourceFactory
  */
-@SuppressWarnings({ "deprecated", "try" })
+@SuppressWarnings({ "deprecation", "try" })
 public interface Resource<T> extends ExtensionContext.Store.CloseableResource, AutoCloseable {
 
 	/**
