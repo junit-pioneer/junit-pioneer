@@ -102,6 +102,7 @@ public class NumberToByteArrayConversionTests {
 	static class BigDecimalProvider implements ArgumentsProvider {
 
 		@Override
+		@SuppressWarnings("deprecation")
 		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
 			return Stream.of(Arguments.of(BigDecimal.ONE));
 		}

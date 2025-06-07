@@ -19,6 +19,7 @@ import org.junit.platform.engine.support.descriptor.MethodSource;
 
 public class MethodTestDescriptor extends AbstractTestDescriptor {
 
+	@SuppressWarnings("deprecation")
 	public MethodTestDescriptor(UniqueId uniqueId, Class<?> testClass, Method testMethod) {
 		super(uniqueId,
 			testMethod.isAnnotationPresent(DisplayName.class) ? testMethod.getAnnotation(DisplayName.class).value()

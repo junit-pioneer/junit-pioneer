@@ -12,6 +12,8 @@ package org.junitpioneer.internal;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -20,7 +22,9 @@ import java.util.function.Function;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExecutableInvoker;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.MediaType;
 import org.junit.jupiter.api.extension.TestInstances;
+import org.junit.jupiter.api.function.ThrowingConsumer;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
@@ -56,6 +60,11 @@ public class TestExtensionContext implements ExtensionContext {
 	@Override
 	public Optional<Class<?>> getTestClass() {
 		return Optional.of(testClass);
+	}
+
+	// Experimental since 5.12.1, no @Override for backwards compatibility
+	public List<Class<?>> getEnclosingTestClasses() {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
 	@Override
@@ -128,8 +137,23 @@ public class TestExtensionContext implements ExtensionContext {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
+	// Experimental since 5.12.0, no @Override for backwards compatibility
+	public void publishFile(String name, MediaType mediaType, ThrowingConsumer<Path> action) {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
+	}
+
+	// Experimental since 5.12.0, no @Override for backwards compatibility
+	public void publishDirectory(String name, ThrowingConsumer<Path> action) {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
+	}
+
 	@Override
 	public Store getStore(Namespace namespace) {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
+	}
+
+	// Experimental since 5.13.0, no @Override for build backwards compatibility
+	public Store getStore(StoreScope scope, Namespace namespace) {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
