@@ -135,7 +135,7 @@ jobs:
         # Pioneer, latest LTS, latest stable
         java: [ 11, 21, 24 ]
         # Pioneer, latest stable
-        junit-version: [ '5.11.2', '5.13.1' ]
+        junit-version: [ '5.13.1' ]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
     steps:

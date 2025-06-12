@@ -12,8 +12,6 @@ package org.junitpioneer.jupiter.resource;
 
 import java.util.List;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
-
 /**
  * {@code ResourceFactory} is the common interface for "resource factories", which are responsible
  * for creating {@link Resource}s.
@@ -31,8 +29,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * @since 1.9.0
  * @see Resource
  */
-@SuppressWarnings({ "deprecation", "try" })
-public interface ResourceFactory<T> extends ExtensionContext.Store.CloseableResource, AutoCloseable {
+@SuppressWarnings("try")
+public interface ResourceFactory<T> extends AutoCloseable {
 
 	/**
 	 * Returns a new resource.

@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 import org.junitpioneer.jupiter.converter.NumberToByteArrayConversion.ByteOrder;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
@@ -102,8 +103,8 @@ public class NumberToByteArrayConversionTests {
 	static class BigDecimalProvider implements ArgumentsProvider {
 
 		@Override
-		@SuppressWarnings("deprecation")
-		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+		public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameters,
+				ExtensionContext context) {
 			return Stream.of(Arguments.of(BigDecimal.ONE));
 		}
 

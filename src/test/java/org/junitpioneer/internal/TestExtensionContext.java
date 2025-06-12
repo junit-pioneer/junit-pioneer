@@ -62,7 +62,7 @@ public class TestExtensionContext implements ExtensionContext {
 		return Optional.of(testClass);
 	}
 
-	// Experimental since 5.12.1, no @Override for backwards compatibility
+	@Override
 	public List<Class<?>> getEnclosingTestClasses() {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
@@ -137,12 +137,12 @@ public class TestExtensionContext implements ExtensionContext {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
-	// Experimental since 5.12.0, no @Override for backwards compatibility
+	@Override
 	public void publishFile(String name, MediaType mediaType, ThrowingConsumer<Path> action) {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
-	// Experimental since 5.12.0, no @Override for backwards compatibility
+	@Override
 	public void publishDirectory(String name, ThrowingConsumer<Path> action) {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
@@ -152,7 +152,7 @@ public class TestExtensionContext implements ExtensionContext {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
-	// Experimental since 5.13.0, no @Override for build backwards compatibility
+	@Override
 	public Store getStore(StoreScope scope, Namespace namespace) {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
