@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.support.AnnotationConsumer;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerPreconditions;
 import org.junitpioneer.jupiter.cartesian.CartesianParameterArgumentsProvider;
@@ -35,7 +36,7 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 	public static final String CONFIG_PARAM = "org.junitpioneer.jupiter.json.objectmapper";
 
 	@Override
-	public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+	public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameters, ExtensionContext context) {
 		Method method = context.getRequiredTestMethod();
 		return provideNodes(context).map(node -> createArguments(method, node));
 	}

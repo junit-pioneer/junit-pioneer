@@ -30,6 +30,7 @@ import org.junit.platform.commons.JUnitException;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("Resources extension")
+@SuppressWarnings("try")
 class ResourcesTests {
 
 	@DisplayName("when a new resource factory is applied to a parameter")

@@ -10,8 +10,6 @@
 
 package org.junitpioneer.jupiter.resource;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
-
 /**
  * {@code Resource} is the common interface for "resources", as managed by {@link ResourceFactory}
  * implementations.
@@ -29,7 +27,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * @since 1.9.0
  * @see ResourceFactory
  */
-public interface Resource<T> extends ExtensionContext.Store.CloseableResource {
+@SuppressWarnings("try")
+public interface Resource<T> extends AutoCloseable {
 
 	/**
 	 * Returns the contents of the resource.

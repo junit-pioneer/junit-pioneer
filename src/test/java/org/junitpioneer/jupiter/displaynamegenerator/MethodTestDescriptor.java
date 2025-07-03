@@ -11,6 +11,7 @@
 package org.junitpioneer.jupiter.displaynamegenerator;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.platform.engine.UniqueId;
@@ -23,7 +24,7 @@ public class MethodTestDescriptor extends AbstractTestDescriptor {
 		super(uniqueId,
 			testMethod.isAnnotationPresent(DisplayName.class) ? testMethod.getAnnotation(DisplayName.class).value()
 					: ReplaceCamelCaseAndUnderscoreAndNumber.INSTANCE
-							.generateDisplayNameForMethod(testClass, testMethod),
+							.generateDisplayNameForMethod(List.of(), testClass, testMethod),
 			MethodSource.from(testClass, testMethod));
 	}
 

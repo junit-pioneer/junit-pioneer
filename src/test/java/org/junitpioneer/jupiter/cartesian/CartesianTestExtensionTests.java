@@ -746,7 +746,7 @@ public class CartesianTestExtensionTests {
 					// CartesianValueArgumentsProvider does not get initialized because it does not implement AnnotationConsumer
 					.withExceptionInstanceOf(PreconditionViolationException.class)
 					.hasMessageContaining(
-						"You must configure at least one set of arguments for this @ParameterizedTest");
+						"You must configure at least one arguments source for this @ParameterizedTest");
 		}
 
 		@Test
