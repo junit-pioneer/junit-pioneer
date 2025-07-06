@@ -21,13 +21,13 @@ plugins.withType<JavaPlugin>().configureEach {
 }
 
 group = "org.junit-pioneer"
-description = "JUnit 5 Extension Pack"
+description = "JUnit Platform Extension Pack"
 
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 val releaseBuild : Boolean = project.version != "unspecified"
 
-val targetJavaVersion = JavaVersion.VERSION_11
+val targetJavaVersion = JavaVersion.VERSION_17
 
 java {
 	if (experimentalBuild) {
@@ -54,14 +54,14 @@ val assertjVersion: String = "3.27.3"
 val jimfsVersion: String = "1.3.0"
 
 dependencies {
-	implementation(platform("org.junit:junit-bom:$junitVersion"))
+	implementation(platform("org.junit.platform:junit-bom:$junitVersion"))
 
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
+	implementation(group = "org.junit.platform", name = "junit-platform-api")
+	implementation(group = "org.junit.platform", name = "junit-platform-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
 	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
 
-	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
+	testImplementation(group = "org.junit.platform", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
@@ -304,7 +304,7 @@ tasks {
 			this as StandardJavadocDocletOptions
 
 			encoding = "UTF-8"
-			links = listOf("https://junit.org/junit5/docs/current/api/")
+			links = listOf("https://docs.junit.org/current/api/")
 
 			// Set javadoc `--release` flag (affects which warnings and errors are reported)
 			// (Note: Gradle adds one leading '-' to the option on its own)
