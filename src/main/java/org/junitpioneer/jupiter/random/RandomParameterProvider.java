@@ -10,6 +10,9 @@
 
 package org.junitpioneer.jupiter.random;
 
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.util.List;
@@ -23,6 +26,8 @@ public abstract class RandomParameterProvider {
 	 */
 	protected static final boolean IS_JAKARTA_VALIDATION_PRESENT = isJakartaValidationClassPresent();
 	protected Random random;
+	protected ParameterContext parameterContext;
+	protected ExtensionContext extensionContext;
 
 	public RandomParameterProvider() {
 		// recreate default constructor to prevent compiler warning
@@ -38,8 +43,10 @@ public abstract class RandomParameterProvider {
 		}
 	}
 
-	public void init(Random random) {
+	public void init(Random random, ParameterContext parameterContext, ExtensionContext extensionContext) {
 		this.random = random;
+		this.parameterContext = parameterContext;
+		this.extensionContext = extensionContext;
 	}
 
 	public abstract List<Class<?>> getSupportedParameterTypes();

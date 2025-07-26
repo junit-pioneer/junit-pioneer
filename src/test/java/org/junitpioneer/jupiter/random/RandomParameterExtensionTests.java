@@ -19,7 +19,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.junitpioneer.jupiter.Random;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 
@@ -117,6 +116,33 @@ public class RandomParameterExtensionTests {
 				.hasMessageContaining("At most one of these can be present");
 	}
 
+	@Test
+	@DisplayName("should not fail when a field has the same type as the parameter we try to inject")
+	void doesNotFailForSelfReference() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "selfReference", SelfRef.class);
+
+		assertThat(results).hasSingleSucceededTest();
+	}
+
+	@Test
+	@DisplayName("should inject an enum type parameter or field correctly")
+	void injectsEnum() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "enumInjection", Gender.class);
+
+		assertThat(results).hasSingleSucceededTest();
+	}
+
+	@Test
+	@DisplayName("should inject a concrete implementation (any) into an abstract parameter")
+	void worksWithInheritance() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "inheritanceTest", Number.class);
+
+		assertThat(results).hasSingleSucceededTest();
+	}
+
 	static class RandomParameterTestCases {
 
 		@Test
@@ -166,6 +192,43 @@ public class RandomParameterExtensionTests {
 		@Test
 		void cantBeBoth(@Random @AssertFalse @AssertTrue boolean b) {
 			// always fails
+		}
+
+		@Test
+		void selfReference(@Random SelfRef ref) {
+			Assertions.assertThat(ref).isNotNull();
+		}
+
+		@Test
+		void enumInjection(@Random Gender gender) {
+			Assertions.assertThat(gender).isNotNull();
+		}
+
+		@Test
+		void inheritanceTest(@Random Number number) {
+			Assertions.assertThat(number).isNotNull();
+		}
+
+	}
+
+	enum Gender {
+		MALE, FEMALE
+	}
+
+	public static class SelfRef {
+
+		private SelfRef selfRef;
+
+		public SelfRef(SelfRef selfRef) {
+			this.selfRef = selfRef;
+		}
+
+		public SelfRef getSelfRef() {
+			return selfRef;
+		}
+
+		public void setSelfRef(SelfRef selfRef) {
+			this.selfRef = selfRef;
 		}
 
 	}

@@ -59,6 +59,7 @@ module org.junitpioneer {
 			org.junitpioneer.jupiter.random.RandomByteParameterProvider,
 			org.junitpioneer.jupiter.random.RandomStringParameterProvider,
 			org.junitpioneer.jupiter.random.RandomBigDecimalParameterProvider,
-			org.junitpioneer.jupiter.random.RandomCharacterParameterProvider;
+			org.junitpioneer.jupiter.random.RandomCharacterParameterProvider,
+			org.junitpioneer.jupiter.random.RandomEnumParameterProvider;
 
 }
