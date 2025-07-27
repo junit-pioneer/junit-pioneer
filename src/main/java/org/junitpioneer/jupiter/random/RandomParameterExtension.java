@@ -145,8 +145,11 @@ class RandomParameterExtension implements ParameterResolver {
 	 * Enums are a special use-case: all enums can be injected via reflection so we don't need to check for inheritance.
 	 */
 	private boolean supportsParameterType(RandomParameterProvider provider, Class<?> type) {
-		return provider.getSupportedParameterTypes().stream().anyMatch(supported -> type.isAssignableFrom(supported)
-		|| (supported.isAssignableFrom(type) && type.isEnum()));
+		return provider
+				.getSupportedParameterTypes()
+				.stream()
+				.anyMatch(supported -> type.isAssignableFrom(supported)
+						|| (supported.isAssignableFrom(type) && type.isEnum()));
 	}
 
 	private static Optional<Constructor<?>> findAllArgsConstructor(Class<?> type) {

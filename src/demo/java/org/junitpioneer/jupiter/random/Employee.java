@@ -1,3 +1,13 @@
+/*
+ * Copyright 2025 the original author or authors.
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v2.0 which
+ * accompanies this distribution and is available at
+ *
+ * http://www.eclipse.org/legal/epl-v20.html
+ */
+
 package org.junitpioneer.jupiter.random;
 
 import jakarta.validation.constraints.Max;
@@ -6,72 +16,73 @@ import jakarta.validation.constraints.Min;
 //tag::employee[]
 public class Employee {
 
-    private String firstName;
-    private String lastName;
-    @Min(18) @Max(70)
-    private int age;
-    private Gender gender;
-    private String division;
-    private String city;
-    private String country;
+	private String firstName;
+	private String lastName;
+	@Min(18)
+	@Max(70)
+	private int age;
+	private Gender gender;
+	private String division;
+	private String city;
+	private String country;
 
-    // Constructor, setters, getters, etc.
-    // end::employee[]
+	// Constructor, setters, getters, etc.
+	// end::employee[]
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public Gender getGender() {
-        return gender;
-    }
+	public Gender getGender() {
+		return gender;
+	}
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
 
-    public String getDivision() {
-        return division;
-    }
+	public String getDivision() {
+		return division;
+	}
 
-    public void setDivision(String division) {
-        this.division = division;
-    }
+	public void setDivision(String division) {
+		this.division = division;
+	}
 
-    public String getCity() {
-        return city;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    public String getCountry() {
-        return country;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public int getAge() {
-        return age;
-    }
+	public int getAge() {
+		return age;
+	}
 
-    public void setAge(int age) {
-        this.age = age;
-    }
+	public void setAge(int age) {
+		this.age = age;
+	}
 
 }

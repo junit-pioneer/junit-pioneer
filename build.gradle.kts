@@ -269,6 +269,7 @@ tasks {
 					implementation(project(project.path))
 					implementation("com.google.jimfs:jimfs:$jimfsVersion")
 					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+					implementation("jakarta.validation:jakarta.validation-api:$jakartaValidationVersion")
 					implementation("org.assertj:assertj-core:$assertjVersion")
 				}
 
