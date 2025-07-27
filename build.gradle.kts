@@ -48,7 +48,7 @@ repositories {
 	mavenCentral()
 }
 
-val junitVersion : String by project
+val junitVersion : String = "6.0.0-M2" // by project
 val jacksonVersion: String = "2.18.0"
 val assertjVersion: String = "3.27.3"
 val jimfsVersion: String = "1.3.0"
