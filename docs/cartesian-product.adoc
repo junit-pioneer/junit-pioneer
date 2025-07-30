@@ -211,6 +211,8 @@ This method must return `ArgumentSets`.
 `ArgumentSets` is a helper class, specifically for creating sets for `@CartesianTest`.
 To create the test data, instantiate with the static factory method `argumentsForFirstParameter`, then call the `addValuesForNextParameter` method once per additional parameter in the order in which they appear in the test method.
 In each call, pass in all values for the corresponding parameter.
+By default the display name for arguments will use `toString()` for conversion.
+An argument can be wrapped in `org.junit.jupiter.api.Named` to provide a custom display name.
 For convenience, all methods return with your `ArgumentSets` instance, so you can chain `add...` calls.
 If you want to create an initially-empty `ArgumentSets`, call the static factory method `create()`.
 
@@ -223,7 +225,7 @@ include::{demo}[tag=cartesian_argument_sets]
 
 The test `testMethod` is executed exactly twelve times.
 The first parameter can have any of the two values `"Alpha"` or `"Omega"`.
-The second parameter can have any of the three values `Runnable.class`, `Cloneable.class` or `Predicate.class`.
+The second parameter can have any of the three values `Runnable.class`, `Cloneable.class` or `Predicate.class`, and uses `org.junit.jupiter.api.Named` to replace the long display name of `Class#toString()`.
 The third parameter can have any of the two values `TimeUnit.DAYS` or `TimeUnit.HOURS`.
 `@CartesianTest` tests for all input combinations, that's `2 × 3 × 2`, so twelve tests in total.
 
@@ -232,18 +234,18 @@ To demonstrate with a table:
 |===
 | # of test  | value of `string` | value of `clazz` | value of `unit`
 
-| 1st test   | "Alpha"           | Runnable.class   | TimeUnit.DAYS
-| 2nd test   | "Alpha"           | Runnable.class   | TimeUnit.HOURS
-| 3rd test   | "Alpha"           | Cloneable.class  | TimeUnit.DAYS
-| 4th test   | "Alpha"           | Cloneable.class  | TimeUnit.HOURS
-| 5th test   | "Alpha"           | Predicate.class  | TimeUnit.DAYS
-| 6th test   | "Alpha"           | Predicate.class  | TimeUnit.HOURS
-| 7th test   | "Omega"           | Runnable.class   | TimeUnit.DAYS
-| 8th test   | "Omega"           | Runnable.class   | TimeUnit.HOURS
-| 9th test   | "Omega"           | Cloneable.class  | TimeUnit.DAYS
-| 10th test  | "Omega"           | Cloneable.class  | TimeUnit.HOURS
-| 11th test  | "Omega"           | Predicate.class  | TimeUnit.DAYS
-| 12th test  | "Omega"           | Predicate.class  | TimeUnit.HOURS
+| 1st test   | "Alpha"           | Runnable         | TimeUnit.DAYS
+| 2nd test   | "Alpha"           | Runnable         | TimeUnit.HOURS
+| 3rd test   | "Alpha"           | Cloneable        | TimeUnit.DAYS
+| 4th test   | "Alpha"           | Cloneable        | TimeUnit.HOURS
+| 5th test   | "Alpha"           | Predicate        | TimeUnit.DAYS
+| 6th test   | "Alpha"           | Predicate        | TimeUnit.HOURS
+| 7th test   | "Omega"           | Runnable         | TimeUnit.DAYS
+| 8th test   | "Omega"           | Runnable         | TimeUnit.HOURS
+| 9th test   | "Omega"           | Cloneable        | TimeUnit.DAYS
+| 10th test  | "Omega"           | Cloneable        | TimeUnit.HOURS
+| 11th test  | "Omega"           | Predicate        | TimeUnit.DAYS
+| 12th test  | "Omega"           | Predicate        | TimeUnit.HOURS
 |===
 
 You can reuse the same argument provider method multiple times.

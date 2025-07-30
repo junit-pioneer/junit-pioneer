@@ -120,6 +120,10 @@ Thank you for your efforts! ?
 
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
+==== 2025
+
+* https://github.com/schosin[Ken Schosinsky] added support for `Named` to `@CartesianTestExtension` (#842 / #848)
+
 ==== 2024
 
 * https://github.com/FanJups[Fanon Jupkwo (FanJups)] added a new display name generator extending `org.junit.jupiter.api.DisplayNameGenerator.Standard` to support CamelCase, underscores, and numbers: https://junit-pioneer.org/docs/replace-camelcase-and-underscore-and-number/[ReplaceCamelCaseAndUnderscoreAndNumber] (#793 / #819)
