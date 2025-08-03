@@ -12,7 +12,6 @@ package org.junitpioneer.jupiter.resource;
 
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -137,12 +136,12 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			throwIfMultipleParametersHaveExactAnnotation(parameters, sharedAnnotation);
 
 			ResourceFactory<?> resourceFactory = scopedStore
-					.getOrComputeIfAbsent( //
+					.computeIfAbsent( //
 						factoryKey(sharedAnnotation), //
 						__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
 						ResourceFactory.class);
 			Resource<?> resource = scopedStore
-					.getOrComputeIfAbsent( //
+					.computeIfAbsent( //
 						resourceKey(sharedAnnotation), //
 						__ -> newResource(sharedAnnotation, resourceFactory), //
 						Resource.class);
@@ -399,19 +398,16 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private List<ReentrantLock> sortedLocksForSharedResources(Collection<Shared> sharedAnnotations,
 			ExtensionContext extensionContext) {
-		List<Shared> sortedAnnotations = sharedAnnotations
-				.stream()
-				.sorted(comparing(Shared::name))
-				.collect(toUnmodifiableList());
+		List<Shared> sortedAnnotations = sharedAnnotations.stream().sorted(comparing(Shared::name)).toList();
 		List<ExtensionContext.Store> stores = //
 			sortedAnnotations
 					.stream() //
 					.map(shared -> scopedStore(extensionContext, shared.scope()))
-					.collect(toUnmodifiableList());
+					.toList();
 		return IntStream
 				.range(0, sortedAnnotations.size()) //
 				.mapToObj(i -> findLockForShared(sortedAnnotations.get(i), stores.get(i)))
-				.collect(toUnmodifiableList());
+				.toList();
 	}
 
 	private Method testFactoryMethod(ExtensionContext extensionContext) {
@@ -453,11 +449,11 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
-				.collect(toUnmodifiableList());
+				.toList();
 	}
 
 	private void putNewLockForShared(Shared shared, ExtensionContext.Store store) {
-		store.getOrComputeIfAbsent(resourceLockKey(shared), __ -> new ReentrantLock(), ReentrantLock.class);
+		store.computeIfAbsent(resourceLockKey(shared), __ -> new ReentrantLock(), ReentrantLock.class);
 	}
 
 	private ReentrantLock findLockForShared(Shared shared, ExtensionContext.Store store) {

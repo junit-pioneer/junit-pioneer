@@ -59,7 +59,7 @@ class StdIoExtension implements ParameterResolver, BeforeEachCallback, AfterEach
 				//@formatter:off
 				return extensionContext
 						.getStore(NAMESPACE)
-						.getOrComputeIfAbsent(
+						.computeIfAbsent(
 								STD_IN_KEY,
 								__ -> createSwapStoreStdIn(extensionContext, source),
 								StdIn.class);
