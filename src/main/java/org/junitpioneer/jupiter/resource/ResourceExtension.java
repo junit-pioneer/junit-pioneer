@@ -234,8 +234,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private void throwIfHasAnnotationWithSameNameButDifferentScope(ExtensionContext.Store rootStore,
 			Shared sharedAnnotation) {
-		Shared presentSharedAnnotation = rootStore
-				.get(sharedAnnotationKey(sharedAnnotation), Shared.class);
+		Shared presentSharedAnnotation = rootStore.get(sharedAnnotationKey(sharedAnnotation), Shared.class);
 
 		if (presentSharedAnnotation == null) {
 			rootStore.put(sharedAnnotationKey(sharedAnnotation), sharedAnnotation);
