@@ -210,13 +210,13 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	private void throwIfHasAnnotationWithSameNameButDifferentType(ExtensionContext.Store scopedStore,
 			Shared sharedAnnotation) {
 		ResourceFactory<?> presentResourceFactory = //
-			scopedStore.getOrDefault(factoryKey(sharedAnnotation), ResourceFactory.class, null);
+			scopedStore.get(factoryKey(sharedAnnotation), ResourceFactory.class);
 
 		if (presentResourceFactory == null) {
 			scopedStore.put(keyOfFactoryKey(sharedAnnotation), factoryKey(sharedAnnotation));
 		} else {
 			String presentResourceFactoryName = //
-				scopedStore.getOrDefault(keyOfFactoryKey(sharedAnnotation), String.class, null);
+				scopedStore.get(keyOfFactoryKey(sharedAnnotation), String.class);
 
 			if (factoryKey(sharedAnnotation).equals(presentResourceFactoryName)
 					&& !sharedAnnotation.factory().equals(presentResourceFactory.getClass())) {
@@ -235,7 +235,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	private void throwIfHasAnnotationWithSameNameButDifferentScope(ExtensionContext.Store rootStore,
 			Shared sharedAnnotation) {
 		Shared presentSharedAnnotation = rootStore
-				.getOrDefault(sharedAnnotationKey(sharedAnnotation), Shared.class, null);
+				.get(sharedAnnotationKey(sharedAnnotation), Shared.class);
 
 		if (presentSharedAnnotation == null) {
 			rootStore.put(sharedAnnotationKey(sharedAnnotation), sharedAnnotation);
