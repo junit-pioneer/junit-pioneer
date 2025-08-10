@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -153,7 +154,9 @@ public class CartesianTestExtensionDemo {
 				.argumentsForFirstParameter(
 						"Alpha", "Omega")
 				.argumentsForNextParameter(
-						Runnable.class, Cloneable.class, Predicate.class)
+						Named.of("Runnable", Runnable.class),
+						Named.of("Cloneable", Cloneable.class),
+						Named.of("Predicate", Predicate.class))
 				.argumentsForNextParameter(
 						TimeUnit.DAYS, TimeUnit.HOURS);
 	}
