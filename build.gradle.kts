@@ -11,7 +11,7 @@ plugins {
 	id("org.shipkit.shipkit-github-release") version "2.0.1"
 	id("com.github.ben-manes.versions") version "0.52.0"
 	id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-	id("org.gradlex.extra-java-module-info") version "1.12"
+
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -21,7 +21,7 @@ plugins.withType<JavaPlugin>().configureEach {
 }
 
 group = "org.junit-pioneer"
-description = "JUnit Platform Extension Pack"
+description = "JUnit Jupiter Extension Pack"
 
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
@@ -48,7 +48,7 @@ repositories {
 	mavenCentral()
 }
 
-val junitVersion : String = "6.0.0-M2" // by project
+val junitVersion : String by project
 val jacksonVersion: String = "2.18.0"
 val assertjVersion: String = "3.27.3"
 val jimfsVersion: String = "1.3.0"
@@ -56,12 +56,12 @@ val jimfsVersion: String = "1.3.0"
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
 
-	implementation(group = "org.junit.platform", name = "junit-platform-suite-api")
+	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
 	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
 
-	testImplementation(group = "org.junit.platform", name = "junit-platform-engine")
+	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
