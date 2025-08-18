@@ -15,6 +15,9 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Random;
 
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+
 public abstract class RandomParameterProvider {
 
 	/**
@@ -28,6 +31,8 @@ public abstract class RandomParameterProvider {
 	 * Note, that this is not a {@link java.security.SecureRandom} instance.
 	 */
 	protected Random random;
+	protected ParameterContext parameterContext;
+	protected ExtensionContext extensionContext;
 
 	public RandomParameterProvider() {
 		// recreate default constructor to prevent compiler warning
@@ -43,8 +48,10 @@ public abstract class RandomParameterProvider {
 		}
 	}
 
-	public void init(Random random) {
+	public void init(Random random, ParameterContext parameterContext, ExtensionContext extensionContext) {
 		this.random = random;
+		this.parameterContext = parameterContext;
+		this.extensionContext = extensionContext;
 	}
 
 	/**

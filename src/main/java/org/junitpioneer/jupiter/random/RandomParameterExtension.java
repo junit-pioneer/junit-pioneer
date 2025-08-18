@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  */
 
-package org.junitpioneer.jupiter;
+package org.junitpioneer.jupiter.random;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -31,7 +31,6 @@ import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junitpioneer.internal.FieldFinder;
-import org.junitpioneer.jupiter.random.RandomParameterProvider;
 
 class RandomParameterExtension implements ParameterResolver {
 
@@ -40,7 +39,7 @@ class RandomParameterExtension implements ParameterResolver {
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 			throws ParameterResolutionException {
-		return parameterContext.findAnnotation(org.junitpioneer.jupiter.Random.class).isPresent();
+		return parameterContext.findAnnotation(org.junitpioneer.jupiter.random.Random.class).isPresent();
 	}
 
 	@Override
@@ -51,12 +50,12 @@ class RandomParameterExtension implements ParameterResolver {
 				.stream()
 				.map(ServiceLoader.Provider::get)
 				.collect(toList());
-		var randomAnnotation = parameterContext.findAnnotation(org.junitpioneer.jupiter.Random.class);
+		var randomAnnotation = parameterContext.findAnnotation(org.junitpioneer.jupiter.random.Random.class);
 		if (randomAnnotation.isEmpty()) {
 			throw new ExtensionConfigurationException("No @Random found on parameter");
 		}
 		var random = new Random(randomAnnotation.get().seed()); //NOSONAR should only be used for testing
-		this.providers.forEach(provider -> provider.init(random));
+		this.providers.forEach(provider -> provider.init(random, parameterContext, extensionContext));
 		return instantiate(parameterContext.getParameter());
 	}
 
@@ -76,8 +75,12 @@ class RandomParameterExtension implements ParameterResolver {
 				var parameters = allArgsConstructor.get().getParameters();
 				var args = new Object[parameters.length];
 				for (int i = 0; i < parameters.length; i++) {
-					Field field = FieldFinder.getMatchingField(parameter.getType(), parameters[i], i);
-					args[i] = instantiateComplexType(parameters[i], field);
+					if (isSelfReference(parameter.getType(), parameters[i].getType())) {
+						args[i] = null;
+					} else {
+						Field field = FieldFinder.getMatchingField(parameter.getType(), parameters[i], i);
+						args[i] = instantiateComplexType(parameters[i], field);
+					}
 				}
 				return allArgsConstructor.get().newInstance(args);
 			}
@@ -101,7 +104,11 @@ class RandomParameterExtension implements ParameterResolver {
 		}
 	}
 
-	private Method hasSetterMethod(Field field, Class<?> type) {
+	private static boolean isSelfReference(Class<?> clazzType, Class<?> fieldType) {
+		return clazzType.isAssignableFrom(fieldType);
+	}
+
+	private static Method hasSetterMethod(Field field, Class<?> type) {
 		String name = normalize(field.getName());
 		Class<?> fieldType = field.getType();
 		try {
@@ -115,7 +122,7 @@ class RandomParameterExtension implements ParameterResolver {
 		}
 	}
 
-	private String normalize(String name) {
+	private static String normalize(String name) {
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 
@@ -134,8 +141,15 @@ class RandomParameterExtension implements ParameterResolver {
 						parameter.getType())));
 	}
 
+	/**
+	 * Enums are a special use-case: all enums can be injected via reflection so we don't need to check for inheritance.
+	 */
 	private boolean supportsParameterType(RandomParameterProvider provider, Class<?> type) {
-		return provider.getSupportedParameterTypes().stream().anyMatch(supported -> supported.isAssignableFrom(type));
+		return provider
+				.getSupportedParameterTypes()
+				.stream()
+				.anyMatch(supported -> type.isAssignableFrom(supported)
+						|| (supported.isAssignableFrom(type) && type.isEnum()));
 	}
 
 	private static Optional<Constructor<?>> findAllArgsConstructor(Class<?> type) {
