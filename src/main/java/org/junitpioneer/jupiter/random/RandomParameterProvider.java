@@ -22,6 +22,11 @@ public abstract class RandomParameterProvider {
 	 * Check the documentation to see how default implementations use this field in Pioneer.
 	 */
 	protected static final boolean IS_JAKARTA_VALIDATION_PRESENT = isJakartaValidationClassPresent();
+
+	/**
+	 * A java.util.Random instance to use for generating random parameters.
+	 * Note, that this is not a {@link java.security.SecureRandom} instance.
+	 */
 	protected Random random;
 
 	public RandomParameterProvider() {
@@ -42,6 +47,9 @@ public abstract class RandomParameterProvider {
 		this.random = random;
 	}
 
+	/**
+	 * Get all the possible types that this provider can return.
+	 */
 	public abstract List<Class<?>> getSupportedParameterTypes();
 
 	/**
@@ -49,11 +57,15 @@ public abstract class RandomParameterProvider {
 	 * Based on the injection method the {@code Parameter} can be a constructor, setter or test parameter.
 	 * If possible, (i.e.: can be found) the {@code Field} is the field corresponding to the setter/constructor
 	 * parameter.
+	 * <p/>
+	 * Optionally, if the jakarta validation artifact is present on the classpath, an implementation may
+	 * scan the field or parameter for constraint annotations.
 	 *
 	 * @param parameter the parameter of the test method or the parameter of the setter/constructor
 	 *                  if the test parameter is a more complex type
 	 * @param field     the field corresponding to the parameter, could be {@code null}
 	 * @return a random parameter
+	 * @see RandomParameterProvider#IS_JAKARTA_VALIDATION_PRESENT
 	 */
 	public abstract Object provideRandomParameter(Parameter parameter, Field field);
 

@@ -117,6 +117,18 @@ public class RandomParameterExtensionTests {
 				.hasMessageContaining("At most one of these can be present");
 	}
 
+	@Test
+	@DisplayName("should validate ranges for min/max constraints")
+	void shouldValidateRangesForMinAndMaxConstraints() {
+		ExecutionResults results = PioneerTestKit
+			.executeTestMethodWithParameterTypes(RandomParameterTestCases.class, "cantBeInRange", int.class);
+
+		assertThat(results)
+			.hasSingleFailedTest()
+			.withExceptionInstanceOf(ParameterResolutionException.class)
+			.hasMessageContaining("Invalid range between @Max and @Min");
+	}
+
 	static class RandomParameterTestCases {
 
 		@Test
@@ -165,6 +177,11 @@ public class RandomParameterExtensionTests {
 
 		@Test
 		void cantBeBoth(@Random @AssertFalse @AssertTrue boolean b) {
+			// always fails
+		}
+
+		@Test
+		void cantBeInRange(@Random @Min(200) @Max(100) int i) {
 			// always fails
 		}
 

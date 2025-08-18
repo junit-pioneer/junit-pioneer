@@ -19,6 +19,7 @@ import java.util.Random;
 public class PioneerRandomUtils {
 
 	private PioneerRandomUtils() {
+		// private constructor to prevent instantiation of utility class
 	}
 
 	public static double boundedNextDouble(Random rng, double origin, double bound) {
