@@ -58,9 +58,9 @@ public class FlakyExtensionTests {
 	void failsOnlyFirstTime() {
 		ExecutionResults results = executeTestMethod(FlakyTestCases.class, "failsOnlyOnFirstInvocation");
 
-		assertThat(results).hasSingleSucceededTest();
-		assertThat(results).hasSingleSkippedTest();
-		assertThat(results).hasSingleAbortedTest();
+		assertThat(results).hasSingleAbortedTest(); // failed, retried
+		assertThat(results).hasSingleSucceededTest(); // succeeded
+		assertThat(results).hasSingleSkippedTest(); // already succeeded, this invocation is skipped
 	}
 
 	@TestInstance(PER_CLASS)
