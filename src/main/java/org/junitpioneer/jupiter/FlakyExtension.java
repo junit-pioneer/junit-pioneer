@@ -42,11 +42,11 @@ class FlakyExtension implements TestExecutionExceptionHandler, TestTemplateInvoc
 			root.getStore(NAMESPACE).put(uniqueId(context), Status.TEST_FAILED);
 			throw new TestAbortedException("The test has failed and will be retried.", throwable);
 		} else {
-			// The test method being present means this is the test template
+			// The repeatId being present in the Store means this is the test template
 			int i = root.getStore(NAMESPACE).get(repeatId(context), int.class);
 			if (i > 0) {
 				root.getStore(NAMESPACE).put(repeatId(context), i - 1);
-				throw new TestAbortedException("The test has failed and will be retried", throwable);
+				throw new TestAbortedException("The test has failed and will be retried.", throwable);
 			}
 			root.getStore(NAMESPACE).remove(repeatId(context));
 			root.getStore(NAMESPACE).put(uniqueId(context), Status.TEST_TEMPLATE_FAILED);
@@ -99,7 +99,7 @@ class FlakyExtension implements TestExecutionExceptionHandler, TestTemplateInvoc
 	}
 
 	private static String uniqueId(ExtensionContext context) {
-		return context.getRoot().getUniqueId() + format("/[method:%s()]", context.getRequiredTestMethod().getName());
+		return format("class %s#method:%s()", context.getRequiredTestClass().getName(), context.getRequiredTestMethod().getName());
 	}
 
 	private static String repeatId(ExtensionContext context) {

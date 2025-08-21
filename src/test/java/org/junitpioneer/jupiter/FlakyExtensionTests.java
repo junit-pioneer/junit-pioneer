@@ -28,8 +28,9 @@ public class FlakyExtensionTests {
 	void disregarded() {
 		ExecutionResults results = executeTestMethod(FlakyTestCases.class, "negativeValuePassing");
 
-		assertThat(results).hasNumberOfSucceededContainers(2);
 		assertThat(results).hasSingleSucceededTest();
+		assertThat(results).hasNumberOfAbortedTests(0);
+		assertThat(results).hasNumberOfFailedTests(0);
 	}
 
 	@Test

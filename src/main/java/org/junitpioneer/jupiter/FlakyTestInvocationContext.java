@@ -10,6 +10,9 @@
 
 package org.junitpioneer.jupiter;
 
+import java.util.List;
+
+import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junitpioneer.internal.TestNameFormatter;
 
@@ -24,6 +27,11 @@ class FlakyTestInvocationContext implements TestTemplateInvocationContext {
 	@Override
 	public String getDisplayName(int invocationIndex) {
 		return formatter.format(invocationIndex);
+	}
+
+	@Override
+	public List<Extension> getAdditionalExtensions() {
+		return List.of();
 	}
 
 }
