@@ -71,6 +71,7 @@ public class FlakyExtensionTests {
 		@Test
 		@Flaky(value = -1)
 		void negativeValuePassing() {
+			// test passes, @Flaky annotation is ignored
 		}
 
 		@Test
