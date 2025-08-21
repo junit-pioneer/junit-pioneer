@@ -34,11 +34,26 @@ public class FlakyExtensionTests {
 
 	@Test
 	@DisplayName("throws an ExtensionConfigurationException for negative value if initial Test is failing")
-	void invalidValue() {
+	void invalidValueNegative() {
 		ExecutionResults results = executeTestMethod(FlakyTestCases.class, "negativeValueFailing");
 
 		assertThat(results).hasNumberOfAbortedTests(1);
-		assertThat(results).hasSingleFailedContainer().withExceptionInstanceOf(ExtensionConfigurationException.class);
+		assertThat(results)
+				.hasSingleFailedContainer()
+				.withExceptionInstanceOf(ExtensionConfigurationException.class)
+				.hasMessage("Flaky#value() must be greater than 1 (was -1) on FlakyTestCases#negativeValueFailing");
+	}
+
+	@Test
+	@DisplayName("throws an ExtensionConfigurationException for one if initial Test is failing")
+	void invalidValueOne() {
+		ExecutionResults results = executeTestMethod(FlakyTestCases.class, "oneFailing");
+
+		assertThat(results).hasNumberOfAbortedTests(1);
+		assertThat(results)
+				.hasSingleFailedContainer()
+				.withExceptionInstanceOf(ExtensionConfigurationException.class)
+				.hasMessage("Flaky#value() must be greater than 1 (was 1) on FlakyTestCases#oneFailing");
 	}
 
 	@Test
@@ -77,6 +92,12 @@ public class FlakyExtensionTests {
 		@Test
 		@Flaky(-1)
 		void negativeValueFailing() {
+			Assertions.fail();
+		}
+
+		@Test
+		@Flaky(1)
+		void oneFailing() {
 			Assertions.fail();
 		}
 

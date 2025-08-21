@@ -71,8 +71,13 @@ class FlakyExtension implements TestExecutionExceptionHandler, TestTemplateInvoc
 					"Flaky extension was invoked but @Flaky annotation is not present."));
 		final var formatter = new TestNameFormatter(flaky.name(), context.getDisplayName(), Flaky.class);
 		int value = flaky.value();
-		if (value <= 0)
-			throw new ExtensionConfigurationException("value must be greater than 0.");
+		if (value <= 1) {
+			String signature = context.getRequiredTestClass().getSimpleName() + "#"
+					+ context.getRequiredTestMethod().getName();
+			throw new ExtensionConfigurationException(String
+					.format("%s#value() must be greater than 1 (was %s) on %s", Flaky.class.getSimpleName(), value,
+						signature));
+		}
 		if (context.getRoot().getStore(NAMESPACE).get(uniqueId(context)) != null) {
 			// normal test ran, one less test template
 			value -= 1;
