@@ -99,7 +99,8 @@ class FlakyExtension implements TestExecutionExceptionHandler, TestTemplateInvoc
 	}
 
 	private static String uniqueId(ExtensionContext context) {
-		return format("class %s#method:%s()", context.getRequiredTestClass().getName(), context.getRequiredTestMethod().getName());
+		return format("class %s#method:%s()", context.getRequiredTestClass().getName(),
+			context.getRequiredTestMethod().getName());
 	}
 
 	private static String repeatId(ExtensionContext context) {
