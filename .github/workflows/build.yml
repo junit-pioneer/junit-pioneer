@@ -135,7 +135,7 @@ jobs:
         # Pioneer, latest LTS, latest stable
         java: [ 17, 21, 24 ]
         # Pioneer, latest stable
-        junit-version: [ '6.0.0-M2' ]
+        junit-version: [ '6.0.0-RC2' ]
         os: [ubuntu, macos, windows]
     name: with Java ${{ matrix.java }}, JUnit ${{ matrix.junit-version }} on ${{ matrix.os }}
     steps:
@@ -164,7 +164,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        junit-version: [ '6.0.0-M2' ]
+        junit-version: [ '6.0.0-RC2' ]
         os: [ubuntu, macos, windows]
     name: Experimental build with newest JDK early-access build and Gradle release candidate
     # Gradle doesn't work with JDK EA builds, so we launch it with a supported Java version,
