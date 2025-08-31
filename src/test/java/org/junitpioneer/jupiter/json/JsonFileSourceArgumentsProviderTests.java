@@ -61,18 +61,19 @@ class JsonFileSourceArgumentsProviderTests {
 		assertThat(displayNames.get("singleObject"))
 				.containsExactly("[1] Jedi {name='Luke', height=172}", "[2] Jedi {name='Yoda', height=66}");
 
-		assertThat(displayNames.get("singleObjectAttribute")).containsExactly("[1] Luke", "[2] Yoda");
+		assertThat(displayNames.get("singleObjectAttribute")).containsExactly("[1] \"Luke\"", "[2] \"Yoda\"");
 
-		assertThat(displayNames.get("deconstructObjectsFromArray")).containsExactly("[1] Luke, 172", "[2] Yoda, 66");
+		assertThat(displayNames.get("deconstructObjectsFromArray"))
+				.containsExactly("[1] \"Luke\", 172", "[2] \"Yoda\", 66");
 
 		assertThat(displayNames.get("customDataLocation"))
-				.containsExactly("[1] Snowspeeder, 4.5", "[2] Imperial Speeder Bike, 3");
+				.containsExactly("[1] \"Snowspeeder\", 4.5", "[2] \"Imperial Speeder Bike\", 3");
 
 		assertThat(displayNames.get("deconstructObjectsFromMultipleFiles"))
-				.containsExactly("[1] 66, Yoda", "[2] 172, Luke");
+				.containsExactly("[1] 66, \"Yoda\"", "[2] 172, \"Luke\"");
 
 		assertThat(displayNames.get("deconstructObjectsFromMultipleFilesIntoComplexType"))
-				.containsExactly("[1] Yoda, Location {name='unknown'}", "[2] Luke, Location {name='Tatooine'}");
+				.containsExactly("[1] \"Yoda\", Location {name='unknown'}", "[2] \"Luke\", Location {name='Tatooine'}");
 	}
 
 	@Test
