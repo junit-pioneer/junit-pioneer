@@ -10,17 +10,17 @@
 ++++
 {empty} +
 
-A melting pot for all kinds of extensions to https://github.com/junit-team/junit-framework[JUnit Framework] and its API.
+A melting pot for all kinds of extensions to https://github.com/junit-team/junit-framework[JUnit Framework], particular to its Jupiter API.
 
 Check out https://junit-pioneer.org/[junit-pioneer.org], particularly https://junit-pioneer.org/docs/[the documentation section].
 
 == A Pioneer's Mission
 
-JUnit Pioneer provides extensions for the https://github.com/junit-team/junit-framework[JUnit Framework] and its API.
+JUnit Pioneer provides extensions for the https://github.com/junit-team/junit-framework[JUnit Framework] and its Jupiter API.
 It does not limit itself to proven ideas with wide application but is purposely open to experimentation.
 It aims to spin off successful and cohesive portions into sibling projects or back into the JUnit 5 code base.
 
-To enable easy exchange of code with JUnit 6, JUnit Pioneer copies most of its infrastructure, from code style to build tool and configuration to continuous integration.
+To enable easy exchange of code with the JUnit Framework, JUnit Pioneer copies most of its infrastructure, from code style to build tool and configuration to continuous integration
 
 
 == Getting on Board
@@ -56,11 +56,11 @@ testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
 Starting with release 3.0, JUnit Pioneer is compiled against **Java 17** and comes as a module (i.e. with a `module-info.class`) named _org.junitpioneer_.
 That means it can be used on all Java versions 17 and higher on class path and module path.
 
-Pioneer does not only use JUnit 6's API, but also other artifacts from its ecosystem such as https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons[`junit-platform-commons`].
-To avoid dependency issues (e.g. in https://github.com/junit-pioneer/junit-pioneer/issues/343[junit-pioneer#343]), you should add the JUnit 6 BOM (https://mvnrepository.com/artifact/org.junit/junit-bom[`junit-bom`]) to your project instead of defining all dependency versions manually.
+Pioneer does not only use the JUnit Jupiter API, but also other artifacts from its ecosystem such as https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons[`junit-platform-commons`].
+To avoid dependency issues (e.g. in https://github.com/junit-pioneer/junit-pioneer/issues/343[junit-pioneer#343]), you should add the JUnit BOM (https://mvnrepository.com/artifact/org.junit/junit-bom[`junit-bom`]) to your project instead of defining all dependency versions manually.
 
-To not add to user's https://nipafx.dev/jar-hell/[JAR hell], JUnit Pioneer is not taking on any runtime dependencies besides JUnit 6.
-Pioneer always depends on the lowest JUnit 6 version that supports its feature set, but that should not keep you from using 6's latest and greatest.
+To not add to user's https://nipafx.dev/jar-hell/[JAR hell], JUnit Pioneer is not taking on any runtime dependencies besides JUnit.
+Pioneer always depends on the lowest JUnit Framework version that supports its feature set, but that should not keep you from using JUnit's latest and greatest.
 
 Since 1.7.0 we also have an **optional** runtime dependency on https://github.com/FasterXML/jackson[Jackson], for our JSON-based extensions.
 You can read a bit more about our approach to dependencies in the link:CONTRIBUTING.adoc#others[contribution guide].

@@ -21,7 +21,7 @@ plugins.withType<JavaPlugin>().configureEach {
 }
 
 group = "org.junit-pioneer"
-description = "JUnit Jupiter Extension Pack"
+description = "JUnit Framework Extension Pack"
 
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
