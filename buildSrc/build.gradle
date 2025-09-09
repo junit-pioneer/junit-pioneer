@@ -1,4 +1,5 @@
 import groovy.xml.XmlUtil
+import groovy.xml.XmlSlurper
 
 build {
 	doLast {
