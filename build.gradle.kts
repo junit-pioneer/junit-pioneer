@@ -11,7 +11,7 @@ plugins {
 	id("org.shipkit.shipkit-github-release") version "2.0.1"
 	id("com.github.ben-manes.versions") version "0.52.0"
 	id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-	id("org.gradlex.extra-java-module-info") version "1.12"
+	id("org.gradlex.extra-java-module-info") version "1.13"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -21,13 +21,13 @@ plugins.withType<JavaPlugin>().configureEach {
 }
 
 group = "org.junit-pioneer"
-description = "JUnit 5 Extension Pack"
+description = "JUnit Framework Extension Pack"
 
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 val releaseBuild : Boolean = project.version != "unspecified"
 
-val targetJavaVersion = JavaVersion.VERSION_11
+val targetJavaVersion = JavaVersion.VERSION_17
 
 java {
 	if (experimentalBuild) {
@@ -304,7 +304,7 @@ tasks {
 			this as StandardJavadocDocletOptions
 
 			encoding = "UTF-8"
-			links = listOf("https://junit.org/junit5/docs/current/api/")
+			links = listOf("https://docs.junit.org/current/api/")
 
 			// Set javadoc `--release` flag (affects which warnings and errors are reported)
 			// (Note: Gradle adds one leading '-' to the option on its own)

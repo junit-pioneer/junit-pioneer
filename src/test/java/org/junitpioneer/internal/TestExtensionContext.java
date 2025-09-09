@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExecutableInvoker;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -128,7 +129,8 @@ public class TestExtensionContext implements ExtensionContext {
 	}
 
 	@Override
-	public <T> Optional<T> getConfigurationParameter(String key, Function<String, T> transformer) {
+	public <T> Optional<T> getConfigurationParameter(String key,
+			Function<? super String, ? extends @Nullable T> transformer) {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 

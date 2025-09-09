@@ -68,7 +68,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		var testMethod = context.getRequiredTestMethod();
 		return context
 				.getStore(NAMESPACE)
-				.getOrComputeIfAbsent(testMethod.toString(), __ -> FailedTestRetrier.createFor(testMethod, context),
+				.computeIfAbsent(testMethod.toString(), __ -> FailedTestRetrier.createFor(testMethod, context),
 					FailedTestRetrier.class);
 	}
 
