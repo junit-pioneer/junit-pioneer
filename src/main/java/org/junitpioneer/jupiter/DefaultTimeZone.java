@@ -47,6 +47,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @see java.util.TimeZone#getDefault()
  * @see DefaultLocale
  */
+@Deprecated(forRemoval = true, since = "6.0")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Inherited

@@ -33,6 +33,7 @@ import org.junit.jupiter.api.parallel.Resources;
  *
  * @since 0.9
  */
+@Deprecated(forRemoval = true, since = "6.0")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PACKAGE, ElementType.TYPE })
 @Inherited

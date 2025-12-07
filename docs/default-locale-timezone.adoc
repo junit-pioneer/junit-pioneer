@@ -7,6 +7,13 @@ The `@DefaultLocale` and `@DefaultTimeZone` annotations can be used to change th
 Both annotations work on the test class level and on the test method level, and are inherited from higher-level containers.
 After the annotated element has been executed, the initial default value is restored.
 
+[WARNING]
+====
+These extensions were contributed to the JUnit Framework and are available since JUnit version 6.1.0.
+Therefore, they are marked as deprecated for removal and not maintained in JUnit Pioneer anymore.
+Expect their removal in Pioneer with a future release.
+====
+
 == `@DefaultLocale`
 
 The default `Locale` can be specified using an https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#forLanguageTag-java.lang.String-[IETF BCP 47 language tag string]

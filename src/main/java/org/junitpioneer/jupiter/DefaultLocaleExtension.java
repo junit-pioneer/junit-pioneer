@@ -22,6 +22,7 @@ import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 import org.junitpioneer.jupiter.LocaleProvider.NullLocaleProvider;
 
+@Deprecated(forRemoval = true, since = "6.0")
 class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(DefaultLocaleExtension.class);

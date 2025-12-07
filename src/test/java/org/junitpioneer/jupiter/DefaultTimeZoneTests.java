@@ -27,6 +27,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.testkit.ExecutionResults;
 
+@Deprecated(forRemoval = true, since = "6.0")
 @DisplayName("DefaultTimeZone extension")
 class DefaultTimeZoneTests {
 

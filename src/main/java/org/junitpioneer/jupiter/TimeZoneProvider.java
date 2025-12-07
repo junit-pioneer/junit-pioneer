@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter;
 import java.util.TimeZone;
 import java.util.function.Supplier;
 
+@Deprecated(forRemoval = true, since = "6.0")
 public interface TimeZoneProvider extends Supplier<TimeZone> {
 
 	interface NullTimeZoneProvider extends TimeZoneProvider {
