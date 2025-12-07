@@ -12,6 +12,7 @@ plugins {
 	id("com.github.ben-manes.versions") version "0.52.0"
 	id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 	id("org.gradlex.extra-java-module-info") version "1.13"
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
