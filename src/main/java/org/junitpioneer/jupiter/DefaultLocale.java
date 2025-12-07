@@ -64,6 +64,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * @since 0.2
  * @see java.util.Locale#getDefault()
  * @see DefaultTimeZone
+ *
+ * @deprecated The extension was provided to the JUnit framework.
  */
 @Deprecated(forRemoval = true, since = "6.0")
 @Retention(RetentionPolicy.RUNTIME)

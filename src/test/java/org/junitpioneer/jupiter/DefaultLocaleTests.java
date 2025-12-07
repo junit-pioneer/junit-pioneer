@@ -28,6 +28,7 @@ import org.junitpioneer.internal.PioneerUtils;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @Deprecated(forRemoval = true, since = "6.0")
+
 @DisplayName("DefaultLocale extension")
 class DefaultLocaleTests {
 

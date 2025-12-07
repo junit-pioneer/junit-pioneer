@@ -22,6 +22,9 @@ import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
 import org.junitpioneer.jupiter.LocaleProvider.NullLocaleProvider;
 
+/**
+ * @deprecated The extension was provided to the JUnit framework.
+ */
 @Deprecated(forRemoval = true, since = "6.0")
 class DefaultLocaleExtension implements BeforeEachCallback, AfterEachCallback {
 
