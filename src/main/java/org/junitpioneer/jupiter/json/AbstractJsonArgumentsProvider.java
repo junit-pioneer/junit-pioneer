@@ -16,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -101,6 +102,7 @@ abstract class AbstractJsonArgumentsProvider<A extends Annotation>
 							.map(value -> value.value(parameter.getParameterizedType()))
 							.orElse(null);
 				})
+				.filter(Objects::nonNull)
 				.toArray();
 		// @formatter:on
 		return Arguments.of(arguments);

@@ -24,6 +24,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junit.platform.engine.TestDescriptor;
@@ -53,9 +54,12 @@ class JsonClasspathSourceArgumentsProviderTests {
 					mapping(TestDescriptor::getDisplayName, toList())));
 
 		assertThat(displayNames)
-				.containsOnlyKeys("singleObject", "singleObjectAttribute", "deconstructObjectsFromArray",
-					"customDataLocation", "deconstructObjectsFromMultipleFiles",
+				.containsOnlyKeys("singleObjectAttributeAndCompetingResolver", "singleObject", "singleObjectAttribute",
+					"deconstructObjectsFromArray", "customDataLocation", "deconstructObjectsFromMultipleFiles",
 					"deconstructObjectsFromMultipleFilesIntoComplexType");
+
+		assertThat(displayNames.get("singleObjectAttributeAndCompetingResolver"))
+				.containsExactly("[1] \"Luke\"", "[2] \"Yoda\"");
 
 		assertThat(displayNames.get("singleObject"))
 				.containsExactly("[1] Jedi {name='Luke', height=172}", "[2] Jedi {name='Yoda', height=66}");
@@ -116,6 +120,13 @@ class JsonClasspathSourceArgumentsProviderTests {
 
 	@Nested
 	class JsonClasspathSourceTests {
+
+		@ParameterizedTest
+		@JsonClasspathSource(JEDIS)
+		void singleObjectAttributeAndCompetingResolver(@Property("name") String name, TestInfo testInfo) {
+			assertThat(testInfo).isNotNull();
+			assertThat(name).isIn("Luke", "Yoda");
+		}
 
 		@ParameterizedTest
 		@JsonClasspathSource(JEDIS)
