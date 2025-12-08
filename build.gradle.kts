@@ -202,7 +202,7 @@ tasks {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
 		// Do not break the build on "exports" warnings (see CONTRIBUTING.adoc for details)
-		options.compilerArgs.add("-Xlint:all,-exports")
+		options.compilerArgs.add("-Xlint:all,-exports,-removal")
 
 		if (project.version != "unspecified") {
 			// Add version to Java modules
@@ -227,7 +227,7 @@ tasks {
 		options.compilerArgs.add("-Werror")
 		options.compilerArgs.add(patchModuleArg)
 		var xlintArg = "-Xlint:all"
-		xlintArg += ",-exports,-requires-automatic"
+		xlintArg += ",-exports,-requires-automatic,-removal"
 		// missing-explicit-ctor was added in Java 16. This causes errors on test classes, which don't have one.
 		if (JavaVersion.current() >= JavaVersion.VERSION_16) {
 			xlintArg += ",-missing-explicit-ctor"

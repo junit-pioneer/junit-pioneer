@@ -13,6 +13,10 @@ package org.junitpioneer.jupiter;
 import java.util.TimeZone;
 import java.util.function.Supplier;
 
+/**
+ * @deprecated The extension was provided to the JUnit framework.
+ */
+@Deprecated(forRemoval = true, since = "6.0")
 public interface TimeZoneProvider extends Supplier<TimeZone> {
 
 	interface NullTimeZoneProvider extends TimeZoneProvider {

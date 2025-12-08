@@ -23,6 +23,10 @@ import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.jupiter.TimeZoneProvider.NullTimeZoneProvider;
 
+/*
+ * @deprecated The extension was provided to the JUnit framework.
+ */
+@Deprecated(forRemoval = true, since = "6.0")
 class DefaultTimeZoneExtension implements BeforeEachCallback, AfterEachCallback {
 
 	private static final Namespace NAMESPACE = Namespace.create(DefaultTimeZoneExtension.class);
