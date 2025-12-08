@@ -64,9 +64,9 @@ public abstract class RandomParameterProvider {
 	 * Based on the injection method the {@code Parameter} can be a constructor, setter or test parameter.
 	 * If possible, (i.e.: can be found) the {@code Field} is the field corresponding to the setter/constructor
 	 * parameter.
-	 * <p/>
-	 * Optionally, if the jakarta validation artifact is present on the classpath, an implementation may
-	 * scan the field or parameter for constraint annotations.
+	 *
+	 * <p>Optionally, if the jakarta validation artifact is present on the classpath, an implementation may
+	 * scan the field or parameter for constraint annotations.</p>
 	 *
 	 * @param parameter the parameter of the test method or the parameter of the setter/constructor
 	 *                  if the test parameter is a more complex type
