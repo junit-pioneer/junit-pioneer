@@ -35,7 +35,7 @@ import org.junit.jupiter.api.parallel.Resources;
  *
  * @deprecated The extension was provided to the JUnit framework.
  */
-@Deprecated(forRemoval = true, since = "6.0")
+@Deprecated(forRemoval = true, since = "3.0")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PACKAGE, ElementType.TYPE })
 @Inherited

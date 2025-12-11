@@ -16,13 +16,13 @@ import java.util.function.Supplier;
 /**
  * @deprecated The extension was provided to the JUnit framework.
  */
-@Deprecated(forRemoval = true, since = "6.0")
+@Deprecated(forRemoval = true, since = "3.0")
 public interface LocaleProvider extends Supplier<Locale> {
 
 	/*
 	* @deprecated The extension was provided to the JUnit framework.
 	 */
-	@Deprecated(forRemoval = true, since = "6.0")
+	@Deprecated(forRemoval = true, since = "3.0")
 	interface NullLocaleProvider extends LocaleProvider {
 	}
 

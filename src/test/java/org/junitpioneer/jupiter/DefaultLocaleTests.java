@@ -27,7 +27,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junitpioneer.internal.PioneerUtils;
 import org.junitpioneer.testkit.ExecutionResults;
 
-@Deprecated(forRemoval = true, since = "6.0")
+@Deprecated(forRemoval = true, since = "3.0")
 
 @DisplayName("DefaultLocale extension")
 class DefaultLocaleTests {
