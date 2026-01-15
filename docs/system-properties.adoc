@@ -5,6 +5,14 @@
 
 == `@ClearSystemProperty` and `@SetSystemProperty`
 The `@ClearSystemProperty` and `@SetSystemProperty` annotations can be used to clear and set, respectively, the values of system properties for a test execution.
+
+[WARNING]
+====
+These extensions were contributed to the JUnit Framework and are available since JUnit version 6.1.0.
+Therefore, they are marked as deprecated for removal and not maintained in JUnit Pioneer anymore.
+Expect their removal in Pioneer with a future release.
+====
+
 Both annotations work on the test method and class level, are repeatable, combinable, and inherited from higher-level containers.
 After the annotated method has been executed, the properties mentioned in the annotation will be restored to their original value or the value of the higher-level container, or will be cleared if they didn't have one before.
 Other system properties that are changed during the test, are *not* restored (unless the `@RestoreSystemProperties` is used).
