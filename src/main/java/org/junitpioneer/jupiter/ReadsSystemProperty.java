@@ -32,7 +32,10 @@ import org.junit.jupiter.api.parallel.Resources;
  * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on <code>@ClearSystemProperty</code> and <code>@SetSystemProperty</code></a>.</p>
  *
  * @since 0.9
+ *
+ * @deprecated The extension was provided to the JUnit framework.
  */
+@Deprecated(forRemoval = true, since = "3.0")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.PACKAGE, ElementType.TYPE })
 @Inherited

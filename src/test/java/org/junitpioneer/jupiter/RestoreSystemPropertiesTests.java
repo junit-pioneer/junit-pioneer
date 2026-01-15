@@ -44,6 +44,7 @@ import org.junit.platform.commons.support.ReflectionSupport;
  * <p>{@link VerifySysPropsExtension} is registered as an extension <em>before</em> {@code RestoreSystemProperties}. It
  * stores the initial system properties and verifies them at the end.
  */
+@Deprecated(forRemoval = true, since = "3.0")
 @DisplayName("RestoreSystemProperties Annotation")
 @ExtendWith(RestoreSystemPropertiesTests.VerifySysPropsExtension.class) // 1st: Order is important here
 @RestoreSystemProperties // 2nd

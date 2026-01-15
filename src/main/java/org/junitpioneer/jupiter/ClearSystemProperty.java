@@ -41,7 +41,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * <a href="https://junit-pioneer.org/docs/system-properties/" target="_top">the documentation on <code>@ClearSystemProperty and @SetSystemProperty</code></a>.</p>
  *
  * @since 0.5
+ *
+ * @deprecated The extension was provided to the JUnit framework.
  */
+@Deprecated(forRemoval = true, since = "3.0")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Inherited

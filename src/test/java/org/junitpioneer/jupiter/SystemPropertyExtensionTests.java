@@ -41,6 +41,7 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 
+@Deprecated(forRemoval = true, since = "3.0")
 @DisplayName("SystemProperty extension")
 class SystemPropertyExtensionTests {
 

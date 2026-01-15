@@ -61,7 +61,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * all its potential (non-standard) richness.</p>
  *
  * @since 2.0.0
+ *
+ * @deprecated The extension was provided to the JUnit framework.
  */
+@Deprecated(forRemoval = true, since = "3.0")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Inherited

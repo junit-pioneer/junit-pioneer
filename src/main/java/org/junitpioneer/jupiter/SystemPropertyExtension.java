@@ -13,6 +13,10 @@ package org.junitpioneer.jupiter;
 import java.util.Properties;
 import java.util.function.Function;
 
+/*
+* @deprecated The extension was provided to the JUnit framework.
+*/
+@Deprecated(forRemoval = true, since = "3.0")
 class SystemPropertyExtension extends
 		AbstractEntryBasedExtension<String, String, ClearSystemProperty, SetSystemProperty, RestoreSystemProperties> {
 
