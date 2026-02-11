@@ -232,7 +232,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				throw new NoSuchElementException();
 
 			if (!isFirstExecution()) {
-				suspendFor(suspendForMs + calcuateJitter());
+				suspendFor(suspendForMs + calculateJitter());
 			}
 
 			retriesSoFar++;
@@ -240,7 +240,7 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 			return new RetryingTestInvocationContext(formatter);
 		}
 
-		private int calcuateJitter() {
+		private int calculateJitter() {
 			int jitter = 0;
 			if (maxJitterMs != 0) {
 				jitter = jitterRandom.nextInt(maxJitterMs);
