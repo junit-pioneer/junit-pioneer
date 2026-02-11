@@ -117,15 +117,14 @@ After failure, the test `suspendBetweenRetries` will wait for 100ms before retry
 include::{demo}[tag=jitter]
 ----
 
-The test `requiresTwoSuccesses` must run at least two times without raising an exception.
-However, it will not run more than four times.
+Use `maxJitterMs` to specify additional suspending.
 
 [source,java,indent=0]
 ----
 include::{demo}[tag=jitter_seed]
 ----
 
-The seed for jitter's generator might be specified manually.
+Use `jitterSeed` to specify seed for jitter's generator might be specified manually.
 
 === Configuring on which Exceptions to Retry
 
