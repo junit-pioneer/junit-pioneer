@@ -153,6 +153,25 @@ public @interface RetryingTest {
 	int suspendForMs() default 0;
 
 	/**
+	 * Specifies the maximum jitter (in milliseconds) added between executions.
+	 *
+	 * <p>A random value between 0 (inclusive) and this value (exclusive) is added
+	 * to {@link #suspendForMs()} to calculate the total sleep time between retries.</p>
+	 *
+	 * <p>Value must be greater than or equal to 0.</p>
+	 */
+	int maxJitterMs() default 0;
+
+	/**
+	 * Specifies a jitter seed. This allows the retries to be reproducible.
+	 *
+	 * <p>This value will be used to create an instance of {@link java.util.Random}</p>
+	 *
+	 * <p>0 value is default and used as the marker to use seed {@link System#currentTimeMillis()}</p>
+	 */
+	int jitterSeed() default 0;
+
+	/**
 	 * Specifies on which exceptions a failed test is retried.
 	 *
 	 * <p>If no exceptions are specified, tests will always be retried; otherwise only when it throws

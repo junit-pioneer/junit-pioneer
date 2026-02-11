@@ -110,6 +110,24 @@ Use `suspendForMs` to specify the number of milliseconds to wait between each re
 
 After failure, the test `suspendBetweenRetries` will wait for 100ms before retrying.
 
+=== Configuring the Jitter
+
+[source,java,indent=0]
+----
+include::{demo}[tag=jitter]
+----
+
+Use `maxJitterMs` to add a random delay (between 0 and the specified value in milliseconds) on top of `suspendForMs` between retries.
+This helps avoid thundering-herd problems when multiple retrying tests access the same external resource simultaneously.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=jitter_seed]
+----
+
+Use `jitterSeed` to make the jitter reproducible by providing a fixed seed for the random number generator.
+This is useful for testing or debugging jitter behavior.
+
 === Configuring on which Exceptions to Retry
 
 Use `onExceptions` to only retry on the mentioned exception(s):

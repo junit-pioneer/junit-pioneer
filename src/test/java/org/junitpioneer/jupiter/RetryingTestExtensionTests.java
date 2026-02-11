@@ -38,6 +38,7 @@ import org.opentest4j.TestAbortedException;
 class RetryingTestExtensionTests {
 
 	private static final int SUSPEND_FOR = 10;
+	private static final int JIT_FOR = 100;
 
 	@Test
 	void invalidConfigurationWithTest() {
@@ -139,7 +140,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfAbortedTests(2)
 				.hasNumberOfFailedTests(1);
 
-		assertFailedTest(results);
+		assertFailedTest(results, 3);
 	}
 
 	@Test
@@ -193,7 +194,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(1);
 
-		assertFailedTest(results);
+		assertFailedTest(results, 3);
 
 	}
 
@@ -207,7 +208,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(0);
 
-		assertFailedTest(results);
+		assertFailedTest(results, 3);
 	}
 
 	@Test
@@ -273,6 +274,14 @@ class RetryingTestExtensionTests {
 	}
 
 	@Test
+	void jitterForLessThanZero_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "jitterForLessThanZero");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
 	void suspendForLessThanZero_fails() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCases.class, "suspendForLessThanZero");
@@ -292,7 +301,37 @@ class RetryingTestExtensionTests {
 				.hasNumberOfSucceededTests(0);
 
 		assertSuspendedFor(results, SUSPEND_FOR);
-		assertFailedTest(results);
+		assertFailedTest(results, 3);
+	}
+
+	@Test
+	void failThreeTimesWithSuspendAndJitter() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithSuspendAndJitter");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(4)
+				.hasNumberOfAbortedTests(3)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+
+		assertSuspendedFor(results, SUSPEND_FOR);
+		assertFailedTest(results, 4);
+	}
+
+	@Test
+	void failThreeTimesWithSuspendAndJitterWithSeed() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithSuspendAndJitterWithSeed");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(5)
+				.hasNumberOfAbortedTests(4)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+
+		assertSuspendedFor(results, SUSPEND_FOR);
+		assertFailedTest(results, 5);
 	}
 
 	@Test
@@ -307,7 +346,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfSucceededTests(0);
 
 		assertSuspendedFor(results, 0);
-		assertFailedTest(results);
+		assertFailedTest(results, 3);
 	}
 
 	private void assertSuspendedFor(ExecutionResults results, long greaterThanOrEqualTo) {
@@ -330,12 +369,12 @@ class RetryingTestExtensionTests {
 		}
 	}
 
-	private void assertFailedTest(ExecutionResults results) {
+	private void assertFailedTest(ExecutionResults results, int count) {
 		assertThat(results)
 				.hasSingleFailedTest()
 				.withExceptionInstanceOf(MultipleFailuresError.class)
 				.extracting(MultipleFailuresError::getFailures, InstanceOfAssertFactories.list(Throwable.class))
-				.hasSize(3)
+				.hasSize(count)
 				.hasOnlyElementsOfType(TestAbortedException.class)
 				.extracting(Throwable::getCause)
 				.hasOnlyElementsOfType(IllegalArgumentException.class);
@@ -508,13 +547,28 @@ class RetryingTestExtensionTests {
 			// Do nothing
 		}
 
+		@RetryingTest(maxAttempts = 3, maxJitterMs = -1)
+		void jitterForLessThanZero() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 3)
+		void failThreeTimesWithoutSuspend() {
+			throw new IllegalArgumentException();
+		}
+
 		@RetryingTest(maxAttempts = 3, suspendForMs = SUSPEND_FOR)
 		void failThreeTimesWithSuspend() {
 			throw new IllegalArgumentException();
 		}
 
-		@RetryingTest(maxAttempts = 3)
-		void failThreeTimesWithoutSuspend() {
+		@RetryingTest(maxAttempts = 4, suspendForMs = SUSPEND_FOR, maxJitterMs = JIT_FOR)
+		void failThreeTimesWithSuspendAndJitter() {
+			throw new IllegalArgumentException();
+		}
+
+		@RetryingTest(maxAttempts = 5, suspendForMs = SUSPEND_FOR, maxJitterMs = JIT_FOR, jitterSeed = 666)
+		void failThreeTimesWithSuspendAndJitterWithSeed() {
 			throw new IllegalArgumentException();
 		}
 
