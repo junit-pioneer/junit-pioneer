@@ -125,16 +125,7 @@ However, it will not run more than four times.
 include::{demo}[tag=jitter_seed]
 ----
 
-=== Suspending between each Retry
-
-[source,java,indent=0]
-----
-include::{demo}[tag=suspending_between_each_retry]
-----
-
-Use `suspendForMs` to specify the number of milliseconds to wait between each retry.
-
-After failure, the test `suspendBetweenRetries` will wait for 100ms before retrying.
+The seed for jitter's generator might be specified manually.
 
 === Configuring on which Exceptions to Retry
 
