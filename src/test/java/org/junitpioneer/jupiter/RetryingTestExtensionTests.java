@@ -552,13 +552,13 @@ class RetryingTestExtensionTests {
 			// Do nothing
 		}
 
-		@RetryingTest(maxAttempts = 3, suspendForMs = SUSPEND_FOR)
-		void failThreeTimesWithSuspend() {
+		@RetryingTest(maxAttempts = 3)
+		void failThreeTimesWithoutSuspend() {
 			throw new IllegalArgumentException();
 		}
 
 		@RetryingTest(maxAttempts = 3, suspendForMs = SUSPEND_FOR)
-		void failThreeTimesWithoutSuspend() {
+		void failThreeTimesWithSuspend() {
 			throw new IllegalArgumentException();
 		}
 
