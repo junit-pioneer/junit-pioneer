@@ -155,8 +155,8 @@ public @interface RetryingTest {
 	/**
 	 * Specifies the maximum jitter (in milliseconds) added between executions.
 	 *
-+	 * <p>A random value between 0 (inclusive) and this value (exclusive) is added
-+	 * to {@link #suspendForMs()} to calculate the total sleep time between retries.</p>
+	+	 * <p>A random value between 0 (inclusive) and this value (exclusive) is added
+	+	 * to {@link #suspendForMs()} to calculate the total sleep time between retries.</p>
 	 *
 	 * <p>Value must be greater than or equal to 0.</p>
 	 */
