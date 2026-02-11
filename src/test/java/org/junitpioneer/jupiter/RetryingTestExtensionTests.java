@@ -38,7 +38,7 @@ import org.opentest4j.TestAbortedException;
 class RetryingTestExtensionTests {
 
 	private static final int SUSPEND_FOR = 10;
-    private static final int JIT_FOR = 100;
+	private static final int JIT_FOR = 100;
 
 	@Test
 	void invalidConfigurationWithTest() {
@@ -273,7 +273,7 @@ class RetryingTestExtensionTests {
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
 	}
 
-    @Test
+	@Test
 	void jitterForLessThanZero_fails() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCases.class, "jitterForLessThanZero");
@@ -304,7 +304,7 @@ class RetryingTestExtensionTests {
 		assertFailedTest(results, 3);
 	}
 
-    @Test
+	@Test
 	void failThreeTimesWithSuspendAndJitter() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithSuspendAndJitter");
@@ -319,7 +319,7 @@ class RetryingTestExtensionTests {
 		assertFailedTest(results, 4);
 	}
 
-    @Test
+	@Test
 	void failThreeTimesWithSuspendAndJitterWithSeed() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithSuspendAndJitterWithSeed");
@@ -391,7 +391,7 @@ class RetryingTestExtensionTests {
 	@TestInstance(PER_CLASS)
 	static class RetryingTestTestCases {
 
-        private int executionCount;
+		private int executionCount;
 
 		@Test
 		@RetryingTest(3)
@@ -571,6 +571,7 @@ class RetryingTestExtensionTests {
 		void failThreeTimesWithSuspendAndJitterWithSeed() {
 			throw new IllegalArgumentException();
 		}
+
 	}
 
 	@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })

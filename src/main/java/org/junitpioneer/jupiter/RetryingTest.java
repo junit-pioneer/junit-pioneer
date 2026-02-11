@@ -17,6 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Random;
+
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
@@ -160,16 +161,16 @@ public @interface RetryingTest {
 	 *
 	 * <p>Value must be greater than or equal to 0.</p>
 	 */
-    int maxJitterMs() default 0;
+	int maxJitterMs() default 0;
 
 	/**
 	 * Specifies a jitter seed. This allows the retries to be reproducible.
 	 *
 	 * <p>This value will be used to create an instance of {@link java.util.Random}</p>
-     *
+	 *
 	 * <p>0 value is default and used as the marker to use seed {@link System#currentTimeMillis()}</p>
 	 */
-    int jitterSeed() default 0;
+	int jitterSeed() default 0;
 
 	/**
 	 * Specifies on which exceptions a failed test is retried.

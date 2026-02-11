@@ -45,14 +45,14 @@ public class RetryingTestExtensionDemo {
 	// tag::jitter[]
 	@RetryingTest(maxAttempts = 3, maxJitterMs = 500)
 	void jitter() {
-        // randomly jitted value is added to sleep interval
+		// randomly jitted value is added to sleep interval
 	}
 	// end::jitter[]
 
 	// tag::jitter_seed[]
 	@RetryingTest(maxAttempts = 3, maxJitterMs = 500, jitterSeed = 123)
 	void jitterSeed() {
-        // jitter might be initialized with the seed.
+		// jitter might be initialized with the seed.
 	}
 	// end::jitter_seed[]
 
