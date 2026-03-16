@@ -47,7 +47,7 @@ For Gradle:
 
 [source,groovy]
 ----
-testCompile group: 'org.junit-pioneer', name: 'junit-pioneer', version: /*...*/
+testImplementation("org.junit-pioneer:junit-pioneer:<version>")
 ----
 
 [#dependencies]
