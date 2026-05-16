@@ -13,16 +13,14 @@ package org.junitpioneer.jupiter.json;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junitpioneer.internal.PioneerPreconditions;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * A {@link JsonConverter} using Jackson 2 {@link ObjectMapper} to perform the conversion
@@ -51,24 +49,14 @@ class JacksonJsonConverter implements JsonConverter {
 
 	@Override
 	public Node toNode(InputStream stream) {
-		try {
-			JsonNode jsonNode = objectMapper.readTree(stream);
-			return new JacksonNode(objectMapper, jsonNode);
-		}
-		catch (IOException e) {
-			throw new UncheckedIOException("Failed to read stream", e);
-		}
+		JsonNode jsonNode = objectMapper.readTree(stream);
+		return new JacksonNode(objectMapper, jsonNode);
 	}
 
 	@Override
 	public Node toNode(String value, boolean lenient) {
-		try {
-			JsonNode jsonNode = getObjectMapper(lenient).readTree(value);
-			return new JacksonNode(getObjectMapper(false), jsonNode);
-		}
-		catch (IOException e) {
-			throw new UncheckedIOException("Failed to read value", e);
-		}
+		JsonNode jsonNode = getObjectMapper(lenient).readTree(value);
+		return new JacksonNode(getObjectMapper(false), jsonNode);
 	}
 
 	private ObjectMapper getObjectMapper(boolean lenient) {

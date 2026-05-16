@@ -50,7 +50,7 @@ repositories {
 }
 
 val junitVersion : String by project
-val jacksonVersion: String = "2.18.0"
+val jacksonVersion: String = "3.1.2"
 val assertjVersion: String = "3.27.7"
 val jimfsVersion: String = "1.3.0"
 
@@ -60,7 +60,7 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
-	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
+	"jacksonImplementation"(group = "tools.jackson.core", name = "jackson-databind", version = jacksonVersion)
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
@@ -266,7 +266,7 @@ tasks {
 				dependencies {
 					implementation(project(project.path))
 					implementation("com.google.jimfs:jimfs:$jimfsVersion")
-					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+					implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
 					implementation("org.assertj:assertj-core:$assertjVersion")
 				}
 
