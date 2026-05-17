@@ -19,7 +19,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * A {@link Node} implementation for Jackson 2.
+ * A {@link Node} implementation for Jackson 3.
  */
 class JacksonNode implements Node {
 
