@@ -23,7 +23,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * A {@link JsonConverter} using Jackson 2 {@link ObjectMapper} to perform the conversion
+ * A {@link JsonConverter} using Jackson 3 {@link ObjectMapper} to perform the conversion
  */
 class JacksonJsonConverter implements JsonConverter {
 
