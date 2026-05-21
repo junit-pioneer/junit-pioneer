@@ -22,7 +22,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 class EnvironmentVariableExtension extends
-		AbstractEntryBasedExtension<String, String, ClearEnvironmentVariable, SetEnvironmentVariable, RestoreEnvironmentVariables> {
+		AbstractEntryBasedExtension<String, String, ClearEnvironmentVariable, SetEnvironmentVariable, SetEnvironmentVariableFromSource, RestoreEnvironmentVariables> {
 
 	// package visible to make accessible for tests
 	static final AtomicBoolean REPORTED_WARNING = new AtomicBoolean(false);
@@ -44,6 +44,21 @@ class EnvironmentVariableExtension extends
 	@Override
 	protected Function<SetEnvironmentVariable, String> setValueMapper() {
 		return SetEnvironmentVariable::value;
+	}
+
+	@Override
+	protected Function<SetEnvironmentVariableFromSource, String> setFromSourceKeyMapper() {
+		return SetEnvironmentVariableFromSource::key;
+	}
+
+	@Override
+	protected Function<SetEnvironmentVariableFromSource, Integer> setFromSourceArgumentIndexMapper() {
+		return SetEnvironmentVariableFromSource::argument;
+	}
+
+	@Override
+	protected Function<Object, String> castArgumentToValueType() {
+		return Object::toString;
 	}
 
 	@Override
