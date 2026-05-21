@@ -83,6 +83,18 @@ public class EnvironmentVariablesExtensionDemo {
 	}
 	// end::environment_method_restore_test[]
 
+	// tag::environment_method_from_source_test[]
+	@ParameterizedTest(name = "Setting MyEnvVariable to {0}")
+	@ValueSource(strings = { "foo", "bar" })
+	@SetEnvironmentVariableFromSource(key = "MyEnvVariable", argument = 0)
+	@SetEnvironmentVariable(key = "MyOtherEnvVariable", value = "Something")
+	@RestoreEnvironmentVariables
+	void parameterizedFromSourceTest(String value) {
+		assertThat(System.getenv("MyEnvVariable")).isEqualTo(value);
+		assertThat(System.getenv("MyOtherEnvVariable")).isEqualTo("Something");
+	}
+	// end::environment_method_from_source_test[]
+
 	@Nested
 	@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 	class EnvironmentVariableRestoreExample {
@@ -154,6 +166,19 @@ public class EnvironmentVariablesExtensionDemo {
 		// Test your image generation utility with the current environment variables
 	}
 	// end::environment_method_combine_all_test[]
+
+	// tag::environment_method_combine_all_test_source[]
+	@ParameterizedTest(name = "Testing Image Size = {0}")
+	@IntRangeSource(from = 0, to = 10000, step = 500)
+	@SetEnvironmentVariable(key = "DISABLE_CACHE", value = "TRUE")
+	@SetEnvironmentVariableFromSource(key = "IMAGE_SIZE", argument = 0)
+	@ClearEnvironmentVariable(key = "COPYWRITE_OVERLAY_TEXT")
+	void imageGenerationTestFromSource(int imageSize) {
+		assertThat(System.getenv("IMAGE_SIZE")).isEqualTo(String.valueOf(imageSize));
+
+		// Test your image generation utility with the current environment variables
+	}
+	// end::environment_method_combine_all_test_source[]
 
 	public static void setEnvVar(String name, String value) {
 		EnvironmentVariableUtils.set(name, value);

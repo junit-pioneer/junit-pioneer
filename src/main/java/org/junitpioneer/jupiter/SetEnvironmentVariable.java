@@ -60,12 +60,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface SetEnvironmentVariable {
 
 	/**
-	 * The key of the system property to be set.
+	 * The key of the environment variable to be set.
 	 */
 	String key();
 
 	/**
-	 * The value of the system property to be set.
+	 * The value of the environment variable to be set.
 	 */
 	String value();
 
