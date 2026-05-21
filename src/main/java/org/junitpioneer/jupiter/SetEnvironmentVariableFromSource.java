@@ -20,18 +20,14 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * {@code @SetEnvironmentVariable} is a JUnit Jupiter extension to set the value of
- * an environment variable for a test execution.
+ * {@code @SetEnvironmentVariableFromSource} is a JUnit Jupiter extension to set the value of
+ * an environment variable for a test execution based on the provided Source.
  *
- * <p>The key and value of the environment variable to be set must be specified via
- * {@link #key()} and {@link #value()}. After the annotated method has been executed,
+ * <p>The key and argument index of the environment variable to be set must be specified via
+ * {@link #key()} and {@link #argument()}. After the annotated method has been executed,
  * the original value or the value of the higher-level container is restored.</p>
  *
- * <p>{@code SetEnvironmentVariable} can be used on the method and on the class level.
- * It is repeatable and inherited from higher-level containers. If a class is
- * annotated, the configured property will be set before every test inside that
- * class. Any method-level configurations will override the class-level
- * configurations.</p>
+ * <p>{@code SetEnvironmentVariableFromSource} is repeatable and can be used on the method level only.</p>
  *
  * <p>WARNING: Java considers environment variables to be immutable, so this extension
  * uses reflection to change them. This requires that the {@link SecurityManager}
@@ -43,21 +39,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p>During
  * <a href="https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution" target="_top">parallel test execution</a>,
- * all tests annotated with {@link ClearEnvironmentVariable}, {@link SetEnvironmentVariable}, {@link ReadsEnvironmentVariable}, and {@link WritesEnvironmentVariable}
+ * all tests annotated with {@link ClearEnvironmentVariable}, {@link SetEnvironmentVariable}, {@link SetEnvironmentVariableFromSource}, {@link ReadsEnvironmentVariable}, and {@link WritesEnvironmentVariable}
  * are scheduled in a way that guarantees correctness under mutation of shared global state.</p>
  *
  * <p>For more details and examples, see
  * <a href="https://junit-pioneer.org/docs/environment-variables/" target="_top">the documentation on <code>@ClearEnvironmentVariable</code> and <code>@SetEnvironmentVariable</code></a>.</p>
  *
- * @since 0.6
+ * @since 2.4.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target(ElementType.METHOD)
 @Inherited
-@Repeatable(SetEnvironmentVariable.SetEnvironmentVariables.class)
+@Repeatable(SetEnvironmentVariableFromSource.SetEnvironmentVariablesFromSource.class)
 @WritesEnvironmentVariable
 @ExtendWith(EnvironmentVariableExtension.class)
-public @interface SetEnvironmentVariable {
+public @interface SetEnvironmentVariableFromSource {
 
 	/**
 	 * The key of the environment variable to be set.
@@ -65,21 +61,24 @@ public @interface SetEnvironmentVariable {
 	String key();
 
 	/**
-	 * The value of the environment variable to be set.
+	 * The argument index number of the {@code @ParameterizedTest} from which the value must be retrieved.
+	 * The first argument has index 0, the second argument index 1, etc.
+	 * Note that the default '.toString()' will be used to obtain the actual value put in the environment
+	 * variable.
 	 */
-	String value();
+	int argument();
 
 	/**
-	 * Containing annotation of repeatable {@code @SetEnvironmentVariable}.
+	 * Containing annotation of repeatable {@code @SetEnvironmentVariableFromSource}.
 	 */
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Target(ElementType.METHOD)
 	@Inherited
 	@WritesEnvironmentVariable
 	@ExtendWith(EnvironmentVariableExtension.class)
-	@interface SetEnvironmentVariables {
+	@interface SetEnvironmentVariablesFromSource {
 
-		SetEnvironmentVariable[] value();
+		SetEnvironmentVariableFromSource[] value();
 
 	}
 

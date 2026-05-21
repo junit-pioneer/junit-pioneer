@@ -119,6 +119,10 @@ Thank you for your efforts! ?
 
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
+==== 2026
+
+* https://github.com/nielsbasjes[Niels Basjes] added support for setting Environment variables and System properties from any JUnit `Source` using `@SetEnvironmentVariableFromSource` and `@SetSystemPropertyFromSource` (#381/#872).
+
 ==== 2025
 
 * https://github.com/schosin[Ken Schosinsky] added support for `Named` to `@CartesianTestExtension` (#842 / #848)

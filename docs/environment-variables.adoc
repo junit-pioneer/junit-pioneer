@@ -9,6 +9,9 @@ Both annotations work on the test method and class level, are repeatable, combin
 After the annotated method has been executed, the variables mentioned in the annotation will be restored to their original value or the value of the higher-level container, or will be cleared if they didn't have one before.
 Other environment variables that are changed during the test, are *not* restored (unless the `@RestoreEnvironmentVariables` is used).
 
+[NOTE]
+Check the `@SetEnvironmentVariableFromSource` if a dynamically determined value is needed.
+
 [WARNING]
 ====
 Java considers environment variables to be immutable, which is why this extension uses reflection to change them.
@@ -52,10 +55,29 @@ Method-level configurations are visible in both `@BeforeEach` setup methods and 
 Since v1.7.0, a class-level configuration means that the specified environment variables are cleared/set before and reset after each individual test in the annotated class.
 ====
 
+== `@SetEnvironmentVariableFromSource`
+The `@SetEnvironmentVariableFromSource` does the same thing as the `@SetEnvironmentVariable` annotation with the only difference being that the actual value is being provided by a JUnit `Source`.
+
+This enables running the same test with a set of possible values for the environment variable and also allows putting a dynamically determined value into the environment variable. This can, for example, be done by writing a method which provides the value and using the `@MethodSource` annotation, or by setting a value in a `@BeforeAll` and using the `@FieldSource`.
+
+To use this:
+
+1. The test must be annotated with `@ParameterizedTest` and some kind of `Source` must be provided.
+2. For each environment variable you need to be set from the `Source` a method parameter must be created. In all of those cases the passed argument and the value of the environment variable should be the same and you can test for that.
+3. Use `@SetEnvironmentVariableFromSource` to specify the name of the environment variable that needs to be set and the index of the argument that contains the value to be used. This uses the same index that you would use when setting the name of a test.
+
+[source,java,indent=0]
+----
+include::{demo}[tag=environment_method_from_source_test]
+----
+
 == `@RestoreEnvironmentVariables`
 `@RestoreEnvironmentVariables` can be used to restore changes to environment variables made directly in code.
-While `@ClearEnvironmentVariable` and `@SetEnvironmentVariable` set or clear specific variables and values, they don't allow values to be calculated or parameterized, thus there are times you may want to directly set them in your test code.
-`@RestoreEnvironmentVariables` can be placed on test methods or test classes and will completely restore all environment variables to their original state after a test or test class is complete.
+
+[NOTE]
+In general changing environment variables in your code is discouraged because this can be achieved with `@SetEnvironmentVariableFromSource` in a simpler and more reliable way.
+
+In the exceptional cases where you still need to set or clear specific variables and values in your test code the use of `@RestoreEnvironmentVariables` is recommended. `@RestoreEnvironmentVariables` can be placed on test methods or test classes and will completely restore all environment variables to their original state after a test or test class is complete.
 
 In this example, `@RestoreEnvironmentVariables` is used on a test method, ensuring any changes made in that method are restored:
 
@@ -89,15 +111,22 @@ Some other test class, running later:
 include::{demo}[tag=environment_class_restore_isolated_class]
 ----
 
-== Using `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, and `@RestoreEnvironmentVariables` together
-All three annotations can be combined, which could be used when some environment values are parameterized (i.e. need to be set in code) and others are not.
+== Using `@ClearEnvironmentVariable`, `@SetEnvironmentVariable`, `@SetEnvironmentVariableFromSource`, and `@RestoreEnvironmentVariables` together
+All four annotations can be combined, which could be used when some environment values are parameterized (possibly need to be set in code) and others are not.
 For instance, imagine testing an image generation utility that takes configuration from environment variables.
 Basic configuration can be specified using `Set` and `Clear` and the image size parameterized:
 
 [source,java,indent=0]
 ----
+include::{demo}[tag=environment_method_combine_all_test_source]
+----
+
+If you really need to set the variables from your code it can look like this:
+[source,java,indent=0]
+----
 include::{demo}[tag=environment_method_combine_all_test]
 ----
+
 
 [NOTE]
 ====
