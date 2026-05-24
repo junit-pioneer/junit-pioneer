@@ -51,7 +51,7 @@ repositories {
 
 val junitVersion : String by project
 val jacksonVersion: String = "2.18.0"
-val assertjVersion: String = "3.27.3"
+val assertjVersion: String = "3.27.7"
 val jimfsVersion: String = "1.3.0"
 
 dependencies {
@@ -66,7 +66,7 @@ dependencies {
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.18.0")
+	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.23.0")
 	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
 	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.19.4")
 }
