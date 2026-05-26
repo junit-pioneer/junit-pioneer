@@ -198,10 +198,6 @@ tasks {
 	// Ensures JUnit 5 engine is available to demo at runtime
 	configurations["demoRuntimeOnly"].extendsFrom(configurations.testImplementation.get())
 
-	configurations.compileClasspath {
-		resolutionStrategy.deactivateDependencyLocking()
-	}
-
 
 	compileJava {
 		options.encoding = "UTF-8"
