@@ -1,3 +1,12 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.snakeyaml:snakeyaml-engine:2.9")
+	}
+}
+
 plugins {
 	java
 	jacoco
@@ -5,7 +14,6 @@ plugins {
 	`maven-publish`
 	signing
 	id("com.diffplug.spotless") version "7.0.4"
-	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "6.2.0.5505"
 	id("org.shipkit.shipkit-changelog") version "2.0.1"
 	id("org.shipkit.shipkit-github-release") version "2.0.1"
@@ -89,9 +97,14 @@ checkstyle {
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
-yamlValidator {
-	searchPaths = listOf("docs")
-	isSearchRecursive = true
+val validateYaml by tasks.registering {
+	val yamlFiles = fileTree("docs") { include("**/*.yaml", "**/*.yml") }
+	inputs.files(yamlFiles)
+	outputs.upToDateWhen { true }
+	doLast {
+		val yaml = org.snakeyaml.engine.v2.api.Load(org.snakeyaml.engine.v2.api.LoadSettings.builder().build())
+		yamlFiles.forEach { it.inputStream().use(yaml::loadFromInputStream) }
+	}
 }
 
 jacoco {
