@@ -17,6 +17,7 @@ import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_KEY;
 import static org.junitpioneer.jupiter.EnvironmentVariableExtension.WARNING_VALUE;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestClass;
 import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethod;
+import static org.junitpioneer.testkit.PioneerTestKit.executeTestMethodWithParameterTypes;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.lang.annotation.ElementType;
@@ -27,6 +28,7 @@ import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
@@ -46,6 +48,10 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("EnvironmentVariable extension")
@@ -140,6 +146,73 @@ class EnvironmentVariableExtensionTests {
 
 			assertThat(systemEnvironmentVariable("clear envvar D")).isEqualTo("new D");
 			assertThat(systemEnvironmentVariable("clear envvar E")).isNull();
+			assertThat(systemEnvironmentVariable("clear envvar F")).isNull();
+		}
+
+	}
+
+	@Nested
+	@DisplayName("used with SetEnvironmentVariableFromSource")
+	class SetEnvironmentVariableFromSourceTests {
+
+		@ParameterizedTest
+		@DisplayName("should set environment variable to value {0}")
+		@ValueSource(strings = { "new A fromSource" })
+		@SetEnvironmentVariableFromSource(key = "set envvar A", argument = 0)
+		@SetEnvironmentVariable(key = "set envvar B", value = "new B")
+		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		void shouldSetEnvironmentVariableToValueFromSource(String setEnvvarA) {
+			assertThat(setEnvvarA).isEqualTo("new A fromSource");
+
+			assertThat(systemEnvironmentVariable("set envvar A")).isEqualTo("new A fromSource");
+			assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("new B");
+			assertThat(systemEnvironmentVariable("set envvar C")).isEqualTo("old C");
+
+			assertThat(systemEnvironmentVariable("clear envvar D")).isNull();
+			assertThat(systemEnvironmentVariable("clear envvar E")).isNull();
+			assertThat(systemEnvironmentVariable("clear envvar F")).isNull();
+		}
+
+		private static Stream<Arguments> shouldBeRepeatable() {
+			return Stream.of(Arguments.of("new A fromSource", "new D fromSource"));
+		}
+
+		@ParameterizedTest
+		@DisplayName("should be repeatable")
+		@MethodSource("shouldBeRepeatable")
+		@SetEnvironmentVariableFromSource(key = "set envvar A", argument = 0)
+		@SetEnvironmentVariable(key = "set envvar B", value = "new B")
+		@SetEnvironmentVariable(key = "set envvar C", value = "new C")
+		@SetEnvironmentVariableFromSource(key = "clear envvar D", argument = 1)
+		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		void shouldBeRepeatable(String setEnvvarA, String clearEnvvarD) {
+			assertThat(setEnvvarA).isEqualTo("new A fromSource");
+			assertThat(clearEnvvarD).isEqualTo("new D fromSource");
+
+			assertThat(systemEnvironmentVariable("set envvar A")).isEqualTo("new A fromSource");
+			assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("new B");
+			assertThat(systemEnvironmentVariable("set envvar C")).isEqualTo("new C");
+
+			assertThat(systemEnvironmentVariable("clear envvar D")).isEqualTo("new D fromSource");
+			assertThat(systemEnvironmentVariable("clear envvar E")).isNull();
+			assertThat(systemEnvironmentVariable("clear envvar F")).isNull();
+		}
+
+		@ParameterizedTest
+		@DisplayName("should be combinable")
+		@ValueSource(strings = { "new E fromSource" })
+		@ClearEnvironmentVariable(key = "set envvar B")
+		@SetEnvironmentVariableFromSource(key = "clear envvar E", argument = 0)
+		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		void clearAndSetEnvironmentVariableShouldBeCombinable(String fromSource0) {
+			assertThat(fromSource0).isEqualTo("new E fromSource");
+
+			assertThat(systemEnvironmentVariable("set envvar A")).isEqualTo("old A");
+			assertThat(systemEnvironmentVariable("set envvar B")).isNull();
+			assertThat(systemEnvironmentVariable("set envvar C")).isEqualTo("old C");
+
+			assertThat(systemEnvironmentVariable("clear envvar D")).isNull();
+			assertThat(systemEnvironmentVariable("clear envvar E")).isEqualTo("new E fromSource");
 			assertThat(systemEnvironmentVariable("clear envvar F")).isNull();
 		}
 
@@ -567,6 +640,36 @@ class EnvironmentVariableExtensionTests {
 			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(ExtensionConfigurationException.class);
 		}
 
+		@Test
+		@DisplayName("should fail when SetEnvironmentVariableFromSource argument is negative")
+		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		void shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsNegative() {
+			ExecutionResults results = executeTestMethodWithParameterTypes(
+				MethodLevelInitializationFailureTestCases.class,
+				"shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsNegative", String.class);
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(IllegalArgumentException.class);
+		}
+
+		@Test
+		@DisplayName("should fail when SetEnvironmentVariableFromSource argument is too large")
+		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		void shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsTooLarge() {
+			ExecutionResults results = executeTestMethodWithParameterTypes(
+				MethodLevelInitializationFailureTestCases.class,
+				"shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsTooLarge", String.class);
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(IllegalArgumentException.class);
+		}
+
+		@Test
+		@DisplayName("should fail when SetEnvironmentVariableFromSource value is NULL")
+		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		void shouldFailWhenSetEnvironmentVariableFromSourceValueIsNull() {
+			ExecutionResults results = executeTestMethodWithParameterTypes(
+				MethodLevelInitializationFailureTestCases.class,
+				"shouldFailWhenSetEnvironmentVariableFromSourceValueIsNull", String.class);
+			assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(IllegalArgumentException.class);
+		}
+
 	}
 
 	@Nested
@@ -648,6 +751,31 @@ class EnvironmentVariableExtensionTests {
 		@SetEnvironmentVariable(key = "set envvar A", value = "new A")
 		@SetEnvironmentVariable(key = "set envvar A", value = "new B")
 		void shouldFailWhenSetSameEnvironmentVariableTwice() {
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = "dummy")
+		@SetEnvironmentVariableFromSource(key = "set envvar A", argument = -1)
+		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		void shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsNegative(String dummy) {
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = "dummy")
+		@SetEnvironmentVariableFromSource(key = "set envvar A", argument = 1)
+		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		void shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsTooLarge(String dummy) {
+		}
+
+		private static Stream<String> nullStringSource() {
+			return Stream.of((String) null);
+		}
+
+		@ParameterizedTest
+		@MethodSource("nullStringSource")
+		@SetEnvironmentVariableFromSource(key = "set envvar A", argument = 0)
+		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		void shouldFailWhenSetEnvironmentVariableFromSourceValueIsNull(String dummy) {
 		}
 
 	}
