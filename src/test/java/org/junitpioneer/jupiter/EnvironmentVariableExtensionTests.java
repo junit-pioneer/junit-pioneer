@@ -46,6 +46,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("EnvironmentVariable extension")
@@ -64,13 +66,23 @@ class EnvironmentVariableExtensionTests {
 
 	@AfterAll
 	static void globalTearDown() {
+		// First check if all environment variables have been restored to their original values
+		assertThat(systemEnvironmentVariable("set envvar A")).isEqualTo("old A");
+		assertThat(systemEnvironmentVariable("set envvar B")).isEqualTo("old B");
+		assertThat(systemEnvironmentVariable("set envvar C")).isEqualTo("old C");
+		assertThat(systemEnvironmentVariable("clear envvar D")).isNull();
+		assertThat(systemEnvironmentVariable("clear envvar E")).isNull();
+		assertThat(systemEnvironmentVariable("clear envvar F")).isNull();
+
+		// Cleanup
 		EnvironmentVariableUtils.clear("set envvar A");
 		EnvironmentVariableUtils.clear("set envvar B");
 		EnvironmentVariableUtils.clear("set envvar C");
 
-		assertThat(systemEnvironmentVariable("clear envvar D")).isNull();
-		assertThat(systemEnvironmentVariable("clear envvar E")).isNull();
-		assertThat(systemEnvironmentVariable("clear envvar F")).isNull();
+		assertThat(systemEnvironmentVariable("set envvar A")).isNull();
+		assertThat(systemEnvironmentVariable("set envvar B")).isNull();
+		assertThat(systemEnvironmentVariable("set envvar C")).isNull();
+
 	}
 
 	private static String systemEnvironmentVariable(String variable) {
@@ -765,6 +777,92 @@ class EnvironmentVariableExtensionTests {
 	@SetEnvironmentVariable(key = "clear envvar E", value = "new E")
 	@RestoreEnvironmentVariables
 	static class InheritanceClearSetRestoreBaseTest {
+	}
+
+	@Nested
+	@Issue("875")
+	@DisplayName("environment is restored after ParameterizedTest")
+	class RestoreAfterParameterizedTest {
+
+		// This reproduces the environment variables not being reset when set as part of a ParameterizedTest.
+		// These test all set only their 'own' environment variable and check ALL environment variables.
+		// This will show in the test output which of the variables was not reset and thus give a clear
+		// indication which test actually did not work correctly.
+		// So the effect is that the BAD test does not fail, all the tests that are run AFTER this BAD test will fail.
+		// How many depends on the (random) order the tests are executed in. In any case the finish check will fail.
+
+		private static final String ENV_NORMAL_TEST = "Normal Test ENV Variable";
+		private static final String ENV_PARAM_TEST = "ParameterizedTest ENV Variable";
+		private static final String ENV_PARAM_WITH_RESTORE_TEST = "ParameterizedTest With Restore ENV Variable";
+		private static final String ENV_ORIG_VALUE = "Original Value";
+		private static final String ENV_CHANGED_VALUE = "Changed Value";
+
+		private static void check(String envName, String envValue) {
+			if (envValue == null) {
+				assertThat(systemEnvironmentVariable(envName))
+						.as("Environment variable \"" + envName + "\" should be NULL.")
+						.isNull();
+			} else {
+				assertThat(systemEnvironmentVariable(envName))
+						.as("Environment variable \"" + envName + "\" should be \"" + envValue + "\".")
+						.isEqualTo(envValue);
+			}
+		}
+
+		@BeforeAll
+		public static void setup() {
+			EnvironmentVariableUtils.set(ENV_NORMAL_TEST, ENV_ORIG_VALUE);
+			EnvironmentVariableUtils.set(ENV_PARAM_TEST, ENV_ORIG_VALUE);
+			EnvironmentVariableUtils.set(ENV_PARAM_WITH_RESTORE_TEST, ENV_ORIG_VALUE);
+			check(ENV_NORMAL_TEST, ENV_ORIG_VALUE);
+			check(ENV_PARAM_TEST, ENV_ORIG_VALUE);
+			check(ENV_PARAM_WITH_RESTORE_TEST, ENV_ORIG_VALUE);
+		}
+
+		@AfterAll
+		public static void finish() {
+			check(ENV_NORMAL_TEST, ENV_ORIG_VALUE);
+			check(ENV_PARAM_TEST, ENV_ORIG_VALUE);
+			check(ENV_PARAM_WITH_RESTORE_TEST, ENV_ORIG_VALUE);
+
+			EnvironmentVariableUtils.clear(ENV_NORMAL_TEST);
+			EnvironmentVariableUtils.clear(ENV_PARAM_TEST);
+			EnvironmentVariableUtils.clear(ENV_PARAM_WITH_RESTORE_TEST);
+
+			check(ENV_NORMAL_TEST, null);
+			check(ENV_PARAM_TEST, null);
+			check(ENV_PARAM_WITH_RESTORE_TEST, null);
+		}
+
+		@Test
+		@SetEnvironmentVariable(key = ENV_NORMAL_TEST, value = ENV_CHANGED_VALUE)
+		void testNormal() {
+			check(ENV_NORMAL_TEST, ENV_CHANGED_VALUE);
+			check(ENV_PARAM_TEST, ENV_ORIG_VALUE);
+			check(ENV_PARAM_WITH_RESTORE_TEST, ENV_ORIG_VALUE);
+		}
+
+		@ParameterizedTest(name = "ParameterizedTest WITHOUT RestoreEnvironmentVariables ({0})")
+		@ValueSource(ints = { 1 })
+		@SetEnvironmentVariable(key = ENV_PARAM_TEST, value = ENV_CHANGED_VALUE)
+		void testParamWithoutRestore(int dummy) {
+			assertThat(dummy).isEqualTo(1);
+			check(ENV_NORMAL_TEST, ENV_ORIG_VALUE);
+			check(ENV_PARAM_TEST, ENV_CHANGED_VALUE);
+			check(ENV_PARAM_WITH_RESTORE_TEST, ENV_ORIG_VALUE);
+		}
+
+		@ParameterizedTest(name = "ParameterizedTest WITH RestoreEnvironmentVariables ({0})")
+		@ValueSource(ints = { 1 })
+		@SetEnvironmentVariable(key = ENV_PARAM_WITH_RESTORE_TEST, value = ENV_CHANGED_VALUE)
+		@RestoreEnvironmentVariables
+		void testParamWithRestore(int dummy) {
+			assertThat(dummy).isEqualTo(1);
+			check(ENV_NORMAL_TEST, ENV_ORIG_VALUE);
+			check(ENV_PARAM_TEST, ENV_ORIG_VALUE);
+			check(ENV_PARAM_WITH_RESTORE_TEST, ENV_CHANGED_VALUE);
+		}
+
 	}
 
 }
