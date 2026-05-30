@@ -30,6 +30,11 @@ val releaseBuild : Boolean = project.version != "unspecified"
 
 val targetJavaVersion = JavaVersion.VERSION_17
 
+val jacksonFeature = "jackson"
+sourceSets {
+	create(jacksonFeature)
+}
+
 java {
 	if (experimentalBuild) {
 		toolchain {
@@ -40,9 +45,27 @@ java {
 	}
 	withJavadocJar()
 	withSourcesJar()
-	registerFeature("jackson") {
-		usingSourceSet(sourceSets["main"])
+	registerFeature(jacksonFeature) {
+		usingSourceSet(sourceSets[jacksonFeature])
 	}
+}
+
+configurations.named("compileClasspath") {
+	extendsFrom(configurations["${jacksonFeature}CompileClasspath"])
+}
+configurations.named("testCompileClasspath") {
+	extendsFrom(configurations["${jacksonFeature}CompileClasspath"])
+}
+configurations.named("testRuntimeClasspath") {
+	extendsFrom(configurations["${jacksonFeature}RuntimeClasspath"])
+}
+
+configurations.matching { it.name in listOf("${jacksonFeature}ApiElements", "${jacksonFeature}RuntimeElements") }.configureEach {
+	val mainConfig = configurations.named(name.substringAfter(jacksonFeature).replaceFirstChar { it.lowercase() })
+	outgoing.artifacts.clear()
+	outgoing.artifacts(mainConfig.map { it.outgoing.artifacts })
+	outgoing.variants.clear()
+	outgoing.variants.addAllLater(mainConfig.map { it.outgoing.variants })
 }
 
 repositories {
