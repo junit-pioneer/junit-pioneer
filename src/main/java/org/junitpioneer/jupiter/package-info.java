@@ -7,6 +7,7 @@
  *     <li>{@link org.junitpioneer.jupiter.ClearEnvironmentVariable}, {@link org.junitpioneer.jupiter.SetEnvironmentVariable}, and {@link org.junitpioneer.jupiter.RestoreEnvironmentVariables}</li>
  *     <li>{@link org.junitpioneer.jupiter.DisabledUntil}</li>
  *     <li>{@link org.junitpioneer.jupiter.DisableIfTestFails}</li>
+ *     <li>{@link org.junitpioneer.jupiter.DisableIfNotReachable}</li>
  *     <li>{@link org.junitpioneer.jupiter.ExpectedToFail}</li>
  *     <li>{@link org.junitpioneer.jupiter.FailAt}</li>
  *     <li>{@link org.junitpioneer.jupiter.ReportEntry}</li>

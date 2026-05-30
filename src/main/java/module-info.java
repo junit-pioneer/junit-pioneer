@@ -17,8 +17,9 @@ module org.junitpioneer {
 
 	requires static com.fasterxml.jackson.core;
 	requires static com.fasterxml.jackson.databind;
+    requires java.net.http;
 
-	exports org.junitpioneer.vintage;
+    exports org.junitpioneer.vintage;
 	exports org.junitpioneer.jupiter;
 	exports org.junitpioneer.jupiter.cartesian;
 	exports org.junitpioneer.jupiter.params;
