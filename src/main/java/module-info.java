@@ -18,6 +18,8 @@ module org.junitpioneer {
 	requires static com.fasterxml.jackson.core;
 	requires static com.fasterxml.jackson.databind;
 
+	requires static jakarta.validation;
+
 	exports org.junitpioneer.vintage;
 	exports org.junitpioneer.jupiter;
 	exports org.junitpioneer.jupiter.cartesian;
@@ -25,6 +27,7 @@ module org.junitpioneer {
 	exports org.junitpioneer.jupiter.json;
 	exports org.junitpioneer.jupiter.converter;
 	exports org.junitpioneer.jupiter.displaynamegenerator;
+	exports org.junitpioneer.jupiter.random;
 
 	opens org.junitpioneer.vintage to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter to org.junit.platform.commons;
@@ -35,6 +38,7 @@ module org.junitpioneer {
 	opens org.junitpioneer.jupiter.json to org.junit.platform.commons, com.fasterxml.jackson.databind;
 	opens org.junitpioneer.jupiter.converter to org.junit.platform.commons;
 	opens org.junitpioneer.jupiter.displaynamegenerator to org.junit.platform.commons;
+	opens org.junitpioneer.jupiter.random to org.junit.platform.commons;
 
 	provides org.junit.platform.launcher.TestExecutionListener
 			with org.junitpioneer.jupiter.issue.IssueExtensionExecutionListener;
@@ -43,4 +47,19 @@ module org.junitpioneer {
 	provides org.junitpioneer.jupiter.json.ObjectMapperProvider
 			with org.junitpioneer.jupiter.json.DefaultObjectMapperProvider;
 	uses org.junitpioneer.jupiter.json.ObjectMapperProvider;
+
+	uses org.junitpioneer.jupiter.random.RandomParameterProvider;
+	provides org.junitpioneer.jupiter.random.RandomParameterProvider
+		with org.junitpioneer.jupiter.random.RandomIntegerParameterProvider,
+			org.junitpioneer.jupiter.random.RandomBooleanParameterProvider,
+			org.junitpioneer.jupiter.random.RandomDoubleParameterProvider,
+			org.junitpioneer.jupiter.random.RandomLongParameterProvider,
+			org.junitpioneer.jupiter.random.RandomFloatParameterProvider,
+			org.junitpioneer.jupiter.random.RandomShortParameterProvider,
+			org.junitpioneer.jupiter.random.RandomByteParameterProvider,
+			org.junitpioneer.jupiter.random.RandomStringParameterProvider,
+			org.junitpioneer.jupiter.random.RandomBigDecimalParameterProvider,
+			org.junitpioneer.jupiter.random.RandomCharacterParameterProvider,
+			org.junitpioneer.jupiter.random.RandomEnumParameterProvider;
+
 }

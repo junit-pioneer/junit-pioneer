@@ -1,0 +1,83 @@
+:page-title: Random Parameters via @Random
+:page-description: The JUnit 5 (Jupiter) extension `@Random` provides random data for tests
+:xp-demo-dir: ../src/demo/java
+:demo: {xp-demo-dir}/org/junitpioneer/jupiter/random
+:demo-java: {demo}/RandomDemo.java
+:demo-employee: {demo}/Employee.java
+
+When unit testing services, a lot of code bases often have utility classes for creating non-empty instances of DTOs.
+For the sake of clarity, let's say we have a class `Employee`, that contains data about employees and a service called `EmployeeService` we want to unit test.
+Our test could look something like this:
+
+[source,java,indent=0]
+----
+include::{demo-java}[tag=employee_service_test_with_utils]
+----
+
+`DataUtils` is used to create a mock `Employee`.
+Not saying this is not a good approach, but why not use a utility instead?
+
+You can use `@Random` to inject mock data into your tests!
+
+`@Random` uses a https://en.wikipedia.org/wiki/Random_seed[seed], meaning stable, reproducible builds.
+With `@Random` you don't need to have a `DataUtils`.
+
+== How To Use
+
+`@Random` can inject a lot of things into your test:
+
+ - byte, boolean, int, double, char, float, long, short
+ - String, BigDecimal, BigInteger
+ - enums
+ - even (most) complex objects!
+
+[source,java,indent=0]
+----
+include::{demo-java}[tag=random_basic_use]
+----
+
+The `Employee` class needs to have `public` setters or an all-args `public` constructor.
+
+Often, truly random data is not useful.
+For example, it might not make sense to test `isCloseToRetirement()` with an `Employee` supplied via `@Random`.
+Unfortunately, edge-cases need to be tested differently.
+You can still let `@Random` set up your parameter and use a setter in your test.
+
+[source,java,indent=0]
+----
+include::{demo-java}[tag=random_with_setter]
+----
+
+Setting fields to random values might lead to silly results.
+E.g.: a random number could be: 21522, 2 or 167.
+These values don't really make sense when testing with someone's age.
+That's why Pioneer has an optional dependency on the https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api/3.1.0[Jakarta Validation API].
+So, if the `Employee` class from our earlier example looks like this:
+
+[source,java,indent=0]
+----
+include::{demo-employee}[tag=employee]
+----
+
+Then `@Random` will generate a number between 18 (inclusive) and 70 (exclusive).
+
+The full list of types and validation annotations they support out-of-the-box:
+
+[cols="1,1"]
+|===
+| Type | Supported annotations
+
+| `int`, `long`, `short`, `double`, `float`, `byte`, `char`, `BigDecimal`
+| `@Min`, `@Max`, `@Positive`, `@PositiveOrZero`, `@Negative`, `@NegativeOrZero`
+
+| `boolean`
+| `@AssertTrue`, `@AssertFalse`
+
+| `String`
+| `@Size`
+|===
+
+== `String` generation
+
+By default, Pioneer will generate a `String` between 3 and 10 characters.
+It will use English alphanumerical characters (A-Z, a-z, 0-9).
