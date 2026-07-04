@@ -30,6 +30,8 @@ val releaseBuild : Boolean = project.version != "unspecified"
 
 val targetJavaVersion = JavaVersion.VERSION_17
 
+val jacksonSourceSet = sourceSets.create("jackson")
+
 java {
 	if (experimentalBuild) {
 		toolchain {
@@ -41,7 +43,18 @@ java {
 	withJavadocJar()
 	withSourcesJar()
 	registerFeature("jackson") {
-		usingSourceSet(sourceSets["main"])
+		usingSourceSet(jacksonSourceSet)
+	}
+}
+
+configurations {
+	named("jacksonApiElements") {
+		outgoing.artifacts.clear()
+		outgoing.artifact(tasks.named("jar"))
+	}
+	named("jacksonRuntimeElements") {
+		outgoing.artifacts.clear()
+		outgoing.artifact(tasks.named("jar"))
 	}
 }
 
@@ -60,10 +73,12 @@ dependencies {
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
 	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
 	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
+	compileOnly(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
 	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
 	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
+	testImplementation(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
 
 	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
 	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.23.0")
