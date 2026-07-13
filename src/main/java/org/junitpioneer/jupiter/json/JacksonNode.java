@@ -10,18 +10,18 @@
 
 package org.junitpioneer.jupiter.json;
 
-import java.io.UncheckedIOException;
 import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
- * A {@link Node} implementation for Jackson 2.
+ * A {@link Node} implementation for Jackson 3.
  */
 class JacksonNode implements Node {
 
@@ -48,8 +48,8 @@ class JacksonNode implements Node {
 		try {
 			return objectMapper.treeToValue(node, objectMapper.constructType(type));
 		}
-		catch (JsonProcessingException e) {
-			throw new UncheckedIOException("Failed to convert to type " + type, e);
+		catch (Exception e) {
+			throw new ParameterResolutionException("Could not resolve type " + type, e);
 		}
 	}
 
@@ -64,8 +64,8 @@ class JacksonNode implements Node {
 
 	@Override
 	public Object value(Type typeHint) {
-		if (node.isTextual()) {
-			return node.textValue();
+		if (node.isString()) {
+			return node.stringValue();
 		} else if (node.isInt()) {
 			return node.intValue();
 		} else if (node.isLong()) {

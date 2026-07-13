@@ -10,16 +10,14 @@
 
 package org.junitpioneer.jupiter.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Service interface for providing a custom {@link com.fasterxml.jackson.databind.ObjectMapper} instance at runtime.
+ * Service interface for providing a custom {@link tools.jackson.databind.ObjectMapper} instance at runtime.
  * The default implementation doesn't register any additional Jackson modules.
- *
- * @see com.fasterxml.jackson.databind.Module
  */
 public interface ObjectMapperProvider {
 
@@ -30,20 +28,20 @@ public interface ObjectMapperProvider {
 		if (mapper instanceof JsonMapper) {
 			return ((JsonMapper) mapper)
 					.rebuild()
-					.enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES)
+					.enable(JsonReadFeature.ALLOW_UNQUOTED_PROPERTY_NAMES)
 					.enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
 					.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
 					.enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
 					.build();
 		}
-		return get()
-				.copyWith(JsonFactory
-						.builder()
-						.enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES)
-						.enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
-						.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
-						.enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
-						.build());
+		var factory = ((JsonFactory) mapper.tokenStreamFactory())
+				.rebuild()
+				.enable(JsonReadFeature.ALLOW_UNQUOTED_PROPERTY_NAMES)
+				.enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
+				.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
+				.enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
+				.build();
+		return JsonMapper.builder(factory).addModules(mapper.registeredModules()).build();
 	}
 
 	String id();

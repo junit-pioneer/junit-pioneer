@@ -10,7 +10,7 @@
 
 package org.junitpioneer.jupiter.json;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 public class DefaultObjectMapperProvider implements ObjectMapperProvider {
 
