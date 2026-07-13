@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -43,7 +44,11 @@ class JacksonNode implements Node {
 
 	@Override
 	public <T> T toType(Type type) {
-		return objectMapper.treeToValue(node, objectMapper.constructType(type));
+		try {
+			return objectMapper.treeToValue(node, objectMapper.constructType(type));
+		} catch (Exception e) {
+			throw new ParameterResolutionException("Could not resolve type " + type, e);
+		}
 	}
 
 	@Override
