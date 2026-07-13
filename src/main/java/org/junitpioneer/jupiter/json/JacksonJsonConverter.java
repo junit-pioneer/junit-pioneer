@@ -53,7 +53,8 @@ class JacksonJsonConverter implements JsonConverter {
 		try {
 			JsonNode jsonNode = objectMapper.readTree(stream);
 			return new JacksonNode(objectMapper, jsonNode);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new ParameterResolutionException("Could not convert JSON to Node.", e);
 		}
 	}
@@ -63,7 +64,8 @@ class JacksonJsonConverter implements JsonConverter {
 		try {
 			JsonNode jsonNode = getObjectMapper(lenient).readTree(value);
 			return new JacksonNode(getObjectMapper(false), jsonNode);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new ParameterResolutionException("Could not convert JSON to Node.", e);
 		}
 	}

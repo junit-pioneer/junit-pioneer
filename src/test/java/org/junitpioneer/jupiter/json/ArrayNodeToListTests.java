@@ -89,7 +89,8 @@ public class ArrayNodeToListTests {
 				.executeTestMethodWithParameterTypes(ArrayNodeToListTests.BadConfigurationTestCase.class,
 					"conversionException", List.class);
 
-		assertThat(results).hasSingleFailedContainer()
+		assertThat(results)
+				.hasSingleFailedContainer()
 				.withExceptionInstanceOf(ParameterResolutionException.class)
 				.hasMessageContaining("Could not resolve type");
 	}
