@@ -61,8 +61,8 @@ class MemberNameUtils {
 	/** Extracts class name from String reference if present.
 	 *
 	 * @param memberName  The String reference
-	 * @return an {@code Optional<String>} The extracted class name, or empty if absent
-	 * @throws IllegalArgumentException  If memberName is null or not present
+	 * @return an {@code Optional<String>} containing the extracted class name. The extracted class name,
+	 * or empty if {@code memberName} is {@code null}, blank, or contains no class reference.
 	 * */
 	public static Optional<String> extractClassName(String memberName) {
 		if (memberName == null || !memberName.contains("#")) {
