@@ -17,6 +17,7 @@ The test will be automatically executed again once the date supplied by the `dat
 ====
 Applying `@DisabledUntil` can make the test suite non-reproducible.
 If a failing test is disabled during a build that then passes, rerunning that build after the "until" date would fail.
+A fixed execution date can be configured to make reruns reproducible, as described below.
 A report entry is issued for every test that is disabled until a certain date.
 ====
 
@@ -47,6 +48,13 @@ include::{demo}[tag=disable_until_at_class_level]
 ----
 
 The `@DisabledUntil` annotation can only be used once per class or method.
+
+== Reproducible Builds
+
+By default, `@DisabledUntil` compares its `date` to the current date.
+To make a build reproducible, set the `org.junitpioneer.jupiter.disableduntil.executiondate` https://junit.org/junit5/docs/current/user-guide/#running-tests-config-params[configuration parameter] to the build's execution date in ISO 8601 format.
+For example, pass `-Dorg.junitpioneer.jupiter.disableduntil.executiondate=2026-08-27` when running the tests.
+An invalid configured date causes an `ExtensionConfigurationException`.
 
 == Before and After
 
