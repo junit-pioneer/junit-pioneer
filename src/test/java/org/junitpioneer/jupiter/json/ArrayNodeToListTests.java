@@ -12,7 +12,6 @@ package org.junitpioneer.jupiter.json;
 
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
-import java.io.UncheckedIOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -20,6 +19,7 @@ import java.util.function.Predicate;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.testkit.ExecutionResults;
@@ -83,7 +83,7 @@ public class ArrayNodeToListTests {
 	}
 
 	@Test
-	@DisplayName("throws a ParameterResolutionException if it can not convert complex objects")
+	@DisplayName("throws a ParameterResolutionException if it can not convert to datatype")
 	void throwsForMalformedComplexObjects() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethodWithParameterTypes(ArrayNodeToListTests.BadConfigurationTestCase.class,
@@ -91,8 +91,8 @@ public class ArrayNodeToListTests {
 
 		assertThat(results)
 				.hasSingleFailedContainer()
-				.withExceptionInstanceOf(UncheckedIOException.class)
-				.hasMessageContaining("Failed to convert to type");
+				.withExceptionInstanceOf(ParameterResolutionException.class)
+				.hasMessageContaining("Could not resolve type");
 	}
 
 	@ParameterizedTest
