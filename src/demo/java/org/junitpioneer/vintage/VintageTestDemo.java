@@ -12,6 +12,8 @@ package org.junitpioneer.vintage;
 
 import java.util.List;
 
+// This is intentional, JUnit 4 -> 5+ migration annotation is @Deprecated by default
+// Marked here to prevent warnings during build
 @Deprecated
 public class VintageTestDemo {
 
