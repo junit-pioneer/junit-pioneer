@@ -239,7 +239,7 @@ tasks.named("jreleaserDeploy") {
 
 // Only cut the GitHub release/tag once the Central Portal upload has succeeded.
 tasks.named("jreleaserRelease") {
-	mustRunAfter("jreleaserDeploy")
+	dependsOn("jreleaserDeploy")
 }
 
 extraJavaModuleInfo {
