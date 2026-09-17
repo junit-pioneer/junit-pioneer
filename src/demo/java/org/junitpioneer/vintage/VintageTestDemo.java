@@ -12,6 +12,7 @@ package org.junitpioneer.vintage;
 
 import java.util.List;
 
+@Deprecated
 public class VintageTestDemo {
 
 	// tag::vintage_test_indexoutofbound_exception[]

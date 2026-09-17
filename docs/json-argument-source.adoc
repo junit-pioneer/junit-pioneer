@@ -166,24 +166,16 @@ If your project does not already depend on a supported JSON parser, you can add 
 
 === Gradle
 
-Gradle offers two ways to pull in a parser.
-The recommended one is to use https://docs.gradle.org/current/userguide/feature_variants.html[feature variants]:
-
-[source,kotlin]
-----
-testRuntimeOnly("org.junit-pioneer:junit-pioneer") {
-    capabilities {
-        requireCapability("org.junit-pioneer:junit-pioneer-jackson")
-    }
-}
-----
-
-Alternatively, the dependency can be added directly:
+To pull in a parser, add the Jackson dependency directly:
 
 [source,kotlin]
 ----
 testImplementation("tools.jackson.core:jackson-databind:$CURRENT_VERSION")
 ----
+
+[NOTE]
+Before 3.0, Pioneer used a Gradle feature variant as an option.
+That has been removed in 3.0 for the sake of simplicity.
 
 === Maven
 
