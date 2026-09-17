@@ -10,10 +10,12 @@
 
 package org.junitpioneer.jupiter;
 
+import static org.junitpioneer.jupiter.DisabledUntilExtension.EXECUTION_DATE_CONFIGURATION_PARAMETER;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -68,6 +70,34 @@ class DisabledUntilExtensionTests {
 		assertThat(results).hasNumberOfStartedTests(0);
 		assertThat(results).hasSingleSkippedTest();
 		assertThat(results).hasSingleReportEntry().firstValue().contains("2199-01-01", "reproduce");
+	}
+
+	@Test
+	@DisplayName("Should use configured execution date instead of current date")
+	void shouldUseConfiguredExecutionDate() {
+		final ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypesAndConfigurationParameters(
+					Map.of(EXECUTION_DATE_CONFIGURATION_PARAMETER, "1990-01-01"), DisabledUntilTestCases.class,
+					"testIsAnnotatedWithDateInThePast");
+		assertThat(results).hasNumberOfStartedTests(0);
+		assertThat(results).hasSingleSkippedTest();
+		assertThat(results).hasSingleReportEntry().firstValue().contains("1993-01-01", "reproduce");
+	}
+
+	@Test
+	@DisplayName("Should fail test with unparsable configured execution date")
+	void shouldFailTestWithUnparsableConfiguredExecutionDate() {
+		final ExecutionResults results = PioneerTestKit
+				.executeTestMethodWithParameterTypesAndConfigurationParameters(
+					Map.of(EXECUTION_DATE_CONFIGURATION_PARAMETER, "xxxx-yy-zz"), DisabledUntilTestCases.class,
+					"testIsAnnotatedWithDateInTheFuture");
+		assertThat(results).hasSingleStartedTest();
+		assertThat(results)
+				.hasSingleFailedTest()
+				.withException()
+				.hasMessageContaining(EXECUTION_DATE_CONFIGURATION_PARAMETER, "xxxx-yy-zz");
+		assertThat(results).hasNumberOfSkippedTests(0);
+		assertThat(results).hasNoReportEntries();
 	}
 
 	@Test

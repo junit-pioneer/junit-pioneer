@@ -119,6 +119,10 @@ Thank you for your efforts! ?
 
 The least we can do is to thank them and list some of their accomplishments here (in lexicographic order).
 
+==== 2026
+
+* https://github.com/Anikesh348[Anikesh348] added a reproducible execution date to the https://junit-pioneer.org/docs/disabled-until/[`@DisabledUntil` extension] (#688 / #882)
+
 ==== 2025
 
 * https://github.com/schosin[Ken Schosinsky] added support for `Named` to `@CartesianTestExtension` (#842 / #848)

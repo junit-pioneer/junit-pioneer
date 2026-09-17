@@ -30,7 +30,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
  *
  * <p><strong>WARNING:</strong> Applying {@code @DisabledUntil} can make the test suite non-reproducible. If a failing
  * test is disabled during a build that then passes, rerunning that build after the "until" date would fail. A report
- * entry is issued for every test that is disabled until a certain date.</p>
+ * entry is issued for every test that is disabled until a certain date. Set the
+ * {@code org.junitpioneer.jupiter.disableduntil.executiondate} configuration parameter to the build's execution date
+ * as an ISO 8601 string to make reruns reproducible.</p>
  *
  * @since 1.6.0
  * @see org.junit.jupiter.api.Disabled
