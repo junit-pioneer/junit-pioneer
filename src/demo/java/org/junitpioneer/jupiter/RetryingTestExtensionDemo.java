@@ -42,6 +42,20 @@ public class RetryingTestExtensionDemo {
 	}
 	// end::retrying_aborted[]
 
+	// tag::jitter[]
+	@RetryingTest(maxAttempts = 3, maxJitterMs = 500)
+	void jitter() {
+		// randomly jitted value is added to sleep interval
+	}
+	// end::jitter[]
+
+	// tag::jitter_seed[]
+	@RetryingTest(maxAttempts = 3, maxJitterMs = 500, jitterSeed = 123)
+	void jitterSeed() {
+		// jitter might be initialized with the seed.
+	}
+	// end::jitter_seed[]
+
 	// tag::retrying_configure_numbers_of_success[]
 	@RetryingTest(maxAttempts = 4, minSuccess = 2)
 	void requiresTwoSuccesses() {

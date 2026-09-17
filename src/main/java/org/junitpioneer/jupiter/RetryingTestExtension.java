@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -77,6 +78,8 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		private final int maxRetries;
 		private final int minSuccess;
 		private final int suspendForMs;
+		private final Random jitterRandom;
+		private final int maxJitterMs;
 		private final Class<? extends Throwable>[] expectedExceptions;
 		private final List<TestAbortedException> seenExceptions;
 		private final TestNameFormatter formatter;
@@ -86,11 +89,15 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 		private boolean seenFailedAssumption;
 		private boolean seenUnexpectedException;
 
-		private FailedTestRetrier(int maxRetries, int minSuccess, int suspendForMs,
+		private FailedTestRetrier(int maxRetries, int minSuccess, int suspendForMs, int maxJitterMs, int jitterSeed,
 				Class<? extends Throwable>[] expectedExceptions, TestNameFormatter formatter) {
 			this.maxRetries = maxRetries;
 			this.minSuccess = minSuccess;
 			this.suspendForMs = suspendForMs;
+			this.maxJitterMs = maxJitterMs;
+			// TODO: Shouldn't this value be logged so the user could reproduce the tests?
+			// What is the best way to show the seed?
+			this.jitterRandom = new Random(jitterSeed == 0 ? System.currentTimeMillis() : jitterSeed);
 			this.expectedExceptions = expectedExceptions;
 			this.seenExceptions = new ArrayList<>();
 			this.retriesSoFar = 0;
@@ -134,9 +141,13 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				throw new ExtensionConfigurationException(
 					"@RetryingTest requires that `suspendForMs` be greater than or equal to 0.");
 			}
+			if (retryingTest.maxJitterMs() < 0) {
+				throw new ExtensionConfigurationException(
+					"@RetryingTest requires that `maxJitterMs` be greater than or equal to 0.");
+			}
 
 			return new FailedTestRetrier(maxAttempts, minSuccess, retryingTest.suspendForMs(),
-				retryingTest.onExceptions(), formatter);
+				retryingTest.maxJitterMs(), retryingTest.jitterSeed(), retryingTest.onExceptions(), formatter);
 		}
 
 		<E extends Throwable> void failed(E exception) throws E {
@@ -157,10 +168,9 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				// put the original exception's message first, so tools can parse it correctly
 				// and include the test execution number, to make it easier to correlate the
 				// failure with a specific execution
-				var testAbortedException = new TestAbortedException(
-					format("%s%nTest execution #%d (of up to %d) failed ~> will retry in %d ms...",
-						exception.getMessage(), retriesSoFar, maxRetries, suspendForMs),
-					exception);
+				var testAbortedException = new TestAbortedException(format(
+					"%s%nTest execution #%d (of up to %d) failed ~> will retry in %d ms with max jitter %d ms...",
+					exception.getMessage(), retriesSoFar, maxRetries, suspendForMs, maxJitterMs), exception);
 				seenExceptions.add(testAbortedException);
 				throw testAbortedException;
 			} else {
@@ -222,12 +232,20 @@ class RetryingTestExtension implements TestTemplateInvocationContextProvider, Te
 				throw new NoSuchElementException();
 
 			if (!isFirstExecution()) {
-				suspendFor(suspendForMs);
+				suspendFor(suspendForMs + calculateJitter());
 			}
 
 			retriesSoFar++;
 
 			return new RetryingTestInvocationContext(formatter);
+		}
+
+		private int calculateJitter() {
+			int jitter = 0;
+			if (maxJitterMs != 0) {
+				jitter = jitterRandom.nextInt(maxJitterMs);
+			}
+			return jitter;
 		}
 
 	}
