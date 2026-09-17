@@ -164,22 +164,18 @@ This is the list of supported parsers:
 If you need support for another parser, please https://github.com/junit-pioneer/junit-pioneer/issues/new/choose[open an issue].
 If your project does not already depend on a supported JSON parser, you can add it as follows.
 
-=== Gradle
+=== Pulling in the parser
 
-To pull in a parser, add the Jackson dependency directly:
+Add the parser as a test dependency.
+
+In Gradle:
 
 [source,kotlin]
 ----
 testImplementation("tools.jackson.core:jackson-databind:$CURRENT_VERSION")
 ----
 
-[NOTE]
-Before 3.0, Pioneer used a Gradle feature variant as an option.
-That has been removed in 3.0 for the sake of simplicity.
-
-=== Maven
-
-In Maven, add the parser as a test dependency:
+In Maven:
 
 [source,xml]
 ----
@@ -190,6 +186,12 @@ In Maven, add the parser as a test dependency:
     <scope>test</scope>
 </dependency>
 ----
+
+[NOTE]
+Before 3.0, Pioneer used a Gradle feature variant as an option.
+That has been removed in 3.0 for the sake of simplicity.
+
+
 
 === Custom `ObjectMapper` for Jackson
 
