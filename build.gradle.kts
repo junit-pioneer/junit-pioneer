@@ -1,16 +1,15 @@
+import org.jreleaser.model.Active
+
 plugins {
 	java
 	jacoco
 	checkstyle
 	`maven-publish`
-	signing
 	id("com.diffplug.spotless") version "7.0.4"
 	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "6.2.0.5505"
-	id("org.shipkit.shipkit-changelog") version "2.0.1"
-	id("org.shipkit.shipkit-github-release") version "2.0.1"
 	id("com.github.ben-manes.versions") version "0.52.0"
-	id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+	id("org.jreleaser") version "1.26.0"
 	id("org.gradlex.extra-java-module-info") version "1.13"
     id("com.adarshr.test-logger") version "4.0.0"
 }
@@ -128,7 +127,9 @@ publishing {
 				}
 
 				scm {
-					url.set("https://github.com/junit-pioneer/junit-pioneer.git")
+					url.set("https://github.com/junit-pioneer/junit-pioneer")
+					connection.set("scm:git:https://github.com/junit-pioneer/junit-pioneer.git")
+					developerConnection.set("scm:git:git@github.com:junit-pioneer/junit-pioneer.git")
 				}
 
 				issueManagement {
@@ -159,20 +160,86 @@ publishing {
 			}
 		}
 	}
-}
-
-signing {
-	isRequired = releaseBuild && gradle.taskGraph.hasTask("publishToSonatype")
-	val signingKey: String? by project
-	val signingPassword: String? by project
-	useInMemoryPgpKeys(signingKey, signingPassword)
-	sign(publishing.publications.findByName("maven"))
-}
-
-nexusPublishing {
 	repositories {
-		sonatype()
+		maven {
+			name = "staging"
+			url = uri(layout.buildDirectory.dir("staging-deploy"))
+		}
 	}
+}
+
+val mavenGroupId = project.group.toString()
+
+// JReleaser drives the whole release (see CONTRIBUTING.adoc). The release job runs:
+//   ./gradlew publish              -> stages the artifacts in build/staging-deploy
+//   ./gradlew jreleaserDeploy      -> signs them + uploads/releases via the Central Portal
+//   ./gradlew jreleaserRelease     -> creates the Git tag + GitHub release with changelog
+jreleaser {
+	gitRootSearch = true
+	project {
+		description = "JUnit Extension Pack"
+		copyright = "JUnit Pioneer Contributors"
+		license = "EPL-2.0"
+		authors = listOf("JUnit Pioneer Contributors")
+		links {
+			homepage = "https://junit-pioneer.org/"
+		}
+		languages {
+			java {
+				groupId = mavenGroupId
+				version = targetJavaVersion.majorVersion
+			}
+		}
+	}
+	release {
+		github {
+			// owner + repo name are detected from the git remote (gitRootSearch above)
+			tagName = "v{{projectVersion}}"
+			releaseName = "JUnit Pioneer {{projectVersion}}"
+			// let GitHub generate the notes (merged PRs + new contributors);
+			// categorize them later via .github/release.yml if desired
+			releaseNotes {
+				enabled = true
+			}
+			changelog {
+				// mutually exclusive with releaseNotes
+				enabled = false
+			}
+		}
+	}
+	signing {
+		// JReleaser signs the staged artifacts using the in-memory PGP key passed
+		// via JRELEASER_GPG_{PUBLIC_KEY,SECRET_KEY,PASSPHRASE} in the release workflow.
+		active = Active.RELEASE
+		pgp {
+			// Maven Central requires armored (.asc) signatures
+			armored = true
+		}
+	}
+	deploy {
+		maven {
+			mavenCentral {
+				register("sonatype") {
+					active = Active.RELEASE
+					url = "https://central.sonatype.com/api/v1/publisher"
+					namespace = mavenGroupId
+					stagingRepository(layout.buildDirectory.dir("staging-deploy").get().asFile.path)
+					// Central Portal validation + publishing can take a few minutes.
+					retryDelay = 20
+					maxRetries = 100
+				}
+			}
+		}
+	}
+}
+
+tasks.named("jreleaserDeploy") {
+	dependsOn("publish")
+}
+
+// Only cut the GitHub release/tag once the Central Portal upload has succeeded.
+tasks.named("jreleaserRelease") {
+	mustRunAfter("jreleaserDeploy")
 }
 
 extraJavaModuleInfo {
@@ -342,23 +409,5 @@ tasks {
 			include("LICENSE.md")
 			into("META-INF")
 		}
-	}
-
-	generateChangelog {
-		dependsOn(":closeAndReleaseSonatypeStagingRepository")
-		val gitFetchRecentTag = Runtime.getRuntime().exec("git describe --tags --abbrev=0")
-		val recentTag = gitFetchRecentTag.inputStream.bufferedReader().readText().trim()
-		previousRevision = recentTag
-		githubToken = System.getenv("GITHUB_TOKEN")
-		repository = "junit-pioneer/junit-pioneer"
-	}
-
-	githubRelease {
-		dependsOn(generateChangelog)
-		val generateChangelogTask = generateChangelog.get()
-		repository = generateChangelogTask.repository
-		changelog = generateChangelogTask.outputFile
-		githubToken = generateChangelogTask.githubToken
-		newTagRevision = System.getenv("GITHUB_SHA")
 	}
 }
