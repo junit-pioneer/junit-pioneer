@@ -20,6 +20,7 @@ import java.util.ServiceLoader;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junitpioneer.internal.PioneerPreconditions;
 
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -54,7 +55,7 @@ class JacksonJsonConverter implements JsonConverter {
 			JsonNode jsonNode = objectMapper.readTree(stream);
 			return new JacksonNode(objectMapper, jsonNode);
 		}
-		catch (Exception e) {
+		catch (JacksonException e) {
 			throw new ParameterResolutionException("Could not convert JSON to Node.", e);
 		}
 	}
@@ -65,7 +66,7 @@ class JacksonJsonConverter implements JsonConverter {
 			JsonNode jsonNode = getObjectMapper(lenient).readTree(value);
 			return new JacksonNode(getObjectMapper(false), jsonNode);
 		}
-		catch (Exception e) {
+		catch (JacksonException e) {
 			throw new ParameterResolutionException("Could not convert JSON to Node.", e);
 		}
 	}

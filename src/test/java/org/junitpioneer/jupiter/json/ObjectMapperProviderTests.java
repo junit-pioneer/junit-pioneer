@@ -10,6 +10,8 @@
 
 package org.junitpioneer.jupiter.json;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,6 +27,7 @@ import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
 import org.junitpioneer.testkit.assertion.PioneerAssert;
 
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -107,6 +110,33 @@ public class ObjectMapperProviderTests {
 				.hasSingleFailedContainer()
 				.withExceptionInstanceOf(PreconditionViolationException.class)
 				.hasMessageContaining("must not have a blank value");
+	}
+
+	@Test
+	@DisplayName("getLenient() does not throw for a plain (non-JsonMapper) ObjectMapper and keeps its configuration")
+	void lenientWithPlainObjectMapper() {
+		ObjectMapper strict = new ObjectMapper()
+				.rebuild()
+				.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+				.build();
+		ObjectMapperProvider provider = new ObjectMapperProvider() {
+
+			@Override
+			public ObjectMapper get() {
+				return strict;
+			}
+
+			@Override
+			public String id() {
+				return "plain";
+			}
+
+		};
+
+		// previously threw ClassCastException, since `strict` isn't a JsonMapper
+		ObjectMapper lenient = provider.getLenient();
+
+		assertThat(lenient.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)).isFalse();
 	}
 
 	static class ObjectMapperProviderTestCases {
