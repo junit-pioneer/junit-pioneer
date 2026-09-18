@@ -10,11 +10,10 @@
 
 package org.junitpioneer.jupiter;
 
-import org.junit.jupiter.api.extension.ConditionEvaluationResult;
-import org.junit.jupiter.api.extension.ExecutionCondition;
-import org.junit.jupiter.api.extension.ExtensionConfigurationException;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import static java.lang.String.format;
+import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
+import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
+import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 import java.io.IOException;
 import java.net.URI;
@@ -23,23 +22,24 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-import static java.lang.String.format;
-import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
-import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
-import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
+import org.junit.jupiter.api.extension.ConditionEvaluationResult;
+import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.ExtensionConfigurationException;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import org.junitpioneer.internal.PioneerPreconditions;
 
 class DisableIfNotReachableExtension implements ExecutionCondition {
 
 	private static final Namespace NAMESPACE = Namespace.create(DisableIfNotReachableExtension.class);
-	private static final String DISABLED_KEY = "DISABLED_KEY";
-	private static final String DISABLED_VALUE = "";
+	private static final String HTTP_CLIENT_STORE_KEY = "DISABLED_KEY";
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
 		var optAnnotation = findClosestEnclosingAnnotation(context, DisableIfNotReachable.class);
 
 		if (optAnnotation.isEmpty()) {
-			return enabled("No @DisabledIfNotReachable annotation found.");
+			return enabled("No @DisableIfNotReachable annotation found.");
 		}
 
 		var config = readConfigurationFromAnnotation(optAnnotation.get());
@@ -48,9 +48,9 @@ class DisableIfNotReachableExtension implements ExecutionCondition {
 	}
 
 	/**
-	 * Pings an HTTP URL. This effectively sends a HEAD request and returns
+	 * Pings an HTTP URL. This effectively sends a GET request and returns
 	 * {@code true} if the response code is in the 200-399 range.
-	 *
+	 * <p>
 	 * Based on <a href="https://stackoverflow.com/users/157882/balusc">BalusC</a>'s answer on StackOverflow to
 	 * <a href="https://stackoverflow.com/a/3584332/2525313">Preferred Java way to ping an HTTP URL for availability</a>
 	 * but with <a href="https://openjdk.org/groups/net/httpclient/intro.html">JDK 11 HTTP-Client</a>.
@@ -61,49 +61,63 @@ class DisableIfNotReachableExtension implements ExecutionCondition {
 	 * 	Extension context to get the unique ID of the test to be executed
 	 *
 	 * @return {@code true} if the given HTTP URL has returned response
-	 * code 200-399 on a HEAD request within the given timeout, otherwise
+	 * code 200-399 on a GET request within the given timeout, otherwise
 	 * {@code false}.
 	 */
 	private static ConditionEvaluationResult pingUrl(DisabledIfNotReachableConfiguration config,
 			ExtensionContext context) {
+		HttpClient client = context
+				.getStore(NAMESPACE)
+				.computeIfAbsent(HTTP_CLIENT_STORE_KEY, __ -> createHttpClient(), HttpClient.class);
 
 		boolean reachable = false;
 
-		try (HttpClient client = HttpClient
-				.newBuilder()
-				.version(HttpClient.Version.HTTP_2)
-				.followRedirects(HttpClient.Redirect.NORMAL)
-				.build()) {
-
+		try {
 			HttpRequest request = HttpRequest
 					.newBuilder()
 					.uri(URI.create(config.url))
-					.timeout(Duration.ofMillis(config.getTimeout()))
+					.timeout(Duration.ofMillis(config.timeout))
 					.GET()
 					.build();
 
-			int responseCode = client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode();
+			int responseCode = client.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
 
 			// We consider the target reachable if we get an HTTP response code which does not indicate an error.
 			reachable = (200 <= responseCode && responseCode <= 399);
 		}
-		catch (IOException | InterruptedException e) {
-			// Nothing to do, as the reachable variable is initialized with false anyway.
-			// The return statement is not placed here as the responseCode is also inspected for the final result.
+		catch (IOException e) {
+			return disabled(format("%s is disabled because trying to ping %s failed with exception: %s",
+				context.getUniqueId(), config.url, e.getMessage()));
+		}
+		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return disabled(format("%s is disabled because trying to ping %s failed with exception: %s",
+				context.getUniqueId(), config.url, e.getMessage()));
 		}
 
 		if (reachable) {
-			return enabled(format("%s is enabled because %s is reachable", context.getUniqueId(), config.getUrl()));
+			return enabled(format("%s is enabled because %s is reachable", context.getUniqueId(), config.url));
 		} else {
 			return disabled(format("%s is disabled because %s could not be reached in %dms", context.getUniqueId(),
-				config.getUrl(), config.getTimeout()));
+				config.url, config.timeout));
 		}
 	}
 
-	private DisabledIfNotReachableConfiguration readConfigurationFromAnnotation(DisableIfNotReachable annotation) {
+	private static HttpClient createHttpClient() {
+		return HttpClient
+				.newBuilder()
+				.version(HttpClient.Version.HTTP_2)
+				.followRedirects(HttpClient.Redirect.NORMAL)
+				.build();
+	}
 
-		if (null == annotation.url()) {
-			throw new ExtensionConfigurationException("URL must not be null");
+	private DisabledIfNotReachableConfiguration readConfigurationFromAnnotation(DisableIfNotReachable annotation) {
+		PioneerPreconditions.notBlank(annotation.url(), "URL must not be null");
+		try {
+			URI.create(annotation.url());
+		}
+		catch (IllegalArgumentException e) {
+			throw new ExtensionConfigurationException(format("URL %s is invalid", annotation.url()), e);
 		}
 
 		if (annotation.timeoutMillis() <= 0) {
@@ -116,25 +130,7 @@ class DisableIfNotReachableExtension implements ExecutionCondition {
 	/**
 	 * Simple Class that holds the configuration for the URL-check of the {@code DisabledIfNotReachableExtension}.
 	 */
-	private class DisabledIfNotReachableConfiguration {
-
-		// Change to record after migrating to Java 16+
-		private final String url;
-		private final int timeout;
-
-		public DisabledIfNotReachableConfiguration(String url, int timeout) {
-			this.url = url;
-			this.timeout = timeout;
-		}
-
-		public int getTimeout() {
-			return timeout;
-		}
-
-		public String getUrl() {
-			return url;
-		}
-
+	private record DisabledIfNotReachableConfiguration(String url, int timeout) {
 	}
 
 }
