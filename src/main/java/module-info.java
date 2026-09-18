@@ -17,6 +17,7 @@ module org.junitpioneer {
 
 	requires static tools.jackson.core;
 	requires static tools.jackson.databind;
+	requires java.net.http;
 
 	exports org.junitpioneer.vintage;
 	exports org.junitpioneer.jupiter;
