@@ -68,7 +68,7 @@ class DisableIfNotReachableExtension implements ExecutionCondition {
 			ExtensionContext context) {
 		HttpClient client = context
 				.getStore(NAMESPACE)
-				.computeIfAbsent(HTTP_CLIENT_STORE_KEY, unusedVariable -> createHttpClient(), HttpClient.class);
+				.computeIfAbsent(HTTP_CLIENT_STORE_KEY, __ -> createHttpClient(), HttpClient.class);
 
 		boolean reachable = false;
 
@@ -112,9 +112,14 @@ class DisableIfNotReachableExtension implements ExecutionCondition {
 	}
 
 	private DisabledIfNotReachableConfiguration readConfigurationFromAnnotation(DisableIfNotReachable annotation) {
-		PioneerPreconditions.notBlank(annotation.url(), "URL must not be null");
+		if (annotation.url().isBlank()) {
+			throw new ExtensionConfigurationException("URL can not be empty");
+		}
 		try {
-			URI.create(annotation.url());
+			URI url = URI.create(annotation.url());
+			if (url.getScheme() == null || !url.getScheme().startsWith("http")) {
+				throw new ExtensionConfigurationException(format("Scheme for URL %s must be http or https", annotation.url()));
+			}
 		}
 		catch (IllegalArgumentException e) {
 			throw new ExtensionConfigurationException(format("URL %s is invalid", annotation.url()), e);
