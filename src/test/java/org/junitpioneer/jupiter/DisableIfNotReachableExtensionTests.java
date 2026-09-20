@@ -53,7 +53,7 @@ public class DisableIfNotReachableExtensionTests {
 				.executeTestMethod(DisableIfNotReachableTestCases.class, "testUnreachableUrl");
 
 		assertThat(results).hasNumberOfFailedTests(0);
-        assertThat(results).hasNumberOfSucceededTests(0);
+		assertThat(results).hasNumberOfSucceededTests(0);
 		assertThat(results).hasNumberOfSkippedTests(1);
 		assertThat(results).hasNoReportEntries();
 	}
@@ -165,15 +165,15 @@ public class DisableIfNotReachableExtensionTests {
 		void testNegativeTimeout() {
 		}
 
-        @Test
-        @DisableIfNotReachable(url = "https://junit-pioneer.org")
-        void testReachableUrl() {
-        }
+		@Test
+		@DisableIfNotReachable(url = "https://junit-pioneer.org")
+		void testReachableUrl() {
+		}
 
-        @Test
-        @DisableIfNotReachable(url = "https://localhost")
-        void testUnreachableUrl() {
-        }
+		@Test
+		@DisableIfNotReachable(url = "https://localhost")
+		void testUnreachableUrl() {
+		}
 
 	}
 

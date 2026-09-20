@@ -118,7 +118,8 @@ class DisableIfNotReachableExtension implements ExecutionCondition {
 		try {
 			URI url = URI.create(annotation.url());
 			if (url.getScheme() == null || !url.getScheme().startsWith("http")) {
-				throw new ExtensionConfigurationException(format("Scheme for URL %s must be http or https", annotation.url()));
+				throw new ExtensionConfigurationException(
+					format("Scheme for URL %s must be http or https", annotation.url()));
 			}
 		}
 		catch (IllegalArgumentException e) {
