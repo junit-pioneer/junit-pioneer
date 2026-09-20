@@ -107,7 +107,7 @@ class DisableIfNotReachableExtension implements ExecutionCondition {
 		return HttpClient
 				.newBuilder()
 				.version(HttpClient.Version.HTTP_2)
-				.followRedirects(HttpClient.Redirect.NORMAL)
+				.followRedirects(HttpClient.Redirect.NEVER)
 				.build();
 	}
 
