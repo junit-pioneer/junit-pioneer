@@ -10,24 +10,22 @@
 
 package org.junitpioneer.jupiter;
 
-import static java.lang.String.format;
-import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
-import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
-import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junitpioneer.internal.PioneerPreconditions;
+import static java.lang.String.format;
+import static org.junit.jupiter.api.extension.ConditionEvaluationResult.disabled;
+import static org.junit.jupiter.api.extension.ConditionEvaluationResult.enabled;
+import static org.junitpioneer.internal.PioneerAnnotationUtils.findClosestEnclosingAnnotation;
 
 class DisableIfNotReachableExtension implements ExecutionCondition {
 
@@ -68,7 +66,7 @@ class DisableIfNotReachableExtension implements ExecutionCondition {
 			ExtensionContext context) {
 		HttpClient client = context
 				.getStore(NAMESPACE)
-				.computeIfAbsent(HTTP_CLIENT_STORE_KEY, __ -> createHttpClient(), HttpClient.class);
+				.computeIfAbsent(HTTP_CLIENT_STORE_KEY, unusedVariable -> createHttpClient(), HttpClient.class);
 
 		boolean reachable = false;
 
