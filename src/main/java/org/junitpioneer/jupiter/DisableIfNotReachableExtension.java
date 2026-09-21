@@ -27,7 +27,6 @@ import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junitpioneer.internal.PioneerPreconditions;
 
 class DisableIfNotReachableExtension implements ExecutionCondition {
 
