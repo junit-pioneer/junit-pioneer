@@ -40,9 +40,6 @@ java {
 	}
 	withJavadocJar()
 	withSourcesJar()
-	registerFeature("jackson") {
-		usingSourceSet(sourceSets["main"])
-	}
 }
 
 repositories {
