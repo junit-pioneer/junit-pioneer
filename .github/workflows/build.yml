@@ -133,7 +133,7 @@ jobs:
     strategy:
       matrix:
         # Pioneer, latest LTS, latest stable
-        java: [ 17, 21, 24 ]
+        java: [ 17, 25, 26 ]
         # Pioneer, latest stable
         junit-version: [ '6.1.0', '6.1.3' ]
         os: [ubuntu, macos, windows]
@@ -183,7 +183,7 @@ jobs:
       - name: Set up supported Java
         uses: actions/setup-java@v4
         with:
-          java-version: 24
+          java-version: 26
           distribution: temurin
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -220,10 +220,10 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          # we build the Javadoc with JDK 24 (for better results),
+          # we build the Javadoc with JDK 26 (for better results),
           # so install that as well
           java-version: |
-            24
+            26
             17
           distribution: temurin
       - name: Set up Gradle
