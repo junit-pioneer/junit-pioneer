@@ -191,8 +191,6 @@ In Maven:
 Before 3.0, Pioneer used a Gradle feature variant as an option.
 That has been removed in 3.0 for the sake of simplicity.
 
-
-
 === Custom `ObjectMapper` for Jackson
 
 By default, Jackson does not support complex fields (e.g.: `LocalDate`).
