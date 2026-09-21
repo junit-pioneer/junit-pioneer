@@ -517,7 +517,7 @@ _Optional_ dependencies are acceptable if they are needed to provide specific fe
 Unless we see reports of optional dependencies causing unexpected problems for users, there is no particularly high hurdle for taking them on, given each provides more than marginal value.
 They should only be used by specifically chosen features that require them, though, and care needs to be taken to prevent them from creeping into the rest of the code base - CheckStyle rules need to be configured for each that fail the build on accidental use of these dependencies.
 
-Optional dependencies are implemented with https://docs.gradle.org/current/userguide/feature_variants.html[Gradle's feature variants].
+Optional dependencies are declared `compileOnly` on the main source set (so Pioneer can compile against them without requiring them at run time) and `testImplementation` on the test source set (so Pioneer's own tests exercise the integration).
 Pioneer's module declaration must be extended with a matching `requires static` clause, which limits optional dependencies to those that have at least an explicit automatic module name.
 Note that `requires static` does not suffice to pull in the optional dependency's module if no user code depends on it as well.
 

@@ -40,9 +40,6 @@ java {
 	}
 	withJavadocJar()
 	withSourcesJar()
-	registerFeature("jackson") {
-		usingSourceSet(sourceSets["main"])
-	}
 }
 
 repositories {
@@ -57,18 +54,19 @@ val jimfsVersion: String = "1.3.0"
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
 
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
-	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
-	"jacksonImplementation"(group = "tools.jackson.core", name = "jackson-databind", version = jacksonVersion)
+	implementation("org.junit.jupiter:junit-jupiter-api")
+	implementation("org.junit.jupiter:junit-jupiter-params")
+	implementation("org.junit.platform:junit-platform-launcher")
+	compileOnly("tools.jackson.core:jackson-databind:$jacksonVersion")
 
-	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
+	testImplementation("org.junit.jupiter:junit-jupiter-engine")
+	testImplementation("org.junit.platform:junit-platform-testkit")
+	testImplementation("tools.jackson.core:jackson-databind:$jacksonVersion")
 
-	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.23.0")
-	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.19.4")
+	testImplementation("org.assertj:assertj-core:$assertjVersion")
+	testImplementation("org.mockito:mockito-core:5.23.0")
+	testImplementation("com.google.jimfs:jimfs:$jimfsVersion")
+	testImplementation("nl.jqno.equalsverifier:equalsverifier:3.19.4")
 }
 
 spotless {
