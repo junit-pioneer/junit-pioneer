@@ -88,7 +88,11 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		 */
 		List<ExtensionContext> contexts = PioneerUtils.findAllContexts(originalContext);
 		Collections.reverse(contexts);
-		contexts.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext, !fullRestore));
+		Set<AnnotatedElement> processedElements = new HashSet<>();
+		contexts
+				.stream()
+				.filter(context -> context.getElement().map(processedElements::add).orElse(true))
+				.forEach(currentContext -> clearAndSetEntries(currentContext, originalContext, !fullRestore));
 	}
 
 	private void clearAndSetEntries(ExtensionContext currentContext, ExtensionContext originalContext,
