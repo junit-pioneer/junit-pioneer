@@ -1,0 +1,49 @@
+/*
+ * Copyright 2016-2023 the original author or authors.
+ *
+ * All rights reserved. This program and the accompanying materials are
+ * made available under the terms of the Eclipse Public License v2.0 which
+ * accompanies this distribution and is available at
+ *
+ * http://www.eclipse.org/legal/epl-v20.html
+ */
+
+package org.junitpioneer.jupiter;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.extension.ExtendWith;
+
+/**
+ * {@code @DisabledIfNotReachable} is a JUnit Jupiter extension to check if a given URL is reachable before executing
+ * the test and disable the test if it's not.
+ *
+ * <p>A maximum timeout (in milliseconds) can be passed as a second argument. The default value is 5000.</p>
+ *
+ * <p>{@code @DisabledIfNotReachable} can be used on the method and class level. It is inherited
+ * from higher-level containers. The closest annotation takes preference.</p>
+ *
+ * @since 3.0.0
+ * @see org.junit.jupiter.api.Disabled
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE })
+@Inherited
+@ExtendWith(DisableIfNotReachableExtension.class)
+public @interface DisableIfNotReachable {
+
+	/**
+	 * The url to be checked.
+	 */
+	String url() default "";
+
+	/**
+	 * Timeout in milliseconds the lookup is allowed to take at a maximum.
+	 */
+	int timeoutMillis() default 5000;
+
+}

@@ -61,6 +61,7 @@ module org.junitpioneer {
 	requires jdk.attach;
 	// via nl.jqno.equalsverifier
 	requires java.sql;
+	requires java.net.http;
 
 	opens org.junitpioneer.internal to org.junit.platform.commons;
 	opens org.junitpioneer.testkit to org.junit.platform.commons;
