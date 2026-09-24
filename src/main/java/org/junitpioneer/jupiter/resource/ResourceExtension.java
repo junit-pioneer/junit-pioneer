@@ -11,20 +11,16 @@
 package org.junitpioneer.jupiter.resource;
 
 import static java.lang.String.format;
-import static java.util.Comparator.comparing;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.extension.DynamicTestInvocationContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -40,6 +36,9 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private static final ExtensionContext.Namespace NAMESPACE = //
 		ExtensionContext.Namespace.create(ResourceExtension.class);
+
+	private static final SharedResourceCoordinator SHARED_RESOURCE_COORDINATOR = //
+		new SharedResourceCoordinator(NAMESPACE);
 
 	private static final Lock SHARED_ANNOTATION_RESOLUTION_LOCK = new ReentrantLock();
 
@@ -72,7 +71,8 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		Optional<Shared> sharedAnnotation = parameterContext.findAnnotation(Shared.class);
 		if (sharedAnnotation.isPresent()) {
 			Parameter[] parameters = parameterContext.getDeclaringExecutable().getParameters();
-			ExtensionContext.Store scopedStore = scopedStore(extensionContext, sharedAnnotation.get().scope());
+			ExtensionContext.Store scopedStore = //
+				SHARED_RESOURCE_COORDINATOR.scopedStore(extensionContext, sharedAnnotation.get().scope());
 			ExtensionContext.Store rootStore = extensionContext.getRoot().getStore(NAMESPACE);
 			Object resource = resolveShared(sharedAnnotation.get(), parameters, scopedStore, rootStore);
 			return checkType(resource, parameterContext.getParameter().getType());
@@ -145,7 +145,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 						resourceKey(sharedAnnotation), //
 						__ -> newResource(sharedAnnotation, resourceFactory), //
 						Resource.class);
-			putNewLockForShared(sharedAnnotation, scopedStore);
+			SHARED_RESOURCE_COORDINATOR.putNewLockForShared(sharedAnnotation, scopedStore);
 
 			Object result;
 			try {
@@ -288,10 +288,6 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 		return sharedAnnotation.name() + " resource";
 	}
 
-	private String resourceLockKey(Shared sharedAnnotation) {
-		return sharedAnnotation.name() + " resource lock";
-	}
-
 	private String keyOfFactoryKey(Shared sharedAnnotation) {
 		return sharedAnnotation.name() + " resource factory key";
 	}
@@ -314,99 +310,58 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	@Override
 	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
 			ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
+		SHARED_RESOURCE_COORDINATOR.runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public <T> T interceptTestFactoryMethod(Invocation<T> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		return runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
+		return SHARED_RESOURCE_COORDINATOR
+				.runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptDynamicTest(Invocation<Void> invocation, DynamicTestInvocationContext invocationContext,
 			ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, testFactoryMethod(extensionContext), extensionContext);
+		SHARED_RESOURCE_COORDINATOR.runSequentially(invocation, testFactoryMethod(extensionContext), extensionContext);
 	}
 
 	@Override
 	public void interceptTestTemplateMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
+		SHARED_RESOURCE_COORDINATOR.runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public <T> T interceptTestClassConstructor(Invocation<T> invocation,
 			ReflectiveInvocationContext<Constructor<T>> invocationContext, ExtensionContext extensionContext)
 			throws Throwable {
-		return runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
+		return SHARED_RESOURCE_COORDINATOR
+				.runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptBeforeAllMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
+		SHARED_RESOURCE_COORDINATOR.runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptAfterAllMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
+		SHARED_RESOURCE_COORDINATOR.runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptBeforeEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
+		SHARED_RESOURCE_COORDINATOR.runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	@Override
 	public void interceptAfterEachMethod(Invocation<Void> invocation,
 			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
-		runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
-	}
-
-	private <T> T runSequentially(Invocation<T> invocation, Executable executable, ExtensionContext extensionContext)
-			throws Throwable {
-		// Parallel tests must not concurrently access shared resources. To ensure that, we associate a lock with
-		// each shared resource and require a test to hold all locks associated with the shared resources it uses.
-		//
-		// This harbors a risk of deadlocks. For example, given these tests and the respective shared resources
-		// that they want to use:
-		//
-		//  - test1 -> [A, B]
-		//  - test2 -> [B, C]
-		//  - test3 -> [C, A]
-		//
-		// If test1 gets A, then test2 gets B, and then test3 gets C, none of the tests can get the second lock
-		// they need, and so they can also never give up the one they hold.
-		//
-		// This is known as the Dining Philosophers Problem [1] and a solution is to order locks before acquiring them.
-		// In the above example, test3 would start with trying to get A and, since it can't, block on that. Then test2
-		// is free to continue and eventually release the locks.
-		//
-		// We implement the solution here by lexicographically sorting the locks by the (globally unique) name of the
-		// shared resource that each lock is (uniquely) associated with.
-		//
-		// [1] https://en.wikipedia.org/wiki/Dining_philosophers_problem
-
-		List<Shared> sharedAnnotations = findShared(executable);
-		List<ReentrantLock> locks = sortedLocksForSharedResources(sharedAnnotations, extensionContext);
-		return invokeWithLocks(invocation, locks);
-	}
-
-	private List<ReentrantLock> sortedLocksForSharedResources(Collection<Shared> sharedAnnotations,
-			ExtensionContext extensionContext) {
-		List<Shared> sortedAnnotations = sharedAnnotations.stream().sorted(comparing(Shared::name)).toList();
-		List<ExtensionContext.Store> stores = //
-			sortedAnnotations
-					.stream() //
-					.map(shared -> scopedStore(extensionContext, shared.scope()))
-					.toList();
-		return IntStream
-				.range(0, sortedAnnotations.size()) //
-				.mapToObj(i -> findLockForShared(sortedAnnotations.get(i), stores.get(i)))
-				.toList();
+		SHARED_RESOURCE_COORDINATOR.runSequentially(invocation, invocationContext.getExecutable(), extensionContext);
 	}
 
 	private Method testFactoryMethod(ExtensionContext extensionContext) {
@@ -415,63 +370,6 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.orElseThrow(() -> new IllegalStateException(
 					"The parent extension context of a DynamicTest was not a @TestFactory-annotated test method"))
 				.getRequiredTestMethod();
-	}
-
-	private ExtensionContext.Store scopedStore(ExtensionContext extensionContext, Shared.Scope scope) {
-		ExtensionContext scopedContext = scopedContext(extensionContext, scope);
-		return scopedContext.getStore(NAMESPACE);
-	}
-
-	private ExtensionContext scopedContext(ExtensionContext extensionContext, Shared.Scope scope) {
-		if (scope == Shared.Scope.SOURCE_FILE) {
-			// search for the test scope that's associated with the same source file,
-			// which we assume is the one that has the root context as parent
-			// (contexts in between the test method context and the source class context
-			//  would belong to nested test classes)
-			ExtensionContext currentContext = extensionContext;
-			Optional<ExtensionContext> parentContext = extensionContext.getParent();
-
-			while (parentContext.isPresent() && parentContext.get() != currentContext.getRoot()) {
-				currentContext = parentContext.get();
-				parentContext = currentContext.getParent();
-			}
-
-			return currentContext;
-		}
-
-		return extensionContext.getRoot();
-	}
-
-	private List<Shared> findShared(Executable executable) {
-		return Arrays
-				.stream(executable.getParameters())
-				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.toList();
-	}
-
-	private void putNewLockForShared(Shared shared, ExtensionContext.Store store) {
-		store.computeIfAbsent(resourceLockKey(shared), __ -> new ReentrantLock(), ReentrantLock.class);
-	}
-
-	private ReentrantLock findLockForShared(Shared shared, ExtensionContext.Store store) {
-		return Optional
-				.ofNullable(store.get(resourceLockKey(shared), ReentrantLock.class))
-				.orElseThrow(() -> new IllegalStateException(
-					format("There should be a shared resource for the name %s", shared.name())));
-	}
-
-	private <T> T invokeWithLocks(Invocation<T> invocation, List<ReentrantLock> locks) throws Throwable {
-		locks.forEach(ReentrantLock::lock);
-		try {
-			return invocation.proceed();
-		}
-		finally {
-			// for dining philosophers, "[t]he order in which each philosopher puts down the forks does not matter"
-			// (quote from Wikipedia)
-			locks.forEach(ReentrantLock::unlock);
-		}
 	}
 
 }
