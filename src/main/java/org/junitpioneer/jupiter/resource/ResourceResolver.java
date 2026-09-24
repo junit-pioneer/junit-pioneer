@@ -96,29 +96,7 @@ final class ResourceResolver {
 		Resource<?> resource = newResource(newAnnotation, resourceFactory);
 		store.put(uniqueKey(), resource);
 
-		Object result;
-		try {
-			result = resource.get();
-		}
-		catch (Exception ex) {
-			// @formatter:off
-			String message = format(
-					"Unable to get the contents of the resource created by `%s`",
-					resourceFactory.getClass().getTypeName());
-			// @formatter:on
-			throw new ParameterResolutionException(message, ex);
-		}
-
-		if (result == null) {
-			// @formatter:off
-			String message = format(
-					"The resource returned by [%s] was null, which is not allowed",
-					getMethod(resource.getClass(), "get"));
-			// @formatter:on
-			throw new ParameterResolutionException(message);
-		}
-
-		return result;
+		return getResourceContents(resource, resourceFactory.getClass().getTypeName());
 	}
 
 	private Object resolveShared(Shared sharedAnnotation, Parameter[] parameters, ExtensionContext.Store scopedStore,
@@ -142,33 +120,37 @@ final class ResourceResolver {
 						Resource.class);
 			sharedResourceCoordinator.putNewLockForShared(sharedAnnotation, scopedStore);
 
-			Object result;
-			try {
-				result = resource.get();
-			}
-			catch (Exception ex) {
-				// @formatter:off
-				String message = format(
-						"Unable to get the contents of the resource created by `%s`",
-						sharedAnnotation.factory());
-				// @formatter:on
-				throw new ParameterResolutionException(message, ex);
-			}
-
-			if (result == null) {
-				// @formatter:off
-				String message = format(
-						"The resource returned by [%s] was null, which is not allowed",
-						getMethod(resource.getClass(), "get"));
-				// @formatter:on
-				throw new ParameterResolutionException(message);
-			}
-
-			return result;
+			return getResourceContents(resource, sharedAnnotation.factory());
 		}
 		finally {
 			SHARED_ANNOTATION_RESOLUTION_LOCK.unlock();
 		}
+	}
+
+	private Object getResourceContents(Resource<?> resource, Object resourceFactoryDescription) {
+		Object result;
+		try {
+			result = resource.get();
+		}
+		catch (Exception ex) {
+			// @formatter:off
+			String message = format(
+					"Unable to get the contents of the resource created by `%s`",
+					resourceFactoryDescription);
+			// @formatter:on
+			throw new ParameterResolutionException(message, ex);
+		}
+
+		if (result == null) {
+			// @formatter:off
+			String message = format(
+					"The resource returned by [%s] was null, which is not allowed",
+					getMethod(resource.getClass(), "get"));
+			// @formatter:on
+			throw new ParameterResolutionException(message);
+		}
+
+		return result;
 	}
 
 	private Resource<?> newResource(Object newOrSharedAnnotation, ResourceFactory<?> resourceFactory) {
