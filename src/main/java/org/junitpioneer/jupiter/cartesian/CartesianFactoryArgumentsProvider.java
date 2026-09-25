@@ -15,6 +15,7 @@ import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
 
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -65,10 +66,12 @@ class CartesianFactoryArgumentsProvider
 	}
 
 	private static Class<?> findExplicitOrImplicitClass(Method testMethod, String methodFactoryName) {
-		if (!methodFactoryName.contains("#"))
+		Optional<String> optionalClassName = MemberNameUtils.extractClassName(methodFactoryName);
+		if (optionalClassName.isEmpty()) {
 			return testMethod.getDeclaringClass();
+		}
 
-		String className = methodFactoryName.substring(0, methodFactoryName.indexOf('#'));
+		String className = optionalClassName.get();
 		Try<Class<?>> tryToLoadClass = ReflectionSupport.tryToLoadClass(className);
 		// step (outwards) through all enclosing classes, trying to load the factory class by appending
 		// its name to the enclosing class' name (if a previous load didn't already succeed
