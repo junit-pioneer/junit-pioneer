@@ -10,6 +10,7 @@
 
 package org.junitpioneer.internal;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.platform.commons.support.ReflectionSupport.findMethod;
 
 import java.lang.invoke.MethodType;
@@ -19,9 +20,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -91,11 +94,7 @@ public class PioneerUtils {
 	 *         beginning with the given context; never {@code null} or empty
 	 */
 	public static List<ExtensionContext> findAllContexts(ExtensionContext context) {
-		List<ExtensionContext> allContexts = new ArrayList<>();
-		for (var c = context; c != null; c = c.getParent().orElse(null)) {
-			allContexts.add(c);
-		}
-		return allContexts;
+		return Stream.iterate(context, Objects::nonNull, c -> c.getParent().orElse(null)).collect(toList());
 	}
 
 	public static String nullSafeToString(Object object) {
