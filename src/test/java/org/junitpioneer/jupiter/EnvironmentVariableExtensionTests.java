@@ -46,6 +46,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.testkit.ExecutionResults;
 
 @DisplayName("EnvironmentVariable extension")
@@ -75,6 +77,22 @@ class EnvironmentVariableExtensionTests {
 
 	private static String systemEnvironmentVariable(String variable) {
 		return System.getenv(variable); //NOSONAR access required to implement the tests
+	}
+
+	@Test
+	@Issue("875")
+	@WritesEnvironmentVariable
+	@DisplayName("should restore an environment variable after a parameterized test")
+	void shouldRestoreEnvironmentVariableAfterParameterizedTest() {
+		try {
+			ExecutionResults results = executeTestClass(ParameterizedEnvironmentVariableTestCases.class);
+
+			assertThat(results).hasNumberOfSucceededTests(2).hasNumberOfFailedTests(0);
+			assertThat(results).hasNumberOfFailedContainers(0);
+		}
+		finally {
+			EnvironmentVariableUtils.clear("parameterized envvar");
+		}
 	}
 
 	@Nested
@@ -625,6 +643,27 @@ class EnvironmentVariableExtensionTests {
 		@Test
 		@ClearEnvironmentVariable(key = "set envvar A")
 		void anotherTestWithExtension() {
+		}
+
+	}
+
+	static class ParameterizedEnvironmentVariableTestCases {
+
+		@BeforeAll
+		static void setInitialValue() {
+			EnvironmentVariableUtils.set("parameterized envvar", "original value");
+		}
+
+		@ParameterizedTest
+		@ValueSource(strings = { "first", "second" })
+		@SetEnvironmentVariable(key = "parameterized envvar", value = "new value")
+		void setsEnvironmentVariable(String ignored) {
+			assertThat(systemEnvironmentVariable("parameterized envvar")).isEqualTo("new value");
+		}
+
+		@AfterAll
+		static void verifyOriginalValueWasRestored() {
+			assertThat(systemEnvironmentVariable("parameterized envvar")).isEqualTo("original value");
 		}
 
 	}
