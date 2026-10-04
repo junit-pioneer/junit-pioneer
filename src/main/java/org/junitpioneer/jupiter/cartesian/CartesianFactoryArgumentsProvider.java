@@ -15,6 +15,7 @@ import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
 
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -41,7 +42,10 @@ class CartesianFactoryArgumentsProvider
 
 	private static Method findMethodFactory(Method testMethod, String methodFactoryName, Object testInstance,
 			TestInstance.Lifecycle lifecycle) {
-		String factoryName = extractMethodFactoryName(methodFactoryName);
+		String factoryName = MemberNameUtils
+				.extractMethodName(methodFactoryName)
+				.orElseThrow(() -> new ExtensionConfigurationException(
+					"Could not extract a factory method name from `" + methodFactoryName + "`."));
 		Class<?> declaringClass = findExplicitOrImplicitClass(testMethod, methodFactoryName);
 		Method factory = PioneerUtils
 				.findMethodCurrentOrEnclosing(declaringClass, factoryName)
@@ -56,19 +60,12 @@ class CartesianFactoryArgumentsProvider
 		return factory;
 	}
 
-	private static String extractMethodFactoryName(String methodFactoryName) {
-		if (methodFactoryName.contains("("))
-			methodFactoryName = methodFactoryName.substring(0, methodFactoryName.indexOf('('));
-		if (methodFactoryName.contains("#"))
-			return methodFactoryName.substring(methodFactoryName.indexOf('#') + 1);
-		return methodFactoryName;
-	}
-
 	private static Class<?> findExplicitOrImplicitClass(Method testMethod, String methodFactoryName) {
-		if (!methodFactoryName.contains("#"))
+		Optional<String> optionalClassName = MemberNameUtils.extractClassName(methodFactoryName);
+		if (optionalClassName.isEmpty())
 			return testMethod.getDeclaringClass();
 
-		String className = methodFactoryName.substring(0, methodFactoryName.indexOf('#'));
+		String className = optionalClassName.get();
 		Try<Class<?>> tryToLoadClass = ReflectionSupport.tryToLoadClass(className);
 		// step (outwards) through all enclosing classes, trying to load the factory class by appending
 		// its name to the enclosing class' name (if a previous load didn't already succeed
