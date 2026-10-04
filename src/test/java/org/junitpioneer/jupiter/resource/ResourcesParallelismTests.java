@@ -13,6 +13,7 @@ package org.junitpioneer.jupiter.resource;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
 import static org.junitpioneer.jupiter.resource.Shared.Scope.GLOBAL;
 import static org.junitpioneer.testkit.assertion.PioneerAssert.assertThat;
@@ -21,7 +22,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterAll;
@@ -60,6 +65,19 @@ class ResourcesParallelismTests {
 				() -> PioneerTestKit.executeTestClass(ThrowIfTestsRunInParallelTestCases.class),
 				"The tests in ThrowIfTestsRunInParallelTestCases became deadlocked!");
 			assertThat(executionResults).hasNumberOfSucceededTests(3);
+		}
+
+		@DisplayName("then a shared-resource lock is released when an invocation fails")
+		@Execution(SAME_THREAD)
+		@Test
+		void thenSharedResourceLockIsReleasedWhenInvocationFails() {
+			ReleaseLockAfterFailureTestCases.reset();
+			ExecutionResults executionResults = assertTimeoutPreemptively(Duration.ofSeconds(15),
+				() -> PioneerTestKit.executeTestClass(ReleaseLockAfterFailureTestCases.class),
+				"The shared-resource lock was not released after the invocation failed!");
+
+			assertThat(executionResults).hasNumberOfFailedTests(1).hasNumberOfSucceededTests(1);
+			assertThat(ReleaseLockAfterFailureTestCases.subsequentInvocationRan).isTrue();
 		}
 
 		@DisplayName("then the test factories do not run in parallel")
@@ -142,6 +160,63 @@ class ResourcesParallelismTests {
 	private static final String SHARED_RESOURCE_A_NAME = "shared-resource-a";
 	private static final String SHARED_RESOURCE_B_NAME = "shared-resource-b";
 	private static final String SHARED_RESOURCE_C_NAME = "shared-resource-c";
+
+	@Execution(CONCURRENT)
+	static class ReleaseLockAfterFailureTestCases {
+
+		private static CountDownLatch failingInvocationStarted;
+		private static CountDownLatch failingInvocationFinished;
+		private static CountDownLatch subsequentInvocationReady;
+		private static AtomicReference<Thread> failingInvocationThread;
+		private static AtomicReference<Thread> subsequentInvocationThread;
+		private static AtomicBoolean subsequentInvocationRan;
+
+		static void reset() {
+			failingInvocationStarted = new CountDownLatch(1);
+			failingInvocationFinished = new CountDownLatch(1);
+			subsequentInvocationReady = new CountDownLatch(1);
+			failingInvocationThread = new AtomicReference<>();
+			subsequentInvocationThread = new AtomicReference<>();
+			subsequentInvocationRan = new AtomicBoolean();
+		}
+
+		@BeforeEach
+		void waitUntilFailingInvocationHasTheLock(TestInfo testInfo) throws InterruptedException {
+			if (testInfo.getTestMethod().orElseThrow().getName().equals("subsequentInvocation")) {
+				assertThat(failingInvocationStarted.await(5, TimeUnit.SECONDS)).isTrue();
+				subsequentInvocationThread.set(Thread.currentThread());
+				subsequentInvocationReady.countDown();
+				assertThat(failingInvocationFinished.await(5, TimeUnit.SECONDS)).isTrue();
+			}
+		}
+
+		@AfterEach
+		void recordFailingInvocationFinished(TestInfo testInfo) {
+			if (testInfo.getTestMethod().orElseThrow().getName().equals("failingInvocation")) {
+				failingInvocationFinished.countDown();
+			}
+		}
+
+		@Test
+		void failingInvocation(
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directory)
+				throws InterruptedException {
+			failingInvocationThread.set(Thread.currentThread());
+			failingInvocationStarted.countDown();
+			assertThat(subsequentInvocationReady.await(5, TimeUnit.SECONDS)).isTrue();
+
+			throw new IllegalStateException("Expected failure while holding the shared-resource lock.");
+		}
+
+		@Test
+		void subsequentInvocation(
+				@SuppressWarnings("unused") @Shared(factory = TemporaryDirectory.class, name = SHARED_RESOURCE_A_NAME) Path directory) {
+			assertThat(Thread.currentThread()).isSameAs(subsequentInvocationThread.get());
+			assertThat(Thread.currentThread()).isNotSameAs(failingInvocationThread.get());
+			subsequentInvocationRan.set(true);
+		}
+
+	}
 
 	static class ThrowIfTestsRunInParallelTestCases {
 
