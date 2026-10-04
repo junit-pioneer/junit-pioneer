@@ -12,32 +12,43 @@ package org.junitpioneer.jupiter.cartesian;
 
 import java.util.Optional;
 
-/** Package private class to handle string splitting/manipulation in
- * CartesianFactoryArgumentsProvider.java
- * */
+/**
+ * Utility methods for parsing member references used by
+ * {@link CartesianFactoryArgumentsProvider}.
+ *
+ * <p>A member reference has the form
+ * {@code [className#]methodName[(parameters)]}, where the class name and
+ * the parameter list are optional.
+ */
 class MemberNameUtils {
 
 	// utility class no-arg constructor
 	private MemberNameUtils() {
 	}
 
-	/** Extracts the method name from a String Reference. Examples are as follows:
+	/**
+	 * Returns the method name of the given member reference, if present.
+	 *
+	 * <p>Any parameter list (starting at the first {@code '('}) and any class
+	 * name (up to and including the first {@code '#'}) are removed, and the
+	 * remaining string is trimmed.
 	 *
 	 * <p>Examples:
-	 *   <ul>
-	 * <li>"myMethod" => "myMethod"</li>
-	 * <li>"MyClass#myMethod" => "myMethod"</li>
-	 * <li>"MyClass#myMethod(int val)" => "myMethod" [regardless of parameters]</li>
-	 *   </ul>
-	 * </p>
+	 * <blockquote><pre>
+	 * extractMethodName("myMethod") returns Optional[myMethod]
+	 * extractMethodName("MyClass#myMethod") returns Optional[myMethod]
+	 * extractMethodName("MyClass#myMethod(int)") returns Optional[myMethod]
+	 * extractMethodName("MyClass#") returns Optional.empty
+	 * </pre></blockquote>
 	 *
-	 * @param memberName  The String reference
-	 * @return {@link String} The extracted method name
-	 * @throws IllegalArgumentException  memberName cannot be null or empty
-	 * */
-	public static String extractMethodName(String memberName) {
-		if (memberName == null || memberName.isBlank()) { // do not use isEmpty()
-			throw new IllegalArgumentException("memberName reference cannot be null or empty");
+	 * @param memberName the member reference; may be {@code null}
+	 * @return an {@code Optional} containing the method name, or an empty
+	 *         {@code Optional} if {@code memberName} is {@code null} or has a
+	 *         blank method name
+	 */
+	public static Optional<String> extractMethodName(String memberName) {
+		if (memberName == null) {
+			return Optional.empty();
 		}
 
 		String name = memberName;
@@ -49,21 +60,28 @@ class MemberNameUtils {
 			name = name.substring(name.indexOf('#') + 1);
 		}
 
-		// check if the string is empty
-		String trimmedName = name.trim();
-		if (trimmedName.isEmpty()) {
-			throw new IllegalArgumentException("memberName cannot be empty");
-		}
-
-		return trimmedName;
+		String methodName = name.trim();
+		return methodName.isEmpty() ? Optional.empty() : Optional.of(methodName);
 	}
 
-	/** Extracts class name from String reference if present.
+	/**
+	 * Returns the class name of the given member reference, if present.
 	 *
-	 * @param memberName  The String reference
-	 * @return an {@code Optional<String>} containing the extracted class name. The extracted class name,
-	 * or empty if {@code memberName} is {@code null}, blank, or contains no class reference.
-	 * */
+	 * <p>The class name is the part before the first {@code '#'}, trimmed.
+	 *
+	 * <p>Examples:
+	 * <blockquote><pre>
+	 * extractClassName("MyClass#myMethod") returns Optional[MyClass]
+	 * extractClassName("com.example.MyClass#myMethod(int)") returns Optional[com.example.MyClass]
+	 * extractClassName("myMethod") returns Optional.empty
+	 * extractClassName("#myMethod") returns Optional.empty
+	 * </pre></blockquote>
+	 *
+	 * @param memberName the member reference; may be {@code null}
+	 * @return an {@code Optional} containing the class name, or an empty
+	 *         {@code Optional} if {@code memberName} is {@code null},
+	 *         contains no {@code '#'}, or has a blank class name
+	 */
 	public static Optional<String> extractClassName(String memberName) {
 		if (memberName == null || !memberName.contains("#")) {
 			return Optional.empty();

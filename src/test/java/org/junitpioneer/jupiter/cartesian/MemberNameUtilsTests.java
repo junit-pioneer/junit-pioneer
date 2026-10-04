@@ -11,7 +11,6 @@
 package org.junitpioneer.jupiter.cartesian;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,15 +26,15 @@ class MemberNameUtilsTests {
 			"MyClass#myMethod| myMethod", "MyClass#myMethod(int)| myMethod",
 			"MyClass#myMethod(int\\, String)| myMethod" })
 	void shouldExtractMethodName(String input, String expected) {
-		assertThat(MemberNameUtils.extractMethodName(input)).isEqualTo(expected);
+		assertThat(MemberNameUtils.extractMethodName(input)).contains(expected);
 	}
 
 	@ParameterizedTest
-	@DisplayName("Should throw IllegalArgumentException when method reference name is null or empty.")
+	@DisplayName("Should return empty optional when no method name is provided")
 	@NullAndEmptySource
-	@ValueSource(strings = { " ", "", "#", "MyClass#" })
-	void shouldThrowExceptionForInvalidMethodNameInput(String input) {
-		assertThatThrownBy(() -> MemberNameUtils.extractMethodName(input)).isInstanceOf(IllegalArgumentException.class);
+	@ValueSource(strings = { " ", "#", "MyClass#", "MyClass#(int)" })
+	void shouldReturnEmptyOptionalWhenThereIsNoMethodName(String input) {
+		assertThat(MemberNameUtils.extractMethodName(input)).isEmpty();
 	}
 
 	@ParameterizedTest

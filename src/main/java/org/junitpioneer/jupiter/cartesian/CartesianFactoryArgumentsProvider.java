@@ -42,7 +42,10 @@ class CartesianFactoryArgumentsProvider
 
 	private static Method findMethodFactory(Method testMethod, String methodFactoryName, Object testInstance,
 			TestInstance.Lifecycle lifecycle) {
-		String factoryName = extractMethodFactoryName(methodFactoryName);
+		String factoryName = MemberNameUtils
+				.extractMethodName(methodFactoryName)
+				.orElseThrow(() -> new ExtensionConfigurationException(
+					"Could not extract a factory method name from `" + methodFactoryName + "`."));
 		Class<?> declaringClass = findExplicitOrImplicitClass(testMethod, methodFactoryName);
 		Method factory = PioneerUtils
 				.findMethodCurrentOrEnclosing(declaringClass, factoryName)
@@ -57,19 +60,10 @@ class CartesianFactoryArgumentsProvider
 		return factory;
 	}
 
-	private static String extractMethodFactoryName(String methodFactoryName) {
-		if (methodFactoryName.contains("("))
-			methodFactoryName = methodFactoryName.substring(0, methodFactoryName.indexOf('('));
-		if (methodFactoryName.contains("#"))
-			return methodFactoryName.substring(methodFactoryName.indexOf('#') + 1);
-		return methodFactoryName;
-	}
-
 	private static Class<?> findExplicitOrImplicitClass(Method testMethod, String methodFactoryName) {
 		Optional<String> optionalClassName = MemberNameUtils.extractClassName(methodFactoryName);
-		if (optionalClassName.isEmpty()) {
+		if (optionalClassName.isEmpty())
 			return testMethod.getDeclaringClass();
-		}
 
 		String className = optionalClassName.get();
 		Try<Class<?>> tryToLoadClass = ReflectionSupport.tryToLoadClass(className);
