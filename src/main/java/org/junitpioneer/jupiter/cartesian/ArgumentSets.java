@@ -25,7 +25,7 @@ import java.util.stream.Stream;
  * <p>Use the static factory method {@link ArgumentSets#argumentsForFirstParameter(Object[]) argumentsForFirstParameter}
  * to create an instance and call {@link ArgumentSets#argumentsForNextParameter(Object[]) argumentsForNextParameter}
  * for each parameter after the first. Alternatively, call the static factory method
- * {@link ArgumentSets#create() create} to create an instance call {@code argumentsForNextParameter} for each parameter.</p>
+ * {@link ArgumentSets#create() create} to create an instance, then call {@code argumentsForNextParameter} for each parameter.</p>
  */
 public class ArgumentSets {
 

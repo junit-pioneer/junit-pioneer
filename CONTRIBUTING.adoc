@@ -56,7 +56,7 @@ For information on how to use it, check its https://asciidoctor.org/docs/user-ma
 
 There are a couple of good guides to get you started on this:
 
-* first of all, the https://junit.org/junit5/docs/current/user-guide/#extensions[JUnit 5 User Guide]
+* first of all, the https://docs.junit.org/current/user-guide/#extensions[JUnit 5 User Guide]
 * then there's https://nipafx.dev/junit-5-extension-model/[Nicolai's article on the topic]
 
 === ...to JUnit Pioneer
@@ -75,6 +75,10 @@ Everything related to branches, commits, and more is described #fixing-bugs-deve
 
 Where to put types and how to name them.
 
+==== Naming Convention
+
+If not explicit mentioned differently, we follow the https://www.oracle.com/java/technologies/javase/codeconventions-namingconventions.html[`Java naming conventions`].
+
 ==== Package Structure
 
 Classes usually belong into one of these packages:
@@ -87,6 +91,7 @@ Classes usually belong into one of these packages:
 	* `...json` - JSON argument sources for Jupiter's `@ParameterizedTest`
 	* `...params` - extensions for Jupiter's `@ParameterizedTest`
 	* `...resource` - extensions for injecting resources
+	* `...displaynamegenerator` - implementations of `org.junit.jupiter.api.DisplayNameGenerator`
 * `org.junitpioneer.vintage` - extensions to older JUnit versions
 
 If none of them is a good fit, we'll find one together.
@@ -126,8 +131,8 @@ class MyTests {
 
 You might ask yourself: should `@YourExtension` run
 
-1. once before/after all tests (meaning it "brackets" the test class, typically via https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeAllCallback.html[`BeforeAllCallback`] / https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterAllCallback.html[`AfterAllCallback`]) or
-2. once before/after each test (meaning it "brackets" each test method, typically via https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeEachCallback.html[`BeforeEachCallback`] / https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterEachCallback.html[`AfterEachCallback`])?
+1. once before/after all tests (meaning it "brackets" the test class, typically via https://docs.junit.org/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeAllCallback.html[`BeforeAllCallback`] / https://docs.junit.org/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterAllCallback.html[`AfterAllCallback`]) or
+2. once before/after each test (meaning it "brackets" each test method, typically via https://docs.junit.org/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/BeforeEachCallback.html[`BeforeEachCallback`] / https://docs.junit.org/current/api/org.junit.jupiter.api/org/junit/jupiter/api/extension/AfterEachCallback.html[`AfterEachCallback`])?
 
 We decided to _default_ to option 2, particularly for extensions that set and reset state (often global state like `DefaultLocaleExtension` and `DefaultTimezoneExtension`), as we believe this is less error-prone and covers more common use cases.
 Furthermore, we want to guarantee consistent behavior across different extensions.
@@ -137,7 +142,7 @@ This, however, is just a default.
 
 ==== Namespaces
 
-Interacting with https://junit.org/junit5/docs/current/user-guide/#extensions-keeping-state[Jupiter's extension `Store`] requires a `Namespace` instance.
+Interacting with https://docs.junit.org/current/user-guide/#extensions-keeping-state[Jupiter's extension `Store`] requires a `Namespace` instance.
 These should always be created from a class as follows:
 
 [source,java]
@@ -150,6 +155,18 @@ It usually makes sense to store them in a static final field.
 === Code Style
 
 How to write the code itself.
+
+==== Formatting
+
+This project uses https://github.com/diffplug/spotless[Spotless] to apply and verify code formatting.
+As builds break if the formatting is off, you should run it before committing.
+You can execute it manually by `./gradlew spotlessApply`.
+But you can also automate this by enabling a pre-commit hook:
+
+```bash
+git config --local core.hooksPath .githooks/
+```
+
 
 ==== `Optional`
 https://nipafx.dev/intention-revealing-code-java-8-optional/[There shall be no `null` - use `Optional` instead]:
@@ -173,7 +190,7 @@ For that, also add the annotation `@Inherited`.
 ==== Thread-safety
 
 It must be safe to use Pioneer's extensions in a test suite that is executed in parallel.
-To that end it is necessary to understand https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[JUnit Jupiter's parallel execution], particularly https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution-synchronization[the synchronization mechanisms it offers]: `@Execution` and `@ResourceLock`.
+To that end it is necessary to understand https://docs.junit.org/current/user-guide/#writing-tests-parallel-execution[JUnit Jupiter's parallel execution], particularly https://docs.junit.org/current/user-guide/#writing-tests-parallel-execution-synchronization[the synchronization mechanisms it offers]: `@Execution` and `@ResourceLock`.
 
 For extensions touching global state (like default locales or environment variables), we've chosen the following approach:
 
@@ -500,7 +517,7 @@ _Optional_ dependencies are acceptable if they are needed to provide specific fe
 Unless we see reports of optional dependencies causing unexpected problems for users, there is no particularly high hurdle for taking them on, given each provides more than marginal value.
 They should only be used by specifically chosen features that require them, though, and care needs to be taken to prevent them from creeping into the rest of the code base - CheckStyle rules need to be configured for each that fail the build on accidental use of these dependencies.
 
-Optional dependencies are implemented with https://docs.gradle.org/current/userguide/feature_variants.html[Gradle's feature variants].
+Optional dependencies are declared `compileOnly` on the main source set (so Pioneer can compile against them without requiring them at run time) and `testImplementation` on the test source set (so Pioneer's own tests exercise the integration).
 Pioneer's module declaration must be extended with a matching `requires static` clause, which limits optional dependencies to those that have at least an explicit automatic module name.
 Note that `requires static` does not suffice to pull in the optional dependency's module if no user code depends on it as well.
 

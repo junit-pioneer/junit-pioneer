@@ -16,8 +16,16 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 
+/**
+ * Pioneer-internal utility class.
+ * DO NOT USE THIS CLASS - IT MAY CHANGE SIGNIFICANTLY IN ANY MINOR UPDATE.
+ * <p>
+ * A (slightly refactored) copy of {@code org.junit.jupiter.params.ParameterizedTestNameFormatter}.
+ * </p>
+ */
 public final class TestNameFormatter {
 
 	// This code is a slightly refactored variant of the JUnit Jupiter class
@@ -74,7 +82,12 @@ public final class TestNameFormatter {
 	private Object[] makeReadable(Object[] arguments) {
 		Object[] result = Arrays.copyOf(arguments, arguments.length, Object[].class);
 		for (int i = 0; i < result.length; i++) {
-			result[i] = PioneerUtils.nullSafeToString(arguments[i]);
+			Object argument = arguments[i];
+			if (argument instanceof Named<?>) {
+				result[i] = ((Named<?>) argument).getName();
+			} else {
+				result[i] = PioneerUtils.nullSafeToString(arguments[i]);
+			}
 		}
 		return result;
 	}

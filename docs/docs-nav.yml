@@ -3,6 +3,8 @@
 #  * the entries are sorted lexicographically by their title (i.e. not their slug)
   - title: JUnit Pioneer Extensions
     children:
+      - title: "DisplayName generator to replace CamelCase, underscore and numbers"
+        url: /docs/replace-camelcase-and-underscore-and-number/
       - title: "Cartesian Product of Parameters"
         url: /docs/cartesian-product/
       - title: "Clear, Set, and Restore System Properties"
@@ -21,6 +23,8 @@
         url: /docs/disable-parameterized-tests/
       - title: "Expected-to-Fail Tests"
         url: /docs/expected-to-fail-tests/
+      - title: "Fail Test at a Date"
+        url: /docs/fail-at/
       - title: "Injecting Resources"
         url: /docs/resources/
       - title: "Injecting Temporary Directories"

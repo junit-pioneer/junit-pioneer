@@ -54,18 +54,19 @@ class JsonSourceArgumentsProviderTests {
 					"deconstructCustomerMultipleLinesComplexType", "singleCustomer", "singleCustomerName",
 					"allowsTrailingComma");
 
-		assertThat(displayNames.get("deconstructCustomerFromArray")).containsExactly("[1] Luke, 172", "[2] Yoda, 66");
+		assertThat(displayNames.get("deconstructCustomerFromArray"))
+				.containsExactly("[1] \"Luke\", 172", "[2] \"Yoda\", 66");
 
 		assertThat(displayNames.get("deconstructCustomerMultipleValues"))
-				.containsExactly("[1] 66, Yoda", "[2] 172, Luke");
+				.containsExactly("[1] 66, \"Yoda\"", "[2] 172, \"Luke\"");
 
 		assertThat(displayNames.get("deconstructCustomerMultipleLinesComplexType"))
-				.containsExactly("[1] Yoda, Location{name='unknown'}", "[2] Luke, Location{name='Tatooine'}");
+				.containsExactly("[1] \"Yoda\", Location{name='unknown'}", "[2] \"Luke\", Location{name='Tatooine'}");
 
 		assertThat(displayNames.get("singleCustomer"))
 				.containsExactly("[1] Customer{name='Luke', height=172}", "[2] Customer{name='Yoda', height=66}");
 
-		assertThat(displayNames.get("singleCustomerName")).containsExactly("[1] Luke", "[2] Yoda");
+		assertThat(displayNames.get("singleCustomerName")).containsExactly("[1] \"Luke\"", "[2] \"Yoda\"");
 
 		assertThat(displayNames.get("allowsTrailingComma"))
 				.containsExactly("[1] Customer{name='Luke', height=172}", "[2] Customer{name='Yoda', height=66}");

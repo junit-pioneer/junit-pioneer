@@ -41,6 +41,7 @@ import java.util.List;
  * @see New
  * @see Shared
  */
+@SuppressWarnings("try")
 public final class TemporaryDirectory implements ResourceFactory<Path> {
 
 	@Override

@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
@@ -31,10 +32,13 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.platform.testkit.engine.Execution;
 import org.junitpioneer.testkit.ExecutionResults;
 import org.junitpioneer.testkit.PioneerTestKit;
+import org.opentest4j.MultipleFailuresError;
+import org.opentest4j.TestAbortedException;
 
 class RetryingTestExtensionTests {
 
 	private static final int SUSPEND_FOR = 10;
+	private static final int JIT_FOR = 100;
 
 	@Test
 	void invalidConfigurationWithTest() {
@@ -111,6 +115,7 @@ class RetryingTestExtensionTests {
 				.executeTestMethod(RetryingTestTestCases.class, "failsOnlyOnFirstInvocationWithUnexpectedException");
 
 		assertThat(results).hasNumberOfDynamicallyRegisteredTests(1).hasNumberOfFailedTests(1);
+		assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(NullPointerException.class);
 	}
 
 	@Test
@@ -122,6 +127,8 @@ class RetryingTestExtensionTests {
 				.hasNumberOfDynamicallyRegisteredTests(2)
 				.hasNumberOfAbortedTests(1)
 				.hasNumberOfFailedTests(1);
+
+		assertThat(results).hasSingleFailedTest().withExceptionInstanceOf(NullPointerException.class);
 	}
 
 	@Test
@@ -132,6 +139,8 @@ class RetryingTestExtensionTests {
 				.hasNumberOfDynamicallyRegisteredTests(3)
 				.hasNumberOfAbortedTests(2)
 				.hasNumberOfFailedTests(1);
+
+		assertFailedTest(results, 3);
 	}
 
 	@Test
@@ -184,6 +193,9 @@ class RetryingTestExtensionTests {
 				.hasNumberOfAbortedTests(2)
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(1);
+
+		assertFailedTest(results, 3);
+
 	}
 
 	@Test
@@ -195,6 +207,8 @@ class RetryingTestExtensionTests {
 				.hasNumberOfAbortedTests(2)
 				.hasNumberOfFailedTests(1)
 				.hasNumberOfSucceededTests(0);
+
+		assertFailedTest(results, 3);
 	}
 
 	@Test
@@ -260,6 +274,14 @@ class RetryingTestExtensionTests {
 	}
 
 	@Test
+	void jitterForLessThanZero_fails() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "jitterForLessThanZero");
+
+		assertThat(results).hasNumberOfDynamicallyRegisteredTests(0);
+	}
+
+	@Test
 	void suspendForLessThanZero_fails() {
 		ExecutionResults results = PioneerTestKit
 				.executeTestMethod(RetryingTestTestCases.class, "suspendForLessThanZero");
@@ -279,6 +301,37 @@ class RetryingTestExtensionTests {
 				.hasNumberOfSucceededTests(0);
 
 		assertSuspendedFor(results, SUSPEND_FOR);
+		assertFailedTest(results, 3);
+	}
+
+	@Test
+	void failThreeTimesWithSuspendAndJitter() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithSuspendAndJitter");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(4)
+				.hasNumberOfAbortedTests(3)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+
+		assertSuspendedFor(results, SUSPEND_FOR);
+		assertFailedTest(results, 4);
+	}
+
+	@Test
+	void failThreeTimesWithSuspendAndJitterWithSeed() {
+		ExecutionResults results = PioneerTestKit
+				.executeTestMethod(RetryingTestTestCases.class, "failThreeTimesWithSuspendAndJitterWithSeed");
+
+		assertThat(results)
+				.hasNumberOfDynamicallyRegisteredTests(5)
+				.hasNumberOfAbortedTests(4)
+				.hasNumberOfFailedTests(1)
+				.hasNumberOfSucceededTests(0);
+
+		assertSuspendedFor(results, SUSPEND_FOR);
+		assertFailedTest(results, 5);
 	}
 
 	@Test
@@ -293,6 +346,7 @@ class RetryingTestExtensionTests {
 				.hasNumberOfSucceededTests(0);
 
 		assertSuspendedFor(results, 0);
+		assertFailedTest(results, 3);
 	}
 
 	private void assertSuspendedFor(ExecutionResults results, long greaterThanOrEqualTo) {
@@ -313,6 +367,17 @@ class RetryingTestExtensionTests {
 
 			Assertions.assertThat(suspendedFor).isGreaterThanOrEqualTo(greaterThanOrEqualTo);
 		}
+	}
+
+	private void assertFailedTest(ExecutionResults results, int count) {
+		assertThat(results)
+				.hasSingleFailedTest()
+				.withExceptionInstanceOf(MultipleFailuresError.class)
+				.extracting(MultipleFailuresError::getFailures, InstanceOfAssertFactories.list(Throwable.class))
+				.hasSize(count)
+				.hasOnlyElementsOfType(TestAbortedException.class)
+				.extracting(Throwable::getCause)
+				.hasOnlyElementsOfType(IllegalArgumentException.class);
 	}
 
 	// TEST CASES -------------------------------------------------------------------
@@ -482,13 +547,28 @@ class RetryingTestExtensionTests {
 			// Do nothing
 		}
 
+		@RetryingTest(maxAttempts = 3, maxJitterMs = -1)
+		void jitterForLessThanZero() {
+			// Do nothing
+		}
+
+		@RetryingTest(maxAttempts = 3)
+		void failThreeTimesWithoutSuspend() {
+			throw new IllegalArgumentException();
+		}
+
 		@RetryingTest(maxAttempts = 3, suspendForMs = SUSPEND_FOR)
 		void failThreeTimesWithSuspend() {
 			throw new IllegalArgumentException();
 		}
 
-		@RetryingTest(maxAttempts = 3)
-		void failThreeTimesWithoutSuspend() {
+		@RetryingTest(maxAttempts = 4, suspendForMs = SUSPEND_FOR, maxJitterMs = JIT_FOR)
+		void failThreeTimesWithSuspendAndJitter() {
+			throw new IllegalArgumentException();
+		}
+
+		@RetryingTest(maxAttempts = 5, suspendForMs = SUSPEND_FOR, maxJitterMs = JIT_FOR, jitterSeed = 666)
+		void failThreeTimesWithSuspendAndJitterWithSeed() {
 			throw new IllegalArgumentException();
 		}
 

@@ -22,7 +22,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.platform.engine.TestExecutionResult.Status;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
+import org.junit.platform.launcher.LauncherExecutionRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.core.LauncherExecutionRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junitpioneer.jupiter.Issue;
 import org.junitpioneer.jupiter.IssueTestCase;
@@ -37,12 +39,13 @@ public class IssueExtensionIntegrationTests {
 
 	@Test
 	void testIssueCases() {
-		LauncherFactory
-				.create()
-				.execute(LauncherDiscoveryRequestBuilder
+		LauncherExecutionRequest request = LauncherExecutionRequestBuilder
+				.request(LauncherDiscoveryRequestBuilder
 						.request()
 						.selectors(DiscoverySelectors.selectClass(IssueIntegrationTestCases.class))
-						.build());
+						.build())
+				.build();
+		LauncherFactory.create().execute(request);
 
 		List<IssueTestSuite> issueTestSuites = StoringIssueProcessor.ISSUE_TEST_SUITES;
 

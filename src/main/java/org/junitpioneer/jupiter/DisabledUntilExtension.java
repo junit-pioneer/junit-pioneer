@@ -32,6 +32,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  */
 class DisabledUntilExtension implements ExecutionCondition {
 
+	static final String EXECUTION_DATE_CONFIGURATION_PARAMETER = "org.junitpioneer.jupiter.disableduntil.executiondate";
+
 	private static final DateTimeFormatter ISO_8601 = DateTimeFormatter.ISO_DATE;
 
 	@Override
@@ -57,22 +59,37 @@ class DisabledUntilExtension implements ExecutionCondition {
 		}
 	}
 
+	private LocalDate parseExecutionDate(String dateString) {
+		try {
+			return LocalDate.parse(dateString, ISO_8601);
+		}
+		catch (DateTimeParseException ex) {
+			throw new ExtensionConfigurationException(
+				"The configuration parameter `" + EXECUTION_DATE_CONFIGURATION_PARAMETER + "` with value '" + dateString
+						+ "' is not a valid ISO-8601 date.",
+				ex);
+		}
+	}
+
 	private ConditionEvaluationResult evaluateUntilDate(ExtensionContext context, LocalDate untilDate) {
-		LocalDate today = LocalDate.now();
-		boolean disabled = today.isBefore(untilDate);
+		LocalDate executionDate = context
+				.getConfigurationParameter(EXECUTION_DATE_CONFIGURATION_PARAMETER)
+				.map(this::parseExecutionDate)
+				.orElseGet(LocalDate::now);
+		boolean disabled = executionDate.isBefore(untilDate);
 
 		if (disabled) {
 			String reportEntry = format(
 				"This test is disabled until %s. If executing it on this commit would fail, the build can't be reproduced after that date.",
 				untilDate.format(ISO_8601));
 			context.publishReportEntry("DisabledUntil", reportEntry);
-			String message = format("The `date` %s is after the current date %s", untilDate.format(ISO_8601),
-				today.format(ISO_8601));
+			String message = format("The `date` %s is after the execution date %s", untilDate.format(ISO_8601),
+				executionDate.format(ISO_8601));
 			return disabled(message);
 		} else {
 			String message = format(
-				"The `date` %s is before or on the current date %s, so `@DisabledUntil` no longer disabled test \"%s\". Please remove the annotation.",
-				untilDate.format(ISO_8601), today.format(ISO_8601), context.getUniqueId());
+				"The `date` %s is before or on the execution date %s, so `@DisabledUntil` no longer disabled test \"%s\". Please remove the annotation.",
+				untilDate.format(ISO_8601), executionDate.format(ISO_8601), context.getUniqueId());
 			context.publishReportEntry(DisabledUntilExtension.class.getSimpleName(), message);
 			return enabled(message);
 		}

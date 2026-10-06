@@ -10,16 +10,17 @@
 
 package org.junitpioneer.jupiter.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Service interface for providing a custom {@link com.fasterxml.jackson.databind.ObjectMapper} instance at runtime.
+ * Service interface for providing a custom {@link tools.jackson.databind.ObjectMapper} instance at runtime.
  * The default implementation doesn't register any additional Jackson modules.
- *
- * @see com.fasterxml.jackson.databind.Module
  */
 public interface ObjectMapperProvider {
 
@@ -30,20 +31,35 @@ public interface ObjectMapperProvider {
 		if (mapper instanceof JsonMapper) {
 			return ((JsonMapper) mapper)
 					.rebuild()
-					.enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES)
+					.enable(JsonReadFeature.ALLOW_UNQUOTED_PROPERTY_NAMES)
 					.enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
 					.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
 					.enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
 					.build();
 		}
-		return get()
-				.copyWith(JsonFactory
-						.builder()
-						.enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES)
-						.enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
-						.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
-						.enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
-						.build());
+		if (!(mapper.tokenStreamFactory() instanceof JsonFactory)) {
+			// Lenient parsing is a JSON-specific concept (JsonReadFeature); mappers backed by a
+			// different format (e.g. XML, YAML, CBOR) have no equivalent, so fall back to `get()`.
+			return mapper;
+		}
+		var factory = ((JsonFactory) mapper.tokenStreamFactory())
+				.rebuild()
+				.enable(JsonReadFeature.ALLOW_UNQUOTED_PROPERTY_NAMES)
+				.enable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
+				.enable(JsonReadFeature.ALLOW_SINGLE_QUOTES)
+				.enable(JsonReadFeature.ALLOW_TRAILING_COMMA)
+				.build();
+		var builder = JsonMapper.builder(factory).addModules(mapper.registeredModules());
+		// JsonMapper.builder() can't get feature flags from an arbitrary ObjectMapper directly,
+		// so we re-apply the standard ones by hand.
+		// This won't carry over anything outside those features.
+		for (MapperFeature feature : MapperFeature.values())
+			builder.configure(feature, mapper.isEnabled(feature));
+		for (SerializationFeature feature : SerializationFeature.values())
+			builder.configure(feature, mapper.isEnabled(feature));
+		for (DeserializationFeature feature : DeserializationFeature.values())
+			builder.configure(feature, mapper.isEnabled(feature));
+		return builder.build();
 	}
 
 	String id();

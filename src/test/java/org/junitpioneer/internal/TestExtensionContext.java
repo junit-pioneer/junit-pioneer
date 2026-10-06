@@ -12,15 +12,20 @@ package org.junitpioneer.internal;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExecutableInvoker;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.MediaType;
 import org.junit.jupiter.api.extension.TestInstances;
+import org.junit.jupiter.api.function.ThrowingConsumer;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
@@ -56,6 +61,11 @@ public class TestExtensionContext implements ExtensionContext {
 	@Override
 	public Optional<Class<?>> getTestClass() {
 		return Optional.of(testClass);
+	}
+
+	@Override
+	public List<Class<?>> getEnclosingTestClasses() {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
 	@Override
@@ -119,7 +129,8 @@ public class TestExtensionContext implements ExtensionContext {
 	}
 
 	@Override
-	public <T> Optional<T> getConfigurationParameter(String key, Function<String, T> transformer) {
+	public <T> Optional<T> getConfigurationParameter(String key,
+			Function<? super String, ? extends @Nullable T> transformer) {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 
@@ -129,7 +140,27 @@ public class TestExtensionContext implements ExtensionContext {
 	}
 
 	@Override
+	public void publishFile(String name, MediaType mediaType, ThrowingConsumer<Path> action) {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
+	}
+
+	@Override
+	public void publishFile(String name, org.junit.jupiter.api.MediaType mediaType, ThrowingConsumer<Path> action) {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
+	}
+
+	@Override
+	public void publishDirectory(String name, ThrowingConsumer<Path> action) {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
+	}
+
+	@Override
 	public Store getStore(Namespace namespace) {
+		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
+	}
+
+	@Override
+	public Store getStore(StoreScope scope, Namespace namespace) {
 		throw NOT_SUPPORTED_IN_TEST_CONTEXT;
 	}
 

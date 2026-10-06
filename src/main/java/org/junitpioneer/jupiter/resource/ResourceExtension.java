@@ -12,7 +12,6 @@ package org.junitpioneer.jupiter.resource;
 
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.toUnmodifiableList;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -137,12 +136,12 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 			throwIfMultipleParametersHaveExactAnnotation(parameters, sharedAnnotation);
 
 			ResourceFactory<?> resourceFactory = scopedStore
-					.getOrComputeIfAbsent( //
+					.computeIfAbsent( //
 						factoryKey(sharedAnnotation), //
 						__ -> ReflectionSupport.newInstance(sharedAnnotation.factory()), //
 						ResourceFactory.class);
 			Resource<?> resource = scopedStore
-					.getOrComputeIfAbsent( //
+					.computeIfAbsent( //
 						resourceKey(sharedAnnotation), //
 						__ -> newResource(sharedAnnotation, resourceFactory), //
 						Resource.class);
@@ -211,13 +210,13 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 	private void throwIfHasAnnotationWithSameNameButDifferentType(ExtensionContext.Store scopedStore,
 			Shared sharedAnnotation) {
 		ResourceFactory<?> presentResourceFactory = //
-			scopedStore.getOrDefault(factoryKey(sharedAnnotation), ResourceFactory.class, null);
+			scopedStore.get(factoryKey(sharedAnnotation), ResourceFactory.class);
 
 		if (presentResourceFactory == null) {
 			scopedStore.put(keyOfFactoryKey(sharedAnnotation), factoryKey(sharedAnnotation));
 		} else {
 			String presentResourceFactoryName = //
-				scopedStore.getOrDefault(keyOfFactoryKey(sharedAnnotation), String.class, null);
+				scopedStore.get(keyOfFactoryKey(sharedAnnotation), String.class);
 
 			if (factoryKey(sharedAnnotation).equals(presentResourceFactoryName)
 					&& !sharedAnnotation.factory().equals(presentResourceFactory.getClass())) {
@@ -235,8 +234,7 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private void throwIfHasAnnotationWithSameNameButDifferentScope(ExtensionContext.Store rootStore,
 			Shared sharedAnnotation) {
-		Shared presentSharedAnnotation = rootStore
-				.getOrDefault(sharedAnnotationKey(sharedAnnotation), Shared.class, null);
+		Shared presentSharedAnnotation = rootStore.get(sharedAnnotationKey(sharedAnnotation), Shared.class);
 
 		if (presentSharedAnnotation == null) {
 			rootStore.put(sharedAnnotationKey(sharedAnnotation), sharedAnnotation);
@@ -399,19 +397,16 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 
 	private List<ReentrantLock> sortedLocksForSharedResources(Collection<Shared> sharedAnnotations,
 			ExtensionContext extensionContext) {
-		List<Shared> sortedAnnotations = sharedAnnotations
-				.stream()
-				.sorted(comparing(Shared::name))
-				.collect(toUnmodifiableList());
+		List<Shared> sortedAnnotations = sharedAnnotations.stream().sorted(comparing(Shared::name)).toList();
 		List<ExtensionContext.Store> stores = //
 			sortedAnnotations
 					.stream() //
 					.map(shared -> scopedStore(extensionContext, shared.scope()))
-					.collect(toUnmodifiableList());
+					.toList();
 		return IntStream
 				.range(0, sortedAnnotations.size()) //
 				.mapToObj(i -> findLockForShared(sortedAnnotations.get(i), stores.get(i)))
-				.collect(toUnmodifiableList());
+				.toList();
 	}
 
 	private Method testFactoryMethod(ExtensionContext extensionContext) {
@@ -453,11 +448,11 @@ class ResourceExtension implements ParameterResolver, InvocationInterceptor {
 				.map(parameter -> AnnotationSupport.findAnnotation(parameter, Shared.class))
 				.filter(Optional::isPresent)
 				.map(Optional::get)
-				.collect(toUnmodifiableList());
+				.toList();
 	}
 
 	private void putNewLockForShared(Shared shared, ExtensionContext.Store store) {
-		store.getOrComputeIfAbsent(resourceLockKey(shared), __ -> new ReentrantLock(), ReentrantLock.class);
+		store.computeIfAbsent(resourceLockKey(shared), __ -> new ReentrantLock(), ReentrantLock.class);
 	}
 
 	private ReentrantLock findLockForShared(Shared shared, ExtensionContext.Store store) {

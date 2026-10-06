@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -109,6 +110,21 @@ public class CartesianTestFactoryTests {
 
 			assertThat(results).hasNumberOfSucceededTests(4);
 			assertThat(results).hasNumberOfReportEntries(4).withValues("AC", "AD", "BC", "BD");
+		}
+
+		@Test
+		@DisplayName("unpacks Named arguments")
+		void unpacksNamedParameters() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CorrectFactoryTestCases.class, "unpacksNamed", Class.class,
+						Class.class);
+
+			assertThat(results).hasNumberOfSucceededTests(4);
+			results
+					.dynamicallyRegisteredEvents()
+					.assertThatEvents()
+					.extracting(event -> event.getTestDescriptor().getDisplayName())
+					.containsExactly("[1] S, I", "[2] S, D", "[3] C, I", "[4] C, D");
 		}
 
 	}
@@ -313,6 +329,11 @@ public class CartesianTestFactoryTests {
 		void worksWithNull(String s1, String s2) {
 		}
 
+		@CartesianTest
+		@CartesianTest.MethodFactory("withNamed")
+		void unpacksNamed(Class<?> charsequence, Class<?> number) {
+		}
+
 		static ArgumentSets parentheses() {
 			return ArgumentSets.argumentsForFirstParameter("A", "B").argumentsForNextParameter("C", "D");
 		}
@@ -323,6 +344,12 @@ public class CartesianTestFactoryTests {
 
 		static ArgumentSets withNull() {
 			return ArgumentSets.argumentsForFirstParameter("A", "B").argumentsForNextParameter((Object) null);
+		}
+
+		static ArgumentSets withNamed() {
+			return ArgumentSets
+					.argumentsForFirstParameter(Named.of("S", String.class), Named.of("C", CharSequence.class))
+					.argumentsForNextParameter(Named.of("I", Integer.class), Named.of("D", Double.class));
 		}
 
 		static class Inner {

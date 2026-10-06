@@ -24,6 +24,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junit.platform.engine.TestDescriptor;
@@ -53,25 +54,29 @@ class JsonClasspathSourceArgumentsProviderTests {
 					mapping(TestDescriptor::getDisplayName, toList())));
 
 		assertThat(displayNames)
-				.containsOnlyKeys("singleObject", "singleObjectAttribute", "deconstructObjectsFromArray",
-					"customDataLocation", "deconstructObjectsFromMultipleFiles",
+				.containsOnlyKeys("singleObjectAttributeAndCompetingResolver", "singleObject", "singleObjectAttribute",
+					"deconstructObjectsFromArray", "customDataLocation", "deconstructObjectsFromMultipleFiles",
 					"deconstructObjectsFromMultipleFilesIntoComplexType");
+
+		assertThat(displayNames.get("singleObjectAttributeAndCompetingResolver"))
+				.containsExactly("[1] \"Luke\"", "[2] \"Yoda\"");
 
 		assertThat(displayNames.get("singleObject"))
 				.containsExactly("[1] Jedi {name='Luke', height=172}", "[2] Jedi {name='Yoda', height=66}");
 
-		assertThat(displayNames.get("singleObjectAttribute")).containsExactly("[1] Luke", "[2] Yoda");
+		assertThat(displayNames.get("singleObjectAttribute")).containsExactly("[1] \"Luke\"", "[2] \"Yoda\"");
 
-		assertThat(displayNames.get("deconstructObjectsFromArray")).containsExactly("[1] Luke, 172", "[2] Yoda, 66");
+		assertThat(displayNames.get("deconstructObjectsFromArray"))
+				.containsExactly("[1] \"Luke\", 172", "[2] \"Yoda\", 66");
 
 		assertThat(displayNames.get("customDataLocation"))
-				.containsExactly("[1] Snowspeeder, 4.5", "[2] Imperial Speeder Bike, 3");
+				.containsExactly("[1] \"Snowspeeder\", 4.5", "[2] \"Imperial Speeder Bike\", 3");
 
 		assertThat(displayNames.get("deconstructObjectsFromMultipleFiles"))
-				.containsExactly("[1] 66, Yoda", "[2] 172, Luke");
+				.containsExactly("[1] 66, \"Yoda\"", "[2] 172, \"Luke\"");
 
 		assertThat(displayNames.get("deconstructObjectsFromMultipleFilesIntoComplexType"))
-				.containsExactly("[1] Yoda, Location {name='unknown'}", "[2] Luke, Location {name='Tatooine'}");
+				.containsExactly("[1] \"Yoda\", Location {name='unknown'}", "[2] \"Luke\", Location {name='Tatooine'}");
 	}
 
 	@Test
@@ -115,6 +120,13 @@ class JsonClasspathSourceArgumentsProviderTests {
 
 	@Nested
 	class JsonClasspathSourceTests {
+
+		@ParameterizedTest
+		@JsonClasspathSource(JEDIS)
+		void singleObjectAttributeAndCompetingResolver(@Property("name") String name, TestInfo testInfo) {
+			assertThat(testInfo).isNotNull();
+			assertThat(name).isIn("Luke", "Yoda");
+		}
 
 		@ParameterizedTest
 		@JsonClasspathSource(JEDIS)

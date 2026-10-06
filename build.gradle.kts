@@ -4,14 +4,15 @@ plugins {
 	checkstyle
 	`maven-publish`
 	signing
-	id("com.diffplug.spotless") version "6.25.0"
+	id("com.diffplug.spotless") version "7.0.4"
 	id("at.zierler.yamlvalidator") version "1.5.0"
-	id("org.sonarqube") version "4.4.1.3373"
+	id("org.sonarqube") version "6.2.0.5505"
 	id("org.shipkit.shipkit-changelog") version "2.0.1"
 	id("org.shipkit.shipkit-github-release") version "2.0.1"
-	id("com.github.ben-manes.versions") version "0.51.0"
-	id("io.github.gradle-nexus.publish-plugin") version "2.0.0-rc-2"
-	id("org.gradlex.extra-java-module-info") version "1.7"
+	id("com.github.ben-manes.versions") version "0.52.0"
+	id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+	id("org.gradlex.extra-java-module-info") version "1.13"
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 plugins.withType<JavaPlugin>().configureEach {
@@ -21,13 +22,13 @@ plugins.withType<JavaPlugin>().configureEach {
 }
 
 group = "org.junit-pioneer"
-description = "JUnit 5 Extension Pack"
+description = "JUnit Framework Extension Pack"
 
 val experimentalJavaVersion : String? by project
 val experimentalBuild: Boolean = experimentalJavaVersion?.isNotEmpty() ?: false
 val releaseBuild : Boolean = project.version != "unspecified"
 
-val targetJavaVersion = JavaVersion.VERSION_11
+val targetJavaVersion = JavaVersion.VERSION_17
 
 java {
 	if (experimentalBuild) {
@@ -39,9 +40,6 @@ java {
 	}
 	withJavadocJar()
 	withSourcesJar()
-	registerFeature("jackson") {
-		usingSourceSet(sourceSets["main"])
-	}
 }
 
 repositories {
@@ -49,29 +47,26 @@ repositories {
 }
 
 val junitVersion : String by project
-val jacksonVersion: String = "2.14.2"
-val assertjVersion: String = "3.24.2"
-val log4jVersion: String = "2.20.0"
+val jacksonVersion: String = "3.1.2"
+val assertjVersion: String = "3.27.7"
 val jimfsVersion: String = "1.3.0"
 
 dependencies {
 	implementation(platform("org.junit:junit-bom:$junitVersion"))
 
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-api")
-	implementation(group = "org.junit.jupiter", name = "junit-jupiter-params")
-	implementation(group = "org.junit.platform", name = "junit-platform-launcher")
-	"jacksonImplementation"(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jacksonVersion)
+	implementation("org.junit.jupiter:junit-jupiter-api")
+	implementation("org.junit.jupiter:junit-jupiter-params")
+	implementation("org.junit.platform:junit-platform-launcher")
+	compileOnly("tools.jackson.core:jackson-databind:$jacksonVersion")
 
-	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine")
-	testImplementation(group = "org.junit.platform", name = "junit-platform-testkit")
+	testImplementation("org.junit.jupiter:junit-jupiter-engine")
+	testImplementation("org.junit.platform:junit-platform-testkit")
+	testImplementation("tools.jackson.core:jackson-databind:$jacksonVersion")
 
-	testImplementation(group = "org.assertj", name = "assertj-core", version = assertjVersion)
-	testImplementation(group = "org.mockito", name = "mockito-core", version = "5.5.0")
-	testImplementation(group = "com.google.jimfs", name = "jimfs", version = jimfsVersion)
-	testImplementation(group = "nl.jqno.equalsverifier", name = "equalsverifier", version = "3.15.1")
-
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-core", version = log4jVersion)
-	testRuntimeOnly(group = "org.apache.logging.log4j", name = "log4j-jul", version = log4jVersion)
+	testImplementation("org.assertj:assertj-core:$assertjVersion")
+	testImplementation("org.mockito:mockito-core:5.23.0")
+	testImplementation("com.google.jimfs:jimfs:$jimfsVersion")
+	testImplementation("nl.jqno.equalsverifier:equalsverifier:3.19.4")
 }
 
 spotless {
@@ -88,7 +83,7 @@ spotless {
 }
 
 checkstyle {
-	toolVersion = "10.12.3"
+	toolVersion = "10.18.2"
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
 }
 
@@ -98,7 +93,7 @@ yamlValidator {
 }
 
 jacoco {
-	toolVersion = "0.8.9"
+	toolVersion = "0.8.12"
 }
 
 sonar {
@@ -187,7 +182,6 @@ extraJavaModuleInfo {
 }
 
 tasks {
-
 	sourceSets {
 		create("demo") {
 			java {
@@ -202,11 +196,12 @@ tasks {
 	// Ensures JUnit 5 engine is available to demo at runtime
 	configurations["demoRuntimeOnly"].extendsFrom(configurations.testImplementation.get())
 
+
 	compileJava {
 		options.encoding = "UTF-8"
 		options.compilerArgs.add("-Werror")
 		// Do not break the build on "exports" warnings (see CONTRIBUTING.adoc for details)
-		options.compilerArgs.add("-Xlint:all,-exports")
+		options.compilerArgs.add("-Xlint:all,-exports,-removal")
 
 		if (project.version != "unspecified") {
 			// Add version to Java modules
@@ -231,7 +226,7 @@ tasks {
 		options.compilerArgs.add("-Werror")
 		options.compilerArgs.add(patchModuleArg)
 		var xlintArg = "-Xlint:all"
-		xlintArg += ",-exports,-requires-automatic"
+		xlintArg += ",-exports,-requires-automatic,-removal"
 		// missing-explicit-ctor was added in Java 16. This causes errors on test classes, which don't have one.
 		if (JavaVersion.current() >= JavaVersion.VERSION_16) {
 			xlintArg += ",-missing-explicit-ctor"
@@ -250,12 +245,7 @@ tasks {
 		filter {
 			includeTestsMatching("*Tests")
 		}
-		systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
-		// java.security.manager was added in Java 12 (see
-		// https://www.oracle.com/java/technologies/javase/12-relnote-issues.html#JDK-8191053). We have to explicitly
-		// set it to "allow" for EnvironmentVariableUtilsTests$With_SecurityManager.
-		if (JavaVersion.current() >= JavaVersion.VERSION_12)
-			systemProperty("java.security.manager", "allow")
+		// Earlier builds enabled the Security Manager - it was removed in Java 24, so we deleted it.
 		// Disables Byte Buddy validation for the maximum supported class file version, since we are possibly using a
 		// Java EA release.
 		if (experimentalBuild)
@@ -274,7 +264,7 @@ tasks {
 				dependencies {
 					implementation(project(project.path))
 					implementation("com.google.jimfs:jimfs:$jimfsVersion")
-					implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+					implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
 					implementation("org.assertj:assertj-core:$assertjVersion")
 				}
 
@@ -305,7 +295,7 @@ tasks {
 		if (releaseBuild) {
 			javadocTool.set(project.javaToolchains.javadocToolFor {
 				// create Javadoc with the minimum Java version needed for our desired features (e.g. search)
-				languageVersion.set(JavaLanguageVersion.of(21))
+				languageVersion.set(JavaLanguageVersion.of(24))
 			})
 		}
 
@@ -314,7 +304,7 @@ tasks {
 			this as StandardJavadocDocletOptions
 
 			encoding = "UTF-8"
-			links = listOf("https://junit.org/junit5/docs/current/api/")
+			links = listOf("https://docs.junit.org/current/api/")
 
 			// Set javadoc `--release` flag (affects which warnings and errors are reported)
 			// (Note: Gradle adds one leading '-' to the option on its own)

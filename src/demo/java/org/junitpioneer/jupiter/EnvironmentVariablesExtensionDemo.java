@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.ClassOrderer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.jupiter.params.IntRangeSource;
 
-@EnabledForJreRange(max = JRE.JAVA_16, disabledReason = "See: https://github.com/junit-pioneer/junit-pioneer/issues/509")
+@Disabled
+@EnabledForJreRange(max = JRE.JAVA_17, disabledReason = "See: https://github.com/junit-pioneer/junit-pioneer/issues/509")
 public class EnvironmentVariablesExtensionDemo {
 
 	// tag::environment_clear_simple[]

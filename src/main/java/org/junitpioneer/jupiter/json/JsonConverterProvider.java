@@ -16,7 +16,7 @@ class JsonConverterProvider {
 
 	static boolean isJacksonObjectMapperClassPresent() {
 		try {
-			JsonConverterProvider.class.getClassLoader().loadClass("com.fasterxml.jackson.databind.ObjectMapper");
+			JsonConverterProvider.class.getClassLoader().loadClass("tools.jackson.databind.ObjectMapper");
 			return true;
 		}
 		catch (Exception e) {

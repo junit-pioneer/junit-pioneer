@@ -14,6 +14,7 @@ import static org.junitpioneer.internal.PioneerUtils.wrap;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -38,6 +39,10 @@ class CartesianProductResolver implements ParameterResolver {
 			return false;
 
 		Object parameter = parameters.get(parameterContext.getIndex());
+		// unpack JUnit Named
+		if (parameter instanceof Named<?>) {
+			parameter = ((Named<?>) parameter).getPayload();
+		}
 		Class<?> parameterType = parameterContext.getParameter().getType();
 		// need to go from primitives to wrapper class or `isAssignableFrom` returns false for primitive parameters
 		Class<?> parameterClass = wrap(parameterType);
@@ -52,7 +57,12 @@ class CartesianProductResolver implements ParameterResolver {
 
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		return parameters.get(parameterContext.getIndex());
+		Object parameter = parameters.get(parameterContext.getIndex());
+		if (parameter instanceof Named<?>) {
+			return ((Named<?>) parameter).getPayload();
+		}
+
+		return parameter;
 	}
 
 }
