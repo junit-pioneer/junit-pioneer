@@ -155,6 +155,70 @@ class PioneerUtilsTests {
 	}
 
 	@Nested
+	@DisplayName("findClassCurrentOrEnclosing")
+	class ClassFinderTests {
+
+		@Test
+		@DisplayName("finds class by fully qualified name")
+		void findsItByFullyQualifiedName() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class, "java.lang.String");
+
+			assertThat(result).contains(String.class);
+		}
+
+		@Test
+		@DisplayName("finds class nested in current class")
+		void findsItInCurrent() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class, "MethodFinderTestCasesChild");
+
+			assertThat(result).contains(MethodFinderTestCases.MethodFinderTestCasesChild.class);
+		}
+
+		@Test
+		@DisplayName("finds class nested in enclosing class if it's not nested in the given class")
+		void findsItInEnclosing() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(
+						MethodFinderTestCases.MethodFinderTestCasesChild.MethodFinderTestCasesGrandChild.class,
+						"MethodFinderTestCasesChild");
+
+			assertThat(result).contains(MethodFinderTestCases.MethodFinderTestCasesChild.class);
+		}
+
+		@Test
+		@DisplayName("finds class nested deeper by relative name")
+		void findsItByRelativePath() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class,
+						"MethodFinderTestCasesChild$MethodFinderTestCasesGrandChild");
+
+			assertThat(result)
+					.contains(MethodFinderTestCases.MethodFinderTestCasesChild.MethodFinderTestCasesGrandChild.class);
+		}
+
+		@Test
+		@DisplayName("returns empty Optional if class is not present")
+		void returnsEmptyOptional() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class, "MissingClass");
+
+			assertThat(result).isNotPresent();
+		}
+
+		@Test
+		@DisplayName("does not check classes nested in nested classes")
+		void noNestedCheck() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class, "MethodFinderTestCasesGrandChild");
+
+			assertThat(result).isNotPresent();
+		}
+
+	}
+
+	@Nested
 	@DisplayName("nullSafeToString")
 	class NullSafeToStringTests {
 

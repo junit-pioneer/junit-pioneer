@@ -13,6 +13,7 @@ package org.junitpioneer.internal;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static org.junit.platform.commons.support.ReflectionSupport.findMethod;
+import static org.junit.platform.commons.support.ReflectionSupport.tryToLoadClass;
 
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Array;
@@ -92,6 +93,29 @@ public class PioneerUtils {
 			current = current.getEnclosingClass();
 		} while (method.isEmpty() && current != null);
 		return method;
+	}
+
+	/**
+	 * Find the class with the supplied name, either as a fully qualified name or
+	 * as a nested class of the supplied class or one of its enclosing classes.
+	 *
+	 * <p>The name is first tried as is (i.e. as a fully qualified name). If that
+	 * fails, it is tried relative to the supplied class and then each of its
+	 * enclosing classes (outwards), so that a nested class can be referenced by
+	 * its simple name.</p>
+	 *
+	 * @param clazz the class relative to which the name is resolved; never {@code null}
+	 * @param className the name of the class to find; never {@code null} or blank
+	 * @return an {@code Optional} containing the class found; never {@code null}
+	 * but potentially empty if no such class could be loaded
+	 * @see org.junit.platform.commons.support.ReflectionSupport#tryToLoadClass(String)
+	 */
+	public static Optional<Class<?>> findClassCurrentOrEnclosing(Class<?> clazz, String className) {
+		Optional<Class<?>> found = tryToLoadClass(className).toOptional();
+		for (Class<?> current = clazz; found.isEmpty() && current != null; current = current.getEnclosingClass()) {
+			found = tryToLoadClass(current.getName() + "$" + className).toOptional();
+		}
+		return found;
 	}
 
 	/**
