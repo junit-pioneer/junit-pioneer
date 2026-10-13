@@ -32,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.platform.commons.JUnitException;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.ReportEntry;
 import org.junitpioneer.jupiter.cartesian.CartesianTest.Enum.Mode;
@@ -479,6 +478,67 @@ public class CartesianTestExtensionTests {
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(9).hasNumberOfSucceededTests(9);
 		}
 
+		@Test
+		@DisplayName("@MethodParameterSource with simple name prefers the overload without parameters")
+		void testMethodParameterSourceOverloadBySimpleName() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"overloadBySimpleName", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(1).hasNumberOfSucceededTests(1);
+		}
+
+		@Test
+		@DisplayName("@MethodParameterSource with explicit empty parameter list picks the matching overload")
+		void testMethodParameterSourceOverloadWithoutParameters() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"overloadWithoutParameters", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(1).hasNumberOfSucceededTests(1);
+		}
+
+		@Test
+		@DisplayName("@MethodParameterSource with explicit parameter list picks the matching overload")
+		void testMethodParameterSourceOverloadWithParameters() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"overloadWithParameters", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+		}
+
+		@Test
+		@DisplayName("@MethodParameterSource with class name relative to the test class")
+		void testMethodParameterSourceRelativeClassName() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"relativeClassName", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+		}
+
+		@Test
+		@DisplayName("@MethodParameterSource in @Nested class with factory method in enclosing class")
+		void testMethodParameterSourceFactoryInEnclosingClass() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.NestedTestCases.class,
+						"factoryInEnclosingClass", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+		}
+
+		@Test
+		@DisplayName("@MethodParameterSource in @Nested class prefers factory method in nearest class")
+		void testMethodParameterSourceFactoryShadowedInNestedClass() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.NestedTestCases.class,
+						"factoryShadowedInNestedClass", String.class, TestReporter.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+			assertThat(results).hasNumberOfReportEntries(3).withValues("one", "two", "three");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -891,7 +951,7 @@ public class CartesianTestExtensionTests {
 							.extracting(Throwable::getMessage)
 							.matches(message -> message
 									.equals(
-										"Could not find factory method [doesNotExist] in class [org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases]")));
+										"Could not find factory method [doesNotExist] in class [org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases] or any enclosing class")));
 		}
 
 		@Test
@@ -923,9 +983,44 @@ public class CartesianTestExtensionTests {
 					.hasSingleFailedContainer()
 					.andThenCheckException(exception -> assertThat(exception)
 							.extracting(Throwable::getCause)
-							.isExactlyInstanceOf(JUnitException.class)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
 							.extracting(Throwable::getMessage)
-							.matches(message -> message.equals("Could not load class [a.b.C]")));
+							.matches(
+								message -> message.equals("Class a.b.C not found, referenced in method noSuchClass")));
+		}
+
+		@Test
+		@DisplayName("@MethodParameterSource with parameter list that matches no method")
+		void testMethodParameterSourceNoSuchParameterList() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"noSuchParameterList", String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message
+									.equals(
+										"Could not find factory method [abc(int)] in class [org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases] or any enclosing class")));
+		}
+
+		@Test
+		@DisplayName("@MethodParameterSource with overloaded method referenced by simple name")
+		void testMethodParameterSourceAmbiguousOverload() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"ambiguousOverload", String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message.startsWith("2 factory methods named [ambiguous] were found")));
 		}
 
 		@Test
@@ -1229,6 +1324,77 @@ public class CartesianTestExtensionTests {
 
 		@CartesianTest
 		void invalidFactoryReturnType(@MethodParameterSource("invalidFactoryReturnType") String value) {
+		}
+
+		@CartesianTest
+		void noSuchParameterList(@MethodParameterSource("abc(int)") String value) {
+		}
+
+		@CartesianTest
+		void ambiguousOverload(@MethodParameterSource("ambiguous") String value) {
+		}
+
+		@CartesianTest
+		void overloadBySimpleName(@MethodParameterSource("overloaded") String value) {
+		}
+
+		@CartesianTest
+		void overloadWithoutParameters(@MethodParameterSource("overloaded()") String value) {
+		}
+
+		@CartesianTest
+		void overloadWithParameters(@MethodParameterSource("overloaded(org.junit.jupiter.api.TestInfo)") String value) {
+		}
+
+		@CartesianTest
+		void relativeClassName(@MethodParameterSource("ExternalFactories#ab") String value) {
+		}
+
+		static List<String> overloaded() {
+			return List.of("a");
+		}
+
+		static List<String> overloaded(TestInfo testInfo) {
+			return List.of("a", "b");
+		}
+
+		static List<String> ambiguous(TestInfo testInfo) {
+			return List.of("a");
+		}
+
+		static List<String> ambiguous(TestReporter testReporter) {
+			return List.of("a");
+		}
+
+		static List<String> nestedShadowed() {
+			return abc();
+		}
+
+		static class ExternalFactories {
+
+			static List<String> ab() {
+				return List.of("a", "b");
+			}
+
+		}
+
+		@Nested
+		class NestedTestCases {
+
+			@CartesianTest
+			void factoryInEnclosingClass(@MethodParameterSource("abc") String value) {
+			}
+
+			@CartesianTest
+			void factoryShadowedInNestedClass(@MethodParameterSource("nestedShadowed") String value,
+					TestReporter reporter) {
+				reporter.publishEntry(value);
+			}
+
+			static List<String> nestedShadowed() {
+				return oneTwoThree();
+			}
+
 		}
 
 		@Test

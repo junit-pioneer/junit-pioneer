@@ -371,32 +371,6 @@ class PioneerUtilsTests {
 	}
 
 	@Nested
-	@DisplayName("isBlank")
-	class IsBlankTests {
-
-		@Test
-		void nullStringIsBlank() {
-			assertThat(PioneerUtils.isBlank(null)).isTrue();
-		}
-
-		@Test
-		void emptyStringIsBlank() {
-			assertThat(PioneerUtils.isBlank("")).isTrue();
-		}
-
-		@Test
-		void spacesStringIsBlank() {
-			assertThat(PioneerUtils.isBlank("   ")).isTrue();
-		}
-
-		@Test
-		void wordsAreNotBlank() {
-			assertThat(PioneerUtils.isBlank("some words")).isFalse();
-		}
-
-	}
-
-	@Nested
 	@DisplayName("isConvertibleToStream & toStream")
 	class ToStreamTests {
 

@@ -336,8 +336,11 @@ public @interface CartesianTest {
 		/**
 		 * Methods that back this source.
 		 *
-		 * <p>Methods may be referenced by their simple name if in the same class,
-		 * or by fully qualified name otherwise (i.e. {@code a.b.c.SomeClass#someMethod}).</p>
+		 * <p>Methods may be referenced by their simple name if in the test class or one of its
+		 * enclosing classes, or by class and method name otherwise (i.e. {@code a.b.c.SomeClass#someMethod}).
+		 * The class name may also be given relative to the test class or one of its enclosing classes
+		 * (i.e. {@code SomeNestedClass#someMethod}). To pick one of several overloaded methods,
+		 * add a parameter list (i.e. {@code someMethod(java.lang.String)} or {@code someMethod()}).</p>
 		 *
 		 * <p>Methods should return a {@link java.util.stream.Stream}, {@link Iterable}, {@link java.util.Iterator},
 		 * or array of values.</p>
