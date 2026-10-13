@@ -1,11 +1,11 @@
 name: Main build
 
 env:
-  EXPERIMENTAL_JAVA: 27
+  EXPERIMENTAL_JAVA: 28
 
 on:
   # We want to trigger our builds all the time for the default branch
-  # except when Shipkit creates a new version tag
+  # except when the release job creates a new version tag
   push:
     branches: ['main']
     tags-ignore:
@@ -211,11 +211,14 @@ jobs:
     needs: full-featured
     timeout-minutes: 15
     name: Release Pioneer into the wild
+    # JReleaser creates the Git tag and the GitHub release
+    permissions:
+      contents: write
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
         with:
-          # Shipkit needs the whole Git history for changelog generation
+          # JReleaser needs the whole Git history for changelog generation
           fetch-depth: 0
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -230,17 +233,27 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Perform release
         env:
-          # used to trigger website build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # used by `io.github.gradle-nexus.publish-plugin` to sign artifacts
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.JUNIT_PIONEER_PGP_SECRET_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.JUNIT_PIONEER_PGP_PASSWORD }}
-          # used by `io.github.gradle-nexus.publish-plugin` to publish to Maven Central
-          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.NEXUS_TOKEN_USERNAME }}
-          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.NEXUS_TOKEN_PASSWORD }}
+          # in-memory PGP key JReleaser uses to sign the staged artifacts
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JUNIT_PIONEER_PGP_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JUNIT_PIONEER_PGP_SECRET_KEY }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JUNIT_PIONEER_PGP_PASSWORD }}
+          # Central Portal user token (https://central.sonatype.com/account)
+          JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
+          JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
+          # used by JReleaser to create the tag + GitHub release
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # defines released version according to GitHub Action input
           ORG_GRADLE_PROJECT_version: ${{ github.event.inputs.version }}
-        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository githubRelease
+        run: ./gradlew publish jreleaserDeploy jreleaserRelease
+      - name: Upload JReleaser logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jreleaser-logs
+          if-no-files-found: ignore
+          path: |
+            build/jreleaser/trace.log
+            build/jreleaser/output.properties
 
   # After our release, we also need to trigger an update for our website build
   update-website:
