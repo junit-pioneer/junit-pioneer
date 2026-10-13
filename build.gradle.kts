@@ -5,7 +5,6 @@ plugins {
 	`maven-publish`
 	signing
 	id("com.diffplug.spotless") version "7.0.4"
-	id("at.zierler.yamlvalidator") version "1.5.0"
 	id("org.sonarqube") version "6.2.0.5505"
 	id("org.shipkit.shipkit-changelog") version "2.0.1"
 	id("org.shipkit.shipkit-github-release") version "2.0.1"
@@ -85,11 +84,6 @@ spotless {
 checkstyle {
 	toolVersion = "10.18.2"
 	configDirectory.set(rootProject.file(".infra/checkstyle"))
-}
-
-yamlValidator {
-	searchPaths = listOf("docs")
-	isSearchRecursive = true
 }
 
 jacoco {
@@ -332,7 +326,7 @@ tasks {
 	@Suppress("UnstableApiUsage")
 	check {
 		// to find Javadoc errors early, let "javadoc" task run during "check"
-		dependsOn(javadoc, validateYaml, testing.suites.named("demoTests"))
+		dependsOn(javadoc, testing.suites.named("demoTests"))
 	}
 
 	withType<Jar>().configureEach {
