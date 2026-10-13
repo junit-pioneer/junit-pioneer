@@ -115,6 +115,32 @@ public class DisableIfNotReachableExtensionTests {
 		}
 
 		@Test
+		@DisplayName("for an url with a missing authority")
+		void shouldThrowForMissingAuthority() {
+			final ExecutionResults results = PioneerTestKit
+					.executeTestMethod(DisableIfNotReachableTestCases.class, "testNoAuthority");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withException()
+					.hasCauseInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageEndingWith("URL https:///index.html must contain a valid host");
+		}
+
+		@Test
+		@DisplayName("for an url with an authority that has no valid host")
+		void shouldThrowForInvalidAuthority() {
+			final ExecutionResults results = PioneerTestKit
+					.executeTestMethod(DisableIfNotReachableTestCases.class, "testInvalidAuthority");
+
+			assertThat(results)
+					.hasSingleFailedTest()
+					.withException()
+					.hasCauseInstanceOf(ExtensionConfigurationException.class)
+					.hasMessageEndingWith("URL https://junit_pioneer.org must contain a valid host");
+		}
+
+		@Test
 		@DisplayName("for negative timeout")
 		void shouldThrowForNegativeTimeout() {
 			final ExecutionResults results = PioneerTestKit
@@ -158,6 +184,16 @@ public class DisableIfNotReachableExtensionTests {
 		@Test
 		@DisableIfNotReachable(url = "file://junit-pioneer.org")
 		void testInvalidScheme() {
+		}
+
+		@Test
+		@DisableIfNotReachable(url = "https:///index.html")
+		void testNoAuthority() {
+		}
+
+		@Test
+		@DisableIfNotReachable(url = "https://junit_pioneer.org")
+		void testInvalidAuthority() {
 		}
 
 		@Test

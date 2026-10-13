@@ -116,9 +116,14 @@ class DisableIfNotReachableExtension implements ExecutionCondition {
 		}
 		try {
 			URI url = URI.create(annotation.url());
-			if (url.getScheme() == null || !(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
+			if (url.getScheme() == null
+					|| !(url.getScheme().equalsIgnoreCase("http") || url.getScheme().equalsIgnoreCase("https"))) {
 				throw new ExtensionConfigurationException(
 					format("Scheme for URL %s must be http or https", annotation.url()));
+			}
+			// the host is null if the authority is missing or can not be parsed as `[user-info@]host[:port]`
+			if (url.getHost() == null) {
+				throw new ExtensionConfigurationException(format("URL %s must contain a valid host", annotation.url()));
 			}
 		}
 		catch (IllegalArgumentException e) {
