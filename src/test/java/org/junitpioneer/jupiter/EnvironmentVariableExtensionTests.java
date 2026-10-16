@@ -160,7 +160,7 @@ class EnvironmentVariableExtensionTests {
 		@ValueSource(strings = { "new A fromSource" })
 		@SetEnvironmentVariableFromSource(key = "set envvar A", argument = 0)
 		@SetEnvironmentVariable(key = "set envvar B", value = "new B")
-		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 		void shouldSetEnvironmentVariableToValueFromSource(String setEnvvarA) {
 			assertThat(setEnvvarA).isEqualTo("new A fromSource");
 
@@ -184,7 +184,7 @@ class EnvironmentVariableExtensionTests {
 		@SetEnvironmentVariable(key = "set envvar B", value = "new B")
 		@SetEnvironmentVariable(key = "set envvar C", value = "new C")
 		@SetEnvironmentVariableFromSource(key = "clear envvar D", argument = 1)
-		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 		void shouldBeRepeatable(String setEnvvarA, String clearEnvvarD) {
 			assertThat(setEnvvarA).isEqualTo("new A fromSource");
 			assertThat(clearEnvvarD).isEqualTo("new D fromSource");
@@ -203,7 +203,7 @@ class EnvironmentVariableExtensionTests {
 		@ValueSource(strings = { "new E fromSource" })
 		@ClearEnvironmentVariable(key = "set envvar B")
 		@SetEnvironmentVariableFromSource(key = "clear envvar E", argument = 0)
-		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 		void clearAndSetEnvironmentVariableShouldBeCombinable(String fromSource0) {
 			assertThat(fromSource0).isEqualTo("new E fromSource");
 
@@ -642,7 +642,7 @@ class EnvironmentVariableExtensionTests {
 
 		@Test
 		@DisplayName("should fail when SetEnvironmentVariableFromSource argument is negative")
-		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 		void shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsNegative() {
 			ExecutionResults results = executeTestMethodWithParameterTypes(
 				MethodLevelInitializationFailureTestCases.class,
@@ -652,7 +652,7 @@ class EnvironmentVariableExtensionTests {
 
 		@Test
 		@DisplayName("should fail when SetEnvironmentVariableFromSource argument is too large")
-		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 		void shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsTooLarge() {
 			ExecutionResults results = executeTestMethodWithParameterTypes(
 				MethodLevelInitializationFailureTestCases.class,
@@ -662,7 +662,7 @@ class EnvironmentVariableExtensionTests {
 
 		@Test
 		@DisplayName("should fail when SetEnvironmentVariableFromSource value is NULL")
-		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 		void shouldFailWhenSetEnvironmentVariableFromSourceValueIsNull() {
 			ExecutionResults results = executeTestMethodWithParameterTypes(
 				MethodLevelInitializationFailureTestCases.class,
@@ -756,14 +756,14 @@ class EnvironmentVariableExtensionTests {
 		@ParameterizedTest
 		@ValueSource(strings = "dummy")
 		@SetEnvironmentVariableFromSource(key = "set envvar A", argument = -1)
-		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 		void shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsNegative(String dummy) {
 		}
 
 		@ParameterizedTest
 		@ValueSource(strings = "dummy")
 		@SetEnvironmentVariableFromSource(key = "set envvar A", argument = 1)
-		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 		void shouldFailWhenSetEnvironmentVariableFromSourceArgumentIsTooLarge(String dummy) {
 		}
 
@@ -774,7 +774,7 @@ class EnvironmentVariableExtensionTests {
 		@ParameterizedTest
 		@MethodSource("nullStringSource")
 		@SetEnvironmentVariableFromSource(key = "set envvar A", argument = 0)
-		@RestoreEnvironmentVariables // Needed because of https://github.com/junit-pioneer/junit-pioneer/issues/875
+		@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 		void shouldFailWhenSetEnvironmentVariableFromSourceValueIsNull(String dummy) {
 		}
 

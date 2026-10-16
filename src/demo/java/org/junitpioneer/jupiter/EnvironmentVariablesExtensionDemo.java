@@ -88,7 +88,7 @@ public class EnvironmentVariablesExtensionDemo {
 	@ValueSource(strings = { "foo", "bar" })
 	@SetEnvironmentVariableFromSource(key = "MyEnvVariable", argument = 0)
 	@SetEnvironmentVariable(key = "MyOtherEnvVariable", value = "Something")
-	@RestoreEnvironmentVariables
+	@RestoreEnvironmentVariables // TODO: REMOVE WHEN FIX FOR https://github.com/junit-pioneer/junit-pioneer/issues/875 IS MERGED
 	void parameterizedFromSourceTest(String value) {
 		assertThat(System.getenv("MyEnvVariable")).isEqualTo(value);
 		assertThat(System.getenv("MyOtherEnvVariable")).isEqualTo("Something");
