@@ -15,6 +15,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -23,11 +24,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -36,6 +39,8 @@ import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ExtensionContext.Store;
+import org.junit.jupiter.api.extension.InvocationInterceptor;
+import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.junitpioneer.internal.PioneerAnnotationUtils;
 import org.junitpioneer.internal.PioneerUtils;
@@ -48,10 +53,11 @@ import org.junitpioneer.internal.PioneerUtils;
  * @param <V> The entry value type.
  * @param <C> The clear annotation type.
  * @param <S> The set annotation type.
+ * @param <SS> The set annotation type that retrieves the value from the source.
  * @param <R> The restore annotation type.
  */
-abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation, R extends Annotation>
-		implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback {
+abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends Annotation, SS extends Annotation, R extends Annotation>
+		implements BeforeEachCallback, AfterEachCallback, BeforeAllCallback, AfterAllCallback, InvocationInterceptor {
 
 	/**
 	 * Key to indicate storage is for an incremental backup object.
@@ -62,6 +68,11 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	 * Key to indicate storage is for a complete backup object.
 	 */
 	private static final String COMPLETE_KEY = "full";
+
+	/**
+	 * The key in the Store used to persist the "From Source" information.
+	 */
+	private static final String SOURCE_BASED_VALUES_KEY = "FromSourceIndexes";
 
 	@Override
 	public void beforeAll(ExtensionContext context) {
@@ -96,28 +107,37 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 		currentContext.getElement().ifPresent(element -> {
 			Set<K> entriesToClear;
 			Map<K, V> entriesToSet;
-
+			Map<K, Integer> entriesToSetFromSource;
+			Set<K> allKeysToSet;
 			try {
 				entriesToClear = findEntriesToClear(element);
 				entriesToSet = findEntriesToSet(element);
-				preventClearAndSetSameEntries(entriesToClear, entriesToSet.keySet());
+				entriesToSetFromSource = findEntriesToSetFromSource(element);
+				allKeysToSet = new HashSet<>(entriesToSet.keySet());
+				allKeysToSet.addAll(entriesToSetFromSource.keySet());
+				preventClearAndSetSameEntries(entriesToClear, allKeysToSet);
 			}
 			catch (IllegalStateException ex) {
 				throw new ExtensionConfigurationException("Don't clear/set the same entry more than once.", ex);
 			}
 
-			if (entriesToClear.isEmpty() && entriesToSet.isEmpty())
+			if (entriesToClear.isEmpty() && entriesToSet.isEmpty() && entriesToSetFromSource.isEmpty()) {
 				return;
+			}
 
 			reportWarning(currentContext);
 
 			// Only backup original values if we didn't already do bulk storage of the original state
 			if (doIncrementalBackup) {
-				storeOriginalIncrementalEntries(originalContext, entriesToClear, entriesToSet.keySet());
+				storeOriginalIncrementalEntries(originalContext, entriesToClear, allKeysToSet);
 			}
 
 			clearEntries(entriesToClear);
 			setEntries(entriesToSet);
+
+			// Store the entries that need to be set from the source in a place that they can be actually set
+			// during the interceptTestTemplateMethod
+			getStore(currentContext).put(SOURCE_BASED_VALUES_KEY, entriesToSetFromSource);
 		});
 	}
 
@@ -129,6 +149,48 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 
 	private Map<K, V> findEntriesToSet(AnnotatedElement element) {
 		return findAnnotations(element, getSetAnnotationType()).collect(toMap(setKeyMapper(), setValueMapper()));
+	}
+
+	private Map<K, Integer> findEntriesToSetFromSource(AnnotatedElement element) {
+		return findAnnotations(element, getSetFromSourceAnnotationType())
+				.collect(toMap(setFromSourceKeyMapper(), setFromSourceArgumentIndexMapper()));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void interceptTestTemplateMethod(@NonNull Invocation<Void> invocation,
+			@NonNull ReflectiveInvocationContext<Method> invocationContext, @NonNull ExtensionContext extensionContext)
+			throws Throwable {
+		Map<K, Integer> entriesToSetFromSource = (Map<K, Integer>) getStore(extensionContext)
+				.get(SOURCE_BASED_VALUES_KEY);
+		if (entriesToSetFromSource != null && !entriesToSetFromSource.isEmpty()) {
+			Map<K, V> entriesToSet = new HashMap<>();
+			List<Object> arguments = invocationContext.getArguments();
+			for (Entry<K, Integer> entryToSetFromSource : entriesToSetFromSource.entrySet()) {
+				K key = entryToSetFromSource.getKey();
+				Integer argumentIndex = entryToSetFromSource.getValue();
+
+				if (argumentIndex < 0) {
+					throw new IllegalArgumentException(
+						"The specified index " + argumentIndex + " is illegal (must be 0 or larger).");
+				}
+				if (argumentIndex >= arguments.size()) {
+					throw new IllegalArgumentException("The specified index " + argumentIndex + " for " + key
+							+ " is greater than the maximum arguments index (" + (arguments.size() - 1)
+							+ ") for the current test method.");
+				}
+				Object argumentValue = arguments.get(argumentIndex);
+				if (argumentValue == null) {
+					throw new IllegalArgumentException("The specified index " + argumentIndex + " for " + key
+							+ " resolves to null; null values are not supported.");
+				}
+				V value = castArgumentToValueType().apply(argumentValue);
+				entriesToSet.put(key, value);
+			}
+			setEntries(entriesToSet);
+		}
+
+		invocation.proceed();
 	}
 
 	private <A extends Annotation> Stream<A> findAnnotations(AnnotatedElement element, Class<A> clazz) {
@@ -146,8 +208,13 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	}
 
 	@SuppressWarnings("unchecked")
+	private Class<SS> getSetFromSourceAnnotationType() {
+		return (Class<SS>) getActualTypeArgumentAt(4);
+	}
+
+	@SuppressWarnings("unchecked")
 	private Class<R> getRestoreAnnotationType() {
-		return (Class<R>) getActualTypeArgumentAt(4);
+		return (Class<R>) getActualTypeArgumentAt(5);
 	}
 
 	private Type getActualTypeArgumentAt(int index) {
@@ -281,6 +348,21 @@ abstract class AbstractEntryBasedExtension<K, V, C extends Annotation, S extends
 	 * @return Mapper function to get the value from a set annotation.
 	 */
 	protected abstract Function<S, V> setValueMapper();
+
+	/**
+	 * @return Mapper function to get the key from a set annotation that uses a Source.
+	 */
+	protected abstract Function<SS, K> setFromSourceKeyMapper();
+
+	/**
+	 * @return Mapper function to get the index of the argument of the argument that contains the value from a set annotation that uses a Source.
+	 */
+	protected abstract Function<SS, Integer> setFromSourceArgumentIndexMapper();
+
+	/**
+	 * @return Cast/Convert the provided Object to the required Value type V.
+	 */
+	protected abstract Function<Object, V> castArgumentToValueType();
 
 	/**
 	 * Removes the entry indicated by the specified key.
