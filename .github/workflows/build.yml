@@ -237,10 +237,11 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          # we build the Javadoc with JDK 26 (for better results),
-          # so install that as well
+          # we build the Javadoc with JDK 24 (for better results),
+          # so install that as well (must match the Javadoc toolchain
+          # in build.gradle.kts, or Gradle will try to provision it)
           java-version: |
-            26
+            24
             17
           distribution: temurin
       - name: Set up Gradle
