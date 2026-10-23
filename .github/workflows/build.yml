@@ -258,7 +258,10 @@ jobs:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # defines released version according to GitHub Action input
           ORG_GRADLE_PROJECT_version: ${{ github.event.inputs.version }}
-        run: ./gradlew publish jreleaserDeploy jreleaserRelease
+          # TEST ONLY: upload + validate on the Central Portal, but don't publish
+          JRELEASER_MAVENCENTRAL_STAGE: UPLOAD
+        # TEST ONLY: no jreleaserRelease, so no Git tag / GitHub release
+        run: ./gradlew publish jreleaserDeploy
       - name: Upload JReleaser logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -271,6 +274,8 @@ jobs:
 
   # After our release, we also need to trigger an update for our website build
   update-website:
+    # TEST ONLY: nothing was published, so don't rebuild the website
+    if: false
     runs-on: ubuntu-latest
     needs: release
     timeout-minutes: 15
