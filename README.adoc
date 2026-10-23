@@ -122,6 +122,7 @@ The least we can do is to thank them and list some of their accomplishments here
 ==== 2026
 
 * https://github.com/Anikesh348[Anikesh348] added a reproducible execution date to the https://junit-pioneer.org/docs/disabled-until/[`@DisabledUntil` extension] (#688 / #882)
+* https://github.com/nielsbasjes[Niels Basjes] reported and wrote the tests reproducing environment variables not being restored after parameterized tests (#875 / #876)
 * https://github.com/roeniss[Roeniss Moon] found the Gradle deprecation warning caused by the YAML validation plugin, which led to moving the validation to CI (#865 / #891)
 
 ==== 2025
