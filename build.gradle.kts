@@ -163,9 +163,11 @@ publishing {
 val mavenGroupId = project.group.toString()
 
 // JReleaser drives the whole release (see CONTRIBUTING.adoc). The release job runs:
-//   ./gradlew publish              -> stages the artifacts in build/staging-deploy
-//   ./gradlew jreleaserDeploy      -> signs them + uploads/releases via the Central Portal
-//   ./gradlew jreleaserRelease     -> creates the Git tag + GitHub release with changelog
+//   ./gradlew publish                -> stages the artifacts in build/staging-deploy
+//   ./gradlew jreleaserFullRelease   -> signs them + uploads/releases via the Central Portal,
+//                                       then creates the Git tag + GitHub release
+// Don't run `jreleaserDeploy` and `jreleaserRelease` one after the other:
+// `jreleaserRelease` deploys as well, and the second upload fails as "already deployed".
 jreleaser {
 	gitRootSearch = true
 	project {
@@ -188,6 +190,10 @@ jreleaser {
 			// owner + repo name are detected from the git remote (gitRootSearch above)
 			tagName = "v{{projectVersion}}"
 			releaseName = "JUnit Pioneer {{projectVersion}}"
+			// mark release candidates and milestones (e.g. 3.0.0-RC1, 3.0.0-M2) as pre-releases
+			prerelease {
+				pattern = ".*-(RC|M)\\d+"
+			}
 			// let GitHub generate the notes (merged PRs + new contributors);
 			// categorize them later via .github/release.yml if desired
 			releaseNotes {
@@ -225,13 +231,10 @@ jreleaser {
 	}
 }
 
-tasks.named("jreleaserDeploy") {
+// Within `jreleaserFullRelease`, the deploy step runs before the release step and aborts
+// on failure, so the GitHub release/tag is only cut once the Central Portal upload succeeded.
+tasks.named("jreleaserFullRelease") {
 	dependsOn("publish")
-}
-
-// Only cut the GitHub release/tag once the Central Portal upload has succeeded.
-tasks.named("jreleaserRelease") {
-	dependsOn("jreleaserDeploy")
 }
 
 extraJavaModuleInfo {

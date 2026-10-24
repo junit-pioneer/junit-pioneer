@@ -259,7 +259,7 @@ jobs:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # defines released version according to GitHub Action input
           ORG_GRADLE_PROJECT_version: ${{ github.event.inputs.version }}
-        run: ./gradlew publish jreleaserDeploy jreleaserRelease
+        run: ./gradlew publish jreleaserFullRelease
       - name: Upload JReleaser logs
         if: always()
         uses: actions/upload-artifact@v4
