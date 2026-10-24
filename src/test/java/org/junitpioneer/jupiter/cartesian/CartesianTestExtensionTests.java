@@ -516,6 +516,16 @@ public class CartesianTestExtensionTests {
 		}
 
 		@Test
+		@DisplayName("@MethodParameterSource with explicit list of multiple parameters picks the matching overload")
+		void testMethodParameterSourceOverloadWithMultipleParameters() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"overloadWithMultipleParameters", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+		}
+
+		@Test
 		@DisplayName("@MethodParameterSource with class name relative to the test class")
 		void testMethodParameterSourceRelativeClassName() {
 			ExecutionResults results = PioneerTestKit
@@ -1411,6 +1421,11 @@ public class CartesianTestExtensionTests {
 		}
 
 		@CartesianTest
+		void overloadWithMultipleParameters(
+				@MethodParameterSource("overloaded(org.junit.jupiter.api.TestInfo, org.junit.jupiter.api.TestReporter)") String value) {
+		}
+
+		@CartesianTest
 		void factoryParameterResolvedByExtensionOnFactory(
 				@MethodParameterSource("prefixedWithOwnExtension") String value) {
 		}
@@ -1482,6 +1497,10 @@ public class CartesianTestExtensionTests {
 
 		static List<String> overloaded(TestInfo testInfo) {
 			return List.of("a", "b");
+		}
+
+		static List<String> overloaded(TestInfo testInfo, TestReporter testReporter) {
+			return List.of("a", "b", "c");
 		}
 
 		static List<String> ambiguous(TestInfo testInfo) {
