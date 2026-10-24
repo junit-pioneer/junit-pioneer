@@ -28,9 +28,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.platform.commons.PreconditionViolationException;
 import org.junitpioneer.jupiter.ReportEntry;
@@ -543,6 +546,17 @@ public class CartesianTestExtensionTests {
 			assertThat(results).hasNumberOfReportEntries(3).withValues("one", "two", "three");
 		}
 
+		@Test
+		@DisplayName("@MethodParameterSource with factory method parameter resolved by extension of the test")
+		void testMethodParameterSourceFactoryParameterResolvedByExtension() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"factoryParameterResolvedByExtension", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results).hasNumberOfReportEntries(2).withValues("pre-a", "pre-b");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -1028,6 +1042,23 @@ public class CartesianTestExtensionTests {
 		}
 
 		@Test
+		@DisplayName("@MethodParameterSource with factory method parameter resolved by extension on the factory method")
+		void testMethodParameterSourceFactoryParameterResolvedByExtensionOnFactory() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"factoryParameterResolvedByExtensionOnFactory", String.class);
+
+			// JUnit doesn't register extensions declared on factory methods, only those of the test
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(ParameterResolutionException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message.startsWith("No ParameterResolver registered")));
+		}
+
+		@Test
 		@DisplayName("@MethodParameterSource with invalid method (@Test method)")
 		void testMethodParameterSourceInvalidFactoryTest() {
 			ExecutionResults results = PioneerTestKit
@@ -1354,6 +1385,50 @@ public class CartesianTestExtensionTests {
 
 		@CartesianTest
 		void relativeClassName(@MethodParameterSource("ExternalFactories#ab") String value) {
+		}
+
+		@CartesianTest
+		@ExtendWith(PrefixResolver.class)
+		@ReportEntry("{0}")
+		void factoryParameterResolvedByExtension(@MethodParameterSource("prefixed") String value) {
+		}
+
+		@CartesianTest
+		void factoryParameterResolvedByExtensionOnFactory(
+				@MethodParameterSource("prefixedWithOwnExtension") String value) {
+		}
+
+		static List<String> prefixed(Prefix prefix) {
+			return List.of(prefix.value + "a", prefix.value + "b");
+		}
+
+		@ExtendWith(PrefixResolver.class)
+		static List<String> prefixedWithOwnExtension(Prefix prefix) {
+			return prefixed(prefix);
+		}
+
+		static class Prefix {
+
+			final String value;
+
+			Prefix(String value) {
+				this.value = value;
+			}
+
+		}
+
+		static class PrefixResolver implements ParameterResolver {
+
+			@Override
+			public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+				return parameterContext.getParameter().getType() == Prefix.class;
+			}
+
+			@Override
+			public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+				return new Prefix("pre-");
+			}
+
 		}
 
 		static List<String> overloaded() {
