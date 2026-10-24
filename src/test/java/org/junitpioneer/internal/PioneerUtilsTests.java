@@ -14,17 +14,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collector;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.platform.commons.PreconditionViolationException;
 
 @DisplayName("JUnitPioneer utilities")
 class PioneerUtilsTests {
@@ -138,6 +148,70 @@ class PioneerUtilsTests {
 			Optional<Method> result = PioneerUtils
 					.findMethodCurrentOrEnclosing(MethodFinderTestCases.MethodFinderTestCasesChild.class,
 						"grandchildrenMethod");
+
+			assertThat(result).isNotPresent();
+		}
+
+	}
+
+	@Nested
+	@DisplayName("findClassCurrentOrEnclosing")
+	class ClassFinderTests {
+
+		@Test
+		@DisplayName("finds class by fully qualified name")
+		void findsItByFullyQualifiedName() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class, "java.lang.String");
+
+			assertThat(result).contains(String.class);
+		}
+
+		@Test
+		@DisplayName("finds class nested in current class")
+		void findsItInCurrent() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class, "MethodFinderTestCasesChild");
+
+			assertThat(result).contains(MethodFinderTestCases.MethodFinderTestCasesChild.class);
+		}
+
+		@Test
+		@DisplayName("finds class nested in enclosing class if it's not nested in the given class")
+		void findsItInEnclosing() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(
+						MethodFinderTestCases.MethodFinderTestCasesChild.MethodFinderTestCasesGrandChild.class,
+						"MethodFinderTestCasesChild");
+
+			assertThat(result).contains(MethodFinderTestCases.MethodFinderTestCasesChild.class);
+		}
+
+		@Test
+		@DisplayName("finds class nested deeper by relative name")
+		void findsItByRelativePath() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class,
+						"MethodFinderTestCasesChild$MethodFinderTestCasesGrandChild");
+
+			assertThat(result)
+					.contains(MethodFinderTestCases.MethodFinderTestCasesChild.MethodFinderTestCasesGrandChild.class);
+		}
+
+		@Test
+		@DisplayName("returns empty Optional if class is not present")
+		void returnsEmptyOptional() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class, "MissingClass");
+
+			assertThat(result).isNotPresent();
+		}
+
+		@Test
+		@DisplayName("does not check classes nested in nested classes")
+		void noNestedCheck() {
+			Optional<Class<?>> result = PioneerUtils
+					.findClassCurrentOrEnclosing(MethodFinderTestCases.class, "MethodFinderTestCasesGrandChild");
 
 			assertThat(result).isNotPresent();
 		}
@@ -292,6 +366,54 @@ class PioneerUtilsTests {
 				assertThat(result).isEqualTo("[12.23, 34.56, 78.9]");
 			}
 
+		}
+
+	}
+
+	@Nested
+	@DisplayName("isConvertibleToStream & toStream")
+	class ToStreamTests {
+
+		@ParameterizedTest
+		@MethodSource("org.junitpioneer.internal.PioneerUtilsTests$ToStreamTestData#convertible")
+		void testConvertible(Object converibleObject) {
+			assertThat(PioneerUtils.isConvertibleToStream(converibleObject.getClass())).isTrue();
+			assertThat(PioneerUtils.toStream(converibleObject)).isInstanceOf(Stream.class);
+		}
+
+		@ParameterizedTest
+		@MethodSource("org.junitpioneer.internal.PioneerUtilsTests$ToStreamTestData#notConvertible")
+		void testNotConvertible(Object inconveribleObject) {
+			assertThat(PioneerUtils.isConvertibleToStream(inconveribleObject.getClass())).isFalse();
+			assertThatThrownBy(() -> {
+				PioneerUtils.toStream(inconveribleObject);
+			}).isInstanceOf(PreconditionViolationException.class).hasMessageStartingWith("Cannot convert instance of ");
+		}
+
+		@Test
+		void testNullTypeInconvertible() {
+			assertThat(PioneerUtils.isConvertibleToStream(null)).isFalse();
+		}
+
+		@Test
+		void testVoidTypeInconvertible() {
+			assertThat(PioneerUtils.isConvertibleToStream(Void.TYPE)).isFalse();
+		}
+
+	}
+
+	static class ToStreamTestData {
+
+		static Stream<Arguments> convertible() {
+			return Stream
+					.of(Stream.of(), DoubleStream.of(), IntStream.of(), LongStream.of(), List.of(),
+						List.of().iterator(), new Object[] { new Object() }, new int[] { 1 }, new double[] { 1.0 },
+						new long[] { 1 }, new boolean[] { true }, (Iterable<Object>) () -> List.of().iterator())
+					.map(Arguments::of);
+		}
+
+		static Stream<Arguments> notConvertible() {
+			return Stream.of("a", new Object(), new HashMap<>(), 1, Void.TYPE).map(Arguments::of);
 		}
 
 	}

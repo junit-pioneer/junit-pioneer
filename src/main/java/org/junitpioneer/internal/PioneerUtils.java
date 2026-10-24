@@ -10,23 +10,34 @@
 
 package org.junitpioneer.internal;
 
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.toList;
 import static org.junit.platform.commons.support.ReflectionSupport.findMethod;
+import static org.junit.platform.commons.support.ReflectionSupport.tryToLoadClass;
 
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.platform.commons.PreconditionViolationException;
 
 /**
  * Pioneer-internal utility class.
@@ -84,6 +95,29 @@ public class PioneerUtils {
 			current = current.getEnclosingClass();
 		} while (method.isEmpty() && current != null);
 		return method;
+	}
+
+	/**
+	 * Find the class with the supplied name, either as a fully qualified name or
+	 * as a nested class of the supplied class or one of its enclosing classes.
+	 *
+	 * <p>The name is first tried as is (i.e. as a fully qualified name). If that
+	 * fails, it is tried relative to the supplied class and then each of its
+	 * enclosing classes (outwards), so that a nested class can be referenced by
+	 * its simple name.</p>
+	 *
+	 * @param clazz the class relative to which the name is resolved; never {@code null}
+	 * @param className the name of the class to find; never {@code null} or blank
+	 * @return an {@code Optional} containing the class found; never {@code null}
+	 * but potentially empty if no such class could be loaded
+	 * @see org.junit.platform.commons.support.ReflectionSupport#tryToLoadClass(String)
+	 */
+	public static Optional<Class<?>> findClassCurrentOrEnclosing(Class<?> clazz, String className) {
+		Optional<Class<?>> found = tryToLoadClass(className).toOptional();
+		for (Class<?> current = clazz; found.isEmpty() && current != null; current = current.getEnclosingClass()) {
+			found = tryToLoadClass(current.getName() + "$" + className).toOptional();
+		}
+		return found;
 	}
 
 	/**
@@ -168,6 +202,99 @@ public class PioneerUtils {
 
 	public static Locale createLocale(String language) {
 		return new Locale.Builder().setLanguage(language).build();
+	}
+
+	/**
+	 * Determine if an instance of the supplied type can be converted into a
+	 * {@code Stream}.
+	 *
+	 * <p>If this method returns {@code true}, {@link #toStream(Object)} can
+	 * successfully convert an object of the specified type into a stream. See
+	 * {@link #toStream(Object)} for supported types.
+	 *
+	 * <p>Based on the method with the same name in org.junit.platform.commons.util.CollectionUtils</p>
+	 *
+	 * @param type the type to check; may be {@code null}
+	 * @return {@code true} if an instance of the type can be converted into a stream
+	 * @see #toStream(Object)
+	 */
+	public static boolean isConvertibleToStream(Class<?> type) {
+		if (type == null || type == void.class) {
+			return false;
+		}
+		return (Stream.class.isAssignableFrom(type)//
+				|| DoubleStream.class.isAssignableFrom(type)//
+				|| IntStream.class.isAssignableFrom(type)//
+				|| LongStream.class.isAssignableFrom(type)//
+				|| Iterable.class.isAssignableFrom(type)//
+				|| Iterator.class.isAssignableFrom(type)//
+				|| Object[].class.isAssignableFrom(type)//
+				|| (type.isArray() && type.getComponentType().isPrimitive()));
+	}
+
+	/**
+	 * Convert an object of one of the following supported types into a {@code Stream}.
+	 *
+	 * <ul>
+	 * <li>{@link Stream}</li>
+	 * <li>{@link DoubleStream}</li>
+	 * <li>{@link IntStream}</li>
+	 * <li>{@link LongStream}</li>
+	 * <li>{@link Collection}</li>
+	 * <li>{@link Iterable}</li>
+	 * <li>{@link Iterator}</li>
+	 * <li>{@link Object} array</li>
+	 * <li>primitive array</li>
+	 * </ul>
+	 *
+	 * <p>Based on the method with the same name in org.junit.platform.commons.util.CollectionUtils</p>
+	 *
+	 * @param object the object to convert into a stream; never {@code null}
+	 * @return the resulting stream
+	 * @throws PreconditionViolationException if the supplied object is {@code null}
+	 *                                        or not one of the supported types
+	 * @see #isConvertibleToStream(Class)
+	 */
+	public static Stream<?> toStream(Object object) {
+		PioneerPreconditions.notNull(object, "Object must not be null");
+		if (object instanceof Stream) {
+			return (Stream<?>) object;
+		}
+		if (object instanceof DoubleStream) {
+			return ((DoubleStream) object).boxed();
+		}
+		if (object instanceof IntStream) {
+			return ((IntStream) object).boxed();
+		}
+		if (object instanceof LongStream) {
+			return ((LongStream) object).boxed();
+		}
+		if (object instanceof Collection) {
+			return ((Collection<?>) object).stream();
+		}
+		if (object instanceof Iterable) {
+			return StreamSupport.stream(((Iterable<?>) object).spliterator(), false);
+		}
+		if (object instanceof Iterator) {
+			return StreamSupport.stream(spliteratorUnknownSize((Iterator<?>) object, ORDERED), false);
+		}
+		if (object instanceof Object[]) {
+			return Arrays.stream((Object[]) object);
+		}
+		if (object instanceof double[]) {
+			return DoubleStream.of((double[]) object).boxed();
+		}
+		if (object instanceof int[]) {
+			return IntStream.of((int[]) object).boxed();
+		}
+		if (object instanceof long[]) {
+			return LongStream.of((long[]) object).boxed();
+		}
+		if (object.getClass().isArray() && object.getClass().getComponentType().isPrimitive()) {
+			return IntStream.range(0, Array.getLength(object)).mapToObj(i -> Array.get(object, i));
+		}
+		throw new PreconditionViolationException(
+			"Cannot convert instance of " + object.getClass().getName() + " into a Stream: " + object);
 	}
 
 }
