@@ -575,6 +575,17 @@ public class CartesianTestExtensionTests {
 
 		}
 
+		@Test
+		@DisplayName("@MethodParameterSource with multiple factory method parameters resolved by extensions of the test")
+		void testMethodParameterSourceFactoryParametersResolvedByExtensions() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"factoryParametersResolvedByExtensions", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results).hasNumberOfReportEntries(2).withValues("pre-a-post", "pre-b-post");
+		}
+
 		@Nested
 		@DisplayName("use custom arguments provider")
 		class CartesianProductCustomArgumentsProviderTests {
@@ -1394,12 +1405,22 @@ public class CartesianTestExtensionTests {
 		}
 
 		@CartesianTest
+		@ExtendWith({ PrefixResolver.class, SuffixResolver.class })
+		@ReportEntry("{0}")
+		void factoryParametersResolvedByExtensions(@MethodParameterSource("affixed") String value) {
+		}
+
+		@CartesianTest
 		void factoryParameterResolvedByExtensionOnFactory(
 				@MethodParameterSource("prefixedWithOwnExtension") String value) {
 		}
 
 		static List<String> prefixed(Prefix prefix) {
 			return List.of(prefix.value + "a", prefix.value + "b");
+		}
+
+		static List<String> affixed(Prefix prefix, Suffix suffix) {
+			return List.of(prefix.value + "a" + suffix.value, prefix.value + "b" + suffix.value);
 		}
 
 		@ExtendWith(PrefixResolver.class)
@@ -1427,6 +1448,30 @@ public class CartesianTestExtensionTests {
 			@Override
 			public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 				return new Prefix("pre-");
+			}
+
+		}
+
+		static class Suffix {
+
+			final String value;
+
+			Suffix(String value) {
+				this.value = value;
+			}
+
+		}
+
+		static class SuffixResolver implements ParameterResolver {
+
+			@Override
+			public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+				return parameterContext.getParameter().getType() == Suffix.class;
+			}
+
+			@Override
+			public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
+				return new Suffix("-post");
 			}
 
 		}
