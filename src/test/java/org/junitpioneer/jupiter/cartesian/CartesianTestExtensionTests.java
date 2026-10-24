@@ -466,6 +466,7 @@ public class CartesianTestExtensionTests {
 						"multipleMethods", String.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(6).hasNumberOfSucceededTests(6);
+			assertThat(results).hasNumberOfReportEntries(6).withValues("a", "b", "c", "one", "two", "three");
 		}
 
 		@Test
@@ -476,6 +477,9 @@ public class CartesianTestExtensionTests {
 						"multipleParameters", String.class, String.class);
 
 			assertThat(results).hasNumberOfDynamicallyRegisteredTests(9).hasNumberOfSucceededTests(9);
+			assertThat(results)
+					.hasNumberOfReportEntries(9)
+					.withValues("a,one", "a,two", "a,three", "b,one", "b,two", "b,three", "c,one", "c,two", "c,three");
 		}
 
 		@Test
@@ -1297,10 +1301,12 @@ public class CartesianTestExtensionTests {
 		}
 
 		@CartesianTest
+		@ReportEntry("{0}")
 		void multipleMethods(@MethodParameterSource({ "abc", "oneTwoThree" }) String value) {
 		}
 
 		@CartesianTest
+		@ReportEntry("{0},{1}")
 		void multipleParameters(@MethodParameterSource("abc") String value1,
 				@MethodParameterSource("oneTwoThree") String value2) {
 		}
