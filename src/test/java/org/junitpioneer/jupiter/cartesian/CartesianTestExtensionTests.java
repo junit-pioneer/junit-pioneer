@@ -27,6 +27,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
@@ -546,6 +548,16 @@ public class CartesianTestExtensionTests {
 		}
 
 		@Test
+		@DisplayName("@MethodParameterSource with non-static factory method and PER_CLASS lifecycle")
+		void testMethodParameterSourceNonStaticFactoryPerClass() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourcePerClassTestCases.class,
+						"nonStaticFactory", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(3).hasNumberOfSucceededTests(3);
+		}
+
+		@Test
 		@DisplayName("@MethodParameterSource in @Nested class prefers factory method in nearest class")
 		void testMethodParameterSourceFactoryShadowedInNestedClass() {
 			ExecutionResults results = PioneerTestKit
@@ -567,6 +579,17 @@ public class CartesianTestExtensionTests {
 			assertThat(results).hasNumberOfReportEntries(2).withValues("pre-a", "pre-b");
 		}
 
+		@Test
+		@DisplayName("@MethodParameterSource with multiple factory method parameters resolved by extensions of the test")
+		void testMethodParameterSourceFactoryParametersResolvedByExtensions() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"factoryParametersResolvedByExtensions", String.class);
+
+			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
+			assertThat(results).hasNumberOfReportEntries(2).withValues("pre-a-post", "pre-b-post");
+		}
+
 		@Nested
 		@DisplayName("removes redundant parameters from input sets")
 		class CartesianProductRedundancyTests {
@@ -583,17 +606,6 @@ public class CartesianTestExtensionTests {
 
 			}
 
-		}
-
-		@Test
-		@DisplayName("@MethodParameterSource with multiple factory method parameters resolved by extensions of the test")
-		void testMethodParameterSourceFactoryParametersResolvedByExtensions() {
-			ExecutionResults results = PioneerTestKit
-					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
-						"factoryParametersResolvedByExtensions", String.class);
-
-			assertThat(results).hasNumberOfDynamicallyRegisteredTests(2).hasNumberOfSucceededTests(2);
-			assertThat(results).hasNumberOfReportEntries(2).withValues("pre-a-post", "pre-b-post");
 		}
 
 		@Nested
@@ -1115,6 +1127,24 @@ public class CartesianTestExtensionTests {
 										"Could not find valid factory method [invalidFactoryReturnType] for test class [org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases] but found the following invalid candidate: static void org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases.invalidFactoryReturnType()")));
 		}
 
+		@Test
+		@DisplayName("@MethodParameterSource with non-static factory method and PER_METHOD lifecycle")
+		void testMethodParameterSourceNonStaticFactoryPerMethod() {
+			ExecutionResults results = PioneerTestKit
+					.executeTestMethodWithParameterTypes(CartesianMethodParameterSourceTestCases.class,
+						"nonStaticFactory", String.class);
+
+			assertThat(results)
+					.hasSingleFailedContainer()
+					.andThenCheckException(exception -> assertThat(exception)
+							.extracting(Throwable::getCause)
+							.isExactlyInstanceOf(PreconditionViolationException.class)
+							.extracting(Throwable::getMessage)
+							.matches(message -> message
+									.startsWith(
+										"Method 'java.util.List<java.lang.String> org.junitpioneer.jupiter.cartesian.CartesianTestExtensionTests$CartesianMethodParameterSourceTestCases.instanceAbc()' must be static")));
+		}
+
 	}
 
 	static class BasicConfigurationTestCases {
@@ -1405,6 +1435,11 @@ public class CartesianTestExtensionTests {
 		}
 
 		@CartesianTest
+		void overloadWithMultipleParameters(
+				@MethodParameterSource("overloaded(org.junit.jupiter.api.TestInfo, org.junit.jupiter.api.TestReporter)") String value) {
+		}
+
+		@CartesianTest
 		void relativeClassName(@MethodParameterSource("ExternalFactories#ab") String value) {
 		}
 
@@ -1418,11 +1453,6 @@ public class CartesianTestExtensionTests {
 		@ExtendWith({ PrefixResolver.class, SuffixResolver.class })
 		@ReportEntry("{0}")
 		void factoryParametersResolvedByExtensions(@MethodParameterSource("affixed") String value) {
-		}
-
-		@CartesianTest
-		void overloadWithMultipleParameters(
-				@MethodParameterSource("overloaded(org.junit.jupiter.api.TestInfo, org.junit.jupiter.api.TestReporter)") String value) {
 		}
 
 		@CartesianTest
@@ -1550,12 +1580,33 @@ public class CartesianTestExtensionTests {
 		static void invalidFactoryReturnType() {
 		}
 
+		@CartesianTest
+		void nonStaticFactory(@MethodParameterSource("instanceAbc") String value) {
+		}
+
+		List<String> instanceAbc() {
+			return abc();
+		}
+
 		static List<String> abc() {
 			return Arrays.asList("a", "b", "c");
 		}
 
 		static List<String> oneTwoThree() {
 			return Arrays.asList("one", "two", "three");
+		}
+
+	}
+
+	@TestInstance(Lifecycle.PER_CLASS)
+	static class CartesianMethodParameterSourcePerClassTestCases {
+
+		@CartesianTest
+		void nonStaticFactory(@MethodParameterSource("instanceAbc") String value) {
+		}
+
+		List<String> instanceAbc() {
+			return Arrays.asList("a", "b", "c");
 		}
 
 	}

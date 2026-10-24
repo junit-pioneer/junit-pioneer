@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.support.AnnotationConsumer;
@@ -59,9 +60,10 @@ class MethodParameterProvider implements CartesianParameterArgumentsProvider<Obj
 		Class<?> testClass = context.getRequiredTestClass();
 		Method testMethod = context.getRequiredTestMethod();
 		Object testInstance = context.getTestInstance().orElse(null);
+		Lifecycle lifecycle = context.getTestInstanceLifecycle().orElse(null);
 		return stream(source.value())
 				.map(factoryMethodName -> findFactoryMethod(testClass, testMethod, factoryMethodName))
-				.map(factoryMethod -> validateFactoryMethod(factoryMethod, testInstance))
+				.map(factoryMethod -> validateFactoryMethod(factoryMethod, testInstance, lifecycle))
 				.map(factoryMethod -> context.getExecutableInvoker().invoke(factoryMethod, testInstance))
 				.flatMap(PioneerUtils::toStream);
 	}
@@ -182,11 +184,13 @@ class MethodParameterProvider implements CartesianParameterArgumentsProvider<Obj
 				|| isAnnotated(candidate, TestFactory.class);
 	}
 
-	private static Method validateFactoryMethod(Method factoryMethod, Object testInstance) {
+	private static Method validateFactoryMethod(Method factoryMethod, Object testInstance, Lifecycle lifecycle) {
+		// A test instance is only available here with PER_CLASS (the test template's context borrows it
+		// from the class context), but check the lifecycle explicitly instead of relying on that.
+		boolean invocableOnTestInstance = lifecycle == Lifecycle.PER_CLASS
+				&& factoryMethod.getDeclaringClass().isInstance(testInstance);
 		PioneerPreconditions
-				.condition(
-					factoryMethod.getDeclaringClass().isInstance(testInstance)
-							|| Modifier.isStatic(factoryMethod.getModifiers()),
+				.condition(invocableOnTestInstance || Modifier.isStatic(factoryMethod.getModifiers()),
 					() -> format("Method '%s' must be static: local factory methods must be static "
 							+ "unless the PER_CLASS @TestInstance lifecycle mode is used; "
 							+ "external factory methods must always be static.",
