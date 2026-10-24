@@ -25,7 +25,7 @@ on:
         type: boolean
         default: false
       version:
-        description: 'Version string, e.g. 2.3.1:'
+        description: 'Version string, e.g. 2.3.1 or 3.0.0-RC1:'
         required: true
 
 jobs:
@@ -41,6 +41,19 @@ jobs:
         uses: actions/checkout@v4
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
+      # Abort a release with a malformed version right away (all other jobs
+      # depend on this one). Allowed: `major.minor.patch`, optionally with a
+      # `-RC<n>` or `-M<n>` suffix - the same suffixes `build.gradle.kts`
+      # marks as GitHub pre-releases.
+      - name: Validate release version
+        if: github.event.inputs.releasing == 'true'
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          if [[ ! "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(RC|M)[1-9][0-9]*)?$ ]]; then
+            echo "::error::'$VERSION' is not a valid release version (expected e.g. 3.0.0, 3.0.0-RC1, or 3.0.0-M2)"
+            exit 1
+          fi
 
   # Our basic build step as we want contributors to have a nice developer
   # experience with little build time and sufficient feedback. Therefore, we
