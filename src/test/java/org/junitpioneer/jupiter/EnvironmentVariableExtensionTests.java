@@ -818,6 +818,7 @@ class EnvironmentVariableExtensionTests {
 	@Nested
 	@Issue("875")
 	@DisplayName("environment is restored after ParameterizedTest")
+	@WritesEnvironmentVariable // `setup` and `finish` modify the environment directly
 	class RestoreAfterParameterizedTest {
 
 		// This reproduces the environment variables not being reset when set as part of a ParameterizedTest.
