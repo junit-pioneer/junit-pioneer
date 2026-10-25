@@ -15,15 +15,12 @@ import static org.junit.platform.commons.support.ReflectionSupport.invokeMethod;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Optional;
 
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtensionConfigurationException;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.params.support.AnnotationConsumer;
-import org.junit.platform.commons.function.Try;
-import org.junit.platform.commons.support.ReflectionSupport;
 import org.junitpioneer.internal.PioneerUtils;
 
 class CartesianFactoryArgumentsProvider
@@ -61,24 +58,14 @@ class CartesianFactoryArgumentsProvider
 	}
 
 	private static Class<?> findExplicitOrImplicitClass(Method testMethod, String methodFactoryName) {
-		Optional<String> optionalClassName = MemberNameUtils.extractClassName(methodFactoryName);
-		if (optionalClassName.isEmpty())
-			return testMethod.getDeclaringClass();
-
-		String className = optionalClassName.get();
-		Try<Class<?>> tryToLoadClass = ReflectionSupport.tryToLoadClass(className);
-		// step (outwards) through all enclosing classes, trying to load the factory class by appending
-		// its name to the enclosing class' name (if a previous load didn't already succeed
-		Class<?> methodClass = testMethod.getDeclaringClass();
-		while (methodClass != null) {
-			String enclosingName = methodClass.getName();
-			tryToLoadClass = tryToLoadClass
-					.orElse(() -> ReflectionSupport.tryToLoadClass(enclosingName + "$" + className));
-			methodClass = methodClass.getEnclosingClass();
-		}
-		return tryToLoadClass
-				.getOrThrow(ex -> new ExtensionConfigurationException(
-					format("Class %s not found, referenced in method %s", className, testMethod.getName()), ex));
+		Class<?> testClass = testMethod.getDeclaringClass();
+		return MemberNameUtils
+				.extractClassName(methodFactoryName)
+				.<Class<?>> map(className -> PioneerUtils
+						.findClassCurrentOrEnclosing(testClass, className)
+						.orElseThrow(() -> new ExtensionConfigurationException(
+							format("Class %s not found, referenced in method %s", className, testMethod.getName()))))
+				.orElse(testClass);
 	}
 
 	private static boolean factoryMustBeStatic(Method factory, Object testInstance, TestInstance.Lifecycle lifecycle) {

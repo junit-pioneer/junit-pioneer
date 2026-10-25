@@ -53,4 +53,21 @@ class MemberNameUtilsTests {
 		assertThat(MemberNameUtils.extractClassName(input)).isEmpty();
 	}
 
+	@ParameterizedTest(name = "[{index}] {arguments}")
+	@DisplayName("Should correctly extract parameter types when a parameter list exists")
+	@CsvSource(useHeadersInDisplayName = true, delimiter = '|', value = { "input| expected", "myMethod(int)| int",
+			"MyClass#myMethod(int, java.lang.String)| int, java.lang.String", "MyClass#myMethod( int )| int",
+			"myMethod()| ''", "myMethod( )| ''" })
+	void shouldExtractParameterTypes(String input, String expected) {
+		assertThat(MemberNameUtils.extractParameterTypes(input)).contains(expected);
+	}
+
+	@ParameterizedTest
+	@DisplayName("Should return empty optional when no parameter list is provided")
+	@NullAndEmptySource
+	@ValueSource(strings = { "myMethod", "MyClass#myMethod", "myMethod(int", "myMethod)" })
+	void shouldReturnEmptyOptionalWhenThereIsNoParameterList(String input) {
+		assertThat(MemberNameUtils.extractParameterTypes(input)).isEmpty();
+	}
+
 }

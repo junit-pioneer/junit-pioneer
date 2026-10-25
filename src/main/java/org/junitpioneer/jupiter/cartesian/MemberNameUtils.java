@@ -14,7 +14,7 @@ import java.util.Optional;
 
 /**
  * Utility methods for parsing member references used by
- * {@link CartesianFactoryArgumentsProvider}.
+ * {@link CartesianFactoryArgumentsProvider} and {@link MethodParameterProvider}.
  *
  * <p>A member reference has the form
  * {@code [className#]methodName[(parameters)]}, where the class name and
@@ -89,6 +89,40 @@ class MemberNameUtils {
 
 		String className = memberName.substring(0, memberName.indexOf('#')).trim();
 		return className.isEmpty() ? Optional.empty() : Optional.of(className);
+	}
+
+	/**
+	 * Returns the parameter list of the given member reference, if present.
+	 *
+	 * <p>The parameter list is the part between the first {@code '('} and a
+	 * closing {@code ')'} at the end of the reference, trimmed. An explicitly
+	 * empty parameter list ({@code "()"}) results in an empty string, which
+	 * differs from a reference without any parameter list.
+	 *
+	 * <p>Examples:
+	 * <blockquote><pre>
+	 * extractParameterTypes("MyClass#myMethod(int, String)") returns Optional[int, String]
+	 * extractParameterTypes("myMethod()") returns Optional[]
+	 * extractParameterTypes("myMethod") returns Optional.empty
+	 * </pre></blockquote>
+	 *
+	 * @param memberName the member reference; may be {@code null}
+	 * @return an {@code Optional} containing the parameter list, or an empty
+	 *         {@code Optional} if {@code memberName} is {@code null} or has no
+	 *         parameter list
+	 */
+	public static Optional<String> extractParameterTypes(String memberName) {
+		if (memberName == null) {
+			return Optional.empty();
+		}
+
+		String name = memberName.trim();
+		int indexOfOpeningParenthesis = name.indexOf('(');
+		if (indexOfOpeningParenthesis == -1 || !name.endsWith(")")) {
+			return Optional.empty();
+		}
+
+		return Optional.of(name.substring(indexOfOpeningParenthesis + 1, name.length() - 1).trim());
 	}
 
 }
