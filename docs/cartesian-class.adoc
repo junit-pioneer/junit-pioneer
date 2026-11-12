@@ -1,0 +1,39 @@
+:page-title: Cartesian Test Classes
+:page-description: Run every test method for each combination of constructor parameters with @CartesianClass
+:xp-demo-dir: ../src/demo/java
+:class-demo: {xp-demo-dir}/org/junitpioneer/jupiter/cartesian/CartesianClassDemo.java
+
+
+Use `@CartesianClass` to run every test in a class for every combination of constructor arguments.
+It is separate from method-level `@CartesianTest` and is built on Jupiter's class-template API.
+
+[source,java,indent=0]
+----
+include::{class-demo}[tag=cartesian_class]
+----
+
+The example has two sizes and two enum values, so it creates four class invocations and runs both test methods in each invocation, for eight tests in total.
+Jupiter creates a fresh test instance for each test method, including nested test methods, using the current combination of constructor arguments.
+`@BeforeEach` and `@AfterEach` retain their usual per-test behavior.
+Class-template lifecycle callbacks retain Jupiter's semantics; `@BeforeAll` and `@AfterAll` surround the whole template, not each combination.
+
+Annotate each constructor parameter with exactly one parameter source.
+The existing `@CartesianTest.Values`, `@CartesianTest.Enum`, range sources, and custom `CartesianParameterArgumentsProvider` sources can be reused.
+Duplicates are removed in encounter order, as with method-level Cartesian tests.
+`Named` arguments use their names for display and their payloads for injection.
+Ordinary test-method parameters such as `TestInfo` are still handled by Jupiter.
+Constructor parameters without a Cartesian source are not supported in this first version.
+
+The `name` attribute accepts the same display-name placeholders as `@CartesianTest` and must not be blank.
+`@CartesianClass` can be used as a meta-annotation and is inherited by subclasses.
+The annotated class must be top-level or static nested and declare one constructor.
+Regular `@Nested` tests inside that class are supported.
+Method-level `@CartesianTest` can be used inside a Cartesian class and adds its own combinations for each class invocation.
+
+[NOTE]
+====
+Constructor injection requires Jupiter's default `PER_METHOD` test instance lifecycle.
+`@TestInstance(PER_CLASS)` is rejected because Jupiter creates that shared instance before the class-template invocation arguments are available.
+Field injection, non-static nested Cartesian classes, and class-level factory sources are outside this first version's scope.
+Empty source sets and invalid source configurations fail rather than silently skipping tests.
+====

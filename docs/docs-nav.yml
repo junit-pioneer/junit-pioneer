@@ -7,6 +7,8 @@
         url: /docs/replace-camelcase-and-underscore-and-number/
       - title: "Cartesian Product of Parameters"
         url: /docs/cartesian-product/
+      - title: "Cartesian Test Classes"
+        url: /docs/cartesian-class/
       - title: "Clear, Set, and Restore System Properties"
         url: /docs/system-properties/
       - title: "Clear, Set, and Restore Environment Variables"
