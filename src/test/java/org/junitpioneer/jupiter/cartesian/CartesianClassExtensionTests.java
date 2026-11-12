@@ -149,6 +149,31 @@ class CartesianClassExtensionTests {
 	}
 
 	@Test
+	void rejectsMultipleCartesianSources() {
+		assertThat(failure(MultipleCartesianSourcesTestCases.class))
+				.hasMessageContaining("exactly one arguments source");
+	}
+
+	@Test
+	void rejectsMultipleComposedCartesianSources() {
+		assertThat(failure(MultipleComposedCartesianSourcesTestCases.class))
+				.hasMessageContaining("exactly one arguments source");
+	}
+
+	@Test
+	void supportsDirectCartesianSources() {
+		assertThat(PioneerTestKit.executeTestClass(DirectCartesianSourceTestCases.class))
+				.hasNumberOfSucceededTests(2)
+				.hasNumberOfFailedTests(0);
+	}
+
+	@Test
+	void rejectsDirectAndComposedCartesianSources() {
+		assertThat(failure(DirectAndComposedCartesianSourcesTestCases.class))
+				.hasMessageContaining("exactly one arguments source");
+	}
+
+	@Test
 	void rejectsEmptySources() {
 		assertThat(failure(EmptySourceTestCases.class))
 				.hasRootCauseMessage("Illegal range. Equal from and to will produce an empty range.");
@@ -493,6 +518,68 @@ class CartesianClassExtensionTests {
 	static class MultipleSourcesTestCases {
 
 		MultipleSourcesTestCases(@CartesianTest.Values(ints = { 1 }) @IntRangeSource(from = 1, to = 2) int number) {
+		}
+
+		@Test
+		void never() {
+		}
+
+	}
+
+	@CartesianClass
+	static class MultipleCartesianSourcesTestCases {
+
+		MultipleCartesianSourcesTestCases(
+				@CartesianTest.Values(strings = { "FIRST" }) @CartesianTest.Enum String value) {
+		}
+
+		@Test
+		void never() {
+		}
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.PARAMETER)
+	@CartesianTest.Values(strings = { "FIRST" })
+	@interface FirstValue {
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.PARAMETER)
+	@CartesianTest.Values(strings = { "SECOND" })
+	@interface SecondValue {
+	}
+
+	@CartesianClass
+	static class MultipleComposedCartesianSourcesTestCases {
+
+		MultipleComposedCartesianSourcesTestCases(@FirstValue @SecondValue String value) {
+		}
+
+		@Test
+		void never() {
+		}
+
+	}
+
+	@CartesianClass
+	static class DirectCartesianSourceTestCases {
+
+		DirectCartesianSourceTestCases(@CartesianArgumentsSource(NamedArgumentsProvider.class) String value) {
+		}
+
+		@Test
+		void valid() {
+		}
+
+	}
+
+	@CartesianClass
+	static class DirectAndComposedCartesianSourcesTestCases {
+
+		DirectAndComposedCartesianSourcesTestCases(
+				@CartesianArgumentsSource(NamedArgumentsProvider.class) @FirstValue String value) {
 		}
 
 		@Test

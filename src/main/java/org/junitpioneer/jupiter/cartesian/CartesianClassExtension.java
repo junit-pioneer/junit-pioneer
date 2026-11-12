@@ -83,7 +83,14 @@ class CartesianClassExtension implements ClassTemplateInvocationContextProvider,
 		List<List<?>> sets = new ArrayList<>();
 		for (Parameter parameter : constructor.getParameters()) {
 			List<Annotation> sources = new ArrayList<>();
-			AnnotationSupport.findAnnotation(parameter, CartesianArgumentsSource.class).ifPresent(sources::add);
+			for (Annotation source : parameter.getAnnotations()) {
+				if (source instanceof CartesianArgumentsSource)
+					sources.add(source);
+				else
+					AnnotationSupport
+							.findAnnotation(source.annotationType(), CartesianArgumentsSource.class)
+							.ifPresent(sources::add);
+			}
 			sources.addAll(AnnotationSupport.findRepeatableAnnotations(parameter, ArgumentsSource.class));
 			if (sources.size() != 1)
 				throw new ExtensionConfigurationException(
