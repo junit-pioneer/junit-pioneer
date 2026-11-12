@@ -16,7 +16,8 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * Provides arguments for a single parameter of a {@link CartesianTest} method.
+ * Provides arguments for a single parameter of a {@link CartesianTest} method
+ * or a {@link CartesianClass} constructor.
  *
  * <p>For more information, see
  * <a href="https://junit-pioneer.org/docs/cartesian-product/" target="_top">the Cartesian product documentation</a>.</p>

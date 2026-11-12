@@ -434,3 +434,6 @@ This is because `@Test` does not know what to do with the parameter(s) of the `@
 == Thread-Safety
 
 This extension is safe to use during https://junit.org/junit5/docs/current/user-guide/#writing-tests-parallel-execution[parallel test execution].
+
+
+For class-level Cartesian constructor arguments, see link:/docs/cartesian-class[Cartesian test classes].

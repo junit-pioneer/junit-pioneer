@@ -1,5 +1,6 @@
 /**
- * This package contains the {@link org.junitpioneer.jupiter.cartesian.CartesianTest} extension.
+ * This package contains the {@link org.junitpioneer.jupiter.cartesian.CartesianTest}
+ * and {@link org.junitpioneer.jupiter.cartesian.CartesianClass} extensions.
  * This includes all associated classes, e.g.:
  *  - Argument providers,
  *  - Display name formatter,
